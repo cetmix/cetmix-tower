@@ -1,0 +1,17 @@
+# Do NOT update manually; changes here will be overwritten by Copier
+_commit: v1.7.0
+_src_path: https://github.com/cetmix/cetmix-addons-repo-template.git
+ci: GitHub
+dependency_installation_mode: OCA
+generate_requirements_txt: true
+include_wkhtmltopdf: false
+odoo_version: 14.0
+org_name: Cetmix
+org_slug: cetmix
+rebel_module_groups: []
+repo_description: Cetmix Tower
+repo_name: Remote server management tools
+repo_slug: cetmix-tower
+repo_website: https://cetmix.com
+travis_apt_packages: []
+travis_apt_sources: []
