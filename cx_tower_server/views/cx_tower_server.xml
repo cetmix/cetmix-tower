@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="server_view_tree" model="ir.ui.view">
+        <field name="name">Cetmix Tower Server Tree</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="status" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="server_view_form" model="ir.ui.view">
+        <field name="name">Cetmix Tower Server Tree</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <form string="Server">
+                <header>
+                    <field name="status" widget="statusbar" />
+                </header>
+                <sheet>
+                    <group name="root">
+                        <group name="main">
+                            <field name="name" />
+                            <field name="partner_id" />
+                            <field name="os_id" />
+                            <field name="tag_ids" widget="many2many_tags" />
+                            <field name="ip_v4_address" />
+                            <field name="ip_v6_address" />
+                            <field name="ip_v6_address" />
+                        </group>
+                        <group name="ssh">
+                            <field name="ssh_auth_mode" />
+                            <field name="ssh_port" />
+                            <field name="ssh_username" />
+                            <field name="ssh_password" />
+                            <field name="ssh_key" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_servers" model="ir.actions.act_window">
+        <field name="name">Servers</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.server</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!--## Menu ##-->
+    <menuitem
+        id="menu_root"
+        name="Cetmix Tower"
+        groups="group_user"
+        web_icon="cx_tower_server,static/description/icon.png"
+    />
+    <menuitem
+        id="menu_servers"
+        name="Servers"
+        action="action_servers"
+        parent="menu_root"
+        groups="group_user"
+        sequence="3"
+    />
+
+</odoo>

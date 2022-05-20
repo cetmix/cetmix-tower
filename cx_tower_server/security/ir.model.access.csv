@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_os_user,OS->User,model_cx_tower_os,group_user,1,0,0,0
+access_os_manager,OS->Manager,model_cx_tower_os,group_manager,1,1,1,0
+access_os_root,OS->Root,model_cx_tower_os,group_root,1,1,1,1
+access_tag_user,Tag->User,model_cx_tower_tag,group_user,1,0,0,0
+access_tag_manager,Tag->Manager,model_cx_tower_tag,group_manager,1,1,1,0
+access_tag_root,Tag->Root,model_cx_tower_tag,group_root,1,1,1,1
+access_server_user,Server->User,model_cx_tower_server,group_user,1,0,0,0
+access_server_manager,Server->Manager,model_cx_tower_server,group_manager,1,1,1,0
+access_server_root,Server->Root,model_cx_tower_tag,group_root,1,1,1,1
