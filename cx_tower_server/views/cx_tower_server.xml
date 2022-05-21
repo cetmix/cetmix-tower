@@ -18,24 +18,29 @@
         <field name="arch" type="xml">
             <form string="Server">
                 <header>
+                    <button
+                        name="start"
+                        type="object"
+                        string="Start"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('status', '!=', 'stopped')]}"
+                    />
+                    <button
+                        name="test_ssh_connection"
+                        type="object"
+                        string="Test Connection"
+                    />
                     <field name="status" widget="statusbar" />
                 </header>
                 <sheet>
-                <div class="oe_button_box" name="button_box">
-                        <!-- <button name="preview_sale_order"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-globe icon">
+                    <div class="oe_button_box" name="button_box">
+                        <!-- <button name="preview_sale_order" type="object" class="oe_stat_button" icon="fa-globe icon">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_text">Customer</span>
                                 <span class="o_stat_text">Preview</span>
                             </div>
                         </button>
-                        <button name="action_view_invoice"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-pencil-square-o"
-                            attrs="{'invisible': [('invoice_count', '=', 0)]}">
+                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('invoice_count', '=', 0)]}">
                             <field name="invoice_count" widget="statinfo" string="Invoices"/>
                         </button> -->
                     </div>
@@ -44,6 +49,9 @@
                             <field name="name" />
                         </h1>
                     </div>
+                    <group name="name">
+                      <field name="available" />
+                    </group>
                     <notebook>
                         <page name="General" string="General Settings">
                             <group name="root">
@@ -53,15 +61,20 @@
                                     <field name="tag_ids" widget="many2many_tags" />
                                     <field name="ip_v4_address" />
                                     <field name="ip_v6_address" />
-                                    <field name="ip_v6_address" />
                                 </group>
                                 <group name="ssh">
                                     <field name="ssh_auth_mode" />
                                     <field name="ssh_port" />
                                     <field name="ssh_username" />
-                                    <field name="ssh_password" />
-                                    <field name="ssh_key" />
+                                    <field
+                                        name="ssh_password"
+                                        attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
+                                    />
                                 </group>
+                                <field
+                                    name="ssh_key"
+                                    attrs="{'required': [('ssh_auth_mode', '=', 'л')]}"
+                                />
                             </group>
                         </page>
                     </notebook>
