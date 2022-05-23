@@ -158,25 +158,23 @@ class Server(models.Model):
 
         command = self._get_connection_test_command()
 
-        stdin, stdout, stderr = client.exec_command(command, get_pty=True)
-        output = stdout.readlines()
-        error = stderr.read()
+        res = self._execute_command(client, command=command)
         # Expecting to receive at least a single line
-        if len(output) == 0:
+        if len(res["output"]) == 0:
             if raise_on_error:
                 raise ValidationError(
                     _(
                         "No output received."
                         " Please log in manually and check for any issues\n"
-                        "===\n%s" % error
+                        "===\n%s" % res["error"]
                     )
                 )
             else:
-                return False, error
+                return res["exit_code"], res["error"]
         if raise_on_error:
-            raise OdooWarning(_("Connection test passed! \n%s" % output))
+            raise OdooWarning(_("Connection test passed! \n%s" % res["output"]))
 
-        return client, output
+        return res["exit_code"], res["output"]
 
     def test_ssh_connection(self):
         """Test SSH connection"""
@@ -187,3 +185,22 @@ class Server(models.Model):
         """Start servers"""
         for rec in self.filtered(lambda s: s.status == "stopped"):
             rec._connect()
+
+    def _execute_command(self, client, command, sudo=False):
+
+        # TODO: check this
+        # https://stackoverflow.com/questions/22587855/running-sudo-command-with-paramiko
+
+        feed_password = False
+        if sudo and self.ssh_username != "root":
+            command = "sudo -S -p '' %s" % command
+            feed_password = self.ssh_password is not None and len(self.ssh_password) > 0
+        stdin, stdout, stderr = client.exec_command(command)
+        if feed_password:
+            stdin.write(self.ssh_password + "\n")
+            stdin.flush()
+        return {
+            "output": stdout.readlines(),
+            "error": stderr.readlines(),
+            "exit_code": stdout.channel.recv_exit_status(),
+        }
