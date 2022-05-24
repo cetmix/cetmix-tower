@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_command_execute_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.execute.wizard.view.form</field>
+        <field name="model">cx.tower.command.execute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Execute Command">
+                <group>
+                    <field name="server_ids" invisible="1" />
+                    <field
+                        name="command_id"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <field
+                        name="code"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                        groups="cx_tower_server.group_root"
+                    />
+                    <field
+                        name="result"
+                        readonly="1"
+                        attrs="{'invisible': [('result', '=', False)]}"
+                    />
+                </group>
+                <footer>
+                    <button
+                        name="execute_command"
+                        type="object"
+                        string="Execute"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <button string="Cancel" special="cancel" />
+                    <button
+                        name="action_execute_command"
+                        type="object"
+                        string="Execute New Command"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('result', '=', False)]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

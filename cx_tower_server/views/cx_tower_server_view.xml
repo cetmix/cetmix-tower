@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="server_view_tree" model="ir.ui.view">
-        <field name="name">Cetmix Tower Server Tree</field>
+    <record id="cx_tower_server_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.tree</field>
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
             <tree>
@@ -12,11 +12,11 @@
         </field>
     </record>
 
-    <record id="server_view_form" model="ir.ui.view">
-        <field name="name">Cetmix Tower Server Tree</field>
+    <record id="cx_tower_server_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.form</field>
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
-            <form string="Server">
+            <form>
                 <header>
                     <button
                         name="start"
@@ -69,6 +69,7 @@
                                     <field
                                         name="ssh_password"
                                         attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
+                                        password="True"
                                     />
                                 </group>
                                 <field
@@ -84,27 +85,11 @@
     </record>
 
 
-    <record id="action_servers" model="ir.actions.act_window">
+    <record id="action_cx_tower_server" model="ir.actions.act_window">
         <field name="name">Servers</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.server</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <!--## Menu ##-->
-    <menuitem
-        id="menu_root"
-        name="Cetmix Tower"
-        groups="group_user"
-        web_icon="cx_tower_server,static/description/icon.png"
-    />
-    <menuitem
-        id="menu_servers"
-        name="Servers"
-        action="action_servers"
-        parent="menu_root"
-        groups="group_user"
-        sequence="3"
-    />
 
 </odoo>

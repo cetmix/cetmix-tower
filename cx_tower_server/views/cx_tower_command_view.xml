@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_command_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.view.form</field>
+        <field name="model">cx.tower.command</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="interpreter_id" />
+                        </group>
+                        <group>
+                            <field name="server_ids" widget="many2many_tags" />
+                            <field name="os_ids" widget="many2many_tags" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="code" string="Code">
+                            <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
+                            <field name="code" nolabel="1" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.command.view.tree</field>
+        <field name="model">cx.tower.command</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="interpreter_id" />
+                <field name="server_ids" widget="many2many_tags" />
+                <field name="os_ids" widget="many2many_tags" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_command" model="ir.actions.act_window">
+        <field name="name">Command</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.command</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

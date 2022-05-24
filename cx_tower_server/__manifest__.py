@@ -11,7 +11,7 @@
     "application": True,
     "installable": True,
     "external_dependencies": {
-        "python": ["paramiko"],
+        "python": ["paramiko", "scp"],
         "bin": [],
     },
     "depends": [
@@ -20,10 +20,16 @@
     "data": [
         "security/cx_tower_server_security.xml",
         "security/ir.model.access.csv",
+        "data/ir_actions_server.xml",
         # "templates/assets.xml",
         # "views/report_name.xml",
-        "views/cx_tower_server.xml",
-        # "wizards/wizard_model_view.xml",
+        "views/cx_tower_server_view.xml",
+        "views/cx_tower_os_view.xml",
+        "views/cx_tower_tag_view.xml",
+        "views/cx_tower_interpreter_view.xml",
+        "views/cx_tower_command_view.xml",
+        "views/menuitems.xml",
+        "wizards/cx_tower_command_execute_wizard_view.xml",
     ],
     # "demo": [
     #     "demo/assets.xml",
