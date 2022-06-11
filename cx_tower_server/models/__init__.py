@@ -1,5 +1,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from . import cx_tower_variable
 from . import cx_tower_server
 from . import cx_tower_os
 from . import cx_tower_tag

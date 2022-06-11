@@ -1,4 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_variable_user,Variable->User,model_cx_tower_variable,group_user,1,0,0,0
+access_variable_manager,Variable->Manager,model_cx_tower_variable,group_manager,1,1,1,0
+access_variable_value_user,Variable Value->User,model_cx_tower_variable_value,group_user,1,0,0,0
+access_variable_value_manager,Variable Value->Manager,model_cx_tower_variable_value,group_manager,1,1,1,1
 access_os_user,OS->User,model_cx_tower_os,group_user,1,0,0,0
 access_os_manager,OS->Manager,model_cx_tower_os,group_manager,1,1,1,0
 access_os_root,OS->Root,model_cx_tower_os,group_root,1,1,1,1
