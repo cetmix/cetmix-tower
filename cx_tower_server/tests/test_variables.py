@@ -145,3 +145,18 @@ class TestTowerVariables(TestTowerCommon):
                 self.server_test_1.id,
             ],
         )
+
+        # Test 'get_variable_values' function
+        res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
+        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+
+        res_vars = res.get(self.server_test_1.id)
+        var_dir = res_vars["dir"]
+        var_os = res_vars["os"]
+        var_url = res_vars["url"]
+        var_version = res_vars["version"]
+
+        self.assertIsNone(var_dir, msg="Variable 'dir' must be None")
+        self.assertIsNone(var_url, msg="Variable 'url' must be None")
+        self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
+        self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")

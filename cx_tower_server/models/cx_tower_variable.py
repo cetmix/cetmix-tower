@@ -94,3 +94,24 @@ class TowerValueMixin(models.AbstractModel):
         # Create new variable values
         if new_vals:
             self.env["cx.tower.variable.value"].create(new_vals)
+
+    def get_variable_values(self, variables):
+        """Get variable values for selected records
+
+        Args:
+            variables (list of Char): variable names
+
+        Returns:
+            dict {record_id: {variable: value}}
+        """
+        res = {}
+        if len(variables):
+            for rec in self:
+                res_vars = {}
+                for variable in variables:
+                    value = rec.variable_value_ids.filtered(
+                        lambda v: v.variable_name == variable
+                    )
+                    res_vars.update({variable: value.value_char if value else None})
+                res.update({rec.id: res_vars})
+        return res
