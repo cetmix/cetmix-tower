@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class CxTowerCommandExecuteWizard(models.TransientModel):
     _name = "cx.tower.command.execute.wizard"
+    _inherit = "cx.tower.template.mixin"
     _description = "Execute Command in Wizard"
 
     @api.onchange("command_id")
@@ -11,7 +12,23 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         """
         Set code after change command
         """
-        self.code = self.command_id.code
+        if self.command_id and self.server_ids:
+            self.code = self.command_id.code
+            server_id = self.server_ids[0]  # TODO testing only!!!
+
+            # Get variable list
+            variables = self.get_variables()
+
+            # Get variable values
+            variable_values = server_id.get_variable_values(variables.get(self.id))
+
+            # Render template
+            if variable_values:
+                self.rendered_code = self.render_code(
+                    **variable_values.get(server_id.id)
+                ).get(self.id)
+            else:
+                self.rendered_code = self.code
 
     @api.model
     def _domain_command_id(self):
@@ -29,7 +46,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         domain=lambda self: self._domain_command_id(),
         required=True,
     )
-    code = fields.Text()
+    rendered_code = fields.Text()
     result = fields.Text()
 
     def execute_command(self):
@@ -37,7 +54,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         Executes a given code
         """
         self.ensure_one()
-        code = self.code
+        code = self.rendered_code  # TODO testing POC!!
         if not code:
             raise ValidationError(_("You cannot execute empty command."))
 
@@ -49,6 +66,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             raise ValidationError(_("Some servers don't support this command."))
 
         result = ""
+
         for server in self.server_ids:
             server_name = server.name
             client = server._connect(raise_on_error=True)

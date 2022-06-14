@@ -1,4 +1,4 @@
-from jinja2 import Environment, meta
+from jinja2 import Environment, Template, meta
 
 from odoo import fields, models
 
@@ -23,12 +23,14 @@ class CxTowerTemplateMixin(models.AbstractModel):
             res.update({rec.id: meta.find_undeclared_variables(ast)})
         return res
 
-    # def render_code(self, **kwargs):
-    #     """Render code using variables from kwargs
-    #     Returns:
-    #         dict {record_id: {code: rendered_code}}
-    #     """
+    def render_code(self, **kwargs):
+        """Render code using variables from kwargs
+        Returns:
+            dict {record_id: {code: rendered_code}}
+        """
+        res = {}
+        for rec in self:
+            rendered_code = Template(rec.code).render(kwargs)
+            res.update({rec.id: rendered_code})
 
-    #     for rec in self:
-    #         # Get template variable list
-    #         pass
+        return res

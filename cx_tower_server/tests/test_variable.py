@@ -3,15 +3,7 @@ from odoo.tests.common import Form
 from .test_common import TestTowerCommon
 
 
-class TestTowerVariables(TestTowerCommon):
-    def setUp(self, *args, **kwargs):
-        super(TestTowerVariables, self).setUp(*args, **kwargs)
-
-        self.variable_dir = self.Variable.create({"name": "dir"})
-        self.variable_os = self.Variable.create({"name": "os"})
-        self.variable_url = self.Variable.create({"name": "url"})
-        self.variable_version = self.Variable.create({"name": "version"})
-
+class TestTowerVariable(TestTowerCommon):
     def get_variable_records(self, model=None, rec_ids=None):
         """Helper function for getting variable record values
 
