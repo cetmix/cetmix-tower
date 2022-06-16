@@ -7,6 +7,18 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     _inherit = "cx.tower.template.mixin"
     _description = "Execute Command in Wizard"
 
+    server_ids = fields.Many2many(
+        "cx.tower.server",
+        string="Servers",
+    )
+    command_id = fields.Many2one(
+        "cx.tower.command",
+        domain=lambda self: self._domain_command_id(),
+        required=True,
+    )
+    rendered_code = fields.Text()
+    result = fields.Text()
+
     @api.onchange("command_id")
     def _onchange_command_id(self):
         """
@@ -14,6 +26,10 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         """
         if self.command_id and self.server_ids:
             self.code = self.command_id.code
+
+    @api.onchange("code")
+    def _onchange_code(self):
+        if self.server_ids:
             server_id = self.server_ids[0]  # TODO testing only!!!
 
             # Get variable list
@@ -37,24 +53,12 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         """
         return "['|', ('server_ids', '=', False), ('server_ids', 'in', server_ids)]"
 
-    server_ids = fields.Many2many(
-        "cx.tower.server",
-        string="Servers",
-    )
-    command_id = fields.Many2one(
-        "cx.tower.command",
-        domain=lambda self: self._domain_command_id(),
-        required=True,
-    )
-    rendered_code = fields.Text()
-    result = fields.Text()
-
     def execute_command(self):
         """
         Executes a given code
         """
         self.ensure_one()
-        code = self.rendered_code  # TODO testing POC!!
+        code = self.code
         if not code:
             raise ValidationError(_("You cannot execute empty command."))
 
@@ -67,10 +71,23 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         result = ""
 
+        variables = self.get_variables()
+        # Get variable values
+        variable_values = self.server_ids.get_variable_values(variables.get(self.id))
+
         for server in self.server_ids:
+
+            # Render template with values
+            if variable_values:
+                rendered_code = self.render_code(**variable_values.get(server.id)).get(
+                    self.id
+                )
+            else:
+                rendered_code = self.code
+
             server_name = server.name
             client = server._connect(raise_on_error=True)
-            status, response = server._execute_command(client, code)
+            status, response = server._execute_command(client, rendered_code)
             for res in response:
                 result += "[{server}]: {res}".format(server=server_name, res=res)
             if not result.endswith("\n"):

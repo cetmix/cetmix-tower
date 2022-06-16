@@ -26,7 +26,7 @@ class CxTowerTemplateMixin(models.AbstractModel):
     def render_code(self, **kwargs):
         """Render code using variables from kwargs
         Returns:
-            dict {record_id: {code: rendered_code}}
+            dict {record_id: rendered_code}}
         """
         res = {}
         for rec in self:
