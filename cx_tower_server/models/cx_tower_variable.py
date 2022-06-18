@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import _, api, fields, models
 
 
 class TowerVariable(models.Model):

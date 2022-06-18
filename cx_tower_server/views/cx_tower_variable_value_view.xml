@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_variable_value_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.variable.value.view.tree</field>
+        <field name="model">cx.tower.variable.value</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="variable_id" invisible="1" />
+                <field name="record_ref" />
+                <field name="value_char" />
+            </tree>
+        </field>
+    </record>
+
+</odoo>
