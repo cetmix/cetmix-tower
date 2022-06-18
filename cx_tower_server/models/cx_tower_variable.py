@@ -111,11 +111,6 @@ class TowerValueMixin(models.AbstractModel):
             # In onchange some computed fields of the related models
             #  may be not initialized yet.
             # For this we get data directly from db
-
-            # Ensure variables are list
-            if not isinstance(variables, list):
-                variables = list(variables)
-
             values = self.env["cx.tower.variable.value"].search(
                 [
                     ("model", "=", self._name),
