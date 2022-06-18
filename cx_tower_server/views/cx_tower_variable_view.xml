@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_variable_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.form</field>
+        <field name="model">cx.tower.variable</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_values"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                        >
+                            <field
+                                name="value_ids_count"
+                                widget="statinfo"
+                                string="Values"
+                            />
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_variable_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.tree</field>
+        <field name="model">cx.tower.variable</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="value_ids_count" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_variable" model="ir.actions.act_window">
+        <field name="name">Variables</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.variable</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import _, api, fields, models
 
 
 class TowerVariable(models.Model):
@@ -6,6 +6,38 @@ class TowerVariable(models.Model):
     _description = "Cetmix Tower Variable"
 
     name = fields.Char(string="Name", required=True)
+    value_ids = fields.One2many(
+        string="Values",
+        comodel_name="cx.tower.variable.value",
+        inverse_name="variable_id",
+    )
+    value_ids_count = fields.Integer(
+        string="Values", compute="_compute_value_ids_count", store=True
+    )
+
+    @api.depends("value_ids", "value_ids.variable_id")
+    def _compute_value_ids_count(self):
+        """Count number of values for the variable"""
+        for rec in self:
+            rec.value_ids_count = len(rec.value_ids)
+
+    def action_open_values(self):
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_variable_id": self.id,
+            }
+        )
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Variable Values"),
+            "res_model": "cx.tower.variable.value",
+            "views": [[False, "tree"]],
+            "target": "current",
+            "context": context,
+            "domain": [("variable_id", "=", self.id)],
+        }
 
 
 class TowerVariableValue(models.Model):
@@ -18,6 +50,12 @@ class TowerVariableValue(models.Model):
     variable_name = fields.Char(related="variable_id.name", store=True, index=True)
     model = fields.Char(string="Related Model", index=True)
     res_id = fields.Integer(string="Record ID")
+    record_ref = fields.Reference(
+        string="Record",
+        selection="_referable_models",
+        compute="_compute_record_ref",
+        inverse="_inverse_record_ref",
+    )
     value_char = fields.Char(string="Value", required=True)
 
     _sql_constraints = [
@@ -27,6 +65,29 @@ class TowerVariableValue(models.Model):
             "Variable can be declared only once for the same record!",
         )
     ]
+
+    @api.model
+    def _referable_models(self):
+        """Models that can have variable values"""
+        return [("cx.tower.server", "Server")]
+
+    @api.depends("model", "res_id")
+    def _compute_record_ref(self):
+        """Compose record reference"""
+        for rec in self:
+            if rec.model and rec.res_id:
+                res = self.env[rec.model].sudo().search([("id", "=", rec.res_id)])
+                if res:
+                    rec.record_ref = res
+                else:
+                    rec.record_ref = None
+            else:
+                rec.record_ref = None
+
+    def _inverse_record_ref(self):
+        """Set model and res id based on reference"""
+        if self.record_ref:
+            self.update({"model": self.record_ref._name, "res_id": self.record_ref.id})
 
 
 class TowerValueMixin(models.AbstractModel):
