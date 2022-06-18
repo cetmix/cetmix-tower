@@ -14,19 +14,25 @@ class CxTowerTemplateMixin(models.AbstractModel):
     def get_variables(self):
         """Get the list of variables for templates
         Returns:
-            dict {record_id: {variables}}
+            dict {record_id: {variables}...}
         """
         env = Environment()
         res = {}
         for rec in self:
             ast = env.parse(rec.code)
-            res.update({rec.id: meta.find_undeclared_variables(ast)})
+            undeclared_variables = meta.find_undeclared_variables(ast)
+            res.update(
+                {rec.id: list(undeclared_variables) if undeclared_variables else []}
+            )
         return res
 
     def render_code(self, **kwargs):
         """Render code using variables from kwargs
+
+        Args:
+            **kwargs (dict): {variable: value, ...}
         Returns:
-            dict {record_id: rendered_code}}
+            dict {record_id: rendered_code, ...}}
         """
         res = {}
         for rec in self:
