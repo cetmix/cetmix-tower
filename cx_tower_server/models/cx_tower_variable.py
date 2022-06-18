@@ -4,6 +4,7 @@ from odoo import _, api, fields, models
 class TowerVariable(models.Model):
     _name = "cx.tower.variable"
     _description = "Cetmix Tower Variable"
+    _order = "name"
 
     name = fields.Char(string="Name", required=True)
     value_ids = fields.One2many(
@@ -56,6 +57,9 @@ class TowerVariableValue(models.Model):
         compute="_compute_record_ref",
         inverse="_inverse_record_ref",
     )
+    is_global = fields.Boolean(
+        string="Global", compute="_compute_is_global", inverse="_inverse_is_global"
+    )
     value_char = fields.Char(string="Value", required=True)
 
     _sql_constraints = [
@@ -65,6 +69,18 @@ class TowerVariableValue(models.Model):
             "Variable can be declared only once for the same record!",
         )
     ]
+
+    def _compute_is_global(self):
+        """If variable is global"""
+        for rec in self:
+            if not rec.model:
+                rec.is_global = True
+            else:
+                rec.is_global = False
+
+    def _inverse_is_global(self):
+        if self.is_global:
+            self.update({"model": None, "res_id": None})
 
     @api.model
     def _referable_models(self):
