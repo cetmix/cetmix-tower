@@ -4,21 +4,8 @@ from odoo.exceptions import ValidationError
 
 class CxTowerCommandExecuteWizard(models.TransientModel):
     _name = "cx.tower.command.execute.wizard"
+    _inherit = "cx.tower.template.mixin"
     _description = "Execute Command in Wizard"
-
-    @api.onchange("command_id")
-    def _onchange_command_id(self):
-        """
-        Set code after change command
-        """
-        self.code = self.command_id.code
-
-    @api.model
-    def _domain_command_id(self):
-        """
-        Return domain to select commands available for selected servers
-        """
-        return "['|', ('server_ids', '=', False), ('server_ids', 'in', server_ids)]"
 
     server_ids = fields.Many2many(
         "cx.tower.server",
@@ -29,8 +16,42 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         domain=lambda self: self._domain_command_id(),
         required=True,
     )
-    code = fields.Text()
+    rendered_code = fields.Text()
     result = fields.Text()
+
+    @api.onchange("command_id")
+    def _onchange_command_id(self):
+        """
+        Set code after change command
+        """
+        if self.command_id and self.server_ids:
+            self.code = self.command_id.code
+
+    @api.onchange("code")
+    def _onchange_code(self):
+        if self.server_ids:
+            server_id = self.server_ids[0]  # TODO testing only!!!
+
+            # Get variable list
+            variables = self.get_variables()
+
+            # Get variable values
+            variable_values = server_id.get_variable_values(variables.get(self.id))
+
+            # Render template
+            if variable_values:
+                self.rendered_code = self.render_code(
+                    **variable_values.get(server_id.id)
+                ).get(self.id)
+            else:
+                self.rendered_code = self.code
+
+    @api.model
+    def _domain_command_id(self):
+        """
+        Return domain to select commands available for selected servers
+        """
+        return "['|', ('server_ids', '=', False), ('server_ids', 'in', server_ids)]"
 
     def execute_command(self):
         """
@@ -49,10 +70,24 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             raise ValidationError(_("Some servers don't support this command."))
 
         result = ""
+
+        variables = self.get_variables()
+        # Get variable values
+        variable_values = self.server_ids.get_variable_values(variables.get(self.id))
+
         for server in self.server_ids:
+
+            # Render template with values
+            if variable_values:
+                rendered_code = self.render_code(**variable_values.get(server.id)).get(
+                    self.id
+                )
+            else:
+                rendered_code = self.code
+
             server_name = server.name
             client = server._connect(raise_on_error=True)
-            status, response = server._execute_command(client, code)
+            status, response = server._execute_command(client, rendered_code)
             for res in response:
                 result += "[{server}]: {res}".format(server=server_name, res=res)
             if not result.endswith("\n"):

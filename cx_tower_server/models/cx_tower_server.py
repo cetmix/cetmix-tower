@@ -163,6 +163,7 @@ class SSH(object):
 
 class CxTowerServer(models.Model):
     _name = "cx.tower.server"
+    _inherit = "cx.tower.variable.mixin"
     _description = "Cetmix Tower Server"
 
     active = fields.Boolean(default=True)

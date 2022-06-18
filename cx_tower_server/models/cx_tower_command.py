@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class CxTowerCommand(models.Model):
     _name = "cx.tower.command"
+    _inherit = "cx.tower.template.mixin"
     _description = "Cetmix Tower Command"
 
     name = fields.Char()
