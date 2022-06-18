@@ -8,10 +8,13 @@
             <form string="Execute Command">
                 <group>
                     <field name="server_ids" invisible="1" />
+                    <field name="available_server_tag_ids" invisible="1" />
                     <field
                         name="command_id"
                         attrs="{'invisible': [('result', '!=', False)]}"
+                        domain="[('tag_ids', 'in', available_server_tag_ids)]"
                     />
+                    <field name="show_all" />
                     <field
                         name="code"
                         attrs="{'invisible': [('result', '!=', False)]}"

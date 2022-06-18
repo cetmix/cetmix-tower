@@ -144,7 +144,8 @@ class SSH(object):
             stdin.flush()
         status = stdout.channel.recv_exit_status()
         response = stdout.readlines()
-        return status, response
+        error = stderr.readlines()
+        return status, response, error
 
     def upload_file(self, file_path, remote_path):
         """
@@ -279,13 +280,13 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         client = self._connect()
         command = self._get_connection_test_command()
-        status, response = self._execute_command(client, command=command)
+        status, response, error = self._execute_command(client, command=command)
 
-        if status != 0:
+        if status != 0 or error:
             raise ValidationError(
                 _(
-                    "Cannot execute command\n. CODE: {}. RESULT: {}".format(
-                        status, response
+                    "Cannot execute command\n. CODE: {}. RESULT: {}. ERROR: {}".format(
+                        status, response, ", ".joint(error)
                     )
                 )
             )

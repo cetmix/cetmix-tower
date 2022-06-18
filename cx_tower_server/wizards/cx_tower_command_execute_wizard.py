@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class CxTowerCommandExecuteWizard(models.TransientModel):
@@ -13,8 +14,16 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     )
     command_id = fields.Many2one(
         "cx.tower.command",
-        domain=lambda self: self._domain_command_id(),
         required=True,
+    )
+    show_all = fields.Boolean(default=False)
+    available_server_tag_ids = fields.Many2many(
+        comodel_name="cx.tower.tag",
+        relation="cx_tower_command_execute_tag_rel",
+        column1="wizard_id",
+        column2="tag_id",
+        string="Tags",
+        compute="_compute_available_server_tag_ids",
     )
     rendered_code = fields.Text()
     result = fields.Text()
@@ -46,12 +55,16 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             else:
                 self.rendered_code = self.code
 
-    @api.model
-    def _domain_command_id(self):
+    @api.depends("show_all", "server_ids")
+    def _compute_available_server_tag_ids(self):
         """
-        Return domain to select commands available for selected servers
+        Compute available tags by selected servers and `show_all` parameter
         """
-        return "['|', ('server_ids', '=', False), ('server_ids', 'in', server_ids)]"
+        self.ensure_one()
+        domain = [("server_ids", "in", self.server_ids.ids)]
+        if self.show_all:
+            domain = expression.OR([domain, [("server_ids", "=", False)]])
+        self.available_server_tag_ids = self.env["cx.tower.tag"].search(domain)
 
     def execute_command(self):
         """
@@ -87,7 +100,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
             server_name = server.name
             client = server._connect(raise_on_error=True)
-            status, response = server._execute_command(client, rendered_code)
+            status, response, error = server._execute_command(client, rendered_code)
+            for err in error:
+                result += "[{server}]: ERROR: {err}".format(server=server_name, err=err)
             for res in response:
                 result += "[{server}]: {res}".format(server=server_name, res=res)
             if not result.endswith("\n"):

@@ -17,6 +17,13 @@ class CxTowerCommand(models.Model):
         column2="server_id",
         string="Servers",
     )
+    tag_ids = fields.Many2many(
+        comodel_name="cx.tower.tag",
+        relation="cx_tower_command_tag_rel",
+        column1="command_id",
+        column2="tag_id",
+        string="Tags",
+    )
     os_ids = fields.Many2many(
         comodel_name="cx.tower.os",
         relation="cx_tower_os_command_rel",
