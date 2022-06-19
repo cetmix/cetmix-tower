@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class TowerValueMixin(models.AbstractModel):
     _name = "cx.tower.variable.mixin"
+    _description = "Tower Variables mixin"
 
     variable_value_ids = fields.One2many(
         string="Variable Values",
@@ -25,7 +26,6 @@ class TowerValueMixin(models.AbstractModel):
         current_values = self.env["cx.tower.variable.value"].search(
             [
                 ("model", "=", self._name),
-                ("res_id", "in", self.ids),
                 ("res_id", "in", self.ids),
             ]
         )
@@ -78,16 +78,11 @@ class TowerValueMixin(models.AbstractModel):
         """
         res = {}
 
-        if len(variables):
+        if variables:
 
             # In onchange some computed fields of the related models
             #  may be not initialized yet.
             # For this we get data directly from db
-
-            # Ensure variables are list
-            if not isinstance(variables, list):
-                variables = list(variables)
-
             values = self.env["cx.tower.variable.value"].search(
                 [
                     ("model", "=", self._name),
@@ -101,6 +96,6 @@ class TowerValueMixin(models.AbstractModel):
                     value = values.filtered(
                         lambda v: v.res_id == rec.ids[0] and v.variable_name == variable
                     )
-                    res_vars.update({variable: value.value_char if value else None})
+                    res_vars.update({variable: value.value_char or None})
                 res.update({rec.id: res_vars})
         return res
