@@ -67,18 +67,20 @@ class TowerValueMixin(models.AbstractModel):
         if new_vals:
             self.env["cx.tower.variable.value"].create(new_vals)
 
-    def get_variable_values(self, variables):
+    def get_variable_values(self, variable_names):
         """Get variable values for selected records
 
         Args:
-            variables (list of Char): variable names
+            variable_names (list of Char): variable names
 
         Returns:
-            dict {record_id: {variable: value}}
+            dict {record_id: {variable_name: value}}
         """
         res = {}
 
-        if variables:
+        if variable_names:
+            # Get fallback values
+            self.get_global_variable_values(variable_names)
 
             # In onchange some computed fields of the related models
             #  may be not initialized yet.
@@ -87,15 +89,59 @@ class TowerValueMixin(models.AbstractModel):
                 [
                     ("model", "=", self._name),
                     ("res_id", "in", self.ids),
-                    ("variable_name", "in", variables),
+                    ("variable_name", "in", variable_names),
                 ]
+            )
+            if values:
+                for rec in self:
+                    res_vars = {}
+                    for variable_name in variable_names:
+                        value = values.filtered(
+                            lambda v: v.res_id == rec.ids[0]
+                            and v.variable_name == variable_name
+                        )
+                        res_vars.update({variable_name: value.value_char or None})
+                    res.update({rec.id: res_vars})
+            else:
+                res = {
+                    rec.id: {variable_name: None for variable_name in variable_names}
+                    for rec in self
+                }
+        return res
+
+    def get_global_variable_values(self, variable_names):
+        """Get global values for variables
+        Override this function to implement own flow
+
+        Args:
+            variable_names (list of Char): variable names
+
+        Returns:
+            dict {record_id: {variable_name: value}}
+        """
+        res = {}
+
+        if variable_names:
+            values = self.env["cx.tower.variable.value"].search(
+                self._compose_variable_global_values_domain(variable_names)
             )
             for rec in self:
                 res_vars = {}
-                for variable in variables:
-                    value = values.filtered(
-                        lambda v: v.res_id == rec.ids[0] and v.variable_name == variable
-                    )
-                    res_vars.update({variable: value.value_char or None})
+                for variable_name in variable_names:
+                    value = values.filtered(lambda v: v.variable_name == variable_name)
+                    res_vars.update({variable_name: value.value_char or None})
                 res.update({rec.id: res_vars})
         return res
+
+    def _compose_variable_global_values_domain(self, variable_names):
+        """Compose domain for global variables
+        Args:
+            variable_names (list of Char): variable names
+
+        Returns:
+            domain
+        """
+        domain = [
+            ("variable_name", "in", variable_names),
+        ]
+        return domain
