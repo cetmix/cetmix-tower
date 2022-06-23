@@ -80,7 +80,7 @@ class TowerValueMixin(models.AbstractModel):
 
         if variable_names:
             # Get fallback values
-            self.get_global_variable_values(variable_names)
+            global_values = self.get_global_variable_values(variable_names)
 
             # In onchange some computed fields of the related models
             #  may be not initialized yet.
@@ -94,19 +94,19 @@ class TowerValueMixin(models.AbstractModel):
             )
             if values:
                 for rec in self:
-                    res_vars = {}
+                    res_vars = global_values.get(
+                        rec.id, {}
+                    )  # set global values as defaults
                     for variable_name in variable_names:
                         value = values.filtered(
                             lambda v: v.res_id == rec.ids[0]
                             and v.variable_name == variable_name
                         )
-                        res_vars.update({variable_name: value.value_char or None})
+                        if value:
+                            res_vars.update({variable_name: value.value_char})
                     res.update({rec.id: res_vars})
             else:
-                res = {
-                    rec.id: {variable_name: None for variable_name in variable_names}
-                    for rec in self
-                }
+                res = global_values
         return res
 
     def get_global_variable_values(self, variable_names):
@@ -142,6 +142,7 @@ class TowerValueMixin(models.AbstractModel):
             domain
         """
         domain = [
+            ("model", "=", False),
             ("variable_name", "in", variable_names),
         ]
         return domain
