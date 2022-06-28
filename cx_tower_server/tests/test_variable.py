@@ -152,3 +152,51 @@ class TestTowerVariable(TestTowerCommon):
         self.assertIsNone(var_url, msg="Variable 'url' must be None")
         self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
         self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
+
+        # ***
+        # *** Test global variable values ***
+        # ***
+
+        # Create a global value for the 'dir' variable
+        self.VariableValues.create(
+            {"variable_id": self.variable_dir.id, "value_char": "/global/dir"}
+        )
+        res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
+        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+
+        res_vars = res.get(self.server_test_1.id)
+        var_dir = res_vars["dir"]
+        var_os = res_vars["os"]
+        var_url = res_vars["url"]
+        var_version = res_vars["version"]
+
+        self.assertEqual(
+            var_dir, "/global/dir", msg="Variable 'dir' must be equal to '/global/dir'"
+        )
+        self.assertIsNone(var_url, msg="Variable 'url' must be None")
+        self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
+        self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
+
+        # Now save a local value for the variable
+        with Form(self.server_test_1) as f:
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_dir
+                line.value_char = "/opt/odoo"
+            f.save()
+
+        # And check
+        res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
+        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+
+        res_vars = res.get(self.server_test_1.id)
+        var_dir = res_vars["dir"]
+        var_os = res_vars["os"]
+        var_url = res_vars["url"]
+        var_version = res_vars["version"]
+
+        self.assertEqual(
+            var_dir, "/opt/odoo", msg="Variable 'dir' must be equal to '/opt/odoo'"
+        )
+        self.assertIsNone(var_url, msg="Variable 'url' must be None")
+        self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
+        self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
