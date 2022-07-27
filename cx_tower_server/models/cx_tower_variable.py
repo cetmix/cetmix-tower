@@ -15,6 +15,7 @@ class TowerVariable(models.Model):
     value_ids_count = fields.Integer(
         string="Values", compute="_compute_value_ids_count", store=True
     )
+    note = fields.Text()
 
     @api.depends("value_ids", "value_ids.variable_id")
     def _compute_value_ids_count(self):

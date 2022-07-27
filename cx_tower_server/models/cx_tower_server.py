@@ -213,6 +213,7 @@ class CxTowerServer(models.Model):
     core_count = fields.Integer(string="CPU Core Count", help="Number of CPU cores")
     ram_total = fields.Integer(string="Total RAM, Mb")
     disk_total = fields.Integer(string="Total RAM, Gb")
+    note = fields.Text()
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
     def _constraint_ssh_settings(self):

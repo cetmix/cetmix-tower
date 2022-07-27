@@ -25,12 +25,12 @@
                         attrs="{'invisible': [('result', '!=', False)]}"
                         groups="cx_tower_server.group_root"
                     />
-                    <field
-                        name="result"
-                        readonly="1"
-                        attrs="{'invisible': [('result', '=', False)]}"
-                    />
                 </group>
+                    <field
+                    name="result"
+                    readonly="1"
+                    attrs="{'invisible': [('result', '=', False)]}"
+                />
                 <footer>
                     <button
                         name="execute_command"

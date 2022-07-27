@@ -10,6 +10,7 @@ class TowerValueMixin(models.AbstractModel):
         comodel_name="cx.tower.variable.value",
         compute="_compute_variable_value_ids",
         inverse="_inverse_variable_value_ids",
+        help="Variable values for selected record",
     )
 
     def _compute_variable_value_ids(self):
@@ -84,7 +85,7 @@ class TowerValueMixin(models.AbstractModel):
 
             # In onchange some computed fields of the related models
             #  may be not initialized yet.
-            # For this we get data directly from db
+            # For this we get data directly
             values = self.env["cx.tower.variable.value"].search(
                 [
                     ("model", "=", self._name),
@@ -99,19 +100,26 @@ class TowerValueMixin(models.AbstractModel):
                     )  # set global values as defaults
                     for variable_name in variable_names:
                         value = values.filtered(
-                            lambda v: v.res_id == rec.ids[0]
+                            lambda v: v.res_id
+                            == rec.ids[0]  # id might be not be valid in onchange
                             and v.variable_name == variable_name
                         )
                         if value:
                             res_vars.update({variable_name: value.value_char})
+
                     res.update({rec.id: res_vars})
             else:
                 res = global_values
+        # Render templates in values
+        for key in res:
+            self._render_variable_values(res[key])
         return res
 
     def get_global_variable_values(self, variable_names):
         """Get global values for variables
-        Override this function to implement own flow
+
+        This function is used by get_variable_values()
+        to compute fallback values.
 
         Args:
             variable_names (list of Char): variable names
@@ -146,3 +154,34 @@ class TowerValueMixin(models.AbstractModel):
             ("variable_name", "in", variable_names),
         ]
         return domain
+
+    def _render_variable_values(self, variables):
+        """Render variable values
+        Renders variable values base on the other variable values.
+        For example we have the following values:
+            "server_root": "/opt/server"
+            "server_assets": "{{ server_root }}/assets"
+
+        This function will render the "server_assets" variable:
+            "server_assets": "/opt/server/assets"
+
+        Args:
+            variables (dict): values to complete
+        """
+        self.ensure_one()
+        TemplateMixin = self.env["cx.tower.template.mixin"]
+        for key in variables:
+            var_value = variables[key]
+            # Render only if template is found
+            if var_value and "{{ " in var_value:
+
+                # Get variables used in value
+                value_vars = TemplateMixin.get_variables_from_code(var_value)
+
+                # Render variables used in value
+                res = self.get_variable_values(value_vars)
+
+                # Render value using variables
+                variables[key] = TemplateMixin.render_code_custom(
+                    var_value, **res[self.id]
+                )
