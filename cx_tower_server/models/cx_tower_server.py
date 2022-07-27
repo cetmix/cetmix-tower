@@ -163,6 +163,13 @@ class SSH(object):
 
 
 class CxTowerServer(models.Model):
+    """Represents a server entity
+
+    Keeps information required to connect and perform routine operations
+    such as configuration, file management etc"
+
+    """
+
     _name = "cx.tower.server"
     _inherit = "cx.tower.variable.mixin"
     _description = "Cetmix Tower Server"
@@ -190,7 +197,8 @@ class CxTowerServer(models.Model):
     ssh_port = fields.Char(string="SSH port", required=True, default="22")
     ssh_username = fields.Char(string="SSH Username", required=True)
     ssh_password = fields.Char(string="SSH Password")
-    ssh_key = fields.Text(string="SSH Private Key")
+    ssh_key_id = fields.Many2one(comodel_name="cx.tower.key", string="SSH Private Key")
+    ssh_key = fields.Text(string="SSH Private Key value")
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
         selection=[
