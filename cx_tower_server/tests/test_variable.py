@@ -73,8 +73,8 @@ class TestTowerVariable(TestTowerCommon):
                 msg="Variable value does not match provided one",
             )
 
-    def test_variable_operations(self):
-        """Test variable operations"""
+    def test_variables(self):
+        """Test common variable operations"""
 
         # Add two variables
         with Form(self.server_test_1) as f:
@@ -184,7 +184,7 @@ class TestTowerVariable(TestTowerCommon):
                 line.value_char = "/opt/odoo"
             f.save()
 
-        # And check
+        # Check
         res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
         self.assertEqual(len(res), 1, "Must be a single record key in the result")
 
@@ -199,4 +199,47 @@ class TestTowerVariable(TestTowerCommon):
         )
         self.assertIsNone(var_url, msg="Variable 'url' must be None")
         self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
+        self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
+
+    def test_variables_in_variable_values(self):
+        """Test variables in variable values
+        eg
+             home: /home
+             user: bob
+             home_dir: {{ home }}/{{ user }} --> /home/bob
+        """
+
+        # Add local variables
+        with Form(self.server_test_1) as f:
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_dir
+                line.value_char = "/web"
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_path
+                line.value_char = "{{ dir }}/{{ version }}"
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_url
+                line.value_char = "{{ path }}/example.com"
+            f.save()
+
+        # Create a global value for the 'Version' variable
+        self.VariableValues.create(
+            {"variable_id": self.variable_version.id, "value_char": "10.0"}
+        )
+
+        # Check values
+        res = self.server_test_1.get_variable_values(["dir", "url", "version"])
+        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+
+        res_vars = res.get(self.server_test_1.id)
+        var_dir = res_vars["dir"]
+        var_url = res_vars["url"]
+        var_version = res_vars["version"]
+
+        self.assertEqual(var_dir, "/web", msg="Variable 'dir' must be '/web'")
+        self.assertEqual(
+            var_url,
+            "/web/10.0/example.com",
+            msg="Variable 'url' must be '/web/10.0/example.com'",
+        )
         self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
