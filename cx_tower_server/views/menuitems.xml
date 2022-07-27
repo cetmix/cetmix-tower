@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <menuitem
+        id="menu_root"
+        name="Cetmix Tower"
+        groups="group_user"
+        web_icon="cx_tower_server,static/description/icon.png"
+    />
+    <menuitem
+        id="menu_cx_tower_server"
+        name="Servers"
+        action="action_cx_tower_server"
+        parent="menu_root"
+        groups="group_user"
+        sequence="3"
+    />
+
+    <menuitem
+        id="menu_settings"
+        name="Settings"
+        parent="menu_root"
+        sequence="999"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cx_tower_variable"
+        name="Variables"
+        action="action_cx_tower_variable"
+        parent="menu_settings"
+        sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_os"
+        name="OS"
+        action="action_cx_tower_os"
+        parent="menu_settings"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_cx_tower_interpreter"
+        name="Interpreter"
+        action="action_cx_tower_interpreter"
+        parent="menu_settings"
+        sequence="12"
+    />
+    <menuitem
+        id="menu_cx_tower_tag"
+        name="Tag"
+        action="action_cx_tower_tag"
+        parent="menu_settings"
+        sequence="13"
+    />
+            <menuitem
+        id="menu_cx_tower_command"
+        name="Command"
+        action="action_cx_tower_command"
+        parent="menu_settings"
+        sequence="14"
+    />
+
+</odoo>

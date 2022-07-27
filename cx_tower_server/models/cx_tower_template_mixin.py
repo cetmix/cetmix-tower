@@ -1,0 +1,67 @@
+from jinja2 import Environment, Template, meta
+
+from odoo import fields, models
+
+
+class CxTowerTemplateMixin(models.AbstractModel):
+    """Used to implement template rendering functions"""
+
+    _name = "cx.tower.template.mixin"
+    _description = "Cetmix Tower template rendering mixin"
+
+    code = fields.Text(string="Code")
+
+    def get_variables(self):
+        """Get the list of variables for templates
+        Call to get variables for recordset of the inheriting models
+
+        Returns:
+            dict {record_id: {variables}...}
+        """
+        Environment()
+        res = {}
+        for rec in self:
+            res.update({rec.id: self.get_variables_from_code(rec.code)})
+        return res
+
+    def get_variables_from_code(self, code):
+        """Get the list of variables for templates
+        Call to get variables from custom code string
+
+        Args:
+            code (Text) custom code (eg 'Custom {{ var }} {{ var2 }} ...')
+        Returns:
+            variables (List) variables (eg ['var','var2',..])
+        """
+        env = Environment()
+        ast = env.parse(code)
+        undeclared_variables = meta.find_undeclared_variables(ast)
+        return list(undeclared_variables) if undeclared_variables else []
+
+    def render_code(self, **kwargs):
+        """Render record 'code' field using variables from kwargs
+        Call to render recordset of the inheriting models
+
+        Args:
+            **kwargs (dict): {variable: value, ...}
+        Returns:
+            dict {record_id: rendered_code, ...}}
+        """
+        res = {}
+        for rec in self:
+            rendered_code = self.render_code_custom(rec.code, **kwargs)
+            res.update({rec.id: rendered_code})
+
+        return res
+
+    def render_code_custom(self, code, **kwargs):
+        """Render custom code using variables from kwargs
+        Call to render any custom string
+
+        Args:
+            code (Text): code to render (eg 'some {{ custom }} text')
+            **kwargs (dict): {variable: value, ...}
+        Returns:
+            rendered_code (text)
+        """
+        return Template(code).render(kwargs)

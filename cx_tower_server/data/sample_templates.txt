@@ -1,0 +1,27 @@
+# Init shared PG
+
+docker stop {{ shared_postgres_name }} && \
+docker rm {{ shared_postgres_name }} && \
+mkdir -p {{ shared_postgres_data }} && \
+docker run -d -e POSTGRES_USER={{ postgres_user }} -e POSTGRES_PASSWORD={{ postgres_password }} \
+    -e POSTGRES_DB=postgres \
+    --restart {{ shared_postgres_restart_policy }} \
+    -v {{ shared_postgres_data }}:/var/lib/postgresql/data \
+    --name {{ shared_postgres_name }} postgres:{{ postgres_version }}
+
+# Init Odoo instance with shared PG
+
+docker stop {{ odoo_container_name}} && \
+docker rm {{ odoo_container_name}} && \
+docker image rm {{ odoo_image_name }} && \
+mkdir -p {{ odoo_data }} && \
+chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ instance_root }} && \
+docker build {{ instance_root }} --tag "{{ odoo_image_name }}" \
+    --no-cache \
+    --build-arg ODOO_VERSION={{ odoo_version }} \
+    --build-arg SEITON_SAL_BRANCH={{ seiton_sal_branch }} \
+    --build-arg BITBUCKET_USER={{ BITBUCKET_USER }} \
+    --build-arg BITBUCKET_TOKEN={{ BITBUCKET_TOKEN }} && \
+docker run -v {{ odoo_data }}:/var/lib/odoo -d -p {{ odoo_port }}:8069 \
+    --restart {{ odoo_restart_policy }} \
+    --name {{ odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }}
