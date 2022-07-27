@@ -13,21 +13,34 @@ class CxTowerTemplateMixin(models.AbstractModel):
 
     def get_variables(self):
         """Get the list of variables for templates
+        Call to get variables for recordset of the inheriting models
+
         Returns:
             dict {record_id: {variables}...}
         """
-        env = Environment()
+        Environment()
         res = {}
         for rec in self:
-            ast = env.parse(rec.code)
-            undeclared_variables = meta.find_undeclared_variables(ast)
-            res.update(
-                {rec.id: list(undeclared_variables) if undeclared_variables else []}
-            )
+            res.update({rec.id: self.get_variables_from_code(rec.code)})
         return res
 
+    def get_variables_from_code(self, code):
+        """Get the list of variables for templates
+        Call to get variables from custom code string
+
+        Args:
+            code (Text) custom code (eg 'Custom {{ var }} {{ var2 }} ...')
+        Returns:
+            variables (List) variables (eg ['var','var2',..])
+        """
+        env = Environment()
+        ast = env.parse(code)
+        undeclared_variables = meta.find_undeclared_variables(ast)
+        return list(undeclared_variables) if undeclared_variables else []
+
     def render_code(self, **kwargs):
-        """Render code using variables from kwargs
+        """Render record 'code' field using variables from kwargs
+        Call to render recordset of the inheriting models
 
         Args:
             **kwargs (dict): {variable: value, ...}
@@ -36,7 +49,19 @@ class CxTowerTemplateMixin(models.AbstractModel):
         """
         res = {}
         for rec in self:
-            rendered_code = Template(rec.code).render(kwargs)
+            rendered_code = self.render_code_custom(rec.code, **kwargs)
             res.update({rec.id: rendered_code})
 
         return res
+
+    def render_code_custom(self, code, **kwargs):
+        """Render custom code using variables from kwargs
+        Call to render any custom string
+
+        Args:
+            code (Text): code to render (eg 'some {{ custom }} text')
+            **kwargs (dict): {variable: value, ...}
+        Returns:
+            rendered_code (text)
+        """
+        return Template(code).render(kwargs)
