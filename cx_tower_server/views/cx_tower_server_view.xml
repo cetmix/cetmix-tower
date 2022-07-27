@@ -72,6 +72,7 @@
                                         password="True"
                                     />
                                 </group>
+                                <field name="note" />
                                 <field
                                     name="ssh_key"
                                     attrs="{'required': [('ssh_auth_mode', '=', 'л')]}"

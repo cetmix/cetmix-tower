@@ -25,6 +25,18 @@
                         <group>
                             <field name="name" />
                         </group>
+                        <group>
+                            <field name="note" />
+                        </group>
+                        <field name="value_ids">
+                            <tree editable="top" decoration-bf="model==False">
+                                <field name="variable_id" invisible="1" />
+                                <field name="model" invisible="1" />
+                                <field name="is_global" widget="boolean_toggle" />
+                                <field name="record_ref" />
+                                <field name="value_char" />
+                            </tree>
+                        </field>
                     </group>
                 </sheet>
             </form>
