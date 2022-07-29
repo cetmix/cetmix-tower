@@ -81,8 +81,9 @@
                         </page>
                         <page name="variables" string="Variables">
                             <group name="variables">
-                                <field name="variable_value_ids">
+                                <field name="variable_value_ids" order="variable_name">
                                     <tree editable="bottom">
+                                    <field name="variable_name" invisible="1" />
                                     <field name="variable_id" />
                                     <field name="value_char" />
                                     </tree>

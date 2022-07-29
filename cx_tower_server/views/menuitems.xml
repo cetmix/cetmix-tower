@@ -45,7 +45,7 @@
         sequence="3"
     />
     <menuitem
-        id="menu_cx_tower_variable"
+        id="menu_cx_tower_key"
         name="Keys"
         action="action_cx_tower_key"
         parent="menu_settings"
