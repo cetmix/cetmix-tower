@@ -9,3 +9,4 @@ from . import cx_tower_os
 from . import cx_tower_tag
 from . import cx_tower_command
 from . import cx_tower_interpreter
+from . import cx_tower_key

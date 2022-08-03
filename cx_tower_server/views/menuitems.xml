@@ -8,12 +8,26 @@
         web_icon="cx_tower_server,static/description/icon.png"
     />
     <menuitem
-        id="menu_cx_tower_server"
+        id="menu_cx_tower_server_root"
         name="Servers"
-        action="action_cx_tower_server"
         parent="menu_root"
         groups="group_user"
         sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_server"
+        name="Servers"
+        action="action_cx_tower_server"
+        parent="menu_cx_tower_server_root"
+        groups="group_user"
+        sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_command"
+        name="Commands"
+        action="action_cx_tower_command"
+        parent="menu_cx_tower_server_root"
+        sequence="14"
     />
 
     <menuitem
@@ -27,6 +41,13 @@
         id="menu_cx_tower_variable"
         name="Variables"
         action="action_cx_tower_variable"
+        parent="menu_settings"
+        sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_key"
+        name="Keys"
+        action="action_cx_tower_key"
         parent="menu_settings"
         sequence="3"
     />
@@ -50,13 +71,6 @@
         action="action_cx_tower_tag"
         parent="menu_settings"
         sequence="13"
-    />
-            <menuitem
-        id="menu_cx_tower_command"
-        name="Command"
-        action="action_cx_tower_command"
-        parent="menu_settings"
-        sequence="14"
     />
 
 </odoo>

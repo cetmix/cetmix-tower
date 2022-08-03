@@ -17,6 +17,8 @@ class TowerVariable(models.Model):
     )
     note = fields.Text()
 
+    _sql_constraints = [("name_uniq", "unique (name)", "Variable names must be unique")]
+
     @api.depends("value_ids", "value_ids.variable_id")
     def _compute_value_ids_count(self):
         """Count number of values for the variable"""

@@ -219,7 +219,7 @@ class TestTowerVariable(TestTowerCommon):
                 line.value_char = "{{ dir }}/{{ version }}"
             with f.variable_value_ids.new() as line:
                 line.variable_id = self.variable_url
-                line.value_char = "{{ path }}/example.com"
+                line.value_char = "{{ test_path }}/example.com"
             f.save()
 
         # Create a global value for the 'Version' variable
