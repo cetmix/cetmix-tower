@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server Management",
     "summary": "Manage remote servers directly from Odoo",
-    "version": "14.0.0.1.6",
+    "version": "14.0.0.1.7",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",
