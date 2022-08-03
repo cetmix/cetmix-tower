@@ -67,7 +67,6 @@ class SSH(object):
         Returns:
             Char: password ready to be used for connection parameters
         """
-        # ssh_key = RSAKey.from_private_key_file(self.ssh_key_filepath)
         ssh_key = RSAKey.from_private_key(io.StringIO(self.ssh_key))
         return ssh_key
 
@@ -198,7 +197,6 @@ class CxTowerServer(models.Model):
     ssh_username = fields.Char(string="SSH Username", required=True)
     ssh_password = fields.Char(string="SSH Password")
     ssh_key_id = fields.Many2one(comodel_name="cx.tower.key", string="SSH Private Key")
-    ssh_key = fields.Text(string="SSH Private Key value")
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
         selection=[
@@ -250,6 +248,20 @@ class CxTowerServer(models.Model):
         password = self.ssh_password
         return password
 
+    def _get_ssh_key(self):
+        """Get SSH key
+        Get private key for an SSH connection
+
+        Returns:
+            Char: SSH private key
+        """
+        self.ensure_one()
+        if self.ssh_key_id:
+            ssh_key = self.ssh_key_id.sudo().ssh_key
+        else:
+            ssh_key = None
+        return ssh_key
+
     def _get_connection_test_command(self):
         """Get command used to test SSH connection
 
@@ -275,7 +287,7 @@ class CxTowerServer(models.Model):
                 username=self.ssh_username,
                 mode=self.ssh_auth_mode,
                 password=self._get_password(),
-                ssh_key=self.ssh_key,
+                ssh_key=self._get_ssh_key(),
             )
         except Exception as e:
             if raise_on_error:

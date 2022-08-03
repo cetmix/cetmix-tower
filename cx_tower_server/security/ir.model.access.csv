@@ -20,5 +20,6 @@ access_command_user,Command->User,model_cx_tower_command,group_user,1,0,0,0
 access_command_manager,Command->Manager,model_cx_tower_command,group_manager,1,1,1,0
 access_command_root,Command->Root,model_cx_tower_command,group_root,1,1,1,1
 access_execute_command_user,Execute Command->User,model_cx_tower_command_execute_wizard,group_user,1,1,1,1
+access_key_user,Key->User,model_cx_tower_key,group_user,1,0,0,0
 access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,0
 access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1

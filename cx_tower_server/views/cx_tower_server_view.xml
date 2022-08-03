@@ -71,12 +71,12 @@
                                         attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
                                         password="True"
                                     />
+                                    <field
+                                        name="ssh_key_id"
+                                        attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
+                                    />
                                 </group>
                                 <field name="note" />
-                                <field
-                                    name="ssh_key"
-                                    attrs="{'required': [('ssh_auth_mode', '=', 'л')]}"
-                                />
                             </group>
                         </page>
                         <page name="variables" string="Variables">
