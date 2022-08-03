@@ -1,4 +1,4 @@
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .test_common import TestTowerCommon
 
@@ -52,3 +52,19 @@ class TestTowerKey(TestTowerCommon):
         # Add Bob to Root group and test write again
         self.add_to_group(self.user_bob, "cx_tower_server.group_root")
         key_bob.unlink()
+
+    def test_key_constraints(self):
+        """Test private key security features"""
+
+        # Store key value
+        self.write_and_invalidate(self.key_1, **{"ssh_key": "pepe"})
+
+        # Try creating another key with the same value. Must raise validation error
+        with self.assertRaises(ValidationError):
+            self.Key.create({"name": "Second key", "ssh_key": "pepe"})
+
+        # Must be ok if value differs
+        second_key = self.Key.create({"name": "Second key", "ssh_key": "frog"})
+        self.assertEqual(
+            second_key.sudo().ssh_key, "frog", msg="Must return key value 'frog'"
+        )

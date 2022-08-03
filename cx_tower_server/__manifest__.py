@@ -21,8 +21,6 @@
         "security/cx_tower_server_security.xml",
         "security/ir.model.access.csv",
         "data/ir_actions_server.xml",
-        # "templates/assets.xml",
-        # "views/report_name.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
