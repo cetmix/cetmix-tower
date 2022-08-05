@@ -1,6 +1,5 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
 
 
 class CxTowerCommandExecuteWizard(models.TransientModel):
@@ -16,15 +15,14 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         "cx.tower.command",
         required=True,
     )
-    show_all = fields.Boolean(default=False)
-    available_server_tag_ids = fields.Many2many(
+    tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         relation="cx_tower_command_execute_tag_rel",
         column1="wizard_id",
         column2="tag_id",
         string="Tags",
-        compute="_compute_available_server_tag_ids",
     )
+    any_server = fields.Boolean()
     rendered_code = fields.Text()
     result = fields.Text()
 
@@ -36,7 +34,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         if self.command_id and self.server_ids:
             self.code = self.command_id.code
 
-    @api.onchange("code")
+    @api.onchange("code", "server_ids")
     def _onchange_code(self):
         if self.server_ids:
             server_id = self.server_ids[0]  # TODO testing only!!!
@@ -55,16 +53,21 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             else:
                 self.rendered_code = self.code
 
-    @api.depends("show_all", "server_ids")
-    def _compute_available_server_tag_ids(self):
+    @api.onchange("any_server", "server_ids", "tag_ids")
+    def _onchange_tag_ids(self):
+        """Compose domain based on condition
+        - any server: show commands compatible with any server
         """
-        Compute available tags by selected servers and `show_all` parameter
-        """
-        self.ensure_one()
-        domain = [("server_ids", "in", self.server_ids.ids)]
-        if self.show_all:
-            domain = expression.OR([domain, [("server_ids", "=", False)]])
-        self.available_server_tag_ids = self.env["cx.tower.tag"].search(domain)
+
+        domain = []
+        if self.any_server:
+            domain = [("server_ids", "=", False)]
+        elif self.server_ids:
+            domain.append(("server_ids", "in", self.server_ids.ids))
+        if self.tag_ids:
+            domain.append(("tag_ids", "in", self.tag_ids.ids))
+
+        return {"domain": {"command_id": domain}}
 
     def execute_command(self):
         """
