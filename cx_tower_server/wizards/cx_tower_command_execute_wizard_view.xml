@@ -6,15 +6,22 @@
         <field name="model">cx.tower.command.execute.wizard</field>
         <field name="arch" type="xml">
             <form string="Execute Command">
+                <h2>
+                    Rendered code is shown as for the first selected server!
+                </h2>
                 <group>
-                    <field name="server_ids" invisible="1" />
-                    <field name="available_server_tag_ids" invisible="1" />
-                    <field
-                        name="command_id"
-                        attrs="{'invisible': [('result', '!=', False)]}"
-                        domain="[('tag_ids', 'in', available_server_tag_ids)]"
-                    />
-                    <field name="show_all" />
+                    <field name="server_ids" widget="many2many_tags" required="1" />
+                    <field name="tag_ids" widget="many2many_tags" />
+                    <label for="command_id" />
+                    <div class="o_row">
+                        <field
+                            name="command_id"
+                            attrs="{'invisible': [('result', '!=', False)]}"
+                            domain="[('server_ids', 'in', server_ids)]"
+                        />
+                        <span> global </span>
+                        <field name="any_server" />
+                    </div>
                     <field
                         name="code"
                         attrs="{'invisible': [('result', '!=', False)]}"
