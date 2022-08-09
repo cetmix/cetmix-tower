@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_variable_value_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.variable.value.view.tree</field>
+        <field name="model">cx.tower.variable.value</field>
+        <field name="arch" type="xml">
+            <tree editable="top" decoration-bf="model==False">
+                <field name="variable_id" invisible="0" readonly="1" />
+                <field name="model" invisible="1" />
+                <field name="is_global" widget="boolean_toggle" />
+                <field name="record_ref" />
+                <field name="value_char" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_variable_value_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.variable.value.view.search</field>
+        <field name="model">cx.tower.variable.value</field>
+        <field name="arch" type="xml">
+            <search string="Search Values">
+                <field name="variable_id" string="Variable" />
+                <field name="value_char" string="Value" />
+                <filter string="Local" name="local" domain="[('model', '!=', False)]" />
+                <filter
+                    string="Global"
+                    name="global"
+                    domain="[('model', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Model"
+                        name="group_by_model"
+                        domain="[]"
+                        context="{'group_by': 'model'}"
+                    />
+                </group>
+             </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_variable_value" model="ir.actions.act_window">
+        <field name="name">Variable Values</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.variable.value</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

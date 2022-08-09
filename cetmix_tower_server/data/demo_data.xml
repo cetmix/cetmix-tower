@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <!-- Add demo users to groups  -->
+    <record id="base.user_admin" model="res.users">
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+    </record>
+    <record id="base.user_demo" model="res.users">
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+    </record>
+
+    <!-- OSs -->
+    <record id="os_debian_10" model="cx.tower.os">
+        <field name="name">Debian 10</field>
+    </record>
+    <record id="os_ubuntu_20_04" model="cx.tower.os">
+        <field name="name">Ubuntu 20.04</field>
+    </record>
+
+    <!-- Tags -->
+    <record id="tag_staging" model="cx.tower.tag">
+        <field name="name">Staging</field>
+    </record>
+    <record id="tag_production" model="cx.tower.tag">
+        <field name="name">Production</field>
+    </record>
+    <record id="tag_custom" model="cx.tower.tag">
+        <field name="name">Custom</field>
+    </record>
+
+    <!-- Keys -->
+    <record id="key_1" model="cx.tower.key">
+        <field name="name">Key 1</field>
+    </record>
+    <record id="key_2" model="cx.tower.key">
+        <field name="name">Key 2</field>
+    </record>
+
+    <!-- Servers -->
+    <record id="server_test_1" model="cx.tower.server">
+        <field name="name">Test Server #1</field>
+        <field name="ip_v4_address">localhost</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">password</field>
+        <field name="ssh_auth_mode">p</field>
+        <field name="os_id" ref="os_debian_10" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field name="note">
+            This server is used in unit tests.
+            No variables are defined.
+        </field>
+    </record>
+    <record id="server_test_2" model="cx.tower.server">
+        <field name="name">Test Server #2</field>
+        <field name="ip_v4_address">localhost</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">password</field>
+        <field name="ssh_auth_mode">k</field>
+        <field name="use_sudo">p</field>
+        <field name="ssh_key_id" ref="key_1" />
+        <field name="os_id" ref="os_ubuntu_20_04" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="note">This server has variables configured</field>
+    </record>
+
+    <!-- Variables -->
+    <record id="variable_path" model="cx.tower.variable">
+        <field name="name">test_path</field>
+    </record>
+    <record id="variable_dir" model="cx.tower.variable">
+        <field name="name">dir</field>
+    </record>
+    <record id="variable_os" model="cx.tower.variable">
+        <field name="name">os</field>
+    </record>
+    <record id="variable_url" model="cx.tower.variable">
+        <field name="name">url</field>
+    </record>
+    <record id="variable_version" model="cx.tower.variable">
+        <field name="name">version</field>
+    </record>
+    <record id="variable_org" model="cx.tower.variable">
+        <field name="name">org</field>
+    </record>
+    <record id="variable_branch" model="cx.tower.variable">
+        <field name="name">branch</field>
+    </record>
+
+    <!-- Variable values -->
+    <record id="server_2_value_path" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_path" />
+        <field name="model">cx.tower.server</field>
+        <field name="res_id" ref="server_test_2" />
+        <field name="value_char">/opt/cetmix-tower</field>
+    </record>
+    <record id="server_2_value_url" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_url" />
+        <field name="model">cx.tower.server</field>
+        <field name="res_id" ref="server_test_2" />
+        <field name="value_char">https://cetmix.com</field>
+    </record>
+    <record id="server_2_value_branch" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_branch" />
+        <field name="model">cx.tower.server</field>
+        <field name="res_id" ref="server_test_2" />
+        <field name="value_char">staging</field>
+    </record>
+    <record id="global_value_branch" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_branch" />
+        <field name="value_char">prod</field>
+    </record>
+    <record id="global_value_org" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_org" />
+        <field name="value_char">Cetmix</field>
+    </record>
+
+    <!-- Commands -->
+    <record id="command_create_dir" model="cx.tower.command">
+        <field name="name">Create directory</field>
+        <field name="code">cd {{ path }} &amp;&amp; mkdir {{ dir }}</field>
+    </record>
+
+</odoo>

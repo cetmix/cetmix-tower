@@ -10,7 +10,6 @@
                     <group>
                         <group>
                             <field name="name" />
-                            <field name="interpreter_id" />
                         </group>
                         <group>
                             <field name="server_ids" widget="many2many_tags" />
@@ -35,10 +34,37 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="interpreter_id" />
                 <field name="server_ids" widget="many2many_tags" />
                 <field name="os_ids" widget="many2many_tags" />
             </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.command.view.search</field>
+        <field name="model">cx.tower.command</field>
+        <field name="arch" type="xml">
+            <search string="Search Commands">
+                <field name="name" />
+                <field name="code" />
+                <field name="server_ids" />
+                <field name="tag_ids" />
+                <filter
+                    string="Global"
+                    name="global"
+                    domain="[('server_ids', '=', False)]"
+                />
+                <filter
+                    string="Server tight"
+                    name="global"
+                    domain="[('server_ids', '!=', False)]"
+                />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+             </search>
         </field>
     </record>
 

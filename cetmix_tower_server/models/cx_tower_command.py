@@ -5,7 +5,9 @@ class CxTowerCommand(models.Model):
     _name = "cx.tower.command"
     _inherit = "cx.tower.template.mixin"
     _description = "Cetmix Tower Command"
+    _order = "name"
 
+    active = fields.Boolean(default=True)
     name = fields.Char()
     interpreter_id = fields.Many2one(
         comodel_name="cx.tower.interpreter",

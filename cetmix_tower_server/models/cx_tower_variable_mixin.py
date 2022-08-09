@@ -13,6 +13,12 @@ class TowerValueMixin(models.AbstractModel):
         help="Variable values for selected record",
     )
 
+    def unlink(self):
+        # Unlink variable values that belong to deleted records
+        variable_value_ids = self.variable_value_ids
+        super().unlink()
+        variable_value_ids.sudo().unlink()
+
     def _compute_variable_value_ids(self):
         """Compute variable values"""
         # Pre-fetch all values to avoid multiple queries
