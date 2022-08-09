@@ -11,12 +11,18 @@
                 </h2>
                 <group>
                     <field name="server_ids" widget="many2many_tags" required="1" />
-                    <field name="tag_ids" widget="many2many_tags" />
-                    <label for="command_id" />
-                    <div class="o_row">
+                    <field
+                        name="tag_ids"
+                        widget="many2many_tags"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <label
+                        for="command_id"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
                         <field
                             name="command_id"
-                            attrs="{'invisible': [('result', '!=', False)]}"
                             domain="[('server_ids', 'in', server_ids)]"
                         />
                         <span> global </span>
