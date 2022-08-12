@@ -66,6 +66,7 @@
                                     <field name="ssh_auth_mode" />
                                     <field name="ssh_port" />
                                     <field name="ssh_username" />
+                                    <field name="use_sudo" />
                                     <field
                                         name="ssh_password"
                                         attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
@@ -96,12 +97,33 @@
         </field>
     </record>
 
+    <record id="cx_tower_server_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.search</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <search string="Search Servers">
+                <field name="name" string="Server" />
+                <field name="os_id" />
+                <field name="tag_ids" />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="OS"
+                        name="group_by_os"
+                        domain="[]"
+                        context="{'group_by': 'os_id'}"
+                    />
+                </group>
+             </search>
+        </field>
+    </record>
+
 
     <record id="action_cx_tower_server" model="ir.actions.act_window">
         <field name="name">Servers</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.server</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_server_search_view" />
     </record>
 
 </odoo>

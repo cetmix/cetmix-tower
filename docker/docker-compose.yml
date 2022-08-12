@@ -1,0 +1,25 @@
+version: "3.1"
+services:
+  web:
+    build:
+      context: .
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    command:
+      - -d
+      - test_db
+      - -i
+      - cx_tower_server
+      - --test-enable
+      - --stop-after-init
+    volumes:
+      - /home/i1/odoo/14/extra-addons/cetmix-tower:/mnt/extra-addons
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo

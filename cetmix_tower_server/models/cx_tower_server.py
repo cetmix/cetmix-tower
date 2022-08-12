@@ -126,19 +126,30 @@ class SSH(object):
             logger.info("Disconnect SCP connection")
             self._scp.close()
 
-    def exec_command(self, command, sudo=False):
+    def exec_command(self, command, sudo=None):
+        """_summary_
+
+        Args:
+            command (text): Command text
+            sudo (selection): Use sudo
+                - 'n': no password
+                - 'p': with password
+                - Defaults to None.
+
+        Returns:
+            status, response, error
         """
-        Execute command in remove SSH
-        """
-        feed_password = False
         # TODO: check this
         # https://stackoverflow.com/questions/22587855/running-sudo-command-with-paramiko
         if sudo and self.username != "root":
             command = "sudo -S -p '' %s" % command
-            feed_password = bool(self.password)
+            # command = "sudo bash -S -c '{command}'".format(command=command)
 
         stdin, stdout, stderr = self.connection.exec_command(command)
-        if feed_password:
+        if sudo == "p":
+            if not self.password:
+                error_message = [_("sudo password was not provided!")]
+                return 255, [], error_message
             stdin.write(self.password + "\n")
             stdin.flush()
         status = stdout.channel.recv_exit_status()
@@ -206,6 +217,11 @@ class CxTowerServer(models.Model):
         default="p",
         required=True,
     )
+    use_sudo = fields.Selection(
+        string="Use sudo",
+        selection=[("n", "No password"), ("p", "With password")],
+        help="Run commands using 'sudo'",
+    )
     os_id = fields.Many2one(
         string="Operating System", comodel_name="cx.tower.os", required=True
     )
@@ -233,7 +249,7 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Please provide SSH password for %s" % rec.name)
                 )
-            if rec.ssh_auth_mode == "k" and not rec.ssh_key:
+            if rec.ssh_auth_mode == "k" and not rec.ssh_key_id:
                 raise ValidationError(_("Please provide SSH Key for %s" % rec.name))
 
     def _get_password(self):
@@ -337,14 +353,126 @@ class CxTowerServer(models.Model):
         for rec in self.filtered(lambda s: s.status == "stopped"):
             rec._connect()
 
-    def _execute_command(self, client, command, sudo=False, raise_on_error=True):
+    def _prepare_command_for_sudo(self, command):
+        """Prepare command to be executed with sudo
+        IMPORTANT:
+        Commands executed with sudo will be run separately one after another
+        even if there is a single command separated with '&&' or ';'
+        Example:
+        "pwd && ls -l" will be run as:
+            sudo pwd
+            sudo ls -l
+
+        Args:
+            command (text): initial command
+
+        Returns:
+            command (list): list of commands
+
         """
-        Execute command method: can be overridden
+        # Detect command separator
+        if "&&" in command:
+            separator = "&&"
+        elif ";" in command:
+            separator = ";"
+        else:
+            return [command]
+
+        return command.replace("\\", "").replace("\n", "").split(separator)
+
+    def execute_commands(self, command_ids, mute_logger=False, sudo=None):
+        """Execute commands
+        Commands are executed each server all commands.
+        E.g serverA: command_ids, serverB,: command_ids etc....
+
+        Args:
+            command_ids (cx.tower.object): Command recordset
+            mute_logger (bool): do not write output to logger
+            sudo (section): use sudo (refer to field). Defaults to None.
+
+        Returns:
+            dict: {server.id: {command.id: (status, response, error)}}
         """
+        result = {}
+
+        # Get variables from commands {variable.id: [variables]}
+        variables = command_ids.get_variables()
+
+        for server in self:
+            client = server._connect(raise_on_error=False)
+            command_response = {}
+            for command_id in command_ids:
+                # Get variable values for server
+                variable_values = server.get_variable_values(
+                    variables.get(command_id.id)
+                )
+
+                # Render command code using variables
+                if variable_values:
+                    rendered_code = command_id.render_code(
+                        **variable_values.get(server.id)
+                    ).get(command_id.id)
+                else:
+                    rendered_code = command_id.code
+                status, response, error = server._execute_command(
+                    client, rendered_code, sudo
+                )
+
+                # Save current command result
+                command_response.update({command_id.id: (status, response, error)})
+                if not mute_logger:
+                    log_message = _(
+                        "{} => command '{}' exit code {}{}".format(
+                            server.name,
+                            command_id.name,
+                            status,
+                            " \n {}".format(error) if error else "",
+                        )
+                    )
+                    _logger.info(log_message)
+
+            # Save result for the current server
+            result.update({server.id: command_response})
+
+        return result
+
+    def _execute_command(self, client, command, raise_on_error=True, sudo=None):
+        """_summary_
+
+        Args:
+            client (Connection): valid server connection obj
+            command (Text): command text
+            raise_on_error (bool, optional): raise error on error
+            sudo (selection): use sudo Defaults to None.
+
+        Raises:
+            ValidationError: if client is not valid
+            ValidationError: command execution error
+
+        Returns:
+            status, response, error
+        """
+        # TODO possibly we need to reformat or drop this function
+        self.ensure_one()
+
+        # Use server settings if not passed explicitly
+        if sudo is None:
+            sudo = self.use_sudo
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
         try:
-            result = client.exec_command(command, sudo=sudo)
+            if sudo:  # Execute each command separately to avoid extra shell
+                status = []
+                response = []
+                error = []
+                for command in self._prepare_command_for_sudo(command):
+                    st, resp, err = client.exec_command(command, sudo=sudo)
+                    status.append(st)
+                    response += resp
+                    error += err
+                return status, response, error
+            else:
+                result = client.exec_command(command, sudo=sudo)
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(_("SSH execute command error %s" % e))

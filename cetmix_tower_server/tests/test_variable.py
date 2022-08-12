@@ -24,8 +24,8 @@ class TestTowerVariable(TestTowerCommon):
         res = self.VariableValues.search(domain)
         return res
 
-    def check_variable_records(self, vals, model=None, rec_ids=None):
-        """Check if variable records are correctly stored in db
+    def check_variable_values(self, vals, model=None, rec_ids=None):
+        """Check if variable values are correctly stored in db
 
         Args:
             vals (List of tuples): format ("variable_id", "value")
@@ -73,7 +73,7 @@ class TestTowerVariable(TestTowerCommon):
                 msg="Variable value does not match provided one",
             )
 
-    def test_variables(self):
+    def test_variable_values(self):
         """Test common variable operations"""
 
         # Add two variables
@@ -90,7 +90,7 @@ class TestTowerVariable(TestTowerCommon):
             (self.variable_url.id, "example.com"),
             (self.variable_dir.id, "/opt/odoo"),
         ]
-        self.check_variable_records(
+        self.check_variable_values(
             vals=vals,
             model="cx.tower.server",
             rec_ids=[
@@ -112,13 +112,13 @@ class TestTowerVariable(TestTowerCommon):
             (self.variable_dir.id, "/opt/odoo"),
             (self.variable_version.id, "10.0"),
         ]
-        self.check_variable_records(
+        self.check_variable_values(
             vals=vals,
             model="cx.tower.server",
             rec_ids=[
                 self.server_test_1.id,
             ],
-        )  # Add another variable and edit the existing one
+        )
 
         # Delete two variables, add a new one
         with Form(self.server_test_1) as f:
@@ -130,7 +130,7 @@ class TestTowerVariable(TestTowerCommon):
             f.save()
 
         vals = [(self.variable_os.id, "Debian"), (self.variable_version.id, "10.0")]
-        self.check_variable_records(
+        self.check_variable_values(
             vals=vals,
             model="cx.tower.server",
             rec_ids=[
@@ -243,3 +243,68 @@ class TestTowerVariable(TestTowerCommon):
             msg="Variable 'url' must be '/web/10.0/example.com'",
         )
         self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
+
+    def test_variable_values_unlink(self):
+        """Ensure variable values are deleted properly
+        - Create a new server
+        - Add 2 variable values
+        - Delete server
+        - Ensure variable values are deleted
+        """
+
+        def get_value_count(variable):
+            """helper function to count variable value records
+            Arg: (cx.tower.variable) variable rec
+            Returns: (int) record count
+            """
+            return self.VariableValues.search_count([("variable_id", "=", variable.id)])
+
+        # Get variable values count before adding variables to server
+        count_dir_before = get_value_count(self.variable_dir)
+        count_url_before = get_value_count(self.variable_url)
+
+        # Create new server
+        server_test_var = self.Server.create(
+            {
+                "name": "Test Var",
+                "os_id": self.os_debian_10.id,
+                "ip_v4_address": "localhost",
+                "ssh_username": "bob",
+                "ssh_password": "pass",
+            }
+        )
+
+        # Add two variables to server
+        with Form(server_test_var) as f:
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_dir
+                line.value_char = "/opt/odoo"
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_url
+                line.value_char = "example.com"
+            f.save()
+
+        # Number of values should be incremented
+        self.assertEqual(
+            get_value_count(self.variable_dir),
+            count_dir_before + 1,
+            msg="Value count must be incremented!",
+        )
+        self.assertEqual(
+            get_value_count(self.variable_url),
+            count_url_before + 1,
+            msg="Value count must be incremented!",
+        )
+
+        # Delete the server
+        server_test_var.unlink()
+        self.assertEqual(
+            get_value_count(self.variable_dir),
+            count_dir_before,
+            msg="Value count must be same as before server creation!",
+        )
+        self.assertEqual(
+            get_value_count(self.variable_url),
+            count_url_before,
+            msg="Value count must be same as before server creation!",
+        )

@@ -12,7 +12,7 @@ access_tag_manager,Tag->Manager,model_cx_tower_tag,group_manager,1,1,1,0
 access_tag_root,Tag->Root,model_cx_tower_tag,group_root,1,1,1,1
 access_server_user,Server->User,model_cx_tower_server,group_user,1,0,0,0
 access_server_manager,Server->Manager,model_cx_tower_server,group_manager,1,1,1,0
-access_server_root,Server->Root,model_cx_tower_tag,group_root,1,1,1,1
+access_server_root,Server->Root,model_cx_tower_server,group_root,1,1,1,1
 access_interpreter_user,Interpreter->User,model_cx_tower_interpreter,group_user,1,0,0,0
 access_interpreter_manager,Interpreter->Manager,model_cx_tower_interpreter,group_manager,1,1,1,0
 access_interpreter_root,Interpreter->Root,model_cx_tower_interpreter,group_root,1,1,1,1

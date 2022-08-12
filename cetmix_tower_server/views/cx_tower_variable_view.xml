@@ -36,6 +36,20 @@
                                 <field name="record_ref" />
                                 <field name="value_char" />
                             </tree>
+                            <form>
+                                <group>
+                                    <field name="model" invisible="1" />
+                                    <field
+                                        name="is_global"
+                                        attrs="{'invisible':[('model', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="record_ref"
+                                        attrs="{'invisible':[('model', '=', False)]}"
+                                    />
+                                    <field name="value_char" />
+                                </group>
+                            </form>
                         </field>
                     </group>
                 </sheet>

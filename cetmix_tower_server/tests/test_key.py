@@ -20,7 +20,7 @@ class TestTowerKey(TestTowerCommon):
             key_value = key_bob.ssh_key
 
         # Add user to group
-        self.add_to_group(self.user_bob, "cx_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
 
         # Get value
         key_value = key_bob.ssh_key
@@ -37,7 +37,7 @@ class TestTowerKey(TestTowerCommon):
             self.write_and_invalidate(key_bob, **{"ssh_key": "frog"})
 
         # Add Bob to Manager group and test write again
-        self.add_to_group(self.user_bob, "cx_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
         self.write_and_invalidate(key_bob, **{"ssh_key": "frog"})
 
         # Read as sudo and check if the value is updated
@@ -50,7 +50,7 @@ class TestTowerKey(TestTowerCommon):
             key_bob.unlink()
 
         # Add Bob to Root group and test write again
-        self.add_to_group(self.user_bob, "cx_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
         key_bob.unlink()
 
     def test_key_constraints(self):

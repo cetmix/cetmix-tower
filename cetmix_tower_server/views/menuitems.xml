@@ -45,18 +45,25 @@
         sequence="3"
     />
     <menuitem
+        id="menu_cx_tower_variable_value"
+        name="Variable Values"
+        action="action_cx_tower_variable_value"
+        parent="menu_settings"
+        sequence="5"
+    />
+    <menuitem
         id="menu_cx_tower_key"
         name="Keys"
         action="action_cx_tower_key"
         parent="menu_settings"
-        sequence="3"
+        sequence="8"
     />
     <menuitem
         id="menu_cx_tower_os"
         name="OS"
         action="action_cx_tower_os"
         parent="menu_settings"
-        sequence="10"
+        sequence="100"
     />
     <menuitem
         id="menu_cx_tower_interpreter"

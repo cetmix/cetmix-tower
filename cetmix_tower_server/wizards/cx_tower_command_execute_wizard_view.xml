@@ -31,12 +31,12 @@
                     <field
                         name="code"
                         attrs="{'invisible': [('result', '!=', False)]}"
-                        groups="cx_tower_server.group_root"
+                        groups="cetmix_tower_server.group_root"
                     />
                     <field
                         name="rendered_code"
                         attrs="{'invisible': [('result', '!=', False)]}"
-                        groups="cx_tower_server.group_root"
+                        groups="cetmix_tower_server.group_root"
                     />
                 </group>
                     <field
@@ -48,7 +48,14 @@
                     <button
                         name="execute_command"
                         type="object"
-                        string="Execute"
+                        string="Run from wizard"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <button
+                        name="execute_command_on_server"
+                        type="object"
+                        string="Run on server(s)"
                         class="oe_highlight"
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />

@@ -20,40 +20,28 @@ class TestTowerCommon(TransactionCase):
         )
 
         # OS
-        self.os_debian_10 = self.env["cx.tower.os"].create({"name": "Debian 10"})
+        self.os_debian_10 = self.env.ref("cetmix_tower_server.os_debian_10")
 
         # Server
         self.Server = self.env["cx.tower.server"]
-        self.server_test_1 = self.Server.create(
-            {
-                "name": "Test 1",
-                "ip_v4_address": "localhost",
-                "ssh_username": "admin",
-                "ssh_password": "password",
-                "ssh_auth_mode": "p",
-                "os_id": self.os_debian_10.id,
-            }
-        )
-
+        self.server_test_1 = self.env.ref("cetmix_tower_server.server_test_1")
         # Variables
         self.Variable = self.env["cx.tower.variable"]
         self.VariableValues = self.env["cx.tower.variable.value"]
-        self.variable_path = self.Variable.create({"name": "test_path"})
-        self.variable_dir = self.Variable.create({"name": "dir"})
-        self.variable_os = self.Variable.create({"name": "os"})
-        self.variable_url = self.Variable.create({"name": "url"})
-        self.variable_version = self.Variable.create({"name": "version"})
+        self.variable_path = self.env.ref("cetmix_tower_server.variable_path")
+        self.variable_dir = self.env.ref("cetmix_tower_server.variable_dir")
+        self.variable_os = self.env.ref("cetmix_tower_server.variable_os")
+        self.variable_url = self.env.ref("cetmix_tower_server.variable_url")
+        self.variable_version = self.env.ref("cetmix_tower_server.variable_version")
 
         # Commands
         self.Command = self.env["cx.tower.command"]
-        self.command_create_dir = self.Command.create(
-            {"name": "Create directory", "code": "cd {{ path }} && mkdir {{ dir }}"}
-        )
+        self.command_create_dir = self.env.ref("cetmix_tower_server.command_create_dir")
 
         # Keys
         self.Key = self.env["cx.tower.key"]
-        self.key_1 = self.Key.create({"name": "Key 1"})
-        self.key_2 = self.Key.create({"name": "Key 2"})
+        self.key_1 = self.env.ref("cetmix_tower_server.key_1")
+        self.key_2 = self.env.ref("cetmix_tower_server.key_2")
 
     def add_to_group(self, user, group_refs):
         """Add user to groups

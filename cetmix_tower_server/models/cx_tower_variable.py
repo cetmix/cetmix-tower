@@ -13,7 +13,7 @@ class TowerVariable(models.Model):
         inverse_name="variable_id",
     )
     value_ids_count = fields.Integer(
-        string="Values", compute="_compute_value_ids_count", store=True
+        string="Value Count", compute="_compute_value_ids_count", store=True
     )
     note = fields.Text()
 

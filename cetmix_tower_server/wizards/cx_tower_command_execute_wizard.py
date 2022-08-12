@@ -69,6 +69,33 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         return {"domain": {"command_id": domain}}
 
+    def execute_command_on_server(self):
+        """Render selected command using server method"""
+        command_res = self.server_ids.execute_commands(self.command_id)
+        result = ""
+        for server in self.server_ids:
+            # Get result for this server and command from the res dict
+            status, response, error = command_res.get(server.id).get(self.command_id.id)
+            for err in error:
+                result += "[{server}]: ERROR: {err}".format(server=server.name, err=err)
+            for res in response:
+                result += "[{server}]: {res}".format(server=server.name, res=res)
+            if not result.endswith("\n"):
+                result += "\n"
+            result += "\n"
+
+        if result:
+            self.result = result
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Execute Result"),
+                "res_model": "cx.tower.command.execute.wizard",
+                "res_id": self.id,
+                "view_mode": "form",
+                "view_type": "form",
+                "target": "new",
+            }
+
     def execute_command(self):
         """
         Executes a given code
