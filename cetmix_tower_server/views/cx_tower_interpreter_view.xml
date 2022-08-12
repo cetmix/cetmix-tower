@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_interpreter_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.interpreter.view.form</field>
+        <field name="model">cx.tower.interpreter</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                        </group>
+                        <group>
+                            <field name="path" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_interpreter_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.interpreter.view.tree</field>
+        <field name="model">cx.tower.interpreter</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_interpreter" model="ir.actions.act_window">
+        <field name="name">Interpreter</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.interpreter</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
