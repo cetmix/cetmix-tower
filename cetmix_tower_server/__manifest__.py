@@ -28,6 +28,7 @@
         "views/cx_tower_variable_view.xml",
         "views/cx_tower_variable_value_view.xml",
         "views/cx_tower_command_view.xml",
+        "views/cx_tower_command_log_view.xml",
         "views/cx_tower_key_view.xml",
         "views/menuitems.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",

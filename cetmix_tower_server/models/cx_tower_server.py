@@ -380,10 +380,25 @@ class CxTowerServer(models.Model):
 
         return command.replace("\\", "").replace("\n", "").split(separator)
 
+    def _pre_execute_commands(
+        self, command_ids, variables=None, mute_logger=False, sudo=None
+    ):
+        """Will be triggered before command execution.
+        Inherit to tweak command values
+
+        Args:
+            command_ids (cx.tower.object): Command recordset
+            variables (dict): {command.id: [variables]}
+            mute_logger (bool): do not write output to logger
+            sudo (section): use sudo (refer to field). Defaults to None.
+
+        Returns:
+            command_ids, variables, mute_logger, sudo
+        """
+        return command_ids, variables, mute_logger, sudo
+
     def execute_commands(self, command_ids, mute_logger=False, sudo=None):
-        """Execute commands
-        Commands are executed each server all commands.
-        E.g serverA: command_ids, serverB,: command_ids etc....
+        """This is a wrapper function for _execute commands()
 
         Args:
             command_ids (cx.tower.object): Command recordset
@@ -393,48 +408,61 @@ class CxTowerServer(models.Model):
         Returns:
             dict: {server.id: {command.id: (status, response, error)}}
         """
-        result = {}
-
-        # Get variables from commands {variable.id: [variables]}
+        # Get variables from commands {command.id: [variables]}
         variables = command_ids.get_variables()
 
+        # Run pre-command hook
+        command_ids, variables, mute_logger, sudo = self._pre_execute_commands(
+            command_ids, variables, mute_logger, sudo
+        )
+
+        # Execute commands
         for server in self:
-            client = server._connect(raise_on_error=False)
-            command_response = {}
-            for command_id in command_ids:
-                # Get variable values for server
-                variable_values = server.get_variable_values(
-                    variables.get(command_id.id)
-                )
+            server._execute_commands(command_ids, variables, mute_logger, sudo)
 
-                # Render command code using variables
-                if variable_values:
-                    rendered_code = command_id.render_code(
-                        **variable_values.get(server.id)
-                    ).get(command_id.id)
-                else:
-                    rendered_code = command_id.code
-                status, response, error = server._execute_command(
-                    client, rendered_code, sudo
-                )
+    def _execute_commands(
+        self, command_ids, variables=None, mute_logger=False, sudo=None
+    ):
+        """Execute commands for server
 
-                # Save current command result
-                command_response.update({command_id.id: (status, response, error)})
-                if not mute_logger:
-                    log_message = _(
-                        "{} => command '{}' exit code {}{}".format(
-                            server.name,
-                            command_id.name,
-                            status,
-                            " \n {}".format(error) if error else "",
-                        )
+        Args:
+            command_ids (cx.tower.object): Command recordset
+            mute_logger (bool): do not write output to logger
+            sudo (section): use sudo (refer to field). Defaults to None.
+        """
+
+        client = self._connect(raise_on_error=False)
+        command_response = {}
+        for command_id in command_ids:
+            # TODO: implement command log here
+            # Get variable values for server
+            variable_values = (
+                self.get_variable_values(variables.get(command_id.id))
+                if variables
+                else False
+            )
+
+            # Render command code using variables
+            if variable_values:
+                rendered_code = command_id.render_code(
+                    **variable_values.get(self.id)
+                ).get(command_id.id)
+            else:
+                rendered_code = command_id.code
+            status, response, error = self._execute_command(client, rendered_code, sudo)
+
+            # Save current command result
+            command_response.update({command_id.id: (status, response, error)})
+            if not mute_logger:
+                log_message = _(
+                    "{} => command '{}' exit code {}{}".format(
+                        self.name,
+                        command_id.name,
+                        status,
+                        " \n {}".format(error) if error else "",
                     )
-                    _logger.info(log_message)
-
-            # Save result for the current server
-            result.update({server.id: command_response})
-
-        return result
+                )
+                _logger.info(log_message)
 
     def _execute_command(self, client, command, raise_on_error=True, sudo=None):
         """_summary_
@@ -450,7 +478,7 @@ class CxTowerServer(models.Model):
             ValidationError: command execution error
 
         Returns:
-            status, response, error
+            [status], [response], [error]
         """
         # TODO possibly we need to reformat or drop this function
         self.ensure_one()

@@ -7,6 +7,7 @@
         groups="group_user"
         web_icon="cx_tower_server,static/description/icon.png"
     />
+    <!-- Servers -->
     <menuitem
         id="menu_cx_tower_server_root"
         name="Servers"
@@ -22,14 +23,30 @@
         groups="group_user"
         sequence="3"
     />
+    <!-- Commands -->
+    <menuitem
+        id="menu_cx_tower_command_root"
+        name="Commands"
+        parent="menu_root"
+        groups="group_user"
+        sequence="3"
+    />
     <menuitem
         id="menu_cx_tower_command"
         name="Commands"
         action="action_cx_tower_command"
-        parent="menu_cx_tower_server_root"
-        sequence="14"
+        parent="menu_cx_tower_command_root"
+        sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_command_log"
+        name="Commands"
+        action="action_cx_tower_command_log"
+        parent="menu_cx_tower_command_root"
+        sequence="99"
     />
 
+    <!-- Settings -->
     <menuitem
         id="menu_settings"
         name="Settings"
