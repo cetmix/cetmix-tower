@@ -432,9 +432,8 @@ class CxTowerServer(models.Model):
         """
 
         client = self._connect(raise_on_error=False)
-        command_response = {}
+        log_obj = self.env["cx.tower.command.log"]
         for command_id in command_ids:
-            # TODO: implement command log here
             # Get variable values for server
             variable_values = (
                 self.get_variable_values(variables.get(command_id.id))
@@ -449,10 +448,17 @@ class CxTowerServer(models.Model):
                 ).get(command_id.id)
             else:
                 rendered_code = command_id.code
-            status, response, error = self._execute_command(client, rendered_code, sudo)
 
-            # Save current command result
-            command_response.update({command_id.id: (status, response, error)})
+            # Start logging
+            log_record = log_obj.start(self.id, command_id.id)
+            # Execute command
+            status, response, error = self._execute_command(
+                client, rendered_code, False, sudo
+            )
+            # Log result
+            log_record.finish(status, response, error)
+
+            # Output to Odoo logger
             if not mute_logger:
                 log_message = _(
                     "{} => command '{}' exit code {}{}".format(
@@ -505,7 +511,7 @@ class CxTowerServer(models.Model):
             if raise_on_error:
                 raise ValidationError(_("SSH execute command error %s" % e))
             else:
-                return False, e
+                return -1, [], [e]
         return result
 
     def action_execute_command(self):

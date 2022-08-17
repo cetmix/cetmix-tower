@@ -14,8 +14,8 @@
                         </group>
                         <group>
                             <field name="create_date" string="Started" />
-                            <field name="finish_date" string="Started" />
-                            <field name="duration_date" string="Started" />
+                            <field name="finish_date" />
+                            <field name="duration" />
                         </group>
                         <field
                             name="command_response"
@@ -87,7 +87,7 @@
     </record>
 
     <record id="action_cx_tower_command_log" model="ir.actions.act_window">
-        <field name="name">OS</field>
+        <field name="name">Command Log</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.command.log</field>
         <field name="view_mode">tree,form</field>

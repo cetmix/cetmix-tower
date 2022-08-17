@@ -40,7 +40,7 @@
     />
     <menuitem
         id="menu_cx_tower_command_log"
-        name="Commands"
+        name="Command Log"
         action="action_cx_tower_command_log"
         parent="menu_cx_tower_command_root"
         sequence="99"

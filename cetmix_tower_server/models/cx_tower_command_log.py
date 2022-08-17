@@ -6,16 +6,21 @@ class CxTowerCommandLog(models.Model):
     _description = "Cetmix Tower Command Log"
     _order = "finish_date desc"
 
+    name = fields.Char(compute="_compute_name", compute_sudo=True)
     server_id = fields.Many2one(comodel_name="cx.tower.server")
     command_id = fields.Many2one(comodel_name="cx.tower.command")
     finish_date = fields.Datetime(string="Finished")
     running = fields.Boolean()
     duration = fields.Float(
-        string="Time consumed", help="Time consumed for execution, seconds"
+        string="Duration, sec", help="Time consumed for execution, seconds"
     )
-    command_status = fields.Integer(sting="Status")
-    command_response = fields.Text(sting="Response")
-    command_error = fields.Text(sting="Error")
+    command_status = fields.Integer(string="Status")
+    command_response = fields.Text(string="Response")
+    command_error = fields.Text(string="Error")
+
+    def _compute_name(self):
+        for rec in self:
+            rec.name = ": ".join((rec.server_id.name, rec.command_id.name))
 
     def start(self, server_id, command_id):
         """Start logging new command
@@ -39,14 +44,26 @@ class CxTowerCommandLog(models.Model):
             error (_type_, optional): _description_. Defaults to None.
         """
         finish_date = fields.Datetime.now()
+        command_response = ""
+        for r in response:
+            command_response = (
+                "{}\n{}".format(command_response, r) if command_response else r
+            )
+        command_error = ""
+        for e in error:
+            command_error = "{}\n{}".format(command_error, e) if command_error else e
+
         for rec in self.sudo():
+            duration = (finish_date - rec.create_date).total_seconds()
+            if duration < 0:
+                duration = 0
             rec.write(
                 {
                     "running": False,
                     "finish_date": finish_date,
-                    "duration": (rec.create_date - finish_date).total_seconds(),
-                    "status": status,
-                    "response": response,
-                    "error": error,
+                    "duration": duration,
+                    "command_status": status,
+                    "command_response": command_response,
+                    "command_error": command_error,
                 }
             )
