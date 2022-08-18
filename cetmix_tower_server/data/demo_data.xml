@@ -123,7 +123,7 @@
     <!-- Commands -->
     <record id="command_create_dir" model="cx.tower.command">
         <field name="name">Create directory</field>
-        <field name="code">cd {{ path }} &amp;&amp; mkdir {{ dir }}</field>
+        <field name="code">cd {{ test_path }} &amp;&amp; mkdir {{ dir }}</field>
     </record>
 
 </odoo>

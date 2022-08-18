@@ -23,3 +23,4 @@ access_execute_command_user,Execute Command->User,model_cx_tower_command_execute
 access_key_user,Key->User,model_cx_tower_key,group_user,1,0,0,0
 access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,0
 access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1
+access_command_log_user,Command Log->User,model_cx_tower_command_log,group_user,1,0,0,0
