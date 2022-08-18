@@ -84,9 +84,9 @@
                             <group name="variables">
                                 <field name="variable_value_ids" order="variable_name">
                                     <tree editable="bottom">
-                                    <field name="variable_name" invisible="1" />
-                                    <field name="variable_id" />
-                                    <field name="value_char" />
+                                        <field name="variable_name" invisible="1" />
+                                        <field name="variable_id" />
+                                        <field name="value_char" />
                                     </tree>
                                 </field>
                             </group>
@@ -105,6 +105,11 @@
                 <field name="name" string="Server" />
                 <field name="os_id" />
                 <field name="tag_ids" />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
                 <group expand="0" string="Group By">
                     <filter
                         string="OS"
@@ -113,7 +118,7 @@
                         context="{'group_by': 'os_id'}"
                     />
                 </group>
-             </search>
+            </search>
         </field>
     </record>
 
