@@ -273,7 +273,7 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
         if self.ssh_key_id:
-            ssh_key = self.ssh_key_id.sudo().ssh_key
+            ssh_key = self.ssh_key_id.sudo().secret_value
         else:
             ssh_key = None
         return ssh_key

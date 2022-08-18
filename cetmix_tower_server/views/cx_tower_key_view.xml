@@ -10,8 +10,12 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="key_ref" />
                         </group>
-                        <field name="ssh_key" />
+                        <group>
+                            <field name="note" />
+                        </group>
+                        <field name="secret_value" />
                     </group>
                 </sheet>
             </form>
