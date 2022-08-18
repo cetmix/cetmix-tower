@@ -359,7 +359,7 @@ class CxTowerServer(models.Model):
         Commands executed with sudo will be run separately one after another
         even if there is a single command separated with '&&' or ';'
         Example:
-        "pwd && ls -l" will be run as:
+        "pwd && ls -l" will be executed as:
             sudo pwd
             sudo ls -l
 
@@ -367,7 +367,7 @@ class CxTowerServer(models.Model):
             command (text): initial command
 
         Returns:
-            command (list): list of commands
+            command (list): command splitted into separate commands
 
         """
         # Detect command separator
@@ -380,64 +380,106 @@ class CxTowerServer(models.Model):
 
         return command.replace("\\", "").replace("\n", "").split(separator)
 
-    def execute_commands(self, command_ids, mute_logger=False, sudo=None):
-        """Execute commands
-        Commands are executed each server all commands.
-        E.g serverA: command_ids, serverB,: command_ids etc....
+    def _pre_execute_commands(self, command_ids, variables=None, sudo=None, **kwargs):
+        """Will be triggered before command execution.
+        Inherit to tweak command values
 
         Args:
             command_ids (cx.tower.object): Command recordset
-            mute_logger (bool): do not write output to logger
-            sudo (section): use sudo (refer to field). Defaults to None.
+            variables (dict): {command.id: [variables]}
+            sudo (section): use sudo (refer to field). Defaults to None
+            kwargs (dict):  extra arguments
 
         Returns:
-            dict: {server.id: {command.id: (status, response, error)}}
+            command_ids, variables, sudo
         """
-        result = {}
+        return command_ids, variables, sudo, kwargs
 
-        # Get variables from commands {variable.id: [variables]}
+    def execute_commands(self, command_ids, sudo=None, **kwargs):
+        """This is a wrapper function for _execute commands()
+        Used to execute multiple commands on multiple servers.
+        This is a primary function to be used for executing commands.
+
+        Args:
+            command_ids (cx.tower.command()): Command recordset
+            sudo (selection): use sudo
+                None - do not use sudo
+                'n' - no password
+                'p' - with password
+                Defaults to None
+            kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+        """
+
+        # Get variables from commands {command.id: [variables]}
         variables = command_ids.get_variables()
 
+        # Run pre-command hook
+        command_ids, variables, sudo, kwargs = self._pre_execute_commands(
+            command_ids, variables, sudo, **kwargs
+        )
+
+        # Execute commands
         for server in self:
-            client = server._connect(raise_on_error=False)
-            command_response = {}
-            for command_id in command_ids:
-                # Get variable values for server
-                variable_values = server.get_variable_values(
-                    variables.get(command_id.id)
-                )
+            server._execute_commands_on_server(command_ids, variables, sudo, **kwargs)
 
-                # Render command code using variables
-                if variable_values:
-                    rendered_code = command_id.render_code(
-                        **variable_values.get(server.id)
-                    ).get(command_id.id)
-                else:
-                    rendered_code = command_id.code
-                status, response, error = server._execute_command(
-                    client, rendered_code, sudo
-                )
+    def _execute_commands_on_server(
+        self, command_ids, variables=None, sudo=None, **kwargs
+    ):
+        """Execute multiple commands on selected server
 
-                # Save current command result
-                command_response.update({command_id.id: (status, response, error)})
-                if not mute_logger:
-                    log_message = _(
-                        "{} => command '{}' exit code {}{}".format(
-                            server.name,
-                            command_id.name,
-                            status,
-                            " \n {}".format(error) if error else "",
-                        )
-                    )
-                    _logger.info(log_message)
+        Args:
+            command_ids (cx.tower.object): Command recordset
+            variable (List): Variables to render the commands with
+            sudo (section): use sudo (refer to field). Defaults to None.
+            kwargs (dict):  extra arguments. Use for extending
+        """
+        self.ensure_one()
+        client = self._connect(raise_on_error=False)
+        log_obj = self.env["cx.tower.command.log"]
+        for command_id in command_ids:
 
-            # Save result for the current server
-            result.update({server.id: command_response})
+            # Get variable values for server
+            variable_values = (
+                self.get_variable_values(variables.get(command_id.id))
+                if variables
+                else False
+            )
 
-        return result
+            # Render command code using variables
+            if variable_values:
+                rendered_code = command_id.render_code(
+                    **variable_values.get(self.id)
+                ).get(command_id.id)
+            else:
+                rendered_code = command_id.code
+
+            # Prepare log values
+            log_vals = kwargs.get("log", {})  # Get vals from kwargs
+            log_vals.update({"code": rendered_code})
+            start_date = fields.Datetime.now()
+
+            # Execute command
+            status, response, error = self._execute_command(
+                client, rendered_code, False, sudo
+            )
+
+            # Log result
+            finish_date = fields.Datetime.now()
+            log_obj.record(
+                self.id,
+                command_id.id,
+                start_date,
+                finish_date,
+                status,
+                response,
+                error,
+                **log_vals
+            )
 
     def _execute_command(self, client, command, raise_on_error=True, sudo=None):
-        """_summary_
+        """Execute a single command using existing connection
 
         Args:
             client (Connection): valid server connection obj
@@ -450,14 +492,8 @@ class CxTowerServer(models.Model):
             ValidationError: command execution error
 
         Returns:
-            status, response, error
+            [status], [response], [error]
         """
-        # TODO possibly we need to reformat or drop this function
-        self.ensure_one()
-
-        # Use server settings if not passed explicitly
-        if sudo is None:
-            sudo = self.use_sudo
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
         try:
@@ -477,7 +513,7 @@ class CxTowerServer(models.Model):
             if raise_on_error:
                 raise ValidationError(_("SSH execute command error %s" % e))
             else:
-                return False, e
+                return -1, [], [e]
         return result
 
     def action_execute_command(self):

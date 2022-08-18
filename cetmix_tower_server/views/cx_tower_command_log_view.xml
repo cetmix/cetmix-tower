@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_command_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.form</field>
+        <field name="model">cx.tower.command.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="create_uid" />
+                            <field name="server_id" />
+                            <field name="command_id" />
+                            <field name="command_status" />
+                        </group>
+                        <group>
+                            <field
+                                name="label"
+                                attrs="{'invisible': [('label', '=', False)]}"
+                            />
+                            <field name="create_date" string="Started" />
+                            <field name="finish_date" />
+                            <field name="duration" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="code" string="Code">
+                            <field name="code" />
+                        </page>
+                        <page name="result" string="Result">
+                            <field
+                                name="command_response"
+                                attrs="{'invisible': [('command_response', '=', False)]}"
+                            />
+                            <field
+                                name="command_error"
+                                attrs="{'invisible': [('command_error', '=', False)]}"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_log_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.tree</field>
+        <field name="model">cx.tower.command.log</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="finish_date" />
+                <field name="duration" />
+                <field name="server_id" />
+                <field name="command_id" />
+                <field name="command_status" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_log_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.search</field>
+        <field name="model">cx.tower.command.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Command Log">
+                <field name="label" />
+                <field name="server_id" />
+                <field name="command_id" />
+                <filter
+                    string="Labeled"
+                    name="filter_labeled"
+                    domain="[('label', '=', True)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Server"
+                        name="group_server"
+                        domain="[]"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="Command"
+                        name="group_command"
+                        domain="[]"
+                        context="{'group_by': 'command_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_command_log" model="ir.actions.act_window">
+        <field name="name">Command Log</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.command.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
