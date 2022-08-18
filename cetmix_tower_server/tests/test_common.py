@@ -25,7 +25,7 @@ class TestTowerCommon(TransactionCase):
         # Server
         self.Server = self.env["cx.tower.server"]
         self.server_test_1 = self.env.ref("cetmix_tower_server.server_test_1")
-        # Variables
+        # Variable
         self.Variable = self.env["cx.tower.variable"]
         self.VariableValues = self.env["cx.tower.variable.value"]
         self.variable_path = self.env.ref("cetmix_tower_server.variable_path")
@@ -34,11 +34,14 @@ class TestTowerCommon(TransactionCase):
         self.variable_url = self.env.ref("cetmix_tower_server.variable_url")
         self.variable_version = self.env.ref("cetmix_tower_server.variable_version")
 
-        # Commands
+        # Command
         self.Command = self.env["cx.tower.command"]
         self.command_create_dir = self.env.ref("cetmix_tower_server.command_create_dir")
 
-        # Keys
+        # Command log
+        self.Command = self.env["cx.tower.command.log"]
+
+        # Key
         self.Key = self.env["cx.tower.key"]
         self.key_1 = self.env.ref("cetmix_tower_server.key_1")
         self.key_2 = self.env.ref("cetmix_tower_server.key_2")

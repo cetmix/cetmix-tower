@@ -1,6 +1,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from ..models.tools import generate_random_id
+
 
 class CxTowerCommandExecuteWizard(models.TransientModel):
     _name = "cx.tower.command.execute.wizard"
@@ -72,14 +74,18 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     def execute_command_on_server(self):
         """Render selected command using server method"""
 
-        self.server_ids.execute_commands(self.command_id)
+        # Generate custom label. Will be used later to locate the command log
+        log_label = generate_random_id(4)
+        # Add custom values for log
+        custom_values = {"log": {"label": log_label}}
+        self.server_ids.execute_commands(self.command_id, **custom_values)
         return {
             "type": "ir.actions.act_window",
             "name": _("Command Log"),
             "res_model": "cx.tower.command.log",
             "view_mode": "tree,form",
             "target": "current",
-            "context": {"search_default_filter_finished": 1},
+            "context": {"search_default_label": log_label},
         }
 
     def execute_command(self):
