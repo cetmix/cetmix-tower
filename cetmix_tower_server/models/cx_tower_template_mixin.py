@@ -4,12 +4,15 @@ from odoo import fields, models
 
 
 class CxTowerTemplateMixin(models.AbstractModel):
-    """Used to implement template rendering functions"""
+    """Used to implement template rendering functions.
+    Inherit in your model in order code that contains variables.
+
+    """
 
     _name = "cx.tower.template.mixin"
     _description = "Cetmix Tower template rendering mixin"
 
-    code = fields.Text(string="Code")
+    code = fields.Text(string="Code", help="This field will be rendered by default")
 
     def get_variables(self):
         """Get the list of variables for templates

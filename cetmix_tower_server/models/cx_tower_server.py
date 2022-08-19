@@ -396,7 +396,8 @@ class CxTowerServer(models.Model):
         return command_ids, variables, sudo, kwargs
 
     def execute_commands(self, command_ids, sudo=None, **kwargs):
-        """This is a wrapper function for _execute commands()
+        """This is a main function to use for commands
+            and the wrapper function for _execute commands()
         Used to execute multiple commands on multiple servers.
         This is a primary function to be used for executing commands.
 
@@ -427,7 +428,7 @@ class CxTowerServer(models.Model):
     def _execute_commands_on_server(
         self, command_ids, variables=None, sudo=None, **kwargs
     ):
-        """Execute multiple commands on selected server
+        """Execute multiple commands on selected server.
 
         Args:
             command_ids (cx.tower.object): Command recordset
@@ -518,7 +519,7 @@ class CxTowerServer(models.Model):
 
     def action_execute_command(self):
         """
-        Return wizard action to select command and execute it
+        Returns wizard action to select command and execute it
         """
         context = self.env.context.copy()
         context.update(

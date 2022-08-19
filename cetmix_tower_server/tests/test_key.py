@@ -68,3 +68,16 @@ class TestTowerKey(TestTowerCommon):
         self.assertEqual(
             second_key.sudo().secret_value, "frog", msg="Must return key value 'frog'"
         )
+
+    # def test_key_inline_keys(self):
+    #     """Inline keys in code"""
+
+    #     # Create new key
+    #     test_key = self.Key.create(
+    #         {"name": "Meme key", "key_ref": "MEME_KEY", "secret_value": "Pepe Frog"}
+    #     )
+
+    #     # Let's parse the following string:
+    #     code = "The key to understand this meme is #!cxtower.key.MEME_KEY"
+    #     self.Key.parse_code(code)
+    # print(parsed_code)

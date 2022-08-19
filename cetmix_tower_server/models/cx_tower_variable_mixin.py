@@ -2,6 +2,10 @@ from odoo import fields, models
 
 
 class TowerValueMixin(models.AbstractModel):
+    """Used to implement variables and variable values.
+    Inherit in your model if you want to use variables in it.
+    """
+
     _name = "cx.tower.variable.mixin"
     _description = "Tower Variables mixin"
 
@@ -12,12 +16,6 @@ class TowerValueMixin(models.AbstractModel):
         inverse="_inverse_variable_value_ids",
         help="Variable values for selected record",
     )
-
-    def unlink(self):
-        # Unlink variable values that belong to deleted records
-        variable_value_ids = self.variable_value_ids
-        super().unlink()
-        variable_value_ids.sudo().unlink()
 
     def _compute_variable_value_ids(self):
         """Compute variable values"""
@@ -74,6 +72,12 @@ class TowerValueMixin(models.AbstractModel):
         if new_vals:
             self.env["cx.tower.variable.value"].create(new_vals)
 
+    def unlink(self):
+        # Unlink variable values that belong to deleted records
+        variable_value_ids = self.variable_value_ids
+        super().unlink()
+        variable_value_ids.sudo().unlink()
+
     def get_variable_values(self, variable_names):
         """Get variable values for selected records
 
@@ -122,7 +126,8 @@ class TowerValueMixin(models.AbstractModel):
         return res
 
     def get_global_variable_values(self, variable_names):
-        """Get global values for variables
+        """Get global values for variables.
+            Such values do not belong to any record.
 
         This function is used by get_variable_values()
         to compute fallback values.
@@ -162,8 +167,7 @@ class TowerValueMixin(models.AbstractModel):
         return domain
 
     def _render_variable_values(self, variables):
-        """Render variable values
-        Renders variable values base on the other variable values.
+        """Renders variable values using other variable values.
         For example we have the following values:
             "server_root": "/opt/server"
             "server_assets": "{{ server_root }}/assets"
