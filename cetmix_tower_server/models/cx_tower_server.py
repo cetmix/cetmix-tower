@@ -497,6 +497,10 @@ class CxTowerServer(models.Model):
         """
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
+
+        # Parse inline variables
+        command = self.env["cx.tower.key"].parse_code(command)
+
         try:
             if sudo:  # Execute each command separately to avoid extra shell
                 status = []

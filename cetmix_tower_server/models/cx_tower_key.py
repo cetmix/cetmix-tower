@@ -17,7 +17,7 @@ class CxTowerKey(models.Model):
         string="Servers", comodel_name="cx.tower.server", inverse_name="ssh_key_id"
     )
     partner_id = fields.Many2one(help="Leave blank to use for any partner")
-    note = fields.Char()
+    note = fields.Text()
 
     _sql_constraints = [
         (
