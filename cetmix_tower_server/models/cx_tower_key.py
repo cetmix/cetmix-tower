@@ -71,8 +71,9 @@ class CxTowerKey(models.Model):
 
     def parse_code(self, code):
         """Replaces key placeholders in code with the corresponding values.
-        keys have format of "#!tower.key.KEY_ID"
-        eg #!cxtower.key.GITHUB_TOKEN
+        - key has format of "#!tower.key.KEY_ID"
+            eg #!cxtower.secret.GITHUB_TOKEN
+        - key is terminated with space, newline or '!#'
 
         Args:
             code (Text): code to proceed
@@ -82,12 +83,24 @@ class CxTowerKey(models.Model):
         """
         key = True
         while key:
-            key = self._extract_key(code)
+            key, key_terminator = self._extract_key(code)
             if key:
-                code = code.replace(key, self._parse_key(key))
+                # Replace key including key terminator
+                key_to_replace = (
+                    "".join((key, key_terminator)) if key_terminator else key
+                )
+                code = code.replace(key_to_replace, self._parse_key(key))
         return code
 
     def _extract_key(self, code):
+        """Extract key from code
+
+        Args:
+            code (Text): _description_
+
+        Returns:
+            str, str: key or False and key terminator or False
+        """
         KEY_PLACEHOLDER = "#!cxtower."
 
         len_code = len(code)
@@ -95,47 +108,79 @@ class CxTowerKey(models.Model):
         if (
             len_code <= len(KEY_PLACEHOLDER) + 3
         ):  # at least one dot separator and two symbols
-            return False
+            return False, False
 
         # Beginning of the key
         index_from = code.find(KEY_PLACEHOLDER, 0)
+        if index_from < 0:
+            return False, False
 
         # Key end
-        index_to = code.find(" ")
+        index_to = code.find(" ", index_from)
 
         # Extract key value
-        key = code[index_from : index_to if index_to > 0 else len_code - 1]
-        return key
+        key_string = code[index_from : index_to if index_to > 0 else len_code]
+        return self._sanitize_key_string(key_string)
+
+    def _sanitize_key_string(self, key_string):
+        """Sanitize extracted key string. Leave key only.
+        If key is terminated explicitly with '!#' return key terminator as well
+
+        Args:
+            key_string (str): key to sanitize
+
+        Returns:
+            str, str: sanitized key with key terminator removed, key terminator
+        """
+        # Key terminator
+        key_terminator = False
+
+        # Remove newlines
+        key_splitted = key_string.split("\n")
+        if len(key_splitted) > 1:
+            key = key_splitted[0]
+        else:
+            key = key_string
+
+        # Remove key terminator '!#'
+        terminator_index = key.find("!#")
+        if terminator_index > 0:
+            key = key[0:terminator_index]
+            key_terminator = "!#"
+
+        return key, key_terminator
 
     def _parse_key(self, key):
-        """Parse key string and call parser based on the key type.
+        """Parse key string and call resolver based on the key type.
         Each key string consists of 3 parts:
         - key marker: #!cxtower
         - key type: e.g. "secret", "password", "login" etc
         - key ID: e.g "qwerty123", "mystrongpassword" etc
 
-        Inherit this function to implement your own parsers
+        Inherit this function to implement your own parser or resolver
         Args:
             key (str): key string
 
         Returns:
             str: key value or ""
         """
+
+        res = ""
         key_parts = key.split(".")
         if len(key_parts) != 3:  # Must be 3 parts!
-            return ""
+            return res
 
         key_type = key_parts[1]
         key_value = key_parts[2]
 
         # Parsing type 'secret'
         if key_type == "secret":
-            res = self._parse_key_type_key(key_value)
+            res = self._resolve_key_type_secret(key_value)
 
         return res
 
-    def _parse_key_type_secret(self, key_value):
-        """Parse key of type "secret".
+    def _resolve_key_type_secret(self, key_value):
+        """Resolve key of type "secret".
         Use this function as a custom parser example
 
         Args:

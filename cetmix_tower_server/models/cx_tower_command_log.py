@@ -11,7 +11,7 @@ class CxTowerCommandLog(models.Model):
     server_id = fields.Many2one(comodel_name="cx.tower.server")
     command_id = fields.Many2one(comodel_name="cx.tower.command")
     code = fields.Text(string="Command Code")
-    start_date = fields.Datetime(string="Finished")
+    start_date = fields.Datetime(string="Started")
     finish_date = fields.Datetime(string="Finished")
     duration = fields.Float(
         string="Duration, sec", help="Time consumed for execution, seconds"

@@ -8,7 +8,7 @@ class TestTowerKey(TestTowerCommon):
         """Test private key security features"""
 
         # Default message returned instead of key value
-        key_placeholder = self.Key.KEY_PLACEHOLDER
+        SECRET_VALUE_PLACEHOLDER = self.Key.SECRET_VALUE_PLACEHOLDER
 
         # Store key value
         self.write_and_invalidate(self.key_1, **{"secret_value": "pepe"})
@@ -28,8 +28,8 @@ class TestTowerKey(TestTowerCommon):
         # Ensure placeholder is used instead of the key value
         self.assertEqual(
             key_value,
-            key_placeholder,
-            msg="Must return placeholder '{}'".format(key_placeholder),
+            SECRET_VALUE_PLACEHOLDER,
+            msg="Must return placeholder '{}'".format(SECRET_VALUE_PLACEHOLDER),
         )
 
         # Test write
@@ -69,15 +69,57 @@ class TestTowerKey(TestTowerCommon):
             second_key.sudo().secret_value, "frog", msg="Must return key value 'frog'"
         )
 
-    # def test_key_inline_keys(self):
-    #     """Inline keys in code"""
+    def test_key_inline_keys(self):
+        """Inline keys in code"""
 
-    #     # Create new key
-    #     test_key = self.Key.create(
-    #         {"name": "Meme key", "key_ref": "MEME_KEY", "secret_value": "Pepe Frog"}
-    #     )
+        def check_parsed_code(code, code_parsed_expected):
+            """Helper function to check parsed code"""
+            code_parsed = self.Key.parse_code(code)
+            self.assertEqual(
+                code_parsed,
+                code_parsed_expected,
+                msg="Parsed code doesn't match expected one",
+            )
 
-    #     # Let's parse the following string:
-    #     code = "The key to understand this meme is #!cxtower.key.MEME_KEY"
-    #     self.Key.parse_code(code)
-    # print(parsed_code)
+        # Create new key
+        self.Key.create(
+            {"name": "Meme key", "key_ref": "MEME_KEY", "secret_value": "Pepe Frog"}
+        )
+
+        # Check key parser
+
+        # 1 - single line
+
+        code = "The key to understand this meme is #!cxtower.secret.MEME_KEY"
+        code_parsed_expected = "The key to understand this meme is Pepe Frog"
+        check_parsed_code(code, code_parsed_expected)
+
+        # 2 - multi line
+        code = "Welcome #!cxtower.secret.MEME_KEY\nNew hero of this city!"
+        code_parsed_expected = "Welcome Pepe Frog\nNew hero of this city!"
+        check_parsed_code(code, code_parsed_expected)
+
+        # 3 - Key not found
+        code = "Don't mess with #!cxtower.secret.DOGE_LIKE He will make you cry"
+        code_parsed_expected = "Don't mess with  He will make you cry"
+        check_parsed_code(code, code_parsed_expected)
+
+        # 4 - Key terminated explicitly with '!#'
+        code = "Don't mess with #!cxtower.secret.MEME_KEY!#! He will make you cry"
+        code_parsed_expected = "Don't mess with Pepe Frog! He will make you cry"
+        check_parsed_code(code, code_parsed_expected)
+
+        # 5 - Multi keys
+        # Create new key
+        self.Key.create(
+            {"name": "doge key", "key_ref": "DOGE_KEY", "secret_value": "Doge"}
+        )
+        code = (
+            "#!cxtower.secret.DOGE_KEY so like #!cxtower.secret.MEME_KEY!#!\n"
+            "They make #!memes together. Check #!cxtower.secret.MEME_KEY&#!"
+            "cxtower.secret.DOGE_KEY"
+        )
+        code_parsed_expected = (
+            "Doge so like Pepe Frog!\nThey make #!memes together. Check "
+        )
+        check_parsed_code(code, code_parsed_expected)
