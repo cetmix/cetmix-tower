@@ -86,7 +86,12 @@ class TestTowerCommand(TestTowerCommon):
 
         # Key
         self.Key.create(
-            {"name": "Folder", "key_ref": "FOLDER", "secret_value": "secretFolder"}
+            {
+                "name": "Folder",
+                "key_ref": "FOLDER",
+                "secret_value": "secretFolder",
+                "key_type": "s",
+            }
         )
 
         # Parse command with key parser to ensure key is parsed correctly

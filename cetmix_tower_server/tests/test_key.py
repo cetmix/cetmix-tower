@@ -61,10 +61,14 @@ class TestTowerKey(TestTowerCommon):
 
         # Try creating another key with the same value. Must raise validation error
         with self.assertRaises(ValidationError):
-            self.Key.create({"name": "Second key", "secret_value": "pepe"})
+            self.Key.create(
+                {"name": "Second key", "secret_value": "pepe", "key_type": "s"}
+            )
 
         # Must be ok if value differs
-        second_key = self.Key.create({"name": "Second key", "secret_value": "frog"})
+        second_key = self.Key.create(
+            {"name": "Second key", "secret_value": "frog", "key_type": "s"}
+        )
         self.assertEqual(
             second_key.sudo().secret_value, "frog", msg="Must return key value 'frog'"
         )
