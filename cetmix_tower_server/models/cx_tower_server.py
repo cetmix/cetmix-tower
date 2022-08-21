@@ -207,7 +207,11 @@ class CxTowerServer(models.Model):
     ssh_port = fields.Char(string="SSH port", required=True, default="22")
     ssh_username = fields.Char(string="SSH Username", required=True)
     ssh_password = fields.Char(string="SSH Password")
-    ssh_key_id = fields.Many2one(comodel_name="cx.tower.key", string="SSH Private Key")
+    ssh_key_id = fields.Many2one(
+        comodel_name="cx.tower.key",
+        string="SSH Private Key",
+        domain=[("key_type", "=", "k")],
+    )
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
         selection=[
@@ -388,7 +392,10 @@ class CxTowerServer(models.Model):
             command_ids (cx.tower.object): Command recordset
             variables (dict): {command.id: [variables]}
             sudo (section): use sudo (refer to field). Defaults to None
-            kwargs (dict):  extra arguments
+            kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
 
         Returns:
             command_ids, variables, sudo
@@ -411,6 +418,7 @@ class CxTowerServer(models.Model):
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
         """
 
         # Get variables from commands {command.id: [variables]}
@@ -479,7 +487,9 @@ class CxTowerServer(models.Model):
                 **log_vals
             )
 
-    def _execute_command(self, client, command, raise_on_error=True, sudo=None):
+    def _execute_command(
+        self, client, command, raise_on_error=True, sudo=None, **kwargs
+    ):
         """Execute a single command using existing connection
 
         Args:
@@ -499,7 +509,7 @@ class CxTowerServer(models.Model):
             raise ValidationError(_("SSH Client is not defined."))
 
         # Parse inline variables
-        command = self.env["cx.tower.key"].parse_code(command)
+        command = self.env["cx.tower.key"].parse_code(command, **kwargs.get("key", {}))
 
         try:
             if sudo:  # Execute each command separately to avoid extra shell

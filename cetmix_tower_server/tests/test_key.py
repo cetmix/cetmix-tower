@@ -83,7 +83,12 @@ class TestTowerKey(TestTowerCommon):
 
         # Create new key
         self.Key.create(
-            {"name": "Meme key", "key_ref": "MEME_KEY", "secret_value": "Pepe Frog"}
+            {
+                "name": "Meme key",
+                "key_ref": "MEME_KEY",
+                "secret_value": "Pepe Frog",
+                "key_type": "s",
+            }
         )
 
         # Check key parser
@@ -112,7 +117,12 @@ class TestTowerKey(TestTowerCommon):
         # 5 - Multi keys
         # Create new key
         self.Key.create(
-            {"name": "doge key", "key_ref": "DOGE_KEY", "secret_value": "Doge"}
+            {
+                "name": "doge key",
+                "key_ref": "DOGE_KEY",
+                "secret_value": "Doge",
+                "key_type": "s",
+            }
         )
         code = (
             "#!cxtower.secret.DOGE_KEY so like #!cxtower.secret.MEME_KEY!#!\n"

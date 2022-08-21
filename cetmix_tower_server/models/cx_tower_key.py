@@ -12,9 +12,26 @@ class CxTowerKey(models.Model):
 
     name = fields.Char(required=True)
     key_ref = fields.Char(string="Key ID", index=True)
+    key_type = fields.Selection(
+        selection=[
+            ("k", "SSH Key"),
+            ("s", "Secret"),
+        ],
+        required=True,
+        defauult="k",
+    )
+    key_ref_complete = fields.Char(
+        string="Key Reference",
+        compute="_compute_key_ref_complete",
+        help="Key reference for inline usage",
+    )
     secret_value = fields.Text(string="SSH Private Key")
-    server_ids = fields.One2many(
-        string="Servers", comodel_name="cx.tower.server", inverse_name="ssh_key_id"
+    server_ssh_ids = fields.One2many(
+        string="Used as SSH Key",
+        comodel_name="cx.tower.server",
+        inverse_name="ssh_key_id",
+        readonly=True,
+        help="Used as SSH key in the following servers",
     )
     partner_id = fields.Many2one(help="Leave blank to use for any partner")
     note = fields.Text()
@@ -26,6 +43,42 @@ class CxTowerKey(models.Model):
             "Key ID must be unique. Try adding another Key ID explicitly",
         )
     ]
+
+    def _compute_key_ref_complete(self):
+        """Compute key reference
+        Eg '#!cxtower.secret.KEY'
+        """
+        for rec in self:
+            if rec.key_ref:
+                key_prefix = self._compose_key_prefix(rec.key_type)
+                if key_prefix:
+                    rec.key_ref_complete = ".".join(
+                        ("#!cxtower", key_prefix, rec.key_ref)
+                    )
+                else:
+                    rec.key_ref_complete = None
+            else:
+                rec.key_ref_complete = None
+
+    def _compose_key_prefix(self, key_type):
+        """Compose key prefix based on key type.
+        Override to implement own key prefixes.
+
+
+        Args:
+            key_type (_type_): _description_
+
+        Raises:
+            ValidationError: _description_
+
+        Returns:
+            Char: key prefix
+        """
+        if key_type == "s":
+            key_prefix = "secret"
+        else:
+            key_prefix = None
+        return key_prefix
 
     @api.model
     def create(self, vals):
@@ -69,7 +122,7 @@ class CxTowerKey(models.Model):
         res = name.replace(" ", "_").upper()
         return res
 
-    def parse_code(self, code):
+    def parse_code(self, code, **kwargs):
         """Replaces key placeholders in code with the corresponding values.
         - key has format of "#!tower.key.KEY_ID"
             eg #!cxtower.secret.GITHUB_TOKEN
@@ -77,26 +130,28 @@ class CxTowerKey(models.Model):
 
         Args:
             code (Text): code to proceed
+            kwargs (dict): optional arguments
 
         Returns:
             Text: code with key values in place
         """
         key = True
         while key:
-            key, key_terminator = self._extract_key(code)
+            key, key_terminator = self._extract_key(code, **kwargs)
             if key:
                 # Replace key including key terminator
                 key_to_replace = (
                     "".join((key, key_terminator)) if key_terminator else key
                 )
-                code = code.replace(key_to_replace, self._parse_key(key))
+                code = code.replace(key_to_replace, self._parse_key(key, **kwargs))
         return code
 
-    def _extract_key(self, code):
+    def _extract_key(self, code, **kwargs):
         """Extract key from code
 
         Args:
             code (Text): _description_
+            **kwargs (dict): optional arguments
 
         Returns:
             str, str: key or False and key terminator or False
@@ -150,7 +205,7 @@ class CxTowerKey(models.Model):
 
         return key, key_terminator
 
-    def _parse_key(self, key):
+    def _parse_key(self, key, **kwargs):
         """Parse key string and call resolver based on the key type.
         Each key string consists of 3 parts:
         - key marker: #!cxtower
@@ -160,6 +215,7 @@ class CxTowerKey(models.Model):
         Inherit this function to implement your own parser or resolver
         Args:
             key (str): key string
+            **kwargs (dict) optional values
 
         Returns:
             str: key value or ""
@@ -175,16 +231,17 @@ class CxTowerKey(models.Model):
 
         # Parsing type 'secret'
         if key_type == "secret":
-            res = self._resolve_key_type_secret(key_value)
+            res = self._resolve_key_type_secret(key_value, **kwargs)
 
         return res
 
-    def _resolve_key_type_secret(self, key_value):
+    def _resolve_key_type_secret(self, key_value, **kwargs):
         """Resolve key of type "secret".
         Use this function as a custom parser example
 
         Args:
             key_value (str): _description_
+            **kwargs (dict) optional values
 
         Returns:
             str: value
