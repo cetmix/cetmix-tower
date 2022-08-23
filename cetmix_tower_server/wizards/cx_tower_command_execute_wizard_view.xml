@@ -21,11 +21,12 @@
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+                        sudo <field name="use_sudo" placeholder="No sudo" />
                         <field
                             name="command_id"
                             domain="[('server_ids', 'in', server_ids)]"
                         />
-                        <span> global </span>
+                        <span> show all </span>
                         <field name="any_server" />
                     </div>
                     <field

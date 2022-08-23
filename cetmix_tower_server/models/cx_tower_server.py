@@ -143,7 +143,6 @@ class SSH(object):
         # https://stackoverflow.com/questions/22587855/running-sudo-command-with-paramiko
         if sudo and self.username != "root":
             command = "sudo -S -p '' %s" % command
-            # command = "sudo bash -S -c '{command}'".format(command=command)
 
         stdin, stdout, stderr = self.connection.exec_command(command)
         if sudo == "p":
@@ -223,7 +222,7 @@ class CxTowerServer(models.Model):
     )
     use_sudo = fields.Selection(
         string="Use sudo",
-        selection=[("n", "No password"), ("p", "With password")],
+        selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
     )
     os_id = fields.Many2one(
@@ -357,33 +356,6 @@ class CxTowerServer(models.Model):
         for rec in self.filtered(lambda s: s.status == "stopped"):
             rec._connect()
 
-    def _prepare_command_for_sudo(self, command):
-        """Prepare command to be executed with sudo
-        IMPORTANT:
-        Commands executed with sudo will be run separately one after another
-        even if there is a single command separated with '&&' or ';'
-        Example:
-        "pwd && ls -l" will be executed as:
-            sudo pwd
-            sudo ls -l
-
-        Args:
-            command (text): initial command
-
-        Returns:
-            command (list): command splitted into separate commands
-
-        """
-        # Detect command separator
-        if "&&" in command:
-            separator = "&&"
-        elif ";" in command:
-            separator = ";"
-        else:
-            return [command]
-
-        return command.replace("\\", "").replace("\n", "").split(separator)
-
     def _pre_execute_commands(self, command_ids, variables=None, sudo=None, **kwargs):
         """Will be triggered before command execution.
         Inherit to tweak command values
@@ -466,7 +438,7 @@ class CxTowerServer(models.Model):
 
             # Prepare log values
             log_vals = kwargs.get("log", {})  # Get vals from kwargs
-            log_vals.update({"code": rendered_code})
+            log_vals.update({"code": rendered_code, "use_sudo": sudo})
             start_date = fields.Datetime.now()
 
             # Execute command
@@ -521,7 +493,7 @@ class CxTowerServer(models.Model):
                     status.append(st)
                     response += resp
                     error += err
-                return status, response, error
+                return self._parse_sudo_command_results(status, response, error)
             else:
                 result = client.exec_command(command, sudo=sudo)
         except Exception as e:
@@ -530,6 +502,51 @@ class CxTowerServer(models.Model):
             else:
                 return -1, [], [e]
         return result
+
+    def _prepare_command_for_sudo(self, command):
+        """Prepare command to be executed with sudo
+        IMPORTANT:
+        Commands executed with sudo will be run separately one after another
+        even if there is a single command separated with '&&' or ';'
+        Example:
+        "pwd && ls -l" will be executed as:
+            sudo pwd
+            sudo ls -l
+
+        Args:
+            command (text): initial command
+
+        Returns:
+            command (list): command splitted into separate commands
+
+        """
+        # Detect command separator
+        if "&&" in command:
+            separator = "&&"
+        elif ";" in command:
+            separator = ";"
+        else:
+            return [command]
+
+        return command.replace("\\", "").replace("\n", "").split(separator)
+
+    def _parse_sudo_command_results(self, status_list, response_list, error_list):
+        """Parse results of the command executed with sudo
+
+        Args:
+            status_list (list): List of statuses
+            response_list (list): List of responses
+            error_list (_type_): list of errors
+
+        Returns:
+            int, list, list: status, response, error
+        """
+        status = 0
+        for st in status_list:
+            if st != 0 and st != status:
+                status = st
+
+        return status, response_list, error_list
 
     def action_execute_command(self):
         """

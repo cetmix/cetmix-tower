@@ -24,6 +24,11 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         column2="tag_id",
         string="Tags",
     )
+    use_sudo = fields.Selection(
+        string="Use sudo",
+        selection=[("n", "Without password"), ("p", "With password")],
+        help="Run commands using 'sudo'",
+    )
     any_server = fields.Boolean()
     rendered_code = fields.Text()
     result = fields.Text()
@@ -72,13 +77,15 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         return {"domain": {"command_id": domain}}
 
     def execute_command_on_server(self):
-        """Render selected command using server method"""
+        """Render selected command rendered using server method"""
 
         # Generate custom label. Will be used later to locate the command log
         log_label = generate_random_id(4)
         # Add custom values for log
         custom_values = {"log": {"label": log_label}}
-        self.server_ids.execute_commands(self.command_id, **custom_values)
+        self.server_ids.execute_commands(
+            self.command_id, sudo=self.use_sudo, **custom_values
+        )
         return {
             "type": "ir.actions.act_window",
             "name": _("Command Log"),
@@ -90,7 +97,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
     def execute_command(self):
         """
-        Executes a given code
+        Executes a given code as is in wizard
         """
         self.ensure_one()
         code = self.code
@@ -122,7 +129,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
             server_name = server.name
             client = server._connect(raise_on_error=True)
-            status, response, error = server._execute_command(client, rendered_code)
+            status, response, error = server._execute_command(
+                client, rendered_code, sudo=self.use_sudo
+            )
             for err in error:
                 result += "[{server}]: ERROR: {err}".format(server=server_name, err=err)
             for res in response:

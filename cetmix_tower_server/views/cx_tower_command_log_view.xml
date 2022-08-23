@@ -11,6 +11,10 @@
                             <field name="create_uid" />
                             <field name="server_id" />
                             <field name="command_id" />
+                            <field
+                                name="use_sudo"
+                                attrs="{'invisible': [('use_sudo', '=', False)]}"
+                            />
                             <field name="command_status" />
                         </group>
                         <group>
