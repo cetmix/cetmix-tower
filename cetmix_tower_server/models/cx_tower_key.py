@@ -8,7 +8,7 @@ class CxTowerKey(models.Model):
     _name = "cx.tower.key"
     _description = "Cetmix Tower private key storage"
 
-    SECRET_VALUE_PLACEHOLDER = "*** Insert new value to replace existing key ***"
+    SECRET_VALUE_PLACEHOLDER = "*** Insert new value to replace the existing one ***"
 
     name = fields.Char(required=True)
     key_ref = fields.Char(string="Key ID", index=True)

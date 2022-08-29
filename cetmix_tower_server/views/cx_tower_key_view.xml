@@ -18,6 +18,7 @@
                             />
                             <field
                                 name="server_id"
+                                invisible="context.get('from_server',False)"
                                 attrs="{'invisible': [('key_type', '=', 'k')]}"
                                 placeholder="Leave blank to use with any server"
                             />

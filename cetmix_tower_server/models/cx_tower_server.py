@@ -186,21 +186,6 @@ class CxTowerServer(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(string="Name", required=True)
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
-    available = fields.Boolean(
-        string="Available", help="Available for operations", readonly=True
-    )
-    status = fields.Selection(
-        string="Status",
-        selection=[
-            ("starting", "Starting"),
-            ("running", "Running"),
-            ("stopping", "Stopping"),
-            ("stopped", "Stopped"),
-        ],
-        readonly=True,
-        help="Server status",
-    )
-    error_code = fields.Char(string="Error Code", help="Latest operation error code")
     ip_v4_address = fields.Char(string="IPv4 Address")
     ip_v6_address = fields.Char(string="IPv6 Address")
     ssh_port = fields.Char(string="SSH port", required=True, default="22")
@@ -225,6 +210,12 @@ class CxTowerServer(models.Model):
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
     )
+    secret_ids = fields.One2many(
+        string="Secrets",
+        comodel_name="cx.tower.key",
+        inverse_name="server_id",
+        domain=[("key_type", "!=", "k")],
+    )
     os_id = fields.Many2one(
         string="Operating System", comodel_name="cx.tower.os", required=True
     )
@@ -235,9 +226,6 @@ class CxTowerServer(models.Model):
         column2="tag_id",
         string="Tags",
     )
-    core_count = fields.Integer(string="CPU Core Count", help="Number of CPU cores")
-    ram_total = fields.Integer(string="Total RAM, Mb")
-    disk_total = fields.Integer(string="Total RAM, Gb")
     note = fields.Text()
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")

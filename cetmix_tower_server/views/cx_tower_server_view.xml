@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="status" />
+                <field name="partner_id" />
             </tree>
         </field>
     </record>
@@ -19,18 +19,10 @@
             <form>
                 <header>
                     <button
-                        name="start"
-                        type="object"
-                        string="Start"
-                        class="oe_highlight"
-                        attrs="{'invisible': [('status', '!=', 'stopped')]}"
-                    />
-                    <button
                         name="test_ssh_connection"
                         type="object"
                         string="Test Connection"
                     />
-                    <field name="status" widget="statusbar" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -49,9 +41,6 @@
                             <field name="name" />
                         </h1>
                     </div>
-                    <group name="name">
-                        <field name="available" />
-                    </group>
                     <notebook>
                         <page name="General" string="General Settings">
                             <group name="root">
@@ -81,22 +70,31 @@
                             </group>
                         </page>
                         <page name="variables" string="Variables">
-                            <group name="variables">
-                                <field name="variable_value_ids" order="variable_name">
-                                    <tree editable="bottom">
-                                        <field name="variable_name" invisible="1" />
+                            <field name="variable_value_ids" order="variable_name">
+                                <tree editable="bottom">
+                                    <field name="variable_name" invisible="1" />
+                                    <field name="variable_id" />
+                                    <field name="value_char" />
+                                </tree>
+                                <form>
+                                    <group>
                                         <field name="variable_id" />
                                         <field name="value_char" />
-                                    </tree>
-                                    <form>
-                                        <group>
-                                            <field name="variable_id" />
-                                            <field name="value_char" />
-                                        </group>
-                                        <field name="note" />
-                                    </form>
-                                </field>
-                            </group>
+                                    </group>
+                                    <field name="note" />
+                                </form>
+                            </field>
+                        </page>
+                        <page name="secrets" string="Secrets">
+                            <field
+                                name="secret_ids"
+                                context="{'default_key_type': 's', 'from_server': True}"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="key_ref" />
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
