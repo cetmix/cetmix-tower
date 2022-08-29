@@ -26,7 +26,7 @@
                             name="command_id"
                             domain="[('server_ids', 'in', server_ids)]"
                         />
-                        <span> show all </span>
+                        <span>show shared</span>
                         <field name="any_server" />
                     </div>
                     <field
@@ -50,13 +50,15 @@
                         name="execute_command"
                         type="object"
                         string="Run from wizard"
+                        help="Run code as it appears in 'Rendered code' in wizard"
                         class="oe_highlight"
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <button
                         name="execute_command_on_server"
                         type="object"
-                        string="Run on server(s)"
+                        string="Run on server"
+                        help="Run code using 'execute_commands' server method"
                         class="oe_highlight"
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />

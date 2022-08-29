@@ -18,7 +18,7 @@ class CxTowerKey(models.Model):
             ("s", "Secret"),
         ],
         required=True,
-        defauult="k",
+        default="k",
     )
     key_ref_complete = fields.Char(
         string="Key Reference",
@@ -33,13 +33,19 @@ class CxTowerKey(models.Model):
         readonly=True,
         help="Used as SSH key in the following servers",
     )
-    partner_id = fields.Many2one(help="Leave blank to use for any partner")
+    server_id = fields.Many2one(
+        comodel_name="cx.tower.server",
+        help="Used for selected server only. Leave blank to use globally",
+    )
+    partner_id = fields.Many2one(
+        comodel_name="res.partner", help="Leave blank to use for any partner"
+    )
     note = fields.Text()
 
     _sql_constraints = [
         (
             "tower_key_ref_uniq",
-            "unique (key_ref,partner_id)",
+            "unique (key_ref,partner_id,server_id)",
             "Key ID must be unique. Try adding another Key ID explicitly",
         )
     ]
@@ -92,7 +98,12 @@ class CxTowerKey(models.Model):
         self_sudo = self.sudo()
         for rec in self_sudo:
             other_key = self_sudo.search(
-                [("secret_value", "=", rec.secret_value), ("id", "!=", rec.id)]
+                [
+                    ("secret_value", "=", rec.secret_value),
+                    ("id", "!=", rec.id),
+                    ("partner_id", "=", rec.partner_id.id if rec.partner_id else False),
+                    ("server_id", "=", rec.server_id.id if rec.server_id else False),
+                ]
             )
             if other_key:
                 raise ValidationError(_("Such key already exists: %s" % other_key.name))
@@ -135,26 +146,56 @@ class CxTowerKey(models.Model):
         Returns:
             Text: code with key values in place
         """
-        key = True
-        while key:
-            key, key_terminator = self._extract_key(code, **kwargs)
-            if key:
-                # Replace key including key terminator
-                key_to_replace = (
-                    "".join((key, key_terminator)) if key_terminator else key
-                )
-                code = code.replace(key_to_replace, self._parse_key(key, **kwargs))
+
+        # Get keys
+        keys = self._extract_keys(code, **kwargs)
+
+        # Replace keys with values
+        for key in keys:
+            # Replace key including key terminator
+            key_string = key[0]
+            key_terminator = key[1]
+            key_to_replace = (
+                "".join((key_string, key_terminator)) if key_terminator else key_string
+            )
+            parsed_key = self._parse_key(key_string, **kwargs)
+            if parsed_key:
+                code = code.replace(key_to_replace, parsed_key)
+
         return code
 
-    def _extract_key(self, code, **kwargs):
-        """Extract key from code
+    def _extract_keys(self, code, **kwargs):
+        """Extract all keys from code
 
         Args:
             code (Text): _description_
             **kwargs (dict): optional arguments
 
         Returns:
-            str, str: key or False and key terminator or False
+            [(str, str)]: list of key & key terminator tuples
+        """
+        keys = []
+        extract_position = 0  # initial position
+        while extract_position > -1:
+            extract_position, key, key_terminator = self._extract_key(
+                code, extract_position, **kwargs
+            )
+            if key:
+                keys.append((key, key_terminator))
+
+        return keys
+
+    def _extract_key(self, code, extract_from=0, **kwargs):
+        """Extract single key from code.
+
+        Args:
+            code (Text): code to extract from
+            extract_from (Int): initial position to extract
+            **kwargs (dict): optional arguments
+
+        Returns:
+            int, str, str: last_position, key or False and key terminator or False
+            Last position is used to control the general extraction flow.
         """
         KEY_PLACEHOLDER = "#!cxtower."
 
@@ -163,26 +204,28 @@ class CxTowerKey(models.Model):
         if (
             len_code <= len(KEY_PLACEHOLDER) + 3
         ):  # at least one dot separator and two symbols
-            return False, False
+            return -1, False, False
 
         # Beginning of the key
-        index_from = code.find(KEY_PLACEHOLDER, 0)
+        index_from = code.find(KEY_PLACEHOLDER, extract_from)
         if index_from < 0:
-            return False, False
+            return index_from, False, False
 
         # Key end
         index_to = code.find(" ", index_from)
 
         # Extract key value
         key_string = code[index_from : index_to if index_to > 0 else len_code]
-        return self._sanitize_key_string(key_string)
+        key, key_terminator = self._sanitize_key_string(key_string, **kwargs)
+        return index_to, key, key_terminator
 
-    def _sanitize_key_string(self, key_string):
+    def _sanitize_key_string(self, key_string, **kwargs):
         """Sanitize extracted key string. Leave key only.
         If key is terminated explicitly with '!#' return key terminator as well
 
         Args:
             key_string (str): key to sanitize
+            **kwargs (dict): optional arguments
 
         Returns:
             str, str: sanitized key with key terminator removed, key terminator
@@ -218,10 +261,10 @@ class CxTowerKey(models.Model):
             **kwargs (dict) optional values
 
         Returns:
-            str: key value or ""
+            str: key value or False if not able to parse
         """
 
-        res = ""
+        res = False
         key_parts = key.split(".")
         if len(key_parts) != 3:  # Must be 3 parts!
             return res
@@ -244,14 +287,28 @@ class CxTowerKey(models.Model):
             **kwargs (dict) optional values
 
         Returns:
-            str: value
+            str: value or False if not able to parse
         """
         if not key_value:
-            return ""
-        keys = self.search([("key_ref", "=", key_value)]).sudo()
-        if keys:
-            res = keys[0].secret_value
-        else:
-            res = ""
+            return False
 
-        return res
+        # Prefetch all the keys with matching ref
+        keys = self.search([("key_ref", "=", key_value)])
+        if not keys:
+            return False
+
+        # Try to get server specific key first
+        key = False
+        server_id = kwargs.get("server_id", False)
+        if server_id:
+            key = keys.filtered(lambda k: k.server_id.id == server_id)
+
+        # Try to get partner specific key next
+        if not key:
+            partner_id = kwargs.get("partner_id", False)
+            key = keys.filtered(lambda k: k.partner_id.id == partner_id)
+
+        if not key:
+            # Fallback to a global key
+            key = keys
+        return key[0].sudo().secret_value

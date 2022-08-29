@@ -88,6 +88,13 @@
                                         <field name="variable_id" />
                                         <field name="value_char" />
                                     </tree>
+                                    <form>
+                                        <group>
+                                            <field name="variable_id" />
+                                            <field name="value_char" />
+                                        </group>
+                                        <field name="note" />
+                                    </form>
                                 </field>
                             </group>
                         </page>

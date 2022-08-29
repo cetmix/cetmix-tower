@@ -76,9 +76,9 @@ class TestTowerKey(TestTowerCommon):
     def test_key_inline_keys(self):
         """Inline keys in code"""
 
-        def check_parsed_code(code, code_parsed_expected):
+        def check_parsed_code(code, code_parsed_expected, **kwargs):
             """Helper function to check parsed code"""
-            code_parsed = self.Key.parse_code(code)
+            code_parsed = self.Key.parse_code(code, **kwargs)
             self.assertEqual(
                 code_parsed,
                 code_parsed_expected,
@@ -110,7 +110,9 @@ class TestTowerKey(TestTowerCommon):
 
         # 3 - Key not found
         code = "Don't mess with #!cxtower.secret.DOGE_LIKE He will make you cry"
-        code_parsed_expected = "Don't mess with  He will make you cry"
+        code_parsed_expected = (
+            "Don't mess with #!cxtower.secret.DOGE_LIKE He will make you cry"
+        )
         check_parsed_code(code, code_parsed_expected)
 
         # 4 - Key terminated explicitly with '!#'
@@ -124,16 +126,63 @@ class TestTowerKey(TestTowerCommon):
             {
                 "name": "doge key",
                 "key_ref": "DOGE_KEY",
-                "secret_value": "Doge",
+                "secret_value": "Doge dog",
                 "key_type": "s",
             }
         )
         code = (
-            "#!cxtower.secret.DOGE_KEY so like #!cxtower.secret.MEME_KEY!#!\n"
+            "#!cxtower.secret.MEME_KEY&Doge #!cxtower.secret.DOGE_KEY so "
+            "like #!cxtower.secret.MEME_KEY!#!\n"
             "They make #!memes together. Check #!cxtower.secret.MEME_KEY&#!"
             "cxtower.secret.DOGE_KEY"
         )
         code_parsed_expected = (
-            "Doge so like Pepe Frog!\nThey make #!memes together. Check "
+            "#!cxtower.secret.MEME_KEY&Doge Doge dog so like Pepe Frog!\n"
+            "They make #!memes together. "
+            "Check #!cxtower.secret.MEME_KEY&Doge dog"
         )
         check_parsed_code(code, code_parsed_expected)
+
+        # 5 - Partner specific key
+        # Create new key for partner Bob
+        self.Key.create(
+            {
+                "name": "doge key",
+                "key_ref": "DOGE_KEY",
+                "secret_value": "Doge wow",
+                "key_type": "s",
+                "partner_id": self.user_bob.partner_id.id,
+            }
+        )
+        # compose kwargs
+        kwargs = {"partner_id": self.user_bob.partner_id.id}
+        code_parsed_expected = (
+            "#!cxtower.secret.MEME_KEY&Doge Doge wow so like Pepe Frog!\n"
+            "They make #!memes together. "
+            "Check #!cxtower.secret.MEME_KEY&Doge wow"
+        )
+        check_parsed_code(code, code_parsed_expected, **kwargs)
+
+        # 6 - Server specific key
+        # Create new key for server Test 1
+        self.Key.create(
+            {
+                "name": "doge key",
+                "key_ref": "DOGE_KEY",
+                "secret_value": "Doge much",
+                "key_type": "s",
+                "partner_id": self.user_bob.partner_id.id,  # not needed but may keep it
+                "server_id": self.server_test_1.id,
+            }
+        )
+        # compose kwargs
+        kwargs = {
+            "partner_id": self.user_bob.partner_id.id,  # not needed but may keep it
+            "server_id": self.server_test_1.id,
+        }
+        code_parsed_expected = (
+            "#!cxtower.secret.MEME_KEY&Doge Doge much so like Pepe Frog!\n"
+            "They make #!memes together. "
+            "Check #!cxtower.secret.MEME_KEY&Doge much"
+        )
+        check_parsed_code(code, code_parsed_expected, **kwargs)

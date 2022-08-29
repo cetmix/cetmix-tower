@@ -441,6 +441,12 @@ class CxTowerServer(models.Model):
             log_vals.update({"code": rendered_code, "use_sudo": sudo})
             start_date = fields.Datetime.now()
 
+            # Prepare key renderer values
+            key_vals = kwargs.get("key", {})  # Get vals from kwargs
+            key_vals.update({"server_id": self.id})
+            if self.partner_id:
+                key_vals.update({"partner_id": self.partner_id.id})
+
             # Execute command
             status, response, error = self._execute_command(
                 client, rendered_code, False, sudo

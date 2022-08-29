@@ -67,4 +67,4 @@ class CxTowerTemplateMixin(models.AbstractModel):
         Returns:
             rendered_code (text)
         """
-        return Template(code).render(kwargs)
+        return Template(code, trim_blocks=True).render(kwargs)

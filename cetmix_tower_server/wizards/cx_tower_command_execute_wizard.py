@@ -76,6 +76,26 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         return {"domain": {"command_id": domain}}
 
+    def action_execute_command(self):
+        """
+        Return wizard action to select command and execute it
+        """
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_server_ids": self.server_ids.ids,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Execute Command"),
+            "res_model": "cx.tower.command.execute.wizard",
+            "view_mode": "form",
+            "view_type": "form",
+            "target": "new",
+            "context": context,
+        }
+
     def execute_command_on_server(self):
         """Render selected command rendered using server method"""
 
@@ -113,24 +133,12 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         result = ""
 
-        variables = self.get_variables()
-        # Get variable values
-        variable_values = self.server_ids.get_variable_values(variables.get(self.id))
-
         for server in self.server_ids:
-
-            # Render template with values
-            if variable_values:
-                rendered_code = self.render_code(**variable_values.get(server.id)).get(
-                    self.id
-                )
-            else:
-                rendered_code = self.code
 
             server_name = server.name
             client = server._connect(raise_on_error=True)
             status, response, error = server._execute_command(
-                client, rendered_code, sudo=self.use_sudo
+                client, self.rendered_code, sudo=self.use_sudo
             )
             for err in error:
                 result += "[{server}]: ERROR: {err}".format(server=server_name, err=err)
@@ -151,23 +159,3 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                 "view_type": "form",
                 "target": "new",
             }
-
-    def action_execute_command(self):
-        """
-        Return wizard action to select command and execute it
-        """
-        context = self.env.context.copy()
-        context.update(
-            {
-                "default_server_ids": self.server_ids.ids,
-            }
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Execute Command"),
-            "res_model": "cx.tower.command.execute.wizard",
-            "view_mode": "form",
-            "view_type": "form",
-            "target": "new",
-            "context": context,
-        }
