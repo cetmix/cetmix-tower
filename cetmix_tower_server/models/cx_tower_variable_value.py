@@ -21,6 +21,7 @@ class TowerVariableValue(models.Model):
         string="Global", compute="_compute_is_global", inverse="_inverse_is_global"
     )
     value_char = fields.Char(string="Value", required=True)
+    note = fields.Text(related="variable_id.note", readonly=True)
 
     _sql_constraints = [
         (

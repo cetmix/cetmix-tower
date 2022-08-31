@@ -143,7 +143,6 @@ class SSH(object):
         # https://stackoverflow.com/questions/22587855/running-sudo-command-with-paramiko
         if sudo and self.username != "root":
             command = "sudo -S -p '' %s" % command
-            # command = "sudo bash -S -c '{command}'".format(command=command)
 
         stdin, stdout, stderr = self.connection.exec_command(command)
         if sudo == "p":
@@ -187,27 +186,16 @@ class CxTowerServer(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(string="Name", required=True)
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
-    available = fields.Boolean(
-        string="Available", help="Available for operations", readonly=True
-    )
-    status = fields.Selection(
-        string="Status",
-        selection=[
-            ("starting", "Starting"),
-            ("running", "Running"),
-            ("stopping", "Stopping"),
-            ("stopped", "Stopped"),
-        ],
-        readonly=True,
-        help="Server status",
-    )
-    error_code = fields.Char(string="Error Code", help="Latest operation error code")
     ip_v4_address = fields.Char(string="IPv4 Address")
     ip_v6_address = fields.Char(string="IPv6 Address")
     ssh_port = fields.Char(string="SSH port", required=True, default="22")
     ssh_username = fields.Char(string="SSH Username", required=True)
     ssh_password = fields.Char(string="SSH Password")
-    ssh_key_id = fields.Many2one(comodel_name="cx.tower.key", string="SSH Private Key")
+    ssh_key_id = fields.Many2one(
+        comodel_name="cx.tower.key",
+        string="SSH Private Key",
+        domain=[("key_type", "=", "k")],
+    )
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
         selection=[
@@ -219,8 +207,14 @@ class CxTowerServer(models.Model):
     )
     use_sudo = fields.Selection(
         string="Use sudo",
-        selection=[("n", "No password"), ("p", "With password")],
+        selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
+    )
+    secret_ids = fields.One2many(
+        string="Secrets",
+        comodel_name="cx.tower.key",
+        inverse_name="server_id",
+        domain=[("key_type", "!=", "k")],
     )
     os_id = fields.Many2one(
         string="Operating System", comodel_name="cx.tower.os", required=True
@@ -232,9 +226,6 @@ class CxTowerServer(models.Model):
         column2="tag_id",
         string="Tags",
     )
-    core_count = fields.Integer(string="CPU Core Count", help="Number of CPU cores")
-    ram_total = fields.Integer(string="Total RAM, Mb")
-    disk_total = fields.Integer(string="Total RAM, Gb")
     note = fields.Text()
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
@@ -273,7 +264,7 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
         if self.ssh_key_id:
-            ssh_key = self.ssh_key_id.sudo().ssh_key
+            ssh_key = self.ssh_key_id.sudo().secret_value
         else:
             ssh_key = None
         return ssh_key
@@ -353,33 +344,6 @@ class CxTowerServer(models.Model):
         for rec in self.filtered(lambda s: s.status == "stopped"):
             rec._connect()
 
-    def _prepare_command_for_sudo(self, command):
-        """Prepare command to be executed with sudo
-        IMPORTANT:
-        Commands executed with sudo will be run separately one after another
-        even if there is a single command separated with '&&' or ';'
-        Example:
-        "pwd && ls -l" will be executed as:
-            sudo pwd
-            sudo ls -l
-
-        Args:
-            command (text): initial command
-
-        Returns:
-            command (list): command splitted into separate commands
-
-        """
-        # Detect command separator
-        if "&&" in command:
-            separator = "&&"
-        elif ";" in command:
-            separator = ";"
-        else:
-            return [command]
-
-        return command.replace("\\", "").replace("\n", "").split(separator)
-
     def _pre_execute_commands(self, command_ids, variables=None, sudo=None, **kwargs):
         """Will be triggered before command execution.
         Inherit to tweak command values
@@ -388,7 +352,10 @@ class CxTowerServer(models.Model):
             command_ids (cx.tower.object): Command recordset
             variables (dict): {command.id: [variables]}
             sudo (section): use sudo (refer to field). Defaults to None
-            kwargs (dict):  extra arguments
+            kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
 
         Returns:
             command_ids, variables, sudo
@@ -396,7 +363,8 @@ class CxTowerServer(models.Model):
         return command_ids, variables, sudo, kwargs
 
     def execute_commands(self, command_ids, sudo=None, **kwargs):
-        """This is a wrapper function for _execute commands()
+        """This is a main function to use for commands
+            and the wrapper function for _execute commands()
         Used to execute multiple commands on multiple servers.
         This is a primary function to be used for executing commands.
 
@@ -410,6 +378,7 @@ class CxTowerServer(models.Model):
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
         """
 
         # Get variables from commands {command.id: [variables]}
@@ -427,7 +396,7 @@ class CxTowerServer(models.Model):
     def _execute_commands_on_server(
         self, command_ids, variables=None, sudo=None, **kwargs
     ):
-        """Execute multiple commands on selected server
+        """Execute multiple commands on selected server.
 
         Args:
             command_ids (cx.tower.object): Command recordset
@@ -457,8 +426,14 @@ class CxTowerServer(models.Model):
 
             # Prepare log values
             log_vals = kwargs.get("log", {})  # Get vals from kwargs
-            log_vals.update({"code": rendered_code})
+            log_vals.update({"code": rendered_code, "use_sudo": sudo})
             start_date = fields.Datetime.now()
+
+            # Prepare key renderer values
+            key_vals = kwargs.get("key", {})  # Get vals from kwargs
+            key_vals.update({"server_id": self.id})
+            if self.partner_id:
+                key_vals.update({"partner_id": self.partner_id.id})
 
             # Execute command
             status, response, error = self._execute_command(
@@ -478,7 +453,9 @@ class CxTowerServer(models.Model):
                 **log_vals
             )
 
-    def _execute_command(self, client, command, raise_on_error=True, sudo=None):
+    def _execute_command(
+        self, client, command, raise_on_error=True, sudo=None, **kwargs
+    ):
         """Execute a single command using existing connection
 
         Args:
@@ -496,6 +473,10 @@ class CxTowerServer(models.Model):
         """
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
+
+        # Parse inline variables
+        command = self.env["cx.tower.key"].parse_code(command, **kwargs.get("key", {}))
+
         try:
             if sudo:  # Execute each command separately to avoid extra shell
                 status = []
@@ -506,7 +487,7 @@ class CxTowerServer(models.Model):
                     status.append(st)
                     response += resp
                     error += err
-                return status, response, error
+                return self._parse_sudo_command_results(status, response, error)
             else:
                 result = client.exec_command(command, sudo=sudo)
         except Exception as e:
@@ -516,9 +497,54 @@ class CxTowerServer(models.Model):
                 return -1, [], [e]
         return result
 
+    def _prepare_command_for_sudo(self, command):
+        """Prepare command to be executed with sudo
+        IMPORTANT:
+        Commands executed with sudo will be run separately one after another
+        even if there is a single command separated with '&&' or ';'
+        Example:
+        "pwd && ls -l" will be executed as:
+            sudo pwd
+            sudo ls -l
+
+        Args:
+            command (text): initial command
+
+        Returns:
+            command (list): command splitted into separate commands
+
+        """
+        # Detect command separator
+        if "&&" in command:
+            separator = "&&"
+        elif ";" in command:
+            separator = ";"
+        else:
+            return [command]
+
+        return command.replace("\\", "").replace("\n", "").split(separator)
+
+    def _parse_sudo_command_results(self, status_list, response_list, error_list):
+        """Parse results of the command executed with sudo
+
+        Args:
+            status_list (list): List of statuses
+            response_list (list): List of responses
+            error_list (_type_): list of errors
+
+        Returns:
+            int, list, list: status, response, error
+        """
+        status = 0
+        for st in status_list:
+            if st != 0 and st != status:
+                status = st
+
+        return status, response_list, error_list
+
     def action_execute_command(self):
         """
-        Return wizard action to select command and execute it
+        Returns wizard action to select command and execute it
         """
         context = self.env.context.copy()
         context.update(

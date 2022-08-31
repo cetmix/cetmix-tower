@@ -11,7 +11,7 @@ class CxTowerCommandLog(models.Model):
     server_id = fields.Many2one(comodel_name="cx.tower.server")
     command_id = fields.Many2one(comodel_name="cx.tower.command")
     code = fields.Text(string="Command Code")
-    start_date = fields.Datetime(string="Finished")
+    start_date = fields.Datetime(string="Started")
     finish_date = fields.Datetime(string="Finished")
     duration = fields.Float(
         string="Duration, sec", help="Time consumed for execution, seconds"
@@ -19,6 +19,11 @@ class CxTowerCommandLog(models.Model):
     command_status = fields.Integer(string="Status")
     command_response = fields.Text(string="Response")
     command_error = fields.Text(string="Error")
+    use_sudo = fields.Selection(
+        string="Use sudo",
+        selection=[("n", "Without password"), ("p", "With password")],
+        help="Run commands using 'sudo'",
+    )
 
     def _compute_name(self):
         for rec in self:
@@ -58,18 +63,18 @@ class CxTowerCommandLog(models.Model):
         # Compose response message
         command_response = ""
         if response:
-            for r in response:
-                command_response = (
-                    "{}\n{}".format(command_response, r) if command_response else r
-                )
+            response_vals = [r for r in response]
+            command_response = (
+                "".join(response_vals) if len(response_vals) > 1 else response_vals[0]
+            )
 
         # Compose error message
         command_error = ""
         if error:
-            for e in error:
-                command_error = (
-                    "{}\n{}".format(command_error, e) if command_error else e
-                )
+            error_vals = [e for e in error]
+            command_error = (
+                "".join(error_vals) if len(error_vals) > 1 else error_vals[0]
+            )
 
         vals = kwargs or {}
         vals.update(
