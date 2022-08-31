@@ -24,6 +24,11 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         column2="tag_id",
         string="Tags",
     )
+    use_sudo = fields.Selection(
+        string="Use sudo",
+        selection=[("n", "Without password"), ("p", "With password")],
+        help="Run commands using 'sudo'",
+    )
     any_server = fields.Boolean()
     rendered_code = fields.Text()
     result = fields.Text()
@@ -71,78 +76,6 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         return {"domain": {"command_id": domain}}
 
-    def execute_command_on_server(self):
-        """Render selected command using server method"""
-
-        # Generate custom label. Will be used later to locate the command log
-        log_label = generate_random_id(4)
-        # Add custom values for log
-        custom_values = {"log": {"label": log_label}}
-        self.server_ids.execute_commands(self.command_id, **custom_values)
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Command Log"),
-            "res_model": "cx.tower.command.log",
-            "view_mode": "tree,form",
-            "target": "current",
-            "context": {"search_default_label": log_label},
-        }
-
-    def execute_command(self):
-        """
-        Executes a given code
-        """
-        self.ensure_one()
-        code = self.code
-        if not code:
-            raise ValidationError(_("You cannot execute empty command."))
-
-        # check that we can execute the command for selected servers
-        command_servers = self.command_id.server_ids
-        if command_servers and not all(
-            [server in command_servers for server in self.server_ids]
-        ):
-            raise ValidationError(_("Some servers don't support this command."))
-
-        result = ""
-
-        variables = self.get_variables()
-        # Get variable values
-        variable_values = self.server_ids.get_variable_values(variables.get(self.id))
-
-        for server in self.server_ids:
-
-            # Render template with values
-            if variable_values:
-                rendered_code = self.render_code(**variable_values.get(server.id)).get(
-                    self.id
-                )
-            else:
-                rendered_code = self.code
-
-            server_name = server.name
-            client = server._connect(raise_on_error=True)
-            status, response, error = server._execute_command(client, rendered_code)
-            for err in error:
-                result += "[{server}]: ERROR: {err}".format(server=server_name, err=err)
-            for res in response:
-                result += "[{server}]: {res}".format(server=server_name, res=res)
-            if not result.endswith("\n"):
-                result += "\n"
-            result += "\n"
-
-        if result:
-            self.result = result
-            return {
-                "type": "ir.actions.act_window",
-                "name": _("Execute Result"),
-                "res_model": "cx.tower.command.execute.wizard",
-                "res_id": self.id,
-                "view_mode": "form",
-                "view_type": "form",
-                "target": "new",
-            }
-
     def action_execute_command(self):
         """
         Return wizard action to select command and execute it
@@ -162,3 +95,67 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             "target": "new",
             "context": context,
         }
+
+    def execute_command_on_server(self):
+        """Render selected command rendered using server method"""
+
+        # Generate custom label. Will be used later to locate the command log
+        log_label = generate_random_id(4)
+        # Add custom values for log
+        custom_values = {"log": {"label": log_label}}
+        self.server_ids.execute_commands(
+            self.command_id, sudo=self.use_sudo, **custom_values
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Command Log"),
+            "res_model": "cx.tower.command.log",
+            "view_mode": "tree,form",
+            "target": "current",
+            "context": {"search_default_label": log_label},
+        }
+
+    def execute_command(self):
+        """
+        Executes a given code as is in wizard
+        """
+        self.ensure_one()
+        code = self.code
+        if not code:
+            raise ValidationError(_("You cannot execute empty command."))
+
+        # check that we can execute the command for selected servers
+        command_servers = self.command_id.server_ids
+        if command_servers and not all(
+            [server in command_servers for server in self.server_ids]
+        ):
+            raise ValidationError(_("Some servers don't support this command."))
+
+        result = ""
+
+        for server in self.server_ids:
+
+            server_name = server.name
+            client = server._connect(raise_on_error=True)
+            status, response, error = server._execute_command(
+                client, self.rendered_code, sudo=self.use_sudo
+            )
+            for err in error:
+                result += "[{server}]: ERROR: {err}".format(server=server_name, err=err)
+            for res in response:
+                result += "[{server}]: {res}".format(server=server_name, res=res)
+            if not result.endswith("\n"):
+                result += "\n"
+            result += "\n"
+
+        if result:
+            self.result = result
+            return {
+                "type": "ir.actions.act_window",
+                "name": _("Execute Result"),
+                "res_model": "cx.tower.command.execute.wizard",
+                "res_id": self.id,
+                "view_mode": "form",
+                "view_type": "form",
+                "target": "new",
+            }
