@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import _, api, fields, models
 
 
 class CxTowerCommand(models.Model):
@@ -33,4 +33,11 @@ class CxTowerCommand(models.Model):
         column2="os_id",
         string="OSes",
     )
-    code = fields.Text()
+    note = fields.Text()
+
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        default = default or {}
+        default["name"] = _("%s (copy)", self.name)
+        # Do not assign to an archived user
+        return super(CxTowerCommand, self).copy(default=default)

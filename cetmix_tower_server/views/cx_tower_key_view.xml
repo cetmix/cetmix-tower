@@ -10,11 +10,82 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="key_type" />
+                            <field
+                                name="partner_id"
+                                attrs="{'invisible': [('key_type', '=', 'k')]}"
+                                placeholder="Leave blank to use with any partner"
+                            />
+                            <field
+                                name="server_id"
+                                invisible="context.get('from_server',False)"
+                                attrs="{'invisible': [('key_type', '=', 'k')]}"
+                                placeholder="Leave blank to use with any server"
+                            />
                         </group>
-                        <field name="ssh_key" />
+                        <group>
+                            <field name="key_ref" />
+                            <field
+                                name="key_ref_complete"
+                                attrs="{'invisible': [('key_ref_complete', '=', False)]}"
+                                widget="CopyClipboardChar"
+                                options="{'string': 'Copy'}"
+                            />
+                            <field name="note" />
+                        </group>
                     </group>
+                    <notebook>
+                        <page name="value" string="Value">
+                            <field name="secret_value" />
+                        </page>
+                        <page
+                            name="servers"
+                            string="Used for"
+                            attrs="{'invisible': [('key_type', '!=', 'k')]}"
+                        >
+                            <field name="server_ssh_ids">
+                                <tree>
+                                    <field name="name" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name" />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_key_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.key.view.search</field>
+        <field name="model">cx.tower.key</field>
+        <field name="arch" type="xml">
+            <search string="Search Keys">
+                <field name="name" />
+                <field name="key_ref" string="Value" />
+                <filter
+                    string="SSH Key"
+                    name="filter_ssh"
+                    domain="[('key_type', '=', 'k')]"
+                />
+                <filter
+                    string="Secret"
+                    name="filter_secret"
+                    domain="[('key_type', '=', 's')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Key Type"
+                        name="group_by_key_type"
+                        domain="[]"
+                        context="{'group_by': 'key_type'}"
+                    />
+                </group>
+             </search>
         </field>
     </record>
 
@@ -24,6 +95,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="key_type" />
             </tree>
         </field>
     </record>

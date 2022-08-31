@@ -11,6 +11,10 @@
                             <field name="create_uid" />
                             <field name="server_id" />
                             <field name="command_id" />
+                            <field
+                                name="use_sudo"
+                                attrs="{'invisible': [('use_sudo', '=', False)]}"
+                            />
                             <field name="command_status" />
                         </group>
                         <group>
@@ -24,7 +28,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="code" string="Code">
+                        <page name="code" string="Command">
                             <field name="code" />
                         </page>
                         <page name="result" string="Result">
