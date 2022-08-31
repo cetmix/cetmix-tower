@@ -293,7 +293,7 @@ class CxTowerKey(models.Model):
             return False
 
         # Prefetch all the keys with matching ref
-        keys = self.search([("key_ref", "=", key_value)])
+        keys = self.search([("key_ref", "=", key_value)]).sudo()
         if not keys:
             return False
 
@@ -311,4 +311,5 @@ class CxTowerKey(models.Model):
         if not key:
             # Fallback to a global key
             key = keys
-        return key[0].sudo().secret_value
+        res = key[0].secret_value
+        return res
