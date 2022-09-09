@@ -270,30 +270,30 @@ class CxTowerKey(models.Model):
             return res
 
         key_type = key_parts[1]
-        key_value = key_parts[2]
+        key_ref = key_parts[2]
 
         # Parsing type 'secret'
         if key_type == "secret":
-            res = self._resolve_key_type_secret(key_value, **kwargs)
+            res = self._resolve_key_type_secret(key_ref, **kwargs)
 
         return res
 
-    def _resolve_key_type_secret(self, key_value, **kwargs):
+    def _resolve_key_type_secret(self, key_ref, **kwargs):
         """Resolve key of type "secret".
         Use this function as a custom parser example
 
         Args:
-            key_value (str): _description_
+            key_ref (str): key reference
             **kwargs (dict) optional values
 
         Returns:
             str: value or False if not able to parse
         """
-        if not key_value:
+        if not key_ref:
             return False
 
         # Prefetch all the keys with matching ref
-        keys = self.search([("key_ref", "=", key_value)])
+        keys = self.search([("key_ref", "=", key_ref)]).sudo()
         if not keys:
             return False
 
@@ -311,4 +311,6 @@ class CxTowerKey(models.Model):
         if not key:
             # Fallback to a global key
             key = keys
-        return key[0].sudo().secret_value
+
+        key_value = key[0].secret_value
+        return key_value

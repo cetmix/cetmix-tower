@@ -183,9 +183,12 @@ class CxTowerServer(models.Model):
     _inherit = "cx.tower.variable.mixin"
     _description = "Cetmix Tower Server"
 
+    # ---- Main
     active = fields.Boolean(default=True)
     name = fields.Char(string="Name", required=True)
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
+
+    # ---- Connection
     ip_v4_address = fields.Char(string="IPv4 Address")
     ip_v6_address = fields.Char(string="IPv6 Address")
     ssh_port = fields.Char(string="SSH port", required=True, default="22")
@@ -210,12 +213,16 @@ class CxTowerServer(models.Model):
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
     )
+
+    # ---- Keys
     secret_ids = fields.One2many(
         string="Secrets",
         comodel_name="cx.tower.key",
         inverse_name="server_id",
         domain=[("key_type", "!=", "k")],
     )
+
+    # ---- Attributes
     os_id = fields.Many2one(
         string="Operating System", comodel_name="cx.tower.os", required=True
     )
