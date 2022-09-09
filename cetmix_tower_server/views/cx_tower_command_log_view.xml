@@ -70,11 +70,6 @@
                 <field name="server_id" />
                 <field name="command_id" />
                 <filter
-                    string="Labeled"
-                    name="filter_labeled"
-                    domain="[('label', '=', True)]"
-                />
-                <filter
                     string="Success"
                     name="filter_success"
                     domain="[('command_status', '=', 0)]"
@@ -85,6 +80,11 @@
                     domain="[('command_status', '!=', 0)]"
                 />
                 <separator />
+                <filter
+                    string="Labeled"
+                    name="filter_labeled"
+                    domain="[('label', '!=', False)]"
+                />
                 <group expand="0" string="Group By">
                     <filter
                         string="Server"
