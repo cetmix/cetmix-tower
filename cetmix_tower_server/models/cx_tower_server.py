@@ -186,6 +186,7 @@ class CxTowerServer(models.Model):
     # ---- Main
     active = fields.Boolean(default=True)
     name = fields.Char(string="Name", required=True)
+    color = fields.Integer(string="Color", help="For better visualization in views")
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
 
     # ---- Connection

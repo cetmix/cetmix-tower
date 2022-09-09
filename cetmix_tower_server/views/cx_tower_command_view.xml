@@ -13,9 +13,21 @@
                             <field name="note" />
                         </group>
                         <group>
-                            <field name="server_ids" widget="many2many_tags" />
-                            <field name="os_ids" widget="many2many_tags" />
-                            <field name="tag_ids" widget="many2many_tags" />
+                            <field
+                                name="server_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="os_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
                         </group>
                     </group>
                     <notebook>
@@ -35,9 +47,24 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="server_ids" widget="many2many_tags" optional="show" />
-                <field name="tag_ids" widget="many2many_tags" optional="show" />
-                <field name="os_ids" widget="many2many_tags" optional="hide" />
+                <field
+                    name="server_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field
+                    name="os_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="hide"
+                />
             </tree>
         </field>
     </record>

@@ -10,6 +10,7 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="color" widget="color_picker" />
                         </group>
                         <group>
                             <field name="server_ids" widget="many2many_tags" />

@@ -13,3 +13,4 @@ class CxTowerTag(models.Model):
         column2="server_id",
         string="Servers",
     )
+    color = fields.Integer(help="For better visualization in views")
