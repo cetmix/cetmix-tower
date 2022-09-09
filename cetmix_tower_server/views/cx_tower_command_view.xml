@@ -13,9 +13,21 @@
                             <field name="note" />
                         </group>
                         <group>
-                            <field name="server_ids" widget="many2many_tags" />
-                            <field name="os_ids" widget="many2many_tags" />
-                            <field name="tag_ids" widget="many2many_tags" />
+                            <field
+                                name="server_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="os_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
                         </group>
                     </group>
                     <notebook>
@@ -35,8 +47,24 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="server_ids" widget="many2many_tags" />
-                <field name="os_ids" widget="many2many_tags" />
+                <field
+                    name="server_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field
+                    name="os_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="hide"
+                />
             </tree>
         </field>
     </record>
@@ -52,14 +80,21 @@
                 <field name="tag_ids" />
                 <filter
                     string="Global"
-                    name="global"
+                    name="filter_global"
                     domain="[('server_ids', '=', False)]"
                 />
                 <filter
                     string="Server tight"
-                    name="global"
+                    name="filter_global"
                     domain="[('server_ids', '!=', False)]"
                 />
+                <separator />
+                <filter
+                    string="Tagged"
+                    name="filter_tagged"
+                    domain="[('tag_ids', '!=', False)]"
+                />
+                <separator />
                 <filter
                     string="Archived"
                     name="archived"

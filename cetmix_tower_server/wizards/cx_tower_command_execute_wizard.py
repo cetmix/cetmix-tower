@@ -26,7 +26,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     )
     use_sudo = fields.Selection(
         string="Use sudo",
-        selection=[("n", "Without password"), ("p", "With password")],
+        selection=[("n", "Sudo without password"), ("p", "Sudo with password")],
         help="Run commands using 'sudo'",
     )
     any_server = fields.Boolean()
