@@ -28,9 +28,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="code" string="Command">
-                            <field name="code" />
-                        </page>
                         <page name="result" string="Result">
                             <field
                                 name="command_response"
@@ -40,6 +37,9 @@
                                 name="command_error"
                                 attrs="{'invisible': [('command_error', '=', False)]}"
                             />
+                        </page>
+                        <page name="code" string="Command">
+                            <field name="code" />
                         </page>
                     </notebook>
                 </sheet>
@@ -74,6 +74,17 @@
                     name="filter_labeled"
                     domain="[('label', '=', True)]"
                 />
+                <filter
+                    string="Success"
+                    name="filter_success"
+                    domain="[('command_status', '=', 0)]"
+                />
+                <filter
+                    string="Error"
+                    name="filter_error"
+                    domain="[('command_status', '!=', 0)]"
+                />
+                <separator />
                 <group expand="0" string="Group By">
                     <filter
                         string="Server"
@@ -86,6 +97,12 @@
                         name="group_command"
                         domain="[]"
                         context="{'group_by': 'command_id'}"
+                    />
+                    <filter
+                        string="Finish date"
+                        name="group_command"
+                        domain="[]"
+                        context="{'group_by': 'finish_date:day'}"
                     />
                 </group>
             </search>
