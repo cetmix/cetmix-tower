@@ -183,9 +183,12 @@ class CxTowerServer(models.Model):
     _inherit = "cx.tower.variable.mixin"
     _description = "Cetmix Tower Server"
 
+    # ---- Main
     active = fields.Boolean(default=True)
     name = fields.Char(string="Name", required=True)
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
+
+    # ---- Connection
     ip_v4_address = fields.Char(string="IPv4 Address")
     ip_v6_address = fields.Char(string="IPv6 Address")
     ssh_port = fields.Char(string="SSH port", required=True, default="22")
@@ -210,12 +213,16 @@ class CxTowerServer(models.Model):
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
     )
+
+    # ---- Keys
     secret_ids = fields.One2many(
         string="Secrets",
         comodel_name="cx.tower.key",
         inverse_name="server_id",
         domain=[("key_type", "!=", "k")],
     )
+
+    # ---- Attributes
     os_id = fields.Many2one(
         string="Operating System", comodel_name="cx.tower.os", required=True
     )
@@ -227,6 +234,53 @@ class CxTowerServer(models.Model):
         string="Tags",
     )
     note = fields.Text()
+
+    # ---- Security
+    partner_read_ids = fields.Many2many(
+        string="Partners, read",
+        comodel_name="res.partner",
+        relation="cx_server_partner_read_rel",
+        column1="server_id",
+        column2="partner_id",
+    )
+    partner_tag_read_ids = fields.Many2many(
+        string="Partner Tags, Read",
+        comodel_name="res.partner.category",
+        relation="cx_server_partner_tag_read_rel",
+        column1="server_id",
+        column2="tag_id",
+    )
+    partner_write_ids = fields.Many2many(
+        string="Partners, read",
+        comodel_name="res.partner",
+        relation="cx_server_partner_write_rel",
+        column1="server_id",
+        column2="partner_id",
+    )
+    partner_tag_write_ids = fields.Many2many(
+        string="Partner Tags, Read",
+        comodel_name="res.partner.category",
+        relation="cx_server_partner_tag_write_rel",
+        column1="server_id",
+        column2="tag_id",
+    )
+    # security_level_run = fields.Selection(
+    #     string="Run Commands",
+    #     selection=lambda self:self._selection_security_level(),
+    #      help="Which access level is required to run commands"
+    # )
+
+    # def _selection_security_level(self):
+    #     """Security levels for common operations
+
+    #     Returns:
+    #         _type_: _description_
+    #     """
+    #     selection=[
+    #         ("r", "With 'read' access"),
+    #         ("w", "With 'write' access")
+    #     ]
+    #     return selection
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
     def _constraint_ssh_settings(self):
