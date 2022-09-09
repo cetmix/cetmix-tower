@@ -21,7 +21,7 @@
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
-                        sudo <field name="use_sudo" placeholder="No sudo" />
+                        <field name="use_sudo" placeholder="No sudo" />
                         <field
                             name="command_id"
                             domain="[('server_ids', 'in', server_ids)]"
@@ -29,37 +29,42 @@
                         <span>show shared</span>
                         <field name="any_server" />
                     </div>
-                    <field
-                        name="code"
-                        attrs="{'invisible': [('result', '!=', False)]}"
-                        groups="cetmix_tower_server.group_root"
-                    />
-                    <field
-                        name="rendered_code"
-                        attrs="{'invisible': [('result', '!=', False)]}"
-                        groups="cetmix_tower_server.group_root"
-                    />
                 </group>
                     <field
                     name="result"
                     readonly="1"
                     attrs="{'invisible': [('result', '=', False)]}"
                 />
+                <notebook
+                    attrs="{'invisible': [('result', '!=', False)]}"
+                    groups="cetmix_tower_server.group_manager"
+                >
+                    <page name="code" string="Code">
+                        <field name="code" groups="cetmix_tower_server.group_manager" />
+                    </page>
+                    <page name="preview" string="Preview">
+                        <field
+                            name="rendered_code"
+                            groups="cetmix_tower_server.group_manager"
+                        />
+                    </page>
+                </notebook>
                 <footer>
                     <button
-                        name="execute_command"
+                        name="execute_command_on_server"
                         type="object"
-                        string="Run from wizard"
-                        help="Run code as it appears in 'Rendered code' in wizard"
+                        string="Run"
+                        help="Run code using sever method and log result"
                         class="oe_highlight"
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <button
-                        name="execute_command_on_server"
+                        name="execute_command"
                         type="object"
-                        string="Run on server"
-                        help="Run code using 'execute_commands' server method"
+                        string="Run in wizard"
+                        help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
+                        groups="cetmix_tower_server.group_manager"
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <button string="Cancel" special="cancel" />

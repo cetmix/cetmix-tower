@@ -7,7 +7,13 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="partner_id" />
+                <field name="partner_id" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
             </tree>
         </field>
     </record>
@@ -40,6 +46,7 @@
                         <h1>
                             <field name="name" />
                         </h1>
+                        <field name="color" widget="color_picker" />
                     </div>
                     <notebook>
                         <page name="General" string="General Settings">
@@ -47,7 +54,11 @@
                                 <group name="main">
                                     <field name="partner_id" />
                                     <field name="os_id" />
-                                    <field name="tag_ids" widget="many2many_tags" />
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
                                     <field name="ip_v4_address" />
                                     <field name="ip_v6_address" />
                                 </group>
