@@ -4,6 +4,8 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .constants import ANOTHER_COMMAND_RUNNING
+
 _logger = logging.getLogger(__name__)
 
 
@@ -272,6 +274,12 @@ class CxTowerServer(models.Model):
             if rec.ssh_auth_mode == "k" and not rec.ssh_key_id:
                 raise ValidationError(_("Please provide SSH Key for %s" % rec.name))
 
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        default = default or {}
+        default["name"] = _("%s (copy)", self.name)
+        return super(CxTowerServer, self).copy(default=default)
+
     def _get_password(self):
         """Get ssh password
         This function prepares and returns ssh password for the ssh connection
@@ -387,17 +395,12 @@ class CxTowerServer(models.Model):
         }
         return notification
 
-    def start(self):
-        """Start servers"""
-        for rec in self.filtered(lambda s: s.status == "stopped"):
-            rec._connect()
-
-    def _pre_execute_commands(self, command_ids, variables=None, sudo=None, **kwargs):
+    def _pre_execute_commands(self, commands, variables=None, sudo=None, **kwargs):
         """Will be triggered before command execution.
         Inherit to tweak command values
 
         Args:
-            command_ids (cx.tower.object): Command recordset
+            commands (cx.tower.command): Command recordset
             variables (dict): {command.id: [variables]}
             sudo (section): use sudo (refer to field). Defaults to None
             kwargs (dict):  extra arguments. Use to pass external values.
@@ -406,18 +409,18 @@ class CxTowerServer(models.Model):
                     - "key": {values passed to key parser}
 
         Returns:
-            command_ids, variables, sudo
+            commands, variables, sudo
         """
-        return command_ids, variables, sudo, kwargs
+        return commands, variables, sudo, kwargs
 
-    def execute_commands(self, command_ids, sudo=None, **kwargs):
+    def execute_commands(self, commands, sudo=None, **kwargs):
         """This is a main function to use for commands
             and the wrapper function for _execute commands()
         Used to execute multiple commands on multiple servers.
         This is a primary function to be used for executing commands.
 
         Args:
-            command_ids (cx.tower.command()): Command recordset
+            commands (cx.tower.command()): Command recordset
             sudo (selection): use sudo
                 None - do not use sudo
                 'n' - no password
@@ -430,24 +433,24 @@ class CxTowerServer(models.Model):
         """
 
         # Get variables from commands {command.id: [variables]}
-        variables = command_ids.get_variables()
+        variables = commands.get_variables()
 
         # Run pre-command hook
-        command_ids, variables, sudo, kwargs = self._pre_execute_commands(
-            command_ids, variables, sudo, **kwargs
+        commands, variables, sudo, kwargs = self._pre_execute_commands(
+            commands, variables, sudo, **kwargs
         )
 
         # Execute commands
         for server in self:
-            server._execute_commands_on_server(command_ids, variables, sudo, **kwargs)
+            server._execute_commands_on_server(commands, variables, sudo, **kwargs)
 
     def _execute_commands_on_server(
-        self, command_ids, variables=None, sudo=None, **kwargs
+        self, commands, variables=None, sudo=None, **kwargs
     ):
         """Execute multiple commands on selected server.
 
         Args:
-            command_ids (cx.tower.object): Command recordset
+            commands (cx.tower.command()): Command recordset
             variable (List): Variables to render the commands with
             sudo (section): use sudo (refer to field). Defaults to None.
             kwargs (dict):  extra arguments. Use for extending
@@ -455,27 +458,57 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         client = self._connect(raise_on_error=False)
         log_obj = self.env["cx.tower.command.log"]
-        for command_id in command_ids:
+        # Prepare log vals
+        log_vals_common = kwargs.get("log", {})  # Get vals from kwargs
+        log_vals_common.update({"use_sudo": sudo})
+        for command in commands:
+
+            # Init log vals
+            log_vals = log_vals_common.copy()
+
+            # Check if command is already running and parallel run is not allowed
+            if not command.allow_parallel_run:
+                running_count = log_obj.sudo().search_count(
+                    [
+                        ("server_id", "=", self.id),
+                        ("command_id", "=", command.id),
+                        ("is_running", "=", True),
+                    ]
+                )
+                # Create log record and continue to the next one
+                # if the same command is currently running on the same server
+                # Log result
+                if running_count > 0:
+                    now = fields.Datetime.now()
+                    log_obj.record(
+                        self.id,
+                        command.id,
+                        now,
+                        now,
+                        ANOTHER_COMMAND_RUNNING,
+                        None,
+                        [_("Another instance of the command is running already")],
+                        **log_vals
+                    )
+                    continue
 
             # Get variable values for server
             variable_values = (
-                self.get_variable_values(variables.get(command_id.id))
+                self.get_variable_values(variables.get(command.id))
                 if variables
                 else False
             )
 
             # Render command code using variables
             if variable_values:
-                rendered_code = command_id.render_code(
-                    **variable_values.get(self.id)
-                ).get(command_id.id)
+                rendered_code = command.render_code(**variable_values.get(self.id)).get(
+                    command.id
+                )
             else:
-                rendered_code = command_id.code
+                rendered_code = command.code
 
-            # Prepare log values
-            log_vals = kwargs.get("log", {})  # Get vals from kwargs
-            log_vals.update({"code": rendered_code, "use_sudo": sudo})
-            start_date = fields.Datetime.now()
+            # Save rendered code to log
+            log_vals.update({"code": rendered_code})
 
             # Prepare key renderer values
             key_vals = kwargs.get("key", {})  # Get vals from kwargs
@@ -483,23 +516,16 @@ class CxTowerServer(models.Model):
             if self.partner_id:
                 key_vals.update({"partner_id": self.partner_id.id})
 
+            # Create log record
+            log_record = log_obj.start(self.id, command.id, **log_vals)
+
             # Execute command
             status, response, error = self._execute_command(
                 client, rendered_code, False, sudo
             )
 
             # Log result
-            finish_date = fields.Datetime.now()
-            log_obj.record(
-                self.id,
-                command_id.id,
-                start_date,
-                finish_date,
-                status,
-                response,
-                error,
-                **log_vals
-            )
+            log_record.finish(fields.Datetime.now(), status, response, error)
 
     def _execute_command(
         self, client, command, raise_on_error=True, sudo=None, **kwargs
@@ -517,7 +543,7 @@ class CxTowerServer(models.Model):
             ValidationError: command execution error
 
         Returns:
-            [status], [response], [error]
+            status, [response], [error]
         """
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
@@ -604,6 +630,26 @@ class CxTowerServer(models.Model):
             "type": "ir.actions.act_window",
             "name": _("Execute Command"),
             "res_model": "cx.tower.command.execute.wizard",
+            "view_mode": "form",
+            "view_type": "form",
+            "target": "new",
+            "context": context,
+        }
+
+    def action_execute_plan(self):
+        """
+        Returns wizard action to select flightplan and execute it
+        """
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_server_ids": self.ids,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Execute Flightplan"),
+            "res_model": "cx.tower.plan.execute.wizard",
             "view_mode": "form",
             "view_type": "form",
             "target": "new",

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="cx_tower_command_log_view_form" model="ir.ui.view">
-        <field name="name">cx.tower.command.log.view.form</field>
-        <field name="model">cx.tower.command.log</field>
+    <record id="cx_tower_plan_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.log.view.form</field>
+        <field name="model">cx.tower.plan.log</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -10,16 +10,19 @@
                         <group>
                             <field name="create_uid" />
                             <field name="server_id" />
-                            <field name="command_id" />
+                            <field name="plan_id" />
                             <field
                                 name="is_running"
                                 attrs="{'invisible': [('is_running', '=', False)]}"
                             />
                             <field
-                                name="use_sudo"
-                                attrs="{'invisible': [('use_sudo', '=', False)]}"
+                                name="plan_line_executed_id"
+                                attrs="{'invisible': [('is_running', '=', False)]}"
                             />
-                            <field name="command_status" />
+                            <field
+                                name="plan_status"
+                                attrs="{'invisible': [('is_running', '=', True)]}"
+                            />
                         </group>
                         <group>
                             <field
@@ -30,63 +33,62 @@
                             <field name="finish_date" />
                             <field name="duration" />
                         </group>
+                        <field name="command_log_ids">
+                            <tree
+                                default_order="id"
+                                decoration-danger="command_status != 0"
+                                decoration-info="is_running == True"
+                            >
+                            <field name="command_id" optional="show" />
+                            <field name="start_date" optional="hide" />
+                            <field name="finish_date" optional="hide" />
+                            <field name="duration" optional="show" />
+                            <field name="command_status" optional="show" />
+                            <field name="is_running" optional="hide" />
+                            </tree>
+                        </field>
                     </group>
-                    <notebook>
-                        <page name="result" string="Result">
-                            <field
-                                name="command_response"
-                                attrs="{'invisible': [('command_response', '=', False)]}"
-                            />
-                            <field
-                                name="command_error"
-                                attrs="{'invisible': [('command_error', '=', False)]}"
-                            />
-                        </page>
-                        <page name="code" string="Command">
-                            <field name="code" />
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <record id="cx_tower_command_log_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.command.log.view.tree</field>
-        <field name="model">cx.tower.command.log</field>
+    <record id="cx_tower_plan_log_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.plan.log.view.tree</field>
+        <field name="model">cx.tower.plan.log</field>
         <field name="arch" type="xml">
             <tree
-                decoration-danger="command_status != 0"
+                decoration-danger="plan_status != 0"
                 decoration-info="is_running == True"
             >
                 <field name="start_date" />
                 <field name="finish_date" optional="hide" />
                 <field name="duration" optional="show" />
                 <field name="server_id" optional="show" />
-                <field name="command_id" optional="show" />
-                <field name="command_status" optional="show" />
+                <field name="plan_id" optional="show" />
+                <field name="plan_status" optional="show" />
                 <field name="is_running" optional="hide" />
             </tree>
         </field>
     </record>
 
-    <record id="cx_tower_command_log_search_view" model="ir.ui.view">
-        <field name="name">cx.tower.command.log.view.search</field>
-        <field name="model">cx.tower.command.log</field>
+    <record id="cx_tower_plan_log_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.plan.log.view.search</field>
+        <field name="model">cx.tower.plan.log</field>
         <field name="arch" type="xml">
-            <search string="Search Command Log">
+            <search string="Search Flightplan Log">
                 <field name="label" />
                 <field name="server_id" />
-                <field name="command_id" />
+                <field name="plan_id" />
                 <filter
                     string="Success"
                     name="filter_success"
-                    domain="[('command_status', '=', 0)]"
+                    domain="[('plan_status', '=', 0)]"
                 />
                 <filter
                     string="Error"
                     name="filter_error"
-                    domain="[('command_status', '!=', 0)]"
+                    domain="[('plan_status', '!=', 0)]"
                 />
                 <filter
                     string="Running Now"
@@ -107,10 +109,10 @@
                         context="{'group_by': 'server_id'}"
                     />
                     <filter
-                        string="Command"
-                        name="group_command"
+                        string="Flightplan"
+                        name="group_plan"
                         domain="[]"
-                        context="{'group_by': 'command_id'}"
+                        context="{'group_by': 'plan_id'}"
                     />
                     <filter
                         string="Start date"
@@ -129,10 +131,10 @@
         </field>
     </record>
 
-    <record id="action_cx_tower_command_log" model="ir.actions.act_window">
-        <field name="name">Command Log</field>
+    <record id="action_cx_tower_plan_log" model="ir.actions.act_window">
+        <field name="name">Flightplan Log</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">cx.tower.command.log</field>
+        <field name="res_model">cx.tower.plan.log</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
     </record>

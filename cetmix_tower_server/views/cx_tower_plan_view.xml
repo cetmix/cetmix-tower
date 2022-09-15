@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="cx_tower_command_view_form" model="ir.ui.view">
-        <field name="name">cx.tower.command.view.form</field>
-        <field name="model">cx.tower.command</field>
+    <record id="cx_tower_plan_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.view.form</field>
+        <field name="model">cx.tower.plan</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
                     <group>
                         <group>
                             <field name="name" />
-                            <field name="allow_parallel_run" />
+                            <label for="on_error_action" />
+                            <div class="o_row">
+                                <field name="on_error_action" />
+                                <field
+                                    name="custom_exit_code"
+                                    attrs="{'invisible': [('on_error_action', '!=', 'ec')], 'required': [('on_error_action', '=', 'ec')]}"
+                                />
+                            </div>
                             <field name="note" />
                         </group>
                         <group>
                             <field
                                 name="server_ids"
-                                widget="many2many_tags"
-                                options="{'color_field': 'color'}"
-                            />
-                            <field
-                                name="os_ids"
                                 widget="many2many_tags"
                                 options="{'color_field': 'color'}"
                             />
@@ -32,9 +34,14 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="code" string="Code">
-                            <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
-                            <field name="code" nolabel="1" />
+                        <page name="plan_lines" string="Code">
+                            <field name="line_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="command_id" />
+                                    <field name="use_sudo" />
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -42,9 +49,9 @@
         </field>
     </record>
 
-    <record id="cx_tower_command_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.command.view.tree</field>
-        <field name="model">cx.tower.command</field>
+    <record id="cx_tower_plan_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.plan.view.tree</field>
+        <field name="model">cx.tower.plan</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
@@ -60,24 +67,16 @@
                     options="{'color_field': 'color'}"
                     optional="show"
                 />
-                <field
-                    name="os_ids"
-                    widget="many2many_tags"
-                    options="{'color_field': 'color'}"
-                    optional="hide"
-                />
-                <field name="allow_parallel_run" optional="hide" />
             </tree>
         </field>
     </record>
 
-    <record id="cx_tower_command_search_view" model="ir.ui.view">
-        <field name="name">cx.tower.command.view.search</field>
-        <field name="model">cx.tower.command</field>
+    <record id="cx_tower_plan_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.plan.view.search</field>
+        <field name="model">cx.tower.plan</field>
         <field name="arch" type="xml">
-            <search string="Search Commands">
+            <search string="Search Flightplans">
                 <field name="name" />
-                <field name="code" />
                 <field name="server_ids" />
                 <field name="tag_ids" />
                 <filter
@@ -89,11 +88,6 @@
                     string="Server tight"
                     name="filter_global"
                     domain="[('server_ids', '!=', False)]"
-                />
-                <filter
-                    string="Allow Parallel Run"
-                    name="filter_run_parallel"
-                    domain="[('allow_parallel_run', '=', True)]"
                 />
                 <separator />
                 <filter
@@ -111,10 +105,10 @@
         </field>
     </record>
 
-    <record id="action_cx_tower_command" model="ir.actions.act_window">
-        <field name="name">Command</field>
+    <record id="action_cx_tower_plan" model="ir.actions.act_window">
+        <field name="name">Flightplan</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">cx.tower.command</field>
+        <field name="res_model">cx.tower.plan</field>
         <field name="view_mode">tree,form</field>
     </record>
 

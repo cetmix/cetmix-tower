@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_plan_execute_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.execute.wizard.view.form</field>
+        <field name="model">cx.tower.plan.execute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Execute Plan">
+                <group>
+                    <field name="server_ids" widget="many2many_tags" required="1" />
+                    <field name="tag_ids" widget="many2many_tags" />
+                    <label for="plan_id" />
+                    <div class="o_row">
+                        <field
+                            name="plan_id"
+                            domain="[('server_ids', 'in', server_ids)]"
+                        />
+                        <span>show shared</span>
+                        <field name="any_server" />
+                    </div>
+                    <field name="plan_line_ids" />
+                </group>
+                <footer>
+                    <button
+                        name="execute"
+                        type="object"
+                        string="Run"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

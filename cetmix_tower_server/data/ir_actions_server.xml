@@ -6,8 +6,19 @@
         <field name="type">ir.actions.server</field>
         <field name="model_id" ref="model_cx_tower_server" />
         <field name="binding_model_id" ref="model_cx_tower_server" />
+        <field name="sequence">10</field>
         <field name="state">code</field>
         <field name="code">action = records.action_execute_command()</field>
+    </record>
+
+    <record id="action_execute_cx_tower_plan" model="ir.actions.server">
+        <field name="name">Execute Flightplan</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="binding_model_id" ref="model_cx_tower_server" />
+        <field name="sequence">12</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_execute_plan()</field>
     </record>
 
 </odoo>
