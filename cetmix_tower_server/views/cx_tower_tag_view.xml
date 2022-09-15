@@ -27,7 +27,8 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="server_ids" widget="many2many_tags" />
+                <field name="server_ids" widget="many2many_tags" optional="show" />
+                <field name="color" widget="color_picker" />
             </tree>
         </field>
     </record>
