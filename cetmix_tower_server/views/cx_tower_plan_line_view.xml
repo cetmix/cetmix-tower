@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_plan_line_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.line.view.form</field>
+        <field name="model">cx.tower.plan.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sequence" />
+                            <field
+                                name="command_id"
+                                context="{'command_show_server_names': True}"
+                            />
+                            <field name="use_sudo" />
+                        </group>
+                        </group>
+                    <notebook>
+                        <page name="actions" string="Actions">
+                            <field name="action_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="sequence" />
+                                        <label for="condition" string="If exit code" />
+                                        <div class="o_row">
+                                            <field name="condition" />
+                                            <field name="value_char" />
+                                        </div>
+                                        <label for="action" string="Then" />
+                                        <div class="o_row">
+                                            <field name="action" />
+                                            <field
+                                                name="custom_exit_code"
+                                                attrs="{'invisible': [('action', '!=', 'ec')], 'required': [('action', '=', 'ec')]}"
+                                            />
+                                        </div>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page name="preview" string="Command Preview">
+                            <group>
+                                <field name="command_code" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>
