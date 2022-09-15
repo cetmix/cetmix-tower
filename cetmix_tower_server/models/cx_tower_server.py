@@ -8,18 +8,12 @@ _logger = logging.getLogger(__name__)
 
 
 try:
-    from paramiko import AutoAddPolicy, RSAKey, SSHClient
+    from paramiko import AutoAddPolicy, RSAKey, SFTPClient, SSHClient
 except ImportError:
     _logger.error(
         "import 'paramiko' error, please try to install: pip install paramiko"
     )
     AutoAddPolicy = RSAKey = SSHClient = None
-
-try:
-    from scp import SCPClient
-except ImportError:
-    _logger.error("import 'scp' error, please try to install: pip install scp")
-    SCPClient = None
 
 
 class SSH(object):
@@ -50,7 +44,7 @@ class SSH(object):
         self.allow_agent = allow_agent
 
         self._ssh = None
-        self._scp = None
+        self._sftp = None
 
     def __del__(self):
         """
@@ -107,24 +101,24 @@ class SSH(object):
         return self._connect()
 
     @property
-    def scp(self):
+    def sftp(self):
         """
-        Open SCP connection to remote host.
+        Open SFTP connection to remote host.
         """
-        self._scp = SCPClient(self.connection.get_transport())
-        return self._scp
+        self._sftp = SFTPClient.from_transport(self.connection.get_transport())
+        return self._sftp
 
     def disconnect(self):
         """
-        Close SSH & SCP connection.
+        Close SSH & SFTP connection.
         """
         logger = logging.getLogger("paramiko")
         if self._ssh:
             logger.info("Disconnect SSH connection")
             self._ssh.close()
-        if self._scp:
-            logger.info("Disconnect SCP connection")
-            self._scp.close()
+        if self._sftp:
+            logger.info("Disconnect SFTP connection")
+            self._sftp.close()
 
     def exec_command(self, command, sudo=None):
         """_summary_
@@ -156,19 +150,46 @@ class SSH(object):
         error = stderr.readlines()
         return status, response, error
 
-    def upload_file(self, file_path, remote_path):
+    def upload_file(self, file, remote_path):
         """
-        Upload file to a remote directory.
-        """
-        self.scp.put(file_path, remote_path=remote_path, recursive=True)
-        return True
+        Upload file to remote server.
 
-    def download_file(self, file_path):
+        Args:
+            file (Text, Bytes): If bytes - file presented as contents of an
+                                open file object (fl).
+                                if text - file presented as local path to file
+            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+
+        Raise:
+            TypeError: incorrect type of file.
+
+        Returns:
+            Result (class paramiko.sftp_attr.SFTPAttributes): metadata of the uploaded file.
         """
-        Download file from remote directory of remote host.
+        if isinstance(file, io.BytesIO):
+            result = self.sftp.putfo(file, remote_path)
+        elif isinstance(file, str):
+            result = self.sftp.put(file, remote_path=remote_path, recursive=True)
+        else:
+            raise TypeError(
+                "Incorrect type of file ({}) allowed: string, BytesIO.".format(
+                    type(file).__name__
+                )
+            )
+        return result
+
+    def download_file(self, remote_path):
         """
-        self.scp.get(file_path)
-        return True
+        Download file from remote server
+
+        Args:
+            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+
+        Returns:
+            Result (Bytes): file content.
+        """
+        file = self.sftp.open(remote_path)
+        return file.read()
 
 
 class CxTowerServer(models.Model):
@@ -290,8 +311,8 @@ class CxTowerServer(models.Model):
         """_summary_
 
         Args:
-            raise_on_error (bool, optional): If true will raise exception in case or error.
-            Otherwise False will be returned
+            raise_on_error (bool, optional): If true will raise exception in case or error,
+            otherwise False will be returned
             Defaults to True.
         """
         self.ensure_one()
@@ -335,6 +356,12 @@ class CxTowerServer(models.Model):
                     "===\nCODE: {}".format(status)
                 )
             )
+
+        # test upload file
+        self.upload_file("test", "/test.txt")
+
+        # test download loaded file
+        self.download_file("/test.txt")
 
         notification = {
             "type": "ir.actions.client",
@@ -569,3 +596,59 @@ class CxTowerServer(models.Model):
             "target": "new",
             "context": context,
         }
+
+    def upload_file(self, data, remote_path, from_path=False):
+        """
+        Upload file to remote server.
+
+        Args:
+            data (Text, Bytes): If the data are text, they are converted to bytes,
+                                contains a local file path if from_path=True.
+            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+            from_path (Boolean): set True if `data` is file path.
+
+        Raise:
+            TypeError: incorrect type of file.
+
+        Returns:
+            Result (class paramiko.sftp_attr.SFTPAttributes): metadata of the uploaded file.
+        """
+        self.ensure_one()
+        client = self._connect(raise_on_error=False)
+        if from_path:
+            result = client.upload_file(data, remote_path)
+        else:
+            if isinstance(data, str):
+                data = str.encode(data)
+            if not isinstance(data, bytes):
+                raise TypeError(
+                    "Incorrect type of file ({}) allowed: string, bytes.".format(
+                        type(data).__name__
+                    )
+                )
+            file = io.BytesIO()
+            file.write(data)
+            file.seek(0)
+            result = client.upload_file(file, remote_path)
+        return result
+
+    def download_file(self, remote_path):
+        """
+        Download file from remote server
+
+        Args:
+            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+
+        Raise:
+            ValidationError: raise if file not found.
+
+        Returns:
+            Result (Bytes): file content.
+        """
+        self.ensure_one()
+        client = self._connect(raise_on_error=False)
+        try:
+            result = client.download_file(remote_path)
+        except FileNotFoundError:
+            raise ValidationError(_('The file "{}" not found.'.format(remote_path)))
+        return result
