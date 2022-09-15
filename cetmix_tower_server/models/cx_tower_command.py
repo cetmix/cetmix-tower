@@ -9,6 +9,11 @@ class CxTowerCommand(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char()
+    allow_parallel_run = fields.Boolean(
+        help="If enabled command can be run on the same server "
+        "while the same command is still running.\n"
+        "Returns ANOTHER_COMMAND_RUNNING if execution is blocked"
+    )
     interpreter_id = fields.Many2one(
         comodel_name="cx.tower.interpreter",
     )
@@ -39,5 +44,20 @@ class CxTowerCommand(models.Model):
     def copy(self, default=None):
         default = default or {}
         default["name"] = _("%s (copy)", self.name)
-        # Do not assign to an archived user
         return super(CxTowerCommand, self).copy(default=default)
+
+    def name_get(self):
+        # Add 'command_show_server_names' context key
+        # to append server names to command
+        if not self._context.get("command_show_server_names"):
+            return super().name_get()
+        res = []
+        for rec in self:
+            if rec.server_ids:
+                name = "{} ({})".format(
+                    rec.name, ",".join(rec.server_ids.mapped("name"))
+                )
+            else:
+                name = rec.name
+            res.append((rec.id, name))
+        return res

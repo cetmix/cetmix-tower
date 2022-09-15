@@ -119,6 +119,26 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         """
         Executes a given code as is in wizard
         """
+        if not self.command_id.allow_parallel_run:
+            running_count = (
+                self.env["cx.tower.command.log"]
+                .sudo()
+                .search_count(
+                    [
+                        ("server_id", "in", self.server_ids.ids),
+                        ("command_id", "=", self.command_id.id),
+                        ("is_running", "=", True),
+                    ]
+                )
+            )
+            # Create log record and continue to the next one
+            # if the same command is currently running on the same server
+            # Log result
+            if running_count > 0:
+                raise ValidationError(
+                    _("Another instance of the command is running already")
+                )
+
         self.ensure_one()
         code = self.code
         if not code:
