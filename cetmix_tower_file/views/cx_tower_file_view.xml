@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_file_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.form</field>
+        <field name="model">cx.tower.file</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_push_to_server"
+                        string="Push to Server"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('source', '!=', 'tower')]}"
+                    />
+                    <button
+                        name="action_pull_from_server"
+                        string="Pull from Server"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('source', '!=', 'server')]}"
+                    />
+                </header>
+                <div
+                    class="text-center alert alert-danger"
+                    role="alert"
+                    attrs="{'invisible': [('is_dirty', '=', False)]}"
+                >
+                    You have change the file content. File will be unlinked from template
+                </div>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" />
+                        <h1>
+                            <div class="o_row">
+                                <field
+                                    name="name"
+                                    class="oe_edit_only"
+                                    placeholder="File name"
+                                    required="1"
+                                />
+                                <field name="rendered_name" />
+                            </div>
+                        </h1>
+                    </div>
+                        <group>
+                            <group>
+                                <field name="is_dirty" invisible="1" />
+                                <field name="source" required="1" />
+                                <field
+                                name="template_id"
+                                attrs="{'invisible': [('source', '!=', 'tower')]}"
+                            />
+                                <field name="server_id" />
+                                <label for="server_dir" />
+                                <div class="o_row">
+                                    <field name="server_dir" class="oe_edit_only" />
+                                    <field name="rendered_server_dir" />
+                                </div>
+                                <field name="full_server_path" />
+                            </group>
+                            <group>
+                                <field name="auto_sync" />
+                                <field
+                                name="auto_sync_interval"
+                                attrs="{'invisible': ['|', ('auto_sync', '=', False), ('source', '!=', 'server')], 'required': [('auto_sync', '=', True), ('source', '=', 'server')]}"
+                            />
+                                <field
+                                name="sync_date_next"
+                                attrs="{'invisible': ['|', ('auto_sync', '=', False), ('source', '!=', 'server')]}"
+                            />
+                                <field
+                                name="sync_date_last"
+                                attrs="{'invisible': [('auto_sync', '=', False)]}"
+                            />
+                            </group>
+                        </group>
+                    <notebook>
+                        <page name="code" string="Code">
+                            <field
+                                name="code"
+                                nolabel="1"
+                                attrs="{'readonly': [('source', '=', 'server')]}"
+                            />
+                        </page>
+                        <page
+                            name="rendered_code"
+                            string="Preview"
+                            attrs="{'invisible': [('source', '!=', 'tower')]}"
+                        >
+                            <field
+                                name="rendered_code"
+                                nolabel="1"
+                                class="o_field_text"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.tree</field>
+        <field name="model">cx.tower.file</field>
+        <field name="arch" type="xml">
+            <tree string="Files">
+                <field name="name" />
+                <field name="source" />
+                <field name="server_id" />
+                <field name="full_server_path" />
+                <field name="sync_date_last" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_action" model="ir.actions.act_window">
+        <field name="name">Files</field>
+        <field name="res_model">cx.tower.file</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Add a new file
+          </p>
+        </field>
+    </record>
+
+</odoo>
