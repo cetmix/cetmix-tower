@@ -56,3 +56,41 @@ class TestTowerCommand(TestTowerCommon):
         with patch.object(cx_tower_server_obj, "download_file", download_file):
             file.action_pull_from_server()
             self.assertEqual(file.code, "Hello, world!")
+
+    def test_get_current_server_code(self):
+        """
+        Download file from server to tower
+        """
+        file_template = self.env["cx.tower.file.template"].create(
+            {
+                "name": "Test",
+                "file_name": "test.txt",
+                "server_dir": "/var/tmp",
+                "code": "Hello, world!",
+            }
+        )
+        file = self.env["cx.tower.file"].create(
+            {
+                "source": "tower",
+                "template_id": file_template.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+
+        cx_tower_server_obj = self.registry["cx.tower.server"]
+
+        def upload_file(this, file, remote_path):
+            if file == "Hello, world!" and remote_path == "/var/tmp":
+                return "ok"
+
+        with patch.object(cx_tower_server_obj, "upload_file", upload_file):
+            file.action_push_to_server()
+            self.assertEqual(file.sync_code, "ok")
+
+        def download_file(this, remote_path):
+            if remote_path == "/var/tmp/test.txt":
+                return "Hello, world!"
+
+        with patch.object(cx_tower_server_obj, "download_file", download_file):
+            file.action_get_current_server_code()
+            self.assertEqual(file.code_on_server, "Hello, world!")

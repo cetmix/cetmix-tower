@@ -173,6 +173,7 @@ class CxTowerFile(models.Model):
         comodel_name="cx.tower.server",
         required=True,
     )
+    code_on_server = fields.Text()
     rendered_code = fields.Char(
         compute="_compute_render",
     )
@@ -232,24 +233,46 @@ class CxTowerFile(models.Model):
         """
         Push the file to server
         """
-        self._process("upload", raise_error=True)
+        self._process("upload")
         self._update_file_sync_date(fields.Datetime.now())
 
     def action_pull_from_server(self):
         """
         Pull file from server
         """
-        self._process("download", raise_error=True)
+        self._process("download")
         self._update_file_sync_date(fields.Datetime.now())
+
+    def action_get_current_server_code(self):
+        """
+        Get actual file code from server
+        """
+        for file in self:
+            if file.source != "tower":
+                raise UserError(
+                    _(
+                        "The file shouldn't have the {} source to download from server!".format(
+                            file.source
+                        )
+                    )
+                )
+            code = self.with_context(is_server_code_version_process=True)._process(
+                "download"
+            )
+            file.code_on_server = code
 
     def _process(self, action, raise_error=True):
         """
         Main process of file manipulation
         """
         tower_key_obj = self.env["cx.tower.key"]
+        is_server_code_version_process = self.env.context.get(
+            "is_server_code_version_process"
+        )
         for file in self:
-            if (action == "download" and file.source != "server") or (
-                action == "upload" and file.source != "tower"
+            if not is_server_code_version_process and (
+                (action == "download" and file.source != "server")
+                or (action == "upload" and file.source != "tower")
             ):
                 if raise_error:
                     raise UserError(
@@ -263,9 +286,12 @@ class CxTowerFile(models.Model):
 
             try:
                 if action == "download":
-                    file.code = file.server_id.download_file(
+                    code = file.server_id.download_file(
                         tower_key_obj.parse_code(file.full_server_path)
                     )
+                    if is_server_code_version_process:
+                        return code
+                    file.code = code
                 elif action == "upload":
                     file.server_id.upload_file(
                         tower_key_obj.parse_code(file.rendered_code),

@@ -95,6 +95,25 @@
                                 class="o_field_text"
                             />
                         </page>
+                        <page
+                            name="code_on_server"
+                            string="Server Version"
+                            attrs="{'invisible': [('source', '!=', 'tower')]}"
+                        >
+                            <group>
+                                <button
+                                    name="action_get_current_server_code"
+                                    type="object"
+                                    class="oe_highlight"
+                                >Refresh</button>
+                            </group>
+
+                            <field
+                                name="code_on_server"
+                                nolabel="1"
+                                class="o_field_text"
+                            />
+                        </page>
                     </notebook>
                 </sheet>
             </form>
