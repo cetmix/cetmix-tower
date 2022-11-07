@@ -14,6 +14,13 @@ class CxTowerFileTemplate(models.Model):
     code = fields.Text(string="Code")
     server_dir = fields.Char(string="Directory on server")
     file_ids = fields.One2many("cx.tower.file", "template_id")
+    tag_ids = fields.Many2many(
+        comodel_name="cx.tower.tag",
+        relation="cx_tower_file_template_tag_rel",
+        column1="file_template_id",
+        column2="tag_id",
+        string="Tags",
+    )
 
     def write(self, vals):
         """

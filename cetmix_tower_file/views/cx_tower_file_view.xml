@@ -128,9 +128,78 @@
                 <field name="name" />
                 <field name="source" />
                 <field name="server_id" />
-                <field name="full_server_path" />
+                <field name="full_server_path" optional="hide" />
                 <field name="sync_date_last" />
             </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.search</field>
+        <field name="model">cx.tower.file</field>
+        <field name="arch" type="xml">
+            <search string="Search Files">
+                <field name="name" />
+                <field name="server_id" />
+                <field name="server_dir" />
+                <filter
+                    string="Tower"
+                    name="filter_is_tower"
+                    domain="[('source', '=', 'tower')]"
+                />
+                <filter
+                    string="Server"
+                    name="filter_is_server"
+                    domain="[('source', '=', 'server')]"
+                />
+                <separator />
+                <filter
+                    string="Has Template"
+                    name="filter_has_template"
+                    domain="[('template_id', '!=', False)]"
+                />
+                <filter
+                    string="No Template"
+                    name="filter_no_template"
+                    domain="[('template_id', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Synced"
+                    name="filter_is_synced"
+                    domain="[('sync_code', '=', 'ok')]"
+                />
+                <filter
+                    string="No Synced"
+                    name="filter_is_no_synced"
+                    domain="[('sync_code', '=', False)]"
+                />
+                <filter
+                    string="Sync Error"
+                    name="filter_is_error_synced"
+                    domain="[('sync_code', 'not in', ['ok', False])]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Type"
+                        name="group_by_type"
+                        domain="[]"
+                        context="{'group_by': 'source'}"
+                    />
+                    <filter
+                        string="Server"
+                        name="group_by_server"
+                        domain="[]"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="Template"
+                        name="group_by_template"
+                        domain="[]"
+                        context="{'group_by': 'template_id'}"
+                    />
+                </group>
+            </search>
         </field>
     </record>
 
@@ -138,6 +207,7 @@
         <field name="name">Files</field>
         <field name="res_model">cx.tower.file</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_file_view_search" />
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">

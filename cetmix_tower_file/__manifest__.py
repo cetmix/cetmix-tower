@@ -25,4 +25,8 @@
         "views/cx_tower_server_view.xml",
         "views/menuitems.xml",
     ],
+    "demo": [
+        "demo/cx_tower_file_template.xml",
+        "demo/cx_tower_file.xml",
+    ],
 }

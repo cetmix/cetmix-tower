@@ -21,6 +21,11 @@
                         <group>
                             <field name="file_name" />
                             <field name="server_dir" />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
                         </group>
                     </group>
                     <notebook>
@@ -39,7 +44,27 @@
         <field name="arch" type="xml">
             <tree string="Templates">
                 <field name="name" />
+                <field name="file_name" optional="show" />
+                <field name="server_dir" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
             </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_template_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.file.template.view.search</field>
+        <field name="model">cx.tower.file.template</field>
+        <field name="arch" type="xml">
+            <search string="Search File Templates">
+                <field name="name" />
+                <field name="server_dir" />
+                <field name="tag_ids" />
+            </search>
         </field>
     </record>
 
@@ -47,6 +72,7 @@
         <field name="name">Templates</field>
         <field name="res_model">cx.tower.file.template</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_file_template_view_search" />
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
             Add a new file template
