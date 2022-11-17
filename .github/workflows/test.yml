@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - "14.0"
-      - "14.0-ocabot-*"
+      - "14.0-dev"
 
 jobs:
   unreleased-deps:
@@ -36,7 +36,7 @@ jobs:
       matrix:
         include:
           - container: ghcr.io/oca/oca-ci/py3.6-odoo14.0:latest
-            makepot: "true"
+            makepot: "false"
             name: test with Odoo
           - container: ghcr.io/oca/oca-ci/py3.6-ocb14.0:latest
             name: test with OCB
@@ -64,6 +64,8 @@ jobs:
       - name: Run tests
         run: oca_run_tests
       - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Update .pot files
         run: oca_export_and_push_pot https://x-access-token:${{ secrets.GIT_PUSH_TOKEN }}@github.com/${{ github.repository }}
         if: ${{ matrix.makepot == 'true' && github.event_name == 'push' && github.repository_owner == 'cetmix' }}
