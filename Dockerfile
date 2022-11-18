@@ -1,7 +1,7 @@
 FROM python:3.7.12-bullseye
 LABEL maintainer="Cetmix OU <docker@cetmix.com>"
 ARG ODOO_VERSION=14.0
-ARG DOCKER_ODOO_UID=9999  
+ARG DOCKER_ODOO_UID=9999
 ARG DOCKER_ODOO_GID=9999
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
@@ -10,10 +10,10 @@ SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 ENV LANG C.UTF-8
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
-RUN apt-get update && apt-get -y install node-less npm ssh libxml2-dev libxslt1-dev libldap2-dev\  
-    libsasl2-dev libtiff5-dev libjpeg62-turbo-dev libopenjp2-7-dev\  
-    zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev\  
-    libharfbuzz-dev libfribidi-dev libxcb1-dev libpq-dev\  
+RUN apt-get update && apt-get -y install node-less npm ssh libxml2-dev libxslt1-dev libldap2-dev\
+    libsasl2-dev libtiff5-dev libjpeg62-turbo-dev libopenjp2-7-dev\
+    zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev\
+    libharfbuzz-dev libfribidi-dev libxcb1-dev libpq-dev\
     xvfb libfontconfig wkhtmltopdf python3-virtualenv virtualenv postgresql-client mc
 
 # Install rtlcss (on Debian buster)
@@ -26,7 +26,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install debugger
 RUN python3.7 -m pip install --upgrade pip && \
-    python3.7 -m pip install debugpy 
+    python3.7 -m pip install debugpy
 
 # Create Virtual Environment and install dependencies
 RUN curl https://raw.githubusercontent.com/odoo/odoo/${ODOO_VERSION}/requirements.txt > /tmp/requirements.txt && \

@@ -358,10 +358,23 @@ class CxTowerServer(models.Model):
             )
 
         # test upload file
-        self.upload_file("test", "/test.txt")
+        self.upload_file("test", "/var/tmp/test.txt")
 
         # test download loaded file
-        self.download_file("/test.txt")
+        self.download_file("/var/tmp/test.txt")
+
+        # remove file from server
+        st, resp, err = self._execute_command(
+            client, command="rm -rf /var/tmp/test.txt"
+        )
+        if status != 0 or error:
+            raise ValidationError(
+                _(
+                    "Cannot execute command\n. CODE: {}. ERROR: {}".format(
+                        st, ", ".joint(err)
+                    )
+                )
+            )
 
         notification = {
             "type": "ir.actions.client",
