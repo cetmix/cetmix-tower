@@ -28,7 +28,7 @@ jobs:
               fi
           done
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ${{ matrix.container }}
     name: ${{ matrix.name }}
     strategy:
@@ -49,6 +49,8 @@ jobs:
           POSTGRES_DB: odoo
         ports:
           - 5432:5432
+    env:
+      RUNBOAT_GITHUB_TOKEN: ${{ secrets.GIT_PUSH_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:
