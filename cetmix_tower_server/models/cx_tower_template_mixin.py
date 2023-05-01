@@ -19,12 +19,13 @@ class CxTowerTemplateMixin(models.AbstractModel):
         Call to get variables for recordset of the inheriting models
 
         Returns:
-            dict {record_id: {variables}...}
+            dict {'record_id': {variables}...}
+                NB: 'record_id' is String
         """
         Environment()
         res = {}
         for rec in self:
-            res.update({rec.id: self.get_variables_from_code(rec.code)})
+            res.update({str(rec.id): self.get_variables_from_code(rec.code)})
         return res
 
     def get_variables_from_code(self, code):
