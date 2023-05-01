@@ -50,7 +50,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             variables = self.get_variables()
 
             # Get variable values
-            variable_values = server_id.get_variable_values(variables.get(self.id))
+            variable_values = server_id.get_variable_values(variables.get(str(self.id)))
 
             # Render template
             if variable_values:
