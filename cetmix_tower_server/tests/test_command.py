@@ -71,8 +71,8 @@ class TestTowerCommand(TestTowerCommon):
             rendered_code_expected,
             msg="Rendered code must be '{}'".format(rendered_code_expected),
         )
-        self.assertNotEqual(
-            log_record.command_status, 0, msg="Command status must not be equal to 0"
+        self.assertEqual(
+            log_record.command_status, 0, msg="Command status must be equal to 0"
         )
 
     def test_command_with_keys(self):
@@ -140,6 +140,6 @@ class TestTowerCommand(TestTowerCommon):
             rendered_code_expected,
             msg="Rendered code must be '{}'".format(rendered_code_expected),
         )
-        self.assertNotEqual(
-            log_record.command_status, 0, msg="Command status must not be equal to 0"
+        self.assertEqual(
+            log_record.command_status, 0, msg="Command status must be equal to 0"
         )

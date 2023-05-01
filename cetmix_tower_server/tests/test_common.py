@@ -6,8 +6,9 @@ from odoo.tests.common import TransactionCase
 class TestTowerCommon(TransactionCase):
     def setUp(self, *args, **kwargs):
         super(TestTowerCommon, self).setUp(*args, **kwargs)
-
+        # ***
         # Create core elements invoked in the tests
+        # ***
 
         # Users
         self.Users = self.env["res.users"].with_context(no_reset_password=True)
@@ -46,6 +47,83 @@ class TestTowerCommon(TransactionCase):
         self.Key = self.env["cx.tower.key"]
         self.key_1 = self.env.ref("cetmix_tower_server.key_1")
         self.key_2 = self.env.ref("cetmix_tower_server.key_2")
+
+        # Flight Plans
+        self.Plan = self.env["cx.tower.plan"]
+        self.plan_line = self.env["cx.tower.plan.line"]
+        self.plan_line_action = self.env["cx.tower.plan.line.action"]
+        self.plan_1 = self.env.ref("cetmix_tower_server.plan_test_1")
+
+        # Flight plan log
+        self.PlanLog = self.env["cx.tower.plan.log"]
+
+        # Patch methods for testing
+        def _connect_patch(self, raise_on_error=True):
+            """Mock method for connection"""
+            return True
+
+        def _execute_command_patch(
+            self, client, command, raise_on_error=True, sudo=None, **kwargs
+        ):
+            """Mock function to test server command execution.
+            It will not execute any command but just return a pre-defined result
+            Pass "simulated_result" to kwargs for mocked response. Eg:
+            "simulated_result": {"status": [0], "response": ["ok"], "error": []}
+
+
+            Args:
+                client (Bool): Anything
+                command (Text): Command text
+                raise_on_error (bool, optional): raise if error Defaults to True.
+                sudo (selection, optional): Use sudo for commands. Defaults to None.
+
+            Returns:
+            status, [response], [error]
+            """
+
+            simulated_result = kwargs.get("simulated_result")
+            if simulated_result:
+                status = simulated_result["status"]
+                response = simulated_result["response"]
+                error = simulated_result["error"]
+            else:
+                status = 0
+                response = ["ok"]
+                error = []
+
+            if status != 0:
+                if raise_on_error:
+                    raise ValidationError(_("SSH execute command error"))
+                else:
+                    return -1, [], error
+
+            command = self.env["cx.tower.key"].parse_code(
+                command, **kwargs.get("key", {})
+            )
+
+            if sudo:  # Execute each command separately to avoid extra shell
+                status_list = []
+                response_list = []
+                error_list = []
+                while self._prepare_command_for_sudo(command):
+                    status_list.append(status)
+                    response_list += response
+                    error_list += error
+                return self._parse_sudo_command_results(
+                    status_list, response_list, error_list
+                )
+            else:
+                result = status, response, error
+            return result
+
+        self.Server._patch_method("_connect", _connect_patch)
+        self.Server._patch_method("_execute_command", _execute_command_patch)
+
+    def tearDown(self):
+        # Remove the monkey patches
+        self.Server._revert_method("_connect")
+        self.Server._revert_method("_execute_command")
+        super(TestTowerCommon, self).tearDown()
 
     def add_to_group(self, user, group_refs):
         """Add user to groups
