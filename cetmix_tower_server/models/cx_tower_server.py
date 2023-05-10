@@ -494,7 +494,7 @@ class CxTowerServer(models.Model):
 
             # Get variable values for server
             variable_values = (
-                self.get_variable_values(variables.get(command.id))
+                self.get_variable_values(variables.get(str(command.id)))
                 if variables
                 else False
             )

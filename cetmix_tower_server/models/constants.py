@@ -2,6 +2,10 @@
 # This file is used to define commonly used constants
 # ***
 
+# Returned when trying to execute another instance of a flightplan on the same server
+# and this flightplan doesn't allow parallel run
+ANOTHER_PLAN_RUNNING = -7
+
 # Returned when trying to execute another instance of a command on the same server
 # and this command doesn't allow parallel run
 ANOTHER_COMMAND_RUNNING = -5

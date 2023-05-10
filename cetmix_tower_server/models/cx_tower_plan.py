@@ -3,11 +3,7 @@ from operator import indexOf
 from odoo import _, fields, models
 from odoo.tools.safe_eval import expr_eval
 
-from .constants import (
-    ANOTHER_COMMAND_RUNNING,
-    PLAN_LINE_NOT_ASSIGNED,
-    PLAN_NOT_ASSIGNED,
-)
+from .constants import ANOTHER_PLAN_RUNNING, PLAN_LINE_NOT_ASSIGNED, PLAN_NOT_ASSIGNED
 
 
 class CxTowerPlan(models.Model):
@@ -96,7 +92,7 @@ class CxTowerPlan(models.Model):
                 ]
             )
             if running_count > 0:
-                return ANOTHER_COMMAND_RUNNING
+                return ANOTHER_PLAN_RUNNING
 
         # Start Flightplan log
         plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)

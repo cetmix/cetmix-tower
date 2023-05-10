@@ -25,6 +25,7 @@ access_key_user,Key->User,model_cx_tower_key,group_user,1,0,0,0
 access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,0
 access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1
 access_command_log_user,Command Log->User,model_cx_tower_command_log,group_user,1,0,0,0
+access_command_log_root,Command Log->User,model_cx_tower_command_log,group_root,1,1,1,1
 access_plan_user,Plan->User,model_cx_tower_plan,group_user,1,0,0,0
 access_plan_manager,Plan->Manager,model_cx_tower_plan,group_manager,1,1,1,0
 access_plan_root,Plan->Root,model_cx_tower_plan,group_root,1,1,1,1
@@ -35,3 +36,4 @@ access_plan_line_action_user,Plan Line Action->User,model_cx_tower_plan_line_act
 access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_line_action,group_manager,1,1,1,0
 access_plan_line_action_root,Plan Line Action->Root,model_cx_tower_plan_line_action,group_root,1,1,1,1
 access_plan_log_user,Plan Log->User,model_cx_tower_plan_log,group_user,1,0,0,0
+access_plan_log_root,Plan Log->User,model_cx_tower_plan_log,group_root,1,1,1,1
