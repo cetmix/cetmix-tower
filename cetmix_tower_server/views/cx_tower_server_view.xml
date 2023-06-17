@@ -38,10 +38,22 @@
                                 <span class="o_stat_text">Customer</span>
                                 <span class="o_stat_text">Preview</span>
                             </div>
-                        </button>
-                        <button name="action_view_invoice" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('invoice_count', '=', 0)]}">
-                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
                         </button> -->
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Command Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Flightplan Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+
                     </div>
                     <div class="oe_title">
                         <h1>
