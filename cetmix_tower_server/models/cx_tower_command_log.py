@@ -103,13 +103,12 @@ class CxTowerCommandLog(models.Model):
                 "command_response": command_response,
                 "command_error": command_error,
             }
-            # Apply kwargs
+            # Apply kwargs and write
             vals.update(kwargs)
             rec.write(vals)
 
-            # Trigger next flightplan line
-            if rec.plan_log_id:  # type: ignore
-                rec.plan_log_id._command_finished(rec)  # type: ignore
+            # Trigger post finish hook
+            rec._command_finished()
 
     def record(
         self,
@@ -171,4 +170,16 @@ class CxTowerCommandLog(models.Model):
                 "command_error": command_error,
             }
         )
-        return self.sudo().create(vals)
+        rec = self.sudo().create(vals)
+        rec._command_finished()
+        return rec
+
+    def _command_finished(self):
+        """Triggered when command is finished
+        Inherit to implement your own hooks
+        """
+
+        # Trigger next flightplan line
+        for rec in self:
+            if rec.plan_log_id:  # type: ignore
+                rec.plan_log_id._plan_command_finished(rec)  # type: ignore

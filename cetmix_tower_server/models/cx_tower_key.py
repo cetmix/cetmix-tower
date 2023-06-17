@@ -272,7 +272,23 @@ class CxTowerKey(models.Model):
         key_type = key_parts[1]
         key_ref = key_parts[2]
 
-        # Parsing type 'secret'
+        res = self._resolve_key(key_type, key_ref, **kwargs)
+
+        return res
+
+    def _resolve_key(self, key_type, key_ref, **kwargs):
+        """Resolve key
+        Inherit this function to implement your own resolvers
+
+        Args:
+            key_ref (str): key reference
+            **kwargs (dict) optional values
+
+        Returns:
+            str: value or False if not able to parse
+        """
+        res = False
+
         if key_type == "secret":
             res = self._resolve_key_type_secret(key_ref, **kwargs)
 
