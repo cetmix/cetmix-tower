@@ -258,6 +258,12 @@ class CxTowerServer(models.Model):
         string="Tags",
     )
     note = fields.Text()
+    command_log_ids = fields.One2many(
+        comodel_name="cx.tower.command.log", inverse_name="server_id"
+    )
+    plan_log_ids = fields.One2many(
+        comodel_name="cx.tower.plan.log", inverse_name="server_id"
+    )
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
     def _constraint_ssh_settings(self):
@@ -279,6 +285,26 @@ class CxTowerServer(models.Model):
         default = default or {}
         default["name"] = _("%s (copy)", self.name)
         return super(CxTowerServer, self).copy(default=default)
+
+    def action_open_command_logs(self):
+        """
+        Open current server command log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_command_log"
+        )
+        action["domain"] = [("server_id", "=", self.id)]
+        return action
+
+    def action_open_plan_logs(self):
+        """
+        Open current server flightplan log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan_log"
+        )
+        action["domain"] = [("server_id", "=", self.id)]
+        return action
 
     def _get_password(self):
         """Get ssh password

@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class TowerValueMixin(models.AbstractModel):
@@ -71,6 +71,13 @@ class TowerValueMixin(models.AbstractModel):
         # Create new variable values
         if new_vals:
             self.env["cx.tower.variable.value"].create(new_vals)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Force field recompute on creation
+        res = super().create(vals_list)
+        res.invalidate_cache(fnames=["variable_value_ids"], ids=res.ids)
+        return res
 
     def unlink(self):
         # Unlink variable values that belong to deleted records
