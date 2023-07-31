@@ -102,8 +102,15 @@ class CxTowerPlanLog(models.Model):
         if kwargs:
             values.update(kwargs)
         self.sudo().write(values)
+        self._plan_finished()
 
-    def _command_finished(self, command_log):
+    def _plan_finished(self):
+        """Triggered when flightplan in finished
+        Inherit to implement your own hooks
+        """
+        return
+
+    def _plan_command_finished(self, command_log):
         """This function is triggered when a command from this log is finished.
         Next action is triggered based on command status (ak exit code)
 
