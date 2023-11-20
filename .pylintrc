@@ -9,7 +9,7 @@ readme_template_url="https://github.com/cetmix/maintainer-tools/blob/master/temp
 manifest_required_authors=Cetmix
 manifest_required_keys=license
 manifest_deprecated_keys=description,active
-license_allowed=OPL-1,AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,LGPL-3
+license_allowed=OPL-1,AGPL-3,GPL-2,GPL-2 or any later version,GPL-3,GPL-3 or any later version,AGPL-3
 valid_odoo_versions=14.0
 
 [MESSAGES CONTROL]

@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
 
@@ -24,7 +26,9 @@ class TowerValueMixin(models.AbstractModel):
             [("model", "=", self._name), ("res_id", "in", self.ids)]
         )
         for rec in self:
-            rec.variable_value_ids = values.filtered(lambda v: v.res_id == rec.id)
+            rec.variable_value_ids = values.filtered(
+                lambda v, rec=rec: v.res_id == rec.id
+            )
 
     def _inverse_variable_value_ids(self):
         """Store variable values for selected record"""
@@ -117,7 +121,7 @@ class TowerValueMixin(models.AbstractModel):
                     )  # set global values as defaults
                     for variable_name in variable_names:
                         value = values.filtered(
-                            lambda v: v.res_id
+                            lambda v, rec=rec, variable_name=variable_name: v.res_id
                             == rec.ids[0]  # id might be not be valid in onchange
                             and v.variable_name == variable_name
                         )
@@ -154,7 +158,10 @@ class TowerValueMixin(models.AbstractModel):
             for rec in self:
                 res_vars = {}
                 for variable_name in variable_names:
-                    value = values.filtered(lambda v: v.variable_name == variable_name)
+                    value = values.filtered(
+                        lambda v, variable_name=variable_name: v.variable_name
+                        == variable_name
+                    )
                     res_vars.update({variable_name: value.value_char or None})
                 res.update({rec.id: res_vars})
         return res
@@ -191,7 +198,6 @@ class TowerValueMixin(models.AbstractModel):
             var_value = variables[key]
             # Render only if template is found
             if var_value and "{{ " in var_value:
-
                 # Get variables used in value
                 value_vars = TemplateMixin.get_variables_from_code(var_value)
 

@@ -1,8 +1,9 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.7.0-92-g8a58cca
+_commit: v1.7.0-173-ge408f2a
 _src_path: https://github.com/cetmix/cetmix-addons-repo-template.git
+additional_ruff_rules: []
 ci: GitHub
-dependency_installation_mode: OCA
+convert_readme_fragments_to_markdown: false
 generate_requirements_txt: true
 github_check_license: true
 github_ci_extra_env: {}
@@ -10,7 +11,9 @@ github_enable_codecov: true
 github_enable_makepot: true
 github_enable_stale_action: true
 github_enforce_dev_status_compatibility: true
+github_odoo_ee: false
 include_wkhtmltopdf: false
+odoo_test_flavor: Both
 odoo_version: 14.0
 org_name: Cetmix
 org_slug: cetmix
@@ -19,6 +22,6 @@ repo_description: Cetmix Tower
 repo_name: Remote server management tools
 repo_slug: cetmix-tower
 repo_website: https://cetmix.com
-travis_apt_packages: []
-travis_apt_sources: []
+use_pyproject_toml: false
+use_ruff: true
 

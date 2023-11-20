@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 
 from ..models.tools import generate_random_id

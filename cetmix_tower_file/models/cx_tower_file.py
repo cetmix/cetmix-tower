@@ -1,4 +1,5 @@
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
@@ -277,9 +278,8 @@ class CxTowerFile(models.Model):
             if file.source != "tower":
                 raise UserError(
                     _(
-                        "The file shouldn't have the {} source to download from server!".format(
-                            file.source
-                        )
+                        "The file shouldn't have the {} source to download "
+                        "from server!".format(file.source)
                     )
                 )
             code = self.with_context(is_server_code_version_process=True)._process(
@@ -319,9 +319,8 @@ class CxTowerFile(models.Model):
                 if raise_error:
                     raise UserError(
                         _(
-                            "The file shouldn't have the {} source to {} from server!".format(
-                                file.source, action
-                            )
+                            "The file shouldn't have the {} source to {} "
+                            "from server!".format(file.source, action)
                         )
                     )
                 return False
@@ -350,7 +349,7 @@ class CxTowerFile(models.Model):
                                 file.rendered_name, exception_to_unicode(error)
                             )
                         )
-                    )
+                    ) from error
                 file.sync_code = repr(error)
 
         if not is_server_code_version_process:
@@ -359,7 +358,8 @@ class CxTowerFile(models.Model):
     @api.model
     def _get_tower_sync_field_names(self):
         """
-        Return the list of field names to start synchronization after changing these fields
+        Return the list of field names to start synchronization
+        after changing these fields
         """
         return ["name", "server_dir", "code"]
 
