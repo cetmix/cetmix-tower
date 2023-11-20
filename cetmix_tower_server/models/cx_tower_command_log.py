@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
 
 
@@ -88,7 +90,6 @@ class CxTowerCommandLog(models.Model):
             )
 
         for rec in self.sudo():
-
             # Duration
             date_finish = finish_date if finish_date else now
             duration = (date_finish - rec.start_date).total_seconds()  # type: ignore
@@ -119,7 +120,7 @@ class CxTowerCommandLog(models.Model):
         status=0,
         response=None,
         error=None,
-        **kwargs
+        **kwargs,
     ):
         """Record completed command directly without using start/stop
 
