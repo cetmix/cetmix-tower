@@ -1,5 +1,7 @@
 from operator import indexOf
 
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, fields, models
 from odoo.tools.safe_eval import expr_eval
 
@@ -39,7 +41,8 @@ class CxTowerPlan(models.Model):
         ],
         required=True,
         default="e",
-        help="This action will be executed on error if no command action can be applied",
+        help="This action will be executed on error "
+        "if no command action can be applied",
     )
     custom_exit_code = fields.Integer(
         help="Will be used instead of the command exit code"

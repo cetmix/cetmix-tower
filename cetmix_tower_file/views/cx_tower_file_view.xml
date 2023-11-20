@@ -121,7 +121,7 @@
         <field name="name">cx.tower.file.view.tree</field>
         <field name="model">cx.tower.file</field>
         <field name="arch" type="xml">
-            <tree string="Files">
+            <tree>
                 <field name="rendered_name" />
                 <field name="source" />
                 <field name="server_id" />

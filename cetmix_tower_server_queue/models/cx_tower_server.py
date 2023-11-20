@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import models
 
 
@@ -6,7 +8,6 @@ class CxTowerServer(models.Model):
 
     # Use job que to run commands on server
     def execute_commands(self, commands, sudo=None, **kwargs):
-
         # Get variables from commands {command.id: [variables]}
         variables = commands.get_variables()
 

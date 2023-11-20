@@ -1,4 +1,5 @@
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import ast
 
 from odoo import fields, models
@@ -34,7 +35,7 @@ class CxTowerServer(models.Model):
         action["domain"] = [("server_id", "=", self.id)]
 
         context = self._context.copy()
-        if "context" in action and type(action["context"]) == str:
+        if "context" in action and isinstance((action["context"]), str):
             context.update(ast.literal_eval(action["context"]))
         else:
             context.update(action.get("context", {}))
