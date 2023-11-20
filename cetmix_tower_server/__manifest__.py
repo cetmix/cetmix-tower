@@ -7,7 +7,7 @@
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",
-    "license": "LGPL-3",
+    "license": "AGPL-3",
     "application": True,
     "installable": True,
     "external_dependencies": {

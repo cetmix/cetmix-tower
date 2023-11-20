@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -154,7 +156,6 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         result = ""
 
         for server in self.server_ids:
-
             server_name = server.name
             client = server._connect(raise_on_error=True)
             status, response, error = server._execute_command(

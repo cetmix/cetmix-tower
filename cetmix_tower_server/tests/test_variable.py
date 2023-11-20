@@ -62,7 +62,7 @@ class TestTowerVariable(TestTowerCommon):
         # Check variable values
         for val in vals:
             variable_line = variable_records.filtered(
-                lambda v: v.variable_id.id == val[0]
+                lambda v, val=val: v.variable_id.id == val[0]
             )
             self.assertEqual(
                 len(variable_line), 1, msg="Must be a single variable line"

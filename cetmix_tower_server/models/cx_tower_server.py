@@ -1,6 +1,8 @@
 import io
 import logging
 
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -160,13 +162,15 @@ class SSH(object):
             file (Text, Bytes): If bytes - file presented as contents of an
                                 open file object (fl).
                                 if text - file presented as local path to file
-            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+            remote_path (Text): full path file location with file type
+            (e.g. /test/my_file.txt).
 
         Raise:
             TypeError: incorrect type of file.
 
         Returns:
-            Result (class paramiko.sftp_attr.SFTPAttributes): metadata of the uploaded file.
+            Result (class paramiko.sftp_attr.SFTPAttributes): metadata
+             of the uploaded file.
         """
         if isinstance(file, io.BytesIO):
             result = self.sftp.putfo(file, remote_path)
@@ -185,7 +189,8 @@ class SSH(object):
         Download file from remote server
 
         Args:
-            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
 
         Returns:
             Result (Bytes): file content.
@@ -345,8 +350,8 @@ class CxTowerServer(models.Model):
         """_summary_
 
         Args:
-            raise_on_error (bool, optional): If true will raise exception in case or error,
-            otherwise False will be returned
+            raise_on_error (bool, optional): If true will raise exception
+             in case or error, otherwise False will be returned
             Defaults to True.
         """
         self.ensure_one()
@@ -361,7 +366,7 @@ class CxTowerServer(models.Model):
             )
         except Exception as e:
             if raise_on_error:
-                raise ValidationError(_("SSH connection error %s" % e))
+                raise ValidationError(_("SSH connection error %s" % e)) from e
             else:
                 return False, e
         return client
@@ -488,7 +493,6 @@ class CxTowerServer(models.Model):
         log_vals_common = kwargs.get("log", {})  # Get vals from kwargs
         log_vals_common.update({"use_sudo": sudo})
         for command in commands:
-
             # Init log vals
             log_vals = log_vals_common.copy()
 
@@ -514,7 +518,7 @@ class CxTowerServer(models.Model):
                         ANOTHER_COMMAND_RUNNING,
                         None,
                         [_("Another instance of the command is running already")],
-                        **log_vals
+                        **log_vals,
                     )
                     continue
 
@@ -582,8 +586,8 @@ class CxTowerServer(models.Model):
                 status = []
                 response = []
                 error = []
-                for command in self._prepare_command_for_sudo(command):
-                    st, resp, err = client.exec_command(command, sudo=sudo)
+                for cmd in self._prepare_command_for_sudo(command):
+                    st, resp, err = client.exec_command(cmd, sudo=sudo)
                     status.append(st)
                     response += resp
                     error += err
@@ -592,7 +596,7 @@ class CxTowerServer(models.Model):
                 result = client.exec_command(command, sudo=sudo)
         except Exception as e:
             if raise_on_error:
-                raise ValidationError(_("SSH execute command error %s" % e))
+                raise ValidationError(_("SSH execute command error %s" % e)) from e
             else:
                 return -1, [], [e]
         return result
@@ -689,14 +693,16 @@ class CxTowerServer(models.Model):
         Args:
             data (Text, Bytes): If the data are text, they are converted to bytes,
                                 contains a local file path if from_path=True.
-            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
             from_path (Boolean): set True if `data` is file path.
 
         Raise:
             TypeError: incorrect type of file.
 
         Returns:
-            Result (class paramiko.sftp_attr.SFTPAttributes): metadata of the uploaded file.
+            Result (class paramiko.sftp_attr.SFTPAttributes): metadata of the
+             uploaded file.
         """
         self.ensure_one()
         client = self._connect(raise_on_error=False)
@@ -722,7 +728,8 @@ class CxTowerServer(models.Model):
         Download file from remote server
 
         Args:
-            remote_path (Text): full path file location with file type (e.g. /test/my_file.txt).
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
 
         Raise:
             ValidationError: raise if file not found.
@@ -734,6 +741,8 @@ class CxTowerServer(models.Model):
         client = self._connect(raise_on_error=False)
         try:
             result = client.download_file(remote_path)
-        except FileNotFoundError:
-            raise ValidationError(_('The file "{}" not found.'.format(remote_path)))
+        except FileNotFoundError as fe:
+            raise ValidationError(
+                _('The file "{}" not found.'.format(remote_path))
+            ) from fe
         return result
