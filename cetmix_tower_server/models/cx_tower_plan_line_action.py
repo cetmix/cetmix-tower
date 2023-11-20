@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 
 
@@ -38,12 +40,12 @@ class CxTowerPlanLineAction(models.Model):
     def _compute_name(self):
         action_selection_vals = dict(self._fields["action"].selection)  # type: ignore
         for rec in self:
-
             # Some values are not updated until record is not saved.
             # This is a disclaimer to avoid misunderstanding
             if not isinstance(rec.id, int):
                 rec.name = _(
-                    "...save record to see the final expression or click the line to edit"
+                    "...save record to see the final expression "
+                    "or click the line to edit"
                 )
 
             # Compose name based on values
