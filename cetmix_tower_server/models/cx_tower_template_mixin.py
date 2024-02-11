@@ -1,7 +1,7 @@
-from jinja2 import Environment, Template, meta
-
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from jinja2 import Environment, Template, meta
+
 from odoo import fields, models
 
 
