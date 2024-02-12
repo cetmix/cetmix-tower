@@ -2,8 +2,8 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "Cetmix Tower Server Management",
-    "summary": "Manage remote servers directly from Odoo",
-    "version": "14.0.0.3.5",
+    "summary": "Flexible Server Management directly from Odoo",
+    "version": "14.0.0.3.6",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",
