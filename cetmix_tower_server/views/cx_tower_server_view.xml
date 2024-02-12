@@ -105,7 +105,10 @@
                                         <field name="variable_id" />
                                         <field name="value_char" />
                                     </group>
-                                    <field name="note" />
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
                                 </form>
                             </field>
                         </page>
