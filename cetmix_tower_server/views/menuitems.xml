@@ -40,7 +40,7 @@
     />
     <menuitem
         id="menu_cx_tower_plan"
-        name="Flightplans"
+        name="Flight Plans"
         action="action_cx_tower_plan"
         parent="menu_cx_tower_command_root"
         sequence="7"
@@ -54,7 +54,7 @@
     />
     <menuitem
         id="menu_cx_tower_plan_log"
-        name="Flightplan Log"
+        name="Flight Plan Log"
         action="action_cx_tower_plan_log"
         parent="menu_cx_tower_command_root"
         sequence="72"

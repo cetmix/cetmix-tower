@@ -49,7 +49,7 @@
                         <button
                             name="action_open_plan_logs"
                             type="object"
-                            string="Flightplan Logs"
+                            string="Flight Plan Logs"
                             class="oe_stat_button"
                             icon="fa-bars"
                         />
