@@ -75,7 +75,7 @@
         <field name="name">cx.tower.plan.view.search</field>
         <field name="model">cx.tower.plan</field>
         <field name="arch" type="xml">
-            <search string="Search Flightplans">
+            <search string="Search Flight Plans">
                 <field name="name" />
                 <field name="server_ids" />
                 <field name="tag_ids" />
@@ -106,7 +106,7 @@
     </record>
 
     <record id="action_cx_tower_plan" model="ir.actions.act_window">
-        <field name="name">Flightplan</field>
+        <field name="name">Flight Plan</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.plan</field>
         <field name="view_mode">tree,form</field>

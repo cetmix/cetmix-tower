@@ -6,12 +6,12 @@ from odoo import fields, models
 class CxTowerPlanLine(models.Model):
     _name = "cx.tower.plan.line"
     _order = "sequence, plan_id"
-    _description = "Cetmix Tower Flightplan Line"
+    _description = "Cetmix Tower Flight Plan Line"
 
     sequence = fields.Integer(default=10)
     name = fields.Char(related="command_id.name", readonly=True)
     plan_id = fields.Many2one(
-        string="Flightplan", comodel_name="cx.tower.plan", auto_join=True
+        string="Flight Plan", comodel_name="cx.tower.plan", auto_join=True
     )
     command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
     use_sudo = fields.Boolean(
@@ -29,7 +29,7 @@ class CxTowerPlanLine(models.Model):
     command_code = fields.Text(related="command_id.code", readonly=True)
 
     def _execute(self, server, plan_log_record, **kwargs):
-        """Execute command from the Flightplan line
+        """Execute command from the Flight Plan line
 
         Args:
             server (cx.tower.server()): Server object

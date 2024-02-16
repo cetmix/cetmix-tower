@@ -70,6 +70,7 @@ class TestTowerPlan(TestTowerCommon):
         command_log = self.CommandLog.create(
             {
                 "plan_log_id": plan_log.id,
+                "server_id": self.server_test_1.id,
                 "command_id": plan_line_1.command_id.id,
                 "command_response": "Ok",
                 "command_status": 0,  # Error code

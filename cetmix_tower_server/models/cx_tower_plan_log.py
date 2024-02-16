@@ -1,40 +1,56 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 from .constants import PLAN_IS_EMPTY
 
 
 class CxTowerPlanLog(models.Model):
     _name = "cx.tower.plan.log"
-    _description = "Cetmix Tower Flightplan Log"
+    _description = "Cetmix Tower Flight Plan Log"
     _order = "start_date desc, id desc"
 
-    name = fields.Char(compute="_compute_name", compute_sudo=True)
+    name = fields.Char(compute="_compute_name", compute_sudo=True, store=True)
     label = fields.Char(help="Custom label. Can be used for search/tracking")
-    server_id = fields.Many2one(comodel_name="cx.tower.server")
-    plan_id = fields.Many2one(string="Flightplan", comodel_name="cx.tower.plan")
+    server_id = fields.Many2one(
+        comodel_name="cx.tower.server", required=True, index=True
+    )
+    plan_id = fields.Many2one(
+        string="Flight Plan", comodel_name="cx.tower.plan", required=True, index=True
+    )
 
     # -- Time
     start_date = fields.Datetime(string="Started")
     finish_date = fields.Datetime(string="Finished")
     duration = fields.Float(
-        string="Duration, sec", help="Time consumed for execution, seconds"
+        string="Duration, sec",
+        help="Time consumed for execution, seconds",
+        compute="_compute_duration",
+        store=True,
     )
     # -- Commands
     is_running = fields.Boolean(help="Plan is being executed right now")
     plan_line_executed_id = fields.Many2one(
         comodel_name="cx.tower.plan.line",
-        help="Flightplan line being currently executed",
+        help="Flight Plan line being currently executed",
     )
     command_log_ids = fields.One2many(
-        comodel_name="cx.tower.command.log", inverse_name="plan_log_id"
+        comodel_name="cx.tower.command.log", inverse_name="plan_log_id", auto_join=True
     )
     plan_status = fields.Integer(string="Status")
 
+    @api.depends("server_id.name", "name")
     def _compute_name(self):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.plan_id.name))  # type: ignore
+
+    @api.depends("finish_date")
+    def _compute_duration(self):
+        for plan_log in self:
+            if plan_log.finish_date and plan_log.start_date:
+                plan_log.duration = (
+                    plan_log.finish_date - plan_log.start_date
+                ).total_seconds()
 
     def start(self, server, plan, start_date=None, **kwargs):
         """Runs plan on server
@@ -42,7 +58,7 @@ class CxTowerPlanLog(models.Model):
 
         Args:
             server (cx.tower.server()) server.
-            plan (cx.tower.plan()) Flightplan.
+            plan (cx.tower.plan()) Flight Plan.
             start_date (datetime) command start date time.
             **kwargs (dict): optional values
                 Following keys are supported but not limited to:
@@ -71,7 +87,6 @@ class CxTowerPlanLog(models.Model):
                 {
                     "is_running": False,
                     "finish_date": fields.Datetime.now(),
-                    "duration": 0,
                     "plan_status": PLAN_IS_EMPTY,
                 }
             )
