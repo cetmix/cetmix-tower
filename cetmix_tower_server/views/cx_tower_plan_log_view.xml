@@ -6,6 +6,23 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Running"
+                        bg_color="bg-info"
+                        attrs="{'invisible': [('is_running', '=', False)]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Finished"
+                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '!=', 0)]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Failed"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '=', 0)]}"
+                    />
                     <group>
                         <group>
                             <field name="create_uid" />
@@ -76,7 +93,7 @@
         <field name="name">cx.tower.plan.log.view.search</field>
         <field name="model">cx.tower.plan.log</field>
         <field name="arch" type="xml">
-            <search string="Search Flightplan Log">
+            <search string="Search Flight Plan Log">
                 <field name="label" />
                 <field name="server_id" />
                 <field name="plan_id" />
@@ -109,7 +126,7 @@
                         context="{'group_by': 'server_id'}"
                     />
                     <filter
-                        string="Flightplan"
+                        string="Flight Plan"
                         name="group_plan"
                         domain="[]"
                         context="{'group_by': 'plan_id'}"
@@ -132,7 +149,7 @@
     </record>
 
     <record id="action_cx_tower_plan_log" model="ir.actions.act_window">
-        <field name="name">Flightplan Log</field>
+        <field name="name">Flight Plan Log</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.plan.log</field>
         <field name="view_mode">tree,form</field>

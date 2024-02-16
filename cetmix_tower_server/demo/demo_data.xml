@@ -137,7 +137,7 @@
         <field name="code">cd {{ test_path }} &amp;&amp; ls -l</field>
     </record>
 
-    <!-- Flightplans -->
+    <!-- Flight Plans -->
     <record id="plan_test_1" model="cx.tower.plan">
         <field name="name">Test #1</field>
         <field name="note">Create directory and list its content</field>
