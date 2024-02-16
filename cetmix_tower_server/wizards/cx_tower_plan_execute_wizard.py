@@ -7,7 +7,7 @@ from ..models.tools import generate_random_id
 
 class CxTowerPlanExecuteWizard(models.TransientModel):
     _name = "cx.tower.plan.execute.wizard"
-    _description = "Execute Flightplan in Wizard"
+    _description = "Execute Flight Plan in Wizard"
 
     server_ids = fields.Many2many(
         "cx.tower.server",

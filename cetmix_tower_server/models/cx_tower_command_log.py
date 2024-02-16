@@ -1,6 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class CxTowerCommandLog(models.Model):
@@ -8,20 +8,27 @@ class CxTowerCommandLog(models.Model):
     _description = "Cetmix Tower Command Log"
     _order = "start_date desc, id desc"
 
-    name = fields.Char(compute="_compute_name", compute_sudo=True)
+    name = fields.Char(compute="_compute_name", compute_sudo=True, store=True)
     label = fields.Char(help="Custom label. Can be used for search/tracking")
-    server_id = fields.Many2one(comodel_name="cx.tower.server")
+    server_id = fields.Many2one(
+        comodel_name="cx.tower.server", required=True, index=True
+    )
 
     # -- Time
     start_date = fields.Datetime(string="Started")
     finish_date = fields.Datetime(string="Finished")
     duration = fields.Float(
-        string="Duration, sec", help="Time consumed for execution, seconds"
+        string="Duration, sec",
+        help="Time consumed for execution, seconds",
+        compute="_compute_duration",
+        store=True,
     )
 
     # -- Command
     is_running = fields.Boolean(help="Command is being executed right now")
-    command_id = fields.Many2one(comodel_name="cx.tower.command")
+    command_id = fields.Many2one(
+        comodel_name="cx.tower.command", required=True, index=True
+    )
     code = fields.Text(string="Command Code")
     command_status = fields.Integer(string="Exit Code")
     command_response = fields.Text(string="Response")
@@ -32,12 +39,21 @@ class CxTowerCommandLog(models.Model):
         help="Run commands using 'sudo'",
     )
 
-    # -- Flightplan
+    # -- Flight Plan
     plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log")
 
+    @api.depends("name", "command_id.name")
     def _compute_name(self):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.command_id.name))  # type: ignore
+
+    @api.depends("finish_date")
+    def _compute_duration(self):
+        for command_log in self:
+            if command_log.finish_date and command_log.start_date:
+                command_log.duration = (
+                    command_log.finish_date - command_log.start_date
+                ).total_seconds()
 
     def start(self, server_id, command_id, start_date=None, **kwargs):
         """Creates initial log record when command is started
@@ -92,14 +108,10 @@ class CxTowerCommandLog(models.Model):
         for rec in self.sudo():
             # Duration
             date_finish = finish_date if finish_date else now
-            duration = (date_finish - rec.start_date).total_seconds()  # type: ignore
-            if duration < 0:
-                duration = 0
 
             vals = {
                 "is_running": False,
                 "finish_date": date_finish,
-                "duration": duration,
                 "command_status": -1 if status is None else status,
                 "command_response": command_response,
                 "command_error": command_error,
@@ -137,11 +149,6 @@ class CxTowerCommandLog(models.Model):
             (cx.tower.command.log()) new command log record
         """
 
-        # Compute duration
-        duration = (finish_date - start_date).total_seconds()
-        if duration < 0:
-            duration = 0
-
         # Compose response message
         command_response = ""
         if response:
@@ -165,7 +172,6 @@ class CxTowerCommandLog(models.Model):
                 "command_id": command_id,
                 "start_date": start_date,
                 "finish_date": finish_date,
-                "duration": duration,
                 "command_status": status,
                 "command_response": command_response,
                 "command_error": command_error,
