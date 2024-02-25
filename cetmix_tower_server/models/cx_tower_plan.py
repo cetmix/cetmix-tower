@@ -12,7 +12,7 @@ class CxTowerPlan(models.Model):
     """A sequence of commands running based on the pre-defined flow"""
 
     _name = "cx.tower.plan"
-    _description = "Cetmix Tower Flightplan"
+    _description = "Cetmix Tower Flight Plan"
 
     active = fields.Boolean(default=True)
     name = fields.Char(required=True)
@@ -66,7 +66,7 @@ class CxTowerPlan(models.Model):
                 plan._execute_single(server, **kwargs)
 
     def _execute_single(self, server, **kwargs):
-        """Execute Flightplan
+        """Execute Flight Plan
 
         Args:
             server (cx.tower.server()): Server object
@@ -97,7 +97,7 @@ class CxTowerPlan(models.Model):
             if running_count > 0:
                 return ANOTHER_PLAN_RUNNING
 
-        # Start Flightplan log
+        # Start Flight Plan log
         plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)
 
     def _get_next_action_values(self, command_log):

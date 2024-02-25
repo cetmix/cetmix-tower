@@ -5,7 +5,7 @@ from odoo import _, api, fields, models
 
 class CxTowerPlanLineAction(models.Model):
     _name = "cx.tower.plan.line.action"
-    _description = "Cetmix Tower Flightplan Line Action"
+    _description = "Cetmix Tower Flight Plan Line Action"
 
     active = fields.Boolean(default=True)
     name = fields.Char(compute="_compute_name")

@@ -678,7 +678,7 @@ class CxTowerServer(models.Model):
         )
         return {
             "type": "ir.actions.act_window",
-            "name": _("Execute Flightplan"),
+            "name": _("Execute Flight Plan"),
             "res_model": "cx.tower.plan.execute.wizard",
             "view_mode": "form",
             "view_type": "form",
