@@ -48,7 +48,7 @@ class CxTowerFileTemplate(models.Model):
         Open current template files
         """
         action = self.env["ir.actions.actions"]._for_xml_id(
-            "cetmix_tower_file.cx_tower_file_action"
+            "cetmix_tower_server.cx_tower_file_action"
         )
         action["domain"] = [("id", "in", self.file_ids.ids)]
         return action

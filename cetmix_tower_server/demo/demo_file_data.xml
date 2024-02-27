@@ -40,7 +40,7 @@
         <field name="source">tower</field>
         <field
             name="template_id"
-            ref="cetmix_tower_file.cx_tower_file_template_demo_1"
+            ref="cetmix_tower_server.cx_tower_file_template_demo_1"
         />
         <field name="server_id" ref="cetmix_tower_server.server_test_2" />
     </record>
@@ -49,7 +49,7 @@
         <field name="source">tower</field>
         <field
             name="template_id"
-            ref="cetmix_tower_file.cx_tower_file_template_demo_2"
+            ref="cetmix_tower_server.cx_tower_file_template_demo_2"
         />
         <field name="server_id" ref="cetmix_tower_server.server_test_2" />
     </record>
@@ -58,7 +58,7 @@
         <field name="source">tower</field>
         <field
             name="template_id"
-            ref="cetmix_tower_file.cx_tower_file_template_demo_3"
+            ref="cetmix_tower_server.cx_tower_file_template_demo_3"
         />
         <field name="server_id" ref="cetmix_tower_server.server_test_2" />
     </record>
