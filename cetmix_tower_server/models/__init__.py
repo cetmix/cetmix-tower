@@ -4,6 +4,8 @@ from . import cx_tower_variable_mixin
 from . import cx_tower_template_mixin
 from . import cx_tower_variable
 from . import cx_tower_variable_value
+from . import cx_tower_file
+from . import cx_tower_file_template
 from . import cx_tower_server
 from . import cx_tower_os
 from . import cx_tower_tag

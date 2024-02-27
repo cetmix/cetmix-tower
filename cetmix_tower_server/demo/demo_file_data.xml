@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+
+    <record id="cx_tower_file_template_demo_1" model="cx.tower.file.template">
+        <field name="name">Demo File Template</field>
+        <field name="file_name">tower_demo_1.txt</field>
+        <field name="server_dir">{{ test_path }}</field>
+        <field name="code">Hello, world!</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="cx_tower_file_template_demo_2" model="cx.tower.file.template">
+        <field name="name">Demo File Template</field>
+        <field name="file_name">{{ branch }}_tower_demo_2.txt</field>
+        <field name="server_dir">/var/tmp</field>
+        <field name="code">Hello, world!</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="cx_tower_file_template_demo_3" model="cx.tower.file.template">
+        <field name="name">Demo File Template</field>
+        <field name="file_name">tower_demo_3.txt</field>
+        <field name="server_dir">/var/tmp</field>
+        <field
+            name="code"
+        >How to create directory: cd {{ test_path }} &amp;&amp; mkdir {{ dir }}</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="cx_tower_file_tower_demo_1" model="cx.tower.file">
+        <field name="source">tower</field>
+        <field
+            name="template_id"
+            ref="cetmix_tower_server.cx_tower_file_template_demo_1"
+        />
+        <field name="server_id" ref="cetmix_tower_server.server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_tower_demo_2" model="cx.tower.file">
+        <field name="source">tower</field>
+        <field
+            name="template_id"
+            ref="cetmix_tower_server.cx_tower_file_template_demo_2"
+        />
+        <field name="server_id" ref="cetmix_tower_server.server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_tower_demo_3" model="cx.tower.file">
+        <field name="source">tower</field>
+        <field
+            name="template_id"
+            ref="cetmix_tower_server.cx_tower_file_template_demo_3"
+        />
+        <field name="server_id" ref="cetmix_tower_server.server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_tower_without_template_demo" model="cx.tower.file">
+        <field name="name">tower_demo_without_template_{{ branch }}.txt</field>
+        <field name="source">tower</field>
+        <field name="server_id" ref="cetmix_tower_server.server_test_2" />
+        <field name="server_dir">{{ test_path }}</field>
+        <field name="code">Please, check url: {{ url }}</field>
+    </record>
+
+    <record id="cx_tower_file_server_demo" model="cx.tower.file">
+        <field name="name">server_demo.txt</field>
+        <field name="source">server</field>
+        <field name="server_id" ref="cetmix_tower_server.server_test_2" />
+        <field name="server_dir">{{ test_path }}</field>
+    </record>
+
+</odoo>
