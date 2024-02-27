@@ -37,3 +37,9 @@ access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_li
 access_plan_line_action_root,Plan Line Action->Root,model_cx_tower_plan_line_action,group_root,1,1,1,1
 access_plan_log_user,Plan Log->User,model_cx_tower_plan_log,group_user,1,0,0,0
 access_plan_log_root,Plan Log->User,model_cx_tower_plan_log,group_root,1,1,1,1
+access_file_user,File->User,model_cx_tower_file,cetmix_tower_server.group_user,1,0,0,0
+access_file_manager,File->Manager,model_cx_tower_file,cetmix_tower_server.group_manager,1,1,1,0
+access_file_root,File->Root,model_cx_tower_file,cetmix_tower_server.group_root,1,1,1,1
+access_file_template_user,File Template->User,model_cx_tower_file_template,cetmix_tower_server.group_user,1,0,0,0
+access_file_template_manager,File Template->Manager,model_cx_tower_file_template,cetmix_tower_server.group_manager,1,1,1,0
+access_file_template_root,File Template->Root,model_cx_tower_file_template,cetmix_tower_server.group_root,1,1,1,1
