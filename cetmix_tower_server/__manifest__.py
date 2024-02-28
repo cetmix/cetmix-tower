@@ -21,6 +21,7 @@
         "security/cx_tower_server_security.xml",
         "security/ir.model.access.csv",
         "data/ir_actions_server.xml",
+        "data/ir_cron.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
@@ -33,11 +34,14 @@
         "views/cx_tower_command_log_view.xml",
         "views/cx_tower_plan_log_view.xml",
         "views/cx_tower_key_view.xml",
+        "views/cx_tower_file_view.xml",
+        "views/cx_tower_file_template_view.xml",
         "views/menuitems.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",
         "wizards/cx_tower_plan_execute_wizard_view.xml",
     ],
     "demo": [
         "demo/demo_data.xml",
+        "demo/demo_file_data.xml",
     ],
 }
