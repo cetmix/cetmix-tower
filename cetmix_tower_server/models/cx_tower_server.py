@@ -211,6 +211,7 @@ class CxTowerServer(models.Model):
     _name = "cx.tower.server"
     _inherit = "cx.tower.variable.mixin"
     _description = "Cetmix Tower Server"
+    _order = "name asc"
 
     # ---- Main
     active = fields.Boolean(default=True)
@@ -253,9 +254,7 @@ class CxTowerServer(models.Model):
     )
 
     # ---- Attributes
-    os_id = fields.Many2one(
-        string="Operating System", comodel_name="cx.tower.os", required=True
-    )
+    os_id = fields.Many2one(string="Operating System", comodel_name="cx.tower.os")
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         relation="cx_tower_server_tag_rel",
