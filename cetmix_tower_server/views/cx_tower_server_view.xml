@@ -1,6 +1,131 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <record id="cx_tower_server_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.kanban</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <kanban class="oe_background_grey o_kanban_dashboard" records_draggable="0">
+                <field name="name" />
+                <field name="partner_id" />
+                <field name="tag_ids" />
+                <field name="os_id" />
+                <field name="ip_v4_address" />
+                <field name="ip_v6_address" />
+                <field name="color" />
+                <templates>
+                    <t t-name="kanban-box">
+                    <div
+                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
+                        >
+                        <div t-attf-class="o_kanban_card_header">
+                            <div class="o_kanban_card_header_title">
+                                <div class="o_primary">
+                                    <field name="name" />
+                                </div>
+                            </div>
+                            <div class="o_kanban_manage_button_section">
+                                <a class="o_kanban_manage_toggle_button" href="#"><i
+                                            class="fa fa-ellipsis-v"
+                                            aria-label="Selection"
+                                            role="img"
+                                            title="Selection"
+                                        /></a>
+                            </div>
+                        </div>
+
+                            <div
+                                class="container o_kanban_card_manage_pane dropdown-menu"
+                                role="menu"
+                            >
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div>
+                                            <t t-if="widget.editable"><a
+                                                    role="menuitem"
+                                                    type="edit"
+                                                    class="dropdown-item"
+                                                >Edit</a>
+                                            </t>
+                                        </div>
+                                        <div>
+                                        <t t-if="widget.deletable"><a
+                                                    role="menuitem"
+                                                    type="delete"
+                                                    class="dropdown-item"
+                                                >Delete</a></t>
+                                        </div>
+                                    </div>
+                                    <div class="col-8">
+                                        <div>
+                                            <a
+                                                role="menuitem"
+                                                type="action"
+                                                name="%(cetmix_tower_server.cx_tower_command_execute_wizard_action)d"
+                                            >Run Command</a>
+                                        </div>
+                                        <div>
+                                            <a
+                                                role="menuitem"
+                                                type="action"
+                                                name="%(cetmix_tower_server.cx_tower_plan_execute_wizard_action)d"
+                                            >Run Flight Plan</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_card_manage_settings row">
+                                    <ul
+                                        class="oe_kanban_colorpicker"
+                                        data-field="color"
+                                    />
+                                </div>
+                            </div>
+                        <div class="oe_kanban_content">
+                            <div class="oe_kanban_global_click">
+                                <div class="col-12 pt8 o_kanban_primary_right">
+                                    <div
+                                            attrs="{'invisible': [('partner_id', '=', False)]}"
+                                        >
+                                        <strong>Partner:</strong>
+                                        <field name="partner_id" />
+                                    </div>
+                                    <div attrs="{'invisible': [('os_id', '=', False)]}">
+                                        <strong>Operating System:</strong>
+                                        <field name="os_id" />
+                                    </div>
+                                    <div
+                                            attrs="{'invisible': [('ip_v4_address', '=', False)]}"
+                                        >
+                                        <strong>IPv4 Address:</strong>
+                                        <field name="ip_v4_address" />
+                                    </div>
+                                    <div
+                                            attrs="{'invisible': [('ip_v6_address', '=', False)]}"
+                                        >
+                                        <strong>IPv6 Address:</strong>
+                                        <field name="ip_v6_address" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <div
+                                            attrs="{'invisible': [('tag_ids', '=', False)]}"
+                                        >
+                                        <field name="tag_ids" widget="many2many_tags" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <record id="cx_tower_server_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.server.view.tree</field>
         <field name="model">cx.tower.server</field>
@@ -156,6 +281,12 @@
                         domain="[]"
                         context="{'group_by': 'os_id'}"
                     />
+                    <filter
+                        string="Partner"
+                        name="group_by_partner_id"
+                        domain="[]"
+                        context="{'group_by': 'partner_id'}"
+                    />
                 </group>
             </search>
         </field>
@@ -166,7 +297,7 @@
         <field name="name">Servers</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.server</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="cx_tower_server_search_view" />
     </record>
 
