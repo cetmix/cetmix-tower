@@ -80,4 +80,14 @@
         </field>
     </record>
 
+    <record id="cx_tower_command_execute_wizard_action" model="ir.actions.act_window">
+        <field name="name">Cetmix Tower Execute Command</field>
+        <field name="res_model">cx.tower.command.execute.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cx_tower_command_execute_wizard_view_form" />
+        <field name="context">{'default_server_ids': [active_id]}</field>
+        <field name="target">new</field>
+    </record>
+
 </odoo>
