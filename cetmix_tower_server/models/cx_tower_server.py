@@ -304,6 +304,8 @@ class CxTowerServer(models.Model):
     def copy(self, default=None):
         default = default or {}
         default["name"] = _("%s (copy)", self.name)
+        default["file_ids"] = self.file_ids.copy({"auto_sync": False})
+        default["variable_value_ids"] = self.variable_value_ids.copy()
         return super(CxTowerServer, self).copy(default=default)
 
     def action_open_command_logs(self):
