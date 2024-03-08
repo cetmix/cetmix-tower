@@ -26,8 +26,9 @@ INTERVAL_TYPES = {
 
 class CxTowerFile(models.Model):
     _name = "cx.tower.file"
-    _inherit = "cx.tower.template.mixin"
+    _inherit = ["cx.tower.template.mixin", "mail.thread", "mail.activity.mixin"]
     _description = "Cx Tower File"
+    _order = "name"
 
     @api.onchange("template_id")
     def _onchange_template_id(self):
@@ -171,6 +172,7 @@ class CxTowerFile(models.Model):
     sync_date_last = fields.Datetime(
         string="Last Sync Date",
         readonly=True,
+        tracking=True,
         help="Date and time of the latest successful synchronisation",
     )
     sync_code = fields.Text()
