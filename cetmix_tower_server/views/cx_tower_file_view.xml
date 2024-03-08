@@ -22,13 +22,6 @@
                         attrs="{'invisible': [('source', '!=', 'server')]}"
                     />
                 </header>
-                <div
-                    class="text-center alert alert-danger"
-                    role="alert"
-                    attrs="{'invisible': [('is_dirty', '=', False)]}"
-                >
-                    You have change the file content. File will be unlinked from template
-                </div>
                 <sheet>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" />
@@ -46,7 +39,6 @@
                     </div>
                         <group>
                             <group>
-                                <field name="is_dirty" invisible="1" />
                                 <field name="source" required="1" />
                                 <field
                                 name="template_id"
@@ -75,10 +67,19 @@
                         </group>
                     <notebook>
                         <page name="code" string="Code">
+                            <button
+                                string="Modify Code"
+                                icon="fa-pencil-square-o"
+                                name="action_modify_code"
+                                type="object"
+                                class="btn-secondary mt-3 mb-3"
+                                confirm="File will be disconnected from template. Continue?"
+                                attrs="{'invisible': [('template_id', '=', False)]}"
+                            />
                             <field
                                 name="code"
                                 nolabel="1"
-                                attrs="{'readonly': [('source', '=', 'server')]}"
+                                attrs="{'readonly': ['|', ('template_id', '!=', False), ('source', '=', 'server')]}"
                             />
                         </page>
                         <page
