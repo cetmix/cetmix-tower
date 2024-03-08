@@ -47,22 +47,6 @@ class CxTowerFile(models.Model):
                 file.rendered_server_dir, file.rendered_name
             )
 
-    @api.depends("template_id", *TEMPLATE_FILE_FIELD_MAPPING.values())
-    def _compute_is_dirty(self):
-        """
-        Set dirty to True if file and template values do not match
-        """
-        for file in self:
-            vals = file._get_file_values_from_related_template()
-            if (
-                file.template_id
-                and file.source == "tower"
-                and any(file[field] != vals[field] for field in vals.keys())
-            ):
-                file.is_dirty = True
-            else:
-                file.is_dirty = False
-
     @api.depends("server_id", "template_id", "name", "server_dir", "code")
     def _compute_render(self):
         """
@@ -186,9 +170,6 @@ class CxTowerFile(models.Model):
         compute="_compute_render",
         help="File content with variables rendered",
     )
-    is_dirty = fields.Boolean(
-        compute="_compute_is_dirty",
-    )
 
     def _get_file_values_from_related_template(self):
         """
@@ -226,11 +207,6 @@ class CxTowerFile(models.Model):
         vals = self._sanitize_values(vals)
         result = super(CxTowerFile, self).write(vals)
 
-        if "template_id" not in vals:
-            # remove template for dirty files
-            for file in self.filtered(lambda rec: rec.is_dirty and rec.template_id):
-                file.template_id = False
-
         # sync tower files after change
         sync_fields = self._get_tower_sync_field_names()
         self.filtered(
@@ -239,6 +215,10 @@ class CxTowerFile(models.Model):
             and any(field in vals for field in sync_fields)
         ).action_push_to_server()
         return result
+
+    def action_modify_code(self):
+        self.ensure_one()
+        self.template_id = False
 
     def action_push_to_server(self):
         """
