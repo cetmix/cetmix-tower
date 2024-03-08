@@ -75,10 +75,19 @@
                         </group>
                     <notebook>
                         <page name="code" string="Code">
+                            <button
+                                string="Modify Code"
+                                icon="fa-pencil-square-o"
+                                name="action_modify_code"
+                                type="object"
+                                class="btn-secondary mt-3 mb-3"
+                                confirm="File will be disconnected from template. Continue?"
+                                attrs="{'invisible': [('template_id', '=', False)]}"
+                            />
                             <field
                                 name="code"
                                 nolabel="1"
-                                attrs="{'readonly': [('source', '=', 'server')]}"
+                                attrs="{'readonly': [('template_id', '!=', False)]}"
                             />
                         </page>
                         <page

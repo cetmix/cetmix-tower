@@ -240,6 +240,10 @@ class CxTowerFile(models.Model):
         ).action_push_to_server()
         return result
 
+    def action_modify_code(self):
+        self.ensure_one()
+        self.template_id = False
+
     def action_push_to_server(self):
         """
         Push the file to server
