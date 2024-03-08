@@ -209,7 +209,7 @@ class CxTowerServer(models.Model):
     """
 
     _name = "cx.tower.server"
-    _inherit = "cx.tower.variable.mixin"
+    _inherit = ["cx.tower.variable.mixin", "mail.thread", "mail.activity.mixin"]
     _description = "Cetmix Tower Server"
     _order = "name asc"
 
