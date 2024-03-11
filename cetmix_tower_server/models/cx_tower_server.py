@@ -749,8 +749,7 @@ class CxTowerServer(models.Model):
                         type(data).__name__
                     )
                 )
-            file = io.BytesIO()
-            file.write(data)
+            file = io.BytesIO(data)
             file.seek(0)
             result = client.upload_file(file, remote_path)
         return result
