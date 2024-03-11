@@ -220,4 +220,20 @@
         </field>
     </record>
 
+    <record id="cetmix_tower_file_upload_action" model="ir.actions.server">
+        <field name="name">Upload</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="binding_model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_push_to_server()</field>
+    </record>
+
+    <record id="cetmix_tower_file_download_action" model="ir.actions.server">
+        <field name="name">Download</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="binding_model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_pull_from_server()</field>
+    </record>
+
 </odoo>
