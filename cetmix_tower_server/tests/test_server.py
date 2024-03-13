@@ -233,3 +233,12 @@ class TestTowerServer(TestTowerCommon):
                                 not be able to unlink servers",
         ):
             new_server_1.with_user(self.user_bob).unlink()
+        # Read as sudo and check if the value is updated
+
+    def test_server_archived_unarchived(self):
+        """Test Server archived/unarchived"""
+        server = self.server_test_1.copy()
+        self.assertTrue(server, msg="Server must be unarchived")
+        server.toggle_active()
+        server.toggle_active()
+        self.assertTrue(server, msg="Server must be unarchived")

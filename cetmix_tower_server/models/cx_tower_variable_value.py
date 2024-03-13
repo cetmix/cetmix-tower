@@ -21,6 +21,7 @@ class TowerVariableValue(models.Model):
 
     value_char = fields.Char(string="Value", required=True)
     note = fields.Text(related="variable_id.note", readonly=True)
+    active = fields.Boolean(default=True)
 
     # Direct model relations.
     # Following functions should be updated when a new m2o field is added:
