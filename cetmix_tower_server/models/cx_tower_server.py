@@ -283,6 +283,32 @@ class CxTowerServer(models.Model):
         compute="_compute_file_count",
     )
 
+    def server_toggle_active(self, self_active):
+        """
+        Change active status of related records
+
+        Args:
+            self_active (bool): active status of the record
+        """
+        self.file_ids.filtered(lambda f: f.active == self_active).toggle_active()
+        self.command_log_ids.filtered(lambda c: c.active == self_active).toggle_active()
+        self.plan_log_ids.filtered(lambda p: p.active == self_active).toggle_active()
+        self.variable_value_ids.filtered(
+            lambda vv: vv.active == self_active
+        ).toggle_active()
+
+    def toggle_active(self):
+        """Archiving related server"""
+        super().toggle_active()
+        server_active = self.with_context(active_test=False).filtered(
+            lambda x: x.active
+        )
+        server_not_active = self - server_active
+        if server_active:
+            server_active.server_toggle_active(False)
+        if server_not_active:
+            server_not_active.server_toggle_active(True)
+
     def _compute_file_count(self):
         """Compute total server files"""
         for server in self:

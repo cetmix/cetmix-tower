@@ -41,6 +41,7 @@ class CxTowerCommandLog(models.Model):
 
     # -- Flight Plan
     plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log")
+    active = fields.Boolean(default=True)
 
     @api.depends("name", "command_id.name")
     def _compute_name(self):
