@@ -38,6 +38,7 @@ class CxTowerPlanLog(models.Model):
         comodel_name="cx.tower.command.log", inverse_name="plan_log_id", auto_join=True
     )
     plan_status = fields.Integer(string="Status")
+    active = fields.Boolean(default=True)
 
     @api.depends("server_id.name", "name")
     def _compute_name(self):
