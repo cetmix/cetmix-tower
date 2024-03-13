@@ -143,6 +143,7 @@ class CxTowerFile(models.Model):
             - Server: file is pulled from server to Tower.
         """,
     )
+    active = fields.Boolean(default=True)
     auto_sync = fields.Boolean(
         help="If enabled file will be synced automatically using cron",
         default=False,
