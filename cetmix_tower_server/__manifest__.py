@@ -18,6 +18,7 @@
         "mail",
     ],
     "data": [
+        "security/cetmix_tower_server_groups.xml",
         "security/cx_tower_server_security.xml",
         "security/ir.model.access.csv",
         "data/ir_actions_server.xml",
