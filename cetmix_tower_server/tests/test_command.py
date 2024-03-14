@@ -1,14 +1,14 @@
 from odoo.tests.common import Form
 
-from .test_common import TestTowerCommon
+from .common import TestTowerCommon
 
 
 class TestTowerCommand(TestTowerCommon):
     def test_render_code(self):
         """Test code template rendering"""
 
-        # Only 'test_path' must be rendered
-        args = {"test_path": "/tmp", "os": "debian"}
+        # Only 'test_path_' must be rendered
+        args = {"test_path_": "/tmp", "test_os": "debian"}
         res = self.command_create_dir.render_code(**args)
         rendered_code = res.get(self.command_create_dir.id)
         rendered_code_expected = "cd /tmp && mkdir "
@@ -18,8 +18,8 @@ class TestTowerCommand(TestTowerCommon):
             msg="Must be rendered as '{}'".format(rendered_code_expected),
         )
 
-        # 'test_path' and 'dir' must be rendered
-        args = {"test_path": "/tmp", "os": "debian", "dir": "odoo"}
+        # 'test_path_' and 'dir' must be rendered
+        args = {"test_path_": "/tmp", "os": "debian", "test_dir": "odoo"}
         res = self.command_create_dir.render_code(**args)
         rendered_code = res.get(self.command_create_dir.id)
         self.assertEqual(
@@ -79,7 +79,7 @@ class TestTowerCommand(TestTowerCommon):
         """Test command with keys in code"""
 
         # Command
-        code = "cd {{ test_path }} && mkdir #!cxtower.secret.FOLDER"
+        code = "cd {{ test_path_ }} && mkdir #!cxtower.secret.FOLDER"
         command_with_keys = self.Command.create(
             {"name": "Command with keys", "code": code}
         )
@@ -95,7 +95,7 @@ class TestTowerCommand(TestTowerCommon):
         )
 
         # Parse command with key parser to ensure key is parsed correctly
-        code_parsed_expected = "cd {{ test_path }} && mkdir secretFolder"
+        code_parsed_expected = "cd {{ test_path_ }} && mkdir secretFolder"
         code_parsed = self.Key.parse_code(code)
         self.assertEqual(
             code_parsed,

@@ -1,6 +1,6 @@
 from odoo.exceptions import AccessError
 
-from .test_common import TestTowerCommon
+from .common import TestTowerCommon
 
 
 class TestTowerServer(TestTowerCommon):
@@ -9,6 +9,11 @@ class TestTowerServer(TestTowerCommon):
 
         # Bob is a regular user with no access to Servers
         server_1_as_bob = self.server_test_1.with_user(self.user_bob)
+
+        # Invalidating cache so values will be fetched again with access check applied
+        server_1_as_bob.invalidate_cache()
+
+        # Access error should be raised because user has no access to the model
         with self.assertRaises(AccessError):
             server_name = server_1_as_bob.name
 
