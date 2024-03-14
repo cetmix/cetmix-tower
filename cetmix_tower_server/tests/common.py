@@ -2,12 +2,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _
 from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
+from odoo.tests import TransactionCase
 
 
 class TestTowerCommon(TransactionCase):
     def setUp(self, *args, **kwargs):
-        super(TestTowerCommon, self).setUp(*args, **kwargs)
+        super().setUp(*args, **kwargs)
         # ***
         # Create core elements invoked in the tests
         # ***
@@ -23,38 +23,120 @@ class TestTowerCommon(TransactionCase):
         )
 
         # OS
-        self.os_debian_10 = self.env.ref("cetmix_tower_server.os_debian_10")
+        self.os_debian_10 = self.env["cx.tower.os"].create({"name": "Test Debian 10"})
 
         # Server
         self.Server = self.env["cx.tower.server"]
-        self.server_test_1 = self.env.ref("cetmix_tower_server.server_test_1")
+        self.server_test_1 = self.Server.create(
+            {
+                "name": "Test 1",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+            }
+        )
 
         # Variable
         self.Variable = self.env["cx.tower.variable"]
         self.VariableValues = self.env["cx.tower.variable.value"]
-        self.variable_path = self.env.ref("cetmix_tower_server.variable_path")
-        self.variable_dir = self.env.ref("cetmix_tower_server.variable_dir")
-        self.variable_os = self.env.ref("cetmix_tower_server.variable_os")
-        self.variable_url = self.env.ref("cetmix_tower_server.variable_url")
-        self.variable_version = self.env.ref("cetmix_tower_server.variable_version")
+
+        self.variable_path = self.Variable.create({"name": "test_path_"})
+        self.variable_dir = self.Variable.create({"name": "test_dir"})
+        self.variable_os = self.Variable.create({"name": "test_os"})
+        self.variable_url = self.Variable.create({"name": "test_url"})
+        self.variable_version = self.Variable.create({"name": "test_version"})
 
         # Command
         self.Command = self.env["cx.tower.command"]
-        self.command_create_dir = self.env.ref("cetmix_tower_server.command_create_dir")
+        self.command_create_dir = self.Command.create(
+            {
+                "name": "Test create directory",
+                "code": "cd {{ test_path_ }} && mkdir {{ test_dir }}",
+            }
+        )
+        self.command_list_dir = self.Command.create(
+            {
+                "name": "Test create directory",
+                "code": "cd {{ test_path_ }} && ls -l",
+            }
+        )
 
         # Command log
         self.CommandLog = self.env["cx.tower.command.log"]
 
         # Key
         self.Key = self.env["cx.tower.key"]
-        self.key_1 = self.env.ref("cetmix_tower_server.key_1")
-        self.key_2 = self.env.ref("cetmix_tower_server.key_2")
+
+        self.key_1 = self.Key.create({"name": "Test Key 1"})
+        self.key_2 = self.Key.create({"name": "Test Key 2"})
 
         # Flight Plans
         self.Plan = self.env["cx.tower.plan"]
         self.plan_line = self.env["cx.tower.plan.line"]
         self.plan_line_action = self.env["cx.tower.plan.line.action"]
-        self.plan_1 = self.env.ref("cetmix_tower_server.plan_test_1")
+
+        self.plan_1 = self.Plan.create(
+            {
+                "name": "Test plan 1",
+                "note": "Create directory and list its content",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+            }
+        )
+        self.plan_line_1 = self.plan_line.create(
+            {
+                "sequence": 5,
+                "plan_id": self.plan_1.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        self.plan_line_2 = self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": self.plan_1.id,
+                "command_id": self.command_list_dir.id,
+            }
+        )
+        self.plan_line_1_action_1 = self.plan_line_action.create(
+            {
+                "line_id": self.plan_line_1.id,
+                "sequence": 1,
+                "condition": "==",
+                "value_char": "0",
+            }
+        )
+        self.plan_line_1_action_2 = self.plan_line_action.create(
+            {
+                "line_id": self.plan_line_1.id,
+                "sequence": 2,
+                "condition": ">",
+                "value_char": "0",
+                "action": "ec",
+                "custom_exit_code": 255,
+            }
+        )
+        self.plan_line_2_action_1 = self.plan_line_action.create(
+            {
+                "line_id": self.plan_line_2.id,
+                "sequence": 1,
+                "condition": "==",
+                "value_char": "-1",
+                "action": "ec",
+                "custom_exit_code": 100,
+            }
+        )
+        self.plan_line_2_action_2 = self.plan_line_action.create(
+            {
+                "line_id": self.plan_line_2.id,
+                "sequence": 2,
+                "condition": ">=",
+                "value_char": "3",
+                "action": "n",
+            }
+        )
 
         # Flight plan log
         self.PlanLog = self.env["cx.tower.plan.log"]

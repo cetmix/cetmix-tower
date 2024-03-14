@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from odoo.addons.cetmix_tower_server.tests.test_common import TestTowerCommon
+from .common import TestTowerCommon
 
 
 class TestTowerCommand(TestTowerCommon):
