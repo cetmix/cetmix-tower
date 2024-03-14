@@ -1,6 +1,6 @@
 from odoo.exceptions import AccessError, ValidationError
 
-from .test_common import TestTowerCommon
+from .common import TestTowerCommon
 
 
 class TestTowerKey(TestTowerCommon):
