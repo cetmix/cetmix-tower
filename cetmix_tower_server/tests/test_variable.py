@@ -1,63 +1,30 @@
+from odoo import _
+from odoo.exceptions import ValidationError
 from odoo.tests.common import Form
 
 from .test_common import TestTowerCommon
 
 
 class TestTowerVariable(TestTowerCommon):
-    def get_variable_records(self, model=None, rec_ids=None):
-        """Helper function for getting variable record values
+    """Testing variables and variable values."""
 
-        Args:
-            model (Char): model name
-            rec_ids ([Integer]): record id
-        """
-        domain = []
-        if model:
-            domain.append(("model", "=", model))
-        if rec_ids:
-            domain.append(
-                ("res_id", "=", rec_ids)
-                if isinstance(rec_ids, int)
-                else ("res_id", "in", rec_ids)
-            )
-
-        res = self.VariableValues.search(domain)
-        return res
-
-    def check_variable_values(self, vals, model=None, rec_ids=None):
+    def check_variable_values(self, vals, server_ids=None):
         """Check if variable values are correctly stored in db
 
         Args:
             vals (List of tuples): format ("variable_id", "value")
+            server_id (cx.tower.server()): Servers those variables belong to.
         """
-        variable_records = self.get_variable_records(model, rec_ids)
+        if server_ids:
+            variable_records = server_ids.variable_value_ids
+        else:
+            variable_records = self.VariableValues.search([("is_global", "=", True)])
         len_vals = len(vals)
 
         # Ensure correct number of records
         self.assertEqual(
             len(variable_records), len_vals, msg="Must be %s records" % str(len_vals)
         )
-
-        # Ensure models are correct
-        if model:
-            record_models = variable_records.mapped("model")
-            self.assertEqual(len(set(record_models)), 1, msg="Must be 1 model")
-            self.assertEqual(record_models[0], model, msg="Must be %s model" % model)
-
-        # Ensure record ids are correct
-        if rec_ids:
-            len_rec_ids = len(rec_ids)
-            record_res_ids = variable_records.mapped("res_id")
-            self.assertEqual(
-                len(set(record_res_ids)),
-                len_rec_ids,
-                msg="Must be %s res_ids" % str(len_rec_ids),
-            )
-            self.assertEqual(
-                set(record_res_ids),
-                set(rec_ids),
-                msg="rec_ids from db must match provided rec_ids",
-            )
 
         # Check variable values
         for val in vals:
@@ -90,13 +57,7 @@ class TestTowerVariable(TestTowerCommon):
             (self.variable_url.id, "example.com"),
             (self.variable_dir.id, "/opt/odoo"),
         ]
-        self.check_variable_values(
-            vals=vals,
-            model="cx.tower.server",
-            rec_ids=[
-                self.server_test_1.id,
-            ],
-        )
+        self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Add another variable and edit the existing one
         with Form(self.server_test_1) as f:
@@ -112,13 +73,7 @@ class TestTowerVariable(TestTowerCommon):
             (self.variable_dir.id, "/opt/odoo"),
             (self.variable_version.id, "10.0"),
         ]
-        self.check_variable_values(
-            vals=vals,
-            model="cx.tower.server",
-            rec_ids=[
-                self.server_test_1.id,
-            ],
-        )
+        self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Delete two variables, add a new one
         with Form(self.server_test_1) as f:
@@ -130,13 +85,7 @@ class TestTowerVariable(TestTowerCommon):
             f.save()
 
         vals = [(self.variable_os.id, "Debian"), (self.variable_version.id, "10.0")]
-        self.check_variable_values(
-            vals=vals,
-            model="cx.tower.server",
-            rec_ids=[
-                self.server_test_1.id,
-            ],
-        )
+        self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Test 'get_variable_values' function
         res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
@@ -307,4 +256,55 @@ class TestTowerVariable(TestTowerCommon):
             get_value_count(self.variable_url),
             count_url_before,
             msg="Value count must be same as before server creation!",
+        )
+
+    def test_variable_value_toggle_global(self):
+        """Test what happens when variable value 'global' setting is togged"""
+
+        variable_meme = self.Variable.create({"name": "meme"})
+        variable_value_pepe = self.VariableValues.create(
+            {"variable_id": variable_meme.id, "value_char": "Pepe"}
+        )
+
+        self.assertEqual(
+            variable_value_pepe.is_global, True, msg="Value 'Pepe' must be global"
+        )
+
+        # Test `_check_is_global` function
+        self.assertEqual(
+            variable_value_pepe._check_is_global(),
+            True,
+            msg="Value 'Pepe' must be global",
+        )
+
+        # Try to create another global value for the same variable
+        with self.assertRaises(ValidationError) as err:
+            self.VariableValues.create(
+                {"variable_id": variable_meme.id, "value_char": "Doge"}
+            )
+
+        # We check the message in order to ensure that
+        # exception was raised by the correct event.
+        self.assertEqual(
+            err.exception.args[0],
+            _("Only one global value can be defined for variable 'meme'"),
+            msg="Error message doesn't match. Check if you have modified it in code:"
+            "models/cx_tower_server.py",
+        )
+
+        # Try to disable 'global' for a global variable explicitly
+        with self.assertRaises(ValidationError) as err:
+            variable_value_pepe.is_global = False
+
+        # We check the message in order to ensure that
+        # exception was raised by the correct event.
+        self.assertEqual(
+            err.exception.args[0],
+            _(
+                "Cannot change 'global' status for "
+                "'meme' with value 'Pepe'."
+                "\nTry to assigns it to a record instead."
+            ),
+            msg="Error message doesn't match. Check if you have modified it in code:"
+            "models/cx_tower_server.py",
         )

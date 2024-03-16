@@ -5,11 +5,10 @@
         <field name="name">cx.tower.variable.value.view.tree</field>
         <field name="model">cx.tower.variable.value</field>
         <field name="arch" type="xml">
-            <tree editable="top" decoration-bf="model==False">
-                <field name="variable_id" invisible="0" readonly="1" />
-                <field name="model" invisible="1" />
+            <tree editable="top" decoration-bf="is_global==True">
+                <field name="variable_id" />
                 <field name="is_global" widget="boolean_toggle" />
-                <field name="record_ref" />
+                <field name="server_id" />
                 <field name="value_char" />
             </tree>
         </field>
@@ -22,20 +21,16 @@
             <search string="Search Values">
                 <field name="variable_id" string="Variable" />
                 <field name="value_char" string="Value" />
-                <filter string="Local" name="local" domain="[('model', '!=', False)]" />
+                <filter
+                    string="Local"
+                    name="local"
+                    domain="[('is_global', '=', False)]"
+                />
                 <filter
                     string="Global"
                     name="global"
-                    domain="[('model', '=', False)]"
+                    domain="[('is_global', '=', True)]"
                 />
-                <group expand="0" string="Group By">
-                    <filter
-                        string="Model"
-                        name="group_by_model"
-                        domain="[]"
-                        context="{'group_by': 'model'}"
-                    />
-                </group>
              </search>
         </field>
     </record>
