@@ -102,20 +102,17 @@
     <!-- Variable values -->
     <record id="server_2_value_path" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_path" />
-        <field name="model">cx.tower.server</field>
-        <field name="res_id" ref="server_test_2" />
+        <field name="server_id" ref="server_test_2" />
         <field name="value_char">/opt/cetmix-tower</field>
     </record>
     <record id="server_2_value_url" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_url" />
-        <field name="model">cx.tower.server</field>
-        <field name="res_id" ref="server_test_2" />
+        <field name="server_id" ref="server_test_2" />
         <field name="value_char">https://cetmix.com</field>
     </record>
     <record id="server_2_value_branch" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_branch" />
-        <field name="model">cx.tower.server</field>
-        <field name="res_id" ref="server_test_2" />
+        <field name="server_id" ref="server_test_2" />
         <field name="value_char">staging</field>
     </record>
     <record id="global_value_branch" model="cx.tower.variable.value">
@@ -162,7 +159,7 @@
     <record id="plan_test_1_line_1_action_2" model="cx.tower.plan.line.action">
         <field name="line_id" ref="plan_test_1_line_1" />
         <field name="sequence">2</field>
-        <field name="condition">></field>
+        <field name="condition">&gt;</field>
         <field name="value_char">0</field>
         <field name="action">ec</field>
         <field name="custom_exit_code">255</field>
@@ -185,7 +182,7 @@
     <record id="plan_test_1_line_2_action_2" model="cx.tower.plan.line.action">
         <field name="line_id" ref="plan_test_1_line_2" />
         <field name="sequence">2</field>
-        <field name="condition">>=</field>
+        <field name="condition">&gt;=</field>
         <field name="value_char">3</field>
         <field name="action">n</field>
     </record>
