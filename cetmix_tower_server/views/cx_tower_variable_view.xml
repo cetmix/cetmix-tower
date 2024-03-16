@@ -29,23 +29,23 @@
                             <field name="note" />
                         </group>
                         <field name="value_ids">
-                            <tree editable="top" decoration-bf="model==False">
+                            <tree editable="top" decoration-bf="is_global==True">
                                 <field name="variable_id" invisible="1" />
-                                <field name="model" invisible="1" />
+                                <field name="server_id" invisible="1" />
                                 <field name="is_global" widget="boolean_toggle" />
-                                <field name="record_ref" />
+                                <field name="server_id" />
                                 <field name="value_char" />
                             </tree>
                             <form>
                                 <group>
-                                    <field name="model" invisible="1" />
+                                    <field name="server_id" invisible="1" />
                                     <field
                                         name="is_global"
-                                        attrs="{'invisible':[('model', '!=', False)]}"
+                                        attrs="{'invisible':[('is_global', '=', False)]}"
                                     />
                                     <field
-                                        name="record_ref"
-                                        attrs="{'invisible':[('model', '=', False)]}"
+                                        name="server_id"
+                                        attrs="{'invisible':[('is_global', '=', True)]}"
                                     />
                                     <field name="value_char" />
                                 </group>
