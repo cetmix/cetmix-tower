@@ -9,6 +9,7 @@
         <field name="sequence">10</field>
         <field name="state">code</field>
         <field name="code">action = records.action_execute_command()</field>
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
     </record>
 
     <record id="action_execute_cx_tower_plan" model="ir.actions.server">
@@ -19,6 +20,8 @@
         <field name="sequence">12</field>
         <field name="state">code</field>
         <field name="code">action = records.action_execute_plan()</field>
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+
     </record>
 
 </odoo>
