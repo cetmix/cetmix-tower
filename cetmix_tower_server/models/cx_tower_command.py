@@ -42,6 +42,18 @@ class CxTowerCommand(models.Model):
     )
     note = fields.Text()
 
+    access_level = fields.Selection(
+        [
+            ("1", "User"),
+            ("2", "Manager"),
+            ("3", "Root"),
+        ],
+        string="Access Level",
+        default="2",
+        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        required=True,
+    )
+
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
