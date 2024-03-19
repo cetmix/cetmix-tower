@@ -1,3 +1,4 @@
+from odoo.exceptions import AccessError
 from odoo.tests.common import Form
 
 from .common import TestTowerCommon
@@ -143,3 +144,91 @@ class TestTowerCommand(TestTowerCommon):
         self.assertEqual(
             log_record.command_status, 0, msg="Command status must be equal to 0"
         )
+
+    def test_user_access_rule(self):
+        """Test user access rule"""
+        # Create the test command
+        test_command = self.Command.create({"name": "Test command"})
+
+        # Ensure that defaulf command access_level is equal to 2
+        self.assertEqual(test_command.access_level, "2")
+        # Remove bob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Ensure that regular user cannot access the command
+        test_command_1_as_bob = test_command.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            command_name = test_command_1_as_bob.name
+        test_command.write({"access_level": "1"})
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Ensure that user can access the command
+        command_name = test_command_1_as_bob.name
+        self.assertEqual(command_name, "Test command", msg="Must return 'Test command'")
+        # Add user to group_manager
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Create a new command with access_level 1
+        new_command = self.Command.with_user(self.user_bob).create(
+            {"name": "New Test Command", "access_level": "1"}
+        )
+        self.assertEqual(new_command.access_level, "1")
+        # Try to elevate the access_level of new_command to 2
+        new_command.with_user(self.user_bob).write({"access_level": "2"})
+        self.assertEqual(new_command.access_level, "2")
+
+        # Ensure that manager user cannot see commands with access_level 3
+
+        restricted_command = self.Command.create(
+            {"name": "Restricted Command", "access_level": "3"}
+        )
+
+        user_bob_records = (
+            self.env["cx.tower.command"].with_user(self.user_bob).search([])
+        )
+        user_bob_records_access_level_3 = user_bob_records.filtered(
+            lambda r: r.access_level == "3"
+        )
+        self.assertFalse(user_bob_records_access_level_3, "Must return 0 records")
+        # Add user to group_root
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        # Ensure that root user can see commands with access_level 3
+        user_bob_records = (
+            self.env["cx.tower.command"].with_user(self.user_bob).search([])
+        )
+        user_bob_records_access_level_3 = user_bob_records.filtered(
+            lambda r: r.access_level == "3"
+        )
+        self.assertTrue(user_bob_records_access_level_3, "Must not be empty")
+
+        # Try to demote the access_level of new_command to 2
+        restricted_command.with_user(self.user_bob).write({"access_level": "2"})
+        self.assertEqual(restricted_command.access_level, "2")
+        # Checking the case that may require clearing the cache:
+        # Create a command with "Manager" access level.
+        cc_command = self.Command.create({"name": "CC Command", "access_level": "2"})
+
+        # Remove bob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Check command list with "Tower-User" user. User cannot see this command.
+        with self.assertRaises(AccessError):
+            command_name = cc_command.with_user(self.user_bob).name
+        # Change the command access level to "User".
+        cc_command.write({"access_level": "1"})
+
+        command_name = cc_command.with_user(self.user_bob).name
+        self.assertEqual(command_name, "CC Command", msg="Must return 'CC command'")
