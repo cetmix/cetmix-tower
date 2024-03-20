@@ -244,6 +244,10 @@ class CxTowerServer(models.Model):
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
     )
+    # ---- Variables
+    variable_value_ids = fields.One2many(
+        inverse_name="server_id"  # Other field properties are defined in mixin
+    )
 
     # ---- Keys
     secret_ids = fields.One2many(
