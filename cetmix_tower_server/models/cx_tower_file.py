@@ -226,13 +226,30 @@ class CxTowerFile(models.Model):
         """
         Push the file to server
         """
+        server_files = self.filtered(lambda file_: file_.source == "server")
+        if server_files:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Failure"),
+                    "message": _(
+                        "Unable to upload file '%s'.\n"
+                        "Upload operation is not supported for 'server' type files."
+                    )
+                    % server_files[0].rendered_name,
+                    "sticky": False,
+                },
+            }
         self._process("upload")
+        single_msg = "File uploaded!"
+        plural_msg = "Files uploaded!"
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "title": _("Success"),
-                "message": _("File uploaded!"),
+                "message": _(single_msg if len(self) == 1 else plural_msg),
                 "sticky": False,
             },
         }
@@ -241,13 +258,19 @@ class CxTowerFile(models.Model):
         """
         Pull file from server
         """
-        self._process("download")
+        tower_files = self.filtered(lambda file_: file_.source == "tower")
+        server_files = self - tower_files
+        tower_files.action_get_current_server_code()
+        server_files._process("download")
+
+        single_msg = "File downloaded!"
+        plural_msg = "Files downloaded!"
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "title": _("Success"),
-                "message": _("File downloaded!"),
+                "message": _(single_msg if len(self) == 1 else plural_msg),
                 "sticky": False,
             },
         }
