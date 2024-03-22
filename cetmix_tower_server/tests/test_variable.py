@@ -2,7 +2,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests.common import Form
 
-from .test_common import TestTowerCommon
+from .common import TestTowerCommon
 
 
 class TestTowerVariable(TestTowerCommon):
@@ -88,14 +88,16 @@ class TestTowerVariable(TestTowerCommon):
         self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Test 'get_variable_values' function
-        res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
+        res = self.server_test_1.get_variable_values(
+            ["test_dir", "test_os", "test_url", "test_version"]
+        )
         self.assertEqual(len(res), 1, "Must be a single record key in the result")
 
         res_vars = res.get(self.server_test_1.id)
-        var_dir = res_vars["dir"]
-        var_os = res_vars["os"]
-        var_url = res_vars["url"]
-        var_version = res_vars["version"]
+        var_dir = res_vars["test_dir"]
+        var_os = res_vars["test_os"]
+        var_url = res_vars["test_url"]
+        var_version = res_vars["test_version"]
 
         self.assertIsNone(var_dir, msg="Variable 'dir' must be None")
         self.assertIsNone(var_url, msg="Variable 'url' must be None")
@@ -110,14 +112,16 @@ class TestTowerVariable(TestTowerCommon):
         self.VariableValues.create(
             {"variable_id": self.variable_dir.id, "value_char": "/global/dir"}
         )
-        res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
+        res = self.server_test_1.get_variable_values(
+            ["test_dir", "test_os", "test_url", "test_version"]
+        )
         self.assertEqual(len(res), 1, "Must be a single record key in the result")
 
         res_vars = res.get(self.server_test_1.id)
-        var_dir = res_vars["dir"]
-        var_os = res_vars["os"]
-        var_url = res_vars["url"]
-        var_version = res_vars["version"]
+        var_dir = res_vars["test_dir"]
+        var_os = res_vars["test_os"]
+        var_url = res_vars["test_url"]
+        var_version = res_vars["test_version"]
 
         self.assertEqual(
             var_dir, "/global/dir", msg="Variable 'dir' must be equal to '/global/dir'"
@@ -134,14 +138,16 @@ class TestTowerVariable(TestTowerCommon):
             f.save()
 
         # Check
-        res = self.server_test_1.get_variable_values(["dir", "os", "url", "version"])
+        res = self.server_test_1.get_variable_values(
+            ["test_dir", "test_os", "test_url", "test_version"]
+        )
         self.assertEqual(len(res), 1, "Must be a single record key in the result")
 
         res_vars = res.get(self.server_test_1.id)
-        var_dir = res_vars["dir"]
-        var_os = res_vars["os"]
-        var_url = res_vars["url"]
-        var_version = res_vars["version"]
+        var_dir = res_vars["test_dir"]
+        var_os = res_vars["test_os"]
+        var_url = res_vars["test_url"]
+        var_version = res_vars["test_version"]
 
         self.assertEqual(
             var_dir, "/opt/odoo", msg="Variable 'dir' must be equal to '/opt/odoo'"
@@ -165,10 +171,10 @@ class TestTowerVariable(TestTowerCommon):
                 line.value_char = "/web"
             with f.variable_value_ids.new() as line:
                 line.variable_id = self.variable_path
-                line.value_char = "{{ dir }}/{{ version }}"
+                line.value_char = "{{ test_dir }}/{{ test_version }}"
             with f.variable_value_ids.new() as line:
                 line.variable_id = self.variable_url
-                line.value_char = "{{ test_path }}/example.com"
+                line.value_char = "{{ test_path_ }}/example.com"
             f.save()
 
         # Create a global value for the 'Version' variable
@@ -177,13 +183,15 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Check values
-        res = self.server_test_1.get_variable_values(["dir", "url", "version"])
+        res = self.server_test_1.get_variable_values(
+            ["test_dir", "test_url", "test_version"]
+        )
         self.assertEqual(len(res), 1, "Must be a single record key in the result")
 
         res_vars = res.get(self.server_test_1.id)
-        var_dir = res_vars["dir"]
-        var_url = res_vars["url"]
-        var_version = res_vars["version"]
+        var_dir = res_vars["test_dir"]
+        var_url = res_vars["test_url"]
+        var_version = res_vars["test_version"]
 
         self.assertEqual(var_dir, "/web", msg="Variable 'dir' must be '/web'")
         self.assertEqual(

@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, fields
 
-from .test_common import TestTowerCommon
+from .common import TestTowerCommon
 
 
 class TestTowerPlan(TestTowerCommon):
@@ -83,7 +83,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(exit_code, 0, msg="Exit code must be equal to 0")
         self.assertEqual(
             next_line_id,
-            self.env.ref("cetmix_tower_server.plan_test_1_line_2"),
+            self.plan_line_2,
             msg="Next line must be Line #2",
         )
 
@@ -128,7 +128,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(exit_code, -12, msg="Exit code must be equal to -12")
         self.assertEqual(
             next_line_id,
-            self.env.ref("cetmix_tower_server.plan_test_1_line_2"),
+            self.plan_line_2,
             msg="Next line must be Line #2",
         )
 
@@ -196,9 +196,7 @@ class TestTowerPlan(TestTowerCommon):
         # Change condition in line #1.
         # Action 1 will be triggered which is "Exit with custom code" 29.
         # ************************
-        action_to_tweak = self.env.ref(
-            "cetmix_tower_server.plan_test_1_line_1_action_1"
-        )
+        action_to_tweak = self.plan_line_1_action_1
         action_to_tweak.write({"custom_exit_code": 29, "action": "ec"})
 
         # Execute plan
