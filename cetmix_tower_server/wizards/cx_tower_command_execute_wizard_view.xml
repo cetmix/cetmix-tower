@@ -22,10 +22,8 @@
                     />
                     <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
                         <field name="use_sudo" placeholder="No sudo" />
-                        <field
-                            name="command_id"
-                            domain="[('server_ids', 'in', server_ids)]"
-                        />
+                        <field name="command_id" domain="command_domain" />
+                        <field name="command_domain" invisible="1" />
                         <span>show shared</span>
                         <field name="any_server" />
                     </div>

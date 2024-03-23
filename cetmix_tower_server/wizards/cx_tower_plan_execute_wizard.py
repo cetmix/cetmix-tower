@@ -17,6 +17,9 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         "cx.tower.plan",
         required=True,
     )
+    plan_domain = fields.Binary(
+        compute="_compute_plan_domain",
+    )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         relation="cx_tower_plan_execute_tag_rel",
@@ -41,21 +44,20 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
             else:
                 rec.plan_line_ids = None
 
-    @api.onchange("any_server", "server_ids", "tag_ids")
-    def _onchange_tag_ids(self):
+    @api.depends("any_server", "server_ids", "tag_ids")
+    def _compute_plan_domain(self):
         """Compose domain based on condition
         - any server: show commands compatible with any server
         """
-
-        domain = []
-        if self.any_server:
-            domain = [("server_ids", "=", False)]
-        elif self.server_ids:
-            domain.append(("server_ids", "in", self.server_ids.ids))
-        if self.tag_ids:
-            domain.append(("tag_ids", "in", self.tag_ids.ids))
-
-        return {"domain": {"plan_id": domain}}
+        for record in self:
+            domain = []
+            if record.any_server:
+                domain = [("server_ids", "=", False)]
+            elif record.server_ids:
+                domain.append(("server_ids", "in", record.server_ids.ids))
+            if record.tag_ids:
+                domain.append(("tag_ids", "in", record.tag_ids.ids))
+            record.plan_domain = domain
 
     def execute(self):
         """Render selected command rendered using server method"""
