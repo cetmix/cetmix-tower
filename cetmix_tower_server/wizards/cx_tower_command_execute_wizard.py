@@ -19,6 +19,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         "cx.tower.command",
         required=True,
     )
+    command_domain = fields.Binary(
+        compute="_compute_command_domain",
+    )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         relation="cx_tower_command_execute_tag_rel",
@@ -31,52 +34,65 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         selection=[("n", "Sudo without password"), ("p", "Sudo with password")],
         help="Run commands using 'sudo'",
     )
+    code = fields.Text(
+        compute="_compute_code",
+        readonly=False,
+    )
     any_server = fields.Boolean()
-    rendered_code = fields.Text()
+    rendered_code = fields.Text(
+        compute="_compute_rendered_code",
+    )
     result = fields.Text()
 
-    @api.onchange("command_id")
-    def _onchange_command_id(self):
+    @api.depends("command_id", "server_ids")
+    def _compute_code(self):
         """
         Set code after change command
         """
-        if self.command_id and self.server_ids:
-            self.code = self.command_id.code
-
-    @api.onchange("code", "server_ids")
-    def _onchange_code(self):
-        if self.server_ids:
-            server_id = self.server_ids[0]  # TODO testing only!!!
-
-            # Get variable list
-            variables = self.get_variables()
-
-            # Get variable values
-            variable_values = server_id.get_variable_values(variables.get(str(self.id)))
-
-            # Render template
-            if variable_values:
-                self.rendered_code = self.render_code(
-                    **variable_values.get(server_id.id)
-                ).get(self.id)
+        for record in self:
+            if record.command_id and record.server_ids:
+                record.code = record.command_id.code
             else:
-                self.rendered_code = self.code
+                record.code = record.code
 
-    @api.onchange("any_server", "server_ids", "tag_ids")
-    def _onchange_tag_ids(self):
+    @api.depends("code", "server_ids")
+    def _compute_rendered_code(self):
+        for record in self:
+            if record.server_ids:
+                server_id = record.server_ids[0]  # TODO testing only!!!
+
+                # Get variable list
+                variables = record.get_variables()
+
+                # Get variable values
+                variable_values = server_id.get_variable_values(
+                    variables.get(str(record.id))
+                )
+
+                # Render template
+                if variable_values:
+                    record.rendered_code = record.render_code(
+                        **variable_values.get(server_id.id)
+                    ).get(self.id)
+                else:
+                    record.rendered_code = record.code
+            else:
+                record.rendered_code = record.code
+
+    @api.depends("any_server", "server_ids", "tag_ids")
+    def _compute_command_domain(self):
         """Compose domain based on condition
         - any server: show commands compatible with any server
         """
-
-        domain = []
-        if self.any_server:
-            domain = [("server_ids", "=", False)]
-        elif self.server_ids:
-            domain.append(("server_ids", "in", self.server_ids.ids))
-        if self.tag_ids:
-            domain.append(("tag_ids", "in", self.tag_ids.ids))
-
-        return {"domain": {"command_id": domain}}
+        for record in self:
+            domain = []
+            if record.any_server:
+                domain = [("server_ids", "=", False)]
+            elif record.server_ids:
+                domain.append(("server_ids", "in", record.server_ids.ids))
+            if record.tag_ids:
+                domain.append(("tag_ids", "in", record.tag_ids.ids))
+            record.command_domain = domain
 
     def action_execute_command(self):
         """
