@@ -307,7 +307,21 @@ class CxTowerServer(models.Model):
     def copy(self, default=None):
         default = default or {}
         default["name"] = _("%s (copy)", self.name)
-        return super(CxTowerServer, self).copy(default=default)
+
+        file_ids = self.env["cx.tower.file"]
+        for file in self.file_ids:
+            file_ids |= file.copy({"auto_sync": False})
+        default["file_ids"] = file_ids.ids
+
+        result = super(CxTowerServer, self).copy(default=default)
+
+        for secret in self.secret_ids:
+            secret.sudo().copy({"server_id": result.id})
+
+        for var_value in self.variable_value_ids:
+            var_value.copy({"res_id": result.id})
+
+        return result
 
     def action_open_command_logs(self):
         """
