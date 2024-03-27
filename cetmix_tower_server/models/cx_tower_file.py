@@ -30,13 +30,21 @@ class CxTowerFile(models.Model):
     _description = "Cx Tower File"
     _order = "name"
 
-    @api.onchange("template_id")
-    def _onchange_template_id(self):
+    @api.depends("template_id")
+    def _compute_template_values(self):
         """
         Update file data by template values
         """
-        if self.template_id:
-            self.update(self._get_file_values_from_related_template())
+        for file in self:
+            if file.template_id:
+                file.update(file._get_file_values_from_related_template())
+            else:
+                file.update(
+                    {
+                        file_field: file[file_field]
+                        for file_field in TEMPLATE_FILE_FIELD_MAPPING.values()
+                    }
+                )
 
     @api.depends("server_dir", "name")
     def _compute_full_server_path(self):
@@ -97,7 +105,12 @@ class CxTowerFile(models.Model):
         """
         self.filtered(lambda rec: rec.source != "tower").template_id = False
 
-    name = fields.Char(help="File name WITHOUT path. Eg 'test.txt'")
+    name = fields.Char(
+        help="File name WITHOUT path. Eg 'test.txt'",
+        compute="_compute_template_values",
+        readonly=False,
+        store=True,
+    )
     rendered_name = fields.Char(
         compute="_compute_render",
     )
@@ -109,6 +122,9 @@ class CxTowerFile(models.Model):
         required=True,
         default="~",
         help="Eg '/home/user' or '/var/log'",
+        compute="_compute_template_values",
+        readonly=False,
+        store=True,
     )
     rendered_server_dir = fields.Char(
         compute="_compute_render",
@@ -158,6 +174,11 @@ class CxTowerFile(models.Model):
         readonly=True,
         tracking=True,
         help="Date and time of the latest successful synchronisation",
+    )
+    code = fields.Text(
+        compute="_compute_template_values",
+        readonly=False,
+        store=True,
     )
     sync_code = fields.Text()
     server_id = fields.Many2one(
