@@ -5,7 +5,7 @@ from odoo import _, api, fields, models
 
 class CxTowerCommand(models.Model):
     _name = "cx.tower.command"
-    _inherit = "cx.tower.template.mixin"
+    _inherit = ["cx.tower.template.mixin", "cx.tower.access.mixin"]
     _description = "Cetmix Tower Command"
     _order = "name"
 
@@ -53,17 +53,6 @@ class CxTowerCommand(models.Model):
     )
     note = fields.Text()
 
-    access_level = fields.Selection(
-        [
-            ("1", "User"),
-            ("2", "Manager"),
-            ("3", "Root"),
-        ],
-        string="Access Level",
-        default="2",
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
-        required=True,
-    )
     action = fields.Selection(
         selection=lambda self: self._selection_action(),
         required=True,

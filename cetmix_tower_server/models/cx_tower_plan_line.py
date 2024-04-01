@@ -29,6 +29,12 @@ class CxTowerPlanLine(models.Model):
     )
     command_code = fields.Text(related="command_id.code", readonly=True)
 
+    access_level = fields.Selection(
+        related="plan_id.access_level",
+        readonly=True,
+        store=True,
+    )
+
     def _execute(self, server, plan_log_record, **kwargs):
         """Execute command from the Flight Plan line
 
@@ -54,5 +60,7 @@ class CxTowerPlanLine(models.Model):
 
         # Set 'sudo' value
         use_sudo = self.use_sudo and server.use_sudo
+        # Use sudo to bypass access rules for execute command with higher access level
+        command_id = self.sudo().command_id
 
-        server.execute_command(self.command_id, use_sudo, **kwargs)
+        server.execute_command(command_id, use_sudo, **kwargs)

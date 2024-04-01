@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, fields
+from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
 
@@ -224,3 +225,153 @@ class TestTowerPlan(TestTowerCommon):
             expected_plan_status,
             msg="Plan status must be equal to {}".format(expected_plan_status),
         )
+
+    def test_plan_user_access_rule(self):
+        """Test plan user access rule"""
+        # Create the test plan without assigned plan.lines
+        self.plan_2 = self.Plan.create(
+            {
+                "name": "Test plan 2",
+                "note": "Create directory and list its content",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+            }
+        )
+        # Ensure that defaulf command access_level is equal to 2
+
+        self.assertEqual(self.plan_2.access_level, "2")
+        self.plan_2.write({"access_level": "1"})
+
+        # Remove bob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Ensure that regular user cannot access the plan
+
+        test_plan_2_as_bob = self.plan_2.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            plan_name = test_plan_2_as_bob.name
+
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Ensure that user can access the plan with access_level 1
+        plan_name = test_plan_2_as_bob.name
+        self.assertEqual(plan_name, test_plan_2_as_bob.name, msg="Name must be equal")
+        # Add user to group_manager
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Check if manager can modify exisiting  plan
+        test_plan_2_as_bob.write({"access_level": "2"})
+        self.assertEqual(test_plan_2_as_bob.access_level, "2")
+
+        # Check if manager can create a new  plan
+        self.plan_3 = self.Plan.with_user(self.user_bob).create(
+            {
+                "name": "Test plan 3",
+                "note": "Create directory and list its content",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+            }
+        )
+        self.assertTrue(self.plan_3)
+
+        # Check what manager can't unlink exisiting plan
+        with self.assertRaises(AccessError):
+            self.plan_3.with_user(self.user_bob).unlink()
+
+        # Add user_bob to group_root
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+
+        # Check what root can unlink exisiting plan
+        result = self.plan_3.with_user(self.user_bob).unlink()
+        self.assertTrue(result)
+
+    def test_plan_and_command_access_level(self):
+        # Remove userbob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+
+        # Add user_bob to group_manager
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # check if plan and commands included has same access level
+        self.assertEqual(self.plan_1.access_level, "2")
+        self.assertEqual(self.command_create_dir.access_level, "2")
+        self.assertEqual(self.command_list_dir.access_level, "2")
+        # check that if we modify plan access level to make it lower than the
+        # access_level of the commands related with it access level,
+        # access_level_warn_msg will be created
+        self.plan_1.with_user(self.user_bob).write({"access_level": "1"})
+        self.assertTrue(self.plan_1.access_level_warn_msg)
+
+        # Add user_bob to group_root
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        # check if user_bob can make plan access leve higher than commands access level
+        self.plan_1.with_user(self.user_bob).write({"access_level": "3"})
+        self.assertEqual(self.plan_1.access_level, "3")
+        # check that if we create a new plan with an access_level lower than
+        # the access_level of the command related with access_level_warn_msg
+        #  will be created
+        command_1 = self.Command.create(
+            {"name": "New Test Command", "access_level": "3"}
+        )
+        self.plan_line_2_1 = self.plan_line.create(
+            {
+                "sequence": 5,
+                "command_id": command_1.id,
+            }
+        )
+
+        self.plan_2 = self.Plan.create(
+            {
+                "name": "Test plan 2",
+                "note": "Create directory and list its content",
+                "line_ids": [(4, self.plan_line_2_1.id)],
+            }
+        )
+        self.assertTrue(self.plan_2.access_level_warn_msg)
+
+    def test_multiple_plan_create_write(self):
+        """Test multiple plan create/write cases"""
+        # Create multiple plans at once
+        plans_data = [
+            {
+                "name": "Test Plan 1",
+                "note": "Plan 1 Note",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+            },
+            {
+                "name": "Test Plan 2",
+                "note": "Plan 2 Note",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_production").id])
+                ],
+            },
+            {
+                "name": "Test Plan 3",
+                "note": "Plan 3 Note",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+            },
+        ]
+        created_plans = self.Plan.create(plans_data)
+        # Check that all plans are created successfully
+        self.assertTrue(all(created_plans))
+        # Update the access level of the created plans
+        created_plans.write({"access_level": "3"})
+        # Check that all plans are updated successfully
+        self.assertTrue(all(plan.access_level == "3" for plan in created_plans))
