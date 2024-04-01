@@ -35,6 +35,11 @@ class CxTowerPlanLineAction(models.Model):
     custom_exit_code = fields.Integer(
         help="Will be used instead of the command exit code"
     )
+    access_level = fields.Selection(
+        related="line_id.access_level",
+        readonly=True,
+        store=True,
+    )
 
     @api.depends("condition", "action", "value_char")
     def _compute_name(self):
