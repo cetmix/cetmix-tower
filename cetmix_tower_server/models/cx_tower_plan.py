@@ -2,7 +2,7 @@ from operator import indexOf
 
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.tools.safe_eval import expr_eval
 
 from .constants import ANOTHER_PLAN_RUNNING, PLAN_LINE_NOT_ASSIGNED, PLAN_NOT_ASSIGNED
@@ -13,6 +13,7 @@ class CxTowerPlan(models.Model):
 
     _name = "cx.tower.plan"
     _description = "Cetmix Tower Flight Plan"
+    _inherit = "cx.tower.access.mixin"
 
     active = fields.Boolean(default=True)
     name = fields.Char(required=True)
@@ -46,6 +47,11 @@ class CxTowerPlan(models.Model):
     )
     custom_exit_code = fields.Integer(
         help="Will be used instead of the command exit code"
+    )
+
+    access_level_warn_msg = fields.Text(
+        compute="_compute_command_access_level",
+        compute_sudo=True,
     )
 
     def execute(self, servers, **kwargs):
@@ -192,3 +198,26 @@ class CxTowerPlan(models.Model):
 
         # NB: we are not putting any fallback here in case
         # someone needs to inherit and extend this function
+
+    @api.depends("line_ids.command_id.access_level", "access_level")
+    def _compute_command_access_level(self):
+        """Check if the access level of a command in the plan
+        is higher than the plan's access level"""
+        for record in self:
+            commands = record.mapped("line_ids").mapped("command_id")
+            # Retrieve all commands associated with the flight plan
+            commands_with_higher_access = commands.filtered(
+                lambda c, access_level=record.access_level: c.access_level
+                > access_level
+            )
+            if commands_with_higher_access:
+                command_names = ", ".join(commands_with_higher_access.mapped("name"))
+                record.access_level_warn_msg = _(
+                    "The access level of command(s) '%(command_names)s' included in the"
+                    "current Flight plan is higher than  the access level of the Flight"
+                    "plan itself. Ensure that you really want to give access to those"
+                    "command(s) to the flight plan users.",
+                    command_names=command_names,
+                )
+            else:
+                record.access_level_warn_msg = False
