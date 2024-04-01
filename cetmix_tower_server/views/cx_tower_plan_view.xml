@@ -7,6 +7,25 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+
+                    <div
+                        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager"
+                        class="alert alert-warning"
+                        role="alert"
+                        attrs="{'invisible': [('access_level_warn_msg', '=', False)]}"
+                        style="margin-bottom:0px;"
+                    >
+                        <p>
+                            <i
+                                class="fa fa-info-circle"
+                                role="img"
+                                aria-label="Info"
+                                title="Info"
+                            />
+                            <span>&amp;nbsp;</span>
+                            <field name="access_level_warn_msg" class="text-center" />
+                        </p>
+                    </div>
                     <group>
                         <group>
                             <field name="name" />
@@ -32,6 +51,7 @@
                                 widget="many2many_tags"
                                 options="{'color_field': 'color'}"
                             />
+                            <field name="access_level" />
                         </group>
                     </group>
                     <notebook>
@@ -102,7 +122,7 @@
                     name="archived"
                     domain="[('active', '=', False)]"
                 />
-             </search>
+            </search>
         </field>
     </record>
 
