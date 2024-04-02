@@ -30,21 +30,83 @@ class CxTowerFile(models.Model):
     _description = "Cx Tower File"
     _order = "name"
 
-    @api.depends("template_id")
-    def _compute_template_values(self):
-        """
-        Update file data by template values
-        """
-        for file in self:
-            if file.template_id:
-                file.update(file._get_file_values_from_related_template())
-            else:
-                file.update(
-                    {
-                        file_field: file[file_field]
-                        for file_field in TEMPLATE_FILE_FIELD_MAPPING.values()
-                    }
-                )
+    active = fields.Boolean(default=True)
+    name = fields.Char(help="File name WITHOUT path. Eg 'test.txt'")
+    rendered_name = fields.Char(
+        compute="_compute_render",
+    )
+    template_id = fields.Many2one(
+        "cx.tower.file.template", inverse="_inverse_template_id"
+    )
+    server_dir = fields.Char(
+        string="Directory on server",
+        required=True,
+        default="~",
+        help="Eg '/home/user' or '/var/log'",
+    )
+    rendered_server_dir = fields.Char(
+        compute="_compute_render",
+    )
+    full_server_path = fields.Char(
+        compute="_compute_full_server_path",
+    )
+    source = fields.Selection(
+        [
+            ("tower", "Tower"),
+            ("server", "Server"),
+        ],
+        inverse="_inverse_source",
+        help="""
+            - Tower:  file is pushed from Tower to server.
+            - Server: file is pulled from server to Tower.
+        """,
+    )
+    auto_sync = fields.Boolean(
+        help="If enabled file will be synced automatically using cron",
+        default=False,
+    )
+    # selection format: interval_number(integer)-interval_type(name of interval)
+    # it will be parsed as 'relativedelta' object
+    auto_sync_interval = fields.Selection(
+        [
+            ("10-minutes", "10 min"),
+            ("30-minutes", "30 min"),
+            ("1-hours", "1 hour"),
+            ("2-hours", "2 hour"),
+            ("6-hours", "6 hour"),
+            ("12-hours", "12 hour"),
+            ("1-days", "1 day"),
+            ("1-weeks", "1 week"),
+            ("1-months", "1 month"),
+            ("1-years", "1 year"),
+        ],
+    )
+    sync_date_next = fields.Datetime(
+        string="Next Sync Date",
+        required=True,
+        default=fields.Datetime.now,
+        help="Date and time of the next synchronisation",
+    )
+    sync_date_last = fields.Datetime(
+        string="Last Sync Date",
+        readonly=True,
+        tracking=True,
+        help="Date and time of the latest successful synchronisation",
+    )
+    server_response = fields.Text(
+        help="Server response received during the last operation.\n"
+        "Default value if no error happened is 'ok'.\n"
+        "Otherwise there will be a server error message logged."
+    )
+    server_id = fields.Many2one(comodel_name="cx.tower.server", required=True)
+    code_on_server = fields.Text(
+        readonly=True,
+        help="Latest version of file content on server",
+    )
+    rendered_code = fields.Char(
+        compute="_compute_render",
+        help="File content with variables rendered",
+    )
 
     @api.depends("server_dir", "name")
     def _compute_full_server_path(self):
@@ -105,109 +167,14 @@ class CxTowerFile(models.Model):
         """
         self.filtered(lambda rec: rec.source != "tower").template_id = False
 
-    name = fields.Char(
-        help="File name WITHOUT path. Eg 'test.txt'",
-        compute="_compute_template_values",
-        readonly=False,
-        store=True,
-    )
-    rendered_name = fields.Char(
-        compute="_compute_render",
-    )
-    template_id = fields.Many2one(
-        "cx.tower.file.template", inverse="_inverse_template_id"
-    )
-    server_dir = fields.Char(
-        string="Directory on server",
-        required=True,
-        default="~",
-        help="Eg '/home/user' or '/var/log'",
-        compute="_compute_template_values",
-        readonly=False,
-        store=True,
-    )
-    rendered_server_dir = fields.Char(
-        compute="_compute_render",
-    )
-    full_server_path = fields.Char(
-        compute="_compute_full_server_path",
-    )
-    source = fields.Selection(
-        [
-            ("tower", "Tower"),
-            ("server", "Server"),
-        ],
-        inverse="_inverse_source",
-        help="""
-            - Tower:  file is pushed from Tower to server.
-            - Server: file is pulled from server to Tower.
-        """,
-    )
-    active = fields.Boolean(default=True)
-    auto_sync = fields.Boolean(
-        help="If enabled file will be synced automatically using cron",
-        default=False,
-    )
-    # selection format: interval_number(integer)-interval_type(name of interval)
-    # it will be parsed as 'relativedelta' object
-    auto_sync_interval = fields.Selection(
-        [
-            ("10-minutes", "10 min"),
-            ("30-minutes", "30 min"),
-            ("1-hours", "1 hour"),
-            ("2-hours", "2 hour"),
-            ("6-hours", "6 hour"),
-            ("12-hours", "12 hour"),
-            ("1-days", "1 day"),
-            ("1-weeks", "1 week"),
-            ("1-months", "1 month"),
-            ("1-years", "1 year"),
-        ],
-    )
-    sync_date_next = fields.Datetime(
-        string="Next Sync Date",
-        required=True,
-        default=fields.Datetime.now,
-        help="Date and time of the next synchronisation",
-    )
-    sync_date_last = fields.Datetime(
-        string="Last Sync Date",
-        readonly=True,
-        tracking=True,
-        help="Date and time of the latest successful synchronisation",
-    )
-    code = fields.Text(
-        compute="_compute_template_values",
-        readonly=False,
-        store=True,
-    )
-    sync_code = fields.Text()
-    server_id = fields.Many2one(
-        comodel_name="cx.tower.server",
-        required=True,
-    )
-    code_on_server = fields.Text(
-        readonly=True,
-        help="Latest version of file content on server",
-    )
-    rendered_code = fields.Char(
-        compute="_compute_render",
-        help="File content with variables rendered",
-    )
-
-    def _get_file_values_from_related_template(self):
+    @api.onchange("template_id")
+    def _onchange_template_id(self):
         """
-        Return file values from related template
+        Update file data by template values
         """
-        self.ensure_one()
-        if not self.template_id:
-            return {}
-        values = self.template_id.read(list(TEMPLATE_FILE_FIELD_MAPPING), load=False)[0]
-        return {
-            key: values[name]
-            for name, key in TEMPLATE_FILE_FIELD_MAPPING.items()
-            if values[name]
-        }
+        for rec in self:
+            if rec.template_id:
+                rec.update(self._get_file_values_from_related_template())
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -215,13 +182,8 @@ class CxTowerFile(models.Model):
         Override to sync files
         """
         vals_list = [self._sanitize_values(vals) for vals in vals_list]
-        records = super(CxTowerFile, self).create(vals_list)
-        records.filtered(
-            lambda file: file.auto_sync and file.source == "server"
-        ).action_pull_from_server()
-        records.filtered(
-            lambda file: file.auto_sync and file.source == "tower"
-        ).action_push_to_server()
+        records = super().create(vals_list)
+        records._post_create_write("create")
         return records
 
     def write(self, vals):
@@ -229,16 +191,43 @@ class CxTowerFile(models.Model):
         Override to sync files from tower
         """
         vals = self._sanitize_values(vals)
-        result = super(CxTowerFile, self).write(vals)
+        result = super().write(vals)
 
         # sync tower files after change
         sync_fields = self._get_tower_sync_field_names()
-        self.filtered(
+        files_to_sync = self.filtered(
             lambda file: file.auto_sync
             and file.source == "tower"
             and any(field in vals for field in sync_fields)
-        ).action_push_to_server()
+        )
+        if files_to_sync:
+            files_to_sync._post_create_write("write")
         return result
+
+    def _post_create_write(self, op_type="write"):
+        """Helper function that is called after file creation or update.
+        Use this function to implement custom hooks.
+
+        Args:
+            op_type (str, optional): Operation type. Defaults to "write".
+                Possible options:
+                    - "create"
+                    - "write"
+        """
+
+        # Pull all `auto_sync` server files
+        server_files_to_sync = self.filtered(
+            lambda file: file.auto_sync and file.source == "server"
+        )
+        if server_files_to_sync:
+            server_files_to_sync.action_pull_from_server()
+
+        # Push all `auto_sync` tower files
+        tower_files_to_sync = self.filtered(
+            lambda file: file.auto_sync and file.source == "tower"
+        )
+        if tower_files_to_sync:
+            tower_files_to_sync.action_push_to_server()
 
     def action_modify_code(self):
         self.ensure_one()
@@ -256,22 +245,22 @@ class CxTowerFile(models.Model):
                 "params": {
                     "title": _("Failure"),
                     "message": _(
-                        "Unable to upload file '%s'.\n"
-                        "Upload operation is not supported for 'server' type files."
-                    )
-                    % server_files[0].rendered_name,
+                        "Unable to upload file '%(f)s'.\n"
+                        "Upload operation is not supported for 'server' type files.",
+                        f=server_files[0].rendered_name,
+                    ),
                     "sticky": False,
                 },
             }
-        self._process("upload")
-        single_msg = "File uploaded!"
-        plural_msg = "Files uploaded!"
+        self.upload(raise_error=True)
+        single_msg = _("File uploaded!")
+        plural_msg = _("Files uploaded!")
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "title": _("Success"),
-                "message": _(single_msg if len(self) == 1 else plural_msg),
+                "message": single_msg if len(self) == 1 else plural_msg,
                 "sticky": False,
             },
         }
@@ -283,16 +272,16 @@ class CxTowerFile(models.Model):
         tower_files = self.filtered(lambda file_: file_.source == "tower")
         server_files = self - tower_files
         tower_files.action_get_current_server_code()
-        server_files._process("download")
+        server_files.download(raise_error=True)
 
-        single_msg = "File downloaded!"
-        plural_msg = "Files downloaded!"
+        single_msg = _("File downloaded!")
+        plural_msg = _("Files downloaded!")
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "title": _("Success"),
-                "message": _(single_msg if len(self) == 1 else plural_msg),
+                "message": single_msg if len(self) == 1 else plural_msg,
                 "sticky": False,
             },
         }
@@ -305,14 +294,32 @@ class CxTowerFile(models.Model):
             if file.source != "tower":
                 raise UserError(
                     _(
-                        "The file shouldn't have the {} source to download "
-                        "from server!".format(file.source)
+                        "File %(f)s is not 'tower' type. "
+                        "This operation is supported for 'tower' "
+                        "files only",
+                        f=file.name,
                     )
                 )
+
+            # Calling `_process` directly to get server version of a `tower` file
             code = self.with_context(is_server_code_version_process=True)._process(
                 "download"
             )
             file.code_on_server = code
+
+    def _get_file_values_from_related_template(self):
+        """
+        Return file values from related template
+        """
+        self.ensure_one()
+        if not self.template_id:
+            return {}
+        values = self.template_id.read(list(TEMPLATE_FILE_FIELD_MAPPING), load=False)[0]
+        return {
+            key: values[name]
+            for name, key in TEMPLATE_FILE_FIELD_MAPPING.items()
+            if values[name]
+        }
 
     @api.model
     def _sanitize_values(self, values):
@@ -330,10 +337,58 @@ class CxTowerFile(models.Model):
             )
         return values
 
-    def _process(self, action, raise_error=True):
+    def download(self, raise_error=False):
+        """Wrapper function for file download.
+        Use it for custom hooks implementation.
+
+        Args:
+            raise_error (bool, optional):
+                Will raise and exception on error if set to 'True'.
+                Defaults to False.
         """
-        Main process of file manipulation
+        self._process("download", raise_error)
+
+    def upload(self, raise_error=False):
+        """Wrapper function for file upload.
+        Use it for custom hooks implementation.
+
+        Args:
+            raise_error (bool, optional):
+                Will raise and exception on error if set to 'True'.
+                Defaults to False.
         """
+        self._process("upload", raise_error)
+
+    def _process(self, action, raise_error=False):
+        """Upload or download file to/from server.
+        Important!
+        This function will return a value only in case `is_server_code_version_process`
+        key is present in context.
+        This key is used to fetch actual file content from server
+        for a `tower` type file.
+        In all other cases it will update the file content and save
+        server response into the `server_response` field.
+
+
+
+        Args:
+            action (Selection): Action to process.
+                Possible options:
+                    - "upload": Upload file.
+                    - "download": Download file.
+            raise_error (bool, optional): Raise exception if there was an error
+                 during the operation. Defaults to False.
+
+        Raises:
+            UserError: In case file format doesn't match the requested operation.
+                Eg if trying to upload 'server' type file.
+            ValidationError: In case there is an error while trying to
+                upload/download a file.
+
+        Returns:
+            Char: file content or False.
+        """
+
         tower_key_obj = self.env["cx.tower.key"]
         is_server_code_version_process = self.env.context.get(
             "is_server_code_version_process"
@@ -346,8 +401,11 @@ class CxTowerFile(models.Model):
                 if raise_error:
                     raise UserError(
                         _(
-                            "The file shouldn't have the {} source to {} "
-                            "from server!".format(file.source, action)
+                            "File %(f)s shouldn't have the '%(src)s' source "
+                            " for the '%(act)s' action",
+                            f=file.name,
+                            src=file.source,
+                            act=action,
                         )
                     )
                 return False
@@ -357,6 +415,7 @@ class CxTowerFile(models.Model):
                     code = file.server_id.download_file(
                         tower_key_obj.parse_code(file.full_server_path)
                     )
+                    # In case server version of a 'tower' file is requested
                     if is_server_code_version_process:
                         return code
                     file.code = code
@@ -367,17 +426,17 @@ class CxTowerFile(models.Model):
                     )
                 else:
                     return False
-                file.sync_code = "ok"
+                file.server_response = "ok"
             except Exception as error:
                 if raise_error:
                     raise ValidationError(
                         _(
-                            "Cannot pull the file {} from server: {}".format(
-                                file.rendered_name, exception_to_unicode(error)
-                            )
+                            "Cannot pull %(f)s from server: %(err)s",
+                            f=file.rendered_name,
+                            err=exception_to_unicode(error),
                         )
                     ) from error
-                file.sync_code = repr(error)
+                file.server_response = repr(error)
 
         if not is_server_code_version_process:
             self._update_file_sync_date(fields.Datetime.now())
@@ -403,7 +462,7 @@ class CxTowerFile(models.Model):
                 ("sync_date_next", "<=", now),
             ]
         )
-        files._process("download", raise_error=False)
+        files.download(raise_error=False)
 
     def _update_file_sync_date(self, last_sync_date):
         """
@@ -419,6 +478,6 @@ class CxTowerFile(models.Model):
                         + INTERVAL_TYPES[interval_type](int(interval))
                     }
                 )
-            if file.sync_code == "ok":
+            if file.server_response == "ok":
                 vals.update({"sync_date_last": last_sync_date})
             file.write(vals)
