@@ -401,7 +401,7 @@ class CxTowerServer(models.Model):
         Returns:
             Char: SSH command
         """
-        command = "uname -ar"
+        command = "whoami"
         return command
 
     def _connect(self, raise_on_error=True):
@@ -440,7 +440,7 @@ class CxTowerServer(models.Model):
             raise ValidationError(
                 _(
                     "Cannot execute command\n. CODE: {}. RESULT: {}. ERROR: {}".format(
-                        status, response, ", ".joint(error)
+                        status, response, ", ".join(error)
                     )
                 )
             )
