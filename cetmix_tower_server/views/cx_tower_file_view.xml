@@ -170,17 +170,17 @@
                 <filter
                     string="Synced"
                     name="filter_is_synced"
-                    domain="[('sync_code', '=', 'ok')]"
+                    domain="[('server_response', '=', 'ok')]"
                 />
                 <filter
                     string="No Synced"
                     name="filter_is_no_synced"
-                    domain="[('sync_code', '=', False)]"
+                    domain="[('server_response', '=', False)]"
                 />
                 <filter
                     string="Sync Error"
                     name="filter_is_error_synced"
-                    domain="[('sync_code', 'not in', ['ok', False])]"
+                    domain="[('server_response', 'not in', ['ok', False])]"
                 />
                 <group expand="0" string="Group By">
                     <filter

@@ -32,7 +32,7 @@ class TestTowerCommand(TestTowerCommon):
 
         with patch.object(cx_tower_server_obj, "upload_file", upload_file):
             file.action_push_to_server()
-            self.assertEqual(file.sync_code, "ok")
+            self.assertEqual(file.server_response, "ok")
 
     def test_download_file(self):
         """
@@ -85,7 +85,7 @@ class TestTowerCommand(TestTowerCommon):
 
         with patch.object(cx_tower_server_obj, "upload_file", upload_file):
             file.action_push_to_server()
-            self.assertEqual(file.sync_code, "ok")
+            self.assertEqual(file.server_response, "ok")
 
         def download_file(this, remote_path):
             if remote_path == "/var/tmp/test.txt":
