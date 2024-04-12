@@ -120,6 +120,7 @@ To create a new file go to `Cetmix Tower/Files/Files` click `Create` and put val
 - **Directory on Server**: This is where the file is located on the remote server
 - **Full Server Path**: Full path to file on the remote server including filename
 - **Auto Sync**: If enabled the file will be automatically uploaded to the remote server on after it is modified in **Cetmix Tower**. Used only with `Tower` source.
+- **Keep when deleted**: If enabled, file will be kept on remote server after removing it in the Odoo
 
 Following fields are located in the tabs below:
 
@@ -141,6 +142,7 @@ To create a new file template go to `Cetmix Tower/Files/Templates` click `Create
 - **Tags**: Make usage as search more convenient
 - **Note**: Comments or user notes
 - **Code**: Raw file content. This field supports [Variables](#configure-variables).
+- **Keep when deleted**: If enabled, file(s) created from this template will be kept on remote server after removing it(them) in the Odoo
 
 **Hint**: If you want to create a file from template but don't want further template modifications to be applied to this file remove the value from the `Template` field before saving it.
 
