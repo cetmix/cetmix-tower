@@ -66,16 +66,16 @@ class SSH(object):
         Returns:
             Char: password ready to be used for connection parameters
         """
-        ssh_key = RSAKey.from_private_key(io.StringIO(self.ssh_key))
+        ssh_key = RSAKey.from_private_key(io.StringIO(self.ssh_key))  # type: ignore
         return ssh_key
 
     def _connect(self):
         """
         Connect to remote host
         """
-        self._ssh = SSHClient()
+        self._ssh = SSHClient()  # type: ignore
         self._ssh.load_system_host_keys()
-        self._ssh.set_missing_host_key_policy(AutoAddPolicy())
+        self._ssh.set_missing_host_key_policy(AutoAddPolicy())  # type: ignore
         kwargs = {
             "hostname": self.host,
             "port": self.port,
@@ -110,7 +110,7 @@ class SSH(object):
         """
         Open SFTP connection to remote host.
         """
-        self._sftp = SFTPClient.from_transport(self.connection.get_transport())
+        self._sftp = SFTPClient.from_transport(self.connection.get_transport())  # type: ignore
         return self._sftp
 
     def disconnect(self):
@@ -138,22 +138,41 @@ class SSH(object):
         Returns:
             status, response, error
         """
-        # TODO: check this
+        # Check this
         # https://stackoverflow.com/questions/22587855/running-sudo-command-with-paramiko
-        if sudo and self.username != "root":
-            command = "sudo -S -p '' %s" % command
 
-        stdin, stdout, stderr = self.connection.exec_command(command)
-        if sudo == "p":
+        sudo_with_password = sudo == "p" and self.username != "root"
+        if sudo_with_password:
+            # Return error if password is not set
             if not self.password:
                 error_message = [_("sudo password was not provided!")]
                 return 255, [], error_message
-            stdin.write(self.password + "\n")
+
+            # prepend command with `sudo`
+            command = f"sudo -S -p '' {command}"
+
+        stdin, stdout, stderr = self.connection.exec_command(command)
+
+        # Send password to stdin
+        if sudo_with_password:
+            stdin.write(self.password + "\n")  # type: ignore
             stdin.flush()
+            # TODO: add password error check
+
         status = stdout.channel.recv_exit_status()
         response = stdout.readlines()
         error = stderr.readlines()
         return status, response, error
+
+    def delete_file(self, remote_path):
+        """
+        Delete file from remote server
+
+        Args:
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
+        """
+        self.sftp.remove(remote_path)
 
     def upload_file(self, file, remote_path):
         """
@@ -174,7 +193,7 @@ class SSH(object):
              of the uploaded file.
         """
         if isinstance(file, io.BytesIO):
-            result = self.sftp.putfo(file, remote_path)
+            result = self.sftp.putfo(file, remote_path)  # type: ignore
         elif isinstance(file, str):
             result = self.sftp.put(file, remote_path=remote_path, recursive=True)
         else:
@@ -403,7 +422,7 @@ class CxTowerServer(models.Model):
         Returns:
             Char: SSH command
         """
-        command = "whoami"
+        command = "uname -a"
         return command
 
     def _connect(self, raise_on_error=True):
@@ -445,7 +464,7 @@ class CxTowerServer(models.Model):
                     "RESULT: %(res)s. ERROR: %(err)s",
                     status=status,
                     res=response,
-                    err=", ".join(error),
+                    err=", ".join(error),  # type: ignore
                 )
             )
 
@@ -473,7 +492,7 @@ class CxTowerServer(models.Model):
             raise ValidationError(
                 _(
                     "Cannot execute command\n. CODE: %(status)s. ERROR: %(err)s",
-                    err=", ".join(err),
+                    err=", ".join(err),  # type: ignore
                     status=st,
                 )
             )
@@ -483,7 +502,9 @@ class CxTowerServer(models.Model):
             "tag": "display_notification",
             "params": {
                 "title": _("Success"),
-                "message": _("Connection test passed! \n%(res)s", res=response),
+                "message": _(
+                    "Connection test passed! \n%(res)s", res=response[0].rstrip()
+                ),
                 "sticky": False,
             },
         }
@@ -649,14 +670,19 @@ class CxTowerServer(models.Model):
                 status = []
                 response = []
                 error = []
-                for cmd in self._prepare_command_for_sudo(command):
+                commands = self._prepare_command_for_sudo(command, mode=sudo)
+
+                if isinstance(commands, str):
+                    return client.exec_command(commands, sudo=sudo)
+
+                for cmd in commands:
                     st, resp, err = client.exec_command(cmd, sudo=sudo)
                     status.append(st)
                     response += resp
                     error += err
                 return self._parse_sudo_command_results(status, response, error)
             else:
-                result = client.exec_command(command, sudo=sudo)
+                return client.exec_command(command)
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(
@@ -664,9 +690,8 @@ class CxTowerServer(models.Model):
                 ) from e
             else:
                 return -1, [], [e]
-        return result
 
-    def _prepare_command_for_sudo(self, command):
+    def _prepare_command_for_sudo(self, command, mode=None):
         """Prepare command to be executed with sudo
         IMPORTANT:
         Commands executed with sudo will be run separately one after another
@@ -678,20 +703,32 @@ class CxTowerServer(models.Model):
 
         Args:
             command (text): initial command
+            mode (str, optional): sudo mode (n, p)
+                n - sudo without password
+                p - sudo with password
 
         Returns:
-            command (list): command splitted into separate commands
+            command (list|str): command splitted into separate commands
+                (for sudo with password mode ('p')) or composed command
+                from its parts for sudo without password mode ('n'))
 
         """
         # Detect command separator
+        # TODO: refactor this method to allow mix of different separators in one string
         if "&&" in command:
             separator = "&&"
         elif ";" in command:
             separator = ";"
         else:
+            if mode == "n":
+                return f"sudo -S -p '' {command}"
             return [command]
 
-        return command.replace("\\", "").replace("\n", "").split(separator)
+        result = command.replace("\\", "").replace("\n", "").split(separator)
+        result = [cmd.strip() for cmd in result]
+        if mode == "n":
+            result = f" {separator} ".join([f"sudo -S -p '' {cmd}" for cmd in result])
+        return result
 
     def _parse_sudo_command_results(self, status_list, response_list, error_list):
         """Parse results of the command executed with sudo
@@ -751,6 +788,18 @@ class CxTowerServer(models.Model):
             "context": context,
         }
 
+    def delete_file(self, remote_path):
+        """
+        Delete file from remote server
+
+        Args:
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
+        """
+        self.ensure_one()
+        client = self._connect(raise_on_error=False)
+        client.delete_file(remote_path)
+
     def upload_file(self, data, remote_path, from_path=False):
         """
         Upload file to remote server.
@@ -804,7 +853,7 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         client = self._connect(raise_on_error=False)
         try:
-            result = client.download_file(remote_path)
+            result = client.download_file(remote_path)  # type: ignore
         except FileNotFoundError as fe:
             raise ValidationError(
                 _("The file %(f_path)s not found.", f_path=remote_path)

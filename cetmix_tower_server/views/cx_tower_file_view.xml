@@ -51,6 +51,10 @@
                                     <field name="rendered_server_dir" />
                                 </div>
                                 <field name="full_server_path" />
+                                <field
+                                name="keep_when_deleted"
+                                attrs="{'invisible': [('source', '!=', 'tower')]}"
+                            />
                             </group>
                             <group>
                                 <field name="auto_sync" />
@@ -234,6 +238,21 @@
         <field name="binding_model_id" ref="model_cx_tower_file" />
         <field name="state">code</field>
         <field name="code">action = records.action_pull_from_server()</field>
+    </record>
+
+    <record id="cetmix_tower_file_delete_action" model="ir.actions.server">
+        <field name="name">Delete from server</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="binding_model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_delete_from_server()</field>
+        <field
+            name="groups_id"
+            eval="[
+            (4, ref('cetmix_tower_server.group_manager')),
+            (4, ref('cetmix_tower_server.group_root')),
+        ]"
+        />
     </record>
 
 </odoo>
