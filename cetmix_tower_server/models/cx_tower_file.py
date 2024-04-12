@@ -3,14 +3,15 @@
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import exception_to_unicode
 
 # mapping of field names from template and field names from file
 TEMPLATE_FILE_FIELD_MAPPING = {
+    "code": "code",
     "file_name": "name",
     "server_dir": "server_dir",
-    "code": "code",
+    "keep_when_deleted": "keep_when_deleted",
 }
 
 # to convert to 'relativedelta' object
@@ -106,6 +107,9 @@ class CxTowerFile(models.Model):
     rendered_code = fields.Char(
         compute="_compute_render",
         help="File content with variables rendered",
+    )
+    keep_when_deleted = fields.Boolean(
+        help="File will be kept on server when deleted in Tower",
     )
 
     @api.depends("server_dir", "name")
@@ -204,6 +208,20 @@ class CxTowerFile(models.Model):
             files_to_sync._post_create_write("write")
         return result
 
+    def unlink(self):
+        """
+        Override to delete from server tower files with
+        `keep_when_deleted` set to False
+        """
+        self.filtered(
+            lambda file_: (
+                file_.server_id
+                and file_.source == "tower"
+                and not file_.keep_when_deleted
+            )
+        ).delete()
+        return super().unlink()
+
     def _post_create_write(self, op_type="write"):
         """Helper function that is called after file creation or update.
         Use this function to implement custom hooks.
@@ -276,6 +294,38 @@ class CxTowerFile(models.Model):
 
         single_msg = _("File downloaded!")
         plural_msg = _("Files downloaded!")
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Success"),
+                "message": single_msg if len(self) == 1 else plural_msg,
+                "sticky": False,
+            },
+        }
+
+    def action_delete_from_server(self):
+        """
+        Delete file from server
+        """
+        server_files = self.filtered(lambda file_: file_.source == "server")
+        if server_files:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Failure"),
+                    "message": _(
+                        "Unable to delete file '%(f)s'.\n"
+                        "Delete operation is not supported for 'server' type files.",
+                        f=server_files[0].rendered_name,
+                    ),
+                    "sticky": False,
+                },
+            }
+        self.delete(raise_error=True)
+        single_msg = _("File deleted!")
+        plural_msg = _("Files deleted!")
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
@@ -359,6 +409,17 @@ class CxTowerFile(models.Model):
         """
         self._process("upload", raise_error)
 
+    def delete(self, raise_error=False):
+        """Wrapper function for file removal.
+        Use it for custom hooks implementation.
+
+        Args:
+            raise_error (bool, optional):
+                Will raise and exception on error if set to 'True'.
+                Defaults to False.
+        """
+        self._process("delete", raise_error)
+
     def _process(self, action, raise_error=False):
         """Upload or download file to/from server.
         Important!
@@ -376,14 +437,15 @@ class CxTowerFile(models.Model):
                 Possible options:
                     - "upload": Upload file.
                     - "download": Download file.
+                    - "delete": Delete file.
             raise_error (bool, optional): Raise exception if there was an error
                  during the operation. Defaults to False.
 
         Raises:
             UserError: In case file format doesn't match the requested operation.
                 Eg if trying to upload 'server' type file.
-            ValidationError: In case there is an error while trying to
-                upload/download a file.
+            ValidationError: In case there is an error while performing
+                an action with a file.
 
         Returns:
             Char: file content or False.
@@ -397,6 +459,7 @@ class CxTowerFile(models.Model):
             if not is_server_code_version_process and (
                 (action == "download" and file.source != "server")
                 or (action == "upload" and file.source != "tower")
+                or (action == "delete" and file.source != "tower")
             ):
                 if raise_error:
                     raise UserError(
@@ -409,6 +472,21 @@ class CxTowerFile(models.Model):
                         )
                     )
                 return False
+
+            if action == "delete":
+                try:
+                    file.check_access_rights("unlink")
+                    file.check_access_rule("unlink")
+                except AccessError as e:
+                    if raise_error:
+                        raise AccessError(
+                            _(
+                                "Due to security restrictions you are "
+                                "not allowed to delete %(fp)s",
+                                fp=file.full_server_path,
+                            )
+                        ) from e
+                    return False
 
             try:
                 if action == "download":
@@ -423,6 +501,10 @@ class CxTowerFile(models.Model):
                     file.server_id.upload_file(
                         tower_key_obj.parse_code(file.rendered_code),
                         tower_key_obj.parse_code(file.full_server_path),
+                    )
+                elif action == "delete":
+                    file.server_id.delete_file(
+                        tower_key_obj.parse_code(file.full_server_path)
                     )
                 else:
                     return False
