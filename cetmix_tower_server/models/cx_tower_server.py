@@ -345,7 +345,7 @@ class CxTowerServer(models.Model):
             secret.sudo().copy({"server_id": result.id})
 
         for var_value in self.variable_value_ids:
-            var_value.copy({"res_id": result.id})
+            var_value.copy({"server_id": result.id})
 
         return result
 
