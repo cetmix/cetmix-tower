@@ -48,7 +48,7 @@
                             />
                             <field name="start_date" />
                             <field name="finish_date" />
-                            <field name="duration" />
+                            <field name="duration_current" />
                         </group>
                         <field name="command_log_ids">
                             <tree
@@ -80,7 +80,7 @@
             >
                 <field name="start_date" />
                 <field name="finish_date" optional="hide" />
-                <field name="duration" optional="show" />
+                <field name="duration_current" optional="show" />
                 <field name="server_id" optional="show" />
                 <field name="plan_id" optional="show" />
                 <field name="plan_status" optional="show" />
