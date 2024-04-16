@@ -8,10 +8,11 @@ class CxTowerCommandLog(models.Model):
     _description = "Cetmix Tower Command Log"
     _order = "start_date desc, id desc"
 
+    active = fields.Boolean(default=True)
     name = fields.Char(compute="_compute_name", compute_sudo=True, store=True)
     label = fields.Char(help="Custom label. Can be used for search/tracking")
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=True, index=True
+        comodel_name="cx.tower.server", required=True, index=True, ondelete="restrict"
     )
 
     # -- Time
@@ -27,7 +28,7 @@ class CxTowerCommandLog(models.Model):
     # -- Command
     is_running = fields.Boolean(help="Command is being executed right now")
     command_id = fields.Many2one(
-        comodel_name="cx.tower.command", required=True, index=True
+        comodel_name="cx.tower.command", required=True, index=True, ondelete="restrict"
     )
     code = fields.Text(string="Command Code")
     command_status = fields.Integer(string="Exit Code")
@@ -40,8 +41,7 @@ class CxTowerCommandLog(models.Model):
     )
 
     # -- Flight Plan
-    plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log")
-    active = fields.Boolean(default=True)
+    plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log", ondelete="cascade")
 
     @api.depends("name", "command_id.name")
     def _compute_name(self):
