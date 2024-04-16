@@ -23,11 +23,16 @@ class CxTowerPlanLog(models.Model):
     start_date = fields.Datetime(string="Started")
     finish_date = fields.Datetime(string="Finished")
     duration = fields.Float(
-        string="Duration, sec",
         help="Time consumed for execution, seconds",
         compute="_compute_duration",
         store=True,
     )
+    duration_current = fields.Float(
+        string="Duration, sec",
+        compute="_compute_duration_current",
+        help="For how long a flight plan is already running",
+    )
+
     # -- Commands
     is_running = fields.Boolean(help="Plan is being executed right now")
     plan_line_executed_id = fields.Many2one(
@@ -52,6 +57,18 @@ class CxTowerPlanLog(models.Model):
                 plan_log.duration = (
                     plan_log.finish_date - plan_log.start_date
                 ).total_seconds()
+
+    def _compute_duration_current(self):
+        """Shows relative time between now() and start time for running plans,
+        and computed duration for finished ones.
+        """
+        for plan_log in self:
+            if plan_log.is_running:
+                plan_log.duration_current = (
+                    fields.Datetime.now() - plan_log.start_date
+                ).total_seconds()
+            else:
+                plan_log.duration_current = plan_log.duration
 
     def start(self, server, plan, start_date=None, **kwargs):
         """Runs plan on server
