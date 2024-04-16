@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 
 class TowerVariableValue(models.Model):
     _name = "cx.tower.variable.value"
-    _description = "Cetmix Tower Variable"
+    _description = "Cetmix Tower Variable Values"
     _rec_name = "variable_name"
     _order = "variable_name"
 
