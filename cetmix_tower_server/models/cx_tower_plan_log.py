@@ -10,13 +10,18 @@ class CxTowerPlanLog(models.Model):
     _description = "Cetmix Tower Flight Plan Log"
     _order = "start_date desc, id desc"
 
+    active = fields.Boolean(default=True)
     name = fields.Char(compute="_compute_name", compute_sudo=True, store=True)
     label = fields.Char(help="Custom label. Can be used for search/tracking")
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=True, index=True
+        comodel_name="cx.tower.server", required=True, index=True, ondelete="restrict"
     )
     plan_id = fields.Many2one(
-        string="Flight Plan", comodel_name="cx.tower.plan", required=True, index=True
+        string="Flight Plan",
+        comodel_name="cx.tower.plan",
+        required=True,
+        index=True,
+        ondelete="restrict",
     )
 
     # -- Time
@@ -32,13 +37,12 @@ class CxTowerPlanLog(models.Model):
     is_running = fields.Boolean(help="Plan is being executed right now")
     plan_line_executed_id = fields.Many2one(
         comodel_name="cx.tower.plan.line",
-        help="Flight Plan line being currently executed",
+        help="Flight Plan line that is being currently executed",
     )
     command_log_ids = fields.One2many(
         comodel_name="cx.tower.command.log", inverse_name="plan_log_id", auto_join=True
     )
     plan_status = fields.Integer(string="Status")
-    active = fields.Boolean(default=True)
 
     @api.depends("server_id.name", "name")
     def _compute_name(self):

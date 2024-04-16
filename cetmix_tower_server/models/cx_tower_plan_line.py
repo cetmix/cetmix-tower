@@ -52,8 +52,6 @@ class CxTowerPlanLine(models.Model):
         kwargs.update({"log": log_vals})
 
         # Set 'sudo' value
-        if self.use_sudo and server.use_sudo:
-            use_sudo = server.use_sudo
-        else:
-            use_sudo = None
+        use_sudo = self.use_sudo and server.use_sudo
+
         server.execute_commands(self.command_id, use_sudo, **kwargs)
