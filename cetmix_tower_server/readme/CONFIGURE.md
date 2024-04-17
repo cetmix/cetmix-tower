@@ -127,7 +127,7 @@ To create a new file template go to `Cetmix Tower/Files/Templates` click `Create
 
 ## Configure a Command
 
-Command is a shell command that is executed on remote server. 
+Command is a shell command that is executed on remote server.
 To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` and put values in the fields:
 
 - **Name**: Command readable name

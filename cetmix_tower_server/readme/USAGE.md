@@ -19,7 +19,9 @@ There are two action buttons available in the wizard:
 
 - **Run**. Executes a command using server "run" method and log command result into the "Command Log".
 - **Run in wizard**. Executes a command directly in the wizard and show command log in a new wizard window.
-You can check the flight plan results in the `Cetmix Tower/Commands/Command Logs` menu.
+
+You can check command execution logs in the `Cetmix Tower/Commands/Command Logs` menu.
+Important! If you want to delete a command you need to delete all its logs manually before doing that.
 
 ## Running a Flight Plan
 
@@ -35,4 +37,7 @@ To run a flight plan:
   - **Commands**: Commands that will be executed in this flight plan. This field is read only
 
   Click the **Run** button to execute a flight plan.
+  
   You can check the flight plan results in the `Cetmix Tower/Commands/Flight Plan Logs` menu.
+  Important! If you want to delete a command you need to delete all its logs manually before doing that.
+
