@@ -320,19 +320,21 @@ class CxTowerServer(models.Model):
         for rec in self:
             if not rec.ip_v4_address and not rec.ip_v6_address:
                 raise ValidationError(
-                    _("Please provide IPv4 or IPv6 address for %s" % rec.name)
+                    _("Please provide IPv4 or IPv6 address for %(srv)s", srv=rec.name)
                 )
             if rec.ssh_auth_mode == "p" and not rec.ssh_password:
                 raise ValidationError(
-                    _("Please provide SSH password for %s" % rec.name)
+                    _("Please provide SSH password for %(srv)s", srv=rec.name)
                 )
             if rec.ssh_auth_mode == "k" and not rec.ssh_key_id:
-                raise ValidationError(_("Please provide SSH Key for %s" % rec.name))
+                raise ValidationError(
+                    _("Please provide SSH Key for %(srv)s", srv=rec.name)
+                )
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
-        default["name"] = _("%s (copy)", self.name)
+        default["name"] = _("%(name)s (copy)", name=self.name)
 
         file_ids = self.env["cx.tower.file"]
         for file in self.file_ids:
@@ -424,7 +426,7 @@ class CxTowerServer(models.Model):
             )
         except Exception as e:
             if raise_on_error:
-                raise ValidationError(_("SSH connection error %s" % e)) from e
+                raise ValidationError(_("SSH connection error %(err)s", err=e)) from e
             else:
                 return False, e
         return client
@@ -439,9 +441,11 @@ class CxTowerServer(models.Model):
         if status != 0 or error:
             raise ValidationError(
                 _(
-                    "Cannot execute command\n. CODE: {}. RESULT: {}. ERROR: {}".format(
-                        status, response, ", ".join(error)
-                    )
+                    "Cannot execute command\n. CODE: %(status)s. "
+                    "RESULT: %(res)s. ERROR: %(err)s",
+                    status=status,
+                    res=response,
+                    err=", ".join(error),
                 )
             )
 
@@ -450,7 +454,8 @@ class CxTowerServer(models.Model):
                 _(
                     "No output received."
                     " Please log in manually and check for any issues.\n"
-                    "===\nCODE: {}".format(status)
+                    "===\nCODE: %(status)s",
+                    status=status,
                 )
             )
 
@@ -467,9 +472,9 @@ class CxTowerServer(models.Model):
         if status != 0 or error:
             raise ValidationError(
                 _(
-                    "Cannot execute command\n. CODE: {}. ERROR: {}".format(
-                        st, ", ".joint(err)
-                    )
+                    "Cannot execute command\n. CODE: %(status)s. ERROR: %(err)s",
+                    err=", ".join(err),
+                    status=st,
                 )
             )
 
@@ -478,7 +483,7 @@ class CxTowerServer(models.Model):
             "tag": "display_notification",
             "params": {
                 "title": _("Success"),
-                "message": _("Connection test passed! \n{}".format(response)),
+                "message": _("Connection test passed! \n%(res)s", res=response),
                 "sticky": False,
             },
         }
@@ -654,7 +659,9 @@ class CxTowerServer(models.Model):
                 result = client.exec_command(command, sudo=sudo)
         except Exception as e:
             if raise_on_error:
-                raise ValidationError(_("SSH execute command error %s" % e)) from e
+                raise ValidationError(
+                    _("SSH execute command error %(err)s", err=e)
+                ) from e
             else:
                 return -1, [], [e]
         return result
@@ -800,7 +807,7 @@ class CxTowerServer(models.Model):
             result = client.download_file(remote_path)
         except FileNotFoundError as fe:
             raise ValidationError(
-                _('The file "{}" not found.'.format(remote_path))
+                _("The file %(f_path)s not found.", f_path=remote_path)
             ) from fe
         return result
 
