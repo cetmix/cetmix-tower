@@ -108,7 +108,9 @@ class CxTowerKey(models.Model):
                 ]
             )
             if other_key:
-                raise ValidationError(_("Such key already exists: %s" % other_key.name))
+                raise ValidationError(
+                    _("Such key already exists: %(key)s", key=other_key.name)
+                )
 
     def _read(self, fields):
         """Substitute fields based on api"""
