@@ -57,7 +57,7 @@ class CxTowerCommand(models.Model):
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
-        default["name"] = _("%s (copy)", self.name)
+        default["name"] = _("%(cmd)s (copy)", cmd=self.name)
         return super(CxTowerCommand, self).copy(default=default)
 
     def name_get(self):
