@@ -191,7 +191,39 @@ class CxTowerFile(models.Model):
         Override to sync files from tower
         """
         vals = self._sanitize_values(vals)
+
+        # if 'name' or 'server_dir' fields are
+        # changed in 'tower' file type, we need to
+        # rename/move corresponding file on server
+
+        renamed_files = None
+        if "name" in vals or "server_dir" in vals:
+            renamed_files = self.filtered(
+                lambda file_: (
+                    file_.server_id
+                    and file_.source == "tower"
+                    and (
+                        file_.name != vals["name"]
+                        or file_.server_dir != vals["server_dir"]
+                    )
+                )
+            )
+            renamed_files = [
+                {
+                    "old_path": file_.full_server_path,
+                    "record": file_,
+                }
+                for file_ in renamed_files
+            ]
+
         result = super().write(vals)
+
+        # rename/move renamed files on server
+        if renamed_files:
+            for file in renamed_files:
+                file["record"].server_id.rename_file(
+                    file["old_path"], file["record"].full_server_path
+                )
 
         # sync tower files after change
         sync_fields = self._get_tower_sync_field_names()

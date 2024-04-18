@@ -5,7 +5,7 @@ import io
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 from .constants import ANOTHER_COMMAND_RUNNING
 
@@ -198,6 +198,18 @@ class SSH(object):
         """
         file = self.sftp.open(remote_path)
         return file.read()
+
+    def move_file(self, old_path, new_path):
+        """
+        Rename/Move file from old path to new path on remote server
+
+        Args:
+            old_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
+            new_path (Text): full path file location with file type
+             (e.g. /test/my_new_file.txt).
+        """
+        self.sftp.rename(old_path, new_path)
 
 
 class CxTowerServer(models.Model):
@@ -803,6 +815,30 @@ class CxTowerServer(models.Model):
                 _('The file "{}" not found.'.format(remote_path))
             ) from fe
         return result
+
+    def rename_file(self, old_path, new_path):
+        """
+        Rename/Move file from old path to new path on remote server
+
+        Args:
+            old_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
+            new_path (Text): full path file location with file type
+             (e.g. /test/my_new_file.txt).
+        """
+        self.ensure_one()
+        client = self._connect(raise_on_error=False)
+        try:
+            client.move_file(old_path, new_path)
+        except FileNotFoundError as e:
+            raise UserError(
+                _(
+                    "Cannot move/rename file from '%(old_path)s' to "
+                    "'%(new_path)s'. File not found.",
+                    old_path=old_path,
+                    new_path=new_path,
+                )
+            ) from e
 
     def action_open_files(self):
         """
