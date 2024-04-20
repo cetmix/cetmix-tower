@@ -195,7 +195,6 @@ class CxTowerFile(models.Model):
         # if 'name' or 'server_dir' fields are
         # changed in 'tower' file type, we need to
         # rename/move corresponding file on server
-
         renamed_files = None
         if "name" in vals or "server_dir" in vals:
             renamed_files = self.filtered(
@@ -219,11 +218,7 @@ class CxTowerFile(models.Model):
         result = super().write(vals)
 
         # rename/move renamed files on server
-        if renamed_files:
-            for file in renamed_files:
-                file["record"].server_id.rename_file(
-                    file["old_path"], file["record"].full_server_path
-                )
+        self.action_rename_on_server(renamed_files)
 
         # sync tower files after change
         sync_fields = self._get_tower_sync_field_names()
@@ -318,6 +313,26 @@ class CxTowerFile(models.Model):
             },
         }
 
+    def action_rename_on_server(self, files_to_rename=None):
+        """
+        Rename or move file on server
+        """
+        files_to_rename = files_to_rename or {}
+        for file_ in files_to_rename:
+            file_["record"].rename(file_["old_path"], raise_error=True)
+
+        single_msg = _("File renamed/moved!")
+        plural_msg = _("Files renamed/moved!")
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": _("Success"),
+                "message": single_msg if len(self) == 1 else plural_msg,
+                "sticky": False,
+            },
+        }
+
     def action_get_current_server_code(self):
         """
         Get actual file code from server
@@ -391,8 +406,23 @@ class CxTowerFile(models.Model):
         """
         self._process("upload", raise_error)
 
-    def _process(self, action, raise_error=False):
-        """Upload or download file to/from server.
+    def rename(self, old_path, raise_error=False):
+        """Wrapper function for file renaming/moving.
+        Use it for custom hooks implementation.
+
+        Args:
+            raise_error (bool, optional):
+                Will raise and exception on error if set to 'True'.
+                Defaults to False.
+        """
+        self._process("rename", raise_error, old_path=old_path)
+
+    def _process(self, action, raise_error=False, **kwargs):
+        """
+        Performs and processes the following actions:
+            - Upload file to server.
+            - Download file from server.
+            - Rename or move file on server.
         Important!
         This function will return a value only in case `is_server_code_version_process`
         key is present in context.
@@ -401,21 +431,22 @@ class CxTowerFile(models.Model):
         In all other cases it will update the file content and save
         server response into the `server_response` field.
 
-
-
         Args:
             action (Selection): Action to process.
                 Possible options:
                     - "upload": Upload file.
                     - "download": Download file.
+                    - "rename": Rename or move a file.
             raise_error (bool, optional): Raise exception if there was an error
-                 during the operation. Defaults to False.
+                during the operation. Defaults to False.
+            old_path (str, optional): Old path of the file to move/rename.
+                Used only for the "rename" action.
 
         Raises:
             UserError: In case file format doesn't match the requested operation.
                 Eg if trying to upload 'server' type file.
             ValidationError: In case there is an error while trying to
-                upload/download a file.
+                perform an action with a file.
 
         Returns:
             Char: file content or False.
@@ -429,6 +460,7 @@ class CxTowerFile(models.Model):
             if not is_server_code_version_process and (
                 (action == "download" and file.source != "server")
                 or (action == "upload" and file.source != "tower")
+                or (action == "rename" and file.source != "tower")
             ):
                 if raise_error:
                     raise UserError(
@@ -455,6 +487,21 @@ class CxTowerFile(models.Model):
                     file.server_id.upload_file(
                         tower_key_obj.parse_code(file.rendered_code),
                         tower_key_obj.parse_code(file.full_server_path),
+                    )
+                elif action == "rename":
+                    if "old_path" not in kwargs:
+                        if raise_error:
+                            raise ValidationError(
+                                _(
+                                    "Old path is not provided for "
+                                    "renaming of file %(f)s",
+                                    f=file.rendered_name,
+                                )
+                            )
+                        return False
+                    file.server_id.rename_file(
+                        kwargs["old_path"],
+                        file.full_server_path,
                     )
                 else:
                     return False

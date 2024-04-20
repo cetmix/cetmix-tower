@@ -5,7 +5,7 @@ import io
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 from .constants import ANOTHER_COMMAND_RUNNING
 
@@ -828,17 +828,7 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
         client = self._connect(raise_on_error=False)
-        try:
-            client.move_file(old_path, new_path)
-        except FileNotFoundError as e:
-            raise UserError(
-                _(
-                    "Cannot move/rename file from '%(old_path)s' to "
-                    "'%(new_path)s'. File not found.",
-                    old_path=old_path,
-                    new_path=new_path,
-                )
-            ) from e
+        client.move_file(old_path, new_path)
 
     def action_open_files(self):
         """
