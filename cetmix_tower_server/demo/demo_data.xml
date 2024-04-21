@@ -49,6 +49,7 @@
         <field name="ssh_username">admin</field>
         <field name="ssh_password">password</field>
         <field name="ssh_auth_mode">p</field>
+        <field name="ssh_key_id" ref="key_1" />
         <field name="os_id" ref="os_debian_10" />
         <field
             name="tag_ids"

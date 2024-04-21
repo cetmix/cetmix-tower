@@ -55,6 +55,12 @@ class TestTowerCommon(TransactionCase):
         self.variable_url = self.Variable.create({"name": "test_url"})
         self.variable_version = self.Variable.create({"name": "test_version"})
 
+        # Tags
+        self.Tag = self.env["cx.tower.tag"]
+
+        self.tag_staging = self.Tag.create({"name": "Staging", "color": 1})
+        self.tag_production = self.Tag.create({"name": "Production", "color": 2})
+
         # Command
         self.Command = self.env["cx.tower.command"]
         self.command_create_dir = self.Command.create(
@@ -82,9 +88,7 @@ class TestTowerCommon(TransactionCase):
             {
                 "name": "Test plan 1",
                 "note": "Create directory and list its content",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_staging.id])],
             }
         )
         self.plan_line_1 = self.plan_line.create(

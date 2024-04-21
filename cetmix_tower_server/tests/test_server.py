@@ -38,9 +38,7 @@ class TestTowerServer(TestTowerCommon):
                         },
                     ),
                 ],
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_production").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_production.id])],
             }
         )
         # Files
