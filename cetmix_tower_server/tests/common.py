@@ -25,6 +25,12 @@ class TestTowerCommon(TransactionCase):
         # OS
         self.os_debian_10 = self.env["cx.tower.os"].create({"name": "Test Debian 10"})
 
+        # Key
+        self.Key = self.env["cx.tower.key"]
+
+        self.key_1 = self.Key.create({"name": "Test Key 1"})
+        self.key_2 = self.Key.create({"name": "Test Key 2"})
+
         # Server
         self.Server = self.env["cx.tower.server"]
         self.server_test_1 = self.Server.create(
@@ -34,6 +40,7 @@ class TestTowerCommon(TransactionCase):
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
+                "ssh_key_id": self.key_1.id,
                 "os_id": self.os_debian_10.id,
             }
         )
@@ -65,12 +72,6 @@ class TestTowerCommon(TransactionCase):
 
         # Command log
         self.CommandLog = self.env["cx.tower.command.log"]
-
-        # Key
-        self.Key = self.env["cx.tower.key"]
-
-        self.key_1 = self.Key.create({"name": "Test Key 1"})
-        self.key_2 = self.Key.create({"name": "Test Key 2"})
 
         # Flight Plans
         self.Plan = self.env["cx.tower.plan"]
