@@ -179,5 +179,28 @@
     <record id="variable_odoo_workers" model="cx.tower.variable">
         <field name="name">odoo_workers</field>
     </record>
+    <record id="variable_postgres_root" model="cx.tower.variable">
+        <field name="name">postgres_root</field>
+    </record>
+
+    <record id="variable_postgres_user" model="cx.tower.variable">
+        <field name="name">postgres_user</field>
+    </record>
+
+    <record id="variable_shared_postgres_data" model="cx.tower.variable">
+        <field name="name">shared_postgres_data</field>
+    </record>
+
+    <record id="variable_shared_postgres_name" model="cx.tower.variable">
+        <field name="name">shared_postgres_name</field>
+    </record>
+
+    <record id="variable_shared_postgres_restart_policy" model="cx.tower.variable">
+        <field name="name">shared_postgres_restart_policy</field>
+    </record>
+
+    <record id="variable_tmp_location" model="cx.tower.variable">
+        <field name="name">tmp_location</field>
+    </record>
 
 </odoo>
