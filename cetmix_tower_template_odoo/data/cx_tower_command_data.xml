@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2023 Cetmix OÜ
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="command_create_dir" model="cx.tower.command">
+        <field name="name">Create directory</field>
+        <field name="code">cd {{ test_path }} &amp;&amp; mkdir {{ dir }}</field>
+    </record>
+    <record id="command_list_dir" model="cx.tower.command">
+        <field name="name">List files in directory</field>
+        <field name="code">cd {{ test_path }} &amp;&amp; ls -l</field>
+    </record>
+
+
+    <record id="command_destroy_odoo_instance_and_image" model="cx.tower.command">
+        <field name="name">Destroy Odoo instance and image</field>
+        <field name="code">docker stop {{ odoo_container_name }} &amp;&amp; docker rm {{
+            odoo_container_name }} &amp;&amp; docker image rm {{ odoo_image_name }}</field>
+    </record>
+
+    <record id="command_disable_all_cron_jobs" model="cx.tower.command">
+        <field name="name">Disable all cron jobs</field>
+        <field name="code">docker exec -t -e PGPASSWORD={{ postgres_password }} {{
+            shared_postgres_name }} psql -U {{ postgres_user }} -d {{ odoo_db_name }} -c "update
+            ir_cron SET active=FALSE"</field>
+    </record>
+
+    <record id="command_docker_prune" model="cx.tower.command">
+        <field name="name">Docker prune</field>
+        <field name="code">docker system prune -af</field>
+    </record>
+
+    <record id="command_docker_show_logs" model="cx.tower.command">
+        <field name="name">Docker show logs</field>
+        <field name="code">docker logs --since={{ docker_logs_time or '5m' }} {{ odoo_container_name
+            }}</field>
+    </record>
+
+    <record id="command_download_and_install_docker_with_script" model="cx.tower.command">
+        <field name="name">Download and install docker with script</field>
+        <field name="code">curl -fsSL https://get.docker.com -o get-docker.sh &amp;&amp; sh
+            get-docker.sh</field>
+    </record>
+
+    <record id="command_fetch_odoo_official_dockerfile" model="cx.tower.command">
+        <field name="name">Fetch Odoo official Dockerfile</field>
+        <field name="code">curl -sSL https://github.com/cetmix/odoo-docker-official/tarball/main |
+            tar zxf - --strip-components=1 -C {{ odoo_dockerfile_official_location }}</field>
+    </record>
+
+    <record id="command_get_odoo_official_checksum" model="cx.tower.command">
+        <field name="name">Get Odoo official checksum</field>
+        <field name="code">curl -sL http://nightly.odoo.com/{{ odoo_version }}/nightly/deb/odoo_{{
+            odoo_version }}.{{ odoo_dockerfile_official_release }}_all.deb | sha1sum</field>
+    </record>
+
+    <record id="command_install_docker_compose" model="cx.tower.command">
+        <field name="name">Install Docker Compose</field>
+        <field name="code">apt install -y docker-compose</field>
+    </record>
+
+    <record id="command_install_git" model="cx.tower.command">
+        <field name="name">Install Git</field>
+        <field name="code">apt install -y git</field>
+    </record>
+
+    <record id="command_install_curl" model="cx.tower.command">
+        <field name="name">Install curl</field>
+        <field name="code">apt-get install -y curl</field>
+    </record>
+
+    <record id="command_list_docker_containers" model="cx.tower.command">
+        <field name="name">List docker containers</field>
+        <field name="code">docker ps --all</field>
+    </record>
+
+    <record id="command_list_local_resources" model="cx.tower.command">
+        <field name="name">List local resources</field>
+        <field name="code">cd / &amp;&amp; pwd &amp;&amp; ls -lha</field>
+    </record>
+
+    <record id="command_list_root_backup_folder_contents" model="cx.tower.command">
+        <field name="name">List root backup folder contents</field>
+        <field name="code">ls -lah {{ backup_location }}</field>
+    </record>
+
+    <record id="command_odoo_container_run" model="cx.tower.command">
+        <field name="name">Odoo container run</field>
+        <field name="code">docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
+            {{ odoo_config_location }}:/etc/odoo --restart {{ odoo_restart_policy }} --name {{
+            odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }}</field>
+    </record>
+
+    <record id="command_odoo_start_with_db" model="cx.tower.command">
+        <field name="name">Odoo start with db</field>
+        <field name="code">docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
+            {{ odoo_config_location }}:/etc/odoo --restart {{ odoo_restart_policy }} --name {{
+            odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }} --
+            --database={{ odoo_db_name }}</field>
+    </record>
+
+    <record id="command_odoo_start_with_db_update" model="cx.tower.command">
+        <field name="name">Odoo start with db update</field>
+        <field name="code">docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
+            {{ odoo_config_location }}:/etc/odoo --restart {{ odoo_restart_policy }} --name {{
+            odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }} --
+            --database={{ odoo_db_name }} --update={{ odoo_modules_to_update }}</field>
+    </record>
+
+    <record id="command_reload_cron" model="cx.tower.command">
+        <field name="name">Reload cron</field>
+        <field name="code">/etc/init.d/cron reload</field>
+    </record>
+
+    <record id="command_remove_odoo_container" model="cx.tower.command">
+        <field name="name">Remove Odoo container</field>
+        <field name="code">docker rm {{ odoo_container_name}}</field>
+    </record>
+
+    <record id="command_remove_shared_pg" model="cx.tower.command">
+        <field name="name">Remove shared PG</field>
+        <field name="code">docker rm {{ shared_postgres_name }}</field>
+    </record>
+
+
+    <record id="command_restart_odoo_container" model="cx.tower.command">
+        <field name="name">Restart Odoo Container</field>
+        <field name="code">docker restart {{ odoo_container_name }}</field>
+    </record>
+
+    <record id="command_restore_db_from_dump" model="cx.tower.command">
+        <field name="name">Restore DB from Dump</field>
+        <field name="code">gunzip -c {{ backup_restore_dump_location }}/{{ backup_restore_file_name
+            }} | docker exec -i -e PGPASSWORD={{ postgres_password }} {{ shared_postgres_name }}
+            psql -U {{ postgres_user }} -d {{ odoo_db_name_restore }}</field>
+    </record>
+
+    <record id="command_run_odoo_container_with_shared_pg" model="cx.tower.command">
+        <field name="name">Run Odoo container with shared PG</field>
+        <field name="code">docker run -d -p {{ odoo_port }}:8069 {% if odoo_longpolling_port and
+            odoo_longpolling_port != '0' and odoo_workers and odoo_workers != '0' %} -p {{
+            odoo_longpolling_port }}:8072 {% endif %} -v {{ odoo_data }}:/var/lib/odoo {% if
+            odoo_config_location %} -v {{ odoo_config_location }}:/etc/odoo {% endif %} {% if
+            odoo_extra_addons %} -v {{ odoo_extra_addons }}:{{ odoo_docker_extra_addons }} {% endif
+            %} {% if odoo_src %} -v {{ odoo_src }}:/mnt/odoo {% endif %} --restart {{
+            odoo_restart_policy }} --name {{ odoo_container_name}} --link {{ shared_postgres_name
+            }}:db -t {{ odoo_image_name }} -- {% if odoo_without_demo and odoo_without_demo !='0' %}
+            --without-demo={{ odoo_without_demo }} {% endif %} {% if odoo_addons_path %}
+            --addons-path={{ odoo_addons_path }} {% endif %} {% if odoo_db_name %} --database={{
+            odoo_db_name }} {% endif %} {% if odoo_limit_time_cpu %} --limit-time-cpu={{
+            odoo_limit_time_cpu }} {% endif %} {% if odoo_limit_time_real %} --limit-time-real={{
+            odoo_limit_time_real }} {% endif %} {% if odoo_log_level %} --log-level={{
+            odoo_log_level }} {% endif %} {% if odoo_log_handler %} --log-handler={{
+            odoo_log_handler }} {% endif %} {% if odoo_log_level %} --log-level={{ odoo_log_level }}
+            {% endif %} {% if odoo_log_web %} --log-web {% endif %} {% if odoo_workers %}
+            --workers={{ odoo_workers }} {% endif %} {% if odoo_load %} --load={{ odoo_load }} {%
+            endif %} {% if odoo_config_file %} --config={{ odoo_config_file }} {% endif %} {% if
+            odoo_proxy_mode %} --proxy-mode {% endif %} {% if odoo_gevent_port and odoo_gevent_port
+            != '0' and odoo_workers and odoo_workers != '0' %} --gevent-port={{ odoo_gevent_port }}
+            {% elif odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and
+            odoo_workers != '0' %} --longpolling-port={{ odoo_longpolling_port }} {% endif %} {% if
+            odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and odoo_workers
+            != '0' and odoo_max_cron_threads and odoo_max_cron_threads != '0' %}
+            --max-cron-threads={{ odoo_max_cron_threads }} {% endif %}</field>
+    </record>
+    <record id="command_run_shared_pg" model="cx.tower.command">
+        <field name="name">Run shared PG</field>
+        <field name="code">docker run -d -e POSTGRES_USER={{ postgres_user }} -e
+            POSTGRES_PASSWORD={{ postgres_password }} \ -e POSTGRES_DB=postgres \ {% if PGDATA %} -e
+            PGDATA={{ PGDATA }} \ {% endif %} {% if postgres_shm_size %} --shm-size={{
+            postgres_shm_size }}\ {% endif %} --restart {{ shared_postgres_restart_policy }} \ -v {{
+            shared_postgres_data }}:{{ PGDATA }} \ {% if postgres_port %} -p {{ postgres_port
+            }}:5432 \ {% endif %} --name {{ shared_postgres_name }} postgres:{{ postgres_version }}
+            \ {% if pg_max_connections %} -c max_connections={{ pg_max_connections }} \ {% endif %}
+            {% if pg_shared_buffers %} -c shared_buffers={{ pg_shared_buffers }} \ {% endif %} {% if
+            pg_effective_cache_size %} -c effective_cache_size={{ pg_shared_buffers }} \ {% endif %}
+            {% if pg_maintenance_work_mem %} -c maintenance_work_mem={{ pg_maintenance_work_mem }} \
+            {% endif %} {% if pg_checkpoint_completion_target %} -c checkpoint_completion_target={{
+            pg_checkpoint_completion_target }} \ {% endif %} {% if pg_wal_buffers %} -c
+            wal_buffers={{ pg_wal_buffers }} \ {% endif %} {% if pg_default_statistics_target %} -c
+            default_statistics_target={{ pg_default_statistics_target }} \ {% endif %} {% if
+            pg_random_page_cost %} -c random_page_cost={{ pg_random_page_cost }} \ {% endif %} {% if
+            pg_effective_io_concurrency %} -c effective_io_concurrency={{
+            pg_effective_io_concurrency }} \ {% endif %} {% if pg_work_mem %} -c work_mem={{
+            pg_work_mem }} \ {% endif %} {% if pg_min_wal_size %} -c min_wal_size={{ pg_min_wal_size
+            }} \ {% endif %} {% if pg_max_wal_size %} -c max_wal_size={{ pg_max_wal_size }} \ {%
+            endif %} {% if pg_max_worker_processes %} -c max_worker_processes={{
+            pg_max_worker_processes }} \ {% endif %} {% if pg_max_parallel_workers_per_gather %} -c
+            max_parallel_workers_per_gather={{ pg_max_parallel_workers_per_gather }} \ {% endif %}
+            {% if pg_max_parallel_workers %} -c max_parallel_workers={{ pg_max_parallel_workers }} \
+            {% endif %} {% if pg_max_parallel_maintenance_workers %} -c
+            max_parallel_maintenance_workers={{ pg_max_parallel_maintenance_workers }} \ {% endif %}</field>
+    </record>
+
+    <record id="command_show_free_disk_space" model="cx.tower.command">
+        <field name="name">Show free disk space</field>
+        <field name="code">df -BG</field>
+    </record>
+
+    <record id="command_start_odoo_container" model="cx.tower.command">
+        <field name="name">Start Odoo container</field>
+        <field name="code">docker start {{ odoo_container_name }}</field>
+    </record>
+
+
+</odoo>
