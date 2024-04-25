@@ -15,6 +15,7 @@
         "data/cx_tower_variable_value_data.xml",
         "data/cx_tower_command_data.xml",
         "data/cx_tower_flight_plan_data.xml",
+        "data/cx_tower_file_template_data.xml",
     ],
     "demo": [],
 }
