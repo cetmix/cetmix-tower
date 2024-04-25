@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright (C) 2023 Cetmix OÜ
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -32,25 +32,36 @@
 
     <record id="command_docker_show_logs" model="cx.tower.command">
         <field name="name">Docker show logs</field>
-        <field name="code">docker logs --since={{ docker_logs_time or '5m' }} {{ odoo_container_name
+        <field
+            name="code"
+        >docker logs --since={{ docker_logs_time or '5m' }} {{ odoo_container_name
             }}</field>
     </record>
 
-    <record id="command_download_and_install_docker_with_script" model="cx.tower.command">
+    <record
+        id="command_download_and_install_docker_with_script"
+        model="cx.tower.command"
+    >
         <field name="name">Download and install docker with script</field>
-        <field name="code">curl -fsSL https://get.docker.com -o get-docker.sh &amp;&amp; sh
+        <field
+            name="code"
+        >curl -fsSL https://get.docker.com -o get-docker.sh &amp;&amp; sh
             get-docker.sh</field>
     </record>
 
     <record id="command_fetch_odoo_official_dockerfile" model="cx.tower.command">
         <field name="name">Fetch Odoo official Dockerfile</field>
-        <field name="code">curl -sSL https://github.com/cetmix/odoo-docker-official/tarball/main |
+        <field
+            name="code"
+        >curl -sSL https://github.com/cetmix/odoo-docker-official/tarball/main |
             tar zxf - --strip-components=1 -C {{ odoo_dockerfile_official_location }}</field>
     </record>
 
     <record id="command_get_odoo_official_checksum" model="cx.tower.command">
         <field name="name">Get Odoo official checksum</field>
-        <field name="code">curl -sL http://nightly.odoo.com/{{ odoo_version }}/nightly/deb/odoo_{{
+        <field
+            name="code"
+        >curl -sL http://nightly.odoo.com/{{ odoo_version }}/nightly/deb/odoo_{{
             odoo_version }}.{{ odoo_dockerfile_official_release }}_all.deb | sha1sum</field>
     </record>
 
@@ -86,14 +97,18 @@
 
     <record id="command_odoo_container_run" model="cx.tower.command">
         <field name="name">Odoo container run</field>
-        <field name="code">docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
+        <field
+            name="code"
+        >docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
             {{ odoo_config_location }}:/etc/odoo --restart {{ odoo_restart_policy }} --name {{
             odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }}</field>
     </record>
 
     <record id="command_odoo_start_with_db" model="cx.tower.command">
         <field name="name">Odoo start with db</field>
-        <field name="code">docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
+        <field
+            name="code"
+        >docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
             {{ odoo_config_location }}:/etc/odoo --restart {{ odoo_restart_policy }} --name {{
             odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }} --
             --database={{ odoo_db_name }}</field>
@@ -101,7 +116,9 @@
 
     <record id="command_odoo_start_with_db_update" model="cx.tower.command">
         <field name="name">Odoo start with db update</field>
-        <field name="code">docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
+        <field
+            name="code"
+        >docker run -d -p {{ odoo_port }}:8069 -v {{ odoo_data }}:/var/lib/odoo -v
             {{ odoo_config_location }}:/etc/odoo --restart {{ odoo_restart_policy }} --name {{
             odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }} --
             --database={{ odoo_db_name }} --update={{ odoo_modules_to_update }}</field>
@@ -130,14 +147,18 @@
 
     <record id="command_restore_db_from_dump" model="cx.tower.command">
         <field name="name">Restore DB from Dump</field>
-        <field name="code">gunzip -c {{ backup_restore_dump_location }}/{{ backup_restore_file_name
+        <field
+            name="code"
+        >gunzip -c {{ backup_restore_dump_location }}/{{ backup_restore_file_name
             }} | docker exec -i -e PGPASSWORD={{ postgres_password }} {{ shared_postgres_name }}
             psql -U {{ postgres_user }} -d {{ odoo_db_name_restore }}</field>
     </record>
 
     <record id="command_run_odoo_container_with_shared_pg" model="cx.tower.command">
         <field name="name">Run Odoo container with shared PG</field>
-        <field name="code">docker run -d -p {{ odoo_port }}:8069 {% if odoo_longpolling_port and
+        <field
+            name="code"
+        >docker run -d -p {{ odoo_port }}:8069 {% if odoo_longpolling_port and
             odoo_longpolling_port != '0' and odoo_workers and odoo_workers != '0' %} -p {{
             odoo_longpolling_port }}:8072 {% endif %} -v {{ odoo_data }}:/var/lib/odoo {% if
             odoo_config_location %} -v {{ odoo_config_location }}:/etc/odoo {% endif %} {% if
@@ -202,5 +223,99 @@
         <field name="code">docker start {{ odoo_container_name }}</field>
     </record>
 
+    <record id="command_update_debian_packages" model="cx.tower.command">
+        <field name="name">Update Debian packages</field>
+        <field name="code">apt-get update</field>
+    </record>
 
+    <record id="command_upgrade_debian_packages" model="cx.tower.command">
+        <field name="name">Upgrade Debian packages</field>
+        <field name="code">apt-get upgrade</field>
+    </record>
+
+    <record id="command_create_odoo_directories" model="cx.tower.command">
+        <field name="name">Create Odoo instance directories</field>
+        <field name="code">mkdir -p {{ odoo_data }} &amp;&amp; \
+            mkdir -p {{ dockerfile_location }} &amp;&amp; \
+            mkdir -p {{ odoo_config_location }}</field>
+    </record>
+
+
+    <record id="command_change_odoo_directories_ownership" model="cx.tower.command">
+        <field name="name">Change Odoo directories ownership</field>
+        <field
+            name="note"
+        >Change Odoo config and data directories ownership to the docker “odoo” user.
+            NB Ensure your user has enough access right for “crown”. Use sudo otherwise</field>
+
+        <field
+            name="code"
+        >chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ odoo_data }}
+            &amp;&amp; \
+            chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ odoo_config_location }}</field>
+    </record>
+
+    <record id="command_create_shared_pg_directories" model="cx.tower.command">
+        <field name="name">Creates directories for shared PG</field>
+        <field name="code">mkdir -p {{ shared_postgres_data }}</field>
+    </record>
+
+    <record id="command_build_odoo_image" model="cx.tower.command">
+        <field name="name">Build Odoo image</field>
+        <field name="note">Common image build command</field>
+
+        <field
+            name="code"
+        >docker build {{ dockerfile_location }} --tag "{{ odoo_image_name }}" \
+            --no-cache \
+            --build-arg ODOO_VERSION={{ odoo_version }} \
+            --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN</field>
+    </record>
+
+    <record id="command_stop_odoo_container" model="cx.tower.command">
+        <field name="name">Stop Odoo container</field>
+
+        <field name="code">docker stop {{ odoo_container_name}}</field>
+    </record>
+
+    <record id="command_update_odoo_container_with_shared_pg" model="cx.tower.command">
+        <field name="name">Update Odoo container with shared PG</field>
+        <field name="note">Runs container with odoo in update mode.
+            Container is removed after execution</field>
+        <field name="code"> docker run --rm \
+            -v {{ odoo_data }}:/var/lib/odoo \
+            {% if odoo_config_location %}
+            -v {{ odoo_config_location }}:/etc/odoo \
+            {% endif %}
+            {% if odoo_extra_addons %}
+            -v {{ odoo_extra_addons }}:{{ odoo_docker_extra_addons }} \
+            {% endif %}
+            {% if odoo_src %}
+            -v {{ odoo_src }}:/mnt/odoo \
+            {% endif %}
+            --name {{ odoo_container_name}}_updater --link {{ shared_postgres_name }}:db -t {{
+            odoo_image_name }} \
+            -- --no-http --stop-after-init --update={{ odoo_modules_to_update }} \
+            {% if odoo_addons_path %}
+            --addons-path={{ odoo_addons_path }} \
+            {% endif %}
+            {% if odoo_db_name %}
+            --database={{ odoo_db_name }} \
+            {% endif %}
+            {% if odoo_limit_time_cpu %}
+            --limit-time-cpu={{ odoo_limit_time_cpu }} \
+            {% endif %}
+            {% if odoo_limit_time_real %}
+            --limit-time-real={{ odoo_limit_time_real }} \
+            {% endif %}
+            {% if odoo_config_file %}
+            --config={{ odoo_config_file }} \
+            {% endif %}
+        </field>
+    </record>
+
+    <record id="command_stop_shared_pg" model="cx.tower.command">
+        <field name="name">Stop shared PG</field>
+        <field name="code">docker rm {{ shared_postgres_name }}</field>
+    </record>
 </odoo>

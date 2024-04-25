@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright (C) 2023 Cetmix OÜ
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+    <!-- Flight Plan  Init Tower on server-->
+    <record id="plan_init_tower" model="cx.tower.plan">
+        <field name="name">Init Tower on server</field>
+        <field name="note">Install docker
+            Create directories
+            Create shared PG
+        </field>
+
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_update_debian_packages" />
+        <field name="use_sudo">1</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_2" model="cx.tower.plan.line">
+        <field name="sequence">11</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_upgrade_debian_packages" />
+        <field name="use_sudo">1</field>
+
+    </record>
+
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_3" model="cx.tower.plan.line">
+        <field name="sequence">12</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_install_curl" />
+        <field name="use_sudo">1</field>
+    </record>
+
+    <!-- Action -->
+    <record id="plan_init_tower_line_3_action_1" model="cx.tower.plan.line.action">
+        <field name="line_id" ref="plan_init_tower_line_3" />
+        <field name="sequence">12</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_4" model="cx.tower.plan.line">
+        <field name="sequence">13</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field
+            name="command_id"
+            ref="command_download_and_install_docker_with_script"
+        />
+        <field name="use_sudo">1</field>
+    </record>
+
+    <!-- Action -->
+    <record id="plan_init_tower_line_4_action_1" model="cx.tower.plan.line.action">
+        <field name="line_id" ref="plan_init_tower_line_4" />
+        <field name="sequence">14</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_5" model="cx.tower.plan.line">
+        <field name="sequence">15</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_create_odoo_directories" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_6" model="cx.tower.plan.line">
+        <field name="sequence">16</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_change_odoo_directories_ownership" />
+        <field name="use_sudo">1</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_7" model="cx.tower.plan.line">
+        <field name="sequence">17</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_create_shared_pg_directories" />
+        <field name="use_sudo">0</field>
+
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_8" model="cx.tower.plan.line">
+        <field name="sequence">18</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_run_shared_pg" />
+        <field name="use_sudo">1</field>
+
+    </record>
+
+    <!-- Flight Plan rebuild Odoo container soft-->
+    <record id="plan_rebuild_odoo_container_soft" model="cx.tower.plan">
+        <field name="name">Rebuild Odoo container soft</field>
+        <field name="note">Build image while container is still running
+        </field>
+        <field name="on_error_action">e</field>
+
+
+    </record>
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_soft_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_soft" />
+        <field name="command_id" ref="command_build_odoo_image" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_soft_line_2" model="cx.tower.plan.line">
+        <field name="sequence">11</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_soft" />
+        <field name="command_id" ref="command_stop_odoo_container" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Action -->
+    <record
+        id="plan_rebuild_odoo_container_soft_line_2_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_rebuild_odoo_container_soft_line_2" />
+        <field name="sequence">11</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_soft_line_3" model="cx.tower.plan.line">
+        <field name="sequence">12</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_soft" />
+        <field name="command_id" ref="command_remove_odoo_container" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Action -->
+    <record
+        id="plan_rebuild_odoo_container_soft_line_3_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_rebuild_odoo_container_soft_line_3" />
+        <field name="sequence">11</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_soft_line_4" model="cx.tower.plan.line">
+        <field name="sequence">13</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_soft" />
+        <field name="command_id" ref="command_run_odoo_container_with_shared_pg" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Flight Plan rebuild Odoo container hard-->
+    <record id="plan_rebuild_odoo_container_hard" model="cx.tower.plan">
+        <field name="name">Rebuild Odoo container hard</field>
+        <field name="note">Stop and remove container before rebuilding.
+            Clear docker cache.
+        </field>
+        <field name="on_error_action">e</field>
+
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_hard_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_hard" />
+        <field name="command_id" ref="command_stop_odoo_container" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Action -->
+    <record
+        id="plan_rebuild_odoo_container_hard_line_1_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_rebuild_odoo_container_hard_line_1" />
+        <field name="sequence">10</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_hard_line_2" model="cx.tower.plan.line">
+        <field name="sequence">11</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_hard" />
+        <field name="command_id" ref="command_remove_odoo_container" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Action -->
+    <record
+        id="plan_rebuild_odoo_container_hard_line_2_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_rebuild_odoo_container_hard_line_2" />
+        <field name="sequence">11</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_hard_line_3" model="cx.tower.plan.line">
+        <field name="sequence">12</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_hard" />
+        <field name="command_id" ref="command_docker_prune" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_hard_line_4" model="cx.tower.plan.line">
+        <field name="sequence">13</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_hard" />
+        <field name="command_id" ref="command_build_odoo_image" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+
+    <!-- Line -->
+    <record id="plan_rebuild_odoo_container_hard_line_5" model="cx.tower.plan.line">
+        <field name="sequence">14</field>
+        <field name="plan_id" ref="plan_rebuild_odoo_container_hard" />
+        <field name="command_id" ref="command_run_odoo_container_with_shared_pg" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Flight Plan update Odoo modules-->
+    <record id="plan_update_odoo_module" model="cx.tower.plan">
+        <field name="name">Update modules</field>
+        <field name="note">Add comma separated list of modules to update in the
+            "odoo_modules_to_update" variable
+        </field>
+        <field name="on_error_action">e</field>
+
+    </record>
+    <!-- Line -->
+    <record id="plan_update_odoo_module_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_update_odoo_module" />
+        <field name="command_id" ref="command_update_odoo_container_with_shared_pg" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_update_odoo_module_line_2" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_update_odoo_module" />
+        <field name="command_id" ref="command_restart_odoo_container" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Flight Plan restart shared PG-->
+    <record id="plan_restart_shared_pg" model="cx.tower.plan">
+        <field name="name">Restart shared PG</field>
+        <field name="note">Stop and remove shared postgres container.
+            Run new one.
+        </field>
+        <field name="on_error_action">e</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_restart_shared_pg_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_restart_shared_pg" />
+        <field name="command_id" ref="command_stop_shared_pg" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Action -->
+    <record
+        id="plan_restart_shared_pg_line_1_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_restart_shared_pg_line_1" />
+        <field name="sequence">10</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+    <!-- Line -->
+    <record id="plan_restart_shared_pg_line_2" model="cx.tower.plan.line">
+        <field name="sequence">11</field>
+        <field name="plan_id" ref="plan_restart_shared_pg" />
+        <field name="command_id" ref="command_remove_shared_pg" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+    <!-- Action -->
+    <record
+        id="plan_restart_shared_pg_line_2_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_restart_shared_pg_line_2" />
+        <field name="sequence">10</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+
+    <!-- Line -->
+    <record id="plan_restart_shared_pg_line_3" model="cx.tower.plan.line">
+        <field name="sequence">12</field>
+        <field name="plan_id" ref="plan_restart_shared_pg" />
+        <field name="command_id" ref="command_run_shared_pg" />
+        <field name="use_sudo">0</field>
+
+    </record>
+
+</odoo>

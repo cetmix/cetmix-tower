@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright (C) 2023 Cetmix OÜ
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
@@ -9,7 +9,10 @@
     </record>
 
 
-    <record id="global_value_backup_restore_dump_location" model="cx.tower.variable.value">
+    <record
+        id="global_value_backup_restore_dump_location"
+        model="cx.tower.variable.value"
+    >
         <field name="variable_id" ref="variable_backup_restore_dump_location" />
         <field name="is_global">True</field>
         <field name="value_char">{{ odoo_backup_location }}</field>
@@ -21,13 +24,19 @@
         <field name="value_char">dump.zip</field>
     </record>
 
-    <record id="global_value_backup_restore_filestore_location" model="cx.tower.variable.value">
+    <record
+        id="global_value_backup_restore_filestore_location"
+        model="cx.tower.variable.value"
+    >
         <field name="variable_id" ref="variable_backup_restore_filestore_location" />
         <field name="is_global">True</field>
         <field name="value_char">{{ instance_root }}</field>
     </record>
 
-    <record id="global_value_backup_restore_filestore_name" model="cx.tower.variable.value">
+    <record
+        id="global_value_backup_restore_filestore_name"
+        model="cx.tower.variable.value"
+    >
         <field name="variable_id" ref="variable_backup_restore_filestore_name" />
         <field name="is_global">True</field>
         <field name="value_char">filestore.zip</field>
@@ -72,7 +81,9 @@
     <record id="global_value_odoo_backup_location" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_odoo_backup_location" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ backup_location }}/{{ instance_name }}/{{ odoo_db_name }}</field>
+        <field
+            name="value_char"
+        >{{ backup_location }}/{{ instance_name }}/{{ odoo_db_name }}</field>
     </record>
 
 
@@ -100,13 +111,19 @@
         <field name="value_char">/mnt/extra-addons</field>
     </record>
 
-    <record id="global_value_odoo_dockerfile_official_location" model="cx.tower.variable.value">
+    <record
+        id="global_value_odoo_dockerfile_official_location"
+        model="cx.tower.variable.value"
+    >
         <field name="variable_id" ref="variable_odoo_dockerfile_official_location" />
         <field name="is_global">True</field>
         <field name="value_char">/tmp/odoo-dockerfile-official</field>
     </record>
 
-    <record id="global_value_odoo_dockerfile_official_release" model="cx.tower.variable.value">
+    <record
+        id="global_value_odoo_dockerfile_official_release"
+        model="cx.tower.variable.value"
+    >
         <field name="variable_id" ref="variable_odoo_dockerfile_official_release" />
         <field name="is_global">True</field>
         <field name="value_char">latest</field>
@@ -184,7 +201,10 @@
         <field name="value_char">db-shared</field>
     </record>
 
-    <record id="global_value_shared_postgres_restart_policy" model="cx.tower.variable.value">
+    <record
+        id="global_value_shared_postgres_restart_policy"
+        model="cx.tower.variable.value"
+    >
         <field name="variable_id" ref="variable_shared_postgres_restart_policy" />
         <field name="is_global">True</field>
         <field name="value_char">always</field>
