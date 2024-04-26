@@ -1,5 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import uuid
+
 from odoo import fields, models
 
 
@@ -39,12 +41,19 @@ class TowerValueMixin(models.AbstractModel):
                     rec.id, {}
                 )  # set global values as defaults
                 for variable_name in variable_names:
-                    value = rec.variable_value_ids.filtered(
-                        lambda v, variable_name=variable_name: v.variable_name
-                        == variable_name
-                    )
-                    if value:
-                        res_vars.update({variable_name: value.value_char})
+                    # Check if this is a system variable
+                    system_value = self._get_system_variable_value(variable_name)
+                    if system_value:
+                        res_vars.update({variable_name: system_value})
+
+                    # Get regular value
+                    else:
+                        value = rec.variable_value_ids.filtered(
+                            lambda v, variable_name=variable_name: v.variable_name
+                            == variable_name
+                        )
+                        if value:
+                            res_vars.update({variable_name: value.value_char})
 
                 res.update({rec.id: res_vars})
 
@@ -76,6 +85,7 @@ class TowerValueMixin(models.AbstractModel):
             for rec in self:
                 res_vars = {}
                 for variable_name in variable_names:
+                    # Get variable value
                     value = values.filtered(
                         lambda v, variable_name=variable_name: v.variable_name
                         == variable_name
@@ -83,6 +93,83 @@ class TowerValueMixin(models.AbstractModel):
                     res_vars.update({variable_name: value.value_char or None})
                 res.update({rec.id: res_vars})
         return res
+
+    def _get_current_server(self):
+        """Get current server record.
+            This is needed to render system variables properly.
+
+        Returns:
+            cx.tower.server(): server record
+        """
+        self.ensure_one()
+
+        if self._name == "cx.tower.server":
+            server = self
+        elif self._name == "cx.tower.variable.value" and self.server_id:
+            server = self.server_id
+        else:
+            server = None
+        return server
+
+    def _get_system_variable_value(self, variable_name):
+        """Get the value of a system variable. Eg `tower.server.partner_name`
+
+        Args:
+            variable_name (Char): variable value
+
+        Returns:
+            dict(): populates `tower` variable with with values.
+                {
+                    'server': {..server vals..},
+                    'tools': {..helper tools vals...}
+                }.
+        """
+
+        # This works for a single record only!
+        self.ensure_one()
+
+        variable_value = {}
+        if variable_name == "tower":
+            variable_value.update(
+                {
+                    "server": self._parse_system_variable_server(),
+                    "tools": self._parse_system_variable_tools(),
+                }
+            )
+
+        return variable_value
+
+    def _parse_system_variable_server(self):
+        """Parser system variable of `server` type.
+
+        Returns:
+            dict(): `server` values of the `tower` variable.
+        """
+        # Get current server
+        values = {}
+        server = self._get_current_server()
+        if server:
+            values = {
+                "name": server.name,
+                "username": server.ssh_username,
+                "partner_name": server.partner_id.name if server.partner_id else False,
+                "ipv4": server.ip_v4_address,
+                "ipv6": server.ip_v6_address,
+            }
+        return values
+
+    def _parse_system_variable_tools(self):
+        """Parser system variable of `tools` type.
+
+        Returns:
+            dict(): `server` values of the `tower` variable.
+        """
+        values = {
+            "uuid": uuid.uuid4(),
+            "today": str(fields.Date.today()),
+            "now": str(fields.Datetime.now()),
+        }
+        return values
 
     def _compose_variable_global_values_domain(self, variable_names):
         """Compose domain for global variables
