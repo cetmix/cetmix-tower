@@ -37,7 +37,7 @@ Check the [Configuring Files](#configure-a-file) section for more details.
 
 ## Configure Variables
 
-To configure variables go to the `Cetmix Tower/Settings` ans select the `Variables` menu.
+To configure variables go to the `Cetmix Tower/Settings` and select the `Variables` menu.
 
 ### Variables Applicability
 
@@ -71,6 +71,25 @@ When rendering an expression local values are used first. If no local value is f
 For example default value of the `odoo_port` variable is `8069`. However you can easily specify any other value and thus run multiple Odoo instances on a single server.
 
 **IMPORTANT!**: Storing sensitive data (eg GitHub tokens) in variable values may expose that date in command preview and logs. Use [secrets](#configure-a-keysecret) for storing such data instead.
+
+### 'tower' System Variable
+
+There is a special `tower` variable available which allows to access some system parameters and helper tools.
+**Important!** do not redefine the `tower` variable unless you really need that on purpose.
+
+Following system variables are available:
+
+- Server properties
+  - `tower.server.name` Current server name
+  - `tower.server.username` Current server SSH Username​
+  - `tower.server.ipv4` Current server IPv4 Address​
+  - `tower.server.ipv6` Current server IPv6 Address​
+  - `tower.server.partner_name` Current server partner name
+
+- Helper tools
+  - `tower.tools.uuid` Generates a random UUID4
+  - `tower.tools.today` Current date
+  - `tower.tools.now` Current date time
 
 ## Configure a Key/Secret
 
