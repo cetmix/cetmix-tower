@@ -3,23 +3,13 @@
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="variable_path" model="cx.tower.variable">
-        <field name="name">test_path</field>
+        <field name="name">path</field>
     </record>
-    <record id="variable_dir" model="cx.tower.variable">
-        <field name="name">dir</field>
-    </record>
-    <record id="variable_os" model="cx.tower.variable">
-        <field name="name">os</field>
-    </record>
+
     <record id="variable_url" model="cx.tower.variable">
         <field name="name">url</field>
     </record>
-    <record id="variable_org" model="cx.tower.variable">
-        <field name="name">org</field>
-    </record>
-    <record id="variable_branch" model="cx.tower.variable">
-        <field name="name">branch</field>
-    </record>
+
     <record id="variable_pgdata" model="cx.tower.variable">
         <field name="name">PGDATA</field>
     </record>
