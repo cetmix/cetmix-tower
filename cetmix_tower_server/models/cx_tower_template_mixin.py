@@ -1,8 +1,10 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from jinja2 import Environment, Template, meta
+from jinja2 import exceptions as jn_exceptions
 
 from odoo import fields, models
+from odoo.exceptions import UserError
 
 
 class CxTowerTemplateMixin(models.AbstractModel):
@@ -70,4 +72,8 @@ class CxTowerTemplateMixin(models.AbstractModel):
         Returns:
             rendered_code (text)
         """
-        return Template(code, trim_blocks=True).render(kwargs)
+
+        try:
+            return Template(code, trim_blocks=True).render(kwargs)
+        except jn_exceptions.UndefinedError as e:
+            raise UserError(e) from e

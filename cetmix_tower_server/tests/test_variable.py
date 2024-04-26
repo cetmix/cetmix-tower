@@ -1,4 +1,6 @@
-from odoo import _
+from unittest.mock import patch
+
+from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import Form
 
@@ -442,3 +444,108 @@ class TestTowerVariable(TestTowerCommon):
             variable_vale_new_private_as_bob.value_char, "New Private Value"
         )
         self.assertEqual(variable_new_global_value_as_bob.value_char, "Global Value 1")
+
+    # @patch("uuid.uuid4", return_value="SuchMuchUUID4")
+    def test_system_variable_server_type_values(self):
+        """Test system variables of `server` type"""
+
+        # Modify server record for testing
+        self.server_test_1.ip_v6_address = "suchmuchipv6"
+        self.server_test_1.partner_id = (
+            self.env["res.partner"].create({"name": "Pepe Frog"}).id
+        )
+
+        # Create new command with system variables
+        command = self.Command.create(
+            {
+                "name": "Super System Command",
+                "code": "echo {{ tower.server.name }} "
+                "{{ tower.server.username}} "
+                "{{ tower.server.partner_name }} "
+                "{{ tower.server.ipv4 }} "
+                " {{ tower.server.ipv6 }} ",
+            }
+        )
+
+        # Get variables
+        variables = command.get_variables().get(str(command.id))
+        # Get variable values
+        variable_values = self.server_test_1.get_variable_values(variables).get(
+            self.server_test_1.id
+        )
+
+        # Check values
+        self.assertEqual(
+            variable_values["tower"]["server"]["name"],
+            self.server_test_1.name,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["username"],
+            self.server_test_1.ssh_username,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["username"],
+            self.server_test_1.ssh_username,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["partner_name"],
+            self.server_test_1.partner_id.name,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["ipv4"],
+            self.server_test_1.ip_v4_address,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["ipv6"],
+            self.server_test_1.ip_v6_address,
+            "System variable doesn't match server property",
+        )
+
+    @patch(
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.fields.Datetime.now",
+        return_value=fields.Datetime.now(),
+    )
+    @patch(
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.fields.Date.today",
+        return_value=fields.Date.today(),
+    )
+    @patch(
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.uuid.uuid4",
+        return_value="suchmuchuuid4",
+    )
+    def test_system_variable_tools_type_values(self, mock_uuid4, mock_today, mock_now):
+        """Test system variables of `tools` type"""
+
+        # Create new command with system variables
+        command = self.Command.create(
+            {"name": "Super System Command", "code": "echo {{ tower.tools.uuid}}"}
+        )
+
+        # Get variables
+        variables = command.get_variables().get(str(command.id))
+        # Get variable values
+        variable_values = self.server_test_1.get_variable_values(variables).get(
+            self.server_test_1.id
+        )
+
+        # Check values
+        self.assertEqual(
+            variable_values["tower"]["tools"]["uuid"],
+            mock_uuid4.return_value,
+            "System variable doesn't match result provided by tools",
+        )
+        self.assertEqual(
+            variable_values["tower"]["tools"]["today"],
+            str(mock_today.return_value),
+            "System variable doesn't match result provided by tools",
+        )
+        self.assertEqual(
+            variable_values["tower"]["tools"]["now"],
+            str(mock_now.return_value),
+            "System variable doesn't match result provided by tools",
+        )
