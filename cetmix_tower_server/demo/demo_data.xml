@@ -77,50 +77,50 @@
     </record>
 
     <!-- Variables -->
-    <record id="variable_path" model="cx.tower.variable">
+    <record id="variable_demo_path" model="cx.tower.variable">
         <field name="name">test_path</field>
     </record>
-    <record id="variable_dir" model="cx.tower.variable">
+    <record id="variable_demo_dir" model="cx.tower.variable">
         <field name="name">dir</field>
     </record>
-    <record id="variable_os" model="cx.tower.variable">
+    <record id="variable_demo_os" model="cx.tower.variable">
         <field name="name">os</field>
     </record>
-    <record id="variable_url" model="cx.tower.variable">
-        <field name="name">url</field>
+    <record id="variable_demo_url" model="cx.tower.variable">
+        <field name="name">URL</field>
     </record>
-    <record id="variable_version" model="cx.tower.variable">
+    <record id="variable_demo_version" model="cx.tower.variable">
         <field name="name">version</field>
     </record>
-    <record id="variable_org" model="cx.tower.variable">
+    <record id="variable_demo_org" model="cx.tower.variable">
         <field name="name">org</field>
     </record>
-    <record id="variable_branch" model="cx.tower.variable">
+    <record id="variable_demo_branch" model="cx.tower.variable">
         <field name="name">branch</field>
     </record>
 
     <!-- Variable values -->
     <record id="server_2_value_path" model="cx.tower.variable.value">
-        <field name="variable_id" ref="variable_path" />
+        <field name="variable_id" ref="variable_demo_path" />
         <field name="server_id" ref="server_test_2" />
         <field name="value_char">/opt/cetmix-tower</field>
     </record>
     <record id="server_2_value_url" model="cx.tower.variable.value">
-        <field name="variable_id" ref="variable_url" />
+        <field name="variable_id" ref="variable_demo_url" />
         <field name="server_id" ref="server_test_2" />
         <field name="value_char">https://cetmix.com</field>
     </record>
     <record id="server_2_value_branch" model="cx.tower.variable.value">
-        <field name="variable_id" ref="variable_branch" />
+        <field name="variable_id" ref="variable_demo_branch" />
         <field name="server_id" ref="server_test_2" />
         <field name="value_char">staging</field>
     </record>
     <record id="global_value_branch" model="cx.tower.variable.value">
-        <field name="variable_id" ref="variable_branch" />
+        <field name="variable_id" ref="variable_demo_branch" />
         <field name="value_char">prod</field>
     </record>
     <record id="global_value_org" model="cx.tower.variable.value">
-        <field name="variable_id" ref="variable_org" />
+        <field name="variable_id" ref="variable_demo_org" />
         <field name="value_char">Cetmix</field>
     </record>
 
