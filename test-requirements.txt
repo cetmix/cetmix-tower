@@ -1,0 +1,1 @@
+odoo14-addon-cetmix_tower_server @ git+https://${RUNBOAT_GITHUB_TOKEN}@github.com/cetmix/cetmix-tower@refs/pull/51/head#subdirectory=setup/cetmix_tower_server
