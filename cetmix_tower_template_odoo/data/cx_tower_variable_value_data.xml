@@ -216,5 +216,11 @@
         <field name="value_char">/tmp</field>
     </record>
 
+    <record id="global_value_tower_root" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_tower_root" />
+        <field name="is_global">True</field>
+        <field name="value_char">/opt/tower</field>
+    </record>
+
 
 </odoo>

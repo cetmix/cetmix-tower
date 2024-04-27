@@ -193,4 +193,8 @@
         <field name="name">tmp_location</field>
     </record>
 
+    <record id="variable_tower_root" model="cx.tower.variable">
+        <field name="name">tower_root</field>
+    </record>
+
 </odoo>
