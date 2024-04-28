@@ -197,4 +197,13 @@
         <field name="name">tower_root</field>
     </record>
 
+    <record id="variable_postgres_password" model="cx.tower.variable">
+        <field name="name">postgres_password</field>
+    </record>
+
+    <record id="variable_postgres_version" model="cx.tower.variable">
+        <field name="name">postgres_version</field>
+    </record>
+
+
 </odoo>
