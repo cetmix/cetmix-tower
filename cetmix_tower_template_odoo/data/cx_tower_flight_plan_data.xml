@@ -90,13 +90,22 @@
     <record id="plan_init_tower_line_7" model="cx.tower.plan.line">
         <field name="sequence">17</field>
         <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_add_user_to_docker_group" />
+        <field name="use_sudo">1</field>
+
+    </record>
+
+    <!-- Line -->
+    <record id="plan_init_tower_line_8" model="cx.tower.plan.line">
+        <field name="sequence">18</field>
+        <field name="plan_id" ref="plan_init_tower" />
         <field name="command_id" ref="command_create_shared_pg_directories" />
         <field name="use_sudo">0</field>
 
     </record>
     <!-- Line -->
-    <record id="plan_init_tower_line_8" model="cx.tower.plan.line">
-        <field name="sequence">18</field>
+    <record id="plan_init_tower_line_9" model="cx.tower.plan.line">
+        <field name="sequence">19</field>
         <field name="plan_id" ref="plan_init_tower" />
         <field name="command_id" ref="command_run_shared_pg" />
         <field name="use_sudo">1</field>

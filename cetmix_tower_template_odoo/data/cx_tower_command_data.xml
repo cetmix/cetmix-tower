@@ -389,4 +389,15 @@
         <field name="name">Stop shared PG</field>
         <field name="code">docker rm {{ shared_postgres_name }}</field>
     </record>
+
+    <record id="command_add_user_to_docker_group" model="cx.tower.command">
+        <field name="name">Add user to docker group</field>
+        <field
+            name="note"
+        >Adds current user to "docker" group to allow running Docker commands without 'sudo'</field>
+        <field name="code">usermod -a -G docker $USER</field>
+    </record>
+
+
+
 </odoo>
