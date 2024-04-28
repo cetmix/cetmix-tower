@@ -153,61 +153,135 @@
 
     <record id="command_run_odoo_container_with_shared_pg" model="cx.tower.command">
         <field name="name">Run Odoo container with shared PG</field>
-        <field
-            name="code"
-        >docker run -d -p {{ odoo_port }}:8069 {% if odoo_longpolling_port and
-            odoo_longpolling_port != '0' and odoo_workers and odoo_workers != '0' %} -p {{
-            odoo_longpolling_port }}:8072 {% endif %} -v {{ odoo_data }}:/var/lib/odoo {% if
-            odoo_config_location %} -v {{ odoo_config_location }}:/etc/odoo {% endif %} {% if
-            odoo_extra_addons %} -v {{ odoo_extra_addons }}:{{ odoo_docker_extra_addons }} {% endif
-            %} {% if odoo_src %} -v {{ odoo_src }}:/mnt/odoo {% endif %} --restart {{
-            odoo_restart_policy }} --name {{ odoo_container_name}} --link {{ shared_postgres_name
-            }}:db -t {{ odoo_image_name }} -- {% if odoo_without_demo and odoo_without_demo !='0' %}
-            --without-demo={{ odoo_without_demo }} {% endif %} {% if odoo_addons_path %}
-            --addons-path={{ odoo_addons_path }} {% endif %} {% if odoo_db_name %} --database={{
-            odoo_db_name }} {% endif %} {% if odoo_limit_time_cpu %} --limit-time-cpu={{
-            odoo_limit_time_cpu }} {% endif %} {% if odoo_limit_time_real %} --limit-time-real={{
-            odoo_limit_time_real }} {% endif %} {% if odoo_log_level %} --log-level={{
-            odoo_log_level }} {% endif %} {% if odoo_log_handler %} --log-handler={{
-            odoo_log_handler }} {% endif %} {% if odoo_log_level %} --log-level={{ odoo_log_level }}
-            {% endif %} {% if odoo_log_web %} --log-web {% endif %} {% if odoo_workers %}
-            --workers={{ odoo_workers }} {% endif %} {% if odoo_load %} --load={{ odoo_load }} {%
-            endif %} {% if odoo_config_file %} --config={{ odoo_config_file }} {% endif %} {% if
-            odoo_proxy_mode %} --proxy-mode {% endif %} {% if odoo_gevent_port and odoo_gevent_port
-            != '0' and odoo_workers and odoo_workers != '0' %} --gevent-port={{ odoo_gevent_port }}
-            {% elif odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and
-            odoo_workers != '0' %} --longpolling-port={{ odoo_longpolling_port }} {% endif %} {% if
-            odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and odoo_workers
-            != '0' and odoo_max_cron_threads and odoo_max_cron_threads != '0' %}
-            --max-cron-threads={{ odoo_max_cron_threads }} {% endif %}</field>
+        <field name="code">docker run -d -p {{ odoo_port }}:8069 \
+        {% if  odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and odoo_workers != '0' %}
+            -p {{ odoo_longpolling_port }}:8072 \
+        {% endif %}
+            -v {{ odoo_data }}:/var/lib/odoo \
+        {% if  odoo_config_location %}
+            -v {{ odoo_config_location }}:/etc/odoo \
+        {% endif %}
+        {% if  odoo_extra_addons %}
+            -v {{ odoo_extra_addons }}:{{ odoo_docker_extra_addons }} \
+        {% endif %}
+        {% if  odoo_src %}
+            -v {{ odoo_src }}:/mnt/odoo \
+        {% endif %}
+            --restart {{ odoo_restart_policy }} \
+            --name {{ odoo_container_name}} --link {{ shared_postgres_name }}:db -t {{ odoo_image_name }} \
+        -- {% if  odoo_without_demo and odoo_without_demo !='0' %} --without-demo={{ odoo_without_demo }} \
+        {% endif %}
+        {% if  odoo_addons_path %}
+           --addons-path={{ odoo_addons_path }} \
+        {% endif %}
+        {% if  odoo_db_name %}
+           --database={{ odoo_db_name }} \
+        {% endif %}
+        {% if odoo_limit_time_cpu %}
+          --limit-time-cpu={{ odoo_limit_time_cpu }} \
+        {% endif %}
+        {% if odoo_limit_time_real %}
+          --limit-time-real={{ odoo_limit_time_real }} \
+        {% endif %}
+        {% if  odoo_log_level %}
+           --log-level={{ odoo_log_level }} \
+        {% endif %}
+        {% if  odoo_log_handler %}
+           --log-handler={{ odoo_log_handler }} \
+        {% endif %}
+        {% if  odoo_log_level %}
+           --log-level={{ odoo_log_level }} \
+        {% endif %}
+        {% if odoo_log_web %}
+           --log-web \
+        {% endif %}
+        {% if  odoo_workers %}
+           --workers={{ odoo_workers }} \
+        {% endif %}
+        {% if  odoo_load %}
+           --load={{ odoo_load }} \
+        {% endif %}
+        {% if  odoo_config_file %}
+           --config={{ odoo_config_file }} \
+        {% endif %}
+        {% if odoo_proxy_mode %}
+           --proxy-mode \
+        {% endif %}
+        {% if  odoo_gevent_port and odoo_gevent_port != '0' and odoo_workers and odoo_workers != '0'  %}
+           --gevent-port={{ odoo_gevent_port }} \
+        {% elif  odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and odoo_workers != '0'  %}
+           --longpolling-port={{ odoo_longpolling_port }} \
+        {% endif %}
+        {% if  odoo_longpolling_port and odoo_longpolling_port != '0' and odoo_workers and odoo_workers != '0' and odoo_max_cron_threads and odoo_max_cron_threads != '0' %}
+           --max-cron-threads={{ odoo_max_cron_threads }} \
+        {% endif %}</field>
     </record>
     <record id="command_run_shared_pg" model="cx.tower.command">
         <field name="name">Run shared PG</field>
-        <field name="code">docker run -d -e POSTGRES_USER={{ postgres_user }} -e
-            POSTGRES_PASSWORD={{ postgres_password }} \ -e POSTGRES_DB=postgres \ {% if PGDATA %} -e
-            PGDATA={{ PGDATA }} \ {% endif %} {% if postgres_shm_size %} --shm-size={{
-            postgres_shm_size }}\ {% endif %} --restart {{ shared_postgres_restart_policy }} \ -v {{
-            shared_postgres_data }}:{{ PGDATA }} \ {% if postgres_port %} -p {{ postgres_port
-            }}:5432 \ {% endif %} --name {{ shared_postgres_name }} postgres:{{ postgres_version }}
-            \ {% if pg_max_connections %} -c max_connections={{ pg_max_connections }} \ {% endif %}
-            {% if pg_shared_buffers %} -c shared_buffers={{ pg_shared_buffers }} \ {% endif %} {% if
-            pg_effective_cache_size %} -c effective_cache_size={{ pg_shared_buffers }} \ {% endif %}
-            {% if pg_maintenance_work_mem %} -c maintenance_work_mem={{ pg_maintenance_work_mem }} \
-            {% endif %} {% if pg_checkpoint_completion_target %} -c checkpoint_completion_target={{
-            pg_checkpoint_completion_target }} \ {% endif %} {% if pg_wal_buffers %} -c
-            wal_buffers={{ pg_wal_buffers }} \ {% endif %} {% if pg_default_statistics_target %} -c
-            default_statistics_target={{ pg_default_statistics_target }} \ {% endif %} {% if
-            pg_random_page_cost %} -c random_page_cost={{ pg_random_page_cost }} \ {% endif %} {% if
-            pg_effective_io_concurrency %} -c effective_io_concurrency={{
-            pg_effective_io_concurrency }} \ {% endif %} {% if pg_work_mem %} -c work_mem={{
-            pg_work_mem }} \ {% endif %} {% if pg_min_wal_size %} -c min_wal_size={{ pg_min_wal_size
-            }} \ {% endif %} {% if pg_max_wal_size %} -c max_wal_size={{ pg_max_wal_size }} \ {%
-            endif %} {% if pg_max_worker_processes %} -c max_worker_processes={{
-            pg_max_worker_processes }} \ {% endif %} {% if pg_max_parallel_workers_per_gather %} -c
-            max_parallel_workers_per_gather={{ pg_max_parallel_workers_per_gather }} \ {% endif %}
-            {% if pg_max_parallel_workers %} -c max_parallel_workers={{ pg_max_parallel_workers }} \
-            {% endif %} {% if pg_max_parallel_maintenance_workers %} -c
-            max_parallel_maintenance_workers={{ pg_max_parallel_maintenance_workers }} \ {% endif %}</field>
+        <field
+            name="code"
+        >docker run -d -e POSTGRES_USER={{ postgres_user }} -e POSTGRES_PASSWORD={{ postgres_password }} \
+            -e POSTGRES_DB=postgres \
+        {% if  PGDATA %}
+            -e PGDATA={{ PGDATA }} \
+        {% endif %}
+        {% if  postgres_shm_size %}
+            --shm-size={{ postgres_shm_size }}\
+        {% endif %}
+            --restart {{ shared_postgres_restart_policy }} \
+            -v {{ shared_postgres_data }}:{{ PGDATA }} \
+        {% if  postgres_port %}
+            -p {{ postgres_port }}:5432 \
+        {% endif %}
+            --name {{ shared_postgres_name }} postgres:{{ postgres_version }} \
+        {% if  pg_max_connections %}
+            -c max_connections={{ pg_max_connections }} \
+        {% endif %}
+        {% if  pg_shared_buffers %}
+            -c shared_buffers={{ pg_shared_buffers }} \
+        {% endif %}
+        {% if  pg_effective_cache_size %}
+            -c effective_cache_size={{ pg_shared_buffers }} \
+        {% endif %}
+        {% if  pg_maintenance_work_mem %}
+            -c maintenance_work_mem={{ pg_maintenance_work_mem }} \
+        {% endif %}
+        {% if  pg_checkpoint_completion_target %}
+            -c checkpoint_completion_target={{ pg_checkpoint_completion_target }} \
+        {% endif %}
+        {% if  pg_wal_buffers %}
+            -c wal_buffers={{ pg_wal_buffers }} \
+        {% endif %}
+        {% if  pg_default_statistics_target %}
+            -c default_statistics_target={{ pg_default_statistics_target }} \
+        {% endif %}
+        {% if  pg_random_page_cost %}
+            -c random_page_cost={{ pg_random_page_cost }} \
+        {% endif %}
+        {% if  pg_effective_io_concurrency %}
+            -c effective_io_concurrency={{ pg_effective_io_concurrency }} \
+        {% endif %}
+        {% if  pg_work_mem %}
+            -c work_mem={{ pg_work_mem }} \
+        {% endif %}
+        {% if  pg_min_wal_size %}
+            -c min_wal_size={{ pg_min_wal_size }} \
+        {% endif %}
+        {% if  pg_max_wal_size %}
+            -c max_wal_size={{ pg_max_wal_size }} \
+        {% endif %}
+        {% if  pg_max_worker_processes %}
+            -c max_worker_processes={{ pg_max_worker_processes }} \
+        {% endif %}
+        {% if  pg_max_parallel_workers_per_gather %}
+            -c max_parallel_workers_per_gather={{ pg_max_parallel_workers_per_gather }} \
+        {% endif %}
+        {% if  pg_max_parallel_workers %}
+            -c max_parallel_workers={{ pg_max_parallel_workers }} \
+        {% endif %}
+        {% if  pg_max_parallel_maintenance_workers %}
+            -c max_parallel_maintenance_workers={{ pg_max_parallel_maintenance_workers }} \
+        {% endif %}</field>
     </record>
 
     <record id="command_show_free_disk_space" model="cx.tower.command">
