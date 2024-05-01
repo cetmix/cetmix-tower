@@ -96,8 +96,11 @@ admin_passwd = {{ odoo_db_manager_password }}
     <field name="name">Git Aggregator Config</field>
     <field name="file_name">git-aggregator.yml</field>
     <field name="server_dir">{{ dockerfile_location }}</field>
-    <field name="note">This file is used by the git-aggregator tool
-
+    <field
+            name="note"
+        >This sample file template is used to configure the git-aggregator tool.
+        For more information about using git-aggregator, please see the
+        the developer's github page at https://github.com/acsone/git-aggregator.
         IMPORTANT: ensure that Git Aggregator directories are not overwritten by the direct Git cloned ones</field>
 
     <field name="code">
@@ -108,7 +111,7 @@ admin_passwd = {{ odoo_db_manager_password }}
     merges:
         -
             remote: remote_1
-            ref: "16.0"    
+            ref: "16.0"
     target: remote_1 16.0
     ]]>
     </field>
