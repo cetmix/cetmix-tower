@@ -120,18 +120,10 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         # Generate custom label. Will be used later to locate the command log
         log_label = generate_random_id(4)
         # Add custom values for log
-        custom_values = {"log": {"label": log_label}}
-        self.server_ids.execute_commands(
+        custom_values = {"log": {"label": log_label}, "show_notification": True}
+        return self.server_ids.execute_commands(
             self.command_id, sudo=self.use_sudo, **custom_values
         )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Command Log"),
-            "res_model": "cx.tower.command.log",
-            "view_mode": "tree,form",
-            "target": "current",
-            "context": {"search_default_label": log_label},
-        }
 
     def execute_command(self):
         """

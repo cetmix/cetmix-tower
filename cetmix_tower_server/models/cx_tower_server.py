@@ -534,9 +534,15 @@ class CxTowerServer(models.Model):
             commands, variables, sudo, **kwargs
         )
 
+        notification = None
         # Execute commands
         for server in self:
-            server._execute_commands_on_server(commands, variables, sudo, **kwargs)
+            result = server._execute_commands_on_server(
+                commands, variables, sudo, **kwargs
+            )
+            if result and len(result) > 3:
+                notification = result[3]
+        return notification
 
     def _execute_commands_on_server(
         self, commands, variables=None, sudo=None, **kwargs
@@ -613,12 +619,33 @@ class CxTowerServer(models.Model):
             log_record = log_obj.start(self.id, command.id, **log_vals)
 
             # Execute command
-            status, response, error = self._execute_command(
-                client, rendered_code, False, sudo
-            )
+            result = self._execute_command(client, rendered_code, False, sudo)
+            status, response, error = result[:-1] if len(result) > 3 else result
 
             # Log result
             log_record.finish(fields.Datetime.now(), status, response, error)
+
+            # Return notification action if there is an extra item in result
+            if len(result) > 3:
+                return result[3]
+
+    def _prepare_command_result_notification(self, status, response, error):
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": "danger" if error else "success",
+                "title": _("Error") if error else _("Success"),
+                "message": _(
+                    "Command has been executed with status: %(st)d\n"
+                    "Response: %(res)s\n" + ("Error: %(err)s" if error else ""),
+                    st=status,
+                    res=response,
+                    err=error,
+                ),
+                "sticky": True,
+            },
+        }
 
     def _execute_command(
         self, client, command, raise_on_error=True, sudo=None, **kwargs
@@ -663,7 +690,12 @@ class CxTowerServer(models.Model):
                     _("SSH execute command error %(err)s", err=e)
                 ) from e
             else:
-                return -1, [], [e]
+                result = -1, [], [e]
+
+        show_notification = kwargs.get("show_notification", False)
+        result = list(result)
+        if show_notification:
+            result.append(self._prepare_command_result_notification(*result))
         return result
 
     def _prepare_command_for_sudo(self, command):
