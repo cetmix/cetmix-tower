@@ -368,7 +368,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:67f2321e7432557f5ef9c05c7edc6288f113fd32160461ca4c09ac2a745590e5
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
 <p>Cetmix Tower offers a streamlined solution for managing remote servers
 via SSH directly from Odoo. This module is designed for versatility
 across different operating systems and software environments, providing
@@ -681,62 +681,70 @@ value from the <tt class="docutils literal">Template</tt> field before saving it
 a new command go to <tt class="docutils literal">Cetmix Tower/Commands/Commands</tt> click <tt class="docutils literal">Create</tt>
 and put values in the fields:</p>
 <ul class="simple">
-<li><strong>Name</strong>: Command readable name</li>
+<li><strong>Name</strong>: Command readable name.</li>
 <li><strong>Allow Parallel Run</strong>: If disabled only one copy of this command can
 be run on the same server at the same time. Otherwise the same
 command can be run in parallel.</li>
-<li><strong>Note</strong>: Comments or user notes</li>
+<li><strong>Note</strong>: Comments or user notes.</li>
 <li><strong>Servers</strong>: List of servers this command can be run on. Leave this
 field blank to make the command available to all servers.</li>
 <li><strong>OSes</strong>: List of operating systems this command is available. Leave
 this field blank to make the command available for all OSes.</li>
-<li><strong>Tags</strong>: Make usage as search more convenient</li>
+<li><strong>Tags</strong>: Make usage as search more convenient.</li>
 <li><strong>Code</strong>: Command code as it will be executed by remote shell. This
 field supports <a class="reference external" href="#configure-variables">Variables</a>.</li>
 </ul>
 </div>
 <div class="section" id="configure-a-flight-plan">
 <h2><a class="toc-backref" href="#toc-entry-15">Configure a Flight Plan</a></h2>
-<p>Flight Plans are used to execute commands in series. They allow to build
-a flexible condition based execution flow. To create a new flight plan
-go to <tt class="docutils literal">Cetmix Tower/Commands/Flight Plans</tt> click <tt class="docutils literal">Create</tt> and put
-values in the fields:</p>
+<p>Flight Plans are used perform several actions in a row. They allow to
+build a flexible condition based execution flow. To create a new flight
+plan go to <tt class="docutils literal">Cetmix Tower/Commands/Flight Plans</tt> click <tt class="docutils literal">Create</tt> and
+put values in the fields:</p>
 <ul class="simple">
-<li><strong>Name</strong>: Flight Plan name</li>
-<li><strong>On Error</strong>: Default action to execute when an error happens during
+<li><strong>Name</strong>: Flight Plan name.</li>
+<li><strong>On Error</strong>: Default action to execute if an error happens during
 the flight plan execution. Possible options:<ul>
 <li><tt class="docutils literal">Exit with command code</tt>. Will terminate the flight plan
-execution and return an exit code of the failed command</li>
+execution and return an exit code of the failed command.</li>
 <li><tt class="docutils literal">Exit with custom code</tt>. Will terminate the flight plan
 execution and return the custom code configured in the field next
-to this one</li>
-<li><tt class="docutils literal">Run next command</tt>. Will continue flight plan execution</li>
+to this one.</li>
+<li><tt class="docutils literal">Run next command</tt>. Will continue flight plan execution.</li>
 </ul>
 </li>
-<li><strong>Note</strong>: Comments or user notes</li>
+<li><strong>Note</strong>: Comments or user notes.</li>
 <li><strong>Servers</strong>: List of servers this command can be run on. Leave this
 field blank to make the command available to all servers.</li>
-<li><strong>Tags</strong>: Make usage as search more convenient</li>
-<li><strong>Code</strong>: List of commands to execute. Each of the commands has the
+<li><strong>Tags</strong>: Make usage as search more convenient.</li>
+<li><strong>Steps</strong>: List of commands to execute. Each of the commands has the
 following fields:<ul>
 <li><strong>Sequence</strong>: Order this command is executed. Lower value = higher
 priority</li>
-<li><strong>Command</strong>: <a class="reference external" href="#configure-a-command">Command</a> to be executed</li>
-<li><strong>Use Sudo</strong>: Use <tt class="docutils literal">sudo</tt> if required to run this command</li>
-<li><strong>Actions</strong>: List of condition based actions to be triggered after
-the command is executed. Each of the actions has the following
-fields:<ul>
+<li><strong>Type</strong>: What does this step do. Possible options:<ul>
+<li><tt class="docutils literal">Run command</tt>. Run selected command.</li>
+<li><tt class="docutils literal">Push file</tt>. Will create or update file on server from
+selected template.</li>
+</ul>
+</li>
+<li><strong>Command</strong>: <a class="reference external" href="#configure-a-command">Command</a> to be executed.</li>
+<li><strong>File Template</strong>: <a class="reference external" href="#file-templates">Template</a> that will be
+used to create or update file on server.</li>
+<li><strong>Use Sudo</strong>: Use <tt class="docutils literal">sudo</tt> if required to run this command.</li>
+<li><strong>When Finished</strong>: List of condition based actions to be triggered
+after the command is executed. Each of the actions has the
+following fields:<ul>
 <li><strong>Sequence</strong>: Order this actions is triggered. Lower value =
-higher priority</li>
-<li><strong>Condition</strong>: Uses command exit code</li>
+higher priority.</li>
+<li><strong>Condition</strong>: Uses command exit code.</li>
 <li><strong>Action</strong>: Action to execute if condition is met. Possible
 options:<ul>
 <li><tt class="docutils literal">Exit with command code</tt>. Will terminate the flight plan
-execution and return an exit code of the failed command</li>
+execution and return an exit code of the failed command.</li>
 <li><tt class="docutils literal">Exit with custom code</tt>. Will terminate the flight plan
 execution and return the custom code configured in the field
-next to this one</li>
-<li><tt class="docutils literal">Run next command</tt>. Will continue flight plan execution</li>
+next to this one.</li>
+<li><tt class="docutils literal">Run next command</tt>. Will continue flight plan execution.</li>
 </ul>
 </li>
 </ul>
@@ -815,7 +823,7 @@ before doing that.</p>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -828,7 +836,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 </div>
 <div class="section" id="maintainers">
 <h2><a class="toc-backref" href="#toc-entry-22">Maintainers</a></h2>
-<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
 </div>

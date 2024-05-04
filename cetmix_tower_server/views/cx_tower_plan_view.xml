@@ -34,12 +34,11 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="plan_lines" string="Code">
+                        <page name="plan_lines" string="Steps">
                             <field name="line_ids">
                                 <tree>
                                     <field name="sequence" widget="handle" />
-                                    <field name="command_id" />
-                                    <field name="use_sudo" />
+                                    <field name="name" />
                                 </tree>
                             </field>
                         </page>

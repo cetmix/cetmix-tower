@@ -1,6 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import _, api, fields, models
 
 
 class CxTowerPlanLine(models.Model):
@@ -8,16 +8,31 @@ class CxTowerPlanLine(models.Model):
     _order = "sequence, plan_id"
     _description = "Cetmix Tower Flight Plan Line"
 
+    def _selection_type(self):
+        """Available actions to be executed by the line.
+        Override when implementing your custom options.
+
+        Returns:
+            List of tuples:  `Selection` field option.
+        """
+        return [("command", "Run command"), ("file", "Push file")]
+
     sequence = fields.Integer(default=10)
-    name = fields.Char(related="command_id.name", readonly=True)
+    name = fields.Char(compute="_compute_name", readonly=True, store=True)
     plan_id = fields.Many2one(
         string="Flight Plan", comodel_name="cx.tower.plan", auto_join=True
     )
-    command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
+    type = fields.Selection(
+        selection=lambda self: self._selection_type(),
+        required=True,
+        default=lambda self: self._selection_type()[0][0],
+    )
+    command_id = fields.Many2one(comodel_name="cx.tower.command")
     use_sudo = fields.Boolean(
         help="Will use sudo based on server settings."
         "If no sudo is configured will run without sudo"
     )
+    file_template_id = fields.Many2one(comodel_name="cx.tower.file.template")
     action_ids = fields.One2many(
         string="Actions",
         comodel_name="cx.tower.plan.line.action",
@@ -27,6 +42,19 @@ class CxTowerPlanLine(models.Model):
         " If empty next command will be executed",
     )
     command_code = fields.Text(related="command_id.code", readonly=True)
+
+    @api.depends("type", "command_id.name", "file_template_id.name")
+    def _compute_name(self):
+        """Line name is composed from line type and command or template name."""
+        for line in self:
+            if line.type == "command" and line.command_id:
+                line.name = _("Run command `%(cmd)s`", cmd=line.command_id.name)
+            elif line.type == "file" and line.file_template_id:
+                line.name = _(
+                    "Push file using `%(file)s`", file=line.file_template_id.name
+                )
+            else:
+                line.name = _("...")
 
     def _execute(self, server, plan_log_record, **kwargs):
         """Execute command from the Flight Plan line

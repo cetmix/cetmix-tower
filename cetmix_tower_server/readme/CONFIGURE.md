@@ -149,36 +149,39 @@ To create a new file template go to `Cetmix Tower/Files/Templates` click `Create
 Command is a shell command that is executed on remote server.
 To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` and put values in the fields:
 
-- **Name**: Command readable name
+- **Name**: Command readable name.
 - **Allow Parallel Run**: If disabled only one copy of this command can be run on the same server at the same time. Otherwise the same command can be run in parallel.
-- **Note**: Comments or user notes
+- **Note**: Comments or user notes.
 - **Servers**: List of servers this command can be run on. Leave this field blank to make the command available to all servers.
 - **OSes**: List of operating systems this command is available. Leave this field blank to make the command available for all OSes.
-- **Tags**: Make usage as search more convenient
+- **Tags**: Make usage as search more convenient.
 - **Code**: Command code as it will be executed by remote shell. This field supports [Variables](#configure-variables).
 
 ## Configure a Flight Plan
 
-Flight Plans are used to execute commands in series. They allow to build a flexible condition based execution flow.
+Flight Plans are used perform several actions in a row. They allow to build a flexible condition based execution flow.
 To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Create` and put values in the fields:
 
-- **Name**: Flight Plan name
-- **On Error**: Default action to execute when an error happens during the flight plan execution. Possible options:
-  - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command
-  - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one
-  - `Run next command`. Will continue flight plan execution
-- **Note**: Comments or user notes
+- **Name**: Flight Plan name.
+- **On Error**: Default action to execute if an error happens during the flight plan execution. Possible options:
+  - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command.
+  - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one.
+  - `Run next command`. Will continue flight plan execution.
+- **Note**: Comments or user notes.
 - **Servers**: List of servers this command can be run on. Leave this field blank to make the command available to all servers.
-- **Tags**: Make usage as search more convenient
-- **Code**: List of commands to execute. Each of the commands has the following fields:
+- **Tags**: Make usage as search more convenient.
+- **Steps**: List of commands to execute. Each of the commands has the following fields:
   - **Sequence**: Order this command is executed. Lower value = higher priority
-  - **Command**: [Command](#configure-a-command) to be executed
-  - **Use Sudo**: Use `sudo` if required to run this command
-  - **Actions**: List of condition based actions to be triggered after the command is executed. Each of the actions has the following fields:
-    - **Sequence**: Order this actions is triggered. Lower value = higher priority
-    - **Condition**: Uses command exit code
+  - **Type**: What does this step do. Possible options:
+    - `Run command`. Run selected command.
+    - `Push file`. Will create or update file on server from selected template.
+  - **Command**: [Command](#configure-a-command) to be executed.
+  - **File Template**: [Template](#file-templates) that will be used to create or update file on server.
+  - **Use Sudo**: Use `sudo` if required to run this command.
+  - **When Finished**: List of condition based actions to be triggered after the command is executed. Each of the actions has the following fields:
+    - **Sequence**: Order this actions is triggered. Lower value = higher priority.
+    - **Condition**: Uses command exit code.
     - **Action**: Action to execute if condition is met. Possible options:
-      - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command
-      - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one
-      - `Run next command`. Will continue flight plan execution
-
+      - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command.
+      - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one.
+      - `Run next command`. Will continue flight plan execution.
