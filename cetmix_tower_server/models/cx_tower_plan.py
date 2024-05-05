@@ -179,16 +179,16 @@ class CxTowerPlan(models.Model):
         self.ensure_one()
         action, exit_code, plan_line_id = self._get_next_action_values(command_log)
 
-        plan_Log = command_log.plan_log_id
+        plan_log = command_log.plan_log_id
 
         # Execute next line
         if action == "n" and plan_line_id:
             server = command_log.server_id
-            plan_line_id._execute(server, plan_Log)
+            plan_line_id._execute(server, plan_log)
 
         # Exit
         if action in ["e", "ec"]:
-            plan_Log.finish(exit_code)
+            plan_log.finish(exit_code)
 
         # NB: we are not putting any fallback here in case
         # someone needs to inherit and extend this function

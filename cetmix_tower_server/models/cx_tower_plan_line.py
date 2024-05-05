@@ -17,6 +17,7 @@ class CxTowerPlanLine(models.Model):
         """
         return [("command", "Run command"), ("file", "Push file")]
 
+    active = fields.Boolean(related="plan_id.active", store=True, readonly=True)
     sequence = fields.Integer(default=10)
     name = fields.Char(compute="_compute_name", readonly=True, store=True)
     plan_id = fields.Many2one(

@@ -38,6 +38,13 @@ class CxTowerPlanLog(models.Model):
         help="For how long a flight plan is already running",
     )
 
+    # -- Lines
+    line_ids = fields.One2many(
+        comodel_name="cx.tower.plan.log.line",
+        inverse_name="plan_log_id",
+        auto_join=True,
+    )
+
     # -- Commands
     is_running = fields.Boolean(help="Plan is being executed right now")
     plan_line_executed_id = fields.Many2one(
@@ -85,7 +92,7 @@ class CxTowerPlanLog(models.Model):
             **kwargs (dict): optional values
                 Following keys are supported but not limited to:
                 - "plan_log": {values passed to flightplan logger}
-                - "log": {values passed to logger}
+                - "log": {values passed to command logger}
                 - "key": {values passed to key parser}
         Returns:
             (cx.tower.plan.log()) new flightplan log record or False
