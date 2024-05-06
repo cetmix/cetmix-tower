@@ -9,6 +9,17 @@ class CxTowerCommand(models.Model):
     _description = "Cetmix Tower Command"
     _order = "name"
 
+    def _selection_action(self):
+        """Actions that can be run by a command.
+
+        Returns:
+            List of tuples: available options.
+        """
+        return [
+            ("ssh_command", "SSH command"),
+            ("file_using_template", "Push file using template"),
+        ]
+
     active = fields.Boolean(default=True)
     name = fields.Char()
     allow_parallel_run = fields.Boolean(
@@ -53,12 +64,21 @@ class CxTowerCommand(models.Model):
         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
         required=True,
     )
+    action = fields.Selection(
+        selection=lambda self: self._selection_action(),
+        required=True,
+        default=lambda self: self._selection_action()[0][0],
+    )
+    file_template_id = fields.Many2one(
+        comodel_name="cx.tower.file.template",
+        help="This template will be used to create or update the pushed file",
+    )
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
         default["name"] = _("%(cmd)s (copy)", cmd=self.name)
-        return super(CxTowerCommand, self).copy(default=default)
+        return super().copy(default=default)
 
     def name_get(self):
         # Add 'command_show_server_names' context key
