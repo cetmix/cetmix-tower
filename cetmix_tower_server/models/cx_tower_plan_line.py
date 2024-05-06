@@ -8,6 +8,7 @@ class CxTowerPlanLine(models.Model):
     _order = "sequence, plan_id"
     _description = "Cetmix Tower Flight Plan Line"
 
+    active = fields.Boolean(related="plan_id.active", readonly=True)
     sequence = fields.Integer(default=10)
     name = fields.Char(related="command_id.name", readonly=True)
     plan_id = fields.Many2one(
@@ -37,7 +38,7 @@ class CxTowerPlanLine(models.Model):
             kwargs (dict): Optional arguments
                 Following are supported but not limited to:
                     - "plan_log": {values passed to flightplan logger}
-                    - "log": {values passed to logger}
+                    - "log": {values passed to command logger}
                     - "key": {values passed to key parser}
 
         """
@@ -54,4 +55,4 @@ class CxTowerPlanLine(models.Model):
         # Set 'sudo' value
         use_sudo = self.use_sudo and server.use_sudo
 
-        server.execute_commands(self.command_id, use_sudo, **kwargs)
+        server.execute_command(self.command_id, use_sudo, **kwargs)

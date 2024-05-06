@@ -10,6 +10,11 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="action" />
+                            <field
+                                name="file_template_id"
+                                attrs="{'invisible': [('action', '!=', 'file_using_template')],'required': [('action', '=', 'file_using_template')],}"
+                            />
                             <field name="allow_parallel_run" />
                             <field name="note" />
                         </group>
@@ -31,13 +36,14 @@
                             />
                             <field name="access_level" />
                         </group>
+                        <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
+                        <field
+                            name="code"
+                            placeholder="Type shell command here..."
+                            nolabel="1"
+                            attrs="{'invisible': [('action', '!=', 'ssh_command')],'required': [('action', '=', 'ssh_command')]}"
+                        />
                     </group>
-                    <notebook>
-                        <page name="code" string="Code">
-                            <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
-                            <field name="code" nolabel="1" />
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -49,6 +55,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="action" />
                 <field
                     name="server_ids"
                     widget="many2many_tags"
@@ -91,10 +98,22 @@
                     name="filter_global"
                     domain="[('server_ids', '!=', False)]"
                 />
+                <separator />
                 <filter
                     string="Allow Parallel Run"
                     name="filter_run_parallel"
                     domain="[('allow_parallel_run', '=', True)]"
+                />
+                <separator />
+                <filter
+                    string="Run shell command"
+                    name="filter_run_command"
+                    domain="[('action', '=', 'ssh_command')]"
+                />
+                <filter
+                    string="Push file (template)"
+                    name="file_from_template"
+                    domain="[('action', '=', 'file_using_template')]"
                 />
                 <separator />
                 <filter

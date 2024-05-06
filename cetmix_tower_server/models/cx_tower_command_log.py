@@ -90,22 +90,6 @@ class CxTowerCommandLog(models.Model):
         """
         now = fields.Datetime.now()
 
-        # Compose response message
-        command_response = ""
-        if response:
-            response_vals = [r for r in response]
-            command_response = (
-                "".join(response_vals) if len(response_vals) > 1 else response_vals[0]
-            )
-
-        # Compose error message
-        command_error = ""
-        if error:
-            error_vals = [e for e in error]
-            command_error = (
-                "".join(error_vals) if len(error_vals) > 1 else error_vals[0]
-            )
-
         for rec in self.sudo():
             # Duration
             date_finish = finish_date if finish_date else now
@@ -114,8 +98,8 @@ class CxTowerCommandLog(models.Model):
                 "is_running": False,
                 "finish_date": date_finish,
                 "command_status": -1 if status is None else status,
-                "command_response": command_response,
-                "command_error": command_error,
+                "command_response": response,
+                "command_error": error,
             }
             # Apply kwargs and write
             vals.update(kwargs)
@@ -150,22 +134,6 @@ class CxTowerCommandLog(models.Model):
             (cx.tower.command.log()) new command log record
         """
 
-        # Compose response message
-        command_response = ""
-        if response:
-            response_vals = [r for r in response]
-            command_response = (
-                "".join(response_vals) if len(response_vals) > 1 else response_vals[0]
-            )
-
-        # Compose error message
-        command_error = ""
-        if error:
-            error_vals = [e for e in error]
-            command_error = (
-                "".join(error_vals) if len(error_vals) > 1 else error_vals[0]
-            )
-
         vals = kwargs or {}
         vals.update(
             {
@@ -174,8 +142,8 @@ class CxTowerCommandLog(models.Model):
                 "start_date": start_date,
                 "finish_date": finish_date,
                 "command_status": status,
-                "command_response": command_response,
-                "command_error": command_error,
+                "command_response": response,
+                "command_error": error,
             }
         )
         rec = self.sudo().create(vals)
