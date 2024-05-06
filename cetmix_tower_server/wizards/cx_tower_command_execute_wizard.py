@@ -73,7 +73,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                 if variable_values:
                     record.rendered_code = record.render_code(
                         **variable_values.get(server_id.id)
-                    ).get(self.id)
+                    ).get(self.id)  # pylint: disable=no-member
                 else:
                     record.rendered_code = record.code
             else:
@@ -121,9 +121,8 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         log_label = generate_random_id(4)
         # Add custom values for log
         custom_values = {"log": {"label": log_label}}
-        self.server_ids.execute_commands(
-            self.command_id, sudo=self.use_sudo, **custom_values
-        )
+        for server in self.server_ids:
+            server.execute_command(self.command_id, sudo=self.use_sudo, **custom_values)
         return {
             "type": "ir.actions.act_window",
             "name": _("Command Log"),
@@ -154,7 +153,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             # Log result
             if running_count > 0:
                 raise ValidationError(
-                    _("Another instance of the command is running already")
+                    _("Another instance of the command is already running")
                 )
 
         self.ensure_one()
@@ -174,16 +173,19 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         for server in self.server_ids:
             server_name = server.name
             client = server._connect(raise_on_error=True)
-            status, response, error = server._execute_command(
-                client, self.rendered_code, sudo=self.use_sudo
+            command_result = server._execute_command_using_ssh(
+                client,
+                self.rendered_code,
+                sudo=self.use_sudo if self.use_sudo else None,
             )
-            for err in error:
-                result += "[{server}]: ERROR: {err}".format(server=server_name, err=err)
-            for res in response:
-                result += "[{server}]: {res}".format(server=server_name, res=res)
+            command_error = command_result["error"]
+            command_response = command_result["response"]
+            if command_error:
+                result = f"{result}\n[{server_name}]: ERROR: {command_error}"
+            if command_response:
+                result = f"{result}\n[{server_name}]: {command_response}"
             if not result.endswith("\n"):
-                result += "\n"
-            result += "\n"
+                result = f"{result}\n"
 
         if result:
             self.result = result
@@ -191,7 +193,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                 "type": "ir.actions.act_window",
                 "name": _("Execute Result"),
                 "res_model": "cx.tower.command.execute.wizard",
-                "res_id": self.id,
+                "res_id": self.id,  # pylint: disable=no-member
                 "view_mode": "form",
                 "view_type": "form",
                 "target": "new",
