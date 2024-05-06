@@ -179,7 +179,7 @@ class TestTowerCommon(TransactionCase):
                 if raise_on_error:
                     raise ValidationError(_("SSH execute command error"))
                 else:
-                    return -1, [], error
+                    result = self._parse_ssh_command_results(-1, [], error)
 
             command = self.env["cx.tower.key"].parse_code(
                 command, **kwargs.get("key", {})
@@ -193,20 +193,20 @@ class TestTowerCommon(TransactionCase):
                     status_list.append(status)
                     response_list += response
                     error_list += error
-                return self._parse_sudo_command_results(
+                result = self._parse_ssh_command_results(
                     status_list, response_list, error_list
                 )
             else:
-                result = status, response, error
+                result = self._parse_ssh_command_results(status, response, error)
             return result
 
         self.Server._patch_method("_connect", _connect_patch)
-        self.Server._patch_method("_execute_command", _execute_command_patch)
+        self.Server._patch_method("_execute_command_using_ssh", _execute_command_patch)
 
     def tearDown(self):
         # Remove the monkey patches
         self.Server._revert_method("_connect")
-        self.Server._revert_method("_execute_command")
+        self.Server._revert_method("_execute_command_using_ssh")
         super(TestTowerCommon, self).tearDown()
 
     def add_to_group(self, user, group_refs):

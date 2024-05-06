@@ -7,7 +7,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from .constants import ANOTHER_COMMAND_RUNNING
+from .constants import ANOTHER_COMMAND_RUNNING, NO_COMMAND_RUNNER_FOUND
 
 _logger = logging.getLogger(__name__)
 
@@ -455,26 +455,26 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         client = self._connect()
         command = self._get_connection_test_command()
-        status, response, error = self._execute_command(client, command=command)
+        command_result = self._execute_command_using_ssh(client, command=command)
 
-        if status != 0 or error:
+        if command_result["status"] != 0 or command_result["error"]:
             raise ValidationError(
                 _(
                     "Cannot execute command\n. CODE: %(status)s. "
                     "RESULT: %(res)s. ERROR: %(err)s",
-                    status=status,
-                    res=response,
-                    err=", ".join(error),  # type: ignore
+                    status=command_result["status"],
+                    res=command_result["response"],
+                    err=command_result["error"],  # type: ignore
                 )
             )
 
-        if not response:
+        if not command_result["response"]:
             raise ValidationError(
                 _(
                     "No output received."
                     " Please log in manually and check for any issues.\n"
                     "===\nCODE: %(status)s",
-                    status=status,
+                    status=command_result["status"],
                 )
             )
 
@@ -485,15 +485,15 @@ class CxTowerServer(models.Model):
         self.download_file("/var/tmp/test.txt")
 
         # remove file from server
-        st, resp, err = self._execute_command(
+        file_remove_result = self._execute_command_using_ssh(
             client, command="rm -rf /var/tmp/test.txt"
         )
-        if status != 0 or error:
+        if file_remove_result["status"] != 0 or command_result["error"]:
             raise ValidationError(
                 _(
                     "Cannot execute command\n. CODE: %(status)s. ERROR: %(err)s",
-                    err=", ".join(err),  # type: ignore
-                    status=st,
+                    err=file_remove_result["error"],  # type: ignore
+                    status=file_remove_result["status"],
                 )
             )
 
@@ -503,151 +503,191 @@ class CxTowerServer(models.Model):
             "params": {
                 "title": _("Success"),
                 "message": _(
-                    "Connection test passed! \n%(res)s", res=response[0].rstrip()
+                    "Connection test passed! \n%(res)s",
+                    res=command_result["response"].rstrip(),
                 ),
                 "sticky": False,
             },
         }
         return notification
 
-    def _pre_execute_commands(self, commands, variables=None, sudo=None, **kwargs):
-        """Will be triggered before command execution.
-        Inherit to tweak command values
+    def _render_command_code(self, command):
+        """Renders command code for selected command for current server
 
         Args:
-            commands (cx.tower.command): Command recordset
-            variables (dict): {command.id: [variables]}
-            sudo (section): use sudo (refer to field). Defaults to None
-            kwargs (dict):  extra arguments. Use to pass external values.
-                Following keys are supported by default:
-                    - "log": {values passed to logger}
-                    - "key": {values passed to key parser}
+            command (cx.tower.command): Command to render
 
         Returns:
-            commands, variables, sudo
+            Text: rendered command code
         """
-        return commands, variables, sudo, kwargs
+        self.ensure_one()
 
-    def execute_commands(self, commands, sudo=None, **kwargs):
-        """This is a main function to use for commands
-            and the wrapper function for _execute commands()
-        Used to execute multiple commands on multiple servers.
-        This is a primary function to be used for executing commands.
+        # Get command variables
+        variables = command.get_variables()
+
+        # Get variable values for current server
+        variable_values = (
+            self.get_variable_values(variables.get(str(command.id)))  # pylint: disable=no-member
+            if variables
+            else False
+        )
+
+        # Render command code using variables
+        if variable_values:
+            rendered_code = command.render_code(**variable_values.get(self.id)).get(  # pylint: disable=no-member
+                command.id
+            )
+        else:
+            rendered_code = command.code
+
+        return rendered_code
+
+    def execute_command(self, command, sudo=None, ssh_connection=None, **kwargs):
+        """This is the main function to use for running commands.
+        It renders command code, creates log record and calls command runner.
 
         Args:
-            commands (cx.tower.command()): Command recordset
+            command (cx.tower.command()): Command record
             sudo (selection): use sudo
                 None - do not use sudo
                 'n' - no password
                 'p' - with password
                 Defaults to None
+            ssh_connection (SSH client instance, optional): SSH connection.
+                Pass to reuse existing connection.
+                This is useful in case you would like to speed up
+                the ssh command execution.
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
         """
+        self.ensure_one()
+        log_obj = self.env["cx.tower.command.log"]
 
-        # Get variables from commands {command.id: [variables]}
-        variables = commands.get_variables()
+        # Get log vals from kwargs and update them
+        log_vals = kwargs.get("log", {})
 
-        # Run pre-command hook
-        commands, variables, sudo, kwargs = self._pre_execute_commands(
-            commands, variables, sudo, **kwargs
+        # Populate `sudo` value from the server settings if not provided explicitly
+        if sudo is None:
+            if self.ssh_username != "root" and self.use_sudo:
+                sudo = self.use_sudo
+
+        # Disable `sudo` if user is root
+        elif sudo and self.ssh_username == "root":
+            sudo = None
+
+        log_vals.update({"use_sudo": sudo})
+
+        # Check if command is already running and parallel run is not allowed
+        if not command.allow_parallel_run:
+            running_count = log_obj.sudo().search_count(
+                [
+                    ("server_id", "=", self.id),  # pylint: disable=no-member
+                    ("command_id", "=", command.id),
+                    ("is_running", "=", True),
+                ]
+            )
+            # Create log record and exit
+            # if the same command is currently running on the same server
+            if running_count > 0:
+                now = fields.Datetime.now()
+                log_obj.record(
+                    self.id,  # pylint: disable=no-member
+                    command.id,
+                    now,
+                    now,
+                    ANOTHER_COMMAND_RUNNING,
+                    None,
+                    [_("Another instance of the command is already running")],
+                    **log_vals,
+                )
+                return
+
+        # Render command code
+        rendered_command_code = (
+            self._render_command_code(command) if command.code else None
         )
 
-        # Execute commands
-        for server in self:
-            server._execute_commands_on_server(commands, variables, sudo, **kwargs)
+        # Save rendered code to log
+        log_vals.update({"code": rendered_command_code})
 
-    def _execute_commands_on_server(
-        self, commands, variables=None, sudo=None, **kwargs
+        # Prepare key renderer values
+        key_vals = kwargs.get("key", {})  # Get vals from kwargs
+        key_vals.update({"server_id": self.id})  # pylint: disable=no-member
+        if self.partner_id:
+            key_vals.update({"partner_id": self.partner_id.id})
+
+        # Create log record
+        log_record = log_obj.start(self.id, command.id, **log_vals)  # pylint: disable=no-member
+
+        self._command_runner(command, log_record, rendered_command_code, ssh_connection)
+
+    def _command_runner(
+        self, command, log_record, rendered_command_code, ssh_connection=None
     ):
-        """Execute multiple commands on selected server.
+        """Top level command runner function.
+        Calls command type specific runners.
 
         Args:
-            commands (cx.tower.command()): Command recordset
-            variable (List): Variables to render the commands with
-            sudo (section): use sudo (refer to field). Defaults to None.
-            kwargs (dict):  extra arguments. Use for extending
+            command (cx.tower.command()): Command
+            log_record (cx.tower.command.log()): Command log record
+            rendered_command_code (Text): Rendered command code.
+                We are passing in case it differs from command code in the log record.
+            ssh_connection (SSH client instance, optional): SSH connection to reuse.
         """
-        self.ensure_one()
-        client = self._connect(raise_on_error=False)
-        log_obj = self.env["cx.tower.command.log"]
-        # Prepare log vals
-        log_vals_common = kwargs.get("log", {})  # Get vals from kwargs
-        log_vals_common.update({"use_sudo": sudo})
-        for command in commands:
-            # Init log vals
-            log_vals = log_vals_common.copy()
 
-            # Check if command is already running and parallel run is not allowed
-            if not command.allow_parallel_run:
-                running_count = log_obj.sudo().search_count(
-                    [
-                        ("server_id", "=", self.id),
-                        ("command_id", "=", command.id),
-                        ("is_running", "=", True),
-                    ]
-                )
-                # Create log record and continue to the next one
-                # if the same command is currently running on the same server
-                # Log result
-                if running_count > 0:
-                    now = fields.Datetime.now()
-                    log_obj.record(
-                        self.id,
-                        command.id,
-                        now,
-                        now,
-                        ANOTHER_COMMAND_RUNNING,
-                        None,
-                        [_("Another instance of the command is running already")],
-                        **log_vals,
-                    )
-                    continue
+        if command.action == "ssh_command":
+            self._command_runner_ssh(log_record, rendered_command_code, ssh_connection)
 
-            # Get variable values for server
-            variable_values = (
-                self.get_variable_values(variables.get(str(command.id)))
-                if variables
-                else False
+        else:
+            log_record.finish(
+                fields.Datetime.now(),
+                NO_COMMAND_RUNNER_FOUND,
+                None,
+                _(
+                    "No runner found for command action '%(cmd_action)s'",
+                    cmd_action=command.action,
+                ),
             )
 
-            # Render command code using variables
-            if variable_values:
-                rendered_code = command.render_code(**variable_values.get(self.id)).get(
-                    command.id
-                )
-            else:
-                rendered_code = command.code
+    def _command_runner_ssh(
+        self, log_record, rendered_command_code, ssh_connection=None
+    ):
+        """Execute SSH command.
+        Updates the record in the Command Log (cx.tower.command.log)
 
-            # Save rendered code to log
-            log_vals.update({"code": rendered_code})
+        Args:
+            log_record (cx.tower.command.log()): Command log record
+            rendered_command_code (Text): Rendered command code.
+                We are passing in case it differs from command code in the log record.
+            ssh_connection (SSH client instance, optional): SSH connection to reuse.
+        """
+        if not ssh_connection:
+            ssh_connection = self._connect(raise_on_error=False)
 
-            # Prepare key renderer values
-            key_vals = kwargs.get("key", {})  # Get vals from kwargs
-            key_vals.update({"server_id": self.id})
-            if self.partner_id:
-                key_vals.update({"partner_id": self.partner_id.id})
+        # Execute command
+        command_result = self._execute_command_using_ssh(
+            ssh_connection, rendered_command_code, False, log_record.use_sudo
+        )
 
-            # Create log record
-            log_record = log_obj.start(self.id, command.id, **log_vals)
+        # Log result
+        log_record.finish(
+            fields.Datetime.now(),
+            command_result["status"],
+            command_result["response"],
+            command_result["error"],
+        )
 
-            # Execute command
-            status, response, error = self._execute_command(
-                client, rendered_code, False, sudo
-            )
-
-            # Log result
-            log_record.finish(fields.Datetime.now(), status, response, error)
-
-    def _execute_command(
+    def _execute_command_using_ssh(
         self, client, command, raise_on_error=True, sudo=None, **kwargs
     ):
-        """Execute a single command using existing connection
+        """This is a low level method for SSH command execution.
+        Use it in case you need to get direct output of an SSH command.
+        Otherwise call `execute_command()`
 
         Args:
-            client (Connection): valid server connection obj
+            client (Connection): valid server ssh connection object
             command (Text): command text
             raise_on_error (bool, optional): raise error on error
             sudo (selection): use sudo Defaults to None.
@@ -657,7 +697,11 @@ class CxTowerServer(models.Model):
             ValidationError: command execution error
 
         Returns:
-            status, [response], [error]
+            dict: {
+                "status": <int>,
+                "response": Text,
+                "error": Text
+            }
         """
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
@@ -672,24 +716,30 @@ class CxTowerServer(models.Model):
                 error = []
                 commands = self._prepare_command_for_sudo(command, mode=sudo)
 
+                # Single command: sudo without password
                 if isinstance(commands, str):
-                    return client.exec_command(commands, sudo=sudo)
+                    status, response, error = client.exec_command(commands, sudo=sudo)
 
-                for cmd in commands:
-                    st, resp, err = client.exec_command(cmd, sudo=sudo)
-                    status.append(st)
-                    response += resp
-                    error += err
-                return self._parse_sudo_command_results(status, response, error)
+                # Multiple commands: sudo with password
+                else:
+                    for cmd in commands:
+                        st, resp, err = client.exec_command(cmd, sudo=sudo)
+                        status.append(st)
+                        response += resp
+                        error += err
             else:
-                return client.exec_command(command)
+                status, response, error = client.exec_command(command)
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(
                     _("SSH execute command error %(err)s", err=e)
                 ) from e
             else:
-                return -1, [], [e]
+                status = -1
+                response = []
+                error = [e]
+
+        return self._parse_ssh_command_results(status, response, error)
 
     def _prepare_command_for_sudo(self, command, mode=None):
         """Prepare command to be executed with sudo
@@ -730,23 +780,49 @@ class CxTowerServer(models.Model):
             result = f" {separator} ".join([f"sudo -S -p '' {cmd}" for cmd in result])
         return result
 
-    def _parse_sudo_command_results(self, status_list, response_list, error_list):
-        """Parse results of the command executed with sudo
+    def _parse_ssh_command_results(self, status, response, error):
+        """Parse results of the command executed with sudo.
+        Paramiko returns SSH response and error as list.
+        When executing command with sudo with password we return status as a list too.
+        _
 
         Args:
-            status_list (list): List of statuses
-            response_list (list): List of responses
-            error_list (_type_): list of errors
+            status_list (Int or list): Status or statuses
+            response_list (list): Response
+            error_list (list): Error
 
         Returns:
-            int, list, list: status, response, error
+            dict: {
+                "status": <int>,
+                "response": <text>,
+                "error": <text>
+            }
         """
-        status = 0
-        for st in status_list:
-            if st != 0 and st != status:
-                status = st
 
-        return status, response_list, error_list
+        # In case of several statuses we return the last one that is not 0 ("ok")
+        if isinstance(status, list):
+            for st in status:
+                if st != 0 and st != status:
+                    status = st
+
+        # Compose response message
+        if response and isinstance(response, list):
+            response_vals = [str(r) for r in response]
+            response = "".join(response_vals)
+
+        elif not response:
+            # For not to save an empty list `[]` in log
+            response = None
+
+        # Compose error message
+        if error and isinstance(error, list):
+            error_vals = [str(r) for r in error]
+            error = "".join(error_vals)
+        elif not error:
+            # For not to save an empty list `[]` in log
+            error = None
+
+        return {"status": status, "response": response, "error": error}
 
     def action_execute_command(self):
         """
