@@ -5,6 +5,63 @@ from .common import TestTowerCommon
 
 
 class TestTowerCommand(TestTowerCommon):
+    def test_sudo_command_prepare_method(self):
+        """Test sudo command preparing in different modes"""
+
+        server = self.server_test_1
+
+        single_command = "ls -a /tmp"
+        multiple_commands = "ls -a /tmp && mkdir /tmp/test"
+
+        sudo_mode = "p"
+        # Prepare single command for sudo with password
+        cmd = server._prepare_command_for_sudo(single_command, sudo_mode)
+        self.assertEqual(
+            cmd,
+            [single_command],
+            msg=(
+                "Single command for sudo with password should be "
+                "equal to list with the original command"
+                "as an only element"
+            ),
+        )
+        # Prepare multiple commands for sudo with password
+        cmd = server._prepare_command_for_sudo(multiple_commands, sudo_mode)
+        self.assertEqual(
+            cmd,
+            [
+                "ls -a /tmp",
+                "mkdir /tmp/test",
+            ],
+            msg=(
+                "Multiple commands with sudo with password should be "
+                "a list of separated commands from original line"
+            ),
+        )
+
+        sudo_mode = "n"
+        # Prepare single command for sudo without password
+        cmd = server._prepare_command_for_sudo(single_command, sudo_mode)
+        self.assertEqual(
+            cmd,
+            f"sudo -S -p '' {single_command}",
+            msg=(
+                "Single command with sudo without password should be "
+                "equal to the original command prefixed with \"sudo -S -p ''\""
+            ),
+        )
+        # Prepare multiple commands for sudo without password
+        cmd = server._prepare_command_for_sudo(multiple_commands, sudo_mode)
+        self.assertEqual(
+            cmd,
+            "sudo -S -p '' ls -a /tmp && sudo -S -p '' mkdir /tmp/test",
+            msg=(
+                "Multiple commands with sudo with password should be "
+                "a re-joined string from list of separated original "
+                "each prefixed with \"sudo -S -p ''\""
+            ),
+        )
+
     def test_render_code(self):
         """Test code template rendering"""
 
