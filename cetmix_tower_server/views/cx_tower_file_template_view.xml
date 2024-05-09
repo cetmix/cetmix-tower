@@ -36,6 +36,7 @@
                                 widget="many2many_tags"
                                 options="{'color_field': 'color'}"
                             />
+                            <field name="keep_when_deleted" />
                             <field name="note" />
                         </group>
                     </group>

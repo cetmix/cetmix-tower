@@ -155,6 +155,16 @@ class SSH(object):
         error = stderr.readlines()
         return status, response, error
 
+    def delete_file(self, remote_path):
+        """
+        Delete file from remote server
+
+        Args:
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
+        """
+        self.sftp.remove(remote_path)
+
     def upload_file(self, file, remote_path):
         """
         Upload file to remote server.
@@ -750,6 +760,18 @@ class CxTowerServer(models.Model):
             "target": "new",
             "context": context,
         }
+
+    def delete_file(self, remote_path):
+        """
+        Delete file from remote server
+
+        Args:
+            remote_path (Text): full path file location with file type
+             (e.g. /test/my_file.txt).
+        """
+        self.ensure_one()
+        client = self._connect(raise_on_error=False)
+        client.delete_file(remote_path)
 
     def upload_file(self, data, remote_path, from_path=False):
         """

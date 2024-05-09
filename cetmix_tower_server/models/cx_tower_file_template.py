@@ -33,6 +33,9 @@ class CxTowerFileTemplate(models.Model):
         string="Tags",
     )
     note = fields.Text(help="This field is used to put some notes regarding template.")
+    keep_when_deleted = fields.Boolean(
+        help="File will be kept on server when deleted in Tower",
+    )
 
     def write(self, vals):
         """
