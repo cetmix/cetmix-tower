@@ -1,0 +1,7 @@
+module: cetmix_tower_data_odoo
+servers:
+  # template_odoo:
+  #   variables:
+  #     instance_name: ""   # client-name
+  #     odoo_version: ""    # 17.0
+  #     odoo_port: ""       # 17000

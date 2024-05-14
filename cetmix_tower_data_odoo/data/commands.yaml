@@ -1,0 +1,248 @@
+module: cetmix_tower_data_odoo
+commands:
+
+  # # In use by flight plan "Build image, run container", "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
+
+  # build_odoo_image:
+  #   name: Build Odoo image
+  #   note: Common image build command
+  #   code: |
+  #     docker build {{ dockerfile_location }} --tag "{{ odoo_image_name }}" \
+  #     --no-cache \
+  #     --build-arg ODOO_VERSION={{ odoo_version }} \
+  #     --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
+
+  # # In use by flight plan "Build image, run container"
+
+  # run_odoo_container:
+  #   name: Run Odoo container
+  #   code: |
+  #     docker run -d \
+  #     -p {{ odoo_port }}:8069 \
+  #     -v {{ odoo_data }}:/var/lib/odoo \
+  #     -v {{ odoo_config_location }}:/etc/odoo \
+  #     --restart {{ odoo_restart_policy }} \
+  #     --name {{ odoo_container_name}} \
+  #     --link {{ shared_postgres_name }}:db \
+  #     -t {{ odoo_image_name }}
+
+  # # In use by flight plan "Init Server Instance"
+
+  # create_odoo_directories:
+  #   name: Create Odoo instance directories
+  #   code: |
+  #     mkdir -p {{ odoo_data }} &amp;&amp; \
+  #     mkdir -p {{ dockerfile_location }} &amp;&amp; \
+  #     mkdir -p {{ odoo_config_location }}
+
+  # change_odoo_directories_ownership:
+  #   name: Change Odoo directories ownership
+  #   note: |
+  #     Change Odoo config and data directories ownership to the docker “odoo” user.
+  #     NB Ensure your user has enough access right for “crown”. Use sudo otherwise.
+  #   code: |
+  #     chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ odoo_data }} \
+  #     &amp;&amp; \
+  #     chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ odoo_config_location }}
+
+  # # In use by flight plan "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
+
+  # stop_odoo_container:
+  #   name: Stop Odoo container
+  #   code: docker stop {{ odoo_container_name}}
+
+  # remove_odoo_container:
+  #   name: Remove Odoo container
+  #   code: docker rm {{ odoo_container_name}}
+
+  # run_odoo_container_with_shared_pg:
+  #   name: Run Odoo container with shared PG
+  #   code: |
+  #     docker run -d \
+  #     -p {{ odoo_port }}:8069 \
+  #     {% if \
+  #         odoo_longpolling_port and odoo_longpolling_port != '0' \
+  #         and odoo_workers and odoo_workers != '0' \
+  #     %} \
+  #         -p {{ odoo_longpolling_port }}:8072 \
+  #     {% endif %} \
+  #     -v {{ odoo_data }}:/var/lib/odoo \
+  #     {% if odoo_config_location %} \
+  #         -v {{ odoo_config_location }}:/etc/odoo \
+  #     {% endif %} \
+  #     {% if odoo_extra_addons %} \
+  #         -v {{ odoo_extra_addons }}:{{ odoo_docker_extra_addons }} \
+  #     {% endif %} \
+  #     {% if odoo_src %} \
+  #         -v {{ odoo_src }}:/mnt/odoo \
+  #     {% endif %} \
+  #     --restart {{ odoo_restart_policy }} \
+  #     --name {{ odoo_container_name}} \
+  #     --link {{ shared_postgres_name }}:db \
+  #     -t {{ odoo_image_name }} \
+  #     -- \
+  #     {% if odoo_without_demo and odoo_without_demo !='0' %} \
+  #         --without-demo={{ odoo_without_demo }} \
+  #     {% endif %} \
+  #     {% if odoo_addons_path %} \
+  #         --addons-path={{ odoo_addons_path }} \
+  #     {% endif %} \
+  #     {% if odoo_db_name %} \
+  #         --database={{ odoo_db_name }} \
+  #     {% endif %} \
+  #     {% if odoo_limit_time_cpu %} \
+  #         --limit-time-cpu={{ odoo_limit_time_cpu }} \
+  #     {% endif %} \
+  #     {% if odoo_limit_time_real %} \
+  #         --limit-time-real={{ odoo_limit_time_real }} \
+  #     {% endif %} \
+  #     {% if odoo_log_level %} \
+  #         --log-level={{ odoo_log_level }} \
+  #     {% endif %} \
+  #     {% if odoo_log_handler %} \
+  #         --log-handler={{ odoo_log_handler }} \
+  #     {% endif %} \
+  #     {% if odoo_log_level %} \
+  #         --log-level={{ odoo_log_level }} \
+  #     {% endif %} \
+  #     {% if odoo_log_web %} \
+  #         --log-web \
+  #     {% endif %} \
+  #     {% if odoo_workers %} \
+  #         --workers={{ odoo_workers }} \
+  #     {% endif %} \
+  #     {% if odoo_load %} \
+  #         --load={{ odoo_load }} \
+  #     {% endif %} \
+  #     {% if odoo_config_file %} \
+  #         --config={{ odoo_config_file }} \
+  #     {% endif %} \
+  #     {% if odoo_proxy_mode %} \
+  #         --proxy-mode \
+  #     {% endif %} \
+  #     {% if \
+  #         odoo_gevent_port and odoo_gevent_port != '0' \
+  #         and odoo_workers and odoo_workers != '0' \
+  #     %} \
+  #         --gevent-port={{ odoo_gevent_port }} \
+  #     {% elif \
+  #         odoo_longpolling_port and odoo_longpolling_port != '0' \
+  #         and odoo_workers and odoo_workers != '0' \
+  #     %} \
+  #         --longpolling-port={{ odoo_longpolling_port }} \
+  #     {% endif %} \
+  #     {% if \
+  #         odoo_longpolling_port and odoo_longpolling_port != '0' \
+  #         and odoo_workers and odoo_workers != '0' \
+  #         and odoo_max_cron_threads and odoo_max_cron_threads != '0' \
+  #     %} \
+  #         --max-cron-threads={{ odoo_max_cron_threads }} \
+  #     {% endif %}
+
+  # # In use by flight plan "Update modules"
+
+  # restart_odoo_container:
+  #   name: Restart Odoo Container
+  #   code: docker restart {{ odoo_container_name }}
+
+  # update_odoo_container_with_shared_pg:
+  #   name: Update Odoo container with shared PG
+  #   note: |
+  #     Runs container with odoo in update mode.
+  #     Container is removed after execution
+  #   code:
+  #     docker run --rm \
+  #     -v {{ odoo_data }}:/var/lib/odoo \
+  #     {% if odoo_config_location %} \
+  #         -v {{ odoo_config_location }}:/etc/odoo \
+  #     {% endif %} \
+  #     {% if odoo_extra_addons %} \
+  #         -v {{ odoo_extra_addons }}:{{ odoo_docker_extra_addons }} \
+  #     {% endif %} \
+  #     {% if odoo_src %} \
+  #         -v {{ odoo_src }}:/mnt/odoo \
+  #     {% endif %} \
+  #     --name {{ odoo_container_name}}_updater \
+  #     --link {{ shared_postgres_name }}:db \
+  #     -t {{ odoo_image_name }} \
+  #     -- \
+  #     --no-http \
+  #     --stop-after-init \
+  #     --update={{ odoo_modules_to_update }} \
+  #     {% if odoo_addons_path %} \
+  #         --addons-path={{ odoo_addons_path }} \
+  #     {% endif %} \
+  #     {% if odoo_db_name %} \
+  #         --database={{ odoo_db_name }} \
+  #     {% endif %} \
+  #     {% if odoo_limit_time_cpu %} \
+  #         --limit-time-cpu={{ odoo_limit_time_cpu }} \
+  #     {% endif %} \
+  #     {% if odoo_limit_time_real %} \
+  #         --limit-time-real={{ odoo_limit_time_real }} \
+  #     {% endif %} \
+  #     {% if odoo_config_file %} \
+  #         --config={{ odoo_config_file }} \
+  #     {% endif %}
+
+  # # Not in use by any plan
+
+  # destroy_odoo_instance_and_image:
+  #   name: Destroy Odoo container and image
+  #   code: |
+  #     docker stop {{ odoo_container_name }} &amp;&amp; \
+  #     docker rm {{ odoo_container_name }} &amp;&amp; \
+  #     docker image rm {{ odoo_image_name }}
+
+  # disable_all_cron_jobs:
+  #   name: Disable all cron jobs
+  #   # -e PGPASSWORD=#!cxtower.secret.postgres_password!# \
+  #   code: |
+  #     docker exec -t \
+  #     -e PGPASSWORD={{ postgres_password }} \
+  #     {{ shared_postgres_name }} \
+  #     psql -U {{ postgres_user }} -d {{ odoo_db_name }} \
+  #     -c "update ir_cron SET active=FALSE"
+
+  # fetch_odoo_official_dockerfile:
+  #   name: Fetch Odoo official Dockerfile
+  #   code: |
+  #     curl -sSL https://github.com/cetmix/odoo-docker-official/tarball/main | \
+  #     tar zxf - --strip-components=1 -C {{ odoo_dockerfile_official_location }}
+
+  # get_odoo_official_checksum:
+  #   name: Get Odoo official checksum
+  #   code:
+  #     curl -sL http://nightly.odoo.com/{{ odoo_version }}/nightly/deb/odoo_{{ \
+  #     odoo_version }}.{{ odoo_dockerfile_official_release }}_all.deb | sha1sum
+
+  # odoo_start_with_db:
+  #   name: Odoo start with db
+  #   code: |
+  #     docker run -d \
+  #     -p {{ odoo_port }}:8069 \
+  #     -v {{ odoo_data }}:/var/lib/odoo \
+  #     -v {{ odoo_config_location }}:/etc/odoo \
+  #     --restart {{ odoo_restart_policy }} \
+  #     --name {{ odoo_container_name}} \
+  #     --link {{ shared_postgres_name }}:db \
+  #     -t {{ odoo_image_name }} -- \
+  #     --database={{ odoo_db_name }}
+
+  # odoo_start_with_db_update:
+  #   name: Odoo start with db update
+  #   code: |
+  #     docker run -d \
+  #     -p {{ odoo_port }}:8069 -v \
+  #     {{ odoo_data }}:/var/lib/odoo \
+  #     -v {{ odoo_config_location }}:/etc/odoo \
+  #     --restart {{ odoo_restart_policy }} \
+  #     --name {{ odoo_container_name}} \
+  #     --link {{ shared_postgres_name }}:db \
+  #     -t {{ odoo_image_name }} -- \
+  #     --database={{ odoo_db_name }} \
+  #     --update={{ odoo_modules_to_update }}
+
+  # start_odoo_container:
+  #   name: Start Odoo container
+  #   code: docker start {{ odoo_container_name }}

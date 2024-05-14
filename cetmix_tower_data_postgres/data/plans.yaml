@@ -1,0 +1,34 @@
+module: cetmix_tower_data_postgres
+plans:
+
+  # # Moved here from Init Tower
+  # create_run_shared_pg:
+  #   name: Init PostgreSQL
+  #   on_error_action: e
+  #   lines:
+  #   - command: create_shared_pg_directories
+  #     use_sudo: 0
+  #   - command: run_shared_pg
+  #     use_sudo: 1
+
+  # restart_shared_pg:
+  #   name: Restart shared PG
+  #   note: |
+  #     Stop and remove shared postgres container.
+  #     Run new one.
+  #   on_error_action: e
+  #   lines:
+  #   - command: stop_shared_pg
+  #     use_sudo: 0
+  #     actions:
+  #     - condition: "!="
+  #       value_char: 0
+  #       action: n
+  #   - command: remove_shared_pg
+  #     use_sudo: 0
+  #     actions:
+  #     - condition: "!="
+  #       value_char: 0
+  #       action: n
+  #   - command: run_shared_pg
+  #     use_sudo: 0

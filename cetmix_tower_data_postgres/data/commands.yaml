@@ -1,0 +1,104 @@
+module: cetmix_tower_data_postgres
+commands:
+
+  # # Was in use by flight plan "Init Tower"
+
+  # create_shared_pg_directories:
+  #   name: Creates directories for shared PG
+  #   code: mkdir -p {{ shared_postgres_data }}
+
+  # # In use by flight plan "Restart shared PG"
+
+  # stop_shared_pg:
+  #   name: Stop shared PG
+  #   code: docker rm {{ shared_postgres_name }}
+
+  # remove_shared_pg:
+  #   name: Remove shared PG
+  #   code: docker rm {{ shared_postgres_name }}
+
+  # run_shared_pg:
+  #   name: Run shared PG
+  #   # -e POSTGRES_PASSWORD=#!cxtower.secret.postgres_password!# \
+  #   code: |
+  #     docker run -d \
+  #     -e POSTGRES_USER={{ postgres_user }} \
+  #     -e POSTGRES_PASSWORD={{ postgres_password }} \
+  #     -e POSTGRES_DB=postgres \
+  #     {% if PGDATA %} \
+  #         -e PGDATA={{ PGDATA }} \
+  #     {% endif %} \
+  #     {% if postgres_shm_size %} \
+  #         --shm-size={{ postgres_shm_size }} \
+  #     {% endif %} \
+  #     --restart {{ shared_postgres_restart_policy }} \
+  #     -v {{ shared_postgres_data }}:{{ PGDATA }} \
+  #     {% if postgres_port %} \
+  #         -p {{ postgres_port }}:5432 \
+  #     {% endif %} \
+  #     --name {{ shared_postgres_name }} \
+  #     \
+  #     postgres:{{ postgres_version }} \
+  #     \
+  #     {% if pg_max_connections %} \
+  #         -c max_connections={{ pg_max_connections }} \
+  #     {% endif %} \
+  #     {% if pg_shared_buffers %} \
+  #         -c shared_buffers={{ pg_shared_buffers }} \
+  #     {% endif %} \
+  #     {% if pg_effective_cache_size %} \
+  #         -c effective_cache_size={{ pg_shared_buffers }} \
+  #     {% endif %} \
+  #     {% if pg_maintenance_work_mem %} \
+  #         -c maintenance_work_mem={{ pg_maintenance_work_mem }} \
+  #     {% endif %} \
+  #     {% if pg_checkpoint_completion_target %} \
+  #         -c checkpoint_completion_target={{ pg_checkpoint_completion_target }} \
+  #     {% endif %} \
+  #     {% if pg_wal_buffers %} \
+  #         -c wal_buffers={{ pg_wal_buffers }} \
+  #     {% endif %} \
+  #     {% if pg_default_statistics_target %} \
+  #         -c default_statistics_target={{ pg_default_statistics_target }} \
+  #     {% endif %} \
+  #     {% if pg_random_page_cost %} \
+  #         -c random_page_cost={{ pg_random_page_cost }} \
+  #     {% endif %} \
+  #     {% if pg_effective_io_concurrency %} \
+  #         -c effective_io_concurrency={{ pg_effective_io_concurrency }} \
+  #     {% endif %} \
+  #     {% if pg_work_mem %} \
+  #         -c work_mem={{ pg_work_mem }} \
+  #     {% endif %} \
+  #     {% if pg_min_wal_size %} \
+  #         -c min_wal_size={{ pg_min_wal_size }} \
+  #     {% endif %} \
+  #     {% if pg_max_wal_size %} \
+  #         -c max_wal_size={{ pg_max_wal_size }} \
+  #     {% endif %} \
+  #     {% if pg_max_worker_processes %} \
+  #         -c max_worker_processes={{ pg_max_worker_processes }} \
+  #     {% endif %} \
+  #     {% if pg_max_parallel_workers_per_gather %} \
+  #         -c max_parallel_workers_per_gather={{ pg_max_parallel_workers_per_gather }} \
+  #     {% endif %} \
+  #     {% if pg_max_parallel_workers %} \
+  #         -c max_parallel_workers={{ pg_max_parallel_workers }} \
+  #     {% endif %} \
+  #     {% if pg_max_parallel_maintenance_workers %} \
+  #         -c max_parallel_maintenance_workers={{ pg_max_parallel_maintenance_workers }} \
+  #     {% endif %}
+
+  # # Not in use by any plan
+
+  # restore_db_from_dump:
+  #   name: Restore DB from Dump
+  #   # -e PGPASSWORD=#!cxtower.secret.postgres_password!# \
+  #   code: |
+  #     gunzip \
+  #     -c {{ backup_restore_dump_location }}/{{ backup_restore_file_name }} \
+  #     | docker exec -i \
+  #     -e PGPASSWORD={{ postgres_password }} \
+  #     {{ shared_postgres_name }} \
+  #     psql -U {{ postgres_user }} \
+  #     -d {{ odoo_db_name_restore }}

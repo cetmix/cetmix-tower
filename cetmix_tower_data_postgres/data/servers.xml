@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- SERVER: template_postgres -->
+    <record id="server_template_postgres" model="cx.tower.server">
+        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="name">template_postgres</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">admin</field>
+        <field name="ip_v4_address">1.2.3.4</field>
+    </record>
+
+</odoo>

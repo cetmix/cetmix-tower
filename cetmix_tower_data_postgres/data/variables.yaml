@@ -1,0 +1,13 @@
+module: cetmix_tower_data_postgres
+variables:
+  # pgdata: /var/lib/postgresql/data
+  # postgres_password: odoo
+  # #postgres_password: move to secret
+  # postgres_root: "{{ tower_root }}/postgres"
+  # postgres_user: odoo
+  # shared_postgres_data: "{{ postgres_root }}/shared_postgres_data"
+  # shared_postgres_name: db-shared
+  # shared_postgres_restart_policy: always
+  # postgres_version: 14
+  # SERVER_NAME: ""
+  # url: ""

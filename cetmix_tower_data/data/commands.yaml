@@ -1,0 +1,74 @@
+module: cetmix_tower_data
+commands:
+
+  # # In use by flight plan "Init Tower"
+
+  # download_and_install_docker_with_script:
+  #   name: Download and install docker with script
+  #   code: |
+  #     curl -fsSL https://get.docker.com -o get-docker.sh &amp;&amp; \
+  #     sh get-docker.sh
+
+  # install_curl:
+  #   name: Install curl
+  #   code: apt-get install -y curl
+
+  # update_debian_packages:
+  #   name: Update Debian packages
+  #   code: apt-get update
+
+  # upgrade_debian_packages:
+  #   name: Upgrade Debian packages
+  #   code: apt-get upgrade
+
+  # add_user_to_docker_group:
+  #   name: Add user to docker group
+  #   note: |
+  #     Adds current user to "docker" group
+  #     to allow running Docker commands without 'sudo'.
+  #   code: usermod -a -G docker $USER
+
+  # # In use by flight plan "Rebuild Odoo container hard"
+
+  # docker_prune:
+  #   name: Docker prune
+  #   code: docker system prune -af
+
+  # # Not in use by any plan
+
+  # list_dir:
+  #   name: List files in directory
+  #   code: cd {{ path }} &amp;&amp; ls -l
+
+  # docker_show_logs:
+  #   name: Docker show logs
+  #   code: |
+  #       docker logs --since={{ docker_logs_time or '5m' }} {{ odoo_container_name }}
+
+  # install_docker_compose:
+  #   name: Install Docker Compose
+  #   code: apt install -y docker-compose
+
+  # install_git:
+  #   name: Install Git
+  #   code: apt install -y git
+
+  # list_docker_containers:
+  #   name: List docker containers
+  #   code: docker ps --all
+
+  # list_local_resources:
+  #   name: List local resources
+  #   code: cd / &amp;&amp; pwd &amp;&amp; ls -lha
+
+  # list_root_backup_folder_contents:
+  #   name: List root backup folder contents
+  #   code: ls -lah {{ backup_location }}
+
+  # reload_cron:
+  #   name: Reload cron
+  #   code: /etc/init.d/cron reload
+
+  # show_free_disk_space:
+  #   name: Show free disk space
+  #   code: df -BG

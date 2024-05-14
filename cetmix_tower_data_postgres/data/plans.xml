@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- FLIGHT PLAN: Init PostgreSQL -->
+    <record id="plan_create_run_shared_pg" model="cx.tower.plan">
+        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="name">Init PostgreSQL</field>
+        <field name="note">
+
+        </field>
+    </record>
+    <!-- Line -->
+    <record id="plan_create_run_shared_pg_line_1" model="cx.tower.plan.line">
+        <field name="sequence">1</field>
+        <field name="plan_id" ref="plan_create_run_shared_pg" />
+        <field name="command_id" ref="command_create_shared_pg_directories" />
+        <field name="use_sudo">0</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_create_run_shared_pg_line_2" model="cx.tower.plan.line">
+        <field name="sequence">2</field>
+        <field name="plan_id" ref="plan_create_run_shared_pg" />
+        <field name="command_id" ref="command_run_shared_pg" />
+        <field name="use_sudo">1</field>
+    </record>
+
+    <!-- FLIGHT PLAN: Restart shared PG -->
+    <record id="plan_restart_shared_pg" model="cx.tower.plan">
+        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="name">Restart shared PG</field>
+        <field name="note">
+Stop and remove shared postgres container.
+Run new one.
+
+        </field>
+    </record>
+    <!-- Line -->
+    <record id="plan_restart_shared_pg_line_1" model="cx.tower.plan.line">
+        <field name="sequence">1</field>
+        <field name="plan_id" ref="plan_restart_shared_pg" />
+        <field name="command_id" ref="command_stop_shared_pg" />
+        <field name="use_sudo">0</field>
+    </record>
+    <!-- Action -->
+    <record id="plan_restart_shared_pg_line_1_action_1" model="cx.tower.plan.line.action">
+        <field name="line_id" ref="plan_restart_shared_pg_line_1" />
+        <field name="sequence">1</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_restart_shared_pg_line_2" model="cx.tower.plan.line">
+        <field name="sequence">2</field>
+        <field name="plan_id" ref="plan_restart_shared_pg" />
+        <field name="command_id" ref="command_remove_shared_pg" />
+        <field name="use_sudo">0</field>
+    </record>
+    <!-- Action -->
+    <record id="plan_restart_shared_pg_line_2_action_1" model="cx.tower.plan.line.action">
+        <field name="line_id" ref="plan_restart_shared_pg_line_2" />
+        <field name="sequence">1</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_restart_shared_pg_line_3" model="cx.tower.plan.line">
+        <field name="sequence">3</field>
+        <field name="plan_id" ref="plan_restart_shared_pg" />
+        <field name="command_id" ref="command_run_shared_pg" />
+        <field name="use_sudo">0</field>
+    </record>
+
+</odoo>
