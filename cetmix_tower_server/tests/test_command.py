@@ -104,7 +104,7 @@ class TestTowerCommand(TestTowerCommon):
         custom_values = {"log": {"label": command_label}}
 
         # Execute command for Server 1
-        self.server_test_1.execute_commands(self.command_create_dir, **custom_values)
+        self.server_test_1.execute_command(self.command_create_dir, **custom_values)
 
         # Expected rendered command code
         rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
@@ -173,7 +173,7 @@ class TestTowerCommand(TestTowerCommon):
         custom_values = {"log": {"label": command_label}}
 
         # Execute command for Server 1
-        self.server_test_1.execute_commands(command_with_keys, **custom_values)
+        self.server_test_1.execute_command(command_with_keys, **custom_values)
 
         # Expected rendered command code
         rendered_code_expected = "cd /opt/tower && mkdir #!cxtower.secret.FOLDER"
