@@ -62,7 +62,8 @@
         <field name="name">cx.tower.variable.view.tree</field>
         <field name="model">cx.tower.variable</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-muted="readonly">
+                <field name="readonly" invisible="1" />
                 <field name="name" />
                 <field name="value_ids_count" />
             </tree>

@@ -99,6 +99,7 @@ class CxTowerCommand(models.Model):
         store=True,
         readonly=False,
     )
+    readonly = fields.Boolean(copy=False, readonly=True)
 
     @api.depends("action")
     def _compute_code(self):

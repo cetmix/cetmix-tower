@@ -234,7 +234,11 @@
                         </page>
                         <page name="variables" string="Variables">
                             <field name="variable_value_ids" order="variable_name">
-                                <tree editable="bottom">
+                                <tree
+                                    editable="bottom"
+                                    decoration-muted="readonly"
+                                >
+                                    <field name="readonly" invisible="1" />
                                     <field name="variable_name" invisible="1" />
                                     <field name="variable_id" />
                                     <field name="value_char" />
@@ -259,6 +263,7 @@
                                 <tree>
                                     <field name="name" />
                                     <field name="key_ref" />
+                                    <field name="key_type" invisible="1" />
                                 </tree>
                             </field>
                         </page>

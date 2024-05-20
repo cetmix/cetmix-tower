@@ -5,7 +5,12 @@
         <field name="name">cx.tower.variable.value.view.tree</field>
         <field name="model">cx.tower.variable.value</field>
         <field name="arch" type="xml">
-            <tree editable="top" decoration-bf="is_global==True">
+            <tree
+                editable="top"
+                decoration-bf="is_global==True"
+                decoration-muted="readonly"
+            >
+                <field name="readonly" invisible="1" />
                 <field name="variable_id" />
                 <field name="is_global" widget="boolean_toggle" />
                 <field name="server_id" />
