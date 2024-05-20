@@ -63,7 +63,8 @@
         <field name="name">cx.tower.file.template.view.tree</field>
         <field name="model">cx.tower.file.template</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-muted="readonly">
+                <field name="readonly" invisible="1" />
                 <field name="name" />
                 <field name="file_type" optional="show" />
                 <field name="file_name" optional="show" />

@@ -40,6 +40,7 @@ class TowerVariableValue(models.Model):
     server_template_id = fields.Many2one(
         comodel_name="cx.tower.server.template", index=True, ondelete="cascade"
     )
+    readonly = fields.Boolean(copy=False, readonly=True)
 
     _sql_constraints = [
         (

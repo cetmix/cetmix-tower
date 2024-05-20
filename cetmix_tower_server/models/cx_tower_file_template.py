@@ -52,6 +52,7 @@ class CxTowerFileTemplate(models.Model):
         required=True,
         default="tower",
     )
+    readonly = fields.Boolean(copy=False, readonly=True)
 
     def write(self, vals):
         """
