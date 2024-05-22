@@ -49,6 +49,11 @@ class CxTowerCommandLog(models.Model):
     is_skipped = fields.Boolean(
         readonly=True,
     )
+    access_level = fields.Selection(
+        related="command_id.access_level",
+        readonly=True,
+        store=True,
+    )
 
     # -- Flight Plan
     plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log", ondelete="cascade")
