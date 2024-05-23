@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+
+    <record id="cx_tower_plan_log_rule_group_user_access" model="ir.rule">
+        <field name="name">Tower plan log: user access rule</field>
+        <field name="model_id" ref="model_cx_tower_plan_log" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <record id="cx_tower_plan_log_rule_group_manager_access" model="ir.rule">
+        <field name="name">Tower plan log: manager access rule</field>
+        <field name="model_id" ref="model_cx_tower_plan_log" />
+        <field name="domain_force">[
+            ('server_id.message_partner_ids', 'in', [user.partner_id.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+    </record>
+
+
+    <record id="cx_tower_plan_log_rule_group_root_access" model="ir.rule">
+        <field name="name">Tower plan log: root access rule</field>
+        <field name="model_id" ref="model_cx_tower_plan_log" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4,ref('cetmix_tower_server.group_root'))]" />
+    </record>
+
+
+</odoo>
