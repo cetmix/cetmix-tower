@@ -11,3 +11,4 @@ from . import test_server_template
 from . import test_reference_mixin
 from . import test_cetmix_tower
 from . import test_update_related_variable_names
+from . import test_log
