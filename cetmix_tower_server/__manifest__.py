@@ -25,6 +25,7 @@
         "security/cx_tower_plan_security.xml",
         "security/cx_tower_plan_line_security.xml",
         "security/cx_tower_plan_line_action_security.xml",
+        "security/cx_tower_plan_log_security.xml",
         "security/ir.model.access.csv",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
