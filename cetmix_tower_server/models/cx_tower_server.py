@@ -621,6 +621,24 @@ class CxTowerServer(models.Model):
         # Create log record
         log_record = log_obj.start(self.id, command.id, **log_vals)  # pylint: disable=no-member
 
+        self._command_runner_wrapper(
+            command, log_record, rendered_command_code, ssh_connection
+        )
+
+    def _command_runner_wrapper(
+        self, command, log_record, rendered_command_code, ssh_connection=None
+    ):
+        """Used to implement custom runner mechanisms.\
+        Use it in case you need to redefine the entire command execution engine.
+        Eg it's used in `cetmix_tower_server_queue` OCA `queue_job` implementation.
+
+        Args:
+            command (cx.tower.command()): Command
+            log_record (cx.tower.command.log()): Command log record
+            rendered_command_code (Text): Rendered command code.
+                We are passing in case it differs from command code in the log record.
+            ssh_connection (SSH client instance, optional): SSH connection to reuse.
+        """
         self._command_runner(command, log_record, rendered_command_code, ssh_connection)
 
     def _command_runner(

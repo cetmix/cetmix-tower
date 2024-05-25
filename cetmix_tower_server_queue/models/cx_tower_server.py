@@ -6,18 +6,9 @@ from odoo import models
 class CxTowerServer(models.Model):
     _inherit = "cx.tower.server"
 
-    # Use job que to run commands on server
-    def execute_commands(self, commands, sudo=None, **kwargs):
-        # Get variables from commands {command.id: [variables]}
-        variables = commands.get_variables()
-
-        # Run pre-command hook
-        commands, variables, sudo, kwargs = self._pre_execute_commands(
-            commands, variables, sudo, **kwargs
+    def _command_runner_wrapper(
+        self, command, log_record, rendered_command_code, ssh_connection=None
+    ):
+        self.with_delay()._command_runner(
+            command, log_record, rendered_command_code, ssh_connection
         )
-
-        # Execute commands
-        for server in self:
-            server.with_delay()._execute_commands_on_server(
-                commands, variables, sudo, **kwargs
-            )
