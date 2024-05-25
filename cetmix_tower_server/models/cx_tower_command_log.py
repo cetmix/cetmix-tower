@@ -19,12 +19,15 @@ class CxTowerCommandLog(models.Model):
     start_date = fields.Datetime(string="Started")
     finish_date = fields.Datetime(string="Finished")
     duration = fields.Float(
-        string="Duration, sec",
         help="Time consumed for execution, seconds",
         compute="_compute_duration",
         store=True,
     )
-
+    duration_current = fields.Float(
+        string="Duration, sec",
+        compute="_compute_duration_current",
+        help="For how long a flight plan is already running",
+    )
     # -- Command
     is_running = fields.Boolean(help="Command is being executed right now")
     command_id = fields.Many2one(
@@ -55,6 +58,19 @@ class CxTowerCommandLog(models.Model):
                 command_log.duration = (
                     command_log.finish_date - command_log.start_date
                 ).total_seconds()
+
+    def _compute_duration_current(self):
+        """Shows relative time between now() and start time for running commands,
+        and computed duration for finished ones.
+        """
+        now = fields.Datetime.now()
+        for command_log in self:
+            if command_log.is_running:
+                command_log.duration_current = (
+                    now - command_log.start_date
+                ).total_seconds()
+            else:
+                command_log.duration_current = command_log.duration
 
     def start(self, server_id, command_id, start_date=None, **kwargs):
         """Creates initial log record when command is started

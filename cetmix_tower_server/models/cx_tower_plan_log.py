@@ -66,11 +66,10 @@ class CxTowerPlanLog(models.Model):
         """Shows relative time between now() and start time for running plans,
         and computed duration for finished ones.
         """
+        now = fields.Datetime.now()
         for plan_log in self:
             if plan_log.is_running:
-                plan_log.duration_current = (
-                    fields.Datetime.now() - plan_log.start_date
-                ).total_seconds()
+                plan_log.duration_current = (now - plan_log.start_date).total_seconds()
             else:
                 plan_log.duration_current = plan_log.duration
 
