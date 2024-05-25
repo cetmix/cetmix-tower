@@ -59,7 +59,7 @@
                             <field name="command_id" optional="show" />
                             <field name="start_date" optional="hide" />
                             <field name="finish_date" optional="hide" />
-                            <field name="duration" optional="show" />
+                            <field name="duration_current" optional="show" />
                             <field name="command_status" optional="show" />
                             <field name="is_running" optional="hide" />
                             </tree>
