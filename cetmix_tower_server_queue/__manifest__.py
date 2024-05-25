@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server Queue",
     "summary": "OCA Queue implementation for Cetmix Tower Server",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.2",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",
