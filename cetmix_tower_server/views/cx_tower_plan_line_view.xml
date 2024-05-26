@@ -15,6 +15,10 @@
                                 context="{'command_show_server_names': True}"
                             />
                             <field name="use_sudo" />
+                            <field
+                                name="path"
+                                placeholder="e.g. /such/much/{{ path }}, overrides command path"
+                            />
                         </group>
                         </group>
                     <notebook>

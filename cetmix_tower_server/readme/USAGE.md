@@ -11,6 +11,7 @@ To run a command:
   - **Sudo**: `sudo` option for running this command
   - **Command**: Command to execute
   - **Show shared**: By default only commands available for the selected server(s) are selectable. Activate this checkbox to select any command
+  - **Path**: Directory where command will be executed. Important: this field does not support variables! Ensure that user has access to this location even if you run command using sudo.
   - **Code**: Raw command code
   - **Preview**: Command code rendered using server variables.
   **IMPORTANT:** If several servers are selected preview will be rendered for the first one. However during the command execution command code will be rendered for each server separately.

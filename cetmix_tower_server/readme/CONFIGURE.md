@@ -4,11 +4,11 @@ Please ensure that you have read and understood the documentation before running
 
 Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`.
 
-Enter the server name fill the values it the tabs below.
+Enter the server name and fill the values it the tabs below:
 
 ### General Settings
 
-- **Partner**: This is a partner this server belongs to
+- **Partner**: Partner this server belongs to
 - **Operating System**: Operating system that runs on the server
 - **IPv4 Address**
 - **IPv6 Address**: Will be used if no IPv4 address is specified
@@ -159,8 +159,9 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 - **Tags**: Make usage as search more convenient.
 - **Action**: Action executed by the command. Possible options:
   - `Execute shell command`: Execute a shell command using ssh connection on remote server.
-  - `Push file`: Cerate or update a file using selected file template and push it to remote server. If the file already exists on server it will be overwritten.
+  - `Push file`: Create or update a file using selected file template and push it to remote server. If the file already exists on server it will be overwritten.
 
+- **Default Path**: Specify path where command will be executed. This field supports [Variables](#configure-variables). Important: ensure ssh user has access to the location even if executing command using sudo.
 - **Code**: Command code as it will be executed by remote shell. This field supports [Variables](#configure-variables).
 - **File Template**: File template that will be used to create or update file. Check [File Templates](#file-templates) for more details.
 
@@ -180,6 +181,7 @@ To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Cr
 - **Code**: List of commands to execute. Each of the commands has the following fields:
   - **Sequence**: Order this command is executed. Lower value = higher priority.
   - **Command**: [Command](#configure-a-command) to be executed.
+  - **Path**: Specify path where command will be executed. Overrides `Default Path` of the command. This field supports [Variables](#configure-variables).
   - **Use Sudo**: Use `sudo` if required to run this command.
   - **Actions**: List of condition based actions to be triggered after the command is executed. Each of the actions has the following fields:
     - **Sequence**: Order this actions is triggered. Lower value = higher priority.
@@ -189,3 +191,63 @@ To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Cr
       - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one.
       - `Run next command`. Will continue flight plan execution.
 
+## Configuration best practices
+
+### Use simple commands
+
+Try to avoid using `&&` or `;` joined commands unless this is really needed.
+Use flight plans instead.
+
+**Why?**
+
+- Simple commands are easier to reuse across multiple flight plans.
+- Commands run with `sudo` with password are be split and executed one by one anyway.
+
+**Not recommended:**
+
+```bash
+apt-get update && apt-get upgrade -y && apt-get install doge-meme-generator
+```
+
+**Way to go:**
+
+```bash
+apt-get update
+```
+
+```bash
+apt-get upgrade -y
+```
+
+```bash
+apt-get install doge-meme-generator
+```
+
+### Do not change directory using shell commands
+
+Do not use `cd` or `chdir` commands.
+Use `Default Path` field in command or `Path` field in flight plan line.
+
+**Why?**
+
+- Tower will automatically adjust the command to ensure it is properly executed in the specified location.
+
+**Do not do this:**
+
+```bash
+cd /home/{{ tower.server.username }}/memes && cat my_doge_memes.txt
+```
+
+**Way to go:**
+
+- Add the following value in the `Default Path` command field or `Path` field of a flight plan line: 
+
+```bash
+/home/{{ tower.server.username }}/memes
+```
+
+- Leave the command code as follows:
+
+```bash
+cat my_doge_memes.txt
+```

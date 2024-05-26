@@ -29,6 +29,10 @@
                             <field name="server_id" />
                             <field name="command_id" />
                             <field
+                                name="path"
+                                attrs="{'invisible': [('path', '=', False)]}"
+                            />
+                            <field
                                 name="is_running"
                                 attrs="{'invisible': [('is_running', '=', False)]}"
                             />
