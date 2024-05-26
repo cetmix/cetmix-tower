@@ -10,6 +10,7 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="allow_parallel_run" />
                             <label for="on_error_action" />
                             <div class="o_row">
                                 <field name="on_error_action" />
