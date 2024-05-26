@@ -148,9 +148,6 @@ class SSH(object):
                 error_message = [_("sudo password was not provided!")]
                 return 255, [], error_message
 
-            # prepend command with `sudo`
-            command = f"sudo -S -p '' {command}"
-
         stdin, stdout, stderr = self.connection.exec_command(command)
 
         # Send password to stdin
@@ -460,7 +457,7 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         client = self._connect()
         command = self._get_connection_test_command()
-        command_result = self._execute_command_using_ssh(client, command=command)
+        command_result = self._execute_command_using_ssh(client, command_code=command)
 
         if command_result["status"] != 0 or command_result["error"]:
             raise ValidationError(
@@ -491,7 +488,7 @@ class CxTowerServer(models.Model):
 
         # remove file from server
         file_remove_result = self._execute_command_using_ssh(
-            client, command="rm -rf /var/tmp/test.txt"
+            client, command_code="rm -rf /var/tmp/test.txt"
         )
         if file_remove_result["status"] != 0 or command_result["error"]:
             raise ValidationError(
@@ -516,43 +513,79 @@ class CxTowerServer(models.Model):
         }
         return notification
 
-    def _render_command_code(self, command):
+    def _render_command(self, command, path=None):
         """Renders command code for selected command for current server
 
         Args:
             command (cx.tower.command): Command to render
+            path (Char): Path where to execute the command.
+                Provide in case you need to override default command path
 
         Returns:
-            Text: rendered command code
+            dict: rendered values
+                {
+                    "rendered_code": rendered command code,
+                    "rendered_path": rendered command path
+                }
         """
         self.ensure_one()
 
-        # Get command variables
-        variables = command.get_variables()
+        variables = []
+
+        # Get variables from code
+        if command.code:
+            variables_extracted = command.get_variables_from_code(command.code)
+            for ve in variables_extracted:
+                if ve not in variables:
+                    variables.append(ve)
+
+        # Get variables from path
+        path = path if path else command.path
+        if path:
+            variables_extracted = command.get_variables_from_code(path)
+            for ve in variables_extracted:
+                if ve not in variables:
+                    variables.append(ve)
 
         # Get variable values for current server
-        variable_values = (
-            self.get_variable_values(variables.get(str(command.id)))  # pylint: disable=no-member
+        variable_values_dict = (
+            self.get_variable_values(variables)  # pylint: disable=no-member
             if variables
             else False
         )
 
+        # Extract variable values for current server
+        variable_values = (
+            variable_values_dict.get(self.id) if variable_values_dict else False
+        )  # pylint: disable=no-member
+
         # Render command code using variables
         if variable_values:
-            rendered_code = command.render_code(**variable_values.get(self.id)).get(  # pylint: disable=no-member
-                command.id
+            rendered_code = (
+                command.render_code_custom(command.code, **variable_values)
+                if command.code
+                else False
             )
+            rendered_path = (
+                command.render_code_custom(path, **variable_values) if path else False
+            )
+
         else:
             rendered_code = command.code
+            rendered_path = path
 
-        return rendered_code
+        return {"rendered_code": rendered_code, "rendered_path": rendered_path}
 
-    def execute_command(self, command, sudo=None, ssh_connection=None, **kwargs):
+    def execute_command(
+        self, command, path=None, sudo=None, ssh_connection=None, **kwargs
+    ):
         """This is the main function to use for running commands.
         It renders command code, creates log record and calls command runner.
 
         Args:
             command (cx.tower.command()): Command record
+            path (Char): directory where command is run.
+                Provide in case you need to override default command value
             sudo (selection): use sudo
                 None - do not use sudo
                 'n' - no password
@@ -609,13 +642,13 @@ class CxTowerServer(models.Model):
                 )
                 return
 
-        # Render command code
-        rendered_command_code = (
-            self._render_command_code(command) if command.code else None
-        )
+        # Render command
+        rendered_command = self._render_command(command, path)
+        rendered_command_code = rendered_command["rendered_code"]
+        rendered_command_path = rendered_command["rendered_path"]
 
         # Save rendered code to log
-        log_vals.update({"code": rendered_command_code})
+        log_vals.update({"code": rendered_command_code, "path": rendered_command_path})
 
         # Prepare key renderer values
         key_vals = kwargs.get("key", {})  # Get vals from kwargs
@@ -627,11 +660,22 @@ class CxTowerServer(models.Model):
         log_record = log_obj.start(self.id, command.id, **log_vals)  # pylint: disable=no-member
 
         self._command_runner_wrapper(
-            command, log_record, rendered_command_code, ssh_connection
+            command,
+            log_record,
+            rendered_command_code,
+            rendered_command_path,
+            ssh_connection,
+            **kwargs,
         )
 
     def _command_runner_wrapper(
-        self, command, log_record, rendered_command_code, ssh_connection=None
+        self,
+        command,
+        log_record,
+        rendered_command_code,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
     ):
         """Used to implement custom runner mechanisms.\
         Use it in case you need to redefine the entire command execution engine.
@@ -642,12 +686,30 @@ class CxTowerServer(models.Model):
             log_record (cx.tower.command.log()): Command log record
             rendered_command_code (Text): Rendered command code.
                 We are passing in case it differs from command code in the log record.
+            rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
+        kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
         """
-        self._command_runner(command, log_record, rendered_command_code, ssh_connection)
+        self._command_runner(
+            command,
+            log_record,
+            rendered_command_code,
+            rendered_command_path,
+            ssh_connection,
+            **kwargs,
+        )
 
     def _command_runner(
-        self, command, log_record, rendered_command_code, ssh_connection=None
+        self,
+        command,
+        log_record,
+        rendered_command_code,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
     ):
         """Top level command runner function.
         Calls command type specific runners.
@@ -657,11 +719,22 @@ class CxTowerServer(models.Model):
             log_record (cx.tower.command.log()): Command log record
             rendered_command_code (Text): Rendered command code.
                 We are passing in case it differs from command code in the log record.
+            rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
+        kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
         """
 
         if command.action == "ssh_command":
-            self._command_runner_ssh(log_record, rendered_command_code, ssh_connection)
+            self._command_runner_ssh(
+                log_record,
+                rendered_command_code,
+                rendered_command_path,
+                ssh_connection,
+                **kwargs,
+            )
 
         else:
             log_record.finish(
@@ -675,7 +748,12 @@ class CxTowerServer(models.Model):
             )
 
     def _command_runner_ssh(
-        self, log_record, rendered_command_code, ssh_connection=None
+        self,
+        log_record,
+        rendered_command_code,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
     ):
         """Execute SSH command.
         Updates the record in the Command Log (cx.tower.command.log)
@@ -684,14 +762,24 @@ class CxTowerServer(models.Model):
             log_record (cx.tower.command.log()): Command log record
             rendered_command_code (Text): Rendered command code.
                 We are passing in case it differs from command code in the log record.
+            rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
+        kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
         """
         if not ssh_connection:
             ssh_connection = self._connect(raise_on_error=False)
 
         # Execute command
         command_result = self._execute_command_using_ssh(
-            ssh_connection, rendered_command_code, False, log_record.use_sudo
+            client=ssh_connection,
+            command_code=rendered_command_code,
+            command_path=rendered_command_path,
+            raise_on_error=False,
+            sudo=log_record.use_sudo,
+            **kwargs,
         )
 
         # Log result
@@ -703,7 +791,13 @@ class CxTowerServer(models.Model):
         )
 
     def _execute_command_using_ssh(
-        self, client, command, raise_on_error=True, sudo=None, **kwargs
+        self,
+        client,
+        command_code,
+        command_path=None,
+        raise_on_error=True,
+        sudo=None,
+        **kwargs,
     ):
         """This is a low level method for SSH command execution.
         Use it in case you need to get direct output of an SSH command.
@@ -711,9 +805,14 @@ class CxTowerServer(models.Model):
 
         Args:
             client (Connection): valid server ssh connection object
-            command (Text): command text
+            command_code (Text): command text
+            command_path (Char, optional): directory where command should be executed
             raise_on_error (bool, optional): raise error on error
             sudo (selection): use sudo Defaults to None.
+        kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
 
         Raises:
             ValidationError: if client is not valid
@@ -730,28 +829,33 @@ class CxTowerServer(models.Model):
             raise ValidationError(_("SSH Client is not defined."))
 
         # Parse inline variables
-        command = self.env["cx.tower.key"].parse_code(command, **kwargs.get("key", {}))
+        command = self.env["cx.tower.key"].parse_code(
+            command_code, **kwargs.get("key", {})
+        )
 
+        # Prepare ssh command
+        command = self._prepare_ssh_command(command, command_path, sudo)
         try:
-            if sudo:  # Execute each command separately to avoid extra shell
-                status = []
-                response = []
-                error = []
-                commands = self._prepare_command_for_sudo(command, mode=sudo)
+            status = []
+            response = []
+            error = []
 
-                # Single command: sudo without password
-                if isinstance(commands, str):
-                    status, response, error = client.exec_command(commands, sudo=sudo)
+            # Command is a single sting. No 'sudo' or 'sudo' w/o password
+            if isinstance(command, str):
+                status, response, error = client.exec_command(command, sudo=sudo)
 
-                # Multiple commands: sudo with password
-                else:
-                    for cmd in commands:
-                        st, resp, err = client.exec_command(cmd, sudo=sudo)
-                        status.append(st)
-                        response += resp
-                        error += err
+            # Multiple commands: sudo with password
+            elif isinstance(command, list):
+                for cmd in command:
+                    st, resp, err = client.exec_command(cmd, sudo=sudo)
+                    status.append(st)
+                    response += resp
+                    error += err
+
+            # Something weird ))
             else:
-                status, response, error = client.exec_command(command)
+                status = -1
+
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(
@@ -764,8 +868,8 @@ class CxTowerServer(models.Model):
 
         return self._parse_ssh_command_results(status, response, error)
 
-    def _prepare_command_for_sudo(self, command, mode=None):
-        """Prepare command to be executed with sudo
+    def _prepare_ssh_command(self, command, path=None, sudo=None):
+        """Prepare ssh command
         IMPORTANT:
         Commands executed with sudo will be run separately one after another
         even if there is a single command separated with '&&' or ';'
@@ -776,7 +880,8 @@ class CxTowerServer(models.Model):
 
         Args:
             command (text): initial command
-            mode (str, optional): sudo mode (n, p)
+            path (str, optional): directory where command should be executed
+            sudo (str, optional): sudo mode (n, p)
                 n - sudo without password
                 p - sudo with password
 
@@ -786,21 +891,55 @@ class CxTowerServer(models.Model):
                 from its parts for sudo without password mode ('n'))
 
         """
-        # Detect command separator
-        # TODO: refactor this method to allow mix of different separators in one string
-        if "&&" in command:
-            separator = "&&"
-        elif ";" in command:
-            separator = ";"
-        else:
-            if mode == "n":
-                return f"sudo -S -p '' {command}"
-            return [command]
+        sudo_prefix = False
 
-        result = command.replace("\\", "").replace("\n", "").split(separator)
-        result = [cmd.strip() for cmd in result]
-        if mode == "n":
-            result = f" {separator} ".join([f"sudo -S -p '' {cmd}" for cmd in result])
+        # Prepare command for sudo if needed
+        if sudo:
+            # Add location
+            sudo_prefix = "sudo -S -p ''"
+
+            # Detect command separator
+            if "&&" in command or ";" in command:
+                # If command consists of several commands:
+                # Replace alternative separator to avoid possible issues.
+                # We need to stop always if some command issues error.
+                # Check TODO above
+                command.replace(";", "&&")
+                separator = "&&"
+                command.replace("\\", "").replace("\n", "").split(separator)
+                result = (
+                    command.replace("\\", "").replace("\n", "").split(separator)
+                    if separator
+                    else [command]
+                )
+
+                # Sudo with password expects a list of commands
+                result = [f"{sudo_prefix} {cmd.strip()}" for cmd in result]
+
+                # Merge back into a single command is sudo is without password
+                if sudo == "n":
+                    result = f" {separator} ".join(result)
+            else:
+                # Single command only
+                result = f"{sudo_prefix} {command}"
+
+                if sudo == "p":
+                    # Sudo with password expects a list of commands
+                    result = [result]
+
+        else:
+            # Command without sudo is always run as is
+            result = command
+        # Add path change command
+        # TODO: we can put this command to the config level later if needed
+        if path:
+            # Add sudo prefix if needed
+            cd_command = f"cd {path}"
+
+            if isinstance(result, list):
+                result = [cd_command] + result
+            else:
+                result = f"{cd_command} && {result}"
         return result
 
     def _parse_ssh_command_results(self, status, response, error):

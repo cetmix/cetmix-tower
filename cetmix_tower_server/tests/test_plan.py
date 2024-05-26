@@ -182,7 +182,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(
             len(plan_log_rec.command_log_ids),
             expected_command_count,
-            msg="Must run {} commands".format(expected_command_count),
+            msg=f"Must run {expected_command_count} commands",
         )
 
         # Check plan status
@@ -190,7 +190,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(
             plan_log_rec.plan_status,
             expected_plan_status,
-            msg="Plan status must be equal to {}".format(expected_plan_status),
+            msg=f"Plan status must be equal to {expected_plan_status}",
         )
 
         # ************************
@@ -215,7 +215,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(
             len(plan_log_rec.command_log_ids),
             expected_command_count,
-            msg="Must run {} commands".format(expected_command_count),
+            msg=f"Must run {expected_command_count} commands",
         )
 
         # Check plan status
@@ -223,7 +223,14 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(
             plan_log_rec.plan_status,
             expected_plan_status,
-            msg="Plan status must be equal to {}".format(expected_plan_status),
+            msg=f"Plan status must be equal to {expected_plan_status}",
+        )
+
+        # Ensure 'path' was substituted with the plan line custom 'path'
+        self.assertEqual(
+            self.plan_line_1.path,
+            plan_log_rec.command_log_ids.path,
+            "Path in command log must be the same as in the flight plan line",
         )
 
     def test_plan_user_access_rule(self):

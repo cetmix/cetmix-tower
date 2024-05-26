@@ -15,6 +15,10 @@
                                 name="file_template_id"
                                 attrs="{'invisible': [('action', '!=', 'file_using_template')],'required': [('action', '=', 'file_using_template')],}"
                             />
+                            <field
+                                name="path"
+                                placeholder="optional, eg /home/{{ tower.server.username }}"
+                            />
                             <field name="allow_parallel_run" />
                             <field name="note" />
                         </group>
@@ -62,6 +66,7 @@
                     options="{'color_field': 'color'}"
                     optional="show"
                 />
+                <field name="path" optional="show" />
                 <field
                     name="tag_ids"
                     widget="many2many_tags"
