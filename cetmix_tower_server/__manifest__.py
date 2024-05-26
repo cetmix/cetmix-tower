@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server Management",
     "summary": "Flexible Server Management directly from Odoo",
-    "version": "14.0.0.3.16",
+    "version": "14.0.0.3.17",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",

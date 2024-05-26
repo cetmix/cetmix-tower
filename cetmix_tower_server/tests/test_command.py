@@ -5,8 +5,21 @@ from .common import TestTowerCommon
 
 
 class TestTowerCommand(TestTowerCommon):
-    def test_sudo_command_prepare_method(self):
-        """Test sudo command preparing in different modes"""
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
+
+        # Save variable values for Server 1
+        with Form(self.server_test_1) as f:
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_dir
+                line.value_char = "test-odoo-1"
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_path
+                line.value_char = "/opt/tower"
+            f.save()
+
+    def test_ssh_command_prepare_method_without_path(self):
+        """Test ssh command preparation in different modes without path"""
 
         server = self.server_test_1
 
@@ -14,24 +27,26 @@ class TestTowerCommand(TestTowerCommon):
         multiple_commands = "ls -a /tmp && mkdir /tmp/test"
 
         sudo_mode = "p"
+
         # Prepare single command for sudo with password
-        cmd = server._prepare_command_for_sudo(single_command, sudo_mode)
+        cmd = server._prepare_ssh_command(single_command, path=None, sudo=sudo_mode)
         self.assertEqual(
             cmd,
-            [single_command],
+            [f"{self.sudo_prefix} {single_command}"],
             msg=(
                 "Single command for sudo with password should be "
                 "equal to list with the original command"
                 "as an only element"
             ),
         )
+
         # Prepare multiple commands for sudo with password
-        cmd = server._prepare_command_for_sudo(multiple_commands, sudo_mode)
+        cmd = server._prepare_ssh_command(multiple_commands, path=None, sudo=sudo_mode)
         self.assertEqual(
             cmd,
             [
-                "ls -a /tmp",
-                "mkdir /tmp/test",
+                f"{self.sudo_prefix} ls -a /tmp",
+                f"{self.sudo_prefix} mkdir /tmp/test",
             ],
             msg=(
                 "Multiple commands with sudo with password should be "
@@ -40,30 +55,192 @@ class TestTowerCommand(TestTowerCommon):
         )
 
         sudo_mode = "n"
+
         # Prepare single command for sudo without password
-        cmd = server._prepare_command_for_sudo(single_command, sudo_mode)
+        cmd = server._prepare_ssh_command(single_command, path=None, sudo=sudo_mode)
         self.assertEqual(
             cmd,
-            f"sudo -S -p '' {single_command}",
+            f"{self.sudo_prefix} {single_command}",
             msg=(
                 "Single command with sudo without password should be "
-                "equal to the original command prefixed with \"sudo -S -p ''\""
-            ),
-        )
-        # Prepare multiple commands for sudo without password
-        cmd = server._prepare_command_for_sudo(multiple_commands, sudo_mode)
-        self.assertEqual(
-            cmd,
-            "sudo -S -p '' ls -a /tmp && sudo -S -p '' mkdir /tmp/test",
-            msg=(
-                "Multiple commands with sudo with password should be "
-                "a re-joined string from list of separated original "
-                "each prefixed with \"sudo -S -p ''\""
+                f'equal to the original command prefixed with "{self.sudo_prefix}"'
             ),
         )
 
-    def test_render_code(self):
-        """Test code template rendering"""
+        # Prepare multiple commands for sudo without password
+        cmd = server._prepare_ssh_command(multiple_commands, path=None, sudo=sudo_mode)
+        self.assertEqual(
+            cmd,
+            f"{self.sudo_prefix} ls -a /tmp && {self.sudo_prefix} mkdir /tmp/test",
+            msg=(
+                "Multiple commands with sudo with password should be "
+                "a re-joined string from list of separated original "
+                f'each prefixed with "{self.sudo_prefix}"'
+            ),
+        )
+
+        # Prepare single command without sudo
+        cmd = server._prepare_ssh_command(single_command)
+        self.assertEqual(
+            cmd,
+            single_command,
+            msg=(
+                "Single command without sudo should be "
+                "equal to the original command "
+            ),
+        )
+
+        # Prepare multiple without sudo
+        cmd = server._prepare_ssh_command(multiple_commands)
+        self.assertEqual(
+            cmd,
+            multiple_commands,
+            msg=(
+                "Multiple commands without sudo should be "
+                "equal to the original line of commands"
+            ),
+        )
+
+    def test_ssh_command_prepare_method_with_path(self):
+        """Test command preparation in different modes without path"""
+
+        server = self.server_test_1
+
+        single_command = "ls -a /tmp"
+        multiple_commands = "ls -a /tmp && mkdir /tmp/test"
+        path = "/home/doge"
+
+        sudo_mode = "p"
+
+        # Prepare single command for sudo with password
+        cmd = server._prepare_ssh_command(single_command, path=path, sudo=sudo_mode)
+        self.assertEqual(
+            cmd,
+            [f"cd {path}", f"{self.sudo_prefix} {single_command}"],
+            msg=(
+                "Single command for sudo with password should be "
+                "equal to list of two elements:"
+                " change directory and original command"
+            ),
+        )
+
+        # Prepare multiple commands for sudo with password
+        cmd = server._prepare_ssh_command(multiple_commands, path=path, sudo=sudo_mode)
+        self.assertEqual(
+            cmd,
+            [
+                f"cd {path}",
+                f"{self.sudo_prefix} ls -a /tmp",
+                f"{self.sudo_prefix} mkdir /tmp/test",
+            ],
+            msg=(
+                "Multiple commands with sudo with password should be "
+                "a list of separated commands from original line"
+            ),
+        )
+
+        sudo_mode = "n"
+
+        # Prepare single command for sudo without password
+        cmd = server._prepare_ssh_command(single_command, path=path, sudo=sudo_mode)
+        self.assertEqual(
+            cmd,
+            f"cd {path} && {self.sudo_prefix} {single_command}",
+            msg=(
+                "Single command with sudo without password should be "
+                f'equal to the original command prefixed with "{self.sudo_prefix}"'
+            ),
+        )
+
+        # Prepare multiple commands for sudo without password
+        cmd = server._prepare_ssh_command(multiple_commands, path=path, sudo=sudo_mode)
+        self.assertEqual(
+            cmd,
+            f"cd {path} && {self.sudo_prefix} ls -a /tmp && {self.sudo_prefix} mkdir /tmp/test",  # noqa
+            msg=(
+                "Multiple commands with sudo with password should be "
+                "a re-joined string from list of separated original "
+                f'each prefixed with "{self.sudo_prefix}"'
+            ),
+        )
+
+        # Prepare single command without sudo
+        cmd = server._prepare_ssh_command(single_command, path=path)
+        self.assertEqual(
+            cmd,
+            f"cd {path} && {single_command}",
+            msg=(
+                "Single command for without sudo should be "
+                "equal to the the original command"
+                "with 'cd {{ path }} && ' prefix"
+            ),
+        )
+
+        # Prepare multiple commands without sudo
+        cmd = server._prepare_ssh_command(multiple_commands, path=path)
+        self.assertEqual(
+            cmd,
+            f"cd {path} && {multiple_commands}",  # noqa
+            msg=(
+                "Multiple commands without sudo should be "
+                "original command with 'change directory' command prepended"
+            ),
+        )
+
+    def test_server_render_command(self):
+        """Test rendering command using `_render_command` method
+        of cx.tower.server
+        """
+
+        # Test with default path
+        rendered_command = self.server_test_1._render_command(self.command_create_dir)
+        rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # Test with custom path
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_dir, path="/such/much/path"
+        )
+        rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
+        rendered_path_expected = "/such/much/path"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # Set both path and code to None
+        self.write_and_invalidate(
+            self.command_create_dir, **{"code": None, "path": None}
+        )
+        rendered_command = self.server_test_1._render_command(self.command_create_dir)
+
+        self.assertFalse(
+            rendered_command["rendered_code"], "Rendered code doesn't match"
+        )
+        self.assertFalse(
+            rendered_command["rendered_path"], "Rendered path doesn't match"
+        )
+
+    def test_render_code_direct(self):
+        """Test code template direct rendering"""
 
         # Only 'test_path_' must be rendered
         args = {"test_path_": "/tmp", "test_os": "debian"}
@@ -87,17 +264,7 @@ class TestTowerCommand(TestTowerCommon):
         )
 
     def test_execute_command_with_variables(self):
-        """Test code executing and command log records"""
-
-        # Save variable values for Server 1
-        with Form(self.server_test_1) as f:
-            with f.variable_value_ids.new() as line:
-                line.variable_id = self.variable_dir
-                line.value_char = "test-odoo-1"
-            with f.variable_value_ids.new() as line:
-                line.variable_id = self.variable_path
-                line.value_char = "/opt/tower"
-            f.save()
+        """Test code execution using command log records"""
 
         # Add label to track command log
         command_label = "Test Command #1"
@@ -160,13 +327,6 @@ class TestTowerCommand(TestTowerCommon):
             code_parsed_expected,
             msg="Parsed code doesn't match expected one",
         )
-
-        # Save variable values for Server 1
-        with Form(self.server_test_1) as f:
-            with f.variable_value_ids.new() as line:
-                line.variable_id = self.variable_path
-                line.value_char = "/opt/tower"
-            f.save()
 
         # Add label to track command log
         command_label = "Test Command with keys"

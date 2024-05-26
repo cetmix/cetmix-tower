@@ -58,6 +58,11 @@ class CxTowerCommand(models.Model):
         required=True,
         default=lambda self: self._selection_action()[0][0],
     )
+    path = fields.Char(
+        string="Default Path",
+        help="Location where command will be executed. "
+        "You can use {{ variables }} in path",
+    )
     file_template_id = fields.Many2one(
         comodel_name="cx.tower.file.template",
         help="This template will be used to create or update the pushed file",
