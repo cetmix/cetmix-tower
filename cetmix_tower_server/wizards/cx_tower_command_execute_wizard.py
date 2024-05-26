@@ -1,7 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 from ..models.tools import generate_random_id
 
@@ -19,6 +19,14 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         "cx.tower.command",
         required=True,
     )
+    path = fields.Char(
+        compute="_compute_code",
+        readonly=False,
+        store=True,
+        groups="cetmix_tower_server.group_manager",
+        help="Put custom path to run the command.\n"
+        "IMPORTANT: this field does NOT support variables!",
+    )
     command_domain = fields.Binary(
         compute="_compute_command_domain",
     )
@@ -34,10 +42,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         selection=[("n", "Sudo without password"), ("p", "Sudo with password")],
         help="Run commands using 'sudo'",
     )
-    code = fields.Text(
-        compute="_compute_code",
-        readonly=False,
-    )
+    code = fields.Text(compute="_compute_code", readonly=False, store=True)
     any_server = fields.Boolean()
     rendered_code = fields.Text(
         compute="_compute_rendered_code",
@@ -52,8 +57,14 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         for record in self:
             if record.command_id and record.server_ids:
                 record.code = record.command_id.code
+                record.path = (
+                    record.server_ids[0]
+                    ._render_command(record.command_id)
+                    .get("rendered_path")
+                )
             else:
                 record.code = record.code
+                record.path = record.path
 
     @api.depends("code", "server_ids")
     def _compute_rendered_code(self):
@@ -122,7 +133,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         # Add custom values for log
         custom_values = {"log": {"label": log_label}}
         for server in self.server_ids:
-            server.execute_command(self.command_id, sudo=self.use_sudo, **custom_values)
+            server.execute_command(
+                self.command_id, sudo=self.use_sudo, path=self.path, **custom_values
+            )
         return {
             "type": "ir.actions.act_window",
             "name": _("Command Log"),
@@ -132,10 +145,19 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             "context": {"search_default_label": log_label},
         }
 
-    def execute_command(self):
+    def execute_command_in_wizard(self):
         """
         Executes a given code as is in wizard
         """
+
+        # Raise access error if non manager is trying to call this method
+        if not self.env.user.has_group(
+            "cetmix_tower_server.group_manager"
+        ) and not self.env.user.has_group("cetmix_tower_server.group_root"):
+            raise AccessError(_("You are not allowed to execute commands in wizard"))
+
+        self.ensure_one()
+
         if not self.command_id.allow_parallel_run:
             running_count = (
                 self.env["cx.tower.command.log"]
@@ -156,17 +178,15 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                     _("Another instance of the command is already running")
                 )
 
-        self.ensure_one()
-        code = self.code
-        if not code:
-            raise ValidationError(_("You cannot execute empty command."))
+        if not self.rendered_code:
+            raise ValidationError(_("You cannot execute an empty command"))
 
         # check that we can execute the command for selected servers
         command_servers = self.command_id.server_ids
         if command_servers and not all(
             [server in command_servers for server in self.server_ids]
         ):
-            raise ValidationError(_("Some servers don't support this command."))
+            raise ValidationError(_("Some servers don't support this command"))
 
         result = ""
 
@@ -176,6 +196,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             command_result = server._execute_command_using_ssh(
                 client,
                 self.rendered_code,
+                self.path or None,
                 sudo=self.use_sudo if self.use_sudo else None,
             )
             command_error = command_result["error"]
