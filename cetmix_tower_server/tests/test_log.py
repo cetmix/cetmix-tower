@@ -24,9 +24,8 @@ class TestTowerlog(TestTowerCommon):
         )
         # Ensure that regular user cannot access the command log
         test_command_log_as_bob = test_command_log.with_user(self.user_bob)
-        test_command_log_as_bob.invalidate_cache()
         with self.assertRaises(AccessError):
-            command_name = test_command_log_as_bob.name  # noqa: F841
+            command_name = test_command_log_as_bob.read(["name"])  # noqa: F841
 
         # # Add user_bob to group user
         # # self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
