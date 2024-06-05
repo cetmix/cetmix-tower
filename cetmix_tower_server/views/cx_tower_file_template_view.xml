@@ -37,11 +37,16 @@
                                 options="{'color_field': 'color'}"
                             />
                             <field name="keep_when_deleted" />
+                            <field name="file_type" />
                             <field name="note" />
                         </group>
                     </group>
                     <notebook>
-                        <page name="code" string="Code">
+                        <page
+                            name="code"
+                            string="Code"
+                            attrs="{'invisible': [('file_type', '=', 'binary')]}"
+                        >
                             <field name="code" nolabel="1" />
                         </page>
                     </notebook>
@@ -56,6 +61,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="file_type" optional="show" />
                 <field name="file_name" optional="show" />
                 <field name="server_dir" optional="show" />
                 <field
@@ -76,6 +82,23 @@
                 <field name="name" />
                 <field name="server_dir" />
                 <field name="tag_ids" />
+                <filter
+                    name="filter_binary"
+                    string="Binary"
+                    domain="[('file_type', '=', 'binary')]"
+                />
+                <filter
+                    name="filter_text"
+                    string="Text"
+                    domain="[('file_type', '=', 'text')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_file_type"
+                        string="File Type"
+                        context="{'group_by': 'file_type'}"
+                    />
+                </group>
             </search>
         </field>
     </record>
