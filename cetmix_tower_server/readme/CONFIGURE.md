@@ -127,6 +127,10 @@ To create a new file go to `Cetmix Tower/Files/Files` click `Create` and put val
 
 - **Name**: Filesystem filename
 - **Source**: File source. Available options are `Server` and `Tower`. Check above for more details.
+- **File type**: Type of file contents. Possible options:
+  - **Text**: Regular text. Eg configuration file or log
+  - **Binary**: Binary file. Eg file archive or pdf document
+- **File**:  Is used to store binary file data.
 - **Template**: File template used to render this file. If selected file will be automatically updated every time template is modified. Used only with `Tower` source.
 - **Server**: Server where this file is located
 - **Directory on Server**: This is where the file is located on the remote server
@@ -151,6 +155,9 @@ To create a new file template go to `Cetmix Tower/Files/Templates` click `Create
 - **Name**: Template name
 - **File Name**: Filesystem name of the file(s) created from this template. This field supports [Variables](#configure-variables).
 - **Directory on server**: Directory on remote server where this file will be stored. This field supports [Variables](#configure-variables).
+- **File type**: Type of file contents. Possible options:
+  - **Text**: Regular text. Eg configuration file or log
+  - **Binary**: Binary file. Eg file archive or pdf document
 - **Tags**: Make usage as search more convenient
 - **Note**: Comments or user notes
 - **Code**: Raw file content. This field supports [Variables](#configure-variables).

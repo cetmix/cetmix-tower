@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -269,6 +269,12 @@ and put values in the fields:
 -  **Name**: Filesystem filename
 -  **Source**: File source. Available options are ``Server`` and
    ``Tower``. Check above for more details.
+-  **File type**: Type of file contents. Possible options:
+
+   -  **Text**: Regular text. Eg configuration file or log
+   -  **Binary**: Binary file. Eg file archive or pdf document
+
+-  **File**: Is used to store binary file data.
 -  **Template**: File template used to render this file. If selected
    file will be automatically updated every time template is modified.
    Used only with ``Tower`` source.
@@ -312,6 +318,11 @@ click ``Create`` and put values in the fields:
 -  **Directory on server**: Directory on remote server where this file
    will be stored. This field supports
    `Variables <#configure-variables>`__.
+-  **File type**: Type of file contents. Possible options:
+
+   -  **Text**: Regular text. Eg configuration file or log
+   -  **Binary**: Binary file. Eg file archive or pdf document
+
 -  **Tags**: Make usage as search more convenient
 -  **Note**: Comments or user notes
 -  **Code**: Raw file content. This field supports
@@ -556,7 +567,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -571,6 +582,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.
