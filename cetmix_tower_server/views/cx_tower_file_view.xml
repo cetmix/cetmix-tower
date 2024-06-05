@@ -40,6 +40,17 @@
                         <group>
                             <group>
                                 <field name="source" required="1" />
+                                <field name="file_type" />
+                                <field name="id" invisible="1" />
+                                <field
+                                name="file"
+                                filename="name"
+                                attrs="{
+                                    'invisible': [('file_type', '!=', 'binary')],
+                                    'required': [('file_type', '=', 'binary'), ('source', '!=', 'server')],
+                                    'readonly': ['|', ('id', '!=', False), ('source', '=', 'server')]
+                                }"
+                            />
                                 <field
                                 name="template_id"
                                 attrs="{'invisible': [('source', '!=', 'tower')]}"
@@ -70,7 +81,11 @@
                             </group>
                         </group>
                     <notebook>
-                        <page name="code" string="Code">
+                        <page
+                            name="code"
+                            string="Code"
+                            attrs="{'invisible': [('file_type', '=', 'binary')]}"
+                        >
                             <button
                                 string="Modify Code"
                                 icon="fa-pencil-square-o"
@@ -89,7 +104,7 @@
                         <page
                             name="rendered_code"
                             string="Preview"
-                            attrs="{'invisible': [('source', '!=', 'tower')]}"
+                            attrs="{'invisible': ['|', ('source', '!=', 'tower'), ('file_type', '=', 'binary')]}"
                         >
                             <field
                                 name="rendered_code"
@@ -100,7 +115,7 @@
                         <page
                             name="code_on_server"
                             string="Server Version"
-                            attrs="{'invisible': [('source', '!=', 'tower')]}"
+                            attrs="{'invisible': ['|', ('source', '!=', 'tower'), ('file_type', '=', 'binary')]}"
                         >
                             <group>
                                 <button
@@ -134,6 +149,9 @@
             <tree>
                 <field name="rendered_name" />
                 <field name="source" />
+                <field name="file_type" optional="show" />
+                <field name="file" widget="binary" optional="show" filename="name" />
+                <field name="name" invisible="1" />
                 <field name="server_id" />
                 <field name="full_server_path" optional="hide" />
                 <field name="sync_date_last" />
@@ -186,12 +204,29 @@
                     name="filter_is_error_synced"
                     domain="[('server_response', 'not in', ['ok', False])]"
                 />
+                <separator />
+                <filter
+                    string="Text"
+                    name="filter_text"
+                    domain="[('file_type', '=', 'text')]"
+                />
+                <filter
+                    string="Binary"
+                    name="filter_binary"
+                    domain="[('file_type', '=', 'binary')]"
+                />
                 <group expand="0" string="Group By">
                     <filter
-                        string="Type"
-                        name="group_by_type"
+                        string="Source"
+                        name="group_by_source"
                         domain="[]"
                         context="{'group_by': 'source'}"
+                    />
+                    <filter
+                        string="File Type"
+                        name="group_by_file_type"
+                        domain="[]"
+                        context="{'group_by': 'file_type'}"
                     />
                     <filter
                         string="Server"

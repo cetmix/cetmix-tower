@@ -74,13 +74,25 @@ class TestTowerCommand(TestTowerCommon):
 
         def download_file(this, remote_path):
             if remote_path == "/var/tmp/test.txt":
-                return "Hello, world!"
+                return b"Hello, world!"
+            elif remote_path == "/var/tmp/binary.zip":
+                return b"Hello, world!\x00"
 
         cx_tower_server_obj = self.registry["cx.tower.server"]
 
         with patch.object(cx_tower_server_obj, "download_file", download_file):
             self.file_2.action_pull_from_server()
             self.assertEqual(self.file_2.code, "Hello, world!")
+
+            self.file_2.name = "binary.zip"
+            res = self.file_2.action_pull_from_server()
+            self.assertTrue(
+                isinstance(res, dict) and res["tag"] == "display_notification",
+                msg=(
+                    "If file type is 'text', then the result must be a dict "
+                    "representing the display_notification action."
+                ),
+            )
 
     def test_get_current_server_code(self):
         """
@@ -98,20 +110,28 @@ class TestTowerCommand(TestTowerCommon):
 
         def download_file(this, remote_path):
             if remote_path == "/var/tmp/test.txt":
-                return "Hello, world!"
+                return b"Hello, world!"
 
         with patch.object(cx_tower_server_obj, "download_file", download_file):
             self.file.action_get_current_server_code()
             self.assertEqual(self.file.code_on_server, "Hello, world!")
 
     def test_modify_template_code(self):
+        """Test how template code modification affects related files"""
         code = "Pepe frog is happy as always"
         self.file_template.code = code
 
         # Check file code before modifications
         self.assertTrue(
             self.file.code == code,
-            msg="File code should be the same as template before any modifications",
+            msg="File code must be the same "
+            "as template code before any modifications",
+        )
+        # Check file rendered code before modifications
+        self.assertTrue(
+            self.file.rendered_code == code,
+            msg="File rendered code must be the same"
+            " as template code before any modifications",
         )
 
         # Make possible to modify file code
