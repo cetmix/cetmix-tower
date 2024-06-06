@@ -2,26 +2,41 @@
 <odoo>
 
     <record id="file_template_odoo_config" model="cx.tower.file.template">
+        <field name="module">cetmix_tower_data_odoo</field>
         <field name="name">Odoo config</field>
         <field name="file_name">odoo.conf</field>
-        <field name="server_dir">{{ odoo_config_location }}</field>
+        <field name="server_dir">{{ odoo_instance_config_path }}</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
         <field name="note">
 
         </field>
         <field name="code">
 [options]
-addons_path = /opt/odoo/extra-addons
+# addons_path = /opt/odoo/extra-addons
 admin_passwd = {{ odoo_db_manager_password }}
 dbfilter = {{ odoo_db_name }}
 db_name = {{ odoo_db_name }}
+db_user = {{ postgres_user }}
+db_password = {{ postgres_password }}
+db_host = {{ postgres_container }}
+db_port = {{ postgres_port }}
+list_db = {{ odoo_list_db }}
 
         </field>
     </record>
 
     <record id="file_template_odoo_dockerfile" model="cx.tower.file.template">
+        <field name="module">cetmix_tower_data_odoo</field>
         <field name="name">Dockerfile with git aggregator</field>
         <field name="file_name">Dockerfile</field>
-        <field name="server_dir">{{ dockerfile_location }}</field>
+        <field name="server_dir">{{ odoo_dockerfile_path }}</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
         <field name="note">
 Git aggregator is used for cloning complex repo configurations.
 Ensure git-aggregator.yml file is present.
@@ -98,9 +113,14 @@ USER odoo
     </record>
 
     <record id="file_template_odoo_git_aggregator" model="cx.tower.file.template">
+        <field name="module">cetmix_tower_data_odoo</field>
         <field name="name">Git Aggregator Config</field>
         <field name="file_name">git-aggregator.yml</field>
-        <field name="server_dir">{{ dockerfile_location }}</field>
+        <field name="server_dir">{{ odoo_dockerfile_path }}</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
         <field name="note">
 This sample file template is used to configure the git-aggregator tool.
 For more information about using git-aggregator, please see the

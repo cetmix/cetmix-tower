@@ -1,39 +1,43 @@
 module: cetmix_tower_data_odoo
 variables:
+  odoo_image_name: ""
+  odoo_instance_name: ""
+
+  odoo_args: ""
+  odoo_db_manager_password: ""
+  odoo_version: ""
+  odoo_website_domain: ""
+
+  odoo_container_name: "{{ odoo_instance_name }}"
+  odoo_db_name: "{{ odoo_instance_name }}"
+
+  odoo_docker_gid: 1001
+  odoo_docker_uid: 1001
+  odoo_instance_config_path: "{{ odoo_instance_path }}/config"
+  odoo_instance_data_path: "{{ odoo_instance_path }}/data"
+  odoo_instance_dockerfile_path: "{{ odoo_instance_path }}/config"
+  odoo_instance_path: "{{ odoo_root }}/{{ odoo_instance_name }}"
+  odoo_list_db: "False"
+  odoo_restart_policy: unless-stopped
+  odoo_root: "{{ tower_root }}/odoo"
   # backup_restore_dump_location: "{{ odoo_backup_location }}"
   # backup_restore_file_name: dump.zip
   # backup_restore_filestore_location: "{{ instance_root }}"
   # backup_restore_filestore_name: filestore.zip
-  # docker_odoo_gid: 101
-  # docker_odoo_uid: 101
-  # dockerfile_location: "{{ instance_root }}/docker"
-  # instance_name: myodoo
-  # #instance_name_version: "{{ instance_name }}_{{ odoo_version }}"
-  # instance_root: "{{ odoo_root }}/{{ instance_name }}"
-  # #instance_root: "{{ odoo_root }}/{{ instance_name_version }}"
   # odoo_addons_path: /opt/odoo/extra-addons
-  # odoo_backup_location: "{{ backup_location }}/{{ instance_name }}/{{ odoo_db_name }}"
-  # odoo_config_location: "{{ instance_root }}/etc"
-  # odoo_container_name: "{{ instance_name }}-odoo"
-  # #odoo_container_name: "{{ instance_name_version }}"
-  # odoo_data: "{{ instance_root }}/data"
-  # odoo_db_name: "{{ instance_name }}_{{ odoo_version }}"
+  # odoo_backup_location: "{{ backup_location }}/{{ odoo_instance_name }}/{{ odoo_db_name }}"
+  # odoo_db_name: "{{ odoo_instance_name }}_{{ odoo_version }}"
   # #odoo_db_name: "{{ instance_name_version }}"
   # odoo_docker_extra_addons: /mnt/extra-addons
   # odoo_dockerfile_official_location: /tmp/odoo-dockerfile-official
   # odoo_dockerfile_official_release: latest
-  # odoo_image_name: "{{ instance_name }}:{{ odoo_version }}"
   # odoo_longpolling_port: 8072
   # odoo_modules_to_update: all
-  # odoo_port: 8069
+  # odoo_port: "8069"
   # odoo_proxy_mode: 1
-  # odoo_restart_policy: unless-stopped
-  # odoo_root: "{{ tower_root }}/odoo"
-  # odoo_version: 16.0
   # odoo_without_demo: all
   # instance_url: ""
   # odoo_config_file: ""
-  # odoo_db_manager_password: ""
   # odoo_db_name_restore: ""
   # odoo_dockerfile_official_sha: ""
   # odoo_extra_addons: ""

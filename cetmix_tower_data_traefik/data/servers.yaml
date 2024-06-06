@@ -1,0 +1,10 @@
+module: cetmix_tower_data_traefik
+servers:
+  template-traefik:
+    variables:
+      traefik_image_name: "{{ traefik_instance_name }}"
+      traefik_image_tag: "v3.0"
+      traefik_instance_name: "shared-traefik"
+
+      traefik_email: ""
+      traefik_url: "{{ traefik_url_staging }}"

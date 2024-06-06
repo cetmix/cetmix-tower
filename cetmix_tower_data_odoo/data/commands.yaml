@@ -1,61 +1,68 @@
 module: cetmix_tower_data_odoo
 commands:
 
+  odoo_dir_create:
+    name: Odoo - Create instance directories
+    code: |
+      mkdir -p {{ odoo_instance_data_path }} &amp;&amp; \
+      mkdir -p {{ odoo_instance_dockerfile_path }} &amp;&amp; \
+      mkdir -p {{ odoo_instance_config_path }}
+
+  odoo_dir_set_ownership:
+    name: Odoo - Set ownership on directories
+    note: |
+      Change Odoo config and data directories ownership to the docker “odoo” user.
+      NB Ensure your user has enough access right for “chown”. Use sudo otherwise.
+    code: |
+      chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_data_path }} \
+      &amp;&amp; \
+      chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_config_path }}
+
   # # In use by flight plan "Build image, run container", "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
-  # build_odoo_image:
-  #   name: Build Odoo image
-  #   note: Common image build command
-  #   code: |
-  #     docker build {{ dockerfile_location }} --tag "{{ odoo_image_name }}" \
-  #     --no-cache \
-  #     --build-arg ODOO_VERSION={{ odoo_version }} \
-  #     --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
+  odoo_docker_build:
+    name: Odoo - Build image
+    note: Common image build command
+    code: |
+      docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
+      --no-cache \
+      --build-arg ODOO_VERSION={{ odoo_version }} \
+      --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
 
-  # # In use by flight plan "Build image, run container"
+  # In use by flight plan "Build image, run container"
 
-  # run_odoo_container:
-  #   name: Run Odoo container
-  #   code: |
-  #     docker run -d \
-  #     -p {{ odoo_port }}:8069 \
-  #     -v {{ odoo_data }}:/var/lib/odoo \
-  #     -v {{ odoo_config_location }}:/etc/odoo \
-  #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_container_name}} \
-  #     --link {{ shared_postgres_name }}:db \
-  #     -t {{ odoo_image_name }}
+  odoo_docker_run:
+    name: Odoo - Create / Run container (with odoo_run_args)
+    code: |
+      docker run -d \
+      -v {{ odoo_instance_data_path }}:/var/lib/odoo \
+      -v {{ odoo_instance_config_path }}:/etc/odoo \
+      --link {{ postgres_container }}:{{ postgres_container }} \
+      --name {{ odoo_container_name }} \
+      --restart {{ odoo_restart_policy }} \
+      --label "traefik.enable=true" \
+      --label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
+      --label "traefik.http.routers.odoo.tls.certresolver={{ traefik_certresolver }}" \
+      --label "traefik.http.services.odoo.loadbalancer.server.port=8069" \
+      -t {{ odoo_image_name }} {{ odoo_args }}
 
-  # # In use by flight plan "Init Server Instance"
+  # # In use by flight plan "Update modules"
 
-  # create_odoo_directories:
-  #   name: Create Odoo instance directories
-  #   code: |
-  #     mkdir -p {{ odoo_data }} &amp;&amp; \
-  #     mkdir -p {{ dockerfile_location }} &amp;&amp; \
-  #     mkdir -p {{ odoo_config_location }}
+  # odoo_docker_restart:
+  #   name: Odoo - Restart Container
+  #   code: docker restart {{ odoo_container_name }}
 
-  # change_odoo_directories_ownership:
-  #   name: Change Odoo directories ownership
-  #   note: |
-  #     Change Odoo config and data directories ownership to the docker “odoo” user.
-  #     NB Ensure your user has enough access right for “crown”. Use sudo otherwise.
-  #   code: |
-  #     chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ odoo_data }} \
-  #     &amp;&amp; \
-  #     chown -R {{ docker_odoo_uid }}:{{ docker_odoo_gid }} {{ odoo_config_location }}
+  # # # In use by flight plan "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
-  # # In use by flight plan "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
-
-  # stop_odoo_container:
-  #   name: Stop Odoo container
+  # odoo_docker_stop:
+  #   name: Odoo - Stop container
   #   code: docker stop {{ odoo_container_name}}
 
-  # remove_odoo_container:
-  #   name: Remove Odoo container
-  #   code: docker rm {{ odoo_container_name}}
+  odoo_docker_rm:
+    name: Odoo - Stop / Remove container (keep the data)
+    code: docker stop {{ odoo_container_name}} &amp;&amp; docker rm {{ odoo_container_name}}
 
-  # run_odoo_container_with_shared_pg:
+  # run_odoo_container_name_with_shared_pg:
   #   name: Run Odoo container with shared PG
   #   code: |
   #     docker run -d \
@@ -141,11 +148,7 @@ commands:
 
   # # In use by flight plan "Update modules"
 
-  # restart_odoo_container:
-  #   name: Restart Odoo Container
-  #   code: docker restart {{ odoo_container_name }}
-
-  # update_odoo_container_with_shared_pg:
+  # update_odoo_container_name_with_shared_pg:
   #   name: Update Odoo container with shared PG
   #   note: |
   #     Runs container with odoo in update mode.
@@ -243,6 +246,6 @@ commands:
   #     --database={{ odoo_db_name }} \
   #     --update={{ odoo_modules_to_update }}
 
-  # start_odoo_container:
+  # start_odoo_container_name:
   #   name: Start Odoo container
   #   code: docker start {{ odoo_container_name }}

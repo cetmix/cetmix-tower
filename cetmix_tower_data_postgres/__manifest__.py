@@ -11,6 +11,7 @@
     "website": "https://cetmix.com",
     "depends": ["cetmix_tower_data"],
     "data": [
+        "data/cx_tower_tag_data.xml",
         "data/commands.xml",
         "data/plans.xml",
         "data/variables.xml",

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <!-- FLIGHT PLAN: Init Tower -->
+    <!-- FLIGHT PLAN: Tower - Init -->
     <record id="plan_init_tower" model="cx.tower.plan">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">Init Tower</field>
+        <field name="module">cetmix_tower_data</field>
+        <field name="name">Tower - Init</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data.tag_cetmix_tower_data')])]"
+        />
         <field name="note">
-Install docker
-Create shared PG
+Update Debian
+Install curl &amp; docker
 
         </field>
     </record>
@@ -15,21 +19,21 @@ Create shared PG
     <record id="plan_init_tower_line_1" model="cx.tower.plan.line">
         <field name="sequence">1</field>
         <field name="plan_id" ref="plan_init_tower" />
-        <field name="command_id" ref="command_update_debian_packages" />
+        <field name="command_id" ref="command_tower_update_debian_packages" />
         <field name="use_sudo">1</field>
     </record>
     <!-- Line -->
     <record id="plan_init_tower_line_2" model="cx.tower.plan.line">
         <field name="sequence">2</field>
         <field name="plan_id" ref="plan_init_tower" />
-        <field name="command_id" ref="command_upgrade_debian_packages" />
+        <field name="command_id" ref="command_tower_upgrade_debian_packages" />
         <field name="use_sudo">1</field>
     </record>
     <!-- Line -->
     <record id="plan_init_tower_line_3" model="cx.tower.plan.line">
         <field name="sequence">3</field>
         <field name="plan_id" ref="plan_init_tower" />
-        <field name="command_id" ref="command_install_curl" />
+        <field name="command_id" ref="command_tower_install_curl" />
         <field name="use_sudo">1</field>
     </record>
     <!-- Action -->
@@ -44,7 +48,7 @@ Create shared PG
     <record id="plan_init_tower_line_4" model="cx.tower.plan.line">
         <field name="sequence">4</field>
         <field name="plan_id" ref="plan_init_tower" />
-        <field name="command_id" ref="command_download_and_install_docker_with_script" />
+        <field name="command_id" ref="command_tower_install_docker" />
         <field name="use_sudo">1</field>
     </record>
     <!-- Action -->
@@ -59,7 +63,7 @@ Create shared PG
     <record id="plan_init_tower_line_5" model="cx.tower.plan.line">
         <field name="sequence">5</field>
         <field name="plan_id" ref="plan_init_tower" />
-        <field name="command_id" ref="command_add_user_to_docker_group" />
+        <field name="command_id" ref="command_tower_add_user_to_docker_group" />
         <field name="use_sudo">1</field>
     </record>
 

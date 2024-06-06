@@ -1,0 +1,15 @@
+module: cetmix_tower_data_traefik
+variables:
+  traefik_image_name: ""
+  traefik_image_tag: ""
+  traefik_instance_name: ""
+  traefik_email:
+
+  traefik_container: "{{ traefik_instance_name }}-{{ traefik_image_tag }}"
+  traefik_image: "{{ traefik_image_name }}:{{ traefik_image_tag }}"
+
+  traefik_certresolver: "letsencrypt"
+  traefik_url: "{{ traefik_url_production }}"
+  traefik_url_production: "https://acme-v02.api.letsencrypt.org/directory"
+  traefik_url_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
+  traefik_volume: "$HOME/odoo/.acme-{{ traefik_image_tag }}"

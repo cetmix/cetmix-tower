@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="variable_traefik_image_name" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_image_name</field>
+    </record>
+
+    <record id="variable_traefik_image_tag" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_image_tag</field>
+    </record>
+
+    <record id="variable_traefik_instance_name" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_instance_name</field>
+    </record>
+
+    <record id="variable_traefik_email" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_email</field>
+    </record>
+
+    <record id="variable_traefik_container" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_container</field>
+    </record>
+    <record id="global_value_traefik_container" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_container" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ traefik_instance_name }}-{{ traefik_image_tag }}</field>
+    </record>
+
+    <record id="variable_traefik_image" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_image</field>
+    </record>
+    <record id="global_value_traefik_image" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_image" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ traefik_image_name }}:{{ traefik_image_tag }}</field>
+    </record>
+
+    <record id="variable_traefik_certresolver" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_certresolver</field>
+    </record>
+    <record id="global_value_traefik_certresolver" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_certresolver" />
+        <field name="is_global">True</field>
+        <field name="value_char">letsencrypt</field>
+    </record>
+
+    <record id="variable_traefik_url" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_url</field>
+    </record>
+    <record id="global_value_traefik_url" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_url" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ traefik_url_production }}</field>
+    </record>
+
+    <record id="variable_traefik_url_production" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_url_production</field>
+    </record>
+    <record id="global_value_traefik_url_production" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_url_production" />
+        <field name="is_global">True</field>
+        <field name="value_char">https://acme-v02.api.letsencrypt.org/directory</field>
+    </record>
+
+    <record id="variable_traefik_url_staging" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_url_staging</field>
+    </record>
+    <record id="global_value_traefik_url_staging" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_url_staging" />
+        <field name="is_global">True</field>
+        <field name="value_char">https://acme-staging-v02.api.letsencrypt.org/directory</field>
+    </record>
+
+    <record id="variable_traefik_volume" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="name">traefik_volume</field>
+    </record>
+    <record id="global_value_traefik_volume" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_traefik</field>
+        <field name="variable_id" ref="variable_traefik_volume" />
+        <field name="is_global">True</field>
+        <field name="value_char">$HOME/odoo/.acme-{{ traefik_image_tag }}</field>
+    </record>
+
+</odoo>

@@ -14,47 +14,47 @@ plans:
   # build_image_run_container:
   #   name: Init Odoo 2
   #   lines:
-  #   - command: build_odoo_image
+  #   - command: build_odoo_image_name
   #     use_sudo: 1
-  #   - command: run_odoo_container
+  #   - command: run_odoo_container_name
   #     use_sudo: 1
 
-  # rebuild_odoo_container_soft:
+  # rebuild_odoo_container_name_soft:
   #   name: Rebuild Odoo container soft
   #   note: Build image while container is still running
   #   on_error_action: e
   #   lines:
-  #   - command: build_odoo_image
+  #   - command: build_odoo_image_name
   #     use_sudo: 0
-  #   - command: stop_odoo_container
-  #     use_sudo: 0
-  #     actions:
-  #     - condition: "!="
-  #       value_char: 0
-  #       action: n
-  #   - command: remove_odoo_container
+  #   - command: stop_odoo_container_name
   #     use_sudo: 0
   #     actions:
   #     - condition: "!="
   #       value_char: 0
   #       action: n
-  #   - command: run_odoo_container_with_shared_pg
+  #   - command: remove_odoo_container_name
+  #     use_sudo: 0
+  #     actions:
+  #     - condition: "!="
+  #       value_char: 0
+  #       action: n
+  #   - command: run_odoo_container_name_with_shared_pg
   #     use_sudo: 0
 
-  # rebuild_odoo_container_hard:
+  # rebuild_odoo_container_name_hard:
   #   name: Rebuild Odoo container hard
   #   note: |
   #     Stop and remove container before rebuilding.
   #     Clear docker cache.
   #   on_error_action: e
   #   lines:
-  #   - command: stop_odoo_container
+  #   - command: stop_odoo_container_name
   #     use_sudo: 0
   #     actions:
   #     - condition: "!="
   #       value_char: 0
   #       action: n
-  #   - command: remove_odoo_container
+  #   - command: remove_odoo_container_name
   #     use_sudo: 0
   #     actions:
   #     - condition: "!="
@@ -63,9 +63,9 @@ plans:
   #   - command: docker_prune
   #     module: cetmix_tower_data
   #     use_sudo: 0
-  #   - command: build_odoo_image
+  #   - command: build_odoo_image_name
   #     use_sudo: 0
-  #   - command: run_odoo_container_with_shared_pg
+  #   - command: run_odoo_container_name_with_shared_pg
   #     use_sudo: 0
 
   # update_odoo_module:
@@ -75,7 +75,7 @@ plans:
   #     "odoo_modules_to_update" variable
   #   on_error_action: e
   #   lines:
-  #   - command: update_odoo_container_with_shared_pg
+  #   - command: update_odoo_container_name_with_shared_pg
   #     use_sudo: 0
-  #   - command: restart_odoo_container
+  #   - command: restart_odoo_container_name
   #     use_sudo: 0

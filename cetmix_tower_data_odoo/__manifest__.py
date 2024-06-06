@@ -10,6 +10,7 @@
     "website": "https://cetmix.com",
     "depends": ["cetmix_tower_data_postgres"],
     "data": [
+        "data/cx_tower_tag_data.xml",
         "data/commands.xml",
         "data/file_templates.xml",
         "data/plans.xml",

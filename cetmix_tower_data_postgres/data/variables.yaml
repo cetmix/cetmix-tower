@@ -1,13 +1,20 @@
 module: cetmix_tower_data_postgres
 variables:
+  postgres_image_name: ""
+  postgres_image_tag: ""
+  postgres_instance_name: ""
+  postgres_password: ""
+  #postgres_password: move to secret
+
+  postgres_container: "{{ postgres_instance_name }}-{{ postgres_image_tag }}"
+  postgres_data_path: "{{ postgres_instance_path }}/data"
+  postgres_image: "{{ postgres_image_name }}:{{ postgres_image_tag }}"
+  postgres_instance_path: "{{ postgres_root }}/{{ postgres_instance_name }}"
+  postgres_port: "5432"
+  postgres_restart_policy: always
+  postgres_root: "{{ tower_root }}/postgres"
+  postgres_shm_size: 1g
+  postgres_user: admin
   # pgdata: /var/lib/postgresql/data
-  # postgres_password: odoo
-  # #postgres_password: move to secret
-  # postgres_root: "{{ tower_root }}/postgres"
-  # postgres_user: odoo
-  # shared_postgres_data: "{{ postgres_root }}/shared_postgres_data"
-  # shared_postgres_name: db-shared
-  # shared_postgres_restart_policy: always
-  # postgres_version: 14
   # SERVER_NAME: ""
   # url: ""

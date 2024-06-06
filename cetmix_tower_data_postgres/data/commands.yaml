@@ -1,11 +1,22 @@
 module: cetmix_tower_data_postgres
 commands:
 
-  # # Was in use by flight plan "Init Tower"
+  postgres_dir_create:
+    name: Postgres - Create data directory
+    code: mkdir -p {{ postgres_data_path }}
 
-  # create_shared_pg_directories:
-  #   name: Creates directories for shared PG
-  #   code: mkdir -p {{ shared_postgres_data }}
+  postgres_docker_run:
+    name: Postgres - Create / Run container
+    code: |
+      docker run -d \
+        --name {{ postgres_container }} \
+        -e POSTGRES_USER={{ postgres_user }} \
+        -e POSTGRES_PASSWORD={{ postgres_password }} \
+        -e POSTGRES_DB=postgres \
+        -v {{ postgres_data_path }}:/var/lib/postgresql/data \
+        --restart {{ postgres_restart_policy }} \
+        --shm-size {{ postgres_shm_size }} \
+        {{ postgres_image }}
 
   # # In use by flight plan "Restart shared PG"
 
@@ -13,9 +24,11 @@ commands:
   #   name: Stop shared PG
   #   code: docker rm {{ shared_postgres_name }}
 
-  # remove_shared_pg:
-  #   name: Remove shared PG
-  #   code: docker rm {{ shared_postgres_name }}
+  postgres_docker_rm:
+    name: Postgres - Stop / Remove container (keep the data)
+    code: |
+      docker stop {{ postgres_container }} &amp;&amp; \
+      docker rm {{ postgres_container }}
 
   # run_shared_pg:
   #   name: Run shared PG

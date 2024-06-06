@@ -1,116 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="command_create_shared_pg_directories" model="cx.tower.command">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">Creates directories for shared PG</field>
+    <record id="command_postgres_dir_create" model="cx.tower.command">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">Postgres - Create data directory</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_postgres.tag_cetmix_tower_data_postgres')])]"
+        />
         <field name="code">
-mkdir -p {{ shared_postgres_data }}
+mkdir -p {{ postgres_data_path }}
         </field>
     </record>
 
-    <record id="command_stop_shared_pg" model="cx.tower.command">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">Stop shared PG</field>
-        <field name="code">
-docker rm {{ shared_postgres_name }}
-        </field>
-    </record>
-
-    <record id="command_remove_shared_pg" model="cx.tower.command">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">Remove shared PG</field>
-        <field name="code">
-docker rm {{ shared_postgres_name }}
-        </field>
-    </record>
-
-    <record id="command_run_shared_pg" model="cx.tower.command">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">Run shared PG</field>
+    <record id="command_postgres_docker_run" model="cx.tower.command">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">Postgres - Create / Run container</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_postgres.tag_cetmix_tower_data_postgres')])]"
+        />
         <field name="code">
 docker run -d \
--e POSTGRES_USER={{ postgres_user }} \
--e POSTGRES_PASSWORD={{ postgres_password }} \
--e POSTGRES_DB=postgres \
-{% if PGDATA %} \
-    -e PGDATA={{ PGDATA }} \
-{% endif %} \
-{% if postgres_shm_size %} \
-    --shm-size={{ postgres_shm_size }} \
-{% endif %} \
---restart {{ shared_postgres_restart_policy }} \
--v {{ shared_postgres_data }}:{{ PGDATA }} \
-{% if postgres_port %} \
-    -p {{ postgres_port }}:5432 \
-{% endif %} \
---name {{ shared_postgres_name }} \
-\
-postgres:{{ postgres_version }} \
-\
-{% if pg_max_connections %} \
-    -c max_connections={{ pg_max_connections }} \
-{% endif %} \
-{% if pg_shared_buffers %} \
-    -c shared_buffers={{ pg_shared_buffers }} \
-{% endif %} \
-{% if pg_effective_cache_size %} \
-    -c effective_cache_size={{ pg_shared_buffers }} \
-{% endif %} \
-{% if pg_maintenance_work_mem %} \
-    -c maintenance_work_mem={{ pg_maintenance_work_mem }} \
-{% endif %} \
-{% if pg_checkpoint_completion_target %} \
-    -c checkpoint_completion_target={{ pg_checkpoint_completion_target }} \
-{% endif %} \
-{% if pg_wal_buffers %} \
-    -c wal_buffers={{ pg_wal_buffers }} \
-{% endif %} \
-{% if pg_default_statistics_target %} \
-    -c default_statistics_target={{ pg_default_statistics_target }} \
-{% endif %} \
-{% if pg_random_page_cost %} \
-    -c random_page_cost={{ pg_random_page_cost }} \
-{% endif %} \
-{% if pg_effective_io_concurrency %} \
-    -c effective_io_concurrency={{ pg_effective_io_concurrency }} \
-{% endif %} \
-{% if pg_work_mem %} \
-    -c work_mem={{ pg_work_mem }} \
-{% endif %} \
-{% if pg_min_wal_size %} \
-    -c min_wal_size={{ pg_min_wal_size }} \
-{% endif %} \
-{% if pg_max_wal_size %} \
-    -c max_wal_size={{ pg_max_wal_size }} \
-{% endif %} \
-{% if pg_max_worker_processes %} \
-    -c max_worker_processes={{ pg_max_worker_processes }} \
-{% endif %} \
-{% if pg_max_parallel_workers_per_gather %} \
-    -c max_parallel_workers_per_gather={{ pg_max_parallel_workers_per_gather }} \
-{% endif %} \
-{% if pg_max_parallel_workers %} \
-    -c max_parallel_workers={{ pg_max_parallel_workers }} \
-{% endif %} \
-{% if pg_max_parallel_maintenance_workers %} \
-    -c max_parallel_maintenance_workers={{ pg_max_parallel_maintenance_workers }} \
-{% endif %}
+  --name {{ postgres_container }} \
+  -e POSTGRES_USER={{ postgres_user }} \
+  -e POSTGRES_PASSWORD={{ postgres_password }} \
+  -e POSTGRES_DB=postgres \
+  -v {{ postgres_data_path }}:/var/lib/postgresql/data \
+  --restart {{ postgres_restart_policy }} \
+  --shm-size {{ postgres_shm_size }} \
+  {{ postgres_image }}
 
         </field>
     </record>
 
-    <record id="command_restore_db_from_dump" model="cx.tower.command">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">Restore DB from Dump</field>
+    <record id="command_postgres_docker_rm" model="cx.tower.command">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">Postgres - Stop / Remove container (keep the data)</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_postgres.tag_cetmix_tower_data_postgres')])]"
+        />
         <field name="code">
-gunzip \
--c {{ backup_restore_dump_location }}/{{ backup_restore_file_name }} \
-| docker exec -i \
--e PGPASSWORD={{ postgres_password }} \
-{{ shared_postgres_name }} \
-psql -U {{ postgres_user }} \
--d {{ odoo_db_name_restore }}
+docker stop {{ postgres_container }} &amp;&amp; \
+docker rm {{ postgres_container }}
 
         </field>
     </record>

@@ -1,72 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="variable_file_cron_location" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">file_cron_location</field>
-    </record>
-    <record id="global_value_file_cron_location" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="variable_id" ref="variable_file_cron_location" />
-        <field name="is_global">True</field>
-        <field name="value_char">/etc/cron.d</field>
-    </record>
-
-    <record id="variable_tmp_location" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">tmp_location</field>
-    </record>
-    <record id="global_value_tmp_location" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="variable_id" ref="variable_tmp_location" />
-        <field name="is_global">True</field>
-        <field name="value_char">/tmp</field>
-    </record>
-
     <record id="variable_tower_root" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
+        <field name="module">cetmix_tower_data</field>
         <field name="name">tower_root</field>
     </record>
     <record id="global_value_tower_root" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data</field> -->
+        <field name="module">cetmix_tower_data</field>
         <field name="variable_id" ref="variable_tower_root" />
         <field name="is_global">True</field>
         <field name="value_char">/home/{{ tower.server.username }}</field>
     </record>
 
-    <record id="variable_backup_location" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">backup_location</field>
-    </record>
-
-    <record id="variable_docker_compose_location" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">docker_compose_location</field>
-    </record>
-
-    <record id="variable_docker_image_repo" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">docker_image_repo</field>
-    </record>
-
-    <record id="variable_file_cron_restore_content" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">file_cron_restore_content</field>
-    </record>
-
     <record id="variable_git_config_user_email" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
+        <field name="module">cetmix_tower_data</field>
         <field name="name">git_config_user_email</field>
     </record>
 
     <record id="variable_git_config_user_name" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
+        <field name="module">cetmix_tower_data</field>
         <field name="name">git_config_user_name</field>
-    </record>
-
-    <record id="variable_path" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data</field> -->
-        <field name="name">path</field>
     </record>
 
 </odoo>

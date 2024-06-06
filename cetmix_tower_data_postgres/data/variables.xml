@@ -1,102 +1,123 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="variable_pgdata" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">pgdata</field>
+    <record id="variable_postgres_image_name" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_image_name</field>
     </record>
-    <record id="global_value_pgdata" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="variable_id" ref="variable_pgdata" />
-        <field name="is_global">True</field>
-        <field name="value_char">/var/lib/postgresql/data</field>
+
+    <record id="variable_postgres_image_tag" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_image_tag</field>
+    </record>
+
+    <record id="variable_postgres_instance_name" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_instance_name</field>
     </record>
 
     <record id="variable_postgres_password" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="module">cetmix_tower_data_postgres</field>
         <field name="name">postgres_password</field>
     </record>
-    <record id="global_value_postgres_password" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="variable_id" ref="variable_postgres_password" />
+
+    <record id="variable_postgres_container" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_container</field>
+    </record>
+    <record id="global_value_postgres_container" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_container" />
         <field name="is_global">True</field>
-        <field name="value_char">odoo</field>
+        <field name="value_char">{{ postgres_instance_name }}-{{ postgres_image_tag }}</field>
+    </record>
+
+    <record id="variable_postgres_data_path" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_data_path</field>
+    </record>
+    <record id="global_value_postgres_data_path" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_data_path" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ postgres_instance_path }}/data</field>
+    </record>
+
+    <record id="variable_postgres_image" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_image</field>
+    </record>
+    <record id="global_value_postgres_image" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_image" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ postgres_image_name }}:{{ postgres_image_tag }}</field>
+    </record>
+
+    <record id="variable_postgres_instance_path" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_instance_path</field>
+    </record>
+    <record id="global_value_postgres_instance_path" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_instance_path" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ postgres_root }}/{{ postgres_instance_name }}</field>
+    </record>
+
+    <record id="variable_postgres_port" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_port</field>
+    </record>
+    <record id="global_value_postgres_port" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_port" />
+        <field name="is_global">True</field>
+        <field name="value_char">5432</field>
+    </record>
+
+    <record id="variable_postgres_restart_policy" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_restart_policy</field>
+    </record>
+    <record id="global_value_postgres_restart_policy" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_restart_policy" />
+        <field name="is_global">True</field>
+        <field name="value_char">always</field>
     </record>
 
     <record id="variable_postgres_root" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="module">cetmix_tower_data_postgres</field>
         <field name="name">postgres_root</field>
     </record>
     <record id="global_value_postgres_root" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="module">cetmix_tower_data_postgres</field>
         <field name="variable_id" ref="variable_postgres_root" />
         <field name="is_global">True</field>
         <field name="value_char">{{ tower_root }}/postgres</field>
     </record>
 
+    <record id="variable_postgres_shm_size" model="cx.tower.variable">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="name">postgres_shm_size</field>
+    </record>
+    <record id="global_value_postgres_shm_size" model="cx.tower.variable.value">
+        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="variable_id" ref="variable_postgres_shm_size" />
+        <field name="is_global">True</field>
+        <field name="value_char">1g</field>
+    </record>
+
     <record id="variable_postgres_user" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="module">cetmix_tower_data_postgres</field>
         <field name="name">postgres_user</field>
     </record>
     <record id="global_value_postgres_user" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
+        <field name="module">cetmix_tower_data_postgres</field>
         <field name="variable_id" ref="variable_postgres_user" />
         <field name="is_global">True</field>
-        <field name="value_char">odoo</field>
-    </record>
-
-    <record id="variable_shared_postgres_data" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">shared_postgres_data</field>
-    </record>
-    <record id="global_value_shared_postgres_data" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="variable_id" ref="variable_shared_postgres_data" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_root }}/shared_postgres_data</field>
-    </record>
-
-    <record id="variable_shared_postgres_name" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">shared_postgres_name</field>
-    </record>
-    <record id="global_value_shared_postgres_name" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="variable_id" ref="variable_shared_postgres_name" />
-        <field name="is_global">True</field>
-        <field name="value_char">db-shared</field>
-    </record>
-
-    <record id="variable_shared_postgres_restart_policy" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">shared_postgres_restart_policy</field>
-    </record>
-    <record id="global_value_shared_postgres_restart_policy" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="variable_id" ref="variable_shared_postgres_restart_policy" />
-        <field name="is_global">True</field>
-        <field name="value_char">always</field>
-    </record>
-
-    <record id="variable_postgres_version" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">postgres_version</field>
-    </record>
-    <record id="global_value_postgres_version" model="cx.tower.variable.value">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="variable_id" ref="variable_postgres_version" />
-        <field name="is_global">True</field>
-        <field name="value_char">14</field>
-    </record>
-
-    <record id="variable_SERVER_NAME" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">SERVER_NAME</field>
-    </record>
-
-    <record id="variable_url" model="cx.tower.variable">
-        <!-- <field name="module">cetmix_tower_data_postgres</field> -->
-        <field name="name">url</field>
+        <field name="value_char">admin</field>
     </record>
 
 </odoo>
