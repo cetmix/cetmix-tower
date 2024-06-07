@@ -41,9 +41,12 @@ class CxTowerKey(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         help="Used for selected server only. Leave blank to use globally",
+        ondelete="cascade",
     )
     partner_id = fields.Many2one(
-        comodel_name="res.partner", help="Leave blank to use for any partner"
+        comodel_name="res.partner",
+        help="Leave blank to use for any partner",
+        ondelete="restrict",
     )
     note = fields.Text()
 

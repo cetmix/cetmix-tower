@@ -239,7 +239,11 @@ class CxTowerServer(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(string="Name", required=True)
     color = fields.Integer(string="Color", help="For better visualization in views")
-    partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
+    partner_id = fields.Many2one(
+        string="Partner",
+        comodel_name="res.partner",
+        ondelete="restrict",
+    )
     status = fields.Selection(
         selection=lambda self: self._selection_status(),
         default=lambda self: self._default_status(),
@@ -256,6 +260,7 @@ class CxTowerServer(models.Model):
         comodel_name="cx.tower.key",
         string="SSH Private Key",
         domain=[("key_type", "=", "k")],
+        ondelete="restrict",
     )
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
@@ -285,7 +290,11 @@ class CxTowerServer(models.Model):
     )
 
     # ---- Attributes
-    os_id = fields.Many2one(string="Operating System", comodel_name="cx.tower.os")
+    os_id = fields.Many2one(
+        string="Operating System",
+        comodel_name="cx.tower.os",
+        ondelete="restrict",
+    )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         relation="cx_tower_server_tag_rel",

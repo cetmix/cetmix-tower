@@ -56,6 +56,7 @@ class CxTowerCommand(models.Model):
     )
     interpreter_id = fields.Many2one(
         comodel_name="cx.tower.interpreter",
+        ondelete="restrict",
     )
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
@@ -93,6 +94,7 @@ class CxTowerCommand(models.Model):
     file_template_id = fields.Many2one(
         comodel_name="cx.tower.file.template",
         help="This template will be used to create or update the pushed file",
+        ondelete="restrict",
     )
     code = fields.Text(
         compute="_compute_code",

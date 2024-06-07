@@ -10,7 +10,11 @@ class TowerVariableValue(models.Model):
     _rec_name = "variable_name"
     _order = "variable_name"
 
-    variable_id = fields.Many2one(string="Variable", comodel_name="cx.tower.variable")
+    variable_id = fields.Many2one(
+        string="Variable",
+        comodel_name="cx.tower.variable",
+        ondelete="restrict",
+    )
     variable_name = fields.Char(related="variable_id.name", store=True, index=True)
     is_global = fields.Boolean(
         string="Global",
