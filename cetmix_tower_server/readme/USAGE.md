@@ -54,3 +54,9 @@ To check a server log:
 Log output will be displayed in the HTML field below.
 
 ![Update server log](../static/description/images/server_log_usage_2.png)
+
+## How to show shared commands and flight plans by default
+
+- Settings - Technical - Parameters - System Parameters - New
+- Key = cetmix_tower_server.any_server
+- Value = 1

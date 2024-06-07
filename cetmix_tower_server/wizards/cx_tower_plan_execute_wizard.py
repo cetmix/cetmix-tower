@@ -27,7 +27,7 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         column2="tag_id",
         string="Tags",
     )
-    any_server = fields.Boolean()
+    any_server = fields.Boolean(default=lambda self: self._default_any_server())
     # Lines
     plan_line_ids = fields.One2many(
         string="Commands",
@@ -58,6 +58,14 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
             if record.tag_ids:
                 domain.append(("tag_ids", "in", record.tag_ids.ids))
             record.plan_domain = domain
+
+    def _default_any_server(self):
+        any_server = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("cetmix_tower_server.any_server")
+        )
+        return any_server in ("1", "True", "true")
 
     def execute(self):
         """Render selected command rendered using server method"""
