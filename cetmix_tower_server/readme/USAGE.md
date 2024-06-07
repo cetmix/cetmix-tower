@@ -33,7 +33,7 @@ Here is a short example of an Odoo automated action that creates a new server wh
 
 ```python
 for record in records:
-  
+
   # Check confirmed orders
   if record.state == "sale":
     params = {
@@ -46,14 +46,14 @@ for record in records:
         "odoo_version": "16.0"
         },
     }
-    
-    # Create a new server from template with the 'demo_template' reference 
+
+    # Create a new server from template with the 'demo_template' reference
     env["cetmix.tower"].server_create_from_template(
       template_reference="demo_template",
       server_name=record.name,
       **params
       )
-    
+
 ```
 
 ## Run a Command
@@ -113,3 +113,9 @@ Log output will be displayed in the HTML field below.
 You can use various Cetmix Tower functions in Odoo automation. Such as server actions, automated actions or scheduled actions.
 While you can always call any public function directly most useful helper functions are located in a special abstract model "cetmix.tower".
 You can check those functions in the source code in the following file: `models/cetmix_tower.py`
+
+## How to show shared commands and flight plans by default
+
+- Settings - Technical - Parameters - System Parameters - New
+- Key = cetmix_tower_server.any_server
+- Value = 1
