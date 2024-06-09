@@ -9,51 +9,39 @@
         <field name="ip_v4_address">1.2.3.4</field>
     </record>
     <record id="server_template-odoo_variable_odoo_image_name" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_image_name" />
         <field name="value_char">{{ odoo_instance_name }}:17.0</field>
     </record>
     <record id="server_template-odoo_variable_odoo_instance_name" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_instance_name" />
         <field name="value_char">myname-odoo</field>
     </record>
     <record id="server_template-odoo_variable_odoo_args" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_args" />
         <field name="value_char">--init base</field>
     </record>
-    <record id="server_template-odoo_variable_odoo_db_manager_password" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
-        <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="variable_odoo_db_manager_password" />
-        <field name="value_char"></field>
-    </record>
     <record id="server_template-odoo_variable_odoo_version" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_version" />
         <field name="value_char">17.0</field>
     </record>
     <record id="server_template-odoo_variable_odoo_website_domain" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_website_domain" />
         <field name="value_char"></field>
     </record>
-    <record id="server_template-odoo_variable_postgres_container" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
+    <record id="server_template-odoo_variable_postgres_container_name" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="cetmix_tower_data_postgres.variable_postgres_container" />
-        <field name="value_char"></field>
-    </record>
-    <record id="server_template-odoo_variable_postgres_password" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data_odoo</field>
-        <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="cetmix_tower_data_postgres.variable_postgres_password" />
+        <field name="variable_id" ref="cetmix_tower_data_postgres.variable_postgres_container_name" />
         <field name="value_char"></field>
     </record>
 

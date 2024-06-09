@@ -2,20 +2,20 @@
 <odoo>
 
     <record id="command_traefik_docker_run" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_traefik</field>
-        <field name="name">Traefik - Run container</field>
+        <field name="readonly">True</field>
+        <field name="name">Traefik - Create / Run container</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_traefik.tag_cetmix_tower_data_traefik')])]"
         />
         <field name="code">
 docker run -d \
-  --name {{ traefik_container }} \
+  --name {{ traefik_container_name }} \
   -p 80:80 \
   -p 443:443 \
   -v {{ traefik_volume }}:/etc/traefik/acme:rw,Z \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
-  {{ traefik_image}} \
+  {{ traefik_image_name}} \
   --certificatesresolvers.myresolver.acme.httpchallenge=true \
   --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web \
   --certificatesresolvers.myresolver.acme.caserver={{ traefik_url }} \
@@ -25,22 +25,22 @@ docker run -d \
   --entrypoints.web.http.redirections.entryPoint.to=websecure \
   --entrypoints.web.http.redirections.entryPoint.scheme=https \
   --entryPoints.websecure.address=:443 \
-  --log.level=DEBUG \
+  --log.level={{ traefik_log_level }} \
   --providers.docker.exposedbydefault=false
 
         </field>
     </record>
 
     <record id="command_traefik_docker_rm" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_traefik</field>
-        <field name="name">Traefik - Remove container</field>
+        <field name="readonly">True</field>
+        <field name="name">Traefik - Stop / Remove container</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_traefik.tag_cetmix_tower_data_traefik')])]"
         />
         <field name="code">
-docker stop {{ traefik_container }} &amp;&amp; \
-docker rm {{ traefik_container }}
+docker stop {{ traefik_container_name }} &amp;&amp; \
+docker rm {{ traefik_container_name }}
 
         </field>
     </record>

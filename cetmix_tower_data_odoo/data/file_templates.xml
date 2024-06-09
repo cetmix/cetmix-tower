@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="file_template_odoo_config" model="cx.tower.file.template">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Odoo config</field>
         <field name="file_name">odoo.conf</field>
         <field name="server_dir">{{ odoo_instance_config_path }}</field>
@@ -21,7 +21,7 @@ dbfilter = {{ odoo_db_name }}
 db_name = {{ odoo_db_name }}
 db_user = {{ postgres_user }}
 db_password = {{ postgres_password }}
-db_host = {{ postgres_container }}
+db_host = {{ postgres_container_name }}
 db_port = {{ postgres_port }}
 list_db = {{ odoo_list_db }}
 
@@ -29,7 +29,7 @@ list_db = {{ odoo_list_db }}
     </record>
 
     <record id="file_template_odoo_dockerfile" model="cx.tower.file.template">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Dockerfile with git aggregator</field>
         <field name="file_name">Dockerfile</field>
         <field name="server_dir">{{ odoo_dockerfile_path }}</field>
@@ -113,7 +113,7 @@ USER odoo
     </record>
 
     <record id="file_template_odoo_git_aggregator" model="cx.tower.file.template">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Git Aggregator Config</field>
         <field name="file_name">git-aggregator.yml</field>
         <field name="server_dir">{{ odoo_dockerfile_path }}</field>

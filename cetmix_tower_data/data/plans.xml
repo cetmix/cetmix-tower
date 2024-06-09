@@ -3,7 +3,7 @@
 
     <!-- FLIGHT PLAN: Tower - Init -->
     <record id="plan_init_tower" model="cx.tower.plan">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">Tower - Init</field>
         <field
             name="tag_ids"

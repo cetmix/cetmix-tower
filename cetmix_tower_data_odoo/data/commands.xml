@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="command_odoo_dir_create" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Odoo - Create instance directories</field>
         <field
             name="tag_ids"
@@ -17,7 +17,7 @@ mkdir -p {{ odoo_instance_config_path }}
     </record>
 
     <record id="command_odoo_dir_set_ownership" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Odoo - Set ownership on directories</field>
         <field
             name="tag_ids"
@@ -32,7 +32,7 @@ chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_config_pat
     </record>
 
     <record id="command_odoo_docker_build" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Odoo - Build image</field>
         <field
             name="tag_ids"
@@ -48,8 +48,8 @@ docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
     </record>
 
     <record id="command_odoo_docker_run" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_odoo</field>
-        <field name="name">Odoo - Create / Run container (with odoo_run_args)</field>
+        <field name="readonly">True</field>
+        <field name="name">Odoo - Create / Run container (with odoo_args)</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
@@ -58,12 +58,12 @@ docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
 docker run -d \
 -v {{ odoo_instance_data_path }}:/var/lib/odoo \
 -v {{ odoo_instance_config_path }}:/etc/odoo \
---link {{ postgres_container }}:{{ postgres_container }} \
+--link {{ postgres_container_name }}:{{ postgres_container_name }} \
 --name {{ odoo_container_name }} \
 --restart {{ odoo_restart_policy }} \
 --label "traefik.enable=true" \
 --label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
---label "traefik.http.routers.odoo.tls.certresolver={{ traefik_certresolver }}" \
+--label "traefik.http.routers.odoo.tls.certresolver=myresolver" \
 --label "traefik.http.services.odoo.loadbalancer.server.port=8069" \
 -t {{ odoo_image_name }} {{ odoo_args }}
 
@@ -71,7 +71,7 @@ docker run -d \
     </record>
 
     <record id="command_odoo_docker_rm" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_odoo</field>
+        <field name="readonly">True</field>
         <field name="name">Odoo - Stop / Remove container (keep the data)</field>
         <field
             name="tag_ids"

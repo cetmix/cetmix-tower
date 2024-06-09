@@ -9,14 +9,14 @@ commands:
     name: Postgres - Create / Run container
     code: |
       docker run -d \
-        --name {{ postgres_container }} \
+        --name {{ postgres_container_name }} \
         -e POSTGRES_USER={{ postgres_user }} \
         -e POSTGRES_PASSWORD={{ postgres_password }} \
         -e POSTGRES_DB=postgres \
         -v {{ postgres_data_path }}:/var/lib/postgresql/data \
         --restart {{ postgres_restart_policy }} \
         --shm-size {{ postgres_shm_size }} \
-        {{ postgres_image }}
+        {{ postgres_image_name}}
 
   # # In use by flight plan "Restart shared PG"
 
@@ -27,8 +27,8 @@ commands:
   postgres_docker_rm:
     name: Postgres - Stop / Remove container (keep the data)
     code: |
-      docker stop {{ postgres_container }} &amp;&amp; \
-      docker rm {{ postgres_container }}
+      docker stop {{ postgres_container_name }} &amp;&amp; \
+      docker rm {{ postgres_container_name }}
 
   # run_shared_pg:
   #   name: Run shared PG

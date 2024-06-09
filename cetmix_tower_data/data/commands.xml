@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="command_tower_update_debian_packages" model="cx.tower.command">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">Tower - Update Debian packages</field>
         <field
             name="tag_ids"
@@ -14,7 +14,7 @@ apt update
     </record>
 
     <record id="command_tower_upgrade_debian_packages" model="cx.tower.command">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">Tower - Upgrade Debian packages</field>
         <field
             name="tag_ids"
@@ -26,7 +26,7 @@ apt upgrade
     </record>
 
     <record id="command_tower_install_curl" model="cx.tower.command">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">Tower - Install curl</field>
         <field
             name="tag_ids"
@@ -38,7 +38,7 @@ apt install -y curl
     </record>
 
     <record id="command_tower_install_docker" model="cx.tower.command">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">Tower - Install Docker for production</field>
         <field
             name="tag_ids"
@@ -64,7 +64,7 @@ sudo apt-get update \
     </record>
 
     <record id="command_tower_add_user_to_docker_group" model="cx.tower.command">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">Tower - Add user to docker group</field>
         <field
             name="tag_ids"

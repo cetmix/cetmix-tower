@@ -7,16 +7,22 @@ Best practice for variables
 server:
   myserver:
     variables:
-      software_image_name: "{{ software_instance_name }}"
-      software_image_tag: "1.0"
+      # Standard server variables
+      software_image_name: "{{ software_instance_name }}:version-1.0"
       software_instance_name: "myname-software"
 
+      # Software server variables
+
 variables:
+  # Standard server variables
   software_image_name: ""
-  software_image_tag: ""
   software_instance_name: ""
 
-  software_container: "{{ software_instance_name }}-{{ software_image_version }}"
-  software_image: "{{ software_image_name }}:{{ software_image_version }}"
+  # Software server variables
+
+  # Software -variables with NOUPDATE global value
+
+  # Software variables with READONLY global value
+  software_container_name: "{{ software_instance_name }}"
   software_instance_path: "{{ software_root }}/{{ software_instance_name }}"
   software_root: "{{ tower_root }}/software"

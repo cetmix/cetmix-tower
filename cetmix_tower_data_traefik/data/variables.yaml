@@ -1,15 +1,20 @@
 module: cetmix_tower_data_traefik
 variables:
+  # Standard server variables
   traefik_image_name: ""
-  traefik_image_tag: ""
   traefik_instance_name: ""
-  traefik_email:
 
-  traefik_container: "{{ traefik_instance_name }}-{{ traefik_image_tag }}"
-  traefik_image: "{{ traefik_image_name }}:{{ traefik_image_tag }}"
+  # Traefik server variables
 
-  traefik_certresolver: "letsencrypt"
+  # Traefik -variables with NOUPDATE global value
+  -traefik_email: "notify@example.com"
+  -traefik_url_production: "https://acme-v02.api.letsencrypt.org/directory"
+  -traefik_url_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+  # Traefik variables with READONLY global value
+  traefik_container_name: "{{ traefik_instance_name }}"
+  traefik_instance_path: "{{ traefik_root }}/{{ traefik_instance_name }}"
+  traefik_log_level: "INFO"
   traefik_url: "{{ traefik_url_production }}"
-  traefik_url_production: "https://acme-v02.api.letsencrypt.org/directory"
-  traefik_url_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
-  traefik_volume: "$HOME/odoo/.acme-{{ traefik_image_tag }}"
+  traefik_root: "{{ tower_root }}/traefik"
+  traefik_volume: "{{ traefik_instance_path }}/.acme"

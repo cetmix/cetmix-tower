@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <data noupdate="1">
+
+    <record id="variable_git_config_user_email" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">git_config_user_email</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_git_config_user_name" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">git_config_user_name</field>
+    </record>
+    </data>
 
     <record id="variable_tower_root" model="cx.tower.variable">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="name">tower_root</field>
     </record>
     <record id="global_value_tower_root" model="cx.tower.variable.value">
-        <field name="module">cetmix_tower_data</field>
+        <field name="readonly">True</field>
         <field name="variable_id" ref="variable_tower_root" />
         <field name="is_global">True</field>
         <field name="value_char">/home/{{ tower.server.username }}</field>
-    </record>
-
-    <record id="variable_git_config_user_email" model="cx.tower.variable">
-        <field name="module">cetmix_tower_data</field>
-        <field name="name">git_config_user_email</field>
-    </record>
-
-    <record id="variable_git_config_user_name" model="cx.tower.variable">
-        <field name="module">cetmix_tower_data</field>
-        <field name="name">git_config_user_name</field>
     </record>
 
 </odoo>

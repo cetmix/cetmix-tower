@@ -2,15 +2,15 @@ module: cetmix_tower_data_odoo
 servers:
   template-odoo:
     variables:
+      # Standard server variables
       odoo_image_name: "{{ odoo_instance_name }}:17.0"
       odoo_instance_name: "myname-odoo"
 
+      # Odoo server variables
       odoo_args: "--init base"
-      odoo_db_manager_password: ""
       odoo_version: "17.0"
       odoo_website_domain: ""
 
       # TODO: Set the postgres variables on the postgres server, not the odoo server.
       # postgres_server_name: ""
-      cetmix_tower_data_postgres.postgres_container: ""
-      cetmix_tower_data_postgres.postgres_password: ""
+      cetmix_tower_data_postgres.postgres_container_name: ""

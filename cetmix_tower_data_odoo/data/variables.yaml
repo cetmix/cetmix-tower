@@ -1,25 +1,30 @@
 module: cetmix_tower_data_odoo
 variables:
+  # Standard server variables
   odoo_image_name: ""
   odoo_instance_name: ""
 
+  # Odoo server variables
   odoo_args: ""
-  odoo_db_manager_password: ""
   odoo_version: ""
   odoo_website_domain: ""
 
+  # Odoo -variables with NOUPDATE global value
+  -odoo_db_manager_password: ""
+  -odoo_docker_gid: ""
+  -odoo_docker_uid: ""
+  -odoo_list_db: "False"
+
+  # Odoo variables with READONLY global value
   odoo_container_name: "{{ odoo_instance_name }}"
   odoo_db_name: "{{ odoo_instance_name }}"
-
-  odoo_docker_gid: 1001
-  odoo_docker_uid: 1001
   odoo_instance_config_path: "{{ odoo_instance_path }}/config"
   odoo_instance_data_path: "{{ odoo_instance_path }}/data"
   odoo_instance_dockerfile_path: "{{ odoo_instance_path }}/config"
   odoo_instance_path: "{{ odoo_root }}/{{ odoo_instance_name }}"
-  odoo_list_db: "False"
-  odoo_restart_policy: unless-stopped
+  odoo_restart_policy: "unless-stopped"
   odoo_root: "{{ tower_root }}/odoo"
+
   # backup_restore_dump_location: "{{ odoo_backup_location }}"
   # backup_restore_file_name: dump.zip
   # backup_restore_filestore_location: "{{ instance_root }}"

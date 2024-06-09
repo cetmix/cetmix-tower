@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="command_postgres_dir_create" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="readonly">True</field>
         <field name="name">Postgres - Create data directory</field>
         <field
             name="tag_ids"
@@ -14,7 +14,7 @@ mkdir -p {{ postgres_data_path }}
     </record>
 
     <record id="command_postgres_docker_run" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="readonly">True</field>
         <field name="name">Postgres - Create / Run container</field>
         <field
             name="tag_ids"
@@ -22,28 +22,28 @@ mkdir -p {{ postgres_data_path }}
         />
         <field name="code">
 docker run -d \
-  --name {{ postgres_container }} \
+  --name {{ postgres_container_name }} \
   -e POSTGRES_USER={{ postgres_user }} \
   -e POSTGRES_PASSWORD={{ postgres_password }} \
   -e POSTGRES_DB=postgres \
   -v {{ postgres_data_path }}:/var/lib/postgresql/data \
   --restart {{ postgres_restart_policy }} \
   --shm-size {{ postgres_shm_size }} \
-  {{ postgres_image }}
+  {{ postgres_image_name}}
 
         </field>
     </record>
 
     <record id="command_postgres_docker_rm" model="cx.tower.command">
-        <field name="module">cetmix_tower_data_postgres</field>
+        <field name="readonly">True</field>
         <field name="name">Postgres - Stop / Remove container (keep the data)</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_postgres.tag_cetmix_tower_data_postgres')])]"
         />
         <field name="code">
-docker stop {{ postgres_container }} &amp;&amp; \
-docker rm {{ postgres_container }}
+docker stop {{ postgres_container_name }} &amp;&amp; \
+docker rm {{ postgres_container_name }}
 
         </field>
     </record>

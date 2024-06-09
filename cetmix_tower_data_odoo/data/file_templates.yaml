@@ -12,7 +12,7 @@ file_templates:
       db_name = {{ odoo_db_name }}
       db_user = {{ postgres_user }}
       db_password = {{ postgres_password }}
-      db_host = {{ postgres_container }}
+      db_host = {{ postgres_container_name }}
       db_port = {{ postgres_port }}
       list_db = {{ odoo_list_db }}
 
