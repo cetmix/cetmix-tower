@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="tag_cetmix_tower_data_doodba" model="cx.tower.tag">
+        <field name="name">Doodba</field>
+    </record>
+
+</odoo>

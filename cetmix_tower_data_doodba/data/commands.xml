@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="command_doodba_docker_run" model="cx.tower.command">
+        <field name="readonly">True</field>
+        <field name="name">Doodba - Create / Run container (with odoo_args)</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
+        <field name="code">
+docker run -d \
+-v {{ odoo_instance_data_path }}:/var/lib/odoo \
+-v {{ odoo_instance_config_path }}:/etc/odoo \
+-v {{ doodba_addons_path }}:/opt/odoo/auto/addons \
+-v {{ doodba_src_path }}:/opt/odoo/custom/src \
+--link {{ postgres_container_name }}:{{ postgres_container_name }} \
+--name {{ odoo_container_name }} \
+--restart {{ odoo_restart_policy }} \
+--label "traefik.enable=true" \
+--label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
+--label "traefik.http.routers.odoo.tls.certresolver=myresolver" \
+--label "traefik.http.services.odoo.loadbalancer.server.port=8069" \
+-t {{ odoo_image_name }} {{ odoo_args }}
+
+        </field>
+    </record>
+
+</odoo>

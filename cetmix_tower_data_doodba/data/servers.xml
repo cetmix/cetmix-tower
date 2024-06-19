@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- SERVER: template-doodba -->
+    <record id="server_template-doodba" model="cx.tower.server">
+        <field name="name">template-doodba</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">admin</field>
+        <field name="ip_v4_address">1.2.3.4</field>
+    </record>
+    <record id="server_template-doodba_variable_doodba_instance_name" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-doodba" />
+        <field name="variable_id" ref="variable_doodba_instance_name" />
+        <field name="value_char">{{ odoo_instance_name }}</field>
+    </record>
+
+</odoo>
