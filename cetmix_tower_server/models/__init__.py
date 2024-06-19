@@ -2,6 +2,7 @@
 
 from . import cx_tower_variable_mixin
 from . import cx_tower_template_mixin
+from . import cx_tower_access_mixin
 from . import cx_tower_variable
 from . import cx_tower_variable_value
 from . import cx_tower_file
