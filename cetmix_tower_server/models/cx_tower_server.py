@@ -357,7 +357,12 @@ class CxTowerServer(models.Model):
 
         file_ids = self.env["cx.tower.file"]
         for file in self.file_ids:
-            file_ids |= file.copy({"auto_sync": False})
+            file_ids |= file.copy(
+                {
+                    "auto_sync": False,
+                    "keep_when_deleted": True,
+                }
+            )
         default["file_ids"] = file_ids.ids
 
         result = super(CxTowerServer, self).copy(default=default)
