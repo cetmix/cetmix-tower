@@ -27,12 +27,14 @@
         <field name="name">odoo_args</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_odoo_args" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_args" />
         <field name="is_global">True</field>
         <field name="value_char">--database {{ odoo_instance_name }}</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_odoo_db_manager_password" model="cx.tower.variable">
@@ -47,12 +49,14 @@
         <field name="name">odoo_docker_gid</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_odoo_docker_gid" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_docker_gid" />
         <field name="is_global">True</field>
         <field name="value_char">999</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_odoo_docker_uid" model="cx.tower.variable">
@@ -60,12 +64,14 @@
         <field name="name">odoo_docker_uid</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_odoo_docker_uid" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_docker_uid" />
         <field name="is_global">True</field>
         <field name="value_char">101</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_odoo_list_db" model="cx.tower.variable">
@@ -73,12 +79,14 @@
         <field name="name">odoo_list_db</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_odoo_list_db" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_list_db" />
         <field name="is_global">True</field>
         <field name="value_char">False</field>
     </record>
+    </data>
 
     <record id="variable_odoo_container_name" model="cx.tower.variable">
         <field name="readonly">True</field>

@@ -252,7 +252,6 @@ def variables_to_xml(yaml_data):
         )
         if global_value:
             # global variable value
-            key, update = _key_update(key)
             xml_content += _xml_content(
                 xml_global_variable_value,
                 update,

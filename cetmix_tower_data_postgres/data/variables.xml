@@ -24,12 +24,14 @@
         <field name="name">postgres_port</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_postgres_port" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_postgres_port" />
         <field name="is_global">True</field>
         <field name="value_char">5432</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_postgres_restart_policy" model="cx.tower.variable">
@@ -37,12 +39,14 @@
         <field name="name">postgres_restart_policy</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_postgres_restart_policy" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_postgres_restart_policy" />
         <field name="is_global">True</field>
         <field name="value_char">always</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_postgres_shm_size" model="cx.tower.variable">
@@ -50,12 +54,14 @@
         <field name="name">postgres_shm_size</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_postgres_shm_size" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_postgres_shm_size" />
         <field name="is_global">True</field>
         <field name="value_char">1g</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_postgres_user" model="cx.tower.variable">

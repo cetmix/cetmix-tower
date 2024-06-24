@@ -17,12 +17,14 @@
         <field name="name">traefik_email</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_traefik_email" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_traefik_email" />
         <field name="is_global">True</field>
         <field name="value_char">notify@example.com</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_traefik_url_production" model="cx.tower.variable">
@@ -30,12 +32,14 @@
         <field name="name">traefik_url_production</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_traefik_url_production" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_traefik_url_production" />
         <field name="is_global">True</field>
         <field name="value_char">https://acme-v02.api.letsencrypt.org/directory</field>
     </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_traefik_url_staging" model="cx.tower.variable">
@@ -43,12 +47,14 @@
         <field name="name">traefik_url_staging</field>
     </record>
     </data>
+    <data noupdate="1">
     <record id="global_value_traefik_url_staging" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_traefik_url_staging" />
         <field name="is_global">True</field>
         <field name="value_char">https://acme-staging-v02.api.letsencrypt.org/directory</field>
     </record>
+    </data>
 
     <record id="variable_traefik_container_name" model="cx.tower.variable">
         <field name="readonly">True</field>
