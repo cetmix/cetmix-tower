@@ -42,7 +42,7 @@ class CxTowerFile(models.Model):
     server_dir = fields.Char(
         string="Directory on server",
         required=True,
-        default="~",
+        default="",
         help="Eg '/home/user' or '/var/log'",
     )
     rendered_server_dir = fields.Char(
