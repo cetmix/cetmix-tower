@@ -93,6 +93,16 @@ class TestTowerServer(TestTowerCommon):
             msg="Auto sync should be disabled on all the files in the copied server!",
         )
 
+        # Check if 'keep_when_deleted' option is enabled on all the files
+        # in the copied server
+        self.assertTrue(
+            all([file.keep_when_deleted for file in server_test_2_copy.file_ids]),
+            msg=(
+                "keep_when_deleted option should be enabled on all the files "
+                "in the copied server!"
+            ),
+        )
+
         # Check if secret values of keys in the copied server are the same
         # as in source server
         self.assertTrue(
