@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
 
+from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
+
 
 class CxTowerFileTemplate(models.Model):
     _name = "cx.tower.file.template"
@@ -42,8 +44,9 @@ class CxTowerFileTemplate(models.Model):
         Override to update files related with the templates
         """
         result = super(CxTowerFileTemplate, self).write(vals)
-        for file in self.mapped("file_ids"):
-            file.write(file._get_file_values_from_related_template())
+        if any([field_ in vals for field_ in TEMPLATE_FILE_FIELD_MAPPING]):
+            for file in self.mapped("file_ids"):
+                file.write(file._get_file_values_from_related_template())
         return result
 
     def action_open_files(self):

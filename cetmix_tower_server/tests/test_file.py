@@ -127,3 +127,35 @@ class TestTowerCommand(TestTowerCommon):
         self.assertTrue(
             self.file.code == code, msg="File code should be the same as template."
         )
+
+    def test_modify_template_related_files(self):
+        # Create side effect for file write method
+        # to track if method was called during
+        # the test
+
+        side_effect_target = {"write_called": False}
+
+        def side_effect(this, vals):
+            side_effect_target["write_called"] = True
+            return False
+
+        # patch file write method with side effect
+        with patch.object(self.registry["cx.tower.file"], "write", side_effect):
+            # Modify template name to see if it won't trigger
+            # write method of the file
+            self.file_template.name = "New name"
+            self.assertFalse(
+                side_effect_target["write_called"],
+                msg=(
+                    "File write method should not be called "
+                    "after modifying template name."
+                ),
+            )
+
+            # Modify template code to see if it will trigger
+            # write method of the file
+            self.file_template.code = "New code"
+            self.assertTrue(
+                side_effect_target["write_called"],
+                msg="File write method should be called after modifying template code.",
+            )
