@@ -7,7 +7,6 @@ servers:
       odoo_instance_name: "myname-odoo"
 
       # Odoo server variables
-      odoo_args: "--init base"
       odoo_version: "17.0"
       odoo_website_domain: ""
 

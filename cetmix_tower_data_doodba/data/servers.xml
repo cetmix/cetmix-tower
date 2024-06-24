@@ -14,5 +14,11 @@
         <field name="variable_id" ref="variable_doodba_instance_name" />
         <field name="value_char">{{ odoo_instance_name }}</field>
     </record>
+    <record id="server_template-doodba_variable_odoo_instance_config_path" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-doodba" />
+        <field name="variable_id" ref="cetmix_tower_data_odoo.variable_odoo_instance_config_path" />
+        <field name="value_char">{{ doodba_path }}/conf [add to .gitignore, create conf/odoo.conf]</field>
+    </record>
 
 </odoo>

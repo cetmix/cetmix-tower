@@ -5,14 +5,14 @@ variables:
   odoo_instance_name: ""
 
   # Odoo server variables
-  odoo_args: ""
   odoo_version: ""
   odoo_website_domain: ""
 
   # Odoo -variables with NOUPDATE global value
+  -odoo_args: "--database {{ odoo_instance_name }}"
   -odoo_db_manager_password: ""
-  -odoo_docker_gid: ""
-  -odoo_docker_uid: ""
+  -odoo_docker_gid: "999"
+  -odoo_docker_uid: "101"
   -odoo_list_db: "False"
 
   # Odoo variables with READONLY global value

@@ -6,17 +6,6 @@
         <field name="name">doodba_instance_name</field>
     </record>
 
-    <record id="variable_doodba_addons_path" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">doodba_addons_path</field>
-    </record>
-    <record id="global_value_doodba_addons_path" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_doodba_addons_path" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ doodba_path }}/odoo/auto/addons</field>
-    </record>
-
     <record id="variable_doodba_path" model="cx.tower.variable">
         <field name="readonly">True</field>
         <field name="name">doodba_path</field>
@@ -37,17 +26,6 @@
         <field name="variable_id" ref="variable_doodba_root" />
         <field name="is_global">True</field>
         <field name="value_char">{{ tower_root }}/doodba</field>
-    </record>
-
-    <record id="variable_doodba_src_path" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">doodba_src_path</field>
-    </record>
-    <record id="global_value_doodba_src_path" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_doodba_src_path" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ doodba_path }}/odoo/custom/src</field>
     </record>
 
 </odoo>

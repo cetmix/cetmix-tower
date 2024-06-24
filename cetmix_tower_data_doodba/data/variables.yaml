@@ -8,7 +8,5 @@ variables:
   # Doodba -variables with NOUPDATE global value
 
   # Doodba variables with READONLY global value
-  doodba_addons_path: "{{ doodba_path }}/odoo/auto/addons"
   doodba_path: "{{ doodba_root }}/{{ doodba_instance_name }}"
   doodba_root: "{{ tower_root }}/doodba"
-  doodba_src_path: "{{ doodba_path }}/odoo/custom/src"
