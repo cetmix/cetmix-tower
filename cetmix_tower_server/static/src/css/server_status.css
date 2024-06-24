@@ -1,0 +1,33 @@
+.o_server_status_1 {
+    background-color: var(--info);
+}
+
+.o_server_status_4 {
+    background-color: var(--success);
+}
+
+.o_server_status_2 {
+    background-color: var(--danger);
+}
+
+.o_server_status_3,
+.o_server_status_5,
+.o_server_status_6 {
+    background-color: var(--warning);
+}
+
+.o_status_text {
+    color: #4c4c4c;
+    font-size: 14px;
+    margin-right: 10px;
+    display: block;
+}
+
+.o_server_status_field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+}

@@ -20,6 +20,18 @@ Enter the server name and fill the values it the tabs below:
 - **SSH Private Key**: Used for authentication is SSH Auth Mode is set to "Key"
 - **Note**: Comments or user notes
 
+There is a special **Status** field which indicates current Server status. It is meant to be updated automatically using external API with further customizations.
+Following pre-defined statuses are available:
+
+- Undefined
+- Stopped
+- Starting
+- Running
+- Stopping
+- Restarting
+
+Default status is 'Undefined'.
+
 ### Variables
 
 Configure variable values to be used when rendering commands and files on this server.
