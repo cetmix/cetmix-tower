@@ -14,16 +14,20 @@
         <field name="name">git_config_user_name</field>
     </record>
     </data>
+    <data noupdate="1">
 
     <record id="variable_tower_root" model="cx.tower.variable">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="name">tower_root</field>
     </record>
+    </data>
+    <data noupdate="1">
     <record id="global_value_tower_root" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_tower_root" />
         <field name="is_global">True</field>
         <field name="value_char">/home/{{ tower.server.username }}</field>
     </record>
+    </data>
 
 </odoo>

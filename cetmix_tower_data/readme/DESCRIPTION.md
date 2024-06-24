@@ -20,9 +20,9 @@ variables:
 
   # Software server variables
 
-  # Software -variables with NOUPDATE global value
-
   # Software variables with READONLY global value
   software_container_name: "{{ software_instance_name }}"
   software_instance_path: "{{ software_root }}/{{ software_instance_name }}"
   software_root: "{{ tower_root }}/software"
+
+  # Software -variables with NOUPDATE global value

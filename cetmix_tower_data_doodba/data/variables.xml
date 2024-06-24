@@ -5,27 +5,35 @@
         <field name="readonly">True</field>
         <field name="name">doodba_instance_name</field>
     </record>
+    <data noupdate="1">
 
     <record id="variable_doodba_path" model="cx.tower.variable">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="name">doodba_path</field>
     </record>
+    </data>
+    <data noupdate="1">
     <record id="global_value_doodba_path" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_doodba_path" />
         <field name="is_global">True</field>
         <field name="value_char">{{ doodba_root }}/{{ doodba_instance_name }}</field>
     </record>
+    </data>
+    <data noupdate="1">
 
     <record id="variable_doodba_root" model="cx.tower.variable">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="name">doodba_root</field>
     </record>
+    </data>
+    <data noupdate="1">
     <record id="global_value_doodba_root" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
+        <field name="readonly">False</field>
         <field name="variable_id" ref="variable_doodba_root" />
         <field name="is_global">True</field>
         <field name="value_char">{{ tower_root }}/doodba</field>
     </record>
+    </data>
 
 </odoo>

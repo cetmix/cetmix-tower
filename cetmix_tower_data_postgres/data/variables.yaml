@@ -6,18 +6,19 @@ variables:
 
   # Postgres server variables
 
+  # Postgres variables with READONLY global value
+  postgres_container_name: "{{ postgres_instance_name }}"
+  postgres_instance_path: "{{ postgres_root }}/{{ postgres_instance_name }}"
+  postgres_root: "{{ tower_root }}/postgres"
+
   # Postgres -variables with NOUPDATE global value
+  -postgres_data_path: "{{ postgres_instance_path }}/data"
   -postgres_password: "" # TODO: move to secret
   -postgres_port: "5432"
   -postgres_restart_policy: always
   -postgres_shm_size: 1g
   -postgres_user: ""
 
-  # Postgres variables with READONLY global value
-  postgres_container_name: "{{ postgres_instance_name }}"
-  postgres_data_path: "{{ postgres_instance_path }}/data"
-  postgres_instance_path: "{{ postgres_root }}/{{ postgres_instance_name }}"
-  postgres_root: "{{ tower_root }}/postgres"
   # pgdata: /var/lib/postgresql/data
   # SERVER_NAME: ""
   # url: ""

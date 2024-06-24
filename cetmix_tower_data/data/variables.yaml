@@ -1,11 +1,11 @@
 module: cetmix_tower_data
 variables:
+  # Software variables with READONLY global value
+
   # Software -variables with NOUPDATE global value
   -git_config_user_email: ""
   -git_config_user_name: ""
-
-  # Software variables with READONLY global value
-  tower_root: "/home/{{ tower.server.username }}"
+  -tower_root: "/home/{{ tower.server.username }}"
 
   # file_cron_location: /etc/cron.d
   # tmp_location: /tmp

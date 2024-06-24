@@ -10,6 +10,54 @@
         <field name="readonly">True</field>
         <field name="name">postgres_instance_name</field>
     </record>
+
+    <record id="variable_postgres_container_name" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">postgres_container_name</field>
+    </record>
+    <record id="global_value_postgres_container_name" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="variable_id" ref="variable_postgres_container_name" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ postgres_instance_name }}</field>
+    </record>
+
+    <record id="variable_postgres_instance_path" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">postgres_instance_path</field>
+    </record>
+    <record id="global_value_postgres_instance_path" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="variable_id" ref="variable_postgres_instance_path" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ postgres_root }}/{{ postgres_instance_name }}</field>
+    </record>
+
+    <record id="variable_postgres_root" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">postgres_root</field>
+    </record>
+    <record id="global_value_postgres_root" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="variable_id" ref="variable_postgres_root" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ tower_root }}/postgres</field>
+    </record>
+    <data noupdate="1">
+
+    <record id="variable_postgres_data_path" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">postgres_data_path</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_postgres_data_path" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_postgres_data_path" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ postgres_instance_path }}/data</field>
+    </record>
+    </data>
     <data noupdate="1">
 
     <record id="variable_postgres_password" model="cx.tower.variable">
@@ -69,49 +117,5 @@
         <field name="name">postgres_user</field>
     </record>
     </data>
-
-    <record id="variable_postgres_container_name" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">postgres_container_name</field>
-    </record>
-    <record id="global_value_postgres_container_name" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_postgres_container_name" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_instance_name }}</field>
-    </record>
-
-    <record id="variable_postgres_data_path" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">postgres_data_path</field>
-    </record>
-    <record id="global_value_postgres_data_path" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_postgres_data_path" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_instance_path }}/data</field>
-    </record>
-
-    <record id="variable_postgres_instance_path" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">postgres_instance_path</field>
-    </record>
-    <record id="global_value_postgres_instance_path" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_postgres_instance_path" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_root }}/{{ postgres_instance_name }}</field>
-    </record>
-
-    <record id="variable_postgres_root" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">postgres_root</field>
-    </record>
-    <record id="global_value_postgres_root" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_postgres_root" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ tower_root }}/postgres</field>
-    </record>
 
 </odoo>
