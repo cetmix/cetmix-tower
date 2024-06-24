@@ -19,10 +19,13 @@
                             t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
                         >
                         <div t-attf-class="o_kanban_card_header">
-                            <div class="o_kanban_card_header_title">
+                            <div
+                                    class="o_kanban_card_header_title d-flex justify-content-between mr-4"
+                                >
                                 <div class="o_primary">
                                     <field name="name" />
                                 </div>
+                                <field name="status" widget="server_status" />
                             </div>
                             <div class="o_kanban_manage_button_section">
                                 <a class="o_kanban_manage_toggle_button" href="#"><i
@@ -123,6 +126,14 @@
                     optional="show"
                 />
                 <field name="color" widget="color_picker" optional="show" />
+                <field
+                    name="status"
+                    widget="badge"
+                    decoration-danger="status == '2'"
+                    decoration-info="status == '1'"
+                    decoration-success="status == '4'"
+                    decoration-warning="status in '356'"
+                />
             </tree>
         </field>
     </record>
@@ -178,8 +189,13 @@
                         attrs="{'invisible': [('active', '=', True)]}"
                     />
                     <div class="oe_title">
-                        <h1>
+                        <h1 class="d-flex flex-grow justify-content-between">
                             <field name="name" />
+                            <field
+                                name="status"
+                                widget="server_status"
+                                class="ml-auto"
+                            />
                         </h1>
                         <field name="color" widget="color_picker" />
                     </div>
@@ -263,12 +279,24 @@
         <field name="arch" type="xml">
             <search string="Search Servers">
                 <field name="name" string="Server" />
+                <field name="status" />
                 <field name="os_id" />
                 <field name="tag_ids" />
                 <filter
                     string="Archived"
                     name="archived"
                     domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Running"
+                    name="running"
+                    domain="[('status', '=', '4')]"
+                />
+                <filter
+                    string="Not Running"
+                    name="not_running"
+                    domain="[('status', 'in', ['2', '3', '5', '6'])]"
                 />
                 <group expand="0" string="Group By">
                     <filter
@@ -282,6 +310,11 @@
                         name="group_by_partner_id"
                         domain="[]"
                         context="{'group_by': 'partner_id'}"
+                    />
+                    <filter
+                        string="Status"
+                        name="group_by_status"
+                        context="{'group_by': 'status'}"
                     />
                 </group>
             </search>

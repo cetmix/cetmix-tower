@@ -234,6 +234,11 @@ class CxTowerServer(models.Model):
     name = fields.Char(string="Name", required=True)
     color = fields.Integer(string="Color", help="For better visualization in views")
     partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
+    status = fields.Selection(
+        selection=lambda self: self._selection_status(),
+        default=lambda self: self._default_status(),
+        required=True,
+    )
 
     # ---- Connection
     ip_v4_address = fields.Char(string="IPv4 Address")
@@ -298,6 +303,31 @@ class CxTowerServer(models.Model):
         "Total Files",
         compute="_compute_file_count",
     )
+
+    def _selection_status(self):
+        """
+        Status selection options
+
+        Returns:
+            list: status selection options
+        """
+        return [
+            ("1", "Undefined"),
+            ("2", "Stopped"),
+            ("3", "Starting"),
+            ("4", "Running"),
+            ("5", "Stopping"),
+            ("6", "Restarting"),
+        ]
+
+    def _default_status(self):
+        """
+        Default status
+
+        Returns:
+            str: default status
+        """
+        return "1"
 
     def server_toggle_active(self, self_active):
         """
