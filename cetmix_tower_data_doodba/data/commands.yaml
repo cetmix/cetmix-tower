@@ -7,10 +7,10 @@ commands:
       docker run -d \
       -v {{ odoo_instance_data_path }}:/var/lib/odoo \
       -v {{ odoo_instance_config_path }}:/etc/odoo \
-      -v {{ doodba_path }}/odoo/auto/addons:/opt/odoo/auto/addons \
-      -v {{ doodba_path }}/odoo/custom/src:/opt/odoo/custom/src \
-      --link {{ postgres_container_name }}:db \
-      --name {{ odoo_container_name }} \
+      -v {{ doodba_instance_path }}/odoo/auto/addons:/opt/odoo/auto/addons \
+      -v {{ doodba_instance_path }}/odoo/custom/src:/opt/odoo/custom/src \
+      --link {{ postgres_instance_name }}:db \
+      --name {{ odoo_instance_name }} \
       --restart {{ odoo_restart_policy }} \
       --label "traefik.enable=true" \
       --label "traefik.http.routers.{{ odoo_instance_name }}.rule=Host(\`{{ odoo_website_domain }}\`)" \

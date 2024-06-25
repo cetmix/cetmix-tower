@@ -37,8 +37,8 @@ commands:
       docker run -d \
       -v {{ odoo_instance_data_path }}:/var/lib/odoo \
       -v {{ odoo_instance_config_path }}:/etc/odoo \
-      --link {{ postgres_container_name }}:{{ postgres_container_name }} \
-      --name {{ odoo_container_name }} \
+      --link {{ postgres_instance_name }}:{{ postgres_instance_name }} \
+      --name {{ odoo_instance_name }} \
       --restart {{ odoo_restart_policy }} \
       --label "traefik.enable=true" \
       --label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
@@ -50,19 +50,19 @@ commands:
 
   # odoo_docker_restart:
   #   name: Odoo - Restart Container
-  #   code: docker restart {{ odoo_container_name }}
+  #   code: docker restart {{ odoo_instance_name }}
 
   # # # In use by flight plan "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
   # odoo_docker_stop:
   #   name: Odoo - Stop container
-  #   code: docker stop {{ odoo_container_name}}
+  #   code: docker stop {{ odoo_instance_name}}
 
   odoo_docker_rm:
     name: Odoo - Stop / Remove container (keep the data)
-    code: docker stop {{ odoo_container_name}} &amp;&amp; docker rm {{ odoo_container_name}}
+    code: docker stop {{ odoo_instance_name}} &amp;&amp; docker rm {{ odoo_instance_name}}
 
-  # run_odoo_container_name_with_shared_pg:
+  # run_odoo_instance_name_with_shared_pg:
   #   name: Run Odoo container with shared PG
   #   code: |
   #     docker run -d \
@@ -84,7 +84,7 @@ commands:
   #         -v {{ odoo_src }}:/mnt/odoo \
   #     {% endif %} \
   #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_container_name}} \
+  #     --name {{ odoo_instance_name}} \
   #     --link {{ shared_postgres_name }}:db \
   #     -t {{ odoo_image_name }} \
   #     -- \
@@ -148,7 +148,7 @@ commands:
 
   # # In use by flight plan "Update modules"
 
-  # update_odoo_container_name_with_shared_pg:
+  # update_odoo_instance_name_with_shared_pg:
   #   name: Update Odoo container with shared PG
   #   note: |
   #     Runs container with odoo in update mode.
@@ -165,7 +165,7 @@ commands:
   #     {% if odoo_src %} \
   #         -v {{ odoo_src }}:/mnt/odoo \
   #     {% endif %} \
-  #     --name {{ odoo_container_name}}_updater \
+  #     --name {{ odoo_instance_name}}_updater \
   #     --link {{ shared_postgres_name }}:db \
   #     -t {{ odoo_image_name }} \
   #     -- \
@@ -193,8 +193,8 @@ commands:
   # destroy_odoo_instance_and_image:
   #   name: Destroy Odoo container and image
   #   code: |
-  #     docker stop {{ odoo_container_name }} &amp;&amp; \
-  #     docker rm {{ odoo_container_name }} &amp;&amp; \
+  #     docker stop {{ odoo_instance_name }} &amp;&amp; \
+  #     docker rm {{ odoo_instance_name }} &amp;&amp; \
   #     docker image rm {{ odoo_image_name }}
 
   # disable_all_cron_jobs:
@@ -227,7 +227,7 @@ commands:
   #     -v {{ odoo_data }}:/var/lib/odoo \
   #     -v {{ odoo_config_location }}:/etc/odoo \
   #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_container_name}} \
+  #     --name {{ odoo_instance_name}} \
   #     --link {{ shared_postgres_name }}:db \
   #     -t {{ odoo_image_name }} -- \
   #     --database={{ odoo_db_name }}
@@ -240,12 +240,12 @@ commands:
   #     {{ odoo_data }}:/var/lib/odoo \
   #     -v {{ odoo_config_location }}:/etc/odoo \
   #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_container_name}} \
+  #     --name {{ odoo_instance_name}} \
   #     --link {{ shared_postgres_name }}:db \
   #     -t {{ odoo_image_name }} -- \
   #     --database={{ odoo_db_name }} \
   #     --update={{ odoo_modules_to_update }}
 
-  # start_odoo_container_name:
+  # start_odoo_instance_name:
   #   name: Start Odoo container
-  #   code: docker start {{ odoo_container_name }}
+  #   code: docker start {{ odoo_instance_name }}

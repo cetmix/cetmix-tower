@@ -10,6 +10,12 @@
         <field name="readonly">True</field>
         <field name="name">odoo_instance_name</field>
     </record>
+    <record id="global_value_odoo_instance_name" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="variable_id" ref="variable_odoo_instance_name" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_instance_name }}</field>
+    </record>
 
     <record id="variable_odoo_version" model="cx.tower.variable">
         <field name="readonly">True</field>
@@ -19,17 +25,6 @@
     <record id="variable_odoo_website_domain" model="cx.tower.variable">
         <field name="readonly">True</field>
         <field name="name">odoo_website_domain</field>
-    </record>
-
-    <record id="variable_odoo_container_name" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">odoo_container_name</field>
-    </record>
-    <record id="global_value_odoo_container_name" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_odoo_container_name" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_instance_name }}</field>
     </record>
 
     <record id="variable_odoo_instance_path" model="cx.tower.variable">
@@ -102,7 +97,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_docker_gid" />
         <field name="is_global">True</field>
-        <field name="value_char">999</field>
+        <field name="value_char">101</field>
     </record>
     </data>
     <data noupdate="1">
@@ -147,7 +142,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_instance_data_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_instance_path }}/data</field>
+        <field name="value_char">{{ odoo_root }}/{{ postgres_instance_name }}/data</field>
     </record>
     </data>
     <data noupdate="1">

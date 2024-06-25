@@ -4,6 +4,11 @@ Use convert_to_xml.sh
 Best practice for variables
 ---------------------------
 
+software_instance_name will be used for
+- container name
+- database name
+- directory name
+
 server:
   myserver:
     variables:
@@ -21,7 +26,6 @@ variables:
   # Software server variables
 
   # Software variables with READONLY global value
-  software_container_name: "{{ software_instance_name }}"
   software_instance_path: "{{ software_root }}/{{ software_instance_name }}"
   software_root: "{{ tower_root }}/software"
 

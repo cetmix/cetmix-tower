@@ -9,7 +9,7 @@ variables:
   odoo_website_domain: ""
 
   # Odoo variables with READONLY global value
-  odoo_container_name: "{{ odoo_instance_name }}"
+  odoo_instance_name: "{{ odoo_instance_name }}"
   odoo_instance_path: "{{ odoo_root }}/{{ odoo_instance_name }}"
   odoo_root: "{{ tower_root }}/odoo"
 
@@ -17,10 +17,10 @@ variables:
   -odoo_args: "--database {{ odoo_instance_name }}"
   -odoo_db_manager_password: ""
   -odoo_db_name: "{{ odoo_instance_name }}"
-  -odoo_docker_gid: "999"
+  -odoo_docker_gid: "101"
   -odoo_docker_uid: "101"
   -odoo_instance_config_path: "{{ odoo_instance_path }}/config"
-  -odoo_instance_data_path: "{{ odoo_instance_path }}/data"
+  -odoo_instance_data_path: "{{ odoo_root }}/{{ postgres_instance_name }}/data"
   -odoo_instance_dockerfile_path: "{{ odoo_instance_path }}/config"
   -odoo_list_db: "False"
   -odoo_restart_policy: "unless-stopped"

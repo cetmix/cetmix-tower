@@ -7,7 +7,6 @@ variables:
   # Traefik server variables
 
   # Traefik variables with READONLY global value
-  traefik_container_name: "{{ traefik_instance_name }}"
   traefik_instance_path: "{{ traefik_root }}/{{ traefik_instance_name }}"
   traefik_root: "{{ tower_root }}/traefik"
 

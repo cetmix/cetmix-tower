@@ -7,7 +7,6 @@ variables:
   # Postgres server variables
 
   # Postgres variables with READONLY global value
-  postgres_container_name: "{{ postgres_instance_name }}"
   postgres_instance_path: "{{ postgres_root }}/{{ postgres_instance_name }}"
   postgres_root: "{{ tower_root }}/postgres"
 

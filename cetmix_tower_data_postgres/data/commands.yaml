@@ -9,7 +9,7 @@ commands:
     name: Postgres - Create / Run container
     code: |
       docker run -d \
-        --name {{ postgres_container_name }} \
+        --name {{ postgres_instance_name }} \
         -e POSTGRES_USER={{ postgres_user }} \
         -e POSTGRES_PASSWORD={{ postgres_password }} \
         -e POSTGRES_DB=postgres \
@@ -27,8 +27,8 @@ commands:
   postgres_docker_rm:
     name: Postgres - Stop / Remove container (keep the data)
     code: |
-      docker stop {{ postgres_container_name }} &amp;&amp; \
-      docker rm {{ postgres_container_name }}
+      docker stop {{ postgres_instance_name }} &amp;&amp; \
+      docker rm {{ postgres_instance_name }}
 
   # run_shared_pg:
   #   name: Run shared PG

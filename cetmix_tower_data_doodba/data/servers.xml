@@ -18,7 +18,7 @@
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-doodba" />
         <field name="variable_id" ref="cetmix_tower_data_odoo.variable_odoo_instance_config_path" />
-        <field name="value_char">{{ doodba_path }}/conf [add to .gitignore, create conf/odoo.conf]</field>
+        <field name="value_char">{{ doodba_instance_path }}/conf [add to .gitignore, create conf/odoo.conf]</field>
     </record>
 
 </odoo>

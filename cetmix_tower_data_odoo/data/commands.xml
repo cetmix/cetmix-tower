@@ -58,8 +58,8 @@ docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
 docker run -d \
 -v {{ odoo_instance_data_path }}:/var/lib/odoo \
 -v {{ odoo_instance_config_path }}:/etc/odoo \
---link {{ postgres_container_name }}:{{ postgres_container_name }} \
---name {{ odoo_container_name }} \
+--link {{ postgres_instance_name }}:{{ postgres_instance_name }} \
+--name {{ odoo_instance_name }} \
 --restart {{ odoo_restart_policy }} \
 --label "traefik.enable=true" \
 --label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
@@ -78,7 +78,7 @@ docker run -d \
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-docker stop {{ odoo_container_name}} &amp;&amp; docker rm {{ odoo_container_name}}
+docker stop {{ odoo_instance_name}} &amp;&amp; docker rm {{ odoo_instance_name}}
         </field>
     </record>
 
