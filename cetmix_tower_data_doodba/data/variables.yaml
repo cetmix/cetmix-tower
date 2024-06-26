@@ -10,4 +10,4 @@ variables:
   doodba_root: "{{ tower_root }}/doodba"
 
   # Doodba -variables with NOUPDATE global value
-  -doodba_instance_repo_path: "{{ doodba_path }}/doodba"
+  -doodba_path_repo: "{{ doodba_path }}/doodba"
