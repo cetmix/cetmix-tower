@@ -9,7 +9,7 @@
             eval="[(6, 0, [ref('cetmix_tower_data_postgres.tag_cetmix_tower_data_postgres')])]"
         />
         <field name="code">
-mkdir -p {{ postgres_data_path }}
+mkdir -p {{ postgres_path_data }}
         </field>
     </record>
 
@@ -26,7 +26,7 @@ docker run -d \
   -e POSTGRES_USER={{ postgres_user }} \
   -e POSTGRES_PASSWORD={{ postgres_password }} \
   -e POSTGRES_DB=postgres \
-  -v {{ postgres_data_path }}:/var/lib/postgresql/data \
+  -v {{ postgres_path_data }}:/var/lib/postgresql/data \
   --restart {{ postgres_restart_policy }} \
   --shm-size {{ postgres_shm_size }} \
   {{ postgres_image_name}}

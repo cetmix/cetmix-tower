@@ -3,7 +3,7 @@ commands:
 
   postgres_dir_create:
     name: Postgres - Create data directory
-    code: mkdir -p {{ postgres_data_path }}
+    code: mkdir -p {{ postgres_path_data }}
 
   postgres_docker_run:
     name: Postgres - Create / Run container
@@ -13,7 +13,7 @@ commands:
         -e POSTGRES_USER={{ postgres_user }} \
         -e POSTGRES_PASSWORD={{ postgres_password }} \
         -e POSTGRES_DB=postgres \
-        -v {{ postgres_data_path }}:/var/lib/postgresql/data \
+        -v {{ postgres_path_data }}:/var/lib/postgresql/data \
         --restart {{ postgres_restart_policy }} \
         --shm-size {{ postgres_shm_size }} \
         {{ postgres_image_name}}

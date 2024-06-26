@@ -11,7 +11,7 @@ variables:
   postgres_root: "{{ tower_root }}/postgres"
 
   # Postgres -variables with NOUPDATE global value
-  -postgres_data_path: "{{ postgres_path }}/data"
+  -postgres_path_data: "{{ postgres_path }}/data"
   -postgres_password: ""
   -postgres_port: "5432"
   -postgres_restart_policy: always

@@ -6,4 +6,5 @@ servers:
       doodba_name: "{{ odoo_name }}"
 
       # Doodba server variables
-      cetmix_tower_data_odoo.odoo_path_config: "{{ doodba_path }}/conf [add to .gitignore, create conf/odoo.conf]"
+      cetmix_tower_data_odoo.odoo_path_config: "{{ doodba_path }}/config"
+      cetmix_tower_data_odoo.odoo_path_dockerfile: "{{ doodba_path }}/docker"

@@ -34,15 +34,15 @@
     </record>
     <data noupdate="1">
 
-    <record id="variable_postgres_data_path" model="cx.tower.variable">
+    <record id="variable_postgres_path_data" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">postgres_data_path</field>
+        <field name="name">postgres_path_data</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_postgres_data_path" model="cx.tower.variable.value">
+    <record id="global_value_postgres_path_data" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_postgres_data_path" />
+        <field name="variable_id" ref="variable_postgres_path_data" />
         <field name="is_global">True</field>
         <field name="value_char">{{ postgres_path }}/data</field>
     </record>
