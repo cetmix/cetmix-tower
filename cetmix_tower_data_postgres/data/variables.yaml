@@ -2,16 +2,16 @@ module: cetmix_tower_data_postgres
 variables:
   # Standard server variables
   postgres_image_name: ""
-  postgres_instance_name: ""
+  postgres_name: ""
 
   # Postgres server variables
 
   # Postgres variables with READONLY global value
-  postgres_instance_path: "{{ postgres_root }}/{{ postgres_instance_name }}"
+  postgres_path: "{{ postgres_root }}/{{ postgres_name }}"
   postgres_root: "{{ tower_root }}/postgres"
 
   # Postgres -variables with NOUPDATE global value
-  -postgres_data_path: "{{ postgres_instance_path }}/data"
+  -postgres_data_path: "{{ postgres_path }}/data"
   -postgres_password: ""
   -postgres_port: "5432"
   -postgres_restart_policy: always

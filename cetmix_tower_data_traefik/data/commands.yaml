@@ -5,7 +5,7 @@ commands:
     name: Traefik - Create / Run container
     code: |
       docker run -d \
-        --name {{ traefik_instance_name }} \
+        --name {{ traefik_name }} \
         -p 80:80 \
         -p 443:443 \
         -v {{ traefik_volume }}:/etc/traefik/acme:rw,Z \
@@ -26,5 +26,5 @@ commands:
   traefik_docker_rm:
     name: Traefik - Stop / Remove container
     code: |
-      docker stop {{ traefik_instance_name }} &amp;&amp; \
-      docker rm {{ traefik_instance_name }}
+      docker stop {{ traefik_name }} &amp;&amp; \
+      docker rm {{ traefik_name }}

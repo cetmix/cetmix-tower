@@ -6,20 +6,20 @@
         <field name="name">postgres_image_name</field>
     </record>
 
-    <record id="variable_postgres_instance_name" model="cx.tower.variable">
+    <record id="variable_postgres_name" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">postgres_instance_name</field>
+        <field name="name">postgres_name</field>
     </record>
 
-    <record id="variable_postgres_instance_path" model="cx.tower.variable">
+    <record id="variable_postgres_path" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">postgres_instance_path</field>
+        <field name="name">postgres_path</field>
     </record>
-    <record id="global_value_postgres_instance_path" model="cx.tower.variable.value">
+    <record id="global_value_postgres_path" model="cx.tower.variable.value">
         <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_postgres_instance_path" />
+        <field name="variable_id" ref="variable_postgres_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_root }}/{{ postgres_instance_name }}</field>
+        <field name="value_char">{{ postgres_root }}/{{ postgres_name }}</field>
     </record>
 
     <record id="variable_postgres_root" model="cx.tower.variable">
@@ -44,7 +44,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_postgres_data_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_instance_path }}/data</field>
+        <field name="value_char">{{ postgres_path }}/data</field>
     </record>
     </data>
     <data noupdate="1">

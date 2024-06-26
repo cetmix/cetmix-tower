@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="variable_doodba_instance_name" model="cx.tower.variable">
+    <record id="variable_doodba_name" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">doodba_instance_name</field>
+        <field name="name">doodba_name</field>
     </record>
 
-    <record id="variable_doodba_instance_path" model="cx.tower.variable">
+    <record id="variable_doodba_path" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">doodba_instance_path</field>
+        <field name="name">doodba_path</field>
     </record>
-    <record id="global_value_doodba_instance_path" model="cx.tower.variable.value">
+    <record id="global_value_doodba_path" model="cx.tower.variable.value">
         <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_doodba_instance_path" />
+        <field name="variable_id" ref="variable_doodba_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ doodba_root }}/{{ doodba_instance_name }}</field>
+        <field name="value_char">{{ doodba_root }}/{{ doodba_name }}</field>
     </record>
 
     <record id="variable_doodba_root" model="cx.tower.variable">
@@ -39,7 +39,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_doodba_instance_repo_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ doodba_instance_path }}/doodba</field>
+        <field name="value_char">{{ doodba_path }}/doodba</field>
     </record>
     </data>
 

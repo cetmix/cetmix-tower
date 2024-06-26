@@ -3,7 +3,7 @@ servers:
   template-doodba:
     variables:
       # Standard server variables
-      doodba_instance_name: "{{ odoo_instance_name }}"
+      doodba_name: "{{ odoo_name }}"
 
       # Doodba server variables
-      cetmix_tower_data_odoo.odoo_path_config: "{{ doodba_instance_path }}/conf [add to .gitignore, create conf/odoo.conf]"
+      cetmix_tower_data_odoo.odoo_path_config: "{{ doodba_path }}/conf [add to .gitignore, create conf/odoo.conf]"

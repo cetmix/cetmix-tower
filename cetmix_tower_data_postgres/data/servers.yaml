@@ -3,7 +3,7 @@ servers:
   template-postgres:
     variables:
       # Standard server variables
-      postgres_image_name: "{{ postgres_instance_name }}:16"
-      postgres_instance_name: "shared-postgres"
+      postgres_image_name: "{{ postgres_name }}:16"
+      postgres_name: "shared-postgres"
 
       # Postgres server variables

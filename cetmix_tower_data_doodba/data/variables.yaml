@@ -1,13 +1,13 @@
 module: cetmix_tower_data_odoo
 variables:
   # Standard server variables
-  doodba_instance_name: ""
+  doodba_name: ""
 
   # Doodba server variables
 
   # Doodba variables with READONLY global value
-  doodba_instance_path: "{{ doodba_root }}/{{ doodba_instance_name }}"
+  doodba_path: "{{ doodba_root }}/{{ doodba_name }}"
   doodba_root: "{{ tower_root }}/doodba"
 
   # Doodba -variables with NOUPDATE global value
-  -doodba_instance_repo_path: "{{ doodba_instance_path }}/doodba"
+  -doodba_instance_repo_path: "{{ doodba_path }}/doodba"

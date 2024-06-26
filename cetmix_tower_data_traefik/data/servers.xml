@@ -12,12 +12,12 @@
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-traefik" />
         <field name="variable_id" ref="variable_traefik_image_name" />
-        <field name="value_char">{{ traefik_instance_name }}:v3.0</field>
+        <field name="value_char">{{ traefik_name }}:v3.0</field>
     </record>
-    <record id="server_template-traefik_variable_traefik_instance_name" model="cx.tower.variable.value">
+    <record id="server_template-traefik_variable_traefik_name" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-traefik" />
-        <field name="variable_id" ref="variable_traefik_instance_name" />
+        <field name="variable_id" ref="variable_traefik_name" />
         <field name="value_char">shared-traefik</field>
     </record>
     <record id="server_template-traefik_variable_traefik_email" model="cx.tower.variable.value">

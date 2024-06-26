@@ -6,9 +6,9 @@
         <field name="name">odoo_image_name</field>
     </record>
 
-    <record id="variable_odoo_instance_name" model="cx.tower.variable">
+    <record id="variable_odoo_name" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">odoo_instance_name</field>
+        <field name="name">odoo_name</field>
     </record>
 
     <record id="variable_odoo_version" model="cx.tower.variable">
@@ -21,15 +21,15 @@
         <field name="name">odoo_website_domain</field>
     </record>
 
-    <record id="variable_odoo_instance_path" model="cx.tower.variable">
+    <record id="variable_odoo_path" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">odoo_instance_path</field>
+        <field name="name">odoo_path</field>
     </record>
-    <record id="global_value_odoo_instance_path" model="cx.tower.variable.value">
+    <record id="global_value_odoo_path" model="cx.tower.variable.value">
         <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_odoo_instance_path" />
+        <field name="variable_id" ref="variable_odoo_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_root }}/{{ odoo_instance_name }}</field>
+        <field name="value_char">{{ odoo_root }}/{{ odoo_name }}</field>
     </record>
 
     <record id="variable_odoo_root" model="cx.tower.variable">
@@ -54,7 +54,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_args" />
         <field name="is_global">True</field>
-        <field name="value_char">--database {{ odoo_instance_name }}</field>
+        <field name="value_char">--database {{ odoo_name }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -84,7 +84,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_config" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_instance_path }}/config</field>
+        <field name="value_char">{{ odoo_path }}/config</field>
     </record>
     </data>
     <data noupdate="1">
@@ -99,7 +99,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_dockerfile" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_instance_path }}/docker</field>
+        <field name="value_char">{{ odoo_path }}/docker</field>
     </record>
     </data>
     <data noupdate="1">
@@ -195,7 +195,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_data_dir" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_root }}/{{ postgres_instance_name }}/data</field>
+        <field name="value_char">{{ odoo_root }}/{{ postgres_name }}/data</field>
     </record>
     </data>
     <data noupdate="1">
@@ -210,7 +210,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_db_host" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_instance_name }}</field>
+        <field name="value_char">{{ postgres_name }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -247,7 +247,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_db_name" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_instance_name }}</field>
+        <field name="value_char">{{ odoo_name }}</field>
     </record>
     </data>
     <data noupdate="1">

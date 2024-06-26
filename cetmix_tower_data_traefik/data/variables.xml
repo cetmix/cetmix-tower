@@ -6,20 +6,20 @@
         <field name="name">traefik_image_name</field>
     </record>
 
-    <record id="variable_traefik_instance_name" model="cx.tower.variable">
+    <record id="variable_traefik_name" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">traefik_instance_name</field>
+        <field name="name">traefik_name</field>
     </record>
 
-    <record id="variable_traefik_instance_path" model="cx.tower.variable">
+    <record id="variable_traefik_path" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">traefik_instance_path</field>
+        <field name="name">traefik_path</field>
     </record>
-    <record id="global_value_traefik_instance_path" model="cx.tower.variable.value">
+    <record id="global_value_traefik_path" model="cx.tower.variable.value">
         <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_traefik_instance_path" />
+        <field name="variable_id" ref="variable_traefik_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ traefik_root }}/{{ traefik_instance_name }}</field>
+        <field name="value_char">{{ traefik_root }}/{{ traefik_name }}</field>
     </record>
 
     <record id="variable_traefik_root" model="cx.tower.variable">
@@ -119,7 +119,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_traefik_volume" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ traefik_instance_path }}/.acme</field>
+        <field name="value_char">{{ traefik_path }}/.acme</field>
     </record>
     </data>
 
