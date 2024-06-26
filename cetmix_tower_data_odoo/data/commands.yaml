@@ -4,9 +4,9 @@ commands:
   odoo_dir_create:
     name: Odoo - Create instance directories
     code: |
-      mkdir -p {{ odoo_instance_data_path }} &amp;&amp; \
-      mkdir -p {{ odoo_instance_dockerfile_path }} &amp;&amp; \
-      mkdir -p {{ odoo_instance_config_path }}
+      mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
+      mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
+      mkdir -p {{ odoo_path_config }}
 
   odoo_dir_set_ownership:
     name: Odoo - Set ownership on directories
@@ -14,9 +14,9 @@ commands:
       Change Odoo config and data directories ownership to the docker “odoo” user.
       NB Ensure your user has enough access right for “chown”. Use sudo otherwise.
     code: |
-      chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_data_path }} \
+      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
       &amp;&amp; \
-      chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_config_path }}
+      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
 
   # # In use by flight plan "Build image, run container", "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
@@ -24,7 +24,7 @@ commands:
     name: Odoo - Build image
     note: Common image build command
     code: |
-      docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
+      docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image_name }}" \
       --no-cache \
       --build-arg ODOO_VERSION={{ odoo_version }} \
       --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
@@ -35,8 +35,8 @@ commands:
     name: Odoo - Create / Run container (with odoo_args)
     code: |
       docker run -d \
-      -v {{ odoo_instance_data_path }}:/var/lib/odoo \
-      -v {{ odoo_instance_config_path }}:/etc/odoo \
+      -v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+      -v {{ odoo_path_config }}:/etc/odoo \
       --link {{ postgres_instance_name }}:{{ postgres_instance_name }} \
       --name {{ odoo_instance_name }} \
       --restart {{ odoo_restart_policy }} \
@@ -94,8 +94,8 @@ commands:
   #     {% if odoo_addons_path %} \
   #         --addons-path={{ odoo_addons_path }} \
   #     {% endif %} \
-  #     {% if odoo_db_name %} \
-  #         --database={{ odoo_db_name }} \
+  #     {% if odoo_conf_db_name %} \
+  #         --database={{ odoo_conf_db_name }} \
   #     {% endif %} \
   #     {% if odoo_limit_time_cpu %} \
   #         --limit-time-cpu={{ odoo_limit_time_cpu }} \
@@ -175,8 +175,8 @@ commands:
   #     {% if odoo_addons_path %} \
   #         --addons-path={{ odoo_addons_path }} \
   #     {% endif %} \
-  #     {% if odoo_db_name %} \
-  #         --database={{ odoo_db_name }} \
+  #     {% if odoo_conf_db_name %} \
+  #         --database={{ odoo_conf_db_name }} \
   #     {% endif %} \
   #     {% if odoo_limit_time_cpu %} \
   #         --limit-time-cpu={{ odoo_limit_time_cpu }} \
@@ -204,7 +204,7 @@ commands:
   #     docker exec -t \
   #     -e PGPASSWORD={{ postgres_password }} \
   #     {{ shared_postgres_name }} \
-  #     psql -U {{ postgres_user }} -d {{ odoo_db_name }} \
+  #     psql -U {{ postgres_user }} -d {{ odoo_conf_db_name }} \
   #     -c "update ir_cron SET active=FALSE"
 
   # fetch_odoo_official_dockerfile:
@@ -230,7 +230,7 @@ commands:
   #     --name {{ odoo_instance_name}} \
   #     --link {{ shared_postgres_name }}:db \
   #     -t {{ odoo_image_name }} -- \
-  #     --database={{ odoo_db_name }}
+  #     --database={{ odoo_conf_db_name }}
 
   # odoo_start_with_db_update:
   #   name: Odoo start with db update
@@ -243,7 +243,7 @@ commands:
   #     --name {{ odoo_instance_name}} \
   #     --link {{ shared_postgres_name }}:db \
   #     -t {{ odoo_image_name }} -- \
-  #     --database={{ odoo_db_name }} \
+  #     --database={{ odoo_conf_db_name }} \
   #     --update={{ odoo_modules_to_update }}
 
   # start_odoo_instance_name:

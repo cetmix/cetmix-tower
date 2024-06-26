@@ -9,9 +9,9 @@
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-mkdir -p {{ odoo_instance_data_path }} &amp;&amp; \
-mkdir -p {{ odoo_instance_dockerfile_path }} &amp;&amp; \
-mkdir -p {{ odoo_instance_config_path }}
+mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
+mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
+mkdir -p {{ odoo_path_config }}
 
         </field>
     </record>
@@ -24,9 +24,9 @@ mkdir -p {{ odoo_instance_config_path }}
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_data_path }} \
+chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
 &amp;&amp; \
-chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_config_path }}
+chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
 
         </field>
     </record>
@@ -39,7 +39,7 @@ chown -R {{ odoo_docker_uid }}:{{ odoo_docker_gid }} {{ odoo_instance_config_pat
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
+docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image_name }}" \
 --no-cache \
 --build-arg ODOO_VERSION={{ odoo_version }} \
 --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
@@ -56,8 +56,8 @@ docker build {{ odoo_instance_dockerfile_path }} --tag "{{ odoo_image_name }}" \
         />
         <field name="code">
 docker run -d \
--v {{ odoo_instance_data_path }}:/var/lib/odoo \
--v {{ odoo_instance_config_path }}:/etc/odoo \
+-v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+-v {{ odoo_path_config }}:/etc/odoo \
 --link {{ postgres_instance_name }}:{{ postgres_instance_name }} \
 --name {{ odoo_instance_name }} \
 --restart {{ odoo_restart_policy }} \

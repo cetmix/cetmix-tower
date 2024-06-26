@@ -12,12 +12,8 @@ variables:
 
   # Postgres -variables with NOUPDATE global value
   -postgres_data_path: "{{ postgres_instance_path }}/data"
-  -postgres_password: "" # TODO: move to secret
+  -postgres_password: ""
   -postgres_port: "5432"
   -postgres_restart_policy: always
   -postgres_shm_size: 1g
   -postgres_user: ""
-
-  # pgdata: /var/lib/postgresql/data
-  # SERVER_NAME: ""
-  # url: ""

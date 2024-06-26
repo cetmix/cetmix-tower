@@ -5,8 +5,8 @@ commands:
     name: Doodba - Create / Run container (with odoo_args)
     code: |
       docker run -d \
-      -v {{ odoo_instance_data_path }}:/var/lib/odoo \
-      -v {{ odoo_instance_config_path }}:/etc/odoo \
+      -v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+      -v {{ odoo_path_config }}:/etc/odoo \
       -v {{ doodba_instance_path }}/odoo/auto/addons:/opt/odoo/auto/addons \
       -v {{ doodba_instance_path }}/odoo/custom/src:/opt/odoo/custom/src \
       --link {{ postgres_instance_name }}:db \

@@ -6,7 +6,8 @@ variables:
   # Doodba server variables
 
   # Doodba variables with READONLY global value
+  doodba_instance_path: "{{ doodba_root }}/{{ doodba_instance_name }}"
+  doodba_root: "{{ tower_root }}/doodba"
 
   # Doodba -variables with NOUPDATE global value
-  -doodba_instance_path: "{{ doodba_root }}/{{ doodba_instance_name }}"
-  -doodba_root: "{{ tower_root }}/doodba"
+  -doodba_instance_repo_path: "{{ doodba_instance_path }}/doodba"
