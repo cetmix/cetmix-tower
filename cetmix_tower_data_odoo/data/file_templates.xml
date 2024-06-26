@@ -103,7 +103,7 @@ workers = {{ odoo_conf_workers }}
 FROM odoo:{{ odoo_version }}
 USER root
 
-RUN apt update && apt install -y \
+RUN apt update &amp;&amp; apt install -y \
     {{ odoo_install_apt }}
 
 RUN python3 -m pip install \
