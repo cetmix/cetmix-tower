@@ -12,19 +12,19 @@
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_image" />
-        <field name="value_char">{{ odoo_instance }}:17.0</field>
+        <field name="value_char">odoo-community:17.0</field>
     </record>
     <record id="server_template-odoo_variable_odoo_instance" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
         <field name="variable_id" ref="variable_odoo_instance" />
-        <field name="value_char">myname-odoo</field>
+        <field name="value_char">myclient-odoo</field>
     </record>
-    <record id="server_template-odoo_variable_odoo_version" model="cx.tower.variable.value">
+    <record id="server_template-odoo_variable_odoo_server" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="variable_odoo_version" />
-        <field name="value_char">17.0</field>
+        <field name="variable_id" ref="variable_odoo_server" />
+        <field name="value_char">odoo-community-17</field>
     </record>
     <record id="server_template-odoo_variable_odoo_website_domain" model="cx.tower.variable.value">
         <field name="readonly">True</field>
@@ -32,11 +32,79 @@
         <field name="variable_id" ref="variable_odoo_website_domain" />
         <field name="value_char"></field>
     </record>
-    <record id="server_template-odoo_variable_postgres_instance" model="cx.tower.variable.value">
+
+    <!-- SERVER: template-odoo-server -->
+    <record id="server_template-odoo-server" model="cx.tower.server">
+        <field name="name">template-odoo-server</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">admin</field>
+        <field name="ip_v4_address">1.2.3.4</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_image" model="cx.tower.variable.value">
         <field name="readonly">True</field>
-        <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="cetmix_tower_data_postgres.variable_postgres_instance" />
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_image" />
+        <field name="value_char">odoo-community:17.0</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_instance" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_instance" />
+        <field name="value_char">odoo-community-17</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_admin_passwd" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_admin_passwd" />
         <field name="value_char"></field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_db_host" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_db_host" />
+        <field name="value_char">postgres16</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_db_password" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_db_password" />
+        <field name="value_char"></field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_db_port" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_db_port" />
+        <field name="value_char">5432</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_db_user" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_db_user" />
+        <field name="value_char"></field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_dbfilter" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_dbfilter" />
+        <field name="value_char">^%d$</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_conf_proxy_mode" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_conf_proxy_mode" />
+        <field name="value_char">True</field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_paths_extra_addons" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_paths_extra_addons" />
+        <field name="value_char"></field>
+    </record>
+    <record id="server_template-odoo-server_variable_odoo_version" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-odoo-server" />
+        <field name="variable_id" ref="variable_odoo_version" />
+        <field name="value_char">17.0</field>
     </record>
 
 </odoo>

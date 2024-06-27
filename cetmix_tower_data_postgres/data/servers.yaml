@@ -2,8 +2,7 @@ module: cetmix_tower_data_postgres
 servers:
   template-postgres:
     variables:
-      # Standard server variables
-      postgres_image: "{{ postgres_instance }}:16"
-      postgres_instance: "shared-postgres"
-
-      # Postgres server variables
+      # Standard variables
+      postgres_image: "postgres:16"
+      postgres_instance: "postgres16"
+      # Custom variables

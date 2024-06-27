@@ -11,16 +11,6 @@
         <field name="name">odoo_instance</field>
     </record>
 
-    <record id="variable_odoo_version" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">odoo_version</field>
-    </record>
-
-    <record id="variable_odoo_website_domain" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">odoo_website_domain</field>
-    </record>
-
     <record id="variable_odoo_path" model="cx.tower.variable">
         <field name="readonly">True</field>
         <field name="name">odoo_path</field>
@@ -188,7 +178,14 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_server" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ tower_root }}/odoo-servers/{{ odoo_instance }}</field>
+        <field name="value_char">{{ tower_root }}/odoo-servers/{{ odoo_server }}</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_paths_extra_addons" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_paths_extra_addons</field>
     </record>
     </data>
     <data noupdate="1">
@@ -208,6 +205,35 @@
     </data>
     <data noupdate="1">
 
+    <record id="variable_odoo_server" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_server</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_server" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_server" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_instance }}</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_version" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_version</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_website_domain" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_website_domain</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
     <record id="variable_odoo_conf_addons_path" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_addons_path</field>
@@ -218,7 +244,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_addons_path" />
         <field name="is_global">True</field>
-        <field name="value_char">/opt/odoo/auto/addons</field>
+        <field name="value_char">/opt/odoo/auto/addons,{{ odoo_extra_addons }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -266,14 +292,6 @@
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_conf_db_host" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_db_host" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_instance }}</field>
-    </record>
-    </data>
-    <data noupdate="1">
 
     <record id="variable_odoo_conf_db_maxconn" model="cx.tower.variable">
         <field name="readonly">False</field>
@@ -303,14 +321,6 @@
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_conf_db_name" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_db_name" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_instance }}</field>
-    </record>
-    </data>
-    <data noupdate="1">
 
     <record id="variable_odoo_conf_db_password" model="cx.tower.variable">
         <field name="readonly">False</field>
@@ -318,26 +328,10 @@
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_conf_db_password" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_db_password" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_password }}</field>
-    </record>
-    </data>
-    <data noupdate="1">
 
     <record id="variable_odoo_conf_db_port" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_db_port</field>
-    </record>
-    </data>
-    <data noupdate="1">
-    <record id="global_value_odoo_conf_db_port" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_db_port" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_port }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -378,26 +372,10 @@
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_conf_db_user" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_db_user" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_user }}</field>
-    </record>
-    </data>
-    <data noupdate="1">
 
     <record id="variable_odoo_conf_dbfilter" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_dbfilter</field>
-    </record>
-    </data>
-    <data noupdate="1">
-    <record id="global_value_odoo_conf_dbfilter" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_dbfilter" />
-        <field name="is_global">True</field>
-        <field name="value_char">^%d$</field>
     </record>
     </data>
     <data noupdate="1">
@@ -659,14 +637,6 @@
     <record id="variable_odoo_conf_proxy_mode" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_proxy_mode</field>
-    </record>
-    </data>
-    <data noupdate="1">
-    <record id="global_value_odoo_conf_proxy_mode" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_conf_proxy_mode" />
-        <field name="is_global">True</field>
-        <field name="value_char">True</field>
     </record>
     </data>
     <data noupdate="1">

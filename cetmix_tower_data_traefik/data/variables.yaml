@@ -1,16 +1,11 @@
 module: cetmix_tower_data_traefik
 variables:
-  # Standard server variables
+  # Standard variables - non-empty global values are READONLY.
   traefik_image: ""
   traefik_instance: ""
-
-  # Traefik server variables
-
-  # Traefik variables with READONLY global value
   traefik_path: "{{ traefik_root }}/{{ traefik_instance }}"
   traefik_root: "{{ tower_root }}/traefik"
-
-  # Traefik -variables with NOUPDATE global value
+  # Custom -variables - non-empty global values are installed once, NO UPDATE.
   -traefik_email: "notify@example.com"
   -traefik_log_level: "INFO"
   -traefik_url: "{{ traefik_url_production }}"

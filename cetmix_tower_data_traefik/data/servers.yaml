@@ -2,9 +2,8 @@ module: cetmix_tower_data_traefik
 servers:
   template-traefik:
     variables:
-      # Standard server variables
+      # Standard variables
       traefik_image: "{{ traefik_instance }}:v3.0"
       traefik_instance: "shared-traefik"
-
-      # Traefik server variables
+      # Custom variables
       traefik_email: ""

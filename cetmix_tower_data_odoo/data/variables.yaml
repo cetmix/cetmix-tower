@@ -1,18 +1,11 @@
 module: cetmix_tower_data_odoo
 variables:
-  # Standard server variables
+  # Standard variables - non-empty global values are READONLY.
   odoo_image: ""
   odoo_instance: ""
-
-  # Odoo server variables
-  odoo_version: ""
-  odoo_website_domain: ""
-
-  # Odoo variables with READONLY global value
   odoo_path: "{{ odoo_root }}/{{ odoo_instance }}"
   odoo_root: "{{ tower_root }}/odoo"
-
-  # Odoo -variables with NOUPDATE global value
+  # Custom -variables - non-empty global values are installed once, NO UPDATE.
   -odoo_args: "--database {{ odoo_instance }}"
   -odoo_filesystem_gid: "101"
   -odoo_filesystem_uid: "101"
@@ -23,23 +16,26 @@ variables:
   -odoo_path_auto_addons: "{{ odoo_path_server }}/doodba/odoo/auto/addons"
   -odoo_path_repos_private: "{{ odoo_path_server }}/private_repos"
   -odoo_path_repos_public: "{{ odoo_path_server }}/doodba/odoo/custom/src"
-  -odoo_path_server: "{{ tower_root }}/odoo-servers/{{ odoo_instance }}"
+  -odoo_path_server: "{{ tower_root }}/odoo-servers/{{ odoo_server }}"
+  -odoo_paths_extra_addons: ""
   -odoo_restart_policy: "unless-stopped"
-
-  -odoo_conf_addons_path: "/opt/odoo/auto/addons"
+  -odoo_server: "{{ odoo_instance }}"
+  -odoo_version: ""
+  -odoo_website_domain: ""
+  -odoo_conf_addons_path: "/opt/odoo/auto/addons,{{ odoo_extra_addons }}"
   -odoo_conf_admin_passwd: ""
   -odoo_conf_csv_internal_sep: ","
   -odoo_conf_data_dir: "{{ odoo_root }}/{{ postgres_instance }}/data"
-  -odoo_conf_db_host: "{{ postgres_instance }}"
+  -odoo_conf_db_host: ""
   -odoo_conf_db_maxconn: "64"
   -odoo_conf_db_maxconn_gevent: ""
-  -odoo_conf_db_name: "{{ odoo_instance }}"
-  -odoo_conf_db_password: "{{ postgres_password }}"
-  -odoo_conf_db_port: "{{ postgres_port }}"
+  -odoo_conf_db_name: ""
+  -odoo_conf_db_password: ""
+  -odoo_conf_db_port: ""
   -odoo_conf_db_sslmode: "prefer"
   -odoo_conf_db_template: "template0"
-  -odoo_conf_db_user: "{{ postgres_user }}"
-  -odoo_conf_dbfilter: "^%d$"
+  -odoo_conf_db_user: ""
+  -odoo_conf_dbfilter: ""
   -odoo_conf_demo: "{}"
   -odoo_conf_email_from: ""
   -odoo_conf_from_filter: ""
@@ -66,7 +62,7 @@ variables:
   -odoo_conf_osv_memory_count_limit: ""
   -odoo_conf_pg_path: ""
   -odoo_conf_pidfile: ""
-  -odoo_conf_proxy_mode: "True"
+  -odoo_conf_proxy_mode: ""
   -odoo_conf_reportgz: ""
   -odoo_conf_screencasts: ""
   -odoo_conf_screenshots: ""

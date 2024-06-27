@@ -12,13 +12,13 @@
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-postgres" />
         <field name="variable_id" ref="variable_postgres_image" />
-        <field name="value_char">{{ postgres_instance }}:16</field>
+        <field name="value_char">postgres:16</field>
     </record>
     <record id="server_template-postgres_variable_postgres_instance" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-postgres" />
         <field name="variable_id" ref="variable_postgres_instance" />
-        <field name="value_char">shared-postgres</field>
+        <field name="value_char">postgres16</field>
     </record>
 
 </odoo>

@@ -4,10 +4,6 @@ echo "Converting to xml..."
 python ./convert_to_xml.py commands ./data/commands.yaml ./data/commands.xml
 python ./convert_to_xml.py plans ./data/plans.yaml ./data/plans.xml
 python ./convert_to_xml.py variables ./data/variables.yaml ./data/variables.xml
-# DOODBA
-python ./convert_to_xml.py commands ../cetmix_tower_data_doodba/data/commands.yaml ../cetmix_tower_data_doodba/data/commands.xml
-python ./convert_to_xml.py servers ../cetmix_tower_data_doodba/data/servers.yaml ../cetmix_tower_data_doodba/data/servers.xml
-python ./convert_to_xml.py variables ../cetmix_tower_data_doodba/data/variables.yaml ../cetmix_tower_data_doodba/data/variables.xml
 # ODOO
 python ./convert_to_xml.py file_templates ../cetmix_tower_data_odoo/data/file_templates.yaml ../cetmix_tower_data_odoo/data/file_templates.xml
 python ./convert_to_xml.py commands ../cetmix_tower_data_odoo/data/commands.yaml ../cetmix_tower_data_odoo/data/commands.xml

@@ -12,21 +12,17 @@ software_instance name will be used for
 server:
   myserver:
     variables:
-      # Standard server variables
+      # Standard variables
       software_image: "{{ software_instance }}:version-1.0"
       software_instance: "myname-software"
 
-      # Software server variables
+      # Custom variables
 
 variables:
-  # Standard server variables
+  # Standard variables - non-empty global values are READONLY.
   software_image: ""
   software_instance: ""
-
-  # Software server variables
-
-  # Software variables with READONLY global value
   software_path: "{{ software_root }}/{{ software_instance }}"
   software_root: "{{ tower_root }}/software"
 
-  # Software -variables with NOUPDATE global value
+  # Custom -variables - non-empty global values are installed once, NO UPDATE.
