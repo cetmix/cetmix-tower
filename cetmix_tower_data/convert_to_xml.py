@@ -212,7 +212,6 @@ def servers_to_xml(yaml_data):
         # server
         key, update = _key_update(key)
         tags = ""
-        print(server)
         if server and server.get("tags"):
             tags = ", ".join(
                 [
@@ -220,7 +219,6 @@ def servers_to_xml(yaml_data):
                     for tag in server["tags"]
                 ]
             )
-            print(tags)
         xml_content += _xml_content(
             xml_server,
             update,

@@ -87,7 +87,7 @@ docker run -d \
 -v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
 -v {{ odoo_path_repos_public }}:/opt/odoo/custom/src \
 -v {{ odoo_path_repos_private }}:/opt/private_repos \
---link {{ postgres_instance }}:db \
+--link {{ postgres_instance }}:{{ postgres_instance }} \
 --name {{ odoo_instance }} \
 --restart {{ odoo_restart_policy }} \
 --label "traefik.enable=true" \

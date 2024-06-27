@@ -4,7 +4,10 @@
     <!-- SERVER: template-traefik -->
     <record id="server_template-traefik" model="cx.tower.server">
         <field name="name">template-traefik</field>
-        <field name="tag_ids" eval="[(6, 0, [ref('cetmix_tower_data_traefik.tag_cetmix_tower_data_traefik')])]" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_traefik.tag_cetmix_tower_data_traefik')])]"
+        />
         <field name="ssh_username">admin</field>
         <field name="ssh_password">admin</field>
         <field name="ip_v4_address">1.2.3.4</field>

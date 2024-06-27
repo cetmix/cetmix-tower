@@ -4,7 +4,10 @@
     <!-- SERVER: template-odoo -->
     <record id="server_template-odoo" model="cx.tower.server">
         <field name="name">template-odoo</field>
-        <field name="tag_ids" eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
         <field name="ssh_username">admin</field>
         <field name="ssh_password">admin</field>
         <field name="ip_v4_address">1.2.3.4</field>
@@ -37,7 +40,10 @@
     <!-- SERVER: template-odoo-config -->
     <record id="server_template-odoo-config" model="cx.tower.server">
         <field name="name">template-odoo-config</field>
-        <field name="tag_ids" eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo_config')])]" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo_config')])]"
+        />
         <field name="ssh_username">admin</field>
         <field name="ssh_password">admin</field>
         <field name="ip_v4_address">1.2.3.4</field>
