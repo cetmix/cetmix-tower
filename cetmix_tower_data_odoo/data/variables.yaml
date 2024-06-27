@@ -6,7 +6,8 @@ variables:
   odoo_path: "{{ odoo_root }}/{{ odoo_instance }}"
   odoo_root: "{{ tower_root }}/odoo"
   # Custom -variables - non-empty global values are installed once, NO UPDATE.
-  -odoo_args: "--database {{ odoo_instance }}"
+  -odoo_config: "{{ odoo_instance }}"
+  -odoo_config_override: ""
   -odoo_filesystem_gid: "101"
   -odoo_filesystem_uid: "101"
   -odoo_install_apt: ""
@@ -19,7 +20,6 @@ variables:
   -odoo_path_server: "{{ tower_root }}/odoo-servers/{{ odoo_server }}"
   -odoo_paths_extra_addons: ""
   -odoo_restart_policy: "unless-stopped"
-  -odoo_server: "{{ odoo_instance }}"
   -odoo_version: ""
   -odoo_website_domain: ""
   -odoo_conf_addons_path: "/opt/odoo/auto/addons,{{ odoo_extra_addons }}"

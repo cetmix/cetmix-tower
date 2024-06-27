@@ -6,7 +6,7 @@ servers:
       odoo_image: "odoo-community:17.0" # Bruke image
       odoo_instance: "myclient-odoo"
       # Custom variables
-      odoo_server: "odoo-community-17"
+      odoo_config: "odoo-community-17"
       odoo_website_domain: ""
 
   template-odoo-server:

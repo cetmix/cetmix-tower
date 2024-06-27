@@ -94,7 +94,7 @@ docker run -d \
 --label "traefik.http.routers.{{ odoo_instance }}.rule=Host(\`{{ odoo_website_domain }}\`)" \
 --label "traefik.http.routers.{{ odoo_instance }}.tls.certresolver=myresolver" \
 --label "traefik.http.services.{{ odoo_instance }}.loadbalancer.server.port=8069" \
--t {{ odoo_image }} {{ odoo_args }}
+-t {{ odoo_image }} --database {{ odoo_instance }} {{ odoo_config_override }}
 
         </field>
     </record>
