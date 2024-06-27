@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="variable_traefik_image_name" model="cx.tower.variable">
+    <record id="variable_traefik_image" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">traefik_image_name</field>
+        <field name="name">traefik_image</field>
     </record>
 
-    <record id="variable_traefik_name" model="cx.tower.variable">
+    <record id="variable_traefik_instance" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">traefik_name</field>
+        <field name="name">traefik_instance</field>
     </record>
 
     <record id="variable_traefik_path" model="cx.tower.variable">
@@ -19,7 +19,7 @@
         <field name="readonly">True</field>
         <field name="variable_id" ref="variable_traefik_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ traefik_root }}/{{ traefik_name }}</field>
+        <field name="value_char">{{ traefik_root }}/{{ traefik_instance }}</field>
     </record>
 
     <record id="variable_traefik_root" model="cx.tower.variable">

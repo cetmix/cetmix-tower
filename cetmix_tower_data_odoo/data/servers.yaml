@@ -3,8 +3,8 @@ servers:
   template-odoo:
     variables:
       # Standard server variables
-      odoo_image_name: "{{ odoo_name }}:17.0"
-      odoo_name: "myname-odoo"
+      odoo_image: "{{ odoo_instance }}:17.0"
+      odoo_instance: "myname-odoo"
 
       # Odoo server variables
       odoo_version: "17.0"
@@ -12,4 +12,4 @@ servers:
 
       # TODO: Set the postgres variables on the postgres server, not the odoo server.
       # postgres_server_name: ""
-      cetmix_tower_data_postgres.postgres_name: ""
+      cetmix_tower_data_postgres.postgres_instance: ""

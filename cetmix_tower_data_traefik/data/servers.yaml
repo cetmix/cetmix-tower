@@ -3,8 +3,8 @@ servers:
   template-traefik:
     variables:
       # Standard server variables
-      traefik_image_name: "{{ traefik_name }}:v3.0"
-      traefik_name: "shared-traefik"
+      traefik_image: "{{ traefik_instance }}:v3.0"
+      traefik_instance: "shared-traefik"
 
       # Traefik server variables
       traefik_email: ""

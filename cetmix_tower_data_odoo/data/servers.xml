@@ -8,16 +8,16 @@
         <field name="ssh_password">admin</field>
         <field name="ip_v4_address">1.2.3.4</field>
     </record>
-    <record id="server_template-odoo_variable_odoo_image_name" model="cx.tower.variable.value">
+    <record id="server_template-odoo_variable_odoo_image" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="variable_odoo_image_name" />
-        <field name="value_char">{{ odoo_name }}:17.0</field>
+        <field name="variable_id" ref="variable_odoo_image" />
+        <field name="value_char">{{ odoo_instance }}:17.0</field>
     </record>
-    <record id="server_template-odoo_variable_odoo_name" model="cx.tower.variable.value">
+    <record id="server_template-odoo_variable_odoo_instance" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="variable_odoo_name" />
+        <field name="variable_id" ref="variable_odoo_instance" />
         <field name="value_char">myname-odoo</field>
     </record>
     <record id="server_template-odoo_variable_odoo_version" model="cx.tower.variable.value">
@@ -32,10 +32,10 @@
         <field name="variable_id" ref="variable_odoo_website_domain" />
         <field name="value_char"></field>
     </record>
-    <record id="server_template-odoo_variable_postgres_name" model="cx.tower.variable.value">
+    <record id="server_template-odoo_variable_postgres_instance" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-odoo" />
-        <field name="variable_id" ref="cetmix_tower_data_postgres.variable_postgres_name" />
+        <field name="variable_id" ref="cetmix_tower_data_postgres.variable_postgres_instance" />
         <field name="value_char"></field>
     </record>
 

@@ -22,14 +22,14 @@ mkdir -p {{ postgres_path_data }}
         />
         <field name="code">
 docker run -d \
-  --name {{ postgres_name }} \
+  --name {{ postgres_instance }} \
   -e POSTGRES_USER={{ postgres_user }} \
   -e POSTGRES_PASSWORD={{ postgres_password }} \
   -e POSTGRES_DB=postgres \
   -v {{ postgres_path_data }}:/var/lib/postgresql/data \
   --restart {{ postgres_restart_policy }} \
   --shm-size {{ postgres_shm_size }} \
-  {{ postgres_image_name}}
+  {{ postgres_image}}
 
         </field>
     </record>
@@ -42,8 +42,8 @@ docker run -d \
             eval="[(6, 0, [ref('cetmix_tower_data_postgres.tag_cetmix_tower_data_postgres')])]"
         />
         <field name="code">
-docker stop {{ postgres_name }} &amp;&amp; \
-docker rm {{ postgres_name }}
+docker stop {{ postgres_instance }} &amp;&amp; \
+docker rm {{ postgres_instance }}
 
         </field>
     </record>

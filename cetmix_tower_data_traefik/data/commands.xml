@@ -10,12 +10,12 @@
         />
         <field name="code">
 docker run -d \
-  --name {{ traefik_name }} \
+  --name {{ traefik_instance }} \
   -p 80:80 \
   -p 443:443 \
   -v {{ traefik_volume }}:/etc/traefik/acme:rw,Z \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
-  {{ traefik_image_name}} \
+  {{ traefik_image}} \
   --certificatesresolvers.myresolver.acme.httpchallenge=true \
   --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web \
   --certificatesresolvers.myresolver.acme.caserver={{ traefik_url }} \
@@ -39,8 +39,8 @@ docker run -d \
             eval="[(6, 0, [ref('cetmix_tower_data_traefik.tag_cetmix_tower_data_traefik')])]"
         />
         <field name="code">
-docker stop {{ traefik_name }} &amp;&amp; \
-docker rm {{ traefik_name }}
+docker stop {{ traefik_instance }} &amp;&amp; \
+docker rm {{ traefik_instance }}
 
         </field>
     </record>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="variable_odoo_image_name" model="cx.tower.variable">
+    <record id="variable_odoo_image" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">odoo_image_name</field>
+        <field name="name">odoo_image</field>
     </record>
 
-    <record id="variable_odoo_name" model="cx.tower.variable">
+    <record id="variable_odoo_instance" model="cx.tower.variable">
         <field name="readonly">True</field>
-        <field name="name">odoo_name</field>
+        <field name="name">odoo_instance</field>
     </record>
 
     <record id="variable_odoo_version" model="cx.tower.variable">
@@ -29,7 +29,7 @@
         <field name="readonly">True</field>
         <field name="variable_id" ref="variable_odoo_path" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_root }}/{{ odoo_name }}</field>
+        <field name="value_char">{{ odoo_root }}/{{ odoo_instance }}</field>
     </record>
 
     <record id="variable_odoo_root" model="cx.tower.variable">
@@ -54,52 +54,37 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_args" />
         <field name="is_global">True</field>
-        <field name="value_char">--database {{ odoo_name }}</field>
+        <field name="value_char">--database {{ odoo_instance }}</field>
     </record>
     </data>
     <data noupdate="1">
 
-    <record id="variable_odoo_gid" model="cx.tower.variable">
+    <record id="variable_odoo_filesystem_gid" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">odoo_gid</field>
+        <field name="name">odoo_filesystem_gid</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_gid" model="cx.tower.variable.value">
+    <record id="global_value_odoo_filesystem_gid" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_gid" />
+        <field name="variable_id" ref="variable_odoo_filesystem_gid" />
         <field name="is_global">True</field>
         <field name="value_char">101</field>
     </record>
     </data>
     <data noupdate="1">
 
-    <record id="variable_odoo_path_config" model="cx.tower.variable">
+    <record id="variable_odoo_filesystem_uid" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">odoo_path_config</field>
+        <field name="name">odoo_filesystem_uid</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_path_config" model="cx.tower.variable.value">
+    <record id="global_value_odoo_filesystem_uid" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_path_config" />
+        <field name="variable_id" ref="variable_odoo_filesystem_uid" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path }}/config</field>
-    </record>
-    </data>
-    <data noupdate="1">
-
-    <record id="variable_odoo_path_dockerfile" model="cx.tower.variable">
-        <field name="readonly">False</field>
-        <field name="name">odoo_path_dockerfile</field>
-    </record>
-    </data>
-    <data noupdate="1">
-    <record id="global_value_odoo_path_dockerfile" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_path_dockerfile" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path }}/docker</field>
+        <field name="value_char">101</field>
     </record>
     </data>
     <data noupdate="1">
@@ -118,6 +103,96 @@
     </data>
     <data noupdate="1">
 
+    <record id="variable_odoo_path_config" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_config</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_config" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_config" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_path_server }}/config</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_path_dockerfile" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_dockerfile</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_dockerfile" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_dockerfile" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_path_server }}/docker</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_path_auto_addons" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_auto_addons</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_auto_addons" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_auto_addons" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_path_server }}/doodba/odoo/auto/addons</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_path_repos_private" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_repos_private</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_repos_private" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_repos_private" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_path_server }}/private_repos</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_path_repos_public" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_repos_public</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_repos_public" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_repos_public" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ odoo_path_server }}/doodba/odoo/custom/src</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
+    <record id="variable_odoo_path_server" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_server</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_server" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_server" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ tower_root }}/odoo-servers/{{ odoo_instance }}</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
     <record id="variable_odoo_restart_policy" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_restart_policy</field>
@@ -129,21 +204,6 @@
         <field name="variable_id" ref="variable_odoo_restart_policy" />
         <field name="is_global">True</field>
         <field name="value_char">unless-stopped</field>
-    </record>
-    </data>
-    <data noupdate="1">
-
-    <record id="variable_odoo_uid" model="cx.tower.variable">
-        <field name="readonly">False</field>
-        <field name="name">odoo_uid</field>
-    </record>
-    </data>
-    <data noupdate="1">
-    <record id="global_value_odoo_uid" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_uid" />
-        <field name="is_global">True</field>
-        <field name="value_char">101</field>
     </record>
     </data>
     <data noupdate="1">
@@ -195,7 +255,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_data_dir" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_root }}/{{ postgres_name }}/data</field>
+        <field name="value_char">{{ odoo_root }}/{{ postgres_instance }}/data</field>
     </record>
     </data>
     <data noupdate="1">
@@ -210,7 +270,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_db_host" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ postgres_name }}</field>
+        <field name="value_char">{{ postgres_instance }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -247,7 +307,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_db_name" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_name }}</field>
+        <field name="value_char">{{ odoo_instance }}</field>
     </record>
     </data>
     <data noupdate="1">

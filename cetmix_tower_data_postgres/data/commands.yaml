@@ -9,26 +9,26 @@ commands:
     name: Postgres - Create / Run container
     code: |
       docker run -d \
-        --name {{ postgres_name }} \
+        --name {{ postgres_instance }} \
         -e POSTGRES_USER={{ postgres_user }} \
         -e POSTGRES_PASSWORD={{ postgres_password }} \
         -e POSTGRES_DB=postgres \
         -v {{ postgres_path_data }}:/var/lib/postgresql/data \
         --restart {{ postgres_restart_policy }} \
         --shm-size {{ postgres_shm_size }} \
-        {{ postgres_image_name}}
+        {{ postgres_image}}
 
   # # In use by flight plan "Restart shared PG"
 
   # stop_shared_pg:
   #   name: Stop shared PG
-  #   code: docker rm {{ shared_postgres_name }}
+  #   code: docker rm {{ shared_postgres_instance }}
 
   postgres_docker_rm:
     name: Postgres - Stop / Remove container (keep the data)
     code: |
-      docker stop {{ postgres_name }} &amp;&amp; \
-      docker rm {{ postgres_name }}
+      docker stop {{ postgres_instance }} &amp;&amp; \
+      docker rm {{ postgres_instance }}
 
   # run_shared_pg:
   #   name: Run shared PG
@@ -49,7 +49,7 @@ commands:
   #     {% if postgres_port %} \
   #         -p {{ postgres_port }}:5432 \
   #     {% endif %} \
-  #     --name {{ shared_postgres_name }} \
+  #     --name {{ shared_postgres_instance }} \
   #     \
   #     postgres:{{ postgres_version }} \
   #     \
@@ -112,6 +112,6 @@ commands:
   #     -c {{ backup_restore_dump_location }}/{{ backup_restore_file_name }} \
   #     | docker exec -i \
   #     -e PGPASSWORD={{ postgres_password }} \
-  #     {{ shared_postgres_name }} \
+  #     {{ shared_postgres_instance }} \
   #     psql -U {{ postgres_user }} \
   #     -d {{ odoo_db_name_restore }}

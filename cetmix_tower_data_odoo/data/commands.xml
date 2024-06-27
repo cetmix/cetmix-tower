@@ -11,7 +11,8 @@
         <field name="code">
 mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
 mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
-mkdir -p {{ odoo_path_config }}
+mkdir -p {{ odoo_path_config }} &amp;&amp; \
+mkdir -p {{ odoo_path_repos }}
 
         </field>
     </record>
@@ -26,7 +27,9 @@ mkdir -p {{ odoo_path_config }}
         <field name="code">
 chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
 &amp;&amp; \
-chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
+chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }} \
+&amp;&amp; \
+chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_repos }}
 
         </field>
     </record>
@@ -39,7 +42,7 @@ chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image_name }}" \
+docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image }}" \
 --no-cache \
 --build-arg ODOO_VERSION={{ odoo_version }} \
 --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
@@ -58,14 +61,40 @@ docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image_name }}" \
 docker run -d \
 -v {{ odoo_conf_data_dir }}:/var/lib/odoo \
 -v {{ odoo_path_config }}:/etc/odoo \
---link {{ postgres_name }}:{{ postgres_name }} \
---name {{ odoo_name }} \
+--link {{ postgres_instance }}:{{ postgres_instance }} \
+--name {{ odoo_instance }} \
 --restart {{ odoo_restart_policy }} \
 --label "traefik.enable=true" \
 --label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
 --label "traefik.http.routers.odoo.tls.certresolver=myresolver" \
 --label "traefik.http.services.odoo.loadbalancer.server.port=8069" \
--t {{ odoo_image_name }} {{ odoo_args }}
+-t {{ odoo_image }} {{ odoo_args }}
+
+        </field>
+    </record>
+
+    <record id="command_odoo_docker_run_with_source_code_in_volumes" model="cx.tower.command">
+        <field name="readonly">True</field>
+        <field name="name">Odoo - Start (source code in volumes)</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
+        <field name="code">
+docker run -d \
+-v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+-v {{ odoo_path_config }}:/etc/odoo \
+-v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
+-v {{ odoo_path_repos_public }}:/opt/odoo/custom/src \
+-v {{ odoo_path_repos_private }}:/opt/private_repos \
+--link {{ postgres_instance }}:db \
+--name {{ odoo_instance }} \
+--restart {{ odoo_restart_policy }} \
+--label "traefik.enable=true" \
+--label "traefik.http.routers.{{ odoo_instance }}.rule=Host(\`{{ odoo_website_domain }}\`)" \
+--label "traefik.http.routers.{{ odoo_instance }}.tls.certresolver=myresolver" \
+--label "traefik.http.services.{{ odoo_instance }}.loadbalancer.server.port=8069" \
+-t {{ odoo_image }} {{ odoo_args }}
 
         </field>
     </record>
@@ -78,7 +107,7 @@ docker run -d \
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-docker stop {{ odoo_name}} &amp;&amp; docker rm {{ odoo_name}}
+docker stop {{ odoo_instance}} &amp;&amp; docker rm {{ odoo_instance}}
         </field>
     </record>
 

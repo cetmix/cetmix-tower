@@ -6,7 +6,8 @@ commands:
     code: |
       mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
       mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
-      mkdir -p {{ odoo_path_config }}
+      mkdir -p {{ odoo_path_config }} &amp;&amp; \
+      mkdir -p {{ odoo_path_repos }}
 
   odoo_dir_set_ownership:
     name: Odoo - Set ownership on directories
@@ -16,7 +17,9 @@ commands:
     code: |
       chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
       &amp;&amp; \
-      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
+      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }} \
+      &amp;&amp; \
+      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_repos }}
 
   # # In use by flight plan "Build image, run container", "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
@@ -24,7 +27,7 @@ commands:
     name: Odoo - Build image
     note: Common image build command
     code: |
-      docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image_name }}" \
+      docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image }}" \
       --no-cache \
       --build-arg ODOO_VERSION={{ odoo_version }} \
       --build-arg GITHUB_TOKEN=#!cxtower.secret.GITHUB_TOKEN!#
@@ -37,32 +40,50 @@ commands:
       docker run -d \
       -v {{ odoo_conf_data_dir }}:/var/lib/odoo \
       -v {{ odoo_path_config }}:/etc/odoo \
-      --link {{ postgres_name }}:{{ postgres_name }} \
-      --name {{ odoo_name }} \
+      --link {{ postgres_instance }}:{{ postgres_instance }} \
+      --name {{ odoo_instance }} \
       --restart {{ odoo_restart_policy }} \
       --label "traefik.enable=true" \
       --label "traefik.http.routers.odoo.rule=Host(\`{{ odoo_website_domain }}\`)" \
       --label "traefik.http.routers.odoo.tls.certresolver=myresolver" \
       --label "traefik.http.services.odoo.loadbalancer.server.port=8069" \
-      -t {{ odoo_image_name }} {{ odoo_args }}
+      -t {{ odoo_image }} {{ odoo_args }}
+
+  odoo_docker_run_with_source_code_in_volumes:
+    name: Odoo - Start (source code in volumes)
+    code: |
+      docker run -d \
+      -v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+      -v {{ odoo_path_config }}:/etc/odoo \
+      -v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
+      -v {{ odoo_path_repos_public }}:/opt/odoo/custom/src \
+      -v {{ odoo_path_repos_private }}:/opt/private_repos \
+      --link {{ postgres_instance }}:db \
+      --name {{ odoo_instance }} \
+      --restart {{ odoo_restart_policy }} \
+      --label "traefik.enable=true" \
+      --label "traefik.http.routers.{{ odoo_instance }}.rule=Host(\`{{ odoo_website_domain }}\`)" \
+      --label "traefik.http.routers.{{ odoo_instance }}.tls.certresolver=myresolver" \
+      --label "traefik.http.services.{{ odoo_instance }}.loadbalancer.server.port=8069" \
+      -t {{ odoo_image }} {{ odoo_args }}
 
   # # In use by flight plan "Update modules"
 
   # odoo_docker_restart:
   #   name: Odoo - Restart Container
-  #   code: docker restart {{ odoo_name }}
+  #   code: docker restart {{ odoo_instance }}
 
   # # # In use by flight plan "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
   # odoo_docker_stop:
   #   name: Odoo - Stop container
-  #   code: docker stop {{ odoo_name}}
+  #   code: docker stop {{ odoo_instance}}
 
   odoo_docker_rm:
     name: Odoo - Stop / Remove container (keep the data)
-    code: docker stop {{ odoo_name}} &amp;&amp; docker rm {{ odoo_name}}
+    code: docker stop {{ odoo_instance}} &amp;&amp; docker rm {{ odoo_instance}}
 
-  # run_odoo_name_with_shared_pg:
+  # run_odoo_instance_with_shared_pg:
   #   name: Run Odoo container with shared PG
   #   code: |
   #     docker run -d \
@@ -84,9 +105,9 @@ commands:
   #         -v {{ odoo_src }}:/mnt/odoo \
   #     {% endif %} \
   #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_name}} \
-  #     --link {{ shared_postgres_name }}:db \
-  #     -t {{ odoo_image_name }} \
+  #     --name {{ odoo_instance}} \
+  #     --link {{ shared_postgres_instance }}:db \
+  #     -t {{ odoo_image }} \
   #     -- \
   #     {% if odoo_without_demo and odoo_without_demo !='0' %} \
   #         --without-demo={{ odoo_without_demo }} \
@@ -148,7 +169,7 @@ commands:
 
   # # In use by flight plan "Update modules"
 
-  # update_odoo_name_with_shared_pg:
+  # update_odoo_instance_with_shared_pg:
   #   name: Update Odoo container with shared PG
   #   note: |
   #     Runs container with odoo in update mode.
@@ -165,9 +186,9 @@ commands:
   #     {% if odoo_src %} \
   #         -v {{ odoo_src }}:/mnt/odoo \
   #     {% endif %} \
-  #     --name {{ odoo_name}}_updater \
-  #     --link {{ shared_postgres_name }}:db \
-  #     -t {{ odoo_image_name }} \
+  #     --name {{ odoo_instance}}_updater \
+  #     --link {{ shared_postgres_instance }}:db \
+  #     -t {{ odoo_image }} \
   #     -- \
   #     --no-http \
   #     --stop-after-init \
@@ -193,9 +214,9 @@ commands:
   # destroy_odoo_instance_and_image:
   #   name: Destroy Odoo container and image
   #   code: |
-  #     docker stop {{ odoo_name }} &amp;&amp; \
-  #     docker rm {{ odoo_name }} &amp;&amp; \
-  #     docker image rm {{ odoo_image_name }}
+  #     docker stop {{ odoo_instance }} &amp;&amp; \
+  #     docker rm {{ odoo_instance }} &amp;&amp; \
+  #     docker image rm {{ odoo_image }}
 
   # disable_all_cron_jobs:
   #   name: Disable all cron jobs
@@ -203,7 +224,7 @@ commands:
   #   code: |
   #     docker exec -t \
   #     -e PGPASSWORD={{ postgres_password }} \
-  #     {{ shared_postgres_name }} \
+  #     {{ shared_postgres_instance }} \
   #     psql -U {{ postgres_user }} -d {{ odoo_conf_db_name }} \
   #     -c "update ir_cron SET active=FALSE"
 
@@ -227,9 +248,9 @@ commands:
   #     -v {{ odoo_data }}:/var/lib/odoo \
   #     -v {{ odoo_config_location }}:/etc/odoo \
   #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_name}} \
-  #     --link {{ shared_postgres_name }}:db \
-  #     -t {{ odoo_image_name }} -- \
+  #     --name {{ odoo_instance}} \
+  #     --link {{ shared_postgres_instance }}:db \
+  #     -t {{ odoo_image }} -- \
   #     --database={{ odoo_conf_db_name }}
 
   # odoo_start_with_db_update:
@@ -240,12 +261,12 @@ commands:
   #     {{ odoo_data }}:/var/lib/odoo \
   #     -v {{ odoo_config_location }}:/etc/odoo \
   #     --restart {{ odoo_restart_policy }} \
-  #     --name {{ odoo_name}} \
-  #     --link {{ shared_postgres_name }}:db \
-  #     -t {{ odoo_image_name }} -- \
+  #     --name {{ odoo_instance}} \
+  #     --link {{ shared_postgres_instance }}:db \
+  #     -t {{ odoo_image }} -- \
   #     --database={{ odoo_conf_db_name }} \
   #     --update={{ odoo_modules_to_update }}
 
-  # start_odoo_name:
+  # start_odoo_instance:
   #   name: Start Odoo container
-  #   code: docker start {{ odoo_name }}
+  #   code: docker start {{ odoo_instance }}
