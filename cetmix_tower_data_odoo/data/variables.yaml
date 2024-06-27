@@ -12,7 +12,7 @@ variables:
   -odoo_filesystem_uid: "101"
   -odoo_install_apt: ""
   -odoo_install_pip: ""
-  -odoo_path_config: "{{ tower_root }}/odoo-config/{{ odoo_server }}"
+  -odoo_path_config: "{{ tower_root }}/odoo-config/{{ odoo_config }}"
   -odoo_path_dockerfile: "{{ odoo_path_config }}/docker"
   -odoo_path_auto_addons: "{{ odoo_path_config }}/doodba/odoo/auto/addons"
   -odoo_path_repos_private: "{{ odoo_path_config }}/private_repos"

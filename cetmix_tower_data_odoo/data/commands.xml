@@ -12,7 +12,12 @@
 mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
 mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
 mkdir -p {{ odoo_path_config }} &amp;&amp; \
-mkdir -p {{ odoo_path_repos }}
+{% if odoo_path_repos_private %} \
+mkdir -p {{ odoo_path_repos_private }} \
+{% endif %}
+{% if odoo_path_repos_public %} \
+mkdir -p {{ odoo_path_repos_public }} \
+{% endif %}
 
         </field>
     </record>
@@ -27,9 +32,7 @@ mkdir -p {{ odoo_path_repos }}
         <field name="code">
 chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
 &amp;&amp; \
-chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }} \
-&amp;&amp; \
-chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_repos }}
+chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
 
         </field>
     </record>

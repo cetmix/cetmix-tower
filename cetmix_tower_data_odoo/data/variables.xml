@@ -110,7 +110,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_config" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ tower_root }}/odoo-config/{{ odoo_server }}</field>
+        <field name="value_char">{{ tower_root }}/odoo-config/{{ odoo_config }}</field>
     </record>
     </data>
     <data noupdate="1">

@@ -26,5 +26,6 @@ servers:
       odoo_conf_db_user: ""
       odoo_conf_dbfilter: "^%d$"
       odoo_conf_proxy_mode: "True"
+      odoo_config: "odoo-community-17"
       odoo_paths_extra_addons: ""
       odoo_version: "17.0"

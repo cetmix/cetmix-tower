@@ -7,7 +7,12 @@ commands:
       mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
       mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
       mkdir -p {{ odoo_path_config }} &amp;&amp; \
-      mkdir -p {{ odoo_path_repos }}
+      {% if odoo_path_repos_private %} \
+      mkdir -p {{ odoo_path_repos_private }} \
+      {% endif %}
+      {% if odoo_path_repos_public %} \
+      mkdir -p {{ odoo_path_repos_public }} \
+      {% endif %}
 
   odoo_dir_set_ownership:
     name: Odoo - Set ownership on directories
@@ -17,9 +22,7 @@ commands:
     code: |
       chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
       &amp;&amp; \
-      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }} \
-      &amp;&amp; \
-      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_repos }}
+      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
 
   # # In use by flight plan "Build image, run container", "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
