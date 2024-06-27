@@ -145,30 +145,30 @@
     </data>
     <data noupdate="1">
 
-    <record id="variable_odoo_path_repos_manual" model="cx.tower.variable">
+    <record id="variable_odoo_path_src_manual" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">odoo_path_repos_manual</field>
+        <field name="name">odoo_path_src_manual</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_path_repos_manual" model="cx.tower.variable.value">
+    <record id="global_value_odoo_path_src_manual" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_path_repos_manual" />
+        <field name="variable_id" ref="variable_odoo_path_src_manual" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path_config }}/private_repos</field>
+        <field name="value_char">{{ odoo_path_config }}/src</field>
     </record>
     </data>
     <data noupdate="1">
 
-    <record id="variable_odoo_path_repos_auto" model="cx.tower.variable">
+    <record id="variable_odoo_path_src_auto" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">odoo_path_repos_auto</field>
+        <field name="name">odoo_path_src_auto</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_path_repos_auto" model="cx.tower.variable.value">
+    <record id="global_value_odoo_path_src_auto" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_path_repos_auto" />
+        <field name="variable_id" ref="variable_odoo_path_src_auto" />
         <field name="is_global">True</field>
         <field name="value_char">{{ odoo_path_config }}/doodba/odoo/custom/src</field>
     </record>
