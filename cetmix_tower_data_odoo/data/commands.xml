@@ -83,7 +83,7 @@ docker run -d \
         <field name="code">
 docker run -d \
 -v {{ odoo_conf_data_dir }}:/var/lib/odoo \
--v {{ odoo_path_config }}:/etc/odoo \
+-v {{ odoo_path_config }}/odoo.conf:/etc/odoo/odoo.conf \
 -v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
 -v {{ odoo_path_repos_public }}:/opt/odoo/custom/src \
 -v {{ odoo_path_repos_private }}:/opt/private_repos \

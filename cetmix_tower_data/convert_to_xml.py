@@ -83,6 +83,10 @@ xml_server = """
     <!-- SERVER: {name} -->
     <record id="server_{key}" model="cx.tower.server">
         <field name="name">{name}</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [{tags}])]"
+        />
         <field name="ssh_username">admin</field>
         <field name="ssh_password">admin</field>
         <field name="ip_v4_address">1.2.3.4</field>
@@ -207,6 +211,16 @@ def servers_to_xml(yaml_data):
     for key, server in yaml_data.get("servers") and yaml_data["servers"].items() or []:
         # server
         key, update = _key_update(key)
+        tags = ""
+        print(server)
+        if server and server.get("tags"):
+            tags = ", ".join(
+                [
+                    "ref('{}.{}')".format(yaml_data["module"], tag)
+                    for tag in server["tags"]
+                ]
+            )
+            print(tags)
         xml_content += _xml_content(
             xml_server,
             update,
@@ -214,6 +228,7 @@ def servers_to_xml(yaml_data):
                 module=yaml_data["module"],
                 key=key,
                 name=key,
+                tags=tags,
             ),
         )
         if server:

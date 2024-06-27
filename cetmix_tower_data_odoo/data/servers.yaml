@@ -1,6 +1,8 @@
 module: cetmix_tower_data_odoo
 servers:
   template-odoo:
+    tags:
+      - tag_cetmix_tower_data_odoo
     variables:
       # Standard variables
       odoo_image: "odoo-community:17.0" # Bruke image
@@ -9,7 +11,9 @@ servers:
       odoo_config: "odoo-community-17"
       odoo_website_domain: ""
 
-  template-odoo-server:
+  template-odoo-config:
+    tags:
+      - tag_cetmix_tower_data_odoo_config
     variables:
       # Standard variables
       odoo_image: "odoo-community:17.0" # Lage image

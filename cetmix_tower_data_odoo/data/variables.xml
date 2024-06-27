@@ -110,7 +110,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_config" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path_server }}/config</field>
+        <field name="value_char">{{ tower_root }}/odoo-config/{{ odoo_server }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -125,7 +125,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_dockerfile" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path_server }}/docker</field>
+        <field name="value_char">{{ odoo_path_config }}/docker</field>
     </record>
     </data>
     <data noupdate="1">
@@ -140,7 +140,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_auto_addons" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path_server }}/doodba/odoo/auto/addons</field>
+        <field name="value_char">{{ odoo_path_config }}/doodba/odoo/auto/addons</field>
     </record>
     </data>
     <data noupdate="1">
@@ -155,7 +155,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_repos_private" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path_server }}/private_repos</field>
+        <field name="value_char">{{ odoo_path_config }}/private_repos</field>
     </record>
     </data>
     <data noupdate="1">
@@ -170,22 +170,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_path_repos_public" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_path_server }}/doodba/odoo/custom/src</field>
-    </record>
-    </data>
-    <data noupdate="1">
-
-    <record id="variable_odoo_path_server" model="cx.tower.variable">
-        <field name="readonly">False</field>
-        <field name="name">odoo_path_server</field>
-    </record>
-    </data>
-    <data noupdate="1">
-    <record id="global_value_odoo_path_server" model="cx.tower.variable.value">
-        <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_path_server" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ tower_root }}/odoo-servers/{{ odoo_server }}</field>
+        <field name="value_char">{{ odoo_path_config }}/doodba/odoo/custom/src</field>
     </record>
     </data>
     <data noupdate="1">

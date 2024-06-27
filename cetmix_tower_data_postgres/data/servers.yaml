@@ -1,6 +1,8 @@
 module: cetmix_tower_data_postgres
 servers:
   template-postgres:
+    tags:
+      - tag_cetmix_tower_data_postgres
     variables:
       # Standard variables
       postgres_image: "postgres:16"

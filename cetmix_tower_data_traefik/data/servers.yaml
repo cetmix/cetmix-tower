@@ -1,6 +1,8 @@
 module: cetmix_tower_data_traefik
 servers:
   template-traefik:
+    tags:
+      - tag_cetmix_tower_data_traefik
     variables:
       # Standard variables
       traefik_image: "{{ traefik_instance }}:v3.0"
