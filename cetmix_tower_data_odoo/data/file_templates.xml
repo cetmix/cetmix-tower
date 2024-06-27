@@ -103,14 +103,14 @@ workers = {{ odoo_conf_workers }}
 FROM odoo:{{ odoo_version }}
 USER root
 
-{% if odoo_install_apt %} \
+{% if odoo_install_apt %}
 RUN apt update &amp;&amp; apt install -y \
     {{ odoo_install_apt }} \
 {% endif %}
 
 RUN python3 -m pip install \
     git+https://github.com/OCA/openupgradelib.git \
-{% if odoo_install_pip %} \
+{% if odoo_install_pip %}
     {{ odoo_install_pip }}
 {% endif %}
 

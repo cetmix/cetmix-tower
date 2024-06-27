@@ -30,9 +30,9 @@ mkdir -p {{ odoo_path_src_auto }} \
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
+chown -R {{ odoo_filesystem_uid }}:{{ odoo_filesystem_gid }} {{ odoo_conf_data_dir }} \
 &amp;&amp; \
-chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
+chown -R {{ odoo_filesystem_uid }}:{{ odoo_filesystem_gid }} {{ odoo_path_config }}
 
         </field>
     </record>

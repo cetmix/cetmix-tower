@@ -20,9 +20,9 @@ commands:
       Change Odoo config and data directories ownership to the docker “odoo” user.
       NB Ensure your user has enough access right for “chown”. Use sudo otherwise.
     code: |
-      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_conf_data_dir }} \
+      chown -R {{ odoo_filesystem_uid }}:{{ odoo_filesystem_gid }} {{ odoo_conf_data_dir }} \
       &amp;&amp; \
-      chown -R {{ odoo_uid }}:{{ odoo_gid }} {{ odoo_path_config }}
+      chown -R {{ odoo_filesystem_uid }}:{{ odoo_filesystem_gid }} {{ odoo_path_config }}
 
   # # In use by flight plan "Build image, run container", "Rebuild Odoo container soft" and "Rebuild Odoo container hard"
 
