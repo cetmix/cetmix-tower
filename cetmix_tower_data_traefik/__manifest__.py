@@ -8,7 +8,7 @@
     "version": "14.0.1.0.0",
     "license": "AGPL-3",
     "author": "Loym",
-    "website": "https://cetmix.com",
+    "website": "https://www.loym.com",
     "depends": ["cetmix_tower_data"],
     "data": [
         "data/cx_tower_tag_data.xml",

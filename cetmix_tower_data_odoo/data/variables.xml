@@ -56,30 +56,30 @@
     </data>
     <data noupdate="1">
 
-    <record id="variable_odoo_filesystem_gid" model="cx.tower.variable">
+    <record id="variable_odoo_dir_gid" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">odoo_filesystem_gid</field>
+        <field name="name">odoo_dir_gid</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_filesystem_gid" model="cx.tower.variable.value">
+    <record id="global_value_odoo_dir_gid" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_filesystem_gid" />
+        <field name="variable_id" ref="variable_odoo_dir_gid" />
         <field name="is_global">True</field>
-        <field name="value_char">101</field>
+        <field name="value_char">1001</field>
     </record>
     </data>
     <data noupdate="1">
 
-    <record id="variable_odoo_filesystem_uid" model="cx.tower.variable">
+    <record id="variable_odoo_dir_uid" model="cx.tower.variable">
         <field name="readonly">False</field>
-        <field name="name">odoo_filesystem_uid</field>
+        <field name="name">odoo_dir_uid</field>
     </record>
     </data>
     <data noupdate="1">
-    <record id="global_value_odoo_filesystem_uid" model="cx.tower.variable.value">
+    <record id="global_value_odoo_dir_uid" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="variable_id" ref="variable_odoo_filesystem_uid" />
+        <field name="variable_id" ref="variable_odoo_dir_uid" />
         <field name="is_global">True</field>
         <field name="value_char">101</field>
     </record>
@@ -221,7 +221,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_addons_path" />
         <field name="is_global">True</field>
-        <field name="value_char">/opt/odoo/auto/addons,{{ odoo_extra_addons }}</field>
+        <field name="value_char">/opt/odoo/auto/addons,{{ odoo_paths_extra_addons }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -465,10 +465,26 @@
     </record>
     </data>
     <data noupdate="1">
+    <record id="global_value_odoo_conf_limit_memory_hard" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_limit_memory_hard" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
+    </record>
+    </data>
+    <data noupdate="1">
 
     <record id="variable_odoo_conf_limit_memory_soft" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_limit_memory_soft</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_conf_limit_memory_soft" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_limit_memory_soft" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
     </record>
     </data>
     <data noupdate="1">
@@ -479,10 +495,26 @@
     </record>
     </data>
     <data noupdate="1">
+    <record id="global_value_odoo_conf_limit_request" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_limit_request" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
+    </record>
+    </data>
+    <data noupdate="1">
 
     <record id="variable_odoo_conf_limit_time_cpu" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_limit_time_cpu</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_conf_limit_time_cpu" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_limit_time_cpu" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
     </record>
     </data>
     <data noupdate="1">
@@ -493,10 +525,26 @@
     </record>
     </data>
     <data noupdate="1">
+    <record id="global_value_odoo_conf_limit_time_real" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_limit_time_real" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
+    </record>
+    </data>
+    <data noupdate="1">
 
     <record id="variable_odoo_conf_limit_time_real_cron" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_limit_time_real_cron</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_conf_limit_time_real_cron" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_limit_time_real_cron" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
     </record>
     </data>
     <data noupdate="1">
@@ -596,6 +644,14 @@
     </record>
     </data>
     <data noupdate="1">
+    <record id="global_value_odoo_conf_osv_memory_count_limit" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_osv_memory_count_limit" />
+        <field name="is_global">True</field>
+        <field name="value_char">0</field>
+    </record>
+    </data>
+    <data noupdate="1">
 
     <record id="variable_odoo_conf_pg_path" model="cx.tower.variable">
         <field name="readonly">False</field>
@@ -649,7 +705,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_server_wide_modules" />
         <field name="is_global">True</field>
-        <field name="value_char">base,web</field>
+        <field name="value_char">web</field>
     </record>
     </data>
     <data noupdate="1">
@@ -846,6 +902,14 @@
     <record id="variable_odoo_conf_workers" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_conf_workers</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_conf_workers" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_conf_workers" />
+        <field name="is_global">True</field>
+        <field name="value_char">2</field>
     </record>
     </data>
 

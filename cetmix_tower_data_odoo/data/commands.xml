@@ -3,7 +3,7 @@
 
     <record id="command_odoo_dir_create" model="cx.tower.command">
         <field name="readonly">True</field>
-        <field name="name">Odoo - Create instance directories</field>
+        <field name="name">Odoo Directories - Create</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
@@ -24,22 +24,80 @@ mkdir -p {{ odoo_path_src_auto }} \
 
     <record id="command_odoo_dir_set_ownership" model="cx.tower.command">
         <field name="readonly">True</field>
-        <field name="name">Odoo - Set ownership on directories</field>
+        <field name="name">Odoo Directories - Set ownership</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-chown -R {{ odoo_filesystem_uid }}:{{ odoo_filesystem_gid }} {{ odoo_conf_data_dir }} \
+chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_conf_data_dir }} \
 &amp;&amp; \
-chown -R {{ odoo_filesystem_uid }}:{{ odoo_filesystem_gid }} {{ odoo_path_config }}
+chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_path_config }}
 
         </field>
     </record>
 
-    <record id="command_odoo_docker_build" model="cx.tower.command">
+    <record id="command_odoo_docker_container_create_start" model="cx.tower.command">
         <field name="readonly">True</field>
-        <field name="name">Odoo - Build image</field>
+        <field name="name">Odoo container - Full Start</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
+        <field name="code">
+docker run -d \
+-v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+-v {{ odoo_path_config }}/odoo.conf:/etc/odoo/odoo.conf \
+{% if odoo_path_auto_addons %}
+-v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
+{% endif %}
+{% if odoo_path_src_auto %}
+-v {{ odoo_path_src_auto }}:/opt/odoo/custom/src \
+{% endif %}
+{% if odoo_path_src_manual %}
+-v {{ odoo_path_src_manual }}:/src \
+{% endif %}
+--link {{ odoo_conf_db_host }}:{{ odoo_conf_db_host }} \
+--name {{ odoo_instance }} \
+--restart {{ odoo_restart_policy }} \
+--label "traefik.enable=true" \
+--label "traefik.http.routers.{{ odoo_instance }}.rule=Host(\`{{ odoo_website_domain }}\`)" \
+--label "traefik.http.routers.{{ odoo_instance }}.tls.certresolver=myresolver" \
+--label "traefik.http.services.{{ odoo_instance }}.loadbalancer.server.port=8069" \
+-t \
+{{ odoo_image }} \
+--database {{ odoo_instance }} {% if odoo_config_override %} {{ odoo_config_override }} {% endif %}
+
+        </field>
+    </record>
+
+    <record id="command_odoo_docker_container_stop_remove" model="cx.tower.command">
+        <field name="readonly">True</field>
+        <field name="name">Odoo container - Full Stop</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
+        <field name="code">
+docker stop {{ odoo_instance}} &amp;&amp; docker rm {{ odoo_instance}}
+        </field>
+    </record>
+
+    <record id="command_odoo_docker_container_restart" model="cx.tower.command">
+        <field name="readonly">True</field>
+        <field name="name">Odoo Container - Restart</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
+        />
+        <field name="code">
+docker restart {{ odoo_instance }}
+        </field>
+    </record>
+
+    <record id="command_odoo_docker_image_build" model="cx.tower.command">
+        <field name="readonly">True</field>
+        <field name="name">Odoo image - Build</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
@@ -53,47 +111,16 @@ docker build {{ odoo_path_dockerfile }} --tag "{{ odoo_image }}" \
         </field>
     </record>
 
-    <record id="command_odoo_docker_run" model="cx.tower.command">
+    <record id="command_odoo_docker_image_remove" model="cx.tower.command">
         <field name="readonly">True</field>
-        <field name="name">Odoo - Start</field>
+        <field name="name">Odoo image - Remove</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-docker run -d \
--v {{ odoo_conf_data_dir }}:/var/lib/odoo \
--v {{ odoo_path_config }}/odoo.conf:/etc/odoo/odoo.conf \
-{% if odoo_path_auto_addons %} \
--v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
-{% endif %} \
-{% if odoo_path_src_auto %} \
--v {{ odoo_path_src_auto }}:/opt/odoo/custom/src \
-{% endif %} \
-{% if odoo_path_src_manual %} \
--v {{ odoo_path_src_manual }}:/src \
-{% endif %} \
---link {{ odoo_conf_db_host }}:{{ odoo_conf_db_host }} \
---name {{ odoo_instance }} \
---restart {{ odoo_restart_policy }} \
---label "traefik.enable=true" \
---label "traefik.http.routers.{{ odoo_instance }}.rule=Host(\`{{ odoo_website_domain }}\`)" \
---label "traefik.http.routers.{{ odoo_instance }}.tls.certresolver=myresolver" \
---label "traefik.http.services.{{ odoo_instance }}.loadbalancer.server.port=8069" \
--t {{ odoo_image }} --database {{ odoo_instance }} {{ odoo_config_override }}
+docker image rm {{ odoo_image }}
 
-        </field>
-    </record>
-
-    <record id="command_odoo_docker_rm" model="cx.tower.command">
-        <field name="readonly">True</field>
-        <field name="name">Odoo - Stop / Remove container (keep the data)</field>
-        <field
-            name="tag_ids"
-            eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
-        />
-        <field name="code">
-docker stop {{ odoo_instance}} &amp;&amp; docker rm {{ odoo_instance}}
         </field>
     </record>
 

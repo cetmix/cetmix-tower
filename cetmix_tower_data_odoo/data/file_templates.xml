@@ -103,16 +103,17 @@ workers = {{ odoo_conf_workers }}
 FROM odoo:{{ odoo_version }}
 USER root
 
-{% if odoo_install_apt %}
 RUN apt update &amp;&amp; apt install -y \
+{% if odoo_install_apt %}
     {{ odoo_install_apt }} \
 {% endif %}
+    git
 
 RUN python3 -m pip install \
-    git+https://github.com/OCA/openupgradelib.git \
 {% if odoo_install_pip %}
-    {{ odoo_install_pip }}
+    {{ odoo_install_pip }} \
 {% endif %}
+    git+https://github.com/OCA/openupgradelib.git
 
 USER odoo
 ENTRYPOINT ["/entrypoint.sh"]
