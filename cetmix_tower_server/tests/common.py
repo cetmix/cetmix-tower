@@ -49,16 +49,19 @@ class TestTowerCommon(TransactionCase):
         self.variable_version = self.Variable.create({"name": "test_version"})
 
         # Command
+        self.sudo_prefix = "sudo -S -p ''"
         self.Command = self.env["cx.tower.command"]
         self.command_create_dir = self.Command.create(
             {
                 "name": "Test create directory",
+                "path": "/home/{{ tower.server.username }}",
                 "code": "cd {{ test_path_ }} && mkdir {{ test_dir }}",
             }
         )
         self.command_list_dir = self.Command.create(
             {
                 "name": "Test create directory",
+                "path": "/home/{{ tower.server.username }}",
                 "code": "cd {{ test_path_ }} && ls -l",
             }
         )
@@ -91,6 +94,7 @@ class TestTowerCommon(TransactionCase):
                 "sequence": 5,
                 "plan_id": self.plan_1.id,
                 "command_id": self.command_create_dir.id,
+                "path": "/such/much/path",
             }
         )
         self.plan_line_2 = self.plan_line.create(
@@ -146,8 +150,14 @@ class TestTowerCommon(TransactionCase):
             """Mock method for connection"""
             return True
 
-        def _execute_command_patch(
-            self, client, command, raise_on_error=True, sudo=None, **kwargs
+        def _execute_command_using_ssh_patch(
+            self,
+            client,
+            command_code,
+            command_path=None,
+            raise_on_error=True,
+            sudo=None,
+            **kwargs,
         ):
             """Mock function to test server command execution.
             It will not execute any command but just return a pre-defined result
@@ -157,7 +167,8 @@ class TestTowerCommon(TransactionCase):
 
             Args:
                 client (Bool): Anything
-                command (Text): Command text
+                command_code (Text): Command text
+                command_path (Char, optional): Directory where command is executed
                 raise_on_error (bool, optional): raise if error Defaults to True.
                 sudo (selection, optional): Use sudo for commands. Defaults to None.
 
@@ -182,14 +193,14 @@ class TestTowerCommon(TransactionCase):
                     result = self._parse_ssh_command_results(-1, [], error)
 
             command = self.env["cx.tower.key"].parse_code(
-                command, **kwargs.get("key", {})
+                command_code, **kwargs.get("key", {})
             )
 
             if sudo:  # Execute each command separately to avoid extra shell
                 status_list = []
                 response_list = []
                 error_list = []
-                while self._prepare_command_for_sudo(command):
+                while self._prepare_ssh_command(command):
                     status_list.append(status)
                     response_list += response
                     error_list += error
@@ -201,7 +212,9 @@ class TestTowerCommon(TransactionCase):
             return result
 
         self.Server._patch_method("_connect", _connect_patch)
-        self.Server._patch_method("_execute_command_using_ssh", _execute_command_patch)
+        self.Server._patch_method(
+            "_execute_command_using_ssh", _execute_command_using_ssh_patch
+        )
 
     def tearDown(self):
         # Remove the monkey patches

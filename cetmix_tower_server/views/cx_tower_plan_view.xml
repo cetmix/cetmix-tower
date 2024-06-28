@@ -59,8 +59,9 @@
                             <field name="line_ids">
                                 <tree>
                                     <field name="sequence" widget="handle" />
-                                    <field name="command_id" />
+                                    <field name="name" />
                                     <field name="use_sudo" />
+                                    <field name="path" optional="show" />
                                 </tree>
                             </field>
                         </page>

@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -98,12 +98,12 @@ Configure a Server
 
 Go to the ``Cetmix Tower/Servers/Servers`` menu and click ``Create``.
 
-Enter the server name fill the values it the tabs below.
+Enter the server name and fill the values it the tabs below:
 
 General Settings
 ~~~~~~~~~~~~~~~~
 
--  **Partner**: This is a partner this server belongs to
+-  **Partner**: Partner this server belongs to
 -  **Operating System**: Operating system that runs on the server
 -  **IPv4 Address**
 -  **IPv6 Address**: Will be used if no IPv4 address is specified
@@ -337,9 +337,14 @@ and put values in the fields:
 
    -  ``Execute shell command``: Execute a shell command using ssh
       connection on remote server.
-   -  ``Push file``: Cerate or update a file using selected file
+   -  ``Push file``: Create or update a file using selected file
       template and push it to remote server. If the file already exists
       on server it will be overwritten.
+
+-  **Default Path**: Specify path where command will be executed. This
+   field supports `Variables <#configure-variables>`__. Important:
+   ensure ssh user has access to the location even if executing command
+   using sudo.
 
 -  **Code**: Command code as it will be executed by remote shell. This
    field supports `Variables <#configure-variables>`__.
@@ -377,6 +382,9 @@ values in the fields:
    -  **Sequence**: Order this command is executed. Lower value = higher
       priority.
    -  **Command**: `Command <#configure-a-command>`__ to be executed.
+   -  **Path**: Specify path where command will be executed. Overrides
+      ``Default Path`` of the command. This field supports
+      `Variables <#configure-variables>`__.
    -  **Use Sudo**: Use ``sudo`` if required to run this command.
    -  **Actions**: List of condition based actions to be triggered after
       the command is executed. Each of the actions has the following
@@ -394,6 +402,73 @@ values in the fields:
             execution and return the custom code configured in the field
             next to this one.
          -  ``Run next command``. Will continue flight plan execution.
+
+Configuration best practices
+----------------------------
+
+Use simple commands
+~~~~~~~~~~~~~~~~~~~
+
+Try to avoid using ``&&`` or ``;`` joined commands unless this is really
+needed. Use flight plans instead.
+
+**Why?**
+
+-  Simple commands are easier to reuse across multiple flight plans.
+-  Commands run with ``sudo`` with password are be split and executed
+   one by one anyway.
+
+**Not recommended:**
+
+.. code:: bash
+
+   apt-get update && apt-get upgrade -y && apt-get install doge-meme-generator
+
+**Way to go:**
+
+.. code:: bash
+
+   apt-get update
+
+.. code:: bash
+
+   apt-get upgrade -y
+
+.. code:: bash
+
+   apt-get install doge-meme-generator
+
+Do not change directory using shell commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Do not use ``cd`` or ``chdir`` commands. Use ``Default Path`` field in
+command or ``Path`` field in flight plan line.
+
+**Why?**
+
+-  Tower will automatically adjust the command to ensure it is properly
+   executed in the specified location.
+
+**Do not do this:**
+
+.. code:: bash
+
+   cd /home/{{ tower.server.username }}/memes && cat my_doge_memes.txt
+
+**Way to go:**
+
+-  Add the following value in the ``Default Path`` command field or
+   ``Path`` field of a flight plan line:
+
+.. code:: bash
+
+   /home/{{ tower.server.username }}/memes
+
+-  Leave the command code as follows:
+
+.. code:: bash
+
+   cat my_doge_memes.txt
 
 Usage
 =====
@@ -414,6 +489,9 @@ To run a command:
    -  **Show shared**: By default only commands available for the
       selected server(s) are selectable. Activate this checkbox to
       select any command
+   -  **Path**: Directory where command will be executed. Important:
+      this field does not support variables! Ensure that user has access
+      to this location even if you run command using sudo.
    -  **Code**: Raw command code
    -  **Preview**: Command code rendered using server variables.
       **IMPORTANT:** If several servers are selected preview will be
@@ -465,7 +543,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -480,6 +558,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.

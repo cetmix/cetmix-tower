@@ -15,6 +15,11 @@ class CxTowerPlanLine(models.Model):
         string="Flight Plan", comodel_name="cx.tower.plan", auto_join=True
     )
     command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
+    path = fields.Char(
+        help="Location where command will be executed. Overrides command default path. "
+        "You can use {{ variables }} in path",
+    )
+
     use_sudo = fields.Boolean(
         help="Will use sudo based on server settings."
         "If no sudo is configured will run without sudo"
@@ -63,4 +68,7 @@ class CxTowerPlanLine(models.Model):
         # Use sudo to bypass access rules for execute command with higher access level
         command_id = self.sudo().command_id
 
-        server.execute_command(command_id, use_sudo, **kwargs)
+        # Set path
+        path = self.path or self.command_id.path
+
+        server.execute_command(command_id, path, sudo=use_sudo, **kwargs)
