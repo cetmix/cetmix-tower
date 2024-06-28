@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="assets_backend" name="Backend Assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script
+                type="text/javascript"
+                src="/cetmix_tower_server/static/src/js/server_status_field.js"
+            />
+            <link
+                rel="stylesheet"
+                type="text/css"
+                href="/cetmix_tower_server/static/src/css/server_status.css"
+            />
+        </xpath>
+    </template>
+
+</odoo>
