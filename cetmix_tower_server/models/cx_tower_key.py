@@ -60,9 +60,7 @@ class CxTowerKey(models.Model):
             if rec.key_ref:
                 key_prefix = self._compose_key_prefix(rec.key_type)
                 if key_prefix:
-                    rec.key_ref_complete = ".".join(
-                        ("#!cxtower", key_prefix, rec.key_ref, "!#")
-                    )
+                    rec.key_ref_complete = f"#!cxtower.{key_prefix}.{rec.key_ref}!#"
                 else:
                     rec.key_ref_complete = None
             else:
