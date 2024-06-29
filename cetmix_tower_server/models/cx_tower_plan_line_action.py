@@ -12,25 +12,14 @@ class CxTowerPlanLineAction(models.Model):
     sequence = fields.Integer(default=10)
     line_id = fields.Many2one(comodel_name="cx.tower.plan.line", auto_join=True)
     condition = fields.Selection(
-        selection=[
-            ("==", "=="),
-            ("!=", "!="),
-            (">", ">"),
-            (">=", ">="),
-            ("<", "<"),
-            ("<=", "<="),
-        ],
+        selection=lambda self: self._selection_condition(),
         required=True,
     )
     value_char = fields.Char(string="Result", required=True)
     action = fields.Selection(
-        selection=[
-            ("e", "Exit with command exit code"),
-            ("ec", "Exit with custom exit code"),
-            ("n", "Run next command"),
-        ],
+        selection=lambda self: self._selection_action(),
+        default=lambda self: self._default_action(),
         required=True,
-        default="n",
     )
     custom_exit_code = fields.Integer(
         help="Will be used instead of the command exit code"
@@ -40,10 +29,47 @@ class CxTowerPlanLineAction(models.Model):
         readonly=True,
         store=True,
     )
+    exit_afterwards = fields.Boolean(string="Exit")
+
+    @api.model
+    def _selection_condition(self):
+        """
+        Selection options list for the 'condition' field
+        :return: list[tuple] of selection options
+        """
+        return [
+            ("==", "=="),
+            ("!=", "!="),
+            (">", ">"),
+            (">=", ">="),
+            ("<", "<"),
+            ("<=", "<="),
+        ]
+
+    @api.model
+    def _selection_action(self):
+        """
+        Selection options list for the 'action' field
+        :return: list[tuple] of selection options
+        """
+        return [
+            ("c", "Run command"),
+            ("e", "Exit with command exit code"),
+            ("ec", "Exit with custom exit code"),
+            ("n", "Run next command"),
+        ]
+
+    @api.model
+    def _default_action(self):
+        """
+        Default value for the 'action' field
+        :return: str
+        """
+        return "n"
 
     @api.depends("condition", "action", "value_char")
     def _compute_name(self):
-        action_selection_vals = dict(self._fields["action"].selection)  # type: ignore
+        action_selection_vals = dict(self._fields["action"].selection(self))  # type: ignore
         for rec in self:
             # Some values are not updated until record is not saved.
             # This is a disclaimer to avoid misunderstanding

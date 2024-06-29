@@ -54,6 +54,10 @@
                                                 attrs="{'invisible': [('action', '!=', 'ec')], 'required': [('action', '=', 'ec')]}"
                                             />
                                         </div>
+                                        <field
+                                            name="exit_afterwards"
+                                            attrs="{'invisible': [('action', '!=', 'c')]}"
+                                        />
                                     </group>
                                 </form>
                             </field>
