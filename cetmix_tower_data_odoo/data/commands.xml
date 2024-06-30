@@ -9,7 +9,7 @@
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
+mkdir -p {{ odoo_path_data }} &amp;&amp; \
 mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
 mkdir -p {{ odoo_path_config }} &amp;&amp; \
 {% if odoo_path_src_manual %} \
@@ -30,7 +30,7 @@ mkdir -p {{ odoo_path_src_auto }} \
             eval="[(6, 0, [ref('cetmix_tower_data_odoo.tag_cetmix_tower_data_odoo')])]"
         />
         <field name="code">
-chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_conf_data_dir }} \
+chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_path_data }} \
 &amp;&amp; \
 chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_path_config }}
 

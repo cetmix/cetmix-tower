@@ -4,7 +4,7 @@ commands:
   odoo_dir_create:
     name: Odoo Directories - Create
     code: |
-      mkdir -p {{ odoo_conf_data_dir }} &amp;&amp; \
+      mkdir -p {{ odoo_path_data }} &amp;&amp; \
       mkdir -p {{ odoo_path_dockerfile }} &amp;&amp; \
       mkdir -p {{ odoo_path_config }} &amp;&amp; \
       {% if odoo_path_src_manual %} \
@@ -20,7 +20,7 @@ commands:
       Change Odoo config and data directories ownership to the docker “odoo” user.
       NB Ensure your user has enough access right for “chown”. Use sudo otherwise.
     code: |
-      chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_conf_data_dir }} \
+      chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_path_data }} \
       &amp;&amp; \
       chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_path_config }}
 

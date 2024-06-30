@@ -1,7 +1,7 @@
 module: cetmix_tower_data_odoo
 variables:
   # Standard variables - non-empty global values are READONLY.
-  odoo_image: ""
+  odoo_image: "" # {{ odoo_config }}:latest
   odoo_instance: ""
   odoo_path: "{{ odoo_root }}/{{ odoo_instance }}"
   odoo_root: "{{ tower_root }}/odoo"
