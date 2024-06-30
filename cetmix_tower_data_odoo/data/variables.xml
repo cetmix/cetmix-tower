@@ -972,7 +972,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_without_demo" />
         <field name="is_global">True</field>
-        <field name="value_char">False</field>
+        <field name="value_char">all</field>
     </record>
     </data>
 

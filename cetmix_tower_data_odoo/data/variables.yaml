@@ -1,6 +1,9 @@
 module: cetmix_tower_data_odoo
 variables:
   # Without global value
+  # NB!
+  # If a global value is set here, and a global value exists in the database,
+  # then "Update module" will fail.
   odoo_conf_geoip_city_db: ""
   odoo_conf_geoip_country_db: ""
   odoo_conf_logfile: ""
@@ -85,7 +88,7 @@ variables:
   odoo_conf_websocket_keep_alive_timeout: "3600"
   odoo_conf_websocket_rate_limit_burst: "10"
   odoo_conf_websocket_rate_limit_delay: "0.2"
-  odoo_conf_without_demo: "False"
+  odoo_conf_without_demo: "all" # custom default value
   odoo_conf_workers: "None"
 
   # backup_restore_dump_location: "{{ odoo_backup_location }}"
