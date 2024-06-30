@@ -91,11 +91,11 @@ variables:
   odoo_conf_without_demo: "all" # custom default value
   odoo_conf_workers: "None"
   # OCA/server-auth/auth_admin_passkey
-  auth_admin_passkey_password: "PASSKEY_PASSWORD"
-  auth_admin_passkey_password_sha512_encrypted: "True"
-  auth_admin_passkey_send_to_user: "True"
-  auth_admin_passkey_sysadmin_email: "SYSADMIN_EMAIL"
-  auth_admin_passkey_sysadmin_lang: "SYSADMIN_LANG"
+  odoo_conf_auth_admin_passkey_password: "PASSKEY_PASSWORD"
+  odoo_conf_auth_admin_passkey_password_sha512_encrypted: "True"
+  odoo_conf_auth_admin_passkey_send_to_user: "True"
+  odoo_conf_auth_admin_passkey_sysadmin_email: "SYSADMIN_EMAIL"
+  odoo_conf_auth_admin_passkey_sysadmin_lang: "SYSADMIN_LANG"
 
   # backup_restore_dump_location: "{{ odoo_backup_location }}"
   # backup_restore_file_name: dump.zip

@@ -75,10 +75,10 @@ file_templates:
       workers = {{ odoo_conf_workers }}
       # OCA/server-auth/auth_admin_passkey
       auth_admin_passkey_password: {{ odoo_conf_auth_admin_passkey_password }}
-      auth_admin_passkey_password_sha512_encrypted: {{ odoo_conf_auth_admin_passkey_password_sha512_encrypted }}
-      auth_admin_passkey_send_to_user: {{ odoo_conf_auth_admin_passkey_send_to_user }}
-      auth_admin_passkey_sysadmin_email: {{ odoo_conf_auth_admin_passkey_sysadmin_email }}
-      auth_admin_passkey_sysadmin_lang: {{ odoo_conf_auth_admin_passkey_sysadmin_lang }}
+      # auth_admin_passkey_password_sha512_encrypted: {{ odoo_conf_auth_admin_passkey_password_sha512_encrypted }}
+      # auth_admin_passkey_send_to_user: {{ odoo_conf_auth_admin_passkey_send_to_user }}
+      # auth_admin_passkey_sysadmin_email: {{ odoo_conf_auth_admin_passkey_sysadmin_email }}
+      # auth_admin_passkey_sysadmin_lang: {{ odoo_conf_auth_admin_passkey_sysadmin_lang }}
 
   # noupdate
   odoo_dockerfile:
