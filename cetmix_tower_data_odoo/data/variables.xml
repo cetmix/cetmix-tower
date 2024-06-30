@@ -115,6 +115,21 @@
     </data>
     <data noupdate="1">
 
+    <record id="variable_odoo_path_data" model="cx.tower.variable">
+        <field name="readonly">False</field>
+        <field name="name">odoo_path_data</field>
+    </record>
+    </data>
+    <data noupdate="1">
+    <record id="global_value_odoo_path_data" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_odoo_path_data" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ tower_root }}/odoo-data</field>
+    </record>
+    </data>
+    <data noupdate="1">
+
     <record id="variable_odoo_path_dockerfile" model="cx.tower.variable">
         <field name="readonly">False</field>
         <field name="name">odoo_path_dockerfile</field>
@@ -221,7 +236,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_addons_path" />
         <field name="is_global">True</field>
-        <field name="value_char">/opt/odoo/auto/addons,{{ odoo_paths_extra_addons }}</field>
+        <field name="value_char">/opt/odoo/auto/addons{% if odoo_paths_extra_addons %},{{ odoo_paths_extra_addons }}{% endif %}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -266,7 +281,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_data_dir" />
         <field name="is_global">True</field>
-        <field name="value_char">{{ odoo_root }}/{{ postgres_instance }}/data</field>
+        <field name="value_char">/opt/odoo/data</field>
     </record>
     </data>
     <data noupdate="1">
@@ -281,7 +296,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_db_host" />
         <field name="is_global">True</field>
-        <field name="value_char">db</field>
+        <field name="value_char">{{ postgres_instance }}</field>
     </record>
     </data>
     <data noupdate="1">
@@ -311,7 +326,7 @@
         <field name="readonly">False</field>
         <field name="variable_id" ref="variable_odoo_conf_db_maxconn_gevent" />
         <field name="is_global">True</field>
-        <field name="value_char">0</field>
+        <field name="value_char">False</field>
     </record>
     </data>
     <data noupdate="1">

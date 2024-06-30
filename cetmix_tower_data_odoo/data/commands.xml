@@ -46,7 +46,7 @@ chown -R {{ odoo_dir_uid }}:{{ odoo_dir_gid }} {{ odoo_path_config }}
         />
         <field name="code">
 docker run -d \
--v {{ odoo_conf_data_dir }}:/var/lib/odoo \
+-v {{ odoo_path_data }}:{{ odoo_conf_data_dir }} \
 -v {{ odoo_path_config }}/odoo.conf:/etc/odoo/odoo.conf \
 {% if odoo_path_auto_addons %}
 -v {{ odoo_path_auto_addons }}:/opt/odoo/auto/addons \
@@ -57,7 +57,7 @@ docker run -d \
 {% if odoo_path_src_manual %}
 -v {{ odoo_path_src_manual }}:/src \
 {% endif %}
---link {{ odoo_conf_db_host }}:{{ odoo_conf_db_host }} \
+--link {{ postgres_instance }}:{{ postgres_instance }} \
 --name {{ odoo_instance }} \
 --restart {{ odoo_restart_policy }} \
 --label "traefik.enable=true" \
