@@ -6,7 +6,9 @@
         <field name="name">Tower command log: user access rule</field>
         <field name="model_id" ref="model_cx_tower_command_log" />
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
-        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field
+            name="domain_force"
+        >[('create_uid', '=', user.id), ('command_id.access_level', '=', '1')]</field>
 
 
     </record>
