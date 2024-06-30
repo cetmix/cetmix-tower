@@ -25,24 +25,24 @@ class TestTowerlog(TestTowerCommon):
         # Ensure that regular user cannot access the command log
         test_command_log_as_bob = test_command_log.with_user(self.user_bob)
         with self.assertRaises(AccessError):
-            command_name = test_command_log_as_bob.read(["name"])
+            command_log_name = test_command_log_as_bob.read(["name"])
 
         # Add user_bob to group user
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
         # Ensure that user still doesn't have access to command log he did't create
         with self.assertRaises(AccessError):
-            command_name = test_command_log_as_bob.read(["name"])
+            command_log_name = test_command_log_as_bob.read(["name"])
         # Add user_bob to group manager
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
         # Ensure that manager doesn't have access to command belongs to server
         #  he did't subscribed to
         with self.assertRaises(AccessError):
-            command_name = test_command_log_as_bob.read(["name"])
+            command_log_name = test_command_log_as_bob.read(["name"])
         # Subscribe manager to server and test again
         self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-        command_name = test_command_log_as_bob.read(["name"])
+        command_log_name = test_command_log_as_bob.read(["name"])
         self.assertEqual(
-            command_name[0]["name"],
+            command_log_name[0]["name"],
             test_command_log_as_bob.name,
             "Command name should be same",
         )
@@ -60,7 +60,7 @@ class TestTowerlog(TestTowerCommon):
             {
                 "name": "Test",
                 "code": "ls",
-                "access_level": "1",
+                "access_level": "3",
             }
         )
 
@@ -73,6 +73,23 @@ class TestTowerlog(TestTowerCommon):
             }
         )
 
+        # Test if Manager can read command log of a command with "Root" access level
+        test_command_log_1_name = test_command_log_1.with_user(self.user_bob).read(
+            ["name"]
+        )
+        self.assertEqual(
+            test_command_log_1_name[0]["name"],
+            test_command_log_1.name,
+            "Command name should be same",
+        )
+        test_command_log_1_command_id = test_command_log_1.with_user(
+            self.user_bob
+        ).read(["command_id"])
+        self.assertEqual(
+            test_command_log_1_command_id[0]["command_id"][0],
+            test_command_log_1.command_id.id,
+            "Command name should be same",
+        )
         # Remove user_bob from group_manager
         self.remove_from_group(
             self.user_bob,
@@ -80,10 +97,14 @@ class TestTowerlog(TestTowerCommon):
                 "cetmix_tower_server.group_manager",
             ],
         )
+        # Update test_command access_level to "1"
+        test_command_1.write({"access_level": "1"})
         # Ensure that user_bob has access to test_command_log_1
-        command_name_1 = test_command_log_1.with_user(self.user_bob).read(["name"])
+        test_command_log_1_name = test_command_log_1.with_user(self.user_bob).read(
+            ["name"]
+        )
         self.assertEqual(
-            command_name_1[0]["name"],
+            test_command_log_1_name[0]["name"],
             test_command_log_1.name,
             "Command name should be same",
         )
@@ -91,4 +112,6 @@ class TestTowerlog(TestTowerCommon):
         test_command_1.write({"access_level": "2"})
         # Ensure that user_bob doesn't have access to test_command_log_1 anymore
         with self.assertRaises(AccessError):
-            command_name = test_command_log_1.with_user(self.user_bob).read(["name"])
+            test_command_log_1_name = test_command_log_1.with_user(self.user_bob).read(
+                ["name"]
+            )
