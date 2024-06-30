@@ -15,6 +15,7 @@
         </field>
         <field name="code">
 [options]
+# odoo/odoo
 addons_path = {{ odoo_conf_addons_path }}
 admin_passwd = {{ odoo_conf_admin_passwd }}
 csv_internal_sep = {{ odoo_conf_csv_internal_sep }}
@@ -80,6 +81,12 @@ server_wide_modules = {{ odoo_conf_server_wide_modules }}
 # websocket_rate_limit_delay = {{ odoo_conf_websocket_rate_limit_delay }}
 without_demo = {{ odoo_conf_without_demo }}
 workers = {{ odoo_conf_workers }}
+# OCA/server-auth/auth_admin_passkey
+auth_admin_passkey_password: {{ odoo_conf_auth_admin_passkey_password }}
+auth_admin_passkey_password_sha512_encrypted: {{ odoo_conf_auth_admin_passkey_password_sha512_encrypted }}
+auth_admin_passkey_send_to_user: {{ odoo_conf_auth_admin_passkey_send_to_user }}
+auth_admin_passkey_sysadmin_email: {{ odoo_conf_auth_admin_passkey_sysadmin_email }}
+auth_admin_passkey_sysadmin_lang: {{ odoo_conf_auth_admin_passkey_sysadmin_lang }}
 
         </field>
     </record>

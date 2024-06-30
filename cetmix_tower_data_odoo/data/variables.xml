@@ -989,4 +989,69 @@
     </record>
     </data>
 
+    <record id="variable_auth_admin_passkey_password" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">auth_admin_passkey_password</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_auth_admin_passkey_password" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_auth_admin_passkey_password" />
+        <field name="is_global">True</field>
+        <field name="value_char">PASSKEY_PASSWORD</field>
+    </record>
+    </data>
+
+    <record id="variable_auth_admin_passkey_password_sha512_encrypted" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">auth_admin_passkey_password_sha512_encrypted</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_auth_admin_passkey_password_sha512_encrypted" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_auth_admin_passkey_password_sha512_encrypted" />
+        <field name="is_global">True</field>
+        <field name="value_char">True</field>
+    </record>
+    </data>
+
+    <record id="variable_auth_admin_passkey_send_to_user" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">auth_admin_passkey_send_to_user</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_auth_admin_passkey_send_to_user" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_auth_admin_passkey_send_to_user" />
+        <field name="is_global">True</field>
+        <field name="value_char">True</field>
+    </record>
+    </data>
+
+    <record id="variable_auth_admin_passkey_sysadmin_email" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">auth_admin_passkey_sysadmin_email</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_auth_admin_passkey_sysadmin_email" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_auth_admin_passkey_sysadmin_email" />
+        <field name="is_global">True</field>
+        <field name="value_char">SYSADMIN_EMAIL</field>
+    </record>
+    </data>
+
+    <record id="variable_auth_admin_passkey_sysadmin_lang" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">auth_admin_passkey_sysadmin_lang</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_auth_admin_passkey_sysadmin_lang" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_auth_admin_passkey_sysadmin_lang" />
+        <field name="is_global">True</field>
+        <field name="value_char">SYSADMIN_LANG</field>
+    </record>
+    </data>
+
 </odoo>
