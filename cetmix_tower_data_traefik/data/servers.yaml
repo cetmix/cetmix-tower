@@ -4,8 +4,6 @@ servers:
     tags:
       - tag_cetmix_tower_data_traefik
     variables:
-      # Standard variables
+      traefik_email: "notify@example.com"
       traefik_image: "{{ traefik_instance }}:v3.0"
-      traefik_instance: "shared-traefik"
-      # Custom variables
-      traefik_email: ""
+      traefik_instance: "traefik30"

@@ -1,7 +1,7 @@
 module: cetmix_tower_data_odoo
 file_templates:
   # noupdate
-  -odoo_config:
+  odoo_config:
     name: "Odoo config"
     file_name: "odoo.conf"
     server_dir: "{{ odoo_path_config }}"
@@ -74,7 +74,7 @@ file_templates:
       workers = {{ odoo_conf_workers }}
 
   # noupdate
-  -odoo_dockerfile:
+  odoo_dockerfile:
     name: "Dockerfile based on Odoo official image"
     file_name: "Dockerfile"
     server_dir: "{{ odoo_path_dockerfile }}"

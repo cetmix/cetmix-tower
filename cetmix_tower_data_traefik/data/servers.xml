@@ -12,6 +12,12 @@
         <field name="ssh_password">admin</field>
         <field name="ip_v4_address">1.2.3.4</field>
     </record>
+    <record id="server_template-traefik_variable_traefik_email" model="cx.tower.variable.value">
+        <field name="readonly">True</field>
+        <field name="server_id" ref="server_template-traefik" />
+        <field name="variable_id" ref="variable_traefik_email" />
+        <field name="value_char">notify@example.com</field>
+    </record>
     <record id="server_template-traefik_variable_traefik_image" model="cx.tower.variable.value">
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-traefik" />
@@ -22,13 +28,7 @@
         <field name="readonly">True</field>
         <field name="server_id" ref="server_template-traefik" />
         <field name="variable_id" ref="variable_traefik_instance" />
-        <field name="value_char">shared-traefik</field>
-    </record>
-    <record id="server_template-traefik_variable_traefik_email" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="server_id" ref="server_template-traefik" />
-        <field name="variable_id" ref="variable_traefik_email" />
-        <field name="value_char"></field>
+        <field name="value_char">traefik30</field>
     </record>
 
 </odoo>

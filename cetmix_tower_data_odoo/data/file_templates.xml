@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="file_template_-odoo_config" model="cx.tower.file.template">
+    <record id="file_template_odoo_config" model="cx.tower.file.template">
         <field name="readonly">True</field>
         <field name="name">Odoo config</field>
         <field name="file_name">odoo.conf</field>
@@ -84,7 +84,7 @@ workers = {{ odoo_conf_workers }}
         </field>
     </record>
 
-    <record id="file_template_-odoo_dockerfile" model="cx.tower.file.template">
+    <record id="file_template_odoo_dockerfile" model="cx.tower.file.template">
         <field name="readonly">True</field>
         <field name="name">Dockerfile based on Odoo official image</field>
         <field name="file_name">Dockerfile</field>

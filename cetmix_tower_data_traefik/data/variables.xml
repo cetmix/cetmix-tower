@@ -1,44 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="variable_traefik_image" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">traefik_image</field>
-    </record>
-
-    <record id="variable_traefik_instance" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">traefik_instance</field>
-    </record>
-
-    <record id="variable_traefik_path" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">traefik_path</field>
-    </record>
-    <record id="global_value_traefik_path" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_traefik_path" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ traefik_root }}/{{ traefik_instance }}</field>
-    </record>
-
-    <record id="variable_traefik_root" model="cx.tower.variable">
-        <field name="readonly">True</field>
-        <field name="name">traefik_root</field>
-    </record>
-    <record id="global_value_traefik_root" model="cx.tower.variable.value">
-        <field name="readonly">True</field>
-        <field name="variable_id" ref="variable_traefik_root" />
-        <field name="is_global">True</field>
-        <field name="value_char">{{ tower_root }}/traefik</field>
-    </record>
-    <data noupdate="1">
-
     <record id="variable_traefik_email" model="cx.tower.variable">
-        <field name="readonly">False</field>
+        <field name="readonly">True</field>
         <field name="name">traefik_email</field>
     </record>
-    </data>
     <data noupdate="1">
     <record id="global_value_traefik_email" model="cx.tower.variable.value">
         <field name="readonly">False</field>
@@ -47,13 +13,37 @@
         <field name="value_char">notify@example.com</field>
     </record>
     </data>
-    <data noupdate="1">
 
-    <record id="variable_traefik_log_level" model="cx.tower.variable">
+    <record id="variable_traefik_image" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">traefik_image</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_traefik_image" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="name">traefik_log_level</field>
+        <field name="variable_id" ref="variable_traefik_image" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ traefik_instance }}:v3.0</field>
     </record>
     </data>
+
+    <record id="variable_traefik_instance" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">traefik_instance</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_traefik_instance" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_traefik_instance" />
+        <field name="is_global">True</field>
+        <field name="value_char">traefik30</field>
+    </record>
+    </data>
+
+    <record id="variable_traefik_log_level" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">traefik_log_level</field>
+    </record>
     <data noupdate="1">
     <record id="global_value_traefik_log_level" model="cx.tower.variable.value">
         <field name="readonly">False</field>
@@ -62,13 +52,37 @@
         <field name="value_char">INFO</field>
     </record>
     </data>
-    <data noupdate="1">
 
-    <record id="variable_traefik_url" model="cx.tower.variable">
+    <record id="variable_traefik_path" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">traefik_path</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_traefik_path" model="cx.tower.variable.value">
         <field name="readonly">False</field>
-        <field name="name">traefik_url</field>
+        <field name="variable_id" ref="variable_traefik_path" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ traefik_root }}/{{ traefik_instance }}</field>
     </record>
     </data>
+
+    <record id="variable_traefik_root" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">traefik_root</field>
+    </record>
+    <data noupdate="1">
+    <record id="global_value_traefik_root" model="cx.tower.variable.value">
+        <field name="readonly">False</field>
+        <field name="variable_id" ref="variable_traefik_root" />
+        <field name="is_global">True</field>
+        <field name="value_char">{{ tower_root }}/traefik</field>
+    </record>
+    </data>
+
+    <record id="variable_traefik_url" model="cx.tower.variable">
+        <field name="readonly">True</field>
+        <field name="name">traefik_url</field>
+    </record>
     <data noupdate="1">
     <record id="global_value_traefik_url" model="cx.tower.variable.value">
         <field name="readonly">False</field>
@@ -77,13 +91,11 @@
         <field name="value_char">{{ traefik_url_production }}</field>
     </record>
     </data>
-    <data noupdate="1">
 
     <record id="variable_traefik_url_production" model="cx.tower.variable">
-        <field name="readonly">False</field>
+        <field name="readonly">True</field>
         <field name="name">traefik_url_production</field>
     </record>
-    </data>
     <data noupdate="1">
     <record id="global_value_traefik_url_production" model="cx.tower.variable.value">
         <field name="readonly">False</field>
@@ -92,13 +104,11 @@
         <field name="value_char">https://acme-v02.api.letsencrypt.org/directory</field>
     </record>
     </data>
-    <data noupdate="1">
 
     <record id="variable_traefik_url_staging" model="cx.tower.variable">
-        <field name="readonly">False</field>
+        <field name="readonly">True</field>
         <field name="name">traefik_url_staging</field>
     </record>
-    </data>
     <data noupdate="1">
     <record id="global_value_traefik_url_staging" model="cx.tower.variable.value">
         <field name="readonly">False</field>
@@ -107,13 +117,11 @@
         <field name="value_char">https://acme-staging-v02.api.letsencrypt.org/directory</field>
     </record>
     </data>
-    <data noupdate="1">
 
     <record id="variable_traefik_volume" model="cx.tower.variable">
-        <field name="readonly">False</field>
+        <field name="readonly">True</field>
         <field name="name">traefik_volume</field>
     </record>
-    </data>
     <data noupdate="1">
     <record id="global_value_traefik_volume" model="cx.tower.variable.value">
         <field name="readonly">False</field>

@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <data noupdate="1">
-
-    <record id="variable_git_config_user_email" model="cx.tower.variable">
-        <field name="readonly">False</field>
-        <field name="name">git_config_user_email</field>
-    </record>
-    </data>
-    <data noupdate="1">
-
-    <record id="variable_git_config_user_name" model="cx.tower.variable">
-        <field name="readonly">False</field>
-        <field name="name">git_config_user_name</field>
-    </record>
-    </data>
-    <data noupdate="1">
 
     <record id="variable_tower_root" model="cx.tower.variable">
-        <field name="readonly">False</field>
+        <field name="readonly">True</field>
         <field name="name">tower_root</field>
     </record>
-    </data>
     <data noupdate="1">
     <record id="global_value_tower_root" model="cx.tower.variable.value">
         <field name="readonly">False</field>

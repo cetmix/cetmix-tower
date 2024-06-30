@@ -121,7 +121,7 @@ def file_templates_to_xml(yaml_data):
         yaml_data.get("file_templates") and yaml_data["file_templates"].items() or []
     ):
         # file template
-        key, update = _key_update(key)
+        update = True
         xml_content += _xml_content(
             xml_file_template,
             update,
@@ -144,7 +144,7 @@ def commands_to_xml(yaml_data):
         yaml_data.get("commands") and yaml_data["commands"].items() or []
     ):
         # command
-        key, update = _key_update(key)
+        update = True
         xml_content += _xml_content(
             xml_command,
             update,
@@ -162,7 +162,7 @@ def plans_to_xml(yaml_data):
     xml_content = ""
     for key, plan in (yaml_data.get("plans") and yaml_data["plans"].items() or []):
         # flight plan
-        key, update = _key_update(key)
+        update = True
         xml_content += _xml_content(
             xml_plan,
             update,
@@ -210,7 +210,7 @@ def servers_to_xml(yaml_data):
     xml_content = ""
     for key, server in yaml_data.get("servers") and yaml_data["servers"].items() or []:
         # server
-        key, update = _key_update(key)
+        update = True
         tags = ""
         if server and server.get("tags"):
             tags = ", ".join(
@@ -253,7 +253,7 @@ def variables_to_xml(yaml_data):
         yaml_data.get("variables") and yaml_data["variables"].items() or []
     ):
         # variable
-        key, update = _key_update(key)
+        update = True
         xml_content += _xml_content(
             xml_variable,
             update,
@@ -265,6 +265,7 @@ def variables_to_xml(yaml_data):
         )
         if global_value:
             # global variable value
+            update = False
             xml_content += _xml_content(
                 xml_global_variable_value,
                 update,
@@ -296,12 +297,6 @@ def _build_var_keys(ambiguous_var_key):
     else:
         var_key = ambiguous_var_key
         return "variable_" + var_key, "variable_" + var_key
-
-def _key_update(key):
-    if key[:1] == '-':
-        return key[1:], False
-    else:
-        return key, True
 
 def _xml_odoo(xml_content):
     return xml_odoo.format(xml_content=xml_content)

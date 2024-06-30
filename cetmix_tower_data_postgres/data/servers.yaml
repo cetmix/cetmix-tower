@@ -4,7 +4,5 @@ servers:
     tags:
       - tag_cetmix_tower_data_postgres
     variables:
-      # Standard variables
       postgres_image: "postgres:16"
       postgres_instance: "postgres16"
-      # Custom variables

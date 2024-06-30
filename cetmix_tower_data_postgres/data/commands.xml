@@ -25,6 +25,7 @@ docker run -d \
   --name {{ postgres_instance }} \
   -e POSTGRES_USER={{ postgres_user }} \
   -e POSTGRES_PASSWORD={{ postgres_password }} \
+  -e POSTGRES_PORT={{ postgres_port }} \
   -e POSTGRES_DB=postgres \
   -v {{ postgres_path_data }}:/var/lib/postgresql/data \
   --restart {{ postgres_restart_policy }} \

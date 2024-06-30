@@ -1,14 +1,12 @@
 module: cetmix_tower_data_postgres
 variables:
-  # Standard variables - non-empty global values are READONLY.
-  postgres_image: ""
-  postgres_instance: ""
+  postgres_image: "postgres:16"
+  postgres_instance: "postgres16"
   postgres_path: "{{ postgres_root }}/{{ postgres_instance }}"
+  postgres_path_data: "{{ postgres_path }}/data"
+  postgres_password: "SECRET"
+  postgres_port: "5432"
+  postgres_restart_policy: always
   postgres_root: "{{ tower_root }}/postgres"
-  # Custom -variables - non-empty global values are installed once, NO UPDATE.
-  -postgres_path_data: "{{ postgres_path }}/data"
-  -postgres_password: ""
-  -postgres_port: "5432"
-  -postgres_restart_policy: always
-  -postgres_shm_size: 1g
-  -postgres_user: ""
+  postgres_shm_size: 1g
+  postgres_user: ""

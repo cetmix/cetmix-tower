@@ -1,14 +1,12 @@
 module: cetmix_tower_data_traefik
 variables:
-  # Standard variables - non-empty global values are READONLY.
-  traefik_image: ""
-  traefik_instance: ""
+  traefik_email: "notify@example.com"
+  traefik_image: "{{ traefik_instance }}:v3.0"
+  traefik_instance: "traefik30"
+  traefik_log_level: "INFO"
   traefik_path: "{{ traefik_root }}/{{ traefik_instance }}"
   traefik_root: "{{ tower_root }}/traefik"
-  # Custom -variables - non-empty global values are installed once, NO UPDATE.
-  -traefik_email: "notify@example.com"
-  -traefik_log_level: "INFO"
-  -traefik_url: "{{ traefik_url_production }}"
-  -traefik_url_production: "https://acme-v02.api.letsencrypt.org/directory"
-  -traefik_url_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
-  -traefik_volume: "{{ traefik_path }}/.acme"
+  traefik_url: "{{ traefik_url_production }}"
+  traefik_url_production: "https://acme-v02.api.letsencrypt.org/directory"
+  traefik_url_staging: "https://acme-staging-v02.api.letsencrypt.org/directory"
+  traefik_volume: "{{ traefik_path }}/.acme"
