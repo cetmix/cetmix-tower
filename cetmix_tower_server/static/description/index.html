@@ -8,10 +8,11 @@
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 8954 2022-01-20 10:10:25Z milde $
+:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
+Despite the name, some widely supported CSS2 features are used.
 
 See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
 customize this style sheet.
@@ -274,7 +275,7 @@ pre.literal-block, pre.doctest-block, pre.math, pre.code {
   margin-left: 2em ;
   margin-right: 2em }
 
-pre.code .ln { color: grey; } /* line numbers */
+pre.code .ln { color: gray; } /* line numbers */
 pre.code, code { background-color: #eeeeee }
 pre.code .comment, code .comment { color: #5C6576 }
 pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
@@ -300,7 +301,7 @@ span.option {
 span.pre {
   white-space: pre }
 
-span.problematic {
+span.problematic, pre.problematic {
   color: red }
 
 span.section-subtitle {
@@ -368,7 +369,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:9a6377426019e72bf8e1511ff801e53b5ee96507487812c6cd888634fb73f17c
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
 <p>Cetmix Tower offers a streamlined solution for managing remote servers
 via SSH directly from Odoo. This module is designed for versatility
 across different operating systems and software environments, providing
@@ -644,6 +645,12 @@ and put values in the fields:</p>
 <li><strong>Name</strong>: Filesystem filename</li>
 <li><strong>Source</strong>: File source. Available options are <tt class="docutils literal">Server</tt> and
 <tt class="docutils literal">Tower</tt>. Check above for more details.</li>
+<li><strong>File type</strong>: Type of file contents. Possible options:<ul>
+<li><strong>Text</strong>: Regular text. Eg configuration file or log</li>
+<li><strong>Binary</strong>: Binary file. Eg file archive or pdf document</li>
+</ul>
+</li>
+<li><strong>File</strong>: Is used to store binary file data.</li>
 <li><strong>Template</strong>: File template used to render this file. If selected
 file will be automatically updated every time template is modified.
 Used only with <tt class="docutils literal">Tower</tt> source.</li>
@@ -684,6 +691,11 @@ template. This field supports <a class="reference external" href="#configure-var
 <li><strong>Directory on server</strong>: Directory on remote server where this file
 will be stored. This field supports
 <a class="reference external" href="#configure-variables">Variables</a>.</li>
+<li><strong>File type</strong>: Type of file contents. Possible options:<ul>
+<li><strong>Text</strong>: Regular text. Eg configuration file or log</li>
+<li><strong>Binary</strong>: Binary file. Eg file archive or pdf document</li>
+</ul>
+</li>
 <li><strong>Tags</strong>: Make usage as search more convenient</li>
 <li><strong>Note</strong>: Comments or user notes</li>
 <li><strong>Code</strong>: Raw file content. This field supports
@@ -913,7 +925,7 @@ before doing that.</p>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">

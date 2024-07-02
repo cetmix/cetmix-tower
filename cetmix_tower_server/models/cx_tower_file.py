@@ -1,5 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from base64 import b64decode, b64encode
+
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
@@ -10,6 +12,7 @@ from odoo.tools import exception_to_unicode
 TEMPLATE_FILE_FIELD_MAPPING = {
     "code": "code",
     "file_name": "name",
+    "file_type": "file_type",
     "server_dir": "server_dir",
     "keep_when_deleted": "keep_when_deleted",
 }
@@ -111,6 +114,33 @@ class CxTowerFile(models.Model):
     keep_when_deleted = fields.Boolean(
         help="File will be kept on server when deleted in Tower",
     )
+    file_type = fields.Selection(
+        selection=lambda self: self._selection_file_type(),
+        default=lambda self: self._default_file_type(),
+        required=True,
+    )
+    file = fields.Binary(
+        attachment=True,
+    )
+
+    def _selection_file_type(self):
+        """Available file types
+
+        Returns:
+            List of tuples: available options.
+        """
+        return [
+            ("text", "Text"),
+            ("binary", "Binary"),
+        ]
+
+    def _default_file_type(self):
+        """Default file type
+
+        Returns:
+            Char: `file_type` field selection value
+        """
+        return "text"
 
     @api.depends("server_dir", "name")
     def _compute_full_server_path(self):
@@ -139,6 +169,15 @@ class CxTowerFile(models.Model):
             var_vals = file.server_id.get_variable_values(variables).get(
                 file.server_id.id
             )
+
+            rendered_code = ""
+            if file.file_type == "text" and file.source == "tower":
+                rendered_code = (
+                    var_vals
+                    and file.code
+                    and render_code_custom(file.code, **var_vals)
+                    or file.code
+                )
             file.update(
                 {
                     "rendered_name": var_vals
@@ -149,10 +188,7 @@ class CxTowerFile(models.Model):
                     and file.server_dir
                     and render_code_custom(file.server_dir, **var_vals)
                     or file.server_dir,
-                    "rendered_code": var_vals
-                    and file.code
-                    and render_code_custom(file.code, **var_vals)
-                    or file.code,
+                    "rendered_code": rendered_code,
                 }
             )
 
@@ -290,7 +326,9 @@ class CxTowerFile(models.Model):
         tower_files = self.filtered(lambda file_: file_.source == "tower")
         server_files = self - tower_files
         tower_files.action_get_current_server_code()
-        server_files.download(raise_error=True)
+        res = server_files.download(raise_error=True)
+        if isinstance(res, dict):
+            return res
 
         single_msg = _("File downloaded!")
         plural_msg = _("Files downloaded!")
@@ -352,10 +390,14 @@ class CxTowerFile(models.Model):
                 )
 
             # Calling `_process` directly to get server version of a `tower` file
-            code = self.with_context(is_server_code_version_process=True)._process(
+            res = self.with_context(is_server_code_version_process=True)._process(
                 "download"
             )
-            file.code_on_server = code
+            # Type check because _process method could return
+            # a display_notification action dict
+            if isinstance(res, dict):
+                return res
+            file.code_on_server = res
 
     def _get_file_values_from_related_template(self):
         """
@@ -396,7 +438,7 @@ class CxTowerFile(models.Model):
                 Will raise and exception on error if set to 'True'.
                 Defaults to False.
         """
-        self._process("download", raise_error)
+        return self._process("download", raise_error)
 
     def upload(self, raise_error=False):
         """Wrapper function for file upload.
@@ -419,6 +461,57 @@ class CxTowerFile(models.Model):
                 Defaults to False.
         """
         self._process("delete", raise_error)
+
+    def _process_download(
+        self,
+        tower_key_obj,
+        is_server_code_version_process=False,
+    ):
+        """
+        Processing of file download.
+        Note: moved this functionality to a separate function from
+        the general `_process` method because it is already too complex.
+
+        Args:
+            tower_key_obj (RecordSet): `cx.tower.key`
+                recordset to parse file path.
+            is_server_code_version_process (bool):
+                Flag to fetch actual file content from server
+                for a `tower` type file.
+
+        Returns:
+            [dict|str|None]:
+                display_notification action dict if there was an error
+                during the operation.
+                file content if `is_server_code_version_process` is True.
+                None otherwise.
+        """
+        self.ensure_one()
+        code = self.server_id.download_file(
+            tower_key_obj.parse_code(self.full_server_path),
+        )
+        if self.file_type == "text" and b"\x00" in code:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Failure"),
+                    "message": _(
+                        "Cannot download %(f)s from server: "
+                        "Binary content is not supported "
+                        "for 'Text' file type",
+                    )
+                    % {"f": self.rendered_name},
+                    "sticky": True,
+                },
+            }
+        # In case server version of a 'tower' file is requested
+        if is_server_code_version_process:
+            return code
+        if self.file_type == "binary":
+            self.file = b64encode(code)
+        else:
+            self.code = code
 
     def _process(self, action, raise_error=False):
         """Upload or download file to/from server.
@@ -490,16 +583,18 @@ class CxTowerFile(models.Model):
 
             try:
                 if action == "download":
-                    code = file.server_id.download_file(
-                        tower_key_obj.parse_code(file.full_server_path)
+                    res = file._process_download(
+                        tower_key_obj, is_server_code_version_process
                     )
-                    # In case server version of a 'tower' file is requested
-                    if is_server_code_version_process:
-                        return code
-                    file.code = code
+                    if res:
+                        return res
                 elif action == "upload":
+                    if file.file_type == "binary":
+                        file_content = b64decode(file.file)
+                    else:
+                        file_content = tower_key_obj.parse_code(file.rendered_code)
                     file.server_id.upload_file(
-                        tower_key_obj.parse_code(file.rendered_code),
+                        file_content,
                         tower_key_obj.parse_code(file.full_server_path),
                     )
                 elif action == "delete":

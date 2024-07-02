@@ -1091,16 +1091,10 @@ class CxTowerServer(models.Model):
         if from_path:
             result = client.upload_file(data, remote_path)
         else:
+            # Convert string to bytes
             if isinstance(data, str):
-                data = str.encode(data)
-            if not isinstance(data, bytes):
-                raise TypeError(
-                    "Incorrect type of file ({}) allowed: string, bytes.".format(
-                        type(data).__name__
-                    )
-                )
+                data = data.encode()
             file = io.BytesIO(data)
-            file.seek(0)
             result = client.upload_file(file, remote_path)
         return result
 

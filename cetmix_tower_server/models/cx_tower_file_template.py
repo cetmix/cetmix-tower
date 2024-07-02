@@ -38,6 +38,11 @@ class CxTowerFileTemplate(models.Model):
     keep_when_deleted = fields.Boolean(
         help="File will be kept on server when deleted in Tower",
     )
+    file_type = fields.Selection(
+        selection=lambda self: self.env["cx.tower.file"]._selection_file_type(),
+        default=lambda self: self.env["cx.tower.file"]._default_file_type(),
+        required=True,
+    )
 
     def write(self, vals):
         """
