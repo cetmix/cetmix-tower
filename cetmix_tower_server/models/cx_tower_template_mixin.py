@@ -9,8 +9,7 @@ from odoo.exceptions import UserError
 
 class CxTowerTemplateMixin(models.AbstractModel):
     """Used to implement template rendering functions.
-    Inherit in your model in order code that contains variables.
-
+    Inherit in your model in case you want to render variable values in it.
     """
 
     _name = "cx.tower.template.mixin"

@@ -155,7 +155,7 @@ class CxTowerFile(models.Model):
     @api.depends("server_id", "template_id", "name", "server_dir", "code")
     def _compute_render(self):
         """
-        Compute name of file by template and server variables
+        Compute file name, directory and code
         """
         for file in self:
             variables = list(
