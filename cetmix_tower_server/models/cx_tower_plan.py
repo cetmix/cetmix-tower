@@ -143,8 +143,8 @@ class CxTowerPlan(models.Model):
 
         # Check plan action lines
         for action_line in current_line.action_ids:
-            conditional_expression = "{} {} {}".format(
-                exit_code, action_line.condition, action_line.value_char
+            conditional_expression = (
+                f"{exit_code} {action_line.condition} {action_line.value_char}"
             )
             # Evaluate expression using safe_eval
             if expr_eval(conditional_expression):

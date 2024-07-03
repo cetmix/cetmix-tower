@@ -979,7 +979,7 @@ class CxTowerServer(models.Model):
         _
 
         Args:
-            status_list (Int or list): Status or statuses
+            status_list (Int or list of int): Status or statuses
             response_list (list): Response
             error_list (list): Error
 
@@ -992,10 +992,14 @@ class CxTowerServer(models.Model):
         """
 
         # In case of several statuses we return the last one that is not 0 ("ok")
+        # Eg for [0,1,0,4,0] result will be 4
         if isinstance(status, list):
+            final_status = 0
             for st in status:
                 if st != 0 and st != status:
-                    status = st
+                    final_status = st
+
+            status = final_status
 
         # Compose response message
         if response and isinstance(response, list):
