@@ -23,3 +23,6 @@ PLAN_LINE_NOT_ASSIGNED = -11
 
 # Returned when trying to star plan without lines
 PLAN_IS_EMPTY = -1
+
+# Returned when the file could not be created on the server
+FILE_CREATION_FAILED = -12

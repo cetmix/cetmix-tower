@@ -95,9 +95,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         - any server: show commands compatible with any server
         """
         for record in self:
-            domain = []
+            domain = [("action", "!=", "file_using_template")]
             if record.any_server:
-                domain = [("server_ids", "=", False)]
+                domain.append(("server_ids", "=", False))
             elif record.server_ids:
                 domain.append(("server_ids", "in", record.server_ids.ids))
             if record.tag_ids:
