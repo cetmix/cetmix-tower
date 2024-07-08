@@ -1,7 +1,7 @@
-from operator import indexOf
-
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from operator import indexOf
+
 from odoo import _, api, fields, models
 from odoo.tools.safe_eval import expr_eval
 

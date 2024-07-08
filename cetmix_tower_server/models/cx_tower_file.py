@@ -406,11 +406,19 @@ class CxTowerFile(models.Model):
         self.ensure_one()
         if not self.template_id:
             return {}
+
         values = self.template_id.read(list(TEMPLATE_FILE_FIELD_MAPPING), load=False)[0]
+        if (
+            self.env.context.get("is_custom_server_dir")
+            and self.server_dir
+            and "server_dir" in values
+        ):
+            del values["server_dir"]
+
         return {
             key: values[name]
             for name, key in TEMPLATE_FILE_FIELD_MAPPING.items()
-            if values[name]
+            if values.get(name)
         }
 
     @api.model

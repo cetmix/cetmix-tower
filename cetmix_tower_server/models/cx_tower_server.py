@@ -7,7 +7,11 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from .constants import ANOTHER_COMMAND_RUNNING, NO_COMMAND_RUNNER_FOUND
+from .constants import (
+    ANOTHER_COMMAND_RUNNING,
+    FILE_CREATION_FAILED,
+    NO_COMMAND_RUNNER_FOUND,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -797,13 +801,19 @@ class CxTowerServer(models.Model):
         Returns:
             dict(): command execution result if `log_record` is defined else None
         """
-
         if command.action == "ssh_command":
             return self._command_runner_ssh(
                 log_record,
                 rendered_command_code,
                 rendered_command_path,
                 ssh_connection,
+                **kwargs,
+            )
+        elif command.action == "file_using_template":
+            return self._command_runner_file_using_template(
+                log_record,
+                command.file_template_id,
+                rendered_command_path,
                 **kwargs,
             )
 
@@ -820,6 +830,83 @@ class CxTowerServer(models.Model):
             )
         else:
             raise ValidationError(error_message)
+
+    def _command_runner_file_using_template(
+        self,
+        log_record,
+        file_template_id,
+        server_dir,
+        **kwargs,
+    ):
+        """
+        Run the command to create a file from a template and upload it to the server.
+
+        This function attempts to create a new file on the server using the specified
+        file template. If the file creation is successful, it uploads the file to the
+        server. The function logs the status of the operation in the provided log
+        record.
+
+        Args:
+            log_record (recordset): The log record to update with the command's
+                status.
+            file_template_id (recordset): The file template to use for creating
+                the new file.
+            server_dir (str): The directory on the server where the file should be
+                created.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If any error occurs during the file creation or upload
+                process, it logs the error and the exception message in the
+                log record.
+        """
+        try:
+            # Attempt to create a new file using the template for the current server
+            file_id = file_template_id.create_file(
+                server=self,
+                server_dir=server_dir,
+                raise_if_exists=True,
+            )
+
+            # If file creation failed, log the failure and exit
+            if not file_id:
+                command_result = {
+                    "status": FILE_CREATION_FAILED,
+                    "response": None,
+                    "error": _("File already exists"),
+                }
+                if log_record:
+                    return log_record.finish(
+                        fields.Datetime.now(),
+                        command_result["status"],
+                        command_result["response"],
+                        command_result["error"],
+                    )
+                else:
+                    return command_result
+
+            # Upload the newly created file to the server
+            file_id.action_push_to_server()
+
+            # Log the successful creation and upload of the file
+            return log_record.finish(
+                fields.Datetime.now(),
+                0,
+                _("File created and uploaded successfully"),
+                None,
+            )
+
+        except Exception as e:
+            # Log any exception that occurs during the process
+            log_record.finish(
+                fields.Datetime.now(),
+                FILE_CREATION_FAILED,
+                None,
+                _("An error occurred: %(error)s", error=str(e)),
+            )
 
     def _command_runner_ssh(
         self,

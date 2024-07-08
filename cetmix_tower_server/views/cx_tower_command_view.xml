@@ -7,13 +7,23 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                        style="margin-bottom:0px;"
+                    >
+                        <p>
+                            This command can be used only in Flight Plans.
+                        </p>
+                    </div>
                     <group>
                         <group>
                             <field name="name" />
                             <field name="action" />
                             <field
                                 name="file_template_id"
-                                attrs="{'invisible': [('action', '!=', 'file_using_template')],'required': [('action', '=', 'file_using_template')],}"
+                                attrs="{'invisible': [('action', '!=', 'file_using_template')], 'required': [('action', '=', 'file_using_template')],}"
                             />
                             <field
                                 name="path"

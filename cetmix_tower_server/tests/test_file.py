@@ -179,3 +179,67 @@ class TestTowerFile(TestTowerCommon):
                 side_effect_target["write_called"],
                 msg="File write method should be called after modifying template code.",
             )
+
+    def test_create_file_with_template(self):
+        """
+        Test if file is created with template code
+        """
+        file_template = self.env["cx.tower.file.template"].create(
+            {
+                "name": "Test",
+                "file_name": "test.txt",
+                "server_dir": "/var/tmp",
+                "code": "Hello, world!",
+            }
+        )
+
+        file = file_template.create_file(server=self.server_test_1)
+        self.assertEqual(file.code, self.file_template.code)
+        self.assertEqual(file.template_id, file_template)
+        self.assertEqual(file.server_id, self.server_test_1)
+        self.assertEqual(file.source, "tower")
+        self.assertEqual(file.server_dir, self.file_template.server_dir)
+
+        with self.assertRaises(exceptions.ValidationError):
+            file_template.create_file(server=self.server_test_1, raise_if_exists=True)
+
+        another_file = file_template.create_file(
+            server=self.server_test_1, raise_if_exists=False
+        )
+        self.assertEqual(another_file, file)
+
+    def test_create_file_with_template_custom_server_dir(self):
+        """
+        Test if file is created with template code and custom server dir
+        """
+        file_template = self.env["cx.tower.file.template"].create(
+            {
+                "name": "Test",
+                "file_name": "test.txt",
+                "server_dir": "/var/tmp",
+                "code": "Hello, world!",
+            }
+        )
+
+        file = file_template.create_file(
+            server=self.server_test_1, server_dir="/var/tmp/custom"
+        )
+        self.assertEqual(file.code, self.file_template.code)
+        self.assertEqual(file.template_id, file_template)
+        self.assertEqual(file.server_id, self.server_test_1)
+        self.assertEqual(file.source, "tower")
+        self.assertEqual(file.server_dir, "/var/tmp/custom")
+
+        with self.assertRaises(exceptions.ValidationError):
+            file_template.create_file(
+                server=self.server_test_1,
+                server_dir="/var/tmp/custom",
+                raise_if_exists=True,
+            )
+
+        another_file = file_template.create_file(
+            server=self.server_test_1,
+            server_dir="/var/tmp/custom",
+            raise_if_exists=False,
+        )
+        self.assertEqual(another_file, file)
