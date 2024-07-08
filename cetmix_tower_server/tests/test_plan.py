@@ -167,7 +167,6 @@ class TestTowerPlan(TestTowerCommon):
 
     def test_plan_execute_single(self):
         """Test plan execution results"""
-
         # Execute plan
         self.plan_1._execute_single(self.server_test_1)
 
