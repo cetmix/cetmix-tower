@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from odoo.exceptions import AccessError
 from odoo.tests.common import Form
 
@@ -600,6 +602,45 @@ class TestTowerCommand(TestTowerCommon):
             "Response in result doesn't match expected",
         )
         self.assertIsNone(result_response, "Error in response must be set to None")
+
+    def test_command_action_file_using_template(self):
+        """Test action file using template"""
+
+        with patch(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_server.CxTowerServer.upload_file",
+            return_value="ok",
+        ):
+            self.server_test_1.execute_command(self.command_create_file_with_template)
+
+        log_text_create_success = "File created and uploaded successfully"
+        log_text_file_exists = "An error occurred: File already exists on server."
+
+        # Get command log
+        log_record = self.CommandLog.search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                ("command_id", "=", self.command_create_file_with_template.id),
+                ("command_response", "=", log_text_create_success),
+            ]
+        )
+
+        self.assertEqual(len(log_record), 1, msg="Must be a single log record")
+
+        with patch(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_server.CxTowerServer.upload_file",
+            return_value="ok",
+        ):
+            self.server_test_1.execute_command(self.command_create_file_with_template)
+
+        log_record_2 = self.CommandLog.search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                ("command_id", "=", self.command_create_file_with_template.id),
+                ("command_error", "=", log_text_file_exists),
+            ]
+        )
+
+        self.assertEqual(len(log_record_2), 1, msg="Must be a single log record")
 
     def test_execute_command_no_log(self):
         """Execute command without creating a log record.

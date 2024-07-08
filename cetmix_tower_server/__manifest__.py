@@ -53,6 +53,5 @@
     ],
     "demo": [
         "demo/demo_data.xml",
-        "demo/demo_file_data.xml",
     ],
 }

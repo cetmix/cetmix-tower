@@ -9,7 +9,7 @@ To configure it go to `Setting/Users & Companies/Users` and open a user whom you
 
 In `Other` section find the `Cetmix Tower` field and select one of the following options:
 
-- **User**. Members of this group have read access only to the [Servers](#configure-a-server) which they are added as followers. 
+- **User**. Members of this group have read access only to the [Servers](#configure-a-server) which they are added as followers.
 They also have access to the entities such as [Commands](#configure-a-command),  [Flight Plans](#configure-a-flight-plan) or [Server Logs](#configure-a-server-log) with `Access Level` set to `User`.
 - **Manager**. Members of this group can modify [Servers](#configure-a-server) which they are added as followers. They can create new [Servers](#configure-a-server) too however they cannot delete them.
 Users of this group have access to the entities with `Access Level` set to `Manager` or `User`.
@@ -129,7 +129,7 @@ Following system variables are available:
 
 ## Configure a Key/Secret
 
-Keys/Secrets are used to private SSH keys and sensitive data that is used for rendering commands.  
+Keys/Secrets are used to private SSH keys and sensitive data that is used for rendering commands.
 To configure a new key or secret go to `Cetmix Tower/Settings/Keys` click `Create` and put values in the fields:
 
 - **Name**: Readable name
@@ -339,7 +339,7 @@ cd /home/{{ tower.server.username }}/memes && cat my_doge_memes.txt
 
 **Way to go:**
 
-- Add the following value in the `Default Path` command field or `Path` field of a flight plan line: 
+- Add the following value in the `Default Path` command field or `Path` field of a flight plan line:
 
 ```bash
 /home/{{ tower.server.username }}/memes
