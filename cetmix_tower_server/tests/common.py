@@ -69,6 +69,24 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
+        self.template_file = self.env["cx.tower.file.template"].create(
+            {
+                "name": "Test file template",
+                "file_name": "test_os.txt",
+                "server_dir": "/home/{{ tower.server.username }}",
+                "code": "Hello, world!",
+            }
+        )
+
+        self.command_create_file_with_template = self.Command.create(
+            {
+                "name": "Test create file with template",
+                "path": "/home/{{ tower.server.username }}",
+                "action": "file_using_template",
+                "file_template_id": self.template_file.id,
+            }
+        )
+
         # Command log
         self.CommandLog = self.env["cx.tower.command.log"]
 

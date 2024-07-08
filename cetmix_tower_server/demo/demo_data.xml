@@ -76,6 +76,76 @@
         <field name="note">This server has variables configured</field>
     </record>
 
+    <!--  File templates  -->
+    <record id="cx_tower_file_template_demo_1" model="cx.tower.file.template">
+        <field name="name">Demo File Template 1</field>
+        <field name="file_name">tower_demo_1.txt</field>
+        <field name="server_dir">{{ test_path }}</field>
+        <field name="code">Hello, world!</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="cx_tower_file_template_demo_2" model="cx.tower.file.template">
+        <field name="name">Demo File Template 2</field>
+        <field name="file_name">{{ branch }}_tower_demo_2.txt</field>
+        <field name="server_dir">/var/tmp</field>
+        <field name="code">Hello, world!</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="cx_tower_file_template_demo_3" model="cx.tower.file.template">
+        <field name="name">Demo File Template 3</field>
+        <field name="file_name">tower_demo_3.txt</field>
+        <field name="server_dir">/var/tmp</field>
+        <field
+            name="code"
+        >How to create directory: cd {{ test_path }} &amp;&amp; mkdir {{ dir }}</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <!--  Files  -->
+    <record id="cx_tower_file_tower_demo_1" model="cx.tower.file">
+        <field name="source">tower</field>
+        <field name="template_id" ref="cx_tower_file_template_demo_1" />
+        <field name="server_id" ref="server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_tower_demo_2" model="cx.tower.file">
+        <field name="source">tower</field>
+        <field name="template_id" ref="cx_tower_file_template_demo_2" />
+        <field name="server_id" ref="server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_tower_demo_3" model="cx.tower.file">
+        <field name="source">tower</field>
+        <field name="template_id" ref="cx_tower_file_template_demo_3" />
+        <field name="server_id" ref="server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_tower_without_template_demo" model="cx.tower.file">
+        <field name="name">tower_demo_without_template_{{ branch }}.txt</field>
+        <field name="source">tower</field>
+        <field name="server_id" ref="server_test_2" />
+        <field name="server_dir">{{ test_path }}</field>
+        <field name="code">Please, check url: {{ url }}</field>
+    </record>
+
+    <record id="cx_tower_file_server_demo" model="cx.tower.file">
+        <field name="name">server_demo.txt</field>
+        <field name="source">server</field>
+        <field name="server_id" ref="server_test_2" />
+        <field name="server_dir">{{ test_path }}</field>
+    </record>
+
     <!-- Variables -->
     <record id="variable_demo_path" model="cx.tower.variable">
         <field name="name">test_path</field>
@@ -139,6 +209,12 @@
         <field name="path">/home/{{ tower.server.username }}</field>
         <field name="code">ls -l</field>
     </record>
+    <record id="command_upload_file" model="cx.tower.command">
+        <field name="name">Upload file by template</field>
+        <field name="path">/home/{{ tower.server.username }}</field>
+        <field name="action">file_using_template</field>
+        <field name="file_template_id" ref="cx_tower_file_template_demo_1" />
+    </record>
 
     <!-- Flight Plans -->
     <record id="plan_test_1" model="cx.tower.plan">
@@ -192,6 +268,12 @@
         <field name="condition">&gt;=</field>
         <field name="value_char">3</field>
         <field name="action">n</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_test_1_line_3" model="cx.tower.plan.line">
+        <field name="sequence">30</field>
+        <field name="plan_id" ref="plan_test_1" />
+        <field name="command_id" ref="command_upload_file" />
     </record>
 
 </odoo>
