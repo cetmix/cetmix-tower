@@ -15,6 +15,7 @@ docker run -d \
   -p 443:443 \
   -v {{ traefik_volume }}:/etc/traefik/acme:rw,Z \
   -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  --restart always \
   {{ traefik_image}} \
   --certificatesresolvers.myresolver.acme.httpchallenge=true \
   --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web \
