@@ -20,9 +20,14 @@
                                 placeholder="e.g. /such/much/{{ path }}, overrides command path"
                             />
                         </group>
-                        </group>
+                    </group>
                     <notebook>
-                        <page name="actions" string="Actions">
+                        <page name="preview" string="Command Preview">
+                            <group>
+                                <field name="command_code" />
+                            </group>
+                        </page>
+                        <page name="actions" string="Post Run Actions">
                             <field name="action_ids">
                                 <tree>
                                     <field name="sequence" widget="handle" />
@@ -47,11 +52,6 @@
                                     </group>
                                 </form>
                             </field>
-                        </page>
-                        <page name="preview" string="Command Preview">
-                            <group>
-                                <field name="command_code" />
-                            </group>
                         </page>
                     </notebook>
                 </sheet>
