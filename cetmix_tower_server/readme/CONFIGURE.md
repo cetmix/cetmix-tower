@@ -202,7 +202,7 @@ To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Cr
   - **Command**: [Command](#configure-a-command) to be executed.
   - **Path**: Specify path where command will be executed. Overrides `Default Path` of the command. This field supports [Variables](#configure-variables).
   - **Use Sudo**: Use `sudo` if required to run this command.
-  - **Actions**: List of condition based actions to be triggered after the command is executed. Each of the actions has the following fields:
+  - **Post Run Actions**: List of conditional actions to be triggered after the command is executed. Each of the actions has the following fields:
     - **Sequence**: Order this actions is triggered. Lower value = higher priority.
     - **Condition**: Uses command exit code.
     - **Action**: Action to execute if condition is met. Possible options:
