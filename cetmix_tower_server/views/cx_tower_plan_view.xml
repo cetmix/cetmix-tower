@@ -60,7 +60,7 @@
                                 <tree>
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
-                                    <field name="use_sudo" />
+                                    <field name="use_sudo" optional="show" />
                                     <field name="path" optional="show" />
                                 </tree>
                             </field>
