@@ -64,9 +64,9 @@
         <field name="name">cx.tower.key.view.search</field>
         <field name="model">cx.tower.key</field>
         <field name="arch" type="xml">
-            <search string="Search Keys">
-                <field name="name" />
-                <field name="key_ref" string="Value" />
+            <search string="Search Keys/Secrets">
+                <field name="name" string="SSH Key / Secret" />
+                <field name="key_ref" string="Reference" />
                 <filter
                     string="SSH Key"
                     name="filter_ssh"
@@ -101,7 +101,7 @@
     </record>
 
     <record id="action_cx_tower_key" model="ir.actions.act_window">
-        <field name="name">SSH Key</field>
+        <field name="name">SSH Key / Secret</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.key</field>
         <field name="view_mode">tree,form</field>

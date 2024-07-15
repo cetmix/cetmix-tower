@@ -488,7 +488,7 @@ class CxTowerFile(models.Model):
         """
         self.ensure_one()
         code = self.server_id.download_file(
-            tower_key_obj.parse_code(self.full_server_path),
+            tower_key_obj._parse_code(self.full_server_path),
         )
         if self.file_type == "text" and b"\x00" in code:
             return {
@@ -592,14 +592,14 @@ class CxTowerFile(models.Model):
                     if file.file_type == "binary":
                         file_content = b64decode(file.file)
                     else:
-                        file_content = tower_key_obj.parse_code(file.rendered_code)
+                        file_content = tower_key_obj._parse_code(file.rendered_code)
                     file.server_id.upload_file(
                         file_content,
-                        tower_key_obj.parse_code(file.full_server_path),
+                        tower_key_obj._parse_code(file.full_server_path),
                     )
                 elif action == "delete":
                     file.server_id.delete_file(
-                        tower_key_obj.parse_code(file.full_server_path)
+                        tower_key_obj._parse_code(file.full_server_path)
                     )
                 else:
                     return False
