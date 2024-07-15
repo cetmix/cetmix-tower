@@ -1,7 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
+from odoo.osv.expression import OR
 
 
 class CxTowerKey(models.Model):
@@ -10,7 +10,10 @@ class CxTowerKey(models.Model):
     _name = "cx.tower.key"
     _description = "Cetmix Tower private key storage"
 
+    KEY_PREFIX = "#!cxtower"
+    KEY_TERMINATOR = "!#"
     SECRET_VALUE_PLACEHOLDER = "*** Insert new value to replace the existing one ***"
+    SECRET_VALUE_SPOILER = "*****"
 
     name = fields.Char(required=True)
     key_ref = fields.Char(string="Key ID", index=True)
@@ -86,33 +89,17 @@ class CxTowerKey(models.Model):
             key_prefix = None
         return key_prefix
 
-    @api.model
-    def create(self, vals):
-        key_ref = vals.get("key_ref", False)
-        if not key_ref:
-            vals.update({"key_ref": self._generate_key_ref(vals.get("name"))})
-        return super().create(vals)
-
-    @api.constrains("secret_value")
-    def secret_value_unique(self):
-        self_sudo = self.sudo()
-        for rec in self_sudo:
-            other_key = self_sudo.search(
-                [
-                    ("secret_value", "=", rec.secret_value),
-                    ("id", "!=", rec.id),
-                    ("partner_id", "=", rec.partner_id.id if rec.partner_id else False),
-                    ("server_id", "=", rec.server_id.id if rec.server_id else False),
-                ]
-            )
-            if other_key:
-                raise ValidationError(
-                    _("Such key already exists: %(key)s", key=other_key.name)
-                )
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            key_ref = vals.get("key_ref", False)
+            if not key_ref:
+                vals.update({"key_ref": self._generate_key_ref(vals.get("name"))})
+        return super().create(vals_list)
 
     def _read(self, fields):
         """Substitute fields based on api"""
-        super(CxTowerKey, self)._read(fields)
+        super()._read(fields)
         if not self.env.is_superuser() and ("secret_value" in fields or fields == []):
             # Public user used for substitution
             for record in self:
@@ -135,38 +122,63 @@ class CxTowerKey(models.Model):
         res = name.replace(" ", "_").upper()
         return res
 
-    def parse_code(self, code, **kwargs):
+    def _parse_code_and_return_key_values(self, code, **kwargs):
+        """Replaces key placeholders in code with the corresponding values,
+        returning key values.
+
+        This function is meant to be used in the flow where key values
+        are needed for some follow up operations such as command log clean up.
+
+        NB:
+        - key format must follow "#!cxtower.key.KEY_ID!#" pattern.
+            eg #!cxtower.secret.GITHUB_TOKEN!# for GITHUB_TOKEN key
+        Args:
+            code (Text): code to process
+            kwargs (dict): optional arguments
+
+        Returns:
+            Dict(): 'code': Command text, 'key_values': List of key values
+        """
+
+        # No need to search if code is too short
+        if len(code) <= len(self.KEY_PREFIX) + 3 + len(
+            self.KEY_TERMINATOR
+        ):  # at least one dot separator and two symbols
+            return {"code": code, "key_values": None}
+
+        # Get key strings
+        key_strings = self._extract_key_strings(code)
+
+        # Set key values
+        key_values = []
+        # Replace keys with values
+        for key_string in key_strings:
+            # Replace key including key terminator
+            key_value = self._parse_key_string(key_string, **kwargs)
+            if key_value:
+                code = code.replace(key_string, key_value)
+
+                # Save key value if not saved yet
+                if key_value not in key_values:
+                    key_values.append(key_value)
+
+        return {"code": code, "key_values": key_values}
+
+    def _parse_code(self, code, **kwargs):
         """Replaces key placeholders in code with the corresponding values.
-        - key has format of "#!tower.key.KEY_ID"
-            eg #!cxtower.secret.GITHUB_TOKEN
-        - key is terminated with space, newline or '!#'
 
         Args:
             code (Text): code to proceed
             kwargs (dict): optional arguments
 
         Returns:
-            Text: code with key values in place
+            Text: code with key values in place and list of key values.
+            Use key values
         """
 
-        # Get keys
-        keys = self._extract_keys(code, **kwargs)
+        return self._parse_code_and_return_key_values(code, **kwargs)["code"]
 
-        # Replace keys with values
-        for key in keys:
-            # Replace key including key terminator
-            key_string = key[0]
-            key_terminator = key[1]
-            key_to_replace = (
-                "".join((key_string, key_terminator)) if key_terminator else key_string
-            )
-            parsed_key = self._parse_key(key_string, **kwargs)
-            if parsed_key:
-                code = code.replace(key_to_replace, parsed_key)
-
-        return code
-
-    def _extract_keys(self, code, **kwargs):
+    def _extract_key_strings(self, code):
         """Extract all keys from code
 
         Args:
@@ -174,83 +186,35 @@ class CxTowerKey(models.Model):
             **kwargs (dict): optional arguments
 
         Returns:
-            [(str, str)]: list of key & key terminator tuples
+            [str]: list of key stings
         """
-        keys = []
-        extract_position = 0  # initial position
-        while extract_position > -1:
-            extract_position, key, key_terminator = self._extract_key(
-                code, extract_position, **kwargs
-            )
-            if key:
-                keys.append((key, key_terminator))
+        key_strings = []
+        key_terminator_len = len(self.KEY_TERMINATOR)
+        index_from = 0  # initial position
+        while index_from > -1:
+            index_from = code.find(self.KEY_PREFIX, index_from)
 
-        return keys
+            if index_from > 0:
+                # Key end
+                index_to = code.find(self.KEY_TERMINATOR, index_from)
 
-    def _extract_key(self, code, extract_from=0, **kwargs):
-        """Extract single key from code.
+                # Extract key value only if key terminator is found
+                if index_to > 0:
+                    # Extract key string including key terminator
+                    extract_to = index_to + key_terminator_len
+                    key_string = code[index_from:extract_to]
 
-        Args:
-            code (Text): code to extract from
-            extract_from (Int): initial position to extract
-            **kwargs (dict): optional arguments
+                    # Add only if not added before
+                    if key_string not in key_strings:
+                        key_strings.append(key_string)
+                    # Update index from
+                    index_from = extract_to
+                else:
+                    break
 
-        Returns:
-            int, str, str: last_position, key or False and key terminator or False
-            Last position is used to control the general extraction flow.
-        """
-        KEY_PLACEHOLDER = "#!cxtower."
+        return key_strings
 
-        len_code = len(code)
-        # No need to search if code is too short
-        if (
-            len_code <= len(KEY_PLACEHOLDER) + 3
-        ):  # at least one dot separator and two symbols
-            return -1, False, False
-
-        # Beginning of the key
-        index_from = code.find(KEY_PLACEHOLDER, extract_from)
-        if index_from < 0:
-            return index_from, False, False
-
-        # Key end
-        index_to = code.find(" ", index_from)
-
-        # Extract key value
-        key_string = code[index_from : index_to if index_to > 0 else len_code]
-        key, key_terminator = self._sanitize_key_string(key_string, **kwargs)
-        return index_to, key, key_terminator
-
-    def _sanitize_key_string(self, key_string, **kwargs):
-        """Sanitize extracted key string. Leave key only.
-        If key is terminated explicitly with '!#' return key terminator as well
-
-        Args:
-            key_string (str): key to sanitize
-            **kwargs (dict): optional arguments
-
-        Returns:
-            str, str: sanitized key with key terminator removed, key terminator
-        """
-        # Key terminator
-        key_terminator = False
-
-        # Remove newlines
-        key_splitted = key_string.split("\n")
-        if len(key_splitted) > 1:
-            key = key_splitted[0]
-        else:
-            key = key_string
-
-        # Remove key terminator '!#'
-        terminator_index = key.find("!#")
-        if terminator_index > 0:
-            key = key[0:terminator_index]
-            key_terminator = "!#"
-
-        return key, key_terminator
-
-    def _parse_key(self, key, **kwargs):
+    def _parse_key_string(self, key_string, **kwargs):
         """Parse key string and call resolver based on the key type.
         Each key string consists of 3 parts:
         - key marker: #!cxtower
@@ -259,24 +223,27 @@ class CxTowerKey(models.Model):
 
         Inherit this function to implement your own parser or resolver
         Args:
-            key (str): key string
+            key_string (str): key string
             **kwargs (dict) optional values
 
         Returns:
-            str: key value or False if not able to parse
+            str: key value or None if not able to parse
         """
 
-        res = False
-        key_parts = key.split(".")
-        if len(key_parts) != 3:  # Must be 3 parts!
-            return res
+        key_parts = (
+            key_string.replace(" ", "").replace(self.KEY_TERMINATOR, "").split(".")
+        )
+
+        # Must be 3 parts including pre!
+        if len(key_parts) != 3 or key_parts[0] != self.KEY_PREFIX:
+            return
 
         key_type = key_parts[1]
         key_ref = key_parts[2]
 
-        res = self._resolve_key(key_type, key_ref, **kwargs)
+        key_value = self._resolve_key(key_type, key_ref, **kwargs)
 
-        return res
+        return key_value
 
     def _resolve_key(self, key_type, key_ref, **kwargs):
         """Resolve key
@@ -287,14 +254,10 @@ class CxTowerKey(models.Model):
             **kwargs (dict) optional values
 
         Returns:
-            str: value or False if not able to parse
+            str: value or None if not able to parse
         """
-        res = False
-
         if key_type == "secret":
-            res = self._resolve_key_type_secret(key_ref, **kwargs)
-
-        return res
+            return self._resolve_key_type_secret(key_ref, **kwargs)
 
     def _resolve_key_type_secret(self, key_ref, **kwargs):
         """Resolve key of type "secret".
@@ -308,22 +271,47 @@ class CxTowerKey(models.Model):
             str: value or False if not able to parse
         """
         if not key_ref:
-            return False
+            return
 
-        # Prefetch all the keys with matching ref
-        keys = self.search([("key_ref", "=", key_ref)]).sudo()
+        # Compose domain used to fetch keys
+        #
+        # Keys are checked in the following order:
+        # 1. Server specific
+        # 2. Partner specific
+        # 3. General (no server or partner specified)
+        server_id = kwargs.get("server_id")
+        partner_id = kwargs.get("partner_id")
+
+        key_domain = [
+            ("key_ref", "=", key_ref),
+            ("server_id", "=", False),
+            ("partner_id", "=", False),
+        ]
+
+        if server_id:
+            key_domain = OR(
+                [key_domain, [("key_ref", "=", key_ref), ("server_id", "=", server_id)]]
+            )
+        if partner_id:
+            key_domain = OR(
+                [
+                    key_domain,
+                    [("key_ref", "=", key_ref), ("partner_id", "=", partner_id)],
+                ]
+            )
+
+        # Fetch keys
+        keys = self.search(key_domain).sudo()
         if not keys:
-            return False
+            return
 
         # Try to get server specific key first
         key = False
-        server_id = kwargs.get("server_id", False)
         if server_id:
             key = keys.filtered(lambda k: k.server_id.id == server_id)
 
         # Try to get partner specific key next
-        if not key:
-            partner_id = kwargs.get("partner_id", False)
+        if not key and partner_id:
             key = keys.filtered(lambda k: k.partner_id.id == partner_id)
 
         if not key:
@@ -332,3 +320,33 @@ class CxTowerKey(models.Model):
 
         key_value = key[0].secret_value
         return key_value
+
+    def _replace_with_spoiler(self, code, key_values):
+        """Helper function that replaces clean text keys in code with spoiler.
+        Eg
+        'Code with passwordX and passwordY` will look like:
+        'Code with *** and ***'
+
+        Important: this function doesn't parse keys by itself.
+        You need to get and provide key values yourself.
+
+        Args:
+            code (Text): code to clean
+            key_values (List): secret values to be cleaned from code
+
+        Returns:
+            Text: cleaned code
+        """
+
+        ## No need to search if code is too short
+        if not key_values or len(code) <= len(self.KEY_PREFIX) + 3 + len(
+            self.KEY_TERMINATOR
+        ):  # at least one dot separator and two symbols
+            return code
+
+        # Replace keys with values
+        for key_value in key_values:
+            # Replace key including key terminator
+            code = code.replace(key_value, self.SECRET_VALUE_SPOILER)
+
+        return code

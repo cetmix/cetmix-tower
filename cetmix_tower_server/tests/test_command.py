@@ -318,7 +318,7 @@ class TestTowerCommand(TestTowerCommon):
         """Test command with keys in code"""
 
         # Command
-        code = "cd {{ test_path_ }} && mkdir #!cxtower.secret.FOLDER"
+        code = "cd {{ test_path_ }} && mkdir #!cxtower.secret.FOLDER!#"
         command_with_keys = self.Command.create(
             {"name": "Command with keys", "code": code}
         )
@@ -335,7 +335,7 @@ class TestTowerCommand(TestTowerCommon):
 
         # Parse command with key parser to ensure key is parsed correctly
         code_parsed_expected = "cd {{ test_path_ }} && mkdir secretFolder"
-        code_parsed = self.Key.parse_code(code)
+        code_parsed = self.Key._parse_code(code)
         self.assertEqual(
             code_parsed,
             code_parsed_expected,
@@ -350,7 +350,7 @@ class TestTowerCommand(TestTowerCommon):
         self.server_test_1.execute_command(command_with_keys, **custom_values)
 
         # Expected rendered command code
-        rendered_code_expected = "cd /opt/tower && mkdir #!cxtower.secret.FOLDER"
+        rendered_code_expected = "cd /opt/tower && mkdir #!cxtower.secret.FOLDER!#"
 
         # Get command log
         log_record = self.CommandLog.search([("label", "=", command_label)])
@@ -470,13 +470,14 @@ class TestTowerCommand(TestTowerCommon):
 
         # -------------------------------------------------------
         # Case 1: regular command execution result with not error
+        # We are testing secret value placeholder here
         # -------------------------------------------------------
         status = 1
-        response = ["Such much", "Doge like SSH"]
+        response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
         error = []
 
         ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
+            status, response, error, key_values=[f"{self.secret_2.secret_value}"]
         )
 
         # Get result
@@ -491,7 +492,7 @@ class TestTowerCommand(TestTowerCommon):
         )
         self.assertEqual(
             result_response,
-            "Such muchDoge like SSH",
+            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_SPOILER}",
             "Response in result doesn't match expected",
         )
         self.assertIsNone(result_error, "Error in response must be set to None")
