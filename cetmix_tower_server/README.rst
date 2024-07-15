@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -284,19 +284,68 @@ Configure a Key/Secret
 ----------------------
 
 | Keys/Secrets are used to private SSH keys and sensitive data that is
-  used for rendering command and files.
+  used for rendering commands.
 | To configure a new key or secret go to ``Cetmix Tower/Settings/Keys``
   click ``Create`` and put values in the fields:
 
 -  **Name**: Readable name
--  **Key Type**: Can be ``SSH Key`` or ``Secret``
+-  **Key Type**: Following values are available:
+
+   -  ``SSH Key`` is used to store SSH private keys. They are selectable
+      in `Server settings <#configure-a-server>`__
+   -  ``Secret`` used to store sensitive information that can be used
+      inline in commands. Eg a token or a password. Secrets cannot be
+      previewed in command preview and are replaced with placeholder in
+      `command <#configure-a-command>`__ logs.
+
 -  **Key ID**: This values will be used for referencing this secret in
    commands and files
 -  **Value**: Key value. **IMPORTANT:** This is a write only field.
    Please ensure that you have saved your key/secret before saving it.
    Once saved it cannot be read from the user interface any longer.
--  **Used For**: List of Servers this key of type ``SSH Key`` is used
-   for
+-  **Used For**: ``SSH Key`` type only. List of
+   `Servers <#configure-a-server>`__ where this SSH key is used
+-  **Partner**: ``Secret`` type only. If selected this secret is used
+   only for the `Servers <#configure-a-server>`__ of selected partner
+-  **Server**: ``Secret`` type only. If selected this secret is used
+   only for selected `Server <#configure-a-server>`__
+-  **Note**: Put your notes here
+
+Keys of type ``Secret``
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Keys of type ``Secret`` (or "Secret") are considered "Global" if no
+partner and no server are selected. Such keys are accessible all across
+the Tower. Global keys are overridden with partner keys with the same
+reference. Partner keys in their turn are overridden with server
+specific keys. Priority order from highest to lowest is:
+
+1. Server specific
+2. Partner specific
+3. Global
+
+Secrets are inserted inline in code using the following pattern:
+``#!cxtower.secret.REFERENCE!#``. It consists of three dot separated
+parts and is terminated with a mandatory ``!#`` suffix:
+
+-  ``#!cxtower`` is used to declare a special Tower construction
+-  ``secret`` is used to declare its type (secret)
+-  ``REFERENCE`` secret id as it's written in the **Key ID** field
+
+**Example:**
+
+Suppose we have a secret with **Key ID** set to ``MY_SECRET_DIR`` and
+value ``suchMuchFolder``. In this case the following command:
+
+.. code:: bash
+
+   mkdir /home/#!cxtower.secret.MY_SECRET_DIR!#
+
+will be executed as:
+
+.. code:: bash
+
+   mkdir /home/suchMuchFolder
 
 Configure a File
 ----------------
@@ -586,8 +635,8 @@ command or ``Path`` field in flight plan line.
 
    cat my_doge_memes.txt
 
-.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png
-.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====
@@ -675,8 +724,8 @@ To check a server log:
 
 |Update server log|
 
-.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png
-.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png
+.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
+.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
 
 Bug Tracker
 ===========
@@ -684,7 +733,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -699,6 +748,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.
