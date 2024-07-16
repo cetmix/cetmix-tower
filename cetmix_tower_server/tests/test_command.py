@@ -250,7 +250,7 @@ class TestTowerCommand(TestTowerCommon):
         self.assertEqual(
             rendered_code,
             rendered_code_expected,
-            msg="Must be rendered as '{}'".format(rendered_code_expected),
+            msg=f"Must be rendered as '{rendered_code_expected}'",
         )
 
         # 'test_path_' and 'dir' must be rendered
@@ -266,39 +266,53 @@ class TestTowerCommand(TestTowerCommon):
     def test_execute_command_with_variables(self):
         """Test code execution using command log records"""
 
-        # Add label to track command log
-        command_label = "Test Command #1"
-        custom_values = {"log": {"label": command_label}}
+        x = 1  # Used to distinguish labels
 
-        # Execute command for Server 1
-        self.server_test_1.execute_command(self.command_create_dir, **custom_values)
+        # Check with all available "sudo" option
+        for sudo in [False, "n", "p"]:
+            # Add label to track command log
+            command_label = f"Test Command {x}"
+            custom_values = {"log": {"label": command_label}}
 
-        # Expected rendered command code
-        rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
+            # Execute command for Server 1
+            self.server_test_1.execute_command(
+                self.command_create_dir, sudo=sudo, **custom_values
+            )
 
-        # Get command log
-        log_record = self.CommandLog.search([("label", "=", command_label)])
+            # Expected rendered command code
+            rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
 
-        # Check log values
-        self.assertEqual(len(log_record), 1, msg="Must be a single log record")
-        self.assertEqual(
-            log_record.server_id.id,
-            self.server_test_1.id,
-            msg="Record must belong to Test 1",
-        )
-        self.assertEqual(
-            log_record.command_id.id,
-            self.command_create_dir.id,
-            msg="Record must belong to command 'Create dir'",
-        )
-        self.assertEqual(
-            log_record.code,
-            rendered_code_expected,
-            msg="Rendered code must be '{}'".format(rendered_code_expected),
-        )
-        self.assertEqual(
-            log_record.command_status, 0, msg="Command status must be equal to 0"
-        )
+            # Get command log
+            log_record = self.CommandLog.search([("label", "=", command_label)])
+
+            # Check log values
+            self.assertEqual(len(log_record), 1, msg="Must be a single log record")
+            self.assertEqual(
+                log_record.server_id.id,
+                self.server_test_1.id,
+                msg="Record must belong to Test 1",
+            )
+            self.assertEqual(
+                log_record.command_id.id,
+                self.command_create_dir.id,
+                msg="Record must belong to command 'Create dir'",
+            )
+            self.assertEqual(
+                log_record.code,
+                rendered_code_expected,
+                msg=f"Rendered code must be '{rendered_code_expected}'",
+            )
+            self.assertEqual(
+                log_record.command_status, 0, msg="Command status must be equal to 0"
+            )
+            self.assertEqual(
+                log_record.use_sudo,
+                sudo,
+                msg="'sudo' param in log doesn't match the command one",
+            )
+
+            # Increment label counter
+            x += 1
 
     def test_command_with_keys(self):
         """Test command with keys in code"""
@@ -449,3 +463,108 @@ class TestTowerCommand(TestTowerCommon):
 
         command_name = cc_command.with_user(self.user_bob).name
         self.assertEqual(command_name, "CC Command", msg="Must return 'CC command'")
+
+    def test_parse_ssh_command_result(self):
+        """Test ssh command result parsing"""
+
+        # -------------------------------------------------------
+        # Case 1: regular command execution result with not error
+        # -------------------------------------------------------
+        status = 1
+        response = ["Such much", "Doge like SSH"]
+        error = []
+
+        ssh_command_result = self.Server._parse_ssh_command_results(
+            status, response, error
+        )
+
+        # Get result
+        result_status = ssh_command_result["status"]
+        result_response = ssh_command_result["response"]
+        result_error = ssh_command_result["error"]
+
+        self.assertEqual(
+            result_status,
+            result_status,
+            "Status in result must be the same as the initial one",
+        )
+        self.assertEqual(
+            result_response,
+            "Such muchDoge like SSH",
+            "Response in result doesn't match expected",
+        )
+        self.assertIsNone(result_error, "Error in response must be set to None")
+
+        # -------------------------------------------------------
+        # Case 2: no response but an error
+        # -------------------------------------------------------
+        status = 1
+        response = []
+        error = ["Ooops", "I did", "it again"]
+
+        ssh_command_result = self.Server._parse_ssh_command_results(
+            status, response, error
+        )
+
+        # Get result
+        result_status = ssh_command_result["status"]
+        result_response = ssh_command_result["response"]
+        result_error = ssh_command_result["error"]
+
+        self.assertEqual(
+            result_status,
+            result_status,
+            "Status in result must be the same as the initial one",
+        )
+        self.assertIsNone(result_response, "Response in response must be set to None")
+        self.assertEqual(
+            result_error, "OoopsI didit again", "Error in result doesn't match expected"
+        )
+
+        # -------------------------------------------------------
+        # Case 3: several codes all 0, no response but an error
+        # -------------------------------------------------------
+        status = [0, 0, 0]
+        response = []
+        error = ["Ooops", "I did", "it again"]
+
+        ssh_command_result = self.Server._parse_ssh_command_results(
+            status, response, error
+        )
+
+        # Get result
+        result_status = ssh_command_result["status"]
+        result_response = ssh_command_result["response"]
+        result_error = ssh_command_result["error"]
+
+        self.assertEqual(
+            result_status, 0, "Status in result doesn't match expected one"
+        )
+        self.assertIsNone(result_response, "Response in response must be set to None")
+        self.assertEqual(
+            result_error, "OoopsI didit again", "Error in result doesn't match expected"
+        )
+
+        # -------------------------------------------------------
+        # Case 4: codes [0,1,0,4,0], no response but an error
+        # -------------------------------------------------------
+        status = [0, 1, 0, 4, 0]
+        response = []
+        error = ["Ooops", "I did", "it again"]
+
+        ssh_command_result = self.Server._parse_ssh_command_results(
+            status, response, error
+        )
+
+        # Get result
+        result_status = ssh_command_result["status"]
+        result_response = ssh_command_result["response"]
+        result_error = ssh_command_result["error"]
+
+        self.assertEqual(
+            result_status, 4, "Status in result doesn't match expected one"
+        )
+        self.assertIsNone(result_response, "Response in response must be set to None")
+        self.assertEqual(
+            result_error, "OoopsI didit again", "Error in result doesn't match expected"
+        )

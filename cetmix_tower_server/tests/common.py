@@ -185,31 +185,23 @@ class TestTowerCommon(TransactionCase):
                 status = 0
                 response = ["ok"]
                 error = []
-
-            if status != 0:
-                if raise_on_error:
-                    raise ValidationError(_("SSH execute command error"))
-                else:
-                    result = self._parse_ssh_command_results(-1, [], error)
-
+            # Parse inline variables
             command = self.env["cx.tower.key"].parse_code(
                 command_code, **kwargs.get("key", {})
             )
+            command = self._prepare_ssh_command(command, command_path, sudo)
 
-            if sudo:  # Execute each command separately to avoid extra shell
+            # Compose response multiple commands: sudo with password
+            if isinstance(command, list):
                 status_list = []
                 response_list = []
                 error_list = []
-                while self._prepare_ssh_command(command):
+                for cmd in command:  # pylint: disable=unused-variable # noqa
                     status_list.append(status)
                     response_list += response
                     error_list += error
-                result = self._parse_ssh_command_results(
-                    status_list, response_list, error_list
-                )
-            else:
-                result = self._parse_ssh_command_results(status, response, error)
-            return result
+
+            return self._parse_ssh_command_results(status, response, error)
 
         self.Server._patch_method("_connect", _connect_patch)
         self.Server._patch_method(
