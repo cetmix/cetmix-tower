@@ -3,7 +3,7 @@ from odoo.exceptions import AccessError
 from .common import TestTowerCommon
 
 
-class TestTowerlog(TestTowerCommon):
+class TestTowerCommandlog(TestTowerCommon):
     def test_user_access_rule(self):
         """Test user access rule"""
         # Create the test command
@@ -97,12 +97,20 @@ class TestTowerlog(TestTowerCommon):
                 "cetmix_tower_server.group_manager",
             ],
         )
+
         # Update test_command access_level to "1"
         test_command_1.write({"access_level": "1"})
+
         # Ensure that user_bob has access to test_command_log_1
-        test_command_log_1_name = test_command_log_1.with_user(self.user_bob).read(
-            ["name"]
+        test_command_log_1_as_bob = test_command_log_1.with_user(self.user_bob)
+        test_command_log_1_as_bob.invalidate_cache()
+        self.assertEqual(
+            test_command_log_1_as_bob.access_level,
+            test_command_1.access_level,
+            "Access  should be same",
         )
+        test_command_1.invalidate_cache()
+        test_command_log_1_name = test_command_log_1_as_bob.read(["name"])
         self.assertEqual(
             test_command_log_1_name[0]["name"],
             test_command_log_1.name,
