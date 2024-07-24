@@ -304,6 +304,13 @@ class CxTowerServer(models.Model):
         compute="_compute_file_count",
     )
 
+    # ---- Server logs
+    server_log_ids = fields.One2many(
+        string="Server Logs",
+        comodel_name="cx.tower.server.log",
+        inverse_name="server_id",
+    )
+
     def _selection_status(self):
         """
         Status selection options
@@ -401,6 +408,12 @@ class CxTowerServer(models.Model):
             var_value.copy({"server_id": result.id})
 
         return result
+
+    def action_update_server_logs(self):
+        """Update selected log from its source."""
+        for server in self:
+            if server.server_log_ids:
+                server.server_log_ids.action_get_log_text()
 
     def action_open_command_logs(self):
         """
@@ -629,12 +642,17 @@ class CxTowerServer(models.Model):
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+        Context:
+            no_log (Bool): set this context key to `True` to disable log creation.
+            Command execution results will be returned instead.
+            If any non command related error occurs in the command execution flow
+            an exception will be raised.
+            IMPORTANT: be aware when running commands with `no_log=True`
+            because no `Allow Parallel Run` check will be done!
+        Returns:
+            dict(): command execution result if `no_log` context value == True else None
         """
         self.ensure_one()
-        log_obj = self.env["cx.tower.command.log"]
-
-        # Get log vals from kwargs and update them
-        log_vals = kwargs.get("log", {})
 
         # Populate `sudo` value from the server settings if not provided explicitly
         if sudo is None:
@@ -645,40 +663,45 @@ class CxTowerServer(models.Model):
         elif sudo and self.ssh_username == "root":
             sudo = None
 
-        log_vals.update({"use_sudo": sudo})
+        # Check if no log record should be created
 
-        # Check if command is already running and parallel run is not allowed
-        if not command.allow_parallel_run:
-            running_count = log_obj.sudo().search_count(
-                [
-                    ("server_id", "=", self.id),  # pylint: disable=no-member
-                    ("command_id", "=", command.id),
-                    ("is_running", "=", True),
-                ]
-            )
-            # Create log record and exit
-            # if the same command is currently running on the same server
-            if running_count > 0:
-                now = fields.Datetime.now()
-                log_obj.record(
-                    self.id,  # pylint: disable=no-member
-                    command.id,
-                    now,
-                    now,
-                    ANOTHER_COMMAND_RUNNING,
-                    None,
-                    [_("Another instance of the command is already running")],
-                    **log_vals,
+        no_log = self._context.get("no_log")
+
+        # Get log vals from kwargs and update them
+        if not no_log:
+            log_obj = self.env["cx.tower.command.log"]
+            log_vals = kwargs.get("log", {})
+            log_vals.update({"use_sudo": sudo})
+
+            # Check if command is already running and parallel run is not allowed
+            if not command.allow_parallel_run:
+                running_count = log_obj.sudo().search_count(
+                    [
+                        ("server_id", "=", self.id),  # pylint: disable=no-member
+                        ("command_id", "=", command.id),
+                        ("is_running", "=", True),
+                    ]
                 )
-                return
+                # Create log record and exit
+                # if the same command is currently running on the same server
+                if running_count > 0:
+                    now = fields.Datetime.now()
+                    log_obj.record(
+                        self.id,  # pylint: disable=no-member
+                        command.id,
+                        now,
+                        now,
+                        ANOTHER_COMMAND_RUNNING,
+                        None,
+                        [_("Another instance of the command is already running")],
+                        **log_vals,
+                    )
+                    return
 
         # Render command
         rendered_command = self._render_command(command, path)
         rendered_command_code = rendered_command["rendered_code"]
         rendered_command_path = rendered_command["rendered_path"]
-
-        # Save rendered code to log
-        log_vals.update({"code": rendered_command_code, "path": rendered_command_path})
 
         # Prepare key renderer values
         key_vals = kwargs.get("key", {})  # Get vals from kwargs
@@ -686,10 +709,17 @@ class CxTowerServer(models.Model):
         if self.partner_id:
             key_vals.update({"partner_id": self.partner_id.id})
 
-        # Create log record
-        log_record = log_obj.start(self.id, command.id, **log_vals)  # pylint: disable=no-member
+        # Save rendered code to log
+        if no_log:
+            log_record = None
+        else:
+            log_vals.update(
+                {"code": rendered_command_code, "path": rendered_command_path}
+            )
+            # Create log record
+            log_record = log_obj.start(self.id, command.id, **log_vals)  # pylint: disable=no-member
 
-        self._command_runner_wrapper(
+        return self.with_context(use_sudo=sudo)._command_runner_wrapper(
             command,
             log_record,
             rendered_command_code,
@@ -722,8 +752,14 @@ class CxTowerServer(models.Model):
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+
+        Context:
+            use_sudo (Bool): use sudo for command execution
+
+        Returns:
+            dict(): command execution result if `log_record` is defined else None
         """
-        self._command_runner(
+        return self._command_runner(
             command,
             log_record,
             rendered_command_code,
@@ -751,14 +787,19 @@ class CxTowerServer(models.Model):
                 We are passing in case it differs from command code in the log record.
             rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
-        kwargs (dict):  extra arguments. Use to pass external values.
+            kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+        Context:
+            use_sudo (Bool): use sudo for command execution
+
+        Returns:
+            dict(): command execution result if `log_record` is defined else None
         """
 
         if command.action == "ssh_command":
-            self._command_runner_ssh(
+            return self._command_runner_ssh(
                 log_record,
                 rendered_command_code,
                 rendered_command_path,
@@ -766,16 +807,19 @@ class CxTowerServer(models.Model):
                 **kwargs,
             )
 
-        else:
+        error_message = _(
+            "No runner found for command action '%(cmd_action)s'",
+            cmd_action=command.action,
+        )
+        if log_record:
             log_record.finish(
                 fields.Datetime.now(),
                 NO_COMMAND_RUNNER_FOUND,
                 None,
-                _(
-                    "No runner found for command action '%(cmd_action)s'",
-                    cmd_action=command.action,
-                ),
+                error_message,
             )
+        else:
+            raise ValidationError(error_message)
 
     def _command_runner_ssh(
         self,
@@ -798,6 +842,11 @@ class CxTowerServer(models.Model):
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+        Context:
+            use_sudo (Bool): use sudo for command execution
+
+        Returns:
+            dict(): command execution result if `log_record` is defined else None
         """
         if not ssh_connection:
             ssh_connection = self._connect(raise_on_error=False)
@@ -808,17 +857,20 @@ class CxTowerServer(models.Model):
             command_code=rendered_command_code,
             command_path=rendered_command_path,
             raise_on_error=False,
-            sudo=log_record.use_sudo,
+            sudo=self._context.get("use_sudo"),
             **kwargs,
         )
 
         # Log result
-        log_record.finish(
-            fields.Datetime.now(),
-            command_result["status"],
-            command_result["response"],
-            command_result["error"],
-        )
+        if log_record:
+            log_record.finish(
+                fields.Datetime.now(),
+                command_result["status"],
+                command_result["response"],
+                command_result["error"],
+            )
+        else:
+            return command_result
 
     def _execute_command_using_ssh(
         self,

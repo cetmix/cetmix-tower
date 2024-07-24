@@ -43,3 +43,6 @@ access_file_root,File->Root,model_cx_tower_file,cetmix_tower_server.group_root,1
 access_file_template_user,File Template->User,model_cx_tower_file_template,cetmix_tower_server.group_user,1,0,0,0
 access_file_template_manager,File Template->Manager,model_cx_tower_file_template,cetmix_tower_server.group_manager,1,1,1,0
 access_file_template_root,File Template->Root,model_cx_tower_file_template,cetmix_tower_server.group_root,1,1,1,1
+access_server_log_user,Server Log->User,model_cx_tower_server_log,group_user,1,0,0,0
+access_server_log_manager,Server Log->Manager,model_cx_tower_server_log,group_manager,1,1,1,0
+access_server_log_root,Server Log->Root,model_cx_tower_server_log,group_root,1,1,1,1
