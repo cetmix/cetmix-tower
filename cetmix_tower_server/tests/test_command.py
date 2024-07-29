@@ -419,9 +419,7 @@ class TestTowerCommand(TestTowerCommon):
             {"name": "Restricted Command", "access_level": "3"}
         )
 
-        user_bob_records = (
-            self.env["cx.tower.command"].with_user(self.user_bob).search([])
-        )
+        user_bob_records = self.Command.with_user(self.user_bob).search([])
         user_bob_records_access_level_3 = user_bob_records.filtered(
             lambda r: r.access_level == "3"
         )
@@ -429,13 +427,16 @@ class TestTowerCommand(TestTowerCommon):
         # Add user to group_root
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
         # Ensure that root user can see commands with access_level 3
-        user_bob_records = (
-            self.env["cx.tower.command"].with_user(self.user_bob).search([])
-        )
+        user_bob_records = self.Command.with_user(self.user_bob).search([])
         user_bob_records_access_level_3 = user_bob_records.filtered(
             lambda r: r.access_level == "3"
         )
         self.assertTrue(user_bob_records_access_level_3, "Must not be empty")
+        self.assertIn(
+            restricted_command,
+            user_bob_records_access_level_3,
+            "Restricted command must be in the list",
+        )
 
         # Try to demote the access_level of new_command to 2
         restricted_command.with_user(self.user_bob).write({"access_level": "2"})
@@ -570,7 +571,9 @@ class TestTowerCommand(TestTowerCommon):
         )
 
     def test_execute_command_no_log(self):
-        """Execute command without creating a log record"""
+        """Execute command without creating a log record.
+        Such commands return execution result directly.
+        """
         # Add label to track command log
         command_label = "Test Command with keys"
         custom_values = {"log": {"label": command_label}}

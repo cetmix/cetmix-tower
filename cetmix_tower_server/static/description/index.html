@@ -434,42 +434,46 @@ questions that arise.</li>
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
-<li><a class="reference internal" href="#configure-a-server" id="toc-entry-2">Configure a Server</a><ul>
-<li><a class="reference internal" href="#general-settings" id="toc-entry-3">General Settings</a></li>
-<li><a class="reference internal" href="#variables" id="toc-entry-4">Variables</a></li>
-<li><a class="reference internal" href="#secrets" id="toc-entry-5">Secrets</a></li>
-<li><a class="reference internal" href="#files" id="toc-entry-6">Files</a></li>
+<li><a class="reference internal" href="#user-access-configuration" id="toc-entry-2">User access configuration</a></li>
+<li><a class="reference internal" href="#configure-a-server" id="toc-entry-3">Configure a Server</a><ul>
+<li><a class="reference internal" href="#general-settings" id="toc-entry-4">General Settings</a></li>
+<li><a class="reference internal" href="#variables" id="toc-entry-5">Variables</a></li>
+<li><a class="reference internal" href="#secrets" id="toc-entry-6">Secrets</a></li>
+<li><a class="reference internal" href="#server-logs" id="toc-entry-7">Server Logs</a></li>
+<li><a class="reference internal" href="#files" id="toc-entry-8">Files</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configure-variables" id="toc-entry-7">Configure Variables</a><ul>
-<li><a class="reference internal" href="#variables-applicability" id="toc-entry-8">Variables Applicability</a></li>
-<li><a class="reference internal" href="#variable-types" id="toc-entry-9">Variable Types</a></li>
-<li><a class="reference internal" href="#tower-system-variable" id="toc-entry-10">‘tower’ System Variable</a></li>
+<li><a class="reference internal" href="#configure-variables" id="toc-entry-9">Configure Variables</a><ul>
+<li><a class="reference internal" href="#variables-applicability" id="toc-entry-10">Variables Applicability</a></li>
+<li><a class="reference internal" href="#variable-types" id="toc-entry-11">Variable Types</a></li>
+<li><a class="reference internal" href="#tower-system-variable" id="toc-entry-12">‘tower’ System Variable</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configure-a-key-secret" id="toc-entry-11">Configure a Key/Secret</a></li>
-<li><a class="reference internal" href="#configure-a-file" id="toc-entry-12">Configure a File</a><ul>
-<li><a class="reference internal" href="#file-templates" id="toc-entry-13">File Templates</a></li>
+<li><a class="reference internal" href="#configure-a-key-secret" id="toc-entry-13">Configure a Key/Secret</a></li>
+<li><a class="reference internal" href="#configure-a-file" id="toc-entry-14">Configure a File</a><ul>
+<li><a class="reference internal" href="#file-templates" id="toc-entry-15">File Templates</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configure-a-command" id="toc-entry-14">Configure a Command</a></li>
-<li><a class="reference internal" href="#configure-a-flight-plan" id="toc-entry-15">Configure a Flight Plan</a></li>
-<li><a class="reference internal" href="#configuration-best-practices" id="toc-entry-16">Configuration best practices</a><ul>
-<li><a class="reference internal" href="#use-simple-commands" id="toc-entry-17">Use simple commands</a></li>
-<li><a class="reference internal" href="#do-not-change-directory-using-shell-commands" id="toc-entry-18">Do not change directory using shell commands</a></li>
+<li><a class="reference internal" href="#configure-a-command" id="toc-entry-16">Configure a Command</a></li>
+<li><a class="reference internal" href="#configure-a-flight-plan" id="toc-entry-17">Configure a Flight Plan</a></li>
+<li><a class="reference internal" href="#configure-a-server-log" id="toc-entry-18">Configure a Server Log</a></li>
+<li><a class="reference internal" href="#configuration-best-practices" id="toc-entry-19">Configuration best practices</a><ul>
+<li><a class="reference internal" href="#use-simple-commands" id="toc-entry-20">Use simple commands</a></li>
+<li><a class="reference internal" href="#do-not-change-directory-using-shell-commands" id="toc-entry-21">Do not change directory using shell commands</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#usage" id="toc-entry-19">Usage</a><ul>
-<li><a class="reference internal" href="#running-a-command" id="toc-entry-20">Running a Command</a></li>
-<li><a class="reference internal" href="#running-a-flight-plan" id="toc-entry-21">Running a Flight Plan</a></li>
+<li><a class="reference internal" href="#usage" id="toc-entry-22">Usage</a><ul>
+<li><a class="reference internal" href="#running-a-command" id="toc-entry-23">Running a Command</a></li>
+<li><a class="reference internal" href="#running-a-flight-plan" id="toc-entry-24">Running a Flight Plan</a></li>
+<li><a class="reference internal" href="#checking-a-server-log" id="toc-entry-25">Checking a Server Log</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-22">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-23">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-24">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-25">Maintainers</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-26">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-27">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-28">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-29">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -477,13 +481,44 @@ questions that arise.</li>
 <div class="section" id="configuration">
 <h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
 <p>Please ensure that you have read and understood the documentation before
-running <strong>Cetmix Tower</strong> in the production environment.</p>
+running <a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> in the production
+environment.</p>
+<div class="section" id="user-access-configuration">
+<h2><a class="toc-backref" href="#toc-entry-2">User access configuration</a></h2>
+<p>In order for a user to be able to use <a class="reference external" href="https://cetmix.com/tower">Cetmix
+Tower</a> features you need to provide access
+to in the the user settings. To configure it go to
+<tt class="docutils literal">Setting/Users &amp; Companies/Users</tt> and open a user whom you would like
+to provide access to the Cetmix Tower.</p>
+<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png" /></p>
+<p>In <tt class="docutils literal">Other</tt> section find the <tt class="docutils literal">Cetmix Tower</tt> field and select one of
+the following options:</p>
+<ul class="simple">
+<li><strong>User</strong>. Members of this group have read access only to the
+<a class="reference external" href="#configure-a-server">Servers</a> which they are added as followers.
+They also have access to the entities such as
+<a class="reference external" href="#configure-a-command">Commands</a>, <a class="reference external" href="#configure-a-flight-plan">Flight
+Plans</a> or <a class="reference external" href="#configure-a-server-log">Server
+Logs</a> with <tt class="docutils literal">Access Level</tt> set to
+<tt class="docutils literal">User</tt>.</li>
+<li><strong>Manager</strong>. Members of this group can modify
+<a class="reference external" href="#configure-a-server">Servers</a> which they are added as followers.
+They can create new <a class="reference external" href="#configure-a-server">Servers</a> too however
+they cannot delete them. Users of this group have access to the
+entities with <tt class="docutils literal">Access Level</tt> set to <tt class="docutils literal">Manager</tt> or <tt class="docutils literal">User</tt>.</li>
+<li><strong>Root</strong>. Members of this group can create, modify or delete any
+<a class="reference external" href="#configure-a-server">Server</a>. They also have access to the
+entities with any <tt class="docutils literal">Access Level</tt> set.</li>
+</ul>
+<p><strong>NB:</strong> Please keep in mind that some of the entities can have their
+additional access management variations.</p>
+</div>
 <div class="section" id="configure-a-server">
-<h2><a class="toc-backref" href="#toc-entry-2">Configure a Server</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-3">Configure a Server</a></h2>
 <p>Go to the <tt class="docutils literal">Cetmix Tower/Servers/Servers</tt> menu and click <tt class="docutils literal">Create</tt>.</p>
 <p>Enter the server name and fill the values it the tabs below:</p>
 <div class="section" id="general-settings">
-<h3><a class="toc-backref" href="#toc-entry-3">General Settings</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-4">General Settings</a></h3>
 <ul class="simple">
 <li><strong>Partner</strong>: Partner this server belongs to</li>
 <li><strong>Operating System</strong>: Operating system that runs on the server</li>
@@ -514,32 +549,40 @@ further customizations. Following pre-defined statuses are available:</p>
 <p>Default status is ‘Undefined’.</p>
 </div>
 <div class="section" id="variables">
-<h3><a class="toc-backref" href="#toc-entry-4">Variables</a></h3>
-<p>Configure variable values to be used when rendering commands and files
-on this server. Check the <a class="reference external" href="#configure-variables">Configuring
-Variables</a> section for more details.</p>
+<h3><a class="toc-backref" href="#toc-entry-5">Variables</a></h3>
+<p>Configure variable values to be used when rendering
+<a class="reference external" href="#configure-a-command">commands</a> and files on this server. Check the
+<a class="reference external" href="#configure-variables">Configuring Variables</a> section for more
+details.</p>
 </div>
 <div class="section" id="secrets">
-<h3><a class="toc-backref" href="#toc-entry-5">Secrets</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-6">Secrets</a></h3>
 <p>Configure secret values to used when rendering commands and files on
 this server. Check the <a class="reference external" href="#configure-a-keysecret">Configuring
 Keys/Secrets</a> section for more details.</p>
 </div>
+<div class="section" id="server-logs">
+<h3><a class="toc-backref" href="#toc-entry-7">Server Logs</a></h3>
+<p>Configure server logs in order to have convenient access to them. Logs
+can be fetched either from <a class="reference external" href="#configure-a-file">Files</a> or using
+<a class="reference external" href="#configure-a-command">Commands.</a> Check the <a class="reference external" href="#configure-a-server-log">Configuring a Server
+Log</a> section for more details.</p>
+</div>
 <div class="section" id="files">
-<h3><a class="toc-backref" href="#toc-entry-6">Files</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-8">Files</a></h3>
 <p>Click the “Files” action button to access files that belong to this
 server. Check the <a class="reference external" href="#configure-a-file">Configuring Files</a> section for
 more details.</p>
 </div>
 </div>
 <div class="section" id="configure-variables">
-<h2><a class="toc-backref" href="#toc-entry-7">Configure Variables</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-9">Configure Variables</a></h2>
 <p>To configure variables go to the <tt class="docutils literal">Cetmix Tower/Settings</tt> and select
 the <tt class="docutils literal">Variables</tt> menu.</p>
 <div class="section" id="variables-applicability">
-<h3><a class="toc-backref" href="#toc-entry-8">Variables Applicability</a></h3>
-<p><strong>Cetmix Tower</strong> supports <tt class="docutils literal">jinja2</tt> syntax for variables. You can use
-variables to render:</p>
+<h3><a class="toc-backref" href="#toc-entry-10">Variables Applicability</a></h3>
+<p><a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> supports <tt class="docutils literal">jinja2</tt> syntax
+for variables. You can use variables to render:</p>
 <ul class="simple">
 <li>Commands. Eg <tt class="docutils literal">ls <span class="pre">-lh</span> {{ file_store_location }}</tt></li>
 <li>Files. Eg a “Dockerfile” file can have the following text in it:
@@ -565,13 +608,14 @@ docker run -d -p {{ odoo_port }}:8069 \
 </pre>
 </div>
 <div class="section" id="variable-types">
-<h3><a class="toc-backref" href="#toc-entry-9">Variable Types</a></h3>
-<p>Following types of variable values available in <strong>Cetmix Tower</strong>:</p>
+<h3><a class="toc-backref" href="#toc-entry-11">Variable Types</a></h3>
+<p>Following types of variable values available in <a class="reference external" href="https://cetmix.com/tower">Cetmix
+Tower</a>:</p>
 <ul class="simple">
 <li>Local values. Those are values that are defined at a record level.
 For example for a server.</li>
-<li>Global values. Those are values that are defined at the <strong>Cetmix
-Tower</strong> level.</li>
+<li>Global values. Those are values that are defined at the <a class="reference external" href="https://cetmix.com/tower">Cetmix
+Tower</a> level.</li>
 </ul>
 <p>When rendering an expression local values are used first. If no local
 value is found then global value will be used. For example default value
@@ -583,7 +627,7 @@ values may expose that date in command preview and logs. Use
 <a class="reference external" href="#configure-a-keysecret">secrets</a> for storing such data instead.</p>
 </div>
 <div class="section" id="tower-system-variable">
-<h3><a class="toc-backref" href="#toc-entry-10">‘tower’ System Variable</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-12">‘tower’ System Variable</a></h3>
 <p>There is a special <tt class="docutils literal">tower</tt> variable available which allows to access
 some system parameters and helper tools. <strong>Important!</strong> do not redefine
 the <tt class="docutils literal">tower</tt> variable unless you really need that on purpose.</p>
@@ -607,7 +651,7 @@ the <tt class="docutils literal">tower</tt> variable unless you really need that
 </div>
 </div>
 <div class="section" id="configure-a-key-secret">
-<h2><a class="toc-backref" href="#toc-entry-11">Configure a Key/Secret</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-13">Configure a Key/Secret</a></h2>
 <div class="line-block">
 <div class="line">Keys/Secrets are used to private SSH keys and sensitive data that is
 used for rendering command and files.</div>
@@ -627,16 +671,18 @@ for</li>
 </ul>
 </div>
 <div class="section" id="configure-a-file">
-<h2><a class="toc-backref" href="#toc-entry-12">Configure a File</a></h2>
-<p><strong>Cetmix Tower</strong> is using SFTP protocol for file transfer operations.
-Based on initial file location following file sources are available:</p>
+<h2><a class="toc-backref" href="#toc-entry-14">Configure a File</a></h2>
+<p><a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> is using SFTP protocol for
+file transfer operations. Based on initial file location following file
+sources are available:</p>
 <ul class="simple">
 <li>Server. These are files that are initially located on remote server
-and are fetched to <strong>Cetmix Tower</strong>. For example log files.</li>
-<li>Tower. These are files that are initially formed in <strong>Cetmix Tower</strong>
-and are uploaded to remote server. For example configuration files.
-Such files are rendered using variables and can be created and
-managed using file templates.</li>
+and are fetched to <a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a>. For
+example log files.</li>
+<li>Tower. These are files that are initially formed in <a class="reference external" href="https://cetmix.com/tower">Cetmix
+Tower</a> and are uploaded to remote
+server. For example configuration files. Such files are rendered
+using variables and can be created and managed using file templates.</li>
 </ul>
 <p>To create a new file go to <tt class="docutils literal">Cetmix Tower/Files/Files</tt> click <tt class="docutils literal">Create</tt>
 and put values in the fields:</p>
@@ -659,8 +705,8 @@ remote server</li>
 <li><strong>Full Server Path</strong>: Full path to file on the remote server
 including filename</li>
 <li><strong>Auto Sync</strong>: If enabled the file will be automatically uploaded to
-the remote server on after it is modified in <strong>Cetmix Tower</strong>. Used
-only with <tt class="docutils literal">Tower</tt> source.</li>
+the remote server on after it is modified in <a class="reference external" href="https://cetmix.com/tower">Cetmix
+Tower</a>. Used only with <tt class="docutils literal">Tower</tt> source.</li>
 <li><strong>Keep when deleted</strong>: If enabled, file will be kept on remote server
 after removing it in the Odoo</li>
 </ul>
@@ -678,7 +724,7 @@ only with <tt class="docutils literal">Tower</tt> source.</li>
 configuration. You should take care of filesystem access rights to
 ensure that file operations are performed without any issues.</p>
 <div class="section" id="file-templates">
-<h3><a class="toc-backref" href="#toc-entry-13">File Templates</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-15">File Templates</a></h3>
 <p>File templates are used to create and manage multiple files in bulk.
 Once a template is modified all related files are automatically updated.</p>
 <p>To create a new file template go to <tt class="docutils literal">Cetmix Tower/Files/Templates</tt>
@@ -708,7 +754,7 @@ value from the <tt class="docutils literal">Template</tt> field before saving it
 </div>
 </div>
 <div class="section" id="configure-a-command">
-<h2><a class="toc-backref" href="#toc-entry-14">Configure a Command</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-16">Configure a Command</a></h2>
 <p>Command is a shell command that is executed on remote server. To create
 a new command go to <tt class="docutils literal">Cetmix Tower/Commands/Commands</tt> click <tt class="docutils literal">Create</tt>
 and put values in the fields:</p>
@@ -743,7 +789,7 @@ details.</li>
 </ul>
 </div>
 <div class="section" id="configure-a-flight-plan">
-<h2><a class="toc-backref" href="#toc-entry-15">Configure a Flight Plan</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-17">Configure a Flight Plan</a></h2>
 <p>Flight Plans are used to execute commands in series. They allow to build
 a flexible condition based execution flow. To create a new flight plan
 go to <tt class="docutils literal">Cetmix Tower/Commands/Flight Plans</tt> click <tt class="docutils literal">Create</tt> and put
@@ -795,10 +841,48 @@ next to this one.</li>
 </li>
 </ul>
 </div>
+<div class="section" id="configure-a-server-log">
+<h2><a class="toc-backref" href="#toc-entry-18">Configure a Server Log</a></h2>
+<p>Server Logs allow to fetch and view logs of a server fast and convenient
+way. To configure a Server Log open the server form, navigate to the
+<tt class="docutils literal">Server Logs</tt> tab and add a new record in the list.</p>
+<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
+<p>Following fields are available:</p>
+<ul class="simple">
+<li><strong>Name</strong>: Readable name of the log</li>
+<li><strong>Access Level</strong>: Minimum access level required to access this
+record. Please check the <a class="reference external" href="#user-access-configuration">User Access
+Settings</a> section for more details.
+Possible options:<ul>
+<li><tt class="docutils literal">User</tt>. User must have at least <tt class="docutils literal">Cetmix Tower / User</tt> access
+group configured in the User Settings.</li>
+<li><tt class="docutils literal">Manager</tt>. User must have at least <tt class="docutils literal">Cetmix Tower / Manager</tt>
+access group configured in the User Settings.</li>
+<li><tt class="docutils literal">Root</tt>. User must have <tt class="docutils literal">Cetmix Tower / Root</tt> access group
+configured in the User Settings.</li>
+</ul>
+</li>
+<li><strong>Log Type</strong>: Defines the way logs are fetched. Possible options:<ul>
+<li><tt class="docutils literal">Command</tt>. A command is run with its output being saved to the
+log</li>
+<li><tt class="docutils literal">File</tt>. Log is fetched from a file</li>
+</ul>
+</li>
+<li><strong>Command</strong>: A command that is used to fetched the logs. This option
+is available only for <tt class="docutils literal">Log Type</tt> set to <tt class="docutils literal">Command</tt>. Important:
+please ensure that selected command can be executed multiple times in
+parallel to avoid any potential issues.</li>
+<li><strong>Use Sudo</strong>: Use <tt class="docutils literal">sudo</tt> if required to run this command.</li>
+<li><strong>File</strong>: A file that is used to fetch the log.</li>
+</ul>
+<p><strong>Developer hint</strong>: log output supports HTML formatting. You can
+implement your custom log formatter by overriding the
+<tt class="docutils literal">_format_log_text()</tt> function of the <tt class="docutils literal">cx.tower.server.log</tt> model.</p>
+</div>
 <div class="section" id="configuration-best-practices">
-<h2><a class="toc-backref" href="#toc-entry-16">Configuration best practices</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-19">Configuration best practices</a></h2>
 <div class="section" id="use-simple-commands">
-<h3><a class="toc-backref" href="#toc-entry-17">Use simple commands</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-20">Use simple commands</a></h3>
 <p>Try to avoid using <tt class="docutils literal">&amp;&amp;</tt> or <tt class="docutils literal">;</tt> joined commands unless this is really
 needed. Use flight plans instead.</p>
 <p><strong>Why?</strong></p>
@@ -823,7 +907,7 @@ apt-get<span class="w"> </span>install<span class="w"> </span>doge-meme-generato
 </pre>
 </div>
 <div class="section" id="do-not-change-directory-using-shell-commands">
-<h3><a class="toc-backref" href="#toc-entry-18">Do not change directory using shell commands</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-21">Do not change directory using shell commands</a></h3>
 <p>Do not use <tt class="docutils literal">cd</tt> or <tt class="docutils literal">chdir</tt> commands. Use <tt class="docutils literal">Default Path</tt> field in
 command or <tt class="docutils literal">Path</tt> field in flight plan line.</p>
 <p><strong>Why?</strong></p>
@@ -853,9 +937,9 @@ cat<span class="w"> </span>my_doge_memes.txt
 </div>
 </div>
 <div class="section" id="usage">
-<h1><a class="toc-backref" href="#toc-entry-19">Usage</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-22">Usage</a></h1>
 <div class="section" id="running-a-command">
-<h2><a class="toc-backref" href="#toc-entry-20">Running a Command</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-23">Running a Command</a></h2>
 <p>To run a command:</p>
 <ul class="simple">
 <li>Select a server in the list view or open a server form view</li>
@@ -892,7 +976,7 @@ delete a command you need to delete all its logs manually before doing
 that.</p>
 </div>
 <div class="section" id="running-a-flight-plan">
-<h2><a class="toc-backref" href="#toc-entry-21">Running a Flight Plan</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-24">Running a Flight Plan</a></h2>
 <p>To run a flight plan:</p>
 <ul>
 <li><p class="first">Select a server in the list view or open a server form view</p>
@@ -918,9 +1002,27 @@ before doing that.</p>
 </li>
 </ul>
 </div>
+<div class="section" id="checking-a-server-log">
+<h2><a class="toc-backref" href="#toc-entry-25">Checking a Server Log</a></h2>
+<p>To check a server log:</p>
+<ul class="simple">
+<li>Navigate to the <tt class="docutils literal">Server Logs</tt> tab on the Server form</li>
+<li>Click on the log <strong>(1)</strong> you would like to check to open in in a pop
+up window. Or click on the <tt class="docutils literal">Open</tt> button <strong>(2)</strong> to open it in the
+full form view</li>
+</ul>
+<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
+<ul class="simple">
+<li>Click the <tt class="docutils literal">Refresh</tt> button to update the log. You can also click
+the <tt class="docutils literal">Refresh All</tt> button <strong>(3)</strong> located above the log list in
+order to refresh all logs at once. Log output will be displayed in
+the HTML field below.</li>
+</ul>
+<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
+</div>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-22">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-26">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -928,15 +1030,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-23">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-27">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-24">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-28">Authors</a></h2>
 <ul class="simple">
 <li>Cetmix</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-25">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-29">Maintainers</a></h2>
 <p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
