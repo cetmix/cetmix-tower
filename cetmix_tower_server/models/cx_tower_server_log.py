@@ -4,7 +4,7 @@ from odoo import _, fields, models
 from odoo.tools import plaintext2html
 
 
-class CxTowerCommand(models.Model):
+class CxTowerServerLog(models.Model):
     """Server log management.
     Used to track various server logs.
     N.B. Do not mistake for command of flight plan log!

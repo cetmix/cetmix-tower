@@ -44,7 +44,6 @@ class TestTowerServer(TestTowerCommon):
             }
         )
         # Files
-        self.File = self.env["cx.tower.file"]
         self.server_test_2_file = self.File.create(
             {
                 "name": "tower_demo_without_template_{{ branch }}.txt",
