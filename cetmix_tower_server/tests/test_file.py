@@ -5,10 +5,10 @@ from odoo import exceptions
 from .common import TestTowerCommon
 
 
-class TestTowerCommand(TestTowerCommon):
+class TestTowerFile(TestTowerCommon):
     def setUp(self):
         super().setUp()
-        self.file_template = self.env["cx.tower.file.template"].create(
+        self.file_template = self.FileTemplate.create(
             {
                 "name": "Test",
                 "file_name": "test.txt",
@@ -16,14 +16,14 @@ class TestTowerCommand(TestTowerCommon):
                 "code": "Hello, world!",
             }
         )
-        self.file = self.env["cx.tower.file"].create(
+        self.file = self.File.create(
             {
                 "source": "tower",
                 "template_id": self.file_template.id,
                 "server_id": self.server_test_1.id,
             }
         )
-        self.file_2 = self.env["cx.tower.file"].create(
+        self.file_2 = self.File.create(
             {
                 "name": "test.txt",
                 "source": "server",
