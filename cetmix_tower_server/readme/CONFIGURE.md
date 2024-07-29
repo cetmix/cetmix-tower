@@ -1,4 +1,22 @@
-Please ensure that you have read and understood the documentation before running **Cetmix Tower** in the production environment.
+Please ensure that you have read and understood the documentation before running [Cetmix Tower](https://cetmix.com/tower) in the production environment.
+
+## User access configuration
+
+In order for a user to be able to use [Cetmix Tower](https://cetmix.com/tower) features you need to provide access to in the the user settings.
+To configure it go to `Setting/Users & Companies/Users` and open a user whom you would like to provide access to the Cetmix Tower.
+
+![User profile](../static/description/images/user_profile.png)
+
+In `Other` section find the `Cetmix Tower` field and select one of the following options:
+
+- **User**. Members of this group have read access only to the [Servers](#configure-a-server) which they are added as followers. 
+They also have access to the entities such as [Commands](#configure-a-command),  [Flight Plans](#configure-a-flight-plan) or [Server Logs](#configure-a-server-log) with `Access Level` set to `User`.
+- **Manager**. Members of this group can modify [Servers](#configure-a-server) which they are added as followers. They can create new [Servers](#configure-a-server) too however they cannot delete them.
+Users of this group have access to the entities with `Access Level` set to `Manager` or `User`.
+- **Root**. Members of this group can create, modify or delete any [Server](#configure-a-server). They also have access to the entities with any `Access Level` set.
+
+**NB:** Please keep in mind that some of the entities can have their additional access management variations.
+
 
 ## Configure a Server
 
@@ -34,13 +52,19 @@ Default status is 'Undefined'.
 
 ### Variables
 
-Configure variable values to be used when rendering commands and files on this server.
+Configure variable values to be used when rendering [commands](#configure-a-command) and files on this server.
 Check the [Configuring Variables](#configure-variables) section for more details.
 
 ### Secrets
 
 Configure secret values to used when rendering commands and files on this server.
 Check the [Configuring Keys/Secrets](#configure-a-keysecret) section for more details.
+
+### Server Logs
+
+Configure server logs in order to have convenient access to them.
+Logs can be fetched either from [Files](#configure-a-file) or using [Commands.](#configure-a-command)
+Check the [Configuring a Server Log](#configure-a-server-log) section for more details.
 
 ### Files
 
@@ -53,7 +77,7 @@ To configure variables go to the `Cetmix Tower/Settings` and select the `Variabl
 
 ### Variables Applicability
 
-**Cetmix Tower** supports `jinja2` syntax for variables. You can use variables to render:
+[Cetmix Tower](https://cetmix.com/tower) supports `jinja2` syntax for variables. You can use variables to render:
 
 - Commands. Eg `ls -lh {{ file_store_location }}`
 - Files. Eg a "Dockerfile" file can have the following text in it: `ODOO_VERSION = {{ odoo_default_version }}`
@@ -74,10 +98,10 @@ docker run -d -p {{ odoo_port }}:8069 \
 
 ### Variable Types
 
-Following types of variable values available in **Cetmix Tower**:
+Following types of variable values available in [Cetmix Tower](https://cetmix.com/tower):
 
 - Local values. Those are values that are defined at a record level. For example for a server.
-- Global values. Those are values that are defined at the **Cetmix Tower** level.
+- Global values. Those are values that are defined at the [Cetmix Tower](https://cetmix.com/tower) level.
 
 When rendering an expression local values are used first. If no local value is found then global value will be used.
 For example default value of the `odoo_port` variable is `8069`. However you can easily specify any other value and thus run multiple Odoo instances on a single server.
@@ -116,11 +140,11 @@ To configure a new key or secret go to `Cetmix Tower/Settings/Keys` click `Creat
 
 ## Configure a File
 
-**Cetmix Tower** is using SFTP protocol for file transfer operations. Based on initial file location following file sources are available:
+[Cetmix Tower](https://cetmix.com/tower) is using SFTP protocol for file transfer operations. Based on initial file location following file sources are available:
 
-- Server. These are files that are initially located on remote server and are fetched to **Cetmix Tower**. For example log files.
+- Server. These are files that are initially located on remote server and are fetched to [Cetmix Tower](https://cetmix.com/tower). For example log files.
 
-- Tower. These are files that are initially formed in **Cetmix Tower** and are uploaded to remote server. For example configuration files.
+- Tower. These are files that are initially formed in [Cetmix Tower](https://cetmix.com/tower) and are uploaded to remote server. For example configuration files.
 Such files are rendered using variables and can be created and managed using file templates.
 
 To create a new file go to `Cetmix Tower/Files/Files` click `Create` and put values in the fields:
@@ -135,7 +159,7 @@ To create a new file go to `Cetmix Tower/Files/Files` click `Create` and put val
 - **Server**: Server where this file is located
 - **Directory on Server**: This is where the file is located on the remote server
 - **Full Server Path**: Full path to file on the remote server including filename
-- **Auto Sync**: If enabled the file will be automatically uploaded to the remote server on after it is modified in **Cetmix Tower**. Used only with `Tower` source.
+- **Auto Sync**: If enabled the file will be automatically uploaded to the remote server on after it is modified in [Cetmix Tower](https://cetmix.com/tower). Used only with `Tower` source.
 - **Keep when deleted**: If enabled, file will be kept on remote server after removing it in the Odoo
 
 Following fields are located in the tabs below:
@@ -209,6 +233,30 @@ To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Cr
       - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command.
       - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one.
       - `Run next command`. Will continue flight plan execution.
+
+## Configure a Server Log
+
+Server Logs allow to fetch and view logs of a server fast and convenient way.
+To configure a Server Log open the server form, navigate to the `Server Logs` tab and add a new record in the list.
+
+![Server logs tab](../static/description/images/server_log_tab.png)
+
+Following fields are available:
+
+- **Name**: Readable name of the log
+- **Access Level**: Minimum access level required to access this record. Please check the [User Access Settings](#user-access-configuration) section for more details.
+Possible options:
+  - `User`. User must have at least `Cetmix Tower / User` access group configured in the User Settings.
+  - `Manager`. User must have at least `Cetmix Tower / Manager` access group configured in the User Settings.
+  - `Root`. User must have `Cetmix Tower / Root` access group configured in the User Settings.
+- **Log Type**: Defines the way logs are fetched. Possible options:
+  - `Command`. A command is run with its output being saved to the log
+  - `File`. Log is fetched from a file
+- **Command**: A command that is used to fetched the logs. This option is available only for `Log Type` set to `Command`. Important: please ensure that selected command can be executed multiple times in parallel to avoid any potential issues.
+- **Use Sudo**: Use `sudo` if required to run this command.
+- **File**: A file that is used to fetch the log.
+
+**Developer hint**: log output supports HTML formatting. You can implement your custom log formatter by overriding the `_format_log_text()` function of the `cx.tower.server.log` model.
 
 ## Configuration best practices
 

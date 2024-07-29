@@ -42,3 +42,15 @@ To run a flight plan:
   You can check the flight plan results in the `Cetmix Tower/Commands/Flight Plan Logs` menu.
   Important! If you want to delete a command you need to delete all its logs manually before doing that.
 
+## Checking a Server Log
+
+To check a server log:
+
+- Navigate to the `Server Logs` tab on the Server form
+- Click on the log **(1)** you would like to check to open in in a pop up window. Or click on the `Open` button **(2)** to open it in the full form view
+
+![Open server log](../static/description/images/server_log_usage_1.png)
+- Click the `Refresh` button to update the log. You can also click the `Refresh All` button **(3)** located above the log list in order to refresh all logs at once.
+Log output will be displayed in the HTML field below.
+
+![Update server log](../static/description/images/server_log_usage_2.png)
