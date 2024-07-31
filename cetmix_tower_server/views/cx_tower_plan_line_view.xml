@@ -53,9 +53,17 @@
                                                 name="custom_exit_code"
                                                 attrs="{'invisible': [('action', '!=', 'ec')], 'required': [('action', '=', 'ec')]}"
                                             />
+                                            <field
+                                                name="command_id"
+                                                attrs="{'invisible': [('action', '!=', 'c')], 'required': [('action', '=', 'c')]}"
+                                            />
                                         </div>
                                         <field
-                                            name="exit_afterwards"
+                                            name="use_sudo"
+                                            attrs="{'invisible': [('action', '!=', 'c')]}"
+                                        />
+                                        <field
+                                            name="terminate_flight_plan"
                                             attrs="{'invisible': [('action', '!=', 'c')]}"
                                         />
                                     </group>

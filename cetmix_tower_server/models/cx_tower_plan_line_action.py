@@ -29,7 +29,15 @@ class CxTowerPlanLineAction(models.Model):
         readonly=True,
         store=True,
     )
-    exit_afterwards = fields.Boolean(string="Exit")
+    command_id = fields.Many2one("cx.tower.command")
+    use_sudo = fields.Boolean(
+        help="Will use sudo based on server settings."
+        "If no sudo is configured will run without sudo"
+    )
+    terminate_flight_plan = fields.Boolean(
+        help="If enabled will terminate current flight plan and"
+        " exit with the return code of the selected command"
+    )
 
     @api.model
     def _selection_condition(self):
@@ -53,10 +61,10 @@ class CxTowerPlanLineAction(models.Model):
         :return: list[tuple] of selection options
         """
         return [
-            ("c", "Run command"),
+            ("n", "Run next command"),
             ("e", "Exit with command exit code"),
             ("ec", "Exit with custom exit code"),
-            ("n", "Run next command"),
+            ("c", "Run selected command"),
         ]
 
     @api.model
