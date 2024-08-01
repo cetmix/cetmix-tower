@@ -38,6 +38,9 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
+        # Server log
+        self.ServerLog = self.env["cx.tower.server.log"]
+
         # Variable
         self.Variable = self.env["cx.tower.variable"]
         self.VariableValues = self.env["cx.tower.variable.value"]
@@ -74,6 +77,12 @@ class TestTowerCommon(TransactionCase):
 
         self.key_1 = self.Key.create({"name": "Test Key 1"})
         self.key_2 = self.Key.create({"name": "Test Key 2"})
+
+        # File template
+        self.FileTemplate = self.env["cx.tower.file.template"]
+
+        # File
+        self.File = self.env["cx.tower.file"]
 
         # Flight Plans
         self.Plan = self.env["cx.tower.plan"]

@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -91,7 +91,41 @@ Configuration
 =============
 
 Please ensure that you have read and understood the documentation before
-running **Cetmix Tower** in the production environment.
+running `Cetmix Tower <https://cetmix.com/tower>`__ in the production
+environment.
+
+User access configuration
+-------------------------
+
+In order for a user to be able to use `Cetmix
+Tower <https://cetmix.com/tower>`__ features you need to provide access
+to in the the user settings. To configure it go to
+``Setting/Users & Companies/Users`` and open a user whom you would like
+to provide access to the Cetmix Tower.
+
+|User profile|
+
+In ``Other`` section find the ``Cetmix Tower`` field and select one of
+the following options:
+
+-  **User**. Members of this group have read access only to the
+   `Servers <#configure-a-server>`__ which they are added as followers.
+   They also have access to the entities such as
+   `Commands <#configure-a-command>`__, `Flight
+   Plans <#configure-a-flight-plan>`__ or `Server
+   Logs <#configure-a-server-log>`__ with ``Access Level`` set to
+   ``User``.
+-  **Manager**. Members of this group can modify
+   `Servers <#configure-a-server>`__ which they are added as followers.
+   They can create new `Servers <#configure-a-server>`__ too however
+   they cannot delete them. Users of this group have access to the
+   entities with ``Access Level`` set to ``Manager`` or ``User``.
+-  **Root**. Members of this group can create, modify or delete any
+   `Server <#configure-a-server>`__. They also have access to the
+   entities with any ``Access Level`` set.
+
+**NB:** Please keep in mind that some of the entities can have their
+additional access management variations.
 
 Configure a Server
 ------------------
@@ -134,9 +168,10 @@ Default status is 'Undefined'.
 Variables
 ~~~~~~~~~
 
-Configure variable values to be used when rendering commands and files
-on this server. Check the `Configuring
-Variables <#configure-variables>`__ section for more details.
+Configure variable values to be used when rendering
+`commands <#configure-a-command>`__ and files on this server. Check the
+`Configuring Variables <#configure-variables>`__ section for more
+details.
 
 Secrets
 ~~~~~~~
@@ -144,6 +179,14 @@ Secrets
 Configure secret values to used when rendering commands and files on
 this server. Check the `Configuring
 Keys/Secrets <#configure-a-keysecret>`__ section for more details.
+
+Server Logs
+~~~~~~~~~~~
+
+Configure server logs in order to have convenient access to them. Logs
+can be fetched either from `Files <#configure-a-file>`__ or using
+`Commands. <#configure-a-command>`__ Check the `Configuring a Server
+Log <#configure-a-server-log>`__ section for more details.
 
 Files
 ~~~~~
@@ -161,8 +204,8 @@ the ``Variables`` menu.
 Variables Applicability
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-**Cetmix Tower** supports ``jinja2`` syntax for variables. You can use
-variables to render:
+`Cetmix Tower <https://cetmix.com/tower>`__ supports ``jinja2`` syntax
+for variables. You can use variables to render:
 
 -  Commands. Eg ``ls -lh {{ file_store_location }}``
 -  Files. Eg a "Dockerfile" file can have the following text in it:
@@ -191,12 +234,13 @@ You can use any ``jinja2`` supported expressions. For example
 Variable Types
 ~~~~~~~~~~~~~~
 
-Following types of variable values available in **Cetmix Tower**:
+Following types of variable values available in `Cetmix
+Tower <https://cetmix.com/tower>`__:
 
 -  Local values. Those are values that are defined at a record level.
    For example for a server.
--  Global values. Those are values that are defined at the **Cetmix
-   Tower** level.
+-  Global values. Those are values that are defined at the `Cetmix
+   Tower <https://cetmix.com/tower>`__ level.
 
 When rendering an expression local values are used first. If no local
 value is found then global value will be used. For example default value
@@ -252,16 +296,18 @@ Configure a Key/Secret
 Configure a File
 ----------------
 
-**Cetmix Tower** is using SFTP protocol for file transfer operations.
-Based on initial file location following file sources are available:
+`Cetmix Tower <https://cetmix.com/tower>`__ is using SFTP protocol for
+file transfer operations. Based on initial file location following file
+sources are available:
 
 -  Server. These are files that are initially located on remote server
-   and are fetched to **Cetmix Tower**. For example log files.
+   and are fetched to `Cetmix Tower <https://cetmix.com/tower>`__. For
+   example log files.
 
--  Tower. These are files that are initially formed in **Cetmix Tower**
-   and are uploaded to remote server. For example configuration files.
-   Such files are rendered using variables and can be created and
-   managed using file templates.
+-  Tower. These are files that are initially formed in `Cetmix
+   Tower <https://cetmix.com/tower>`__ and are uploaded to remote
+   server. For example configuration files. Such files are rendered
+   using variables and can be created and managed using file templates.
 
 To create a new file go to ``Cetmix Tower/Files/Files`` click ``Create``
 and put values in the fields:
@@ -284,8 +330,8 @@ and put values in the fields:
 -  **Full Server Path**: Full path to file on the remote server
    including filename
 -  **Auto Sync**: If enabled the file will be automatically uploaded to
-   the remote server on after it is modified in **Cetmix Tower**. Used
-   only with ``Tower`` source.
+   the remote server on after it is modified in `Cetmix
+   Tower <https://cetmix.com/tower>`__. Used only with ``Tower`` source.
 -  **Keep when deleted**: If enabled, file will be kept on remote server
    after removing it in the Odoo
 
@@ -427,6 +473,47 @@ values in the fields:
             next to this one.
          -  ``Run next command``. Will continue flight plan execution.
 
+Configure a Server Log
+----------------------
+
+Server Logs allow to fetch and view logs of a server fast and convenient
+way. To configure a Server Log open the server form, navigate to the
+``Server Logs`` tab and add a new record in the list.
+
+|Server logs tab|
+
+Following fields are available:
+
+-  **Name**: Readable name of the log
+-  **Access Level**: Minimum access level required to access this
+   record. Please check the `User Access
+   Settings <#user-access-configuration>`__ section for more details.
+   Possible options:
+
+   -  ``User``. User must have at least ``Cetmix Tower / User`` access
+      group configured in the User Settings.
+   -  ``Manager``. User must have at least ``Cetmix Tower / Manager``
+      access group configured in the User Settings.
+   -  ``Root``. User must have ``Cetmix Tower / Root`` access group
+      configured in the User Settings.
+
+-  **Log Type**: Defines the way logs are fetched. Possible options:
+
+   -  ``Command``. A command is run with its output being saved to the
+      log
+   -  ``File``. Log is fetched from a file
+
+-  **Command**: A command that is used to fetched the logs. This option
+   is available only for ``Log Type`` set to ``Command``. Important:
+   please ensure that selected command can be executed multiple times in
+   parallel to avoid any potential issues.
+-  **Use Sudo**: Use ``sudo`` if required to run this command.
+-  **File**: A file that is used to fetch the log.
+
+**Developer hint**: log output supports HTML formatting. You can
+implement your custom log formatter by overriding the
+``_format_log_text()`` function of the ``cx.tower.server.log`` model.
+
 Configuration best practices
 ----------------------------
 
@@ -493,6 +580,9 @@ command or ``Path`` field in flight plan line.
 .. code:: bash
 
    cat my_doge_memes.txt
+
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====
@@ -561,13 +651,35 @@ To run a flight plan:
    want to delete a command you need to delete all its logs manually
    before doing that.
 
+Checking a Server Log
+---------------------
+
+To check a server log:
+
+-  Navigate to the ``Server Logs`` tab on the Server form
+-  Click on the log **(1)** you would like to check to open in in a pop
+   up window. Or click on the ``Open`` button **(2)** to open it in the
+   full form view
+
+|Open server log|
+
+-  Click the ``Refresh`` button to update the log. You can also click
+   the ``Refresh All`` button **(3)** located above the log list in
+   order to refresh all logs at once. Log output will be displayed in
+   the HTML field below.
+
+|Update server log|
+
+.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
+.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
+
 Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -582,6 +694,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.

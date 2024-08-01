@@ -262,6 +262,26 @@
                                 </tree>
                             </field>
                         </page>
+                        <page name="logs" string="Server Logs">
+                            <button
+                                name="action_update_server_logs"
+                                string="Refresh All"
+                                type="object"
+                                class="oe_highlight"
+                            />
+                            <field name="server_log_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <button
+                                        type="object"
+                                        string="Open"
+                                        name="action_open_log"
+                                        class="oe_highlight"
+                                        title="Open full form"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

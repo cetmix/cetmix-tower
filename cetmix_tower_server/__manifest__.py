@@ -26,6 +26,7 @@
         "security/cx_tower_plan_line_security.xml",
         "security/cx_tower_plan_line_action_security.xml",
         "security/cx_tower_plan_log_security.xml",
+        "security/cx_tower_server_log_security.xml",
         "security/ir.model.access.csv",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
@@ -46,6 +47,7 @@
         "views/cx_tower_key_view.xml",
         "views/cx_tower_file_view.xml",
         "views/cx_tower_file_template_view.xml",
+        "views/cx_tower_server_log_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [
