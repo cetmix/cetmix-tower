@@ -5,7 +5,12 @@ from operator import indexOf
 from odoo import _, api, fields, models
 from odoo.tools.safe_eval import expr_eval
 
-from .constants import ANOTHER_PLAN_RUNNING, PLAN_LINE_NOT_ASSIGNED, PLAN_NOT_ASSIGNED
+from .constants import (
+    ANOTHER_PLAN_RUNNING,
+    PLAN_LINE_CONDITION_CHECK_FAILED,
+    PLAN_LINE_NOT_ASSIGNED,
+    PLAN_NOT_ASSIGNED,
+)
 
 
 class CxTowerPlan(models.Model):
@@ -120,7 +125,6 @@ class CxTowerPlan(models.Model):
             action, exit_code, next_line (Selection, Integer, cx.tower.plan.line())
 
         """
-
         # Iterate all actions and return the first matching one.
         # If no action is found return the default plan values
         # If the line is the last one return last command execution code
@@ -133,13 +137,15 @@ class CxTowerPlan(models.Model):
             return "ec", PLAN_LINE_NOT_ASSIGNED, None
 
         # Default values
-        action, next_line = None, None
         exit_code = command_log.command_status
+        server = command_log.server_id
 
-        # Check if current line is the last one
-        lines = current_line.plan_id.line_ids
-        current_line_index = indexOf(lines, current_line)
-        is_last_line = current_line == lines[-1]
+        # Check line condition
+        if not current_line._is_executable_line(server):
+            # Immediately return to the next line if condition fails
+            return self._get_next_action_state(
+                "n", PLAN_LINE_CONDITION_CHECK_FAILED, current_line
+            )
 
         # Check plan action lines
         for action_line in current_line.action_ids:
@@ -152,26 +158,33 @@ class CxTowerPlan(models.Model):
                 # Use custom exit code if action requires it
                 if action == "ec" and action_line.custom_exit_code:
                     exit_code = action_line.custom_exit_code
-                break
+                return self._get_next_action_state(action, exit_code, current_line)
+
+        # If no action matched, fallback to default ones
+        return self._get_next_action_state(None, exit_code, current_line)
+
+    def _get_next_action_state(self, action, exit_code, current_line):
+        """
+        Determine the next action, exit code, and next line based on the current state.
+        """
+        lines = current_line.plan_id.line_ids
+        is_last_line = current_line == lines[-1]
 
         # If no conditions were met fallback to default ones
         if not action:
-            if exit_code == 0:  # Run next line if no error
-                action = "n"
-            else:  # Pickup on error action
-                action = current_line.plan_id.on_error_action
+            action = "n" if exit_code == 0 else current_line.plan_id.on_error_action
 
             # Exit with custom code
             if action == "ec":
                 exit_code = current_line.plan_id.custom_exit_code
 
-        # Set next line if current is not the last one
-        # Else exit with the last command exit code
-        if action == "n":
-            if is_last_line:
-                action = "e"
-            else:
-                next_line = lines[current_line_index + 1]
+        # Determine the next line if current is not the last one
+        next_line = None
+        if action == "n" and not is_last_line:
+            next_line = lines[indexOf(lines, current_line) + 1]
+
+        if is_last_line:
+            action = "e"
 
         return action, exit_code, next_line
 
@@ -181,11 +194,14 @@ class CxTowerPlan(models.Model):
         Args:
             command_log (cx.tower.command.log()): Command log record
         """
-
         self.ensure_one()
         action, exit_code, plan_line_id = self._get_next_action_values(command_log)
-
         plan_Log = command_log.plan_log_id
+
+        # Update log message
+        if exit_code == PLAN_LINE_CONDITION_CHECK_FAILED:
+            current_line = command_log.plan_log_id.plan_line_executed_id
+            command_log._command_skipped(current_line.condition)
 
         # Execute next line
         if action == "n" and plan_line_id:

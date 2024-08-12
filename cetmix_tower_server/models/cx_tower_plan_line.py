@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
+from odoo.tools.safe_eval import safe_eval
 
 
 class CxTowerPlanLine(models.Model):
@@ -39,6 +40,11 @@ class CxTowerPlanLine(models.Model):
         readonly=True,
         store=True,
     )
+    condition = fields.Char(
+        string="Condition",
+        help="Conditions under which this Flight Plan Line "
+        "will be launched. e.g.: {{ odoo_version}} == '14.0'",
+    )
 
     def _execute(self, server, plan_log_record, **kwargs):
         """Execute command from the Flight Plan line
@@ -72,3 +78,33 @@ class CxTowerPlanLine(models.Model):
         path = self.path or self.command_id.path
 
         server.execute_command(command_id, path, sudo=use_sudo, **kwargs)
+
+    def _is_executable_line(self, server):
+        """
+        Check if this line can be executed based on its condition.
+
+        Args:
+            server (cx.tower.server()): The server on which conditions are checked.
+
+        Returns:
+            bool: True if the line can be executed, otherwise False.
+        """
+        self.ensure_one()
+        condition = self.condition
+        if condition:
+            variables = self.command_id.get_variables_from_code(condition)
+            if variables:
+                variable_values_dict = (
+                    server.get_variable_values(variables) if variables else {}
+                )
+                variable_values = variable_values_dict.get(server.id, {})
+                condition = self.command_id.render_code_custom(
+                    condition, pythonic_mode=True, **variable_values
+                )
+
+            # For evaluate a string that contains an expression that mostly uses
+            # Python constants, arithmetic expressions and the objects directly provided
+            # in context we need use `safe_eval`
+            return safe_eval(condition)
+
+        return True  # Assume the line can be executed if no condition is specified
