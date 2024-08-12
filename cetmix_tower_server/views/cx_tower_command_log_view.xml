@@ -21,13 +21,26 @@
                         name="web_ribbon"
                         title="Failed"
                         bg_color="bg-danger"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '=', 0)]}"
+                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', 'in', [0, -20])]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Skipped"
+                        bg_color="bg-dark"
+                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '!=', -20)]}"
                     />
                     <group>
                         <group>
+                            <field name="is_skipped" invisible="1" />
                             <field name="create_uid" />
                             <field name="server_id" />
                             <field name="command_id" />
+                            <field
+                                name="condition"
+                                attrs="{'invisible': [('condition', '=', False)]}"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                            />
                             <field
                                 name="path"
                                 attrs="{'invisible': [('path', '=', False)]}"

@@ -62,6 +62,12 @@
                                     <field name="name" />
                                     <field name="use_sudo" optional="show" />
                                     <field name="path" optional="show" />
+                                    <field
+                                        name="condition"
+                                        widget="ace"
+                                        options="{'mode': 'python'}"
+                                        optional="show"
+                                    />
                                 </tree>
                             </field>
                         </page>

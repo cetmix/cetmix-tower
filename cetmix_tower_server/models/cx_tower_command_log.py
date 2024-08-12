@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 
+from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
+
 
 class CxTowerCommandLog(models.Model):
     _name = "cx.tower.command.log"
@@ -42,6 +44,12 @@ class CxTowerCommandLog(models.Model):
         string="Use sudo",
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
+    )
+    condition = fields.Char(
+        readonly=True,
+    )
+    is_skipped = fields.Boolean(
+        readonly=True,
     )
 
     # -- Flight Plan
@@ -166,6 +174,20 @@ class CxTowerCommandLog(models.Model):
         rec = self.sudo().create(vals)
         rec._command_finished()
         return rec
+
+    def _command_skipped(self, condition):
+        """
+        Triggered when command skipped by condition
+        """
+        return self.write(
+            {
+                "condition": condition,
+                "is_skipped": True,
+                "finish_date": fields.Datetime.now(),
+                "command_status": PLAN_LINE_CONDITION_CHECK_FAILED,
+                "command_error": _("Plan line condition check failed."),
+            }
+        )
 
     def _command_finished(self):
         """Triggered when command is finished
