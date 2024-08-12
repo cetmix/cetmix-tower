@@ -255,6 +255,14 @@ To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Cr
 - **Tags**: Make usage as search more convenient.
 - **Code**: List of commands to execute. Each of the commands has the following fields:
   - **Sequence**: Order this command is executed. Lower value = higher priority.
+  - **Condition**: [Python expression](https://www.w3schools.com/python/python_syntax.asp) to be matched for the command to be executed. Leave this field blank for unconditional command execution. This field supports [Variables](#configure-variables).
+  Example:
+
+  ```python
+  {{ odoo_version }} == "17.0" and ( {{ nginx_installed }} or {{ traefik_installed }} )
+  ```
+
+
   - **Command**: [Command](#configure-a-command) to be executed.
   - **Path**: Specify path where command will be executed. Overrides `Default Path` of the command. This field supports [Variables](#configure-variables).
   - **Use Sudo**: Use `sudo` if required to run this command.

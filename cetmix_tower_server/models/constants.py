@@ -26,3 +26,6 @@ PLAN_IS_EMPTY = -1
 
 # Returned when the file could not be created on the server
 FILE_CREATION_FAILED = -12
+
+# Returned when the command failed to execute because the condition was not met
+PLAN_LINE_CONDITION_CHECK_FAILED = -20

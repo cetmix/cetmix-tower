@@ -38,7 +38,7 @@ To run a flight plan:
   - **Commands**: Commands that will be executed in this flight plan. This field is read only
 
   Click the **Run** button to execute a flight plan.
-  
+
   You can check the flight plan results in the `Cetmix Tower/Commands/Flight Plan Logs` menu.
   Important! If you want to delete a command you need to delete all its logs manually before doing that.
 
