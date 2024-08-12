@@ -24,8 +24,7 @@ This module is designed for versatility across different operating systems and s
 - **Flight Plans**
 
   - Execute commands in series.
-  - Condition based flow: execute a command based on the previous command result.
-
+  - Condition based flow: execute a command based on pre-defined condition or previous command result. Conditions are built using [Python syntax](https://www.w3schools.com/python/python_syntax.asp).
 - **Files**
 
   - Download files from remote server using SFTP.
