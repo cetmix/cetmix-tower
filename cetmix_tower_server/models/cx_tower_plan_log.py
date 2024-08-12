@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 
-from .constants import PLAN_IS_EMPTY
+from .constants import PLAN_IS_EMPTY, PLAN_LINE_CONDITION_CHECK_FAILED
 
 
 class CxTowerPlanLog(models.Model):
@@ -74,8 +74,10 @@ class CxTowerPlanLog(models.Model):
                 plan_log.duration_current = plan_log.duration
 
     def start(self, server, plan, start_date=None, **kwargs):
-        """Runs plan on server
-        Creates initial log record when command is started.
+        """
+        Runs plan on server.
+        Creates initial log records for each command that cannot be executed until
+        it finds the first executable command.
 
         Args:
             server (cx.tower.server()) server.
@@ -86,40 +88,67 @@ class CxTowerPlanLog(models.Model):
                 - "plan_log": {values passed to flightplan logger}
                 - "log": {values passed to logger}
                 - "key": {values passed to key parser}
+                - "no_log" (bool): If True, no logs will be recorded for
+                                   non-executable lines.
         Returns:
-            (cx.tower.plan.log()) new flightplan log record or False
+            cx.tower.plan.log(): New flightplan log record.
         """
+
+        def get_executable_line(plan, server):
+            """
+            Generator to get each line and check if it's executable.
+            """
+            for line in plan.line_ids:
+                yield line, line._is_executable_line(server)
 
         vals = {
             "server_id": server.id,
             "plan_id": plan.id,
             "is_running": True,
-            "start_date": start_date if start_date else fields.Datetime.now(),
+            "start_date": start_date or fields.Datetime.now(),
         }
-        # Extract and apply plan log kwargs
-        if kwargs:
-            plan_log_kwargs = kwargs.get("plan_log")
-            if plan_log_kwargs:
-                vals.update(plan_log_kwargs)
 
-        # Get plan line to be executed first or finish with error if empty
-        if not plan.line_ids:
-            vals.update(
+        # Extract and apply plan log kwargs
+        plan_log_kwargs = kwargs.get("plan_log")
+        if plan_log_kwargs:
+            vals.update(plan_log_kwargs)
+
+        plan_log = self.sudo().create(vals)
+
+        # Process each line until the first executable one is found
+        log_obj = self.env["cx.tower.command.log"]
+        now = fields.Datetime.now()
+        for line, is_executable in get_executable_line(plan, server):
+            if is_executable:
+                line._execute(server, plan_log, **kwargs)
+                break
+            else:
+                if self._context.get("no_log"):
+                    continue
+
+                # Log the unsuccessful execution attempt
+                log_vals = kwargs.get("log", {})
+                log_obj.record(
+                    server.id,
+                    line.command_id.id,
+                    now,
+                    now,
+                    PLAN_LINE_CONDITION_CHECK_FAILED,
+                    None,
+                    _("Plan line condition check failed."),
+                    plan_log_id=plan_log.id,
+                    condition=line.condition,
+                    is_skipped=True,
+                    **log_vals,
+                )
+        else:
+            plan_log.sudo().write(
                 {
                     "is_running": False,
                     "finish_date": fields.Datetime.now(),
                     "plan_status": PLAN_IS_EMPTY,
                 }
             )
-            proceed = False
-        else:
-            proceed = True
-
-        plan_log = self.sudo().create(vals)
-
-        # Run the first line
-        if proceed:
-            plan.line_ids[0]._execute(server, plan_log, **kwargs)
 
         return plan_log
 

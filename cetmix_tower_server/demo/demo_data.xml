@@ -252,6 +252,9 @@
         <field name="sequence">20</field>
         <field name="plan_id" ref="plan_test_1" />
         <field name="command_id" ref="command_list_dir" />
+        <field
+            name="condition"
+        >{{ branch }} == 'prod' and {{ odoo_version }} == "17.0"</field>
     </record>
     <!-- Actions -->
     <record id="plan_test_1_line_2_action_1" model="cx.tower.plan.line.action">

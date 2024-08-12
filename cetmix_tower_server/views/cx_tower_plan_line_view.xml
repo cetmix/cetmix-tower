@@ -11,6 +11,11 @@
                         <group>
                             <field name="sequence" />
                             <field
+                                name="condition"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                            />
+                            <field
                                 name="command_id"
                                 context="{'command_show_server_names': True}"
                             />
