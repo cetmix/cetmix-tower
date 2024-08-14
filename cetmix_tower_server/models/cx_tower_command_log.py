@@ -1,6 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class CxTowerCommandLog(models.Model):
@@ -171,8 +171,27 @@ class CxTowerCommandLog(models.Model):
         """Triggered when command is finished
         Inherit to implement your own hooks
         """
-
         # Trigger next flightplan line
         for rec in self:
             if rec.plan_log_id:  # type: ignore
                 rec.plan_log_id._plan_command_finished(rec)  # type: ignore
+            elif rec.command_status == 0:
+                rec.create_uid.notify_success(
+                    message=_(
+                        "Command '%(name)s' finished successfully",
+                        name=rec.command_id.name,
+                    ),
+                    title=rec.server_id.name,
+                    sticky=True,
+                )
+            else:
+                rec.create_uid.notify_danger(
+                    message=_(
+                        "Command '%(name)s'"
+                        " finished with error.\n"
+                        "Please check the command log for details.",
+                        name=rec.command_id.name,
+                    ),
+                    title=rec.server_id.name,
+                    sticky=True,
+                )

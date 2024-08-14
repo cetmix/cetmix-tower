@@ -1,6 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 from .constants import PLAN_IS_EMPTY
 
@@ -146,7 +146,28 @@ class CxTowerPlanLog(models.Model):
         """Triggered when flightplan in finished
         Inherit to implement your own hooks
         """
-        return
+        for log in self:
+            if log.plan_status == 0:
+                log.create_uid.notify_success(
+                    message=_(
+                        "Flight Plan '%(name)s' finished successfully",
+                        name=log.plan_id.name,
+                    ),
+                    title=log.server_id.name,
+                    sticky=True,
+                )
+            else:
+                log.create_uid.notify_danger(
+                    message=_(
+                        "Flight Plan '%(name)s'"
+                        " finished with error.\n"
+                        "Please check the flight plan log for details.",
+                        name=log.plan_id.name,
+                    ),
+                    title=log.server_id.name,
+                    sticky=True,
+                )
+        return True
 
     def _plan_command_finished(self, command_log):
         """This function is triggered when a command from this log is finished.
@@ -157,6 +178,5 @@ class CxTowerPlanLog(models.Model):
 
         """
         self.ensure_one()
-
         # Get next line to execute
         self.plan_id._run_next_action(command_log)  # type: ignore
