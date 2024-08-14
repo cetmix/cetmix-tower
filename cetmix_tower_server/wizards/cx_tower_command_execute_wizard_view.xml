@@ -58,7 +58,7 @@
                         string="Run"
                         help="Run code using sever method and log result"
                         class="oe_highlight"
-                        attrs="{'invisible': [('result', '!=', False)]}"
+                        attrs="{'invisible': ['|',('result', '!=', False),('command_id', '=', False)]}"
                     />
                     <button
                         name="execute_command_in_wizard"
@@ -67,7 +67,7 @@
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
                         groups="cetmix_tower_server.group_manager"
-                        attrs="{'invisible': [('result', '!=', False)]}"
+                        attrs="{'invisible': ['|', ('result', '!=', False),('code', '=', False)]}"
                     />
                     <button string="Cancel" special="cancel" />
                     <button
