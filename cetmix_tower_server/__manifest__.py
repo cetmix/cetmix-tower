@@ -16,6 +16,7 @@
     },
     "depends": [
         "mail",
+        "web_notify",
     ],
     "data": [
         "security/cetmix_tower_server_groups.xml",
