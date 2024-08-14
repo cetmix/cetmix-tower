@@ -17,7 +17,6 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     )
     command_id = fields.Many2one(
         "cx.tower.command",
-        required=True,
     )
     path = fields.Char(
         compute="_compute_code",
@@ -128,6 +127,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     def execute_command_on_server(self):
         """Render selected command rendered using server method"""
 
+        # Check if command is selected
+        if not self.command_id:
+            raise ValidationError(_("Please select a command to execute"))
         # Generate custom label. Will be used later to locate the command log
         log_label = generate_random_id(4)
         # Add custom values for log

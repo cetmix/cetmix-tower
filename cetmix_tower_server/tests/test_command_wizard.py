@@ -1,4 +1,4 @@
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common import TestTowerCommon
 
@@ -46,3 +46,24 @@ class TestTowerCommandWizard(TestTowerCommon):
         # Now promote bob to `manager` group and try again
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
         test_wizard.execute_command_in_wizard()
+
+    def test_execute_code_without_a_command(self):
+        """Execute command code without a command selected"""
+
+        # Add Bob to `root` group in order to create a wizard
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+
+        # Create new wizard
+        test_wizard = (
+            self.env["cx.tower.command.execute.wizard"]
+            .with_user(self.user_bob)
+            .create(
+                {
+                    "server_ids": [self.server_test_1.id],
+                }
+            )
+        ).with_user(self.user_bob)
+
+        # Should not allow to run command on server if no command is selected
+        with self.assertRaises(ValidationError):
+            test_wizard.execute_command_on_server()
