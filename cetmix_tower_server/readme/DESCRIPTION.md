@@ -34,6 +34,7 @@ This module is designed for versatility across different operating systems and s
 
 - **Support and Technical Requirements**
 
+  - This module depends on the [OCA](http://odoo-community.org) free [Web Notify](https://github.com/OCA/web/tree/14.0/web_notify) module. Please ensure it is installed in your system for your Odoo version.
   - Cetmix Tower is designed to be accessible, though some features might require a foundational understanding of server management principles.
   - We offer dedicated support to help with any custom setup needs or questions that arise.
   - For additional details, visit our website [cetmix.com](https://cetmix.com).
