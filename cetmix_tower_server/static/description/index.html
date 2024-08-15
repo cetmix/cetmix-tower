@@ -368,7 +368,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:4eff23e585ddd8e7d4da044df74522d9d8d250a7cbcfebb5af858263ea6c2f09
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
 <p>Cetmix Tower offers a streamlined solution for managing remote servers
 via SSH directly from Odoo. This module is designed for versatility
 across different operating systems and software environments, providing
@@ -420,6 +420,11 @@ command result.</li>
 </ul>
 </li>
 <li><strong>Support and Technical Requirements</strong><ul>
+<li>This module depends on the <a class="reference external" href="http://odoo-community.org">OCA</a>
+free <a class="reference external" href="https://github.com/OCA/web/tree/14.0/web_notify">Web
+Notify</a>
+module. Please ensure it is installed in your system for your Odoo
+version.</li>
 <li>Cetmix Tower is designed to be accessible, though some features
 might require a foundational understanding of server management
 principles.</li>
@@ -490,7 +495,7 @@ Tower</a> features you need to provide access
 to in the the user settings. To configure it go to
 <tt class="docutils literal">Setting/Users &amp; Companies/Users</tt> and open a user whom you would like
 to provide access to the Cetmix Tower.</p>
-<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png" /></p>
+<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png" /></p>
 <p>In <tt class="docutils literal">Other</tt> section find the <tt class="docutils literal">Cetmix Tower</tt> field and select one of
 the following options:</p>
 <ul class="simple">
@@ -846,7 +851,7 @@ next to this one.</li>
 <p>Server Logs allow to fetch and view logs of a server fast and convenient
 way. To configure a Server Log open the server form, navigate to the
 <tt class="docutils literal">Server Logs</tt> tab and add a new record in the list.</p>
-<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
+<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
 <p>Following fields are available:</p>
 <ul class="simple">
 <li><strong>Name</strong>: Readable name of the log</li>
@@ -1011,14 +1016,14 @@ before doing that.</p>
 up window. Or click on the <tt class="docutils literal">Open</tt> button <strong>(2)</strong> to open it in the
 full form view</li>
 </ul>
-<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
+<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
 <ul class="simple">
 <li>Click the <tt class="docutils literal">Refresh</tt> button to update the log. You can also click
 the <tt class="docutils literal">Refresh All</tt> button <strong>(3)</strong> located above the log list in
 order to refresh all logs at once. Log output will be displayed in
 the HTML field below.</li>
 </ul>
-<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
+<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
 </div>
 </div>
 <div class="section" id="bug-tracker">
@@ -1026,7 +1031,7 @@ the HTML field below.</li>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -1039,7 +1044,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 </div>
 <div class="section" id="maintainers">
 <h2><a class="toc-backref" href="#toc-entry-29">Maintainers</a></h2>
-<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
 </div>
