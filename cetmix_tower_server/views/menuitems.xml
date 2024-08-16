@@ -23,6 +23,14 @@
         groups="group_user"
         sequence="3"
     />
+    <menuitem
+        id="menu_cx_tower_server_template"
+        name="Templates"
+        action="action_cx_tower_server_template"
+        parent="menu_cx_tower_server_root"
+        groups="group_manager"
+        sequence="10"
+    />
     <!-- Commands -->
     <menuitem
         id="menu_cx_tower_command_root"

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_server_template_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.kanban</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <kanban class="oe_background_grey o_kanban_dashboard" records_draggable="0">
+                <field name="name" />
+                <field name="tag_ids" />
+                <field name="os_id" />
+                <field name="color" />
+                <templates>
+                    <t t-name="kanban-box">
+                    <div
+                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
+                        >
+                        <div t-attf-class="o_kanban_card_header">
+                            <div
+                                    class="o_kanban_card_header_title d-flex justify-content-between mr-4"
+                                >
+                                <div class="o_primary">
+                                    <field name="name" />
+                                </div>
+                            </div>
+                            <div class="o_kanban_manage_button_section">
+                                <a class="o_kanban_manage_toggle_button" href="#"><i
+                                            class="fa fa-ellipsis-v"
+                                            aria-label="Selection"
+                                            role="img"
+                                            title="Selection"
+                                        /></a>
+                            </div>
+                        </div>
+
+                            <div
+                                class="container o_kanban_card_manage_pane dropdown-menu"
+                                role="menu"
+                            >
+                                <div class="o_kanban_card_manage_settings row">
+                                    <ul
+                                        class="oe_kanban_colorpicker"
+                                        data-field="color"
+                                    />
+                                </div>
+                            </div>
+                        <div class="oe_kanban_content">
+                            <div class="oe_kanban_global_click">
+                                <div class="col-12 pt8 o_kanban_primary_right">
+                                    <div attrs="{'invisible': [('os_id', '=', False)]}">
+                                        <strong>Operating System:</strong>
+                                        <field name="os_id" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <div
+                                            attrs="{'invisible': [('tag_ids', '=', False)]}"
+                                        >
+                                        <field name="tag_ids" widget="many2many_tags" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_template_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.tree</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field name="color" widget="color_picker" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.form</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <form>
+
+                <sheet>
+                     <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <div class="oe_title">
+                        <h1 class="d-flex flex-grow justify-content-between">
+                            <field name="name" />
+                        </h1>
+                        <field name="color" widget="color_picker" />
+                    </div>
+                    <notebook>
+                        <page name="General" string="General Settings">
+                            <group name="root">
+                                <group name="main">
+                                    <field name="os_id" />
+                                    <field name="active" invisible='1' />
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                </group>
+                                <group name="ssh">
+                                    <field name="ssh_auth_mode" />
+                                    <field name="ssh_username" />
+                                    <field name="use_sudo" />
+                                    <field
+                                        name="ssh_password"
+                                        attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
+                                        password="True"
+                                    />
+                                    <field
+                                        name="ssh_key_id"
+                                        attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page name="variables" string="Variables">
+                            <field name="variable_value_ids" order="variable_name">
+                                <tree editable="bottom">
+                                    <field name="variable_name" invisible="1" />
+                                    <field name="variable_id" />
+                                    <field name="value_char" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="variable_id" />
+                                        <field name="value_char" />
+                                    </group>
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_template_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.search</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Server Templates">
+                <field name="name" string="Server" />
+                <field name="os_id" />
+                <field name="tag_ids" />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="OS"
+                        name="group_by_os"
+                        domain="[]"
+                        context="{'group_by': 'os_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_cx_tower_server_template" model="ir.actions.act_window">
+        <field name="name">Server Templates</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.server.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="cx_tower_server_template_search_view" />
+    </record>
+
+</odoo>

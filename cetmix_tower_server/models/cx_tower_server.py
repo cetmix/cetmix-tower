@@ -231,9 +231,9 @@ class CxTowerServer(models.Model):
 
     # ---- Main
     active = fields.Boolean(default=True)
-    name = fields.Char(string="Name", required=True)
-    color = fields.Integer(string="Color", help="For better visualization in views")
-    partner_id = fields.Many2one(string="Partner", comodel_name="res.partner")
+    name = fields.Char(required=True)
+    color = fields.Integer(help="For better visualization in views")
+    partner_id = fields.Many2one(comodel_name="res.partner")
     status = fields.Selection(
         selection=lambda self: self._selection_status(),
         default=lambda self: self._default_status(),

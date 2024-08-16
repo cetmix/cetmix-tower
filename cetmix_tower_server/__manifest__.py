@@ -20,6 +20,7 @@
     ],
     "data": [
         "security/cetmix_tower_server_groups.xml",
+        "security/ir.model.access.csv",
         "security/cx_tower_server_security.xml",
         "security/cx_tower_command_security.xml",
         "security/cx_tower_variable_value_security.xml",
@@ -28,7 +29,7 @@
         "security/cx_tower_plan_line_action_security.xml",
         "security/cx_tower_plan_log_security.xml",
         "security/cx_tower_server_log_security.xml",
-        "security/ir.model.access.csv",
+        "security/cx_tower_server_template_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",
@@ -49,6 +50,7 @@
         "views/cx_tower_file_view.xml",
         "views/cx_tower_file_template_view.xml",
         "views/cx_tower_server_log_view.xml",
+        "views/cx_tower_server_template_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [
