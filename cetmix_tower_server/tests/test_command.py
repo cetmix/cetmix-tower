@@ -469,10 +469,10 @@ class TestTowerCommand(TestTowerCommon):
         """Test ssh command result parsing"""
 
         # -------------------------------------------------------
-        # Case 1: regular command execution result with not error
+        # Case 1: regular command execution result with no error
         # We are testing secret value placeholder here
         # -------------------------------------------------------
-        status = 1
+        status = 0
         response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
         error = []
 
@@ -570,6 +570,36 @@ class TestTowerCommand(TestTowerCommon):
         self.assertEqual(
             result_error, "OoopsI didit again", "Error in result doesn't match expected"
         )
+
+        # -------------------------------------------------------
+        # Case 5: regular command execution result with no error
+        # However the command result is saved in the "error" value.
+        # For example this happens in 'docker build'.
+        # -------------------------------------------------------
+        status = 0
+        error = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
+        response = []
+
+        ssh_command_result = self.Server._parse_ssh_command_results(
+            status, response, error, key_values=[f"{self.secret_2.secret_value}"]
+        )
+
+        # Get result
+        result_status = ssh_command_result["status"]
+        result_response = ssh_command_result["response"]
+        result_error = ssh_command_result["error"]
+
+        self.assertEqual(
+            result_status,
+            result_status,
+            "Status in result must be the same as the initial one",
+        )
+        self.assertEqual(
+            result_error,
+            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_SPOILER}",
+            "Response in result doesn't match expected",
+        )
+        self.assertIsNone(result_response, "Error in response must be set to None")
 
     def test_execute_command_no_log(self):
         """Execute command without creating a log record.
