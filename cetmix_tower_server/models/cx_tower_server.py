@@ -1074,10 +1074,13 @@ class CxTowerServer(models.Model):
 
             status = final_status
 
+        # This is needed to remove keys
+        if key_values:
+            key_model = self.env["cx.tower.key"]
+
         # Compose response message
         if response and isinstance(response, list):
             # Replace secrets with spoiler
-            key_model = self.env["cx.tower.key"]
             response_vals = [
                 key_model._replace_with_spoiler(str(r), key_values)
                 if key_values
@@ -1092,7 +1095,13 @@ class CxTowerServer(models.Model):
 
         # Compose error message
         if error and isinstance(error, list):
-            error_vals = [str(r) for r in error]
+            # Replace secrets with spoiler
+            error_vals = [
+                key_model._replace_with_spoiler(str(e), key_values)
+                if key_values
+                else str(e)
+                for e in error
+            ]
             error = "".join(error_vals)
         elif not error:
             # For not to save an empty list `[]` in log
