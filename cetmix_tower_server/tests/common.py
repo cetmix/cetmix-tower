@@ -76,7 +76,7 @@ class TestTowerCommon(TransactionCase):
         self.Key = self.env["cx.tower.key"]
 
         self.key_1 = self.Key.create({"name": "Test Key 1"})
-        self.key_2 = self.Key.create({"name": "Test Key 2"})
+        self.secret_2 = self.Key.create({"name": "Test Key 2", "key_type": "s"})
 
         # File template
         self.FileTemplate = self.env["cx.tower.file.template"]
@@ -194,10 +194,23 @@ class TestTowerCommon(TransactionCase):
                 status = 0
                 response = ["ok"]
                 error = []
-            # Parse inline variables
-            command = self.env["cx.tower.key"].parse_code(
+
+            # Parse inline secrets
+            code_and_secrets = self.env[
+                "cx.tower.key"
+            ]._parse_code_and_return_key_values(command_code, **kwargs.get("key", {}))
+            command_code = code_and_secrets["code"]
+            secrets = code_and_secrets["key_values"]
+
+            command = self.env["cx.tower.key"]._parse_code(
                 command_code, **kwargs.get("key", {})
             )
+
+            if status != 0:
+                if raise_on_error:
+                    raise ValidationError(_("SSH execute command error"))
+                return self._parse_ssh_command_results(-1, [], error, secrets, **kwargs)
+
             command = self._prepare_ssh_command(command, command_path, sudo)
 
             # Compose response multiple commands: sudo with password
@@ -210,7 +223,9 @@ class TestTowerCommon(TransactionCase):
                     response_list += response
                     error_list += error
 
-            return self._parse_ssh_command_results(status, response, error)
+            return self._parse_ssh_command_results(
+                status, response, error, secrets, **kwargs
+            )
 
         self.Server._patch_method("_connect", _connect_patch)
         self.Server._patch_method(

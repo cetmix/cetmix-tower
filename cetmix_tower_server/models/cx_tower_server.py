@@ -891,10 +891,10 @@ class CxTowerServer(models.Model):
             command_path (Char, optional): directory where command should be executed
             raise_on_error (bool, optional): raise error on error
             sudo (selection): use sudo Defaults to None.
-        kwargs (dict):  extra arguments. Use to pass external values.
-                Following keys are supported by default:
-                    - "log": {values passed to logger}
-                    - "key": {values passed to key parser}
+            kwargs (dict):  extra arguments. Use to pass external values.
+                    Following keys are supported by default:
+                        - "log": {values passed to logger}
+                        - "key": {values passed to key parser}
 
         Raises:
             ValidationError: if client is not valid
@@ -910,25 +910,32 @@ class CxTowerServer(models.Model):
         if not client:
             raise ValidationError(_("SSH Client is not defined."))
 
-        # Parse inline variables
-        command = self.env["cx.tower.key"].parse_code(
+        # Parse inline secrets
+        code_and_secrets = self.env["cx.tower.key"]._parse_code_and_return_key_values(
             command_code, **kwargs.get("key", {})
         )
+        command_code = code_and_secrets["code"]
+        secrets = code_and_secrets["key_values"]
 
         # Prepare ssh command
-        command = self._prepare_ssh_command(command, command_path, sudo)
+        prepared_command_code = self._prepare_ssh_command(
+            command_code, command_path, sudo
+        )
+
         try:
             status = []
             response = []
             error = []
 
             # Command is a single sting. No 'sudo' or 'sudo' w/o password
-            if isinstance(command, str):
-                status, response, error = client.exec_command(command, sudo=sudo)
+            if isinstance(prepared_command_code, str):
+                status, response, error = client.exec_command(
+                    prepared_command_code, sudo=sudo
+                )
 
             # Multiple commands: sudo with password
-            elif isinstance(command, list):
-                for cmd in command:
+            elif isinstance(prepared_command_code, list):
+                for cmd in prepared_command_code:
                     st, resp, err = client.exec_command(cmd, sudo=sudo)
                     status.append(st)
                     response += resp
@@ -948,9 +955,11 @@ class CxTowerServer(models.Model):
                 response = []
                 error = [e]
 
-        return self._parse_ssh_command_results(status, response, error)
+        return self._parse_ssh_command_results(
+            status, response, error, secrets, **kwargs
+        )
 
-    def _prepare_ssh_command(self, command, path=None, sudo=None):
+    def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
         """Prepare ssh command
         IMPORTANT:
         Commands executed with sudo will be run separately one after another
@@ -961,11 +970,15 @@ class CxTowerServer(models.Model):
             sudo ls -l
 
         Args:
-            command (text): initial command
+            command_code (text): initial command
             path (str, optional): directory where command should be executed
             sudo (str, optional): sudo mode (n, p)
                 n - sudo without password
                 p - sudo with password
+            kwargs (dict):  extra arguments. Use to pass external values.
+                    Following keys are supported by default:
+                        - "log": {values passed to logger}
+                        - "key": {values passed to key parser}
 
         Returns:
             command (list|str): command splitted into separate commands
@@ -981,18 +994,18 @@ class CxTowerServer(models.Model):
             sudo_prefix = "sudo -S -p ''"
 
             # Detect command separator
-            if "&&" in command or ";" in command:
+            if "&&" in command_code or ";" in command_code:
                 # If command consists of several commands:
                 # Replace alternative separator to avoid possible issues.
                 # We need to stop always if some command issues error.
                 # Check TODO above
-                command.replace(";", "&&")
+                command_code.replace(";", "&&")
                 separator = "&&"
-                command.replace("\\", "").replace("\n", "").split(separator)
+                command_code.replace("\\", "").replace("\n", "").split(separator)
                 result = (
-                    command.replace("\\", "").replace("\n", "").split(separator)
+                    command_code.replace("\\", "").replace("\n", "").split(separator)
                     if separator
-                    else [command]
+                    else [command_code]
                 )
 
                 # Sudo with password expects a list of commands
@@ -1003,7 +1016,7 @@ class CxTowerServer(models.Model):
                     result = f" {separator} ".join(result)
             else:
                 # Single command only
-                result = f"{sudo_prefix} {command}"
+                result = f"{sudo_prefix} {command_code}"
 
                 if sudo == "p":
                     # Sudo with password expects a list of commands
@@ -1011,7 +1024,7 @@ class CxTowerServer(models.Model):
 
         else:
             # Command without sudo is always run as is
-            result = command
+            result = command_code
         # Add path change command
         # TODO: we can put this command to the config level later if needed
         if path:
@@ -1024,7 +1037,9 @@ class CxTowerServer(models.Model):
                 result = f"{cd_command} && {result}"
         return result
 
-    def _parse_ssh_command_results(self, status, response, error):
+    def _parse_ssh_command_results(
+        self, status, response, error, key_values=None, **kwargs
+    ):
         """Parse results of the command executed with sudo.
         Paramiko returns SSH response and error as list.
         When executing command with sudo with password we return status as a list too.
@@ -1034,6 +1049,12 @@ class CxTowerServer(models.Model):
             status_list (Int or list of int): Status or statuses
             response_list (list): Response
             error_list (list): Error
+            key_values (list): Secrets that were discovered in code.
+                Used to clean up command result.
+            kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
 
         Returns:
             dict: {
@@ -1055,7 +1076,14 @@ class CxTowerServer(models.Model):
 
         # Compose response message
         if response and isinstance(response, list):
-            response_vals = [str(r) for r in response]
+            # Replace secrets with spoiler
+            key_model = self.env["cx.tower.key"]
+            response_vals = [
+                key_model._replace_with_spoiler(str(r), key_values)
+                if key_values
+                else str(r)
+                for r in response
+            ]
             response = "".join(response_vals)
 
         elif not response:

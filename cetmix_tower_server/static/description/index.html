@@ -8,11 +8,10 @@
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
+:Id: $Id: html4css1.css 8954 2022-01-20 10:10:25Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
-Despite the name, some widely supported CSS2 features are used.
 
 See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
 customize this style sheet.
@@ -275,7 +274,7 @@ pre.literal-block, pre.doctest-block, pre.math, pre.code {
   margin-left: 2em ;
   margin-right: 2em }
 
-pre.code .ln { color: gray; } /* line numbers */
+pre.code .ln { color: grey; } /* line numbers */
 pre.code, code { background-color: #eeeeee }
 pre.code .comment, code .comment { color: #5C6576 }
 pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
@@ -301,7 +300,7 @@ span.option {
 span.pre {
   white-space: pre }
 
-span.problematic, pre.problematic {
+span.problematic {
   color: red }
 
 span.section-subtitle {
@@ -369,7 +368,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:77220a5c3e2820d1330d901e182a7dc8594d354cc925ec4cda42fcdaf423f307
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
 <p>Cetmix Tower offers a streamlined solution for managing remote servers
 via SSH directly from Odoo. This module is designed for versatility
 across different operating systems and software environments, providing
@@ -455,31 +454,34 @@ questions that arise.</li>
 <li><a class="reference internal" href="#tower-system-variable" id="toc-entry-12">‘tower’ System Variable</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configure-a-key-secret" id="toc-entry-13">Configure a Key/Secret</a></li>
-<li><a class="reference internal" href="#configure-a-file" id="toc-entry-14">Configure a File</a><ul>
-<li><a class="reference internal" href="#file-templates" id="toc-entry-15">File Templates</a></li>
+<li><a class="reference internal" href="#configure-a-key-secret" id="toc-entry-13">Configure a Key/Secret</a><ul>
+<li><a class="reference internal" href="#keys-of-type-secret" id="toc-entry-14">Keys of type <tt class="docutils literal">Secret</tt></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#configure-a-command" id="toc-entry-16">Configure a Command</a></li>
-<li><a class="reference internal" href="#configure-a-flight-plan" id="toc-entry-17">Configure a Flight Plan</a></li>
-<li><a class="reference internal" href="#configure-a-server-log" id="toc-entry-18">Configure a Server Log</a></li>
-<li><a class="reference internal" href="#configuration-best-practices" id="toc-entry-19">Configuration best practices</a><ul>
-<li><a class="reference internal" href="#use-simple-commands" id="toc-entry-20">Use simple commands</a></li>
-<li><a class="reference internal" href="#do-not-change-directory-using-shell-commands" id="toc-entry-21">Do not change directory using shell commands</a></li>
+<li><a class="reference internal" href="#configure-a-file" id="toc-entry-15">Configure a File</a><ul>
+<li><a class="reference internal" href="#file-templates" id="toc-entry-16">File Templates</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configure-a-command" id="toc-entry-17">Configure a Command</a></li>
+<li><a class="reference internal" href="#configure-a-flight-plan" id="toc-entry-18">Configure a Flight Plan</a></li>
+<li><a class="reference internal" href="#configure-a-server-log" id="toc-entry-19">Configure a Server Log</a></li>
+<li><a class="reference internal" href="#configuration-best-practices" id="toc-entry-20">Configuration best practices</a><ul>
+<li><a class="reference internal" href="#use-simple-commands" id="toc-entry-21">Use simple commands</a></li>
+<li><a class="reference internal" href="#do-not-change-directory-using-shell-commands" id="toc-entry-22">Do not change directory using shell commands</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#usage" id="toc-entry-22">Usage</a><ul>
-<li><a class="reference internal" href="#running-a-command" id="toc-entry-23">Running a Command</a></li>
-<li><a class="reference internal" href="#running-a-flight-plan" id="toc-entry-24">Running a Flight Plan</a></li>
-<li><a class="reference internal" href="#checking-a-server-log" id="toc-entry-25">Checking a Server Log</a></li>
+<li><a class="reference internal" href="#usage" id="toc-entry-23">Usage</a><ul>
+<li><a class="reference internal" href="#running-a-command" id="toc-entry-24">Running a Command</a></li>
+<li><a class="reference internal" href="#running-a-flight-plan" id="toc-entry-25">Running a Flight Plan</a></li>
+<li><a class="reference internal" href="#checking-a-server-log" id="toc-entry-26">Checking a Server Log</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-26">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-27">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-28">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-29">Maintainers</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-27">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-28">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-29">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-30">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -496,7 +498,7 @@ Tower</a> features you need to provide access
 to in the the user settings. To configure it go to
 <tt class="docutils literal">Setting/Users &amp; Companies/Users</tt> and open a user whom you would like
 to provide access to the Cetmix Tower.</p>
-<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png" /></p>
+<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png" /></p>
 <p>In <tt class="docutils literal">Other</tt> section find the <tt class="docutils literal">Cetmix Tower</tt> field and select one of
 the following options:</p>
 <ul class="simple">
@@ -660,24 +662,68 @@ the <tt class="docutils literal">tower</tt> variable unless you really need that
 <h2><a class="toc-backref" href="#toc-entry-13">Configure a Key/Secret</a></h2>
 <div class="line-block">
 <div class="line">Keys/Secrets are used to private SSH keys and sensitive data that is
-used for rendering command and files.</div>
+used for rendering commands.</div>
 <div class="line">To configure a new key or secret go to <tt class="docutils literal">Cetmix Tower/Settings/Keys</tt>
 click <tt class="docutils literal">Create</tt> and put values in the fields:</div>
 </div>
 <ul class="simple">
 <li><strong>Name</strong>: Readable name</li>
-<li><strong>Key Type</strong>: Can be <tt class="docutils literal">SSH Key</tt> or <tt class="docutils literal">Secret</tt></li>
+<li><strong>Key Type</strong>: Following values are available:<ul>
+<li><tt class="docutils literal">SSH Key</tt> is used to store SSH private keys. They are selectable
+in <a class="reference external" href="#configure-a-server">Server settings</a></li>
+<li><tt class="docutils literal">Secret</tt> used to store sensitive information that can be used
+inline in commands. Eg a token or a password. Secrets cannot be
+previewed in command preview and are replaced with placeholder in
+<a class="reference external" href="#configure-a-command">command</a> logs.</li>
+</ul>
+</li>
 <li><strong>Key ID</strong>: This values will be used for referencing this secret in
 commands and files</li>
 <li><strong>Value</strong>: Key value. <strong>IMPORTANT:</strong> This is a write only field.
 Please ensure that you have saved your key/secret before saving it.
 Once saved it cannot be read from the user interface any longer.</li>
-<li><strong>Used For</strong>: List of Servers this key of type <tt class="docutils literal">SSH Key</tt> is used
-for</li>
+<li><strong>Used For</strong>: <tt class="docutils literal">SSH Key</tt> type only. List of
+<a class="reference external" href="#configure-a-server">Servers</a> where this SSH key is used</li>
+<li><strong>Partner</strong>: <tt class="docutils literal">Secret</tt> type only. If selected this secret is used
+only for the <a class="reference external" href="#configure-a-server">Servers</a> of selected partner</li>
+<li><strong>Server</strong>: <tt class="docutils literal">Secret</tt> type only. If selected this secret is used
+only for selected <a class="reference external" href="#configure-a-server">Server</a></li>
+<li><strong>Note</strong>: Put your notes here</li>
 </ul>
+<div class="section" id="keys-of-type-secret">
+<h3><a class="toc-backref" href="#toc-entry-14">Keys of type <tt class="docutils literal">Secret</tt></a></h3>
+<p>Keys of type <tt class="docutils literal">Secret</tt> (or “Secret”) are considered “Global” if no
+partner and no server are selected. Such keys are accessible all across
+the Tower. Global keys are overridden with partner keys with the same
+reference. Partner keys in their turn are overridden with server
+specific keys. Priority order from highest to lowest is:</p>
+<ol class="arabic simple">
+<li>Server specific</li>
+<li>Partner specific</li>
+<li>Global</li>
+</ol>
+<p>Secrets are inserted inline in code using the following pattern:
+<tt class="docutils literal">#!cxtower.secret.REFERENCE!#</tt>. It consists of three dot separated
+parts and is terminated with a mandatory <tt class="docutils literal">!#</tt> suffix:</p>
+<ul class="simple">
+<li><tt class="docutils literal">#!cxtower</tt> is used to declare a special Tower construction</li>
+<li><tt class="docutils literal">secret</tt> is used to declare its type (secret)</li>
+<li><tt class="docutils literal">REFERENCE</tt> secret id as it’s written in the <strong>Key ID</strong> field</li>
+</ul>
+<p><strong>Example:</strong></p>
+<p>Suppose we have a secret with <strong>Key ID</strong> set to <tt class="docutils literal">MY_SECRET_DIR</tt> and
+value <tt class="docutils literal">suchMuchFolder</tt>. In this case the following command:</p>
+<pre class="code bash literal-block">
+mkdir<span class="w"> </span>/home/#!cxtower.secret.MY_SECRET_DIR!#
+</pre>
+<p>will be executed as:</p>
+<pre class="code bash literal-block">
+mkdir<span class="w"> </span>/home/suchMuchFolder
+</pre>
+</div>
 </div>
 <div class="section" id="configure-a-file">
-<h2><a class="toc-backref" href="#toc-entry-14">Configure a File</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-15">Configure a File</a></h2>
 <p><a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> is using SFTP protocol for
 file transfer operations. Based on initial file location following file
 sources are available:</p>
@@ -730,7 +776,7 @@ only with <tt class="docutils literal">Tower</tt> source.</li>
 configuration. You should take care of filesystem access rights to
 ensure that file operations are performed without any issues.</p>
 <div class="section" id="file-templates">
-<h3><a class="toc-backref" href="#toc-entry-15">File Templates</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-16">File Templates</a></h3>
 <p>File templates are used to create and manage multiple files in bulk.
 Once a template is modified all related files are automatically updated.</p>
 <p>To create a new file template go to <tt class="docutils literal">Cetmix Tower/Files/Templates</tt>
@@ -760,7 +806,7 @@ value from the <tt class="docutils literal">Template</tt> field before saving it
 </div>
 </div>
 <div class="section" id="configure-a-command">
-<h2><a class="toc-backref" href="#toc-entry-16">Configure a Command</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-17">Configure a Command</a></h2>
 <p>Command is a shell command that is executed on remote server. To create
 a new command go to <tt class="docutils literal">Cetmix Tower/Commands/Commands</tt> click <tt class="docutils literal">Create</tt>
 and put values in the fields:</p>
@@ -795,7 +841,7 @@ details.</li>
 </ul>
 </div>
 <div class="section" id="configure-a-flight-plan">
-<h2><a class="toc-backref" href="#toc-entry-17">Configure a Flight Plan</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-18">Configure a Flight Plan</a></h2>
 <p>Flight Plans are used to execute commands in series. They allow to build
 a flexible condition based execution flow. To create a new flight plan
 go to <tt class="docutils literal">Cetmix Tower/Commands/Flight Plans</tt> click <tt class="docutils literal">Create</tt> and put
@@ -848,11 +894,11 @@ next to this one.</li>
 </ul>
 </div>
 <div class="section" id="configure-a-server-log">
-<h2><a class="toc-backref" href="#toc-entry-18">Configure a Server Log</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-19">Configure a Server Log</a></h2>
 <p>Server Logs allow to fetch and view logs of a server fast and convenient
 way. To configure a Server Log open the server form, navigate to the
 <tt class="docutils literal">Server Logs</tt> tab and add a new record in the list.</p>
-<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
+<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
 <p>Following fields are available:</p>
 <ul class="simple">
 <li><strong>Name</strong>: Readable name of the log</li>
@@ -886,9 +932,9 @@ implement your custom log formatter by overriding the
 <tt class="docutils literal">_format_log_text()</tt> function of the <tt class="docutils literal">cx.tower.server.log</tt> model.</p>
 </div>
 <div class="section" id="configuration-best-practices">
-<h2><a class="toc-backref" href="#toc-entry-19">Configuration best practices</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-20">Configuration best practices</a></h2>
 <div class="section" id="use-simple-commands">
-<h3><a class="toc-backref" href="#toc-entry-20">Use simple commands</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-21">Use simple commands</a></h3>
 <p>Try to avoid using <tt class="docutils literal">&amp;&amp;</tt> or <tt class="docutils literal">;</tt> joined commands unless this is really
 needed. Use flight plans instead.</p>
 <p><strong>Why?</strong></p>
@@ -913,7 +959,7 @@ apt-get<span class="w"> </span>install<span class="w"> </span>doge-meme-generato
 </pre>
 </div>
 <div class="section" id="do-not-change-directory-using-shell-commands">
-<h3><a class="toc-backref" href="#toc-entry-21">Do not change directory using shell commands</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-22">Do not change directory using shell commands</a></h3>
 <p>Do not use <tt class="docutils literal">cd</tt> or <tt class="docutils literal">chdir</tt> commands. Use <tt class="docutils literal">Default Path</tt> field in
 command or <tt class="docutils literal">Path</tt> field in flight plan line.</p>
 <p><strong>Why?</strong></p>
@@ -943,9 +989,9 @@ cat<span class="w"> </span>my_doge_memes.txt
 </div>
 </div>
 <div class="section" id="usage">
-<h1><a class="toc-backref" href="#toc-entry-22">Usage</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-23">Usage</a></h1>
 <div class="section" id="running-a-command">
-<h2><a class="toc-backref" href="#toc-entry-23">Running a Command</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-24">Running a Command</a></h2>
 <p>To run a command:</p>
 <ul class="simple">
 <li>Select a server in the list view or open a server form view</li>
@@ -982,7 +1028,7 @@ delete a command you need to delete all its logs manually before doing
 that.</p>
 </div>
 <div class="section" id="running-a-flight-plan">
-<h2><a class="toc-backref" href="#toc-entry-24">Running a Flight Plan</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-25">Running a Flight Plan</a></h2>
 <p>To run a flight plan:</p>
 <ul>
 <li><p class="first">Select a server in the list view or open a server form view</p>
@@ -1009,7 +1055,7 @@ before doing that.</p>
 </ul>
 </div>
 <div class="section" id="checking-a-server-log">
-<h2><a class="toc-backref" href="#toc-entry-25">Checking a Server Log</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-26">Checking a Server Log</a></h2>
 <p>To check a server log:</p>
 <ul class="simple">
 <li>Navigate to the <tt class="docutils literal">Server Logs</tt> tab on the Server form</li>
@@ -1017,35 +1063,35 @@ before doing that.</p>
 up window. Or click on the <tt class="docutils literal">Open</tt> button <strong>(2)</strong> to open it in the
 full form view</li>
 </ul>
-<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
+<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
 <ul class="simple">
 <li>Click the <tt class="docutils literal">Refresh</tt> button to update the log. You can also click
 the <tt class="docutils literal">Refresh All</tt> button <strong>(3)</strong> located above the log list in
 order to refresh all logs at once. Log output will be displayed in
 the HTML field below.</li>
 </ul>
-<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
+<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
 </div>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-26">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-27">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-27">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-28">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-28">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-29">Authors</a></h2>
 <ul class="simple">
 <li>Cetmix</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-29">Maintainers</a></h2>
-<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
+<h2><a class="toc-backref" href="#toc-entry-30">Maintainers</a></h2>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
 </div>
