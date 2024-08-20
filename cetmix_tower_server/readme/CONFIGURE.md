@@ -233,11 +233,12 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 - **OSes**: List of operating systems this command is available. Leave this field blank to make the command available for all OSes.
 - **Tags**: Make usage as search more convenient.
 - **Action**: Action executed by the command. Possible options:
+  - `Execute Python code`: Execute a Python code on the Tower Server.
   - `Execute shell command`: Execute a shell command using ssh connection on remote server.
   - `Push file`: Create or update a file using selected file template and push it to remote server. If the file already exists on server it will be overwritten.
 
 - **Default Path**: Specify path where command will be executed. This field supports [Variables](#configure-variables). Important: ensure ssh user has access to the location even if executing command using sudo.
-- **Code**: Command code as it will be executed by remote shell. This field supports [Variables](#configure-variables).
+- **Code**: Code to execute. Can be an SSH command or Python code based on selected action. This field supports [Variables](#configure-variables).
 - **File Template**: File template that will be used to create or update file. Check [File Templates](#file-templates) for more details.
 
 ## Configure a Flight Plan

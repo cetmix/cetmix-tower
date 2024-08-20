@@ -10,11 +10,16 @@
                     <div
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                        attrs="{'invisible': [('action', 'not in', ['file_using_template', 'python_code'])]}"
                         style="margin-bottom:0px;"
                     >
-                        <p>
+                        <p
+                            attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                        >
                             This command can be used only in Flight Plans.
+                        </p>
+                        <p attrs="{'invisible': [('action', '!=', 'python_code')]}">
+                            Remember: Python code is executed on the Tower server, not on the remote one.
                         </p>
                     </div>
                     <group>
@@ -27,6 +32,7 @@
                             />
                             <field
                                 name="path"
+                                attrs="{'invisible': [('action', '=', 'python_code')]}"
                                 placeholder="optional, eg /home/{{ tower.server.username }}"
                             />
                             <field name="allow_parallel_run" />
@@ -58,6 +64,47 @@
                             attrs="{'invisible': [('action', '!=', 'ssh_command')],'required': [('action', '=', 'ssh_command')]}"
                         />
                     </group>
+                    <notebook attrs="{'invisible': [('action', '!=', 'python_code')]}">
+                        <page name="python_code" string="Python Expression">
+                            <field
+                                name="code"
+                                attrs="{'required': [('action', '=', 'python_code')]}"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                                placeholder="Enter Python code here. Help about Python expression is available in the help tab of this document."
+                            />
+                        </page>
+                        <page string="Help" name="python_help_info">
+                            <div style="margin-top: 4px;">
+                                <h3>Help with Python expressions</h3>
+                                <p
+                                >Various fields may use Python code or Python expressions. The following variables can be used:</p>
+                                <ul>
+                                    <li><code>user</code>: Current Odoo user</li>
+                                    <li><code
+                                        >env</code>: Odoo Environment on which the action is triggered</li>
+                                    <li><code
+                                        >server</code>: Server on which the command is run</li>
+                                    <li><code>time</code>, <code>datetime</code>, <code
+                                        >dateutil</code>, <code
+                                        >timezone</code>: useful Python libraries</li>
+                                    <li><code
+                                        >requests</code>: Python 'requests' library</li>
+                                    <li><code
+                                        >UserError</code>: Warning Exception to use with <code
+                                        >raise</code></li>
+                                    <li
+                                    >Each python code command returns the COMMAND_RESULT value which is a dictionary.</li>
+                                </ul>
+                                <p
+                                >There are two default keys in the dictionary, e.g.:</p>
+<code style='white-space: pre-wrap'>
+x = 2*10
+COMMAND_RESULT = {"exit_code": x, "message": "This will be logged as an error message because exit code !=0"}
+</code>
+                            </div>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

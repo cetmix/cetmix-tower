@@ -6,6 +6,16 @@
         <field name="model">cx.tower.command.execute.wizard</field>
         <field name="arch" type="xml">
             <form string="Execute Command">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('action', '!=', 'python_code')]}"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        Remember: Python code is executed on the Tower server, not on the remote one.
+                    </p>
+                </div>
                 <h2>
                     Rendered code is shown as for the first selected server!
                 </h2>
@@ -21,7 +31,12 @@
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
-                        <field name="use_sudo" placeholder="No sudo" />
+                        <field name="action" nolabel="1" />
+                        <field
+                            name="use_sudo"
+                            attrs="{'invisible': [('action', '=', 'python_code')]}"
+                            placeholder="No sudo"
+                        />
                         <field name="command_id" domain="command_domain" />
                         <field name="command_domain" invisible="1" />
                         <span>show shared</span>
@@ -29,6 +44,7 @@
                     </div>
                     <field
                         name="path"
+                        attrs="{'invisible': [('action', '=', 'python_code')]}"
                         placeholder="e.g. /home/user This field does NOT support variables"
                     />
                 </group>
@@ -42,11 +58,18 @@
                     groups="cetmix_tower_server.group_manager"
                 >
                     <page name="code" string="Code">
-                        <field name="code" groups="cetmix_tower_server.group_manager" />
+                        <field
+                            name="code"
+                            widget="ace"
+                            options="{'mode': 'python'}"
+                            groups="cetmix_tower_server.group_manager"
+                        />
                     </page>
                     <page name="preview" string="Preview">
                         <field
                             name="rendered_code"
+                            widget="ace"
+                            options="{'mode': 'python'}"
                             groups="cetmix_tower_server.group_manager"
                         />
                     </page>
