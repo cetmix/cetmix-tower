@@ -29,3 +29,6 @@ FILE_CREATION_FAILED = -12
 
 # Returned when the command failed to execute because the condition was not met
 PLAN_LINE_CONDITION_CHECK_FAILED = -20
+
+# Returned when the command failed to execute due to a python code execution error
+PYTHON_COMMAND_ERROR = -24

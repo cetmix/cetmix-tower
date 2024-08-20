@@ -87,6 +87,19 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
+        self.command_create_new_command = self.Command.create(
+            {
+                "name": "Create new command",
+                "action": "python_code",
+                "code": """
+if #!cxtower.secret.FOLDER!#:
+    command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
+    COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
+else:
+    COMMAND_RESULT = {"exit_code": -1, "message": "error"}
+""",
+            }
+        )
         # Command log
         self.CommandLog = self.env["cx.tower.command.log"]
 
