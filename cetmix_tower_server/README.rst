@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -63,8 +63,10 @@ tied down by vendor or technology constraints.
 -  **Flight Plans**
 
    -  Execute commands in series.
-   -  Condition based flow: execute a command based on the previous
-      command result.
+   -  Condition based flow: execute a command based on pre-defined
+      condition or previous command result. Conditions are built using
+      `Python
+      syntax <https://www.w3schools.com/python/python_syntax.asp>`__.
 
 -  **Files**
 
@@ -486,6 +488,7 @@ go to ``Cetmix Tower/Commands/Flight Plans`` click ``Create`` and put
 values in the fields:
 
 -  **Name**: Flight Plan name
+
 -  **On Error**: Default action to execute when an error happens during
    the flight plan execution. Possible options:
 
@@ -497,14 +500,27 @@ values in the fields:
    -  ``Run next command``. Will continue flight plan execution.
 
 -  **Note**: Comments or user notes.
+
 -  **Servers**: List of servers this command can be run on. Leave this
    field blank to make the command available to all servers.
+
 -  **Tags**: Make usage as search more convenient.
+
 -  **Code**: List of commands to execute. Each of the commands has the
    following fields:
 
    -  **Sequence**: Order this command is executed. Lower value = higher
       priority.
+   -  **Condition**: `Python
+      expression <https://www.w3schools.com/python/python_syntax.asp>`__
+      to be matched for the command to be executed. Leave this field
+      blank for unconditional command execution. This field supports
+      `Variables <#configure-variables>`__. Example:
+
+   .. code:: python
+
+      {{ odoo_version }} == "17.0" and ( {{ nginx_installed }} or {{ traefik_installed }} )
+
    -  **Command**: `Command <#configure-a-command>`__ to be executed.
    -  **Path**: Specify path where command will be executed. Overrides
       ``Default Path`` of the command. This field supports
@@ -635,8 +651,8 @@ command or ``Path`` field in flight plan line.
 
    cat my_doge_memes.txt
 
-.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png
-.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====
@@ -724,8 +740,8 @@ To check a server log:
 
 |Update server log|
 
-.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png
-.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png
+.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
+.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
 
 Bug Tracker
 ===========
@@ -733,7 +749,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -748,6 +764,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.
