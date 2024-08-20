@@ -6,11 +6,13 @@ import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 from .constants import (
     ANOTHER_COMMAND_RUNNING,
     FILE_CREATION_FAILED,
     NO_COMMAND_RUNNER_FOUND,
+    PYTHON_COMMAND_ERROR,
 )
 
 _logger = logging.getLogger(__name__)
@@ -608,6 +610,9 @@ class CxTowerServer(models.Model):
 
         # Render command code using variables
         if variable_values:
+            if command.action == "python_code":
+                variable_values["pythonic_mode"] = True
+
             rendered_code = (
                 command.render_code_custom(command.code, **variable_values)
                 if command.code
@@ -816,6 +821,12 @@ class CxTowerServer(models.Model):
                 rendered_command_path,
                 **kwargs,
             )
+        elif command.action == "python_code":
+            return self._command_runner_python_code(
+                log_record,
+                rendered_command_code,
+                **kwargs,
+            )
 
         error_message = _(
             "No runner found for command action '%(cmd_action)s'",
@@ -959,6 +970,46 @@ class CxTowerServer(models.Model):
         else:
             return command_result
 
+    def _command_runner_python_code(
+        self,
+        log_record,
+        rendered_code,
+        **kwargs,
+    ):
+        """
+        Execute Python code.
+        Updates the record in the Command Log (cx.tower.command.log)
+
+        Args:
+            log_record (cx.tower.command.log()): Command log record
+            rendered_code (Text): Rendered python code.
+        kwargs (dict):  extra arguments. Use to pass external values.
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
+
+        Returns:
+            dict(): python code execution result if `log_record` is
+                    not defined else None
+        """
+        # Execute python code
+        result = self._execute_python_code(
+            code=rendered_code,
+            raise_on_error=False,
+            **kwargs,
+        )
+
+        # Log result
+        if log_record:
+            log_record.finish(
+                fields.Datetime.now(),
+                result["status"],
+                result["response"],
+                result["error"],
+            )
+        else:
+            return result
+
     def _execute_command_using_ssh(
         self,
         client,
@@ -1006,7 +1057,9 @@ class CxTowerServer(models.Model):
 
         # Prepare ssh command
         prepared_command_code = self._prepare_ssh_command(
-            command_code, command_path, sudo
+            command_code,
+            command_path,
+            sudo,
         )
 
         try:
@@ -1046,6 +1099,76 @@ class CxTowerServer(models.Model):
             status, response, error, secrets, **kwargs
         )
 
+    def _execute_python_code(
+        self,
+        code,
+        raise_on_error=True,
+        **kwargs,
+    ):
+        """
+        This is a low level method for python code execution.
+
+        Args:
+            code (Text): python code
+            raise_on_error (bool, optional): raise error on error
+            kwargs (dict):  extra arguments. Use to pass external values.
+                    Following keys are supported by default:
+                        - "log": {values passed to logger}
+                        - "key": {values passed to key parser}
+
+        Raises:
+            ValidationError: python code execution error
+
+        Returns:
+            dict: {
+                "status": <int>,
+                "response": Text,
+                "error": Text
+            }
+        """
+        response = None
+        error = None
+        status = 0
+
+        try:
+            # Parse inline secrets
+            code_and_secrets = self.env[
+                "cx.tower.key"
+            ]._parse_code_and_return_key_values(
+                code, pythonic_mode=True, **kwargs.get("key", {})
+            )
+            command_code = code_and_secrets["code"]
+
+            code = self.env["cx.tower.key"]._parse_code(
+                command_code, pythonic_mode=True, **kwargs.get("key", {})
+            )
+
+            eval_context = self.env["cx.tower.command"]._get_eval_context(self)
+            safe_eval(
+                code,
+                eval_context,
+                mode="exec",
+                nocopy=True,
+            )
+            result = eval_context.get("COMMAND_RESULT")
+            if result:
+                status = result.get("exit_code", 0)
+                if status == 0:
+                    response = result.get("message")
+                else:
+                    error = result.get("message")
+
+        except Exception as e:
+            if raise_on_error:
+                raise ValidationError(
+                    _("Execute python code error: %(err)s", err=e)
+                ) from e
+            else:
+                status = PYTHON_COMMAND_ERROR
+                error = e
+
+        return {"status": status, "response": response, "error": error}
+
     def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
         """Prepare ssh command
         IMPORTANT:
@@ -1073,8 +1196,6 @@ class CxTowerServer(models.Model):
                 from its parts for sudo without password mode ('n'))
 
         """
-        sudo_prefix = False
-
         # Prepare command for sudo if needed
         if sudo:
             # Add location
@@ -1122,6 +1243,7 @@ class CxTowerServer(models.Model):
                 result = [cd_command] + result
             else:
                 result = f"{cd_command} && {result}"
+
         return result
 
     def _parse_ssh_command_results(

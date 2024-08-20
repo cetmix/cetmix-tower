@@ -122,7 +122,7 @@ class CxTowerKey(models.Model):
         res = name.replace(" ", "_").upper()
         return res
 
-    def _parse_code_and_return_key_values(self, code, **kwargs):
+    def _parse_code_and_return_key_values(self, code, pythonic_mode=False, **kwargs):
         """Replaces key placeholders in code with the corresponding values,
         returning key values.
 
@@ -134,6 +134,9 @@ class CxTowerKey(models.Model):
             eg #!cxtower.secret.GITHUB_TOKEN!# for GITHUB_TOKEN key
         Args:
             code (Text): code to process
+            pythonic_mode (Bool): If True, all variables in kwargs are converted to
+                                  strings and wrapped in double quotes.
+                                  Default is False.
             kwargs (dict): optional arguments
 
         Returns:
@@ -156,6 +159,10 @@ class CxTowerKey(models.Model):
             # Replace key including key terminator
             key_value = self._parse_key_string(key_string, **kwargs)
             if key_value:
+                if pythonic_mode:
+                    # save key value as string in pythonic mode
+                    key_value = f'"{key_value}"'
+
                 code = code.replace(key_string, key_value)
 
                 # Save key value if not saved yet

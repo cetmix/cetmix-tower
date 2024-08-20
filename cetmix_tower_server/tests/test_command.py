@@ -665,3 +665,84 @@ class TestTowerCommand(TestTowerCommon):
         self.assertIsNone(
             command_result["error"], "Command error doesn't match expected one"
         )
+
+    def test_execute_python_command(self):
+        """
+        Execute command with python action.
+        """
+        self.Key.create(
+            {
+                "name": "Folder",
+                "key_ref": "FOLDER",
+                "secret_value": "secretFolder",
+                "key_type": "s",
+            }
+        )
+
+        command_result = self.server_test_1.with_context(no_log=True).execute_command(
+            self.command_create_new_command
+        )
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+        self.assertEqual(
+            command_result["response"],
+            "New command was created",
+            "The response must be text",
+        )
+        code = """
+if not #!cxtower.secret.FOLDER!#:
+    command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
+    COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
+else:
+    COMMAND_RESULT = {"exit_code": -1, "message": "error"}
+"""
+        self.command_create_new_command.code = code
+        command_result = self.server_test_1.with_context(no_log=True).execute_command(
+            self.command_create_new_command
+        )
+        self.assertEqual(
+            command_result["status"], -1, "The command result status must be -1"
+        )
+        self.assertEqual(
+            command_result["error"],
+            "error",
+            "The error response must be contain text - error",
+        )
+
+    def test_execute_python_code(self):
+        """
+        Test Execute python code
+        """
+        self.Key.create(
+            {
+                "name": "Folder",
+                "key_ref": "FOLDER",
+                "secret_value": "secretFolder",
+                "key_type": "s",
+            }
+        )
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_new_command
+        )
+        self.assertIn(
+            "/opt/tower",
+            rendered_command["rendered_code"],
+            "Rendered code doesn't contain '/opt/tower'",
+        )
+
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+        self.assertEqual(
+            command_result["response"],
+            "New command was created",
+            "The response must be text",
+        )
+        self.assertIsNone(
+            command_result["error"],
+            "Error in command result must be set to None",
+        )
