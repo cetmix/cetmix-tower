@@ -139,6 +139,7 @@ class CxTowerPlan(models.Model):
         # Default values
         exit_code = command_log.command_status
         server = command_log.server_id
+        server_variable_values = server.variable_value_ids
 
         # Check line condition
         if not current_line._is_executable_line(server):
@@ -158,6 +159,26 @@ class CxTowerPlan(models.Model):
                 # Use custom exit code if action requires it
                 if action == "ec" and action_line.custom_exit_code:
                     exit_code = action_line.custom_exit_code
+
+                variable_value_obj = self.env["cx.tower.variable.value"]
+                for variable_value in action_line.variable_value_ids:
+                    variable = variable_value.variable_id
+                    server_variable_value = server_variable_values.filtered(
+                        lambda rec, variable=variable: rec.variable_id == variable,
+                    )
+                    if server_variable_value:
+                        # update exist server value
+                        server_variable_value.value_char = variable_value.value_char
+                    else:
+                        # create new value
+                        variable_value_obj.create(
+                            {
+                                "variable_id": variable.id,
+                                "value_char": variable_value.value_char,
+                                "server_id": server.id,
+                            }
+                        )
+
                 return self._get_next_action_state(action, exit_code, current_line)
 
         # If no action matched, fallback to default ones

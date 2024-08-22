@@ -464,3 +464,140 @@ class TestTowerPlan(TestTowerCommon):
             all(not command.is_skipped for command in plan_log_records.command_log_ids),
             msg="All command should be executed",
         )
+
+    def test_plan_with_update_variables(self):
+        """
+        Test plan with update server variables
+        """
+        # Add new variable to server
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_version.id,
+                "value_char": "14.0",
+                "server_id": self.server_test_1.id,
+            }
+        )
+        # Create new variable value to action to update existing server variable
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_version.id,
+                "value_char": "16.0",
+                "action_id": self.plan_line_1_action_1.id,
+            }
+        )
+        # Check that server contains server variable with value
+        exist_server_values = self.server_test_1.variable_value_ids.filtered(
+            lambda rec: rec.variable_id == self.variable_version
+        )
+        self.assertEqual(
+            len(exist_server_values),
+            1,
+            "The server should have only one value for the variable",
+        )
+        self.assertEqual(
+            exist_server_values.value_char,
+            "14.0",
+            "The server variable value should be '14.0'",
+        )
+
+        # Add a new variable value to an action that does not exist on the server
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Ubuntu",
+                "action_id": self.plan_line_1_action_1.id,
+            }
+        )
+        # Check that this field is not exist on server
+        exist_server_values = self.server_test_1.variable_value_ids.filtered(
+            lambda rec: rec.variable_id == self.variable_os
+        )
+        self.assertFalse(
+            exist_server_values, "The server should not have this variable"
+        )
+        # Execute plan
+        self.plan_1._execute_single(self.server_test_1)
+        # Check that exists server values was updated
+        exist_server_values = self.server_test_1.variable_value_ids.filtered(
+            lambda rec: rec.variable_id == self.variable_version
+        )
+        self.assertEqual(
+            len(exist_server_values),
+            1,
+            "The server should have only one value for the variable",
+        )
+        self.assertEqual(
+            exist_server_values.value_char,
+            "16.0",
+            "The server variable value should be updated value '16.0'",
+        )
+        # Check that new server value was added to server
+        exist_server_values = self.server_test_1.variable_value_ids.filtered(
+            lambda rec: rec.variable_id == self.variable_os
+        )
+        self.assertEqual(
+            len(exist_server_values),
+            1,
+            "The server should have new value for the variable",
+        )
+        self.assertEqual(
+            exist_server_values.value_char,
+            "Ubuntu",
+            "The server variable value should be updated value 'Ubuntu'",
+        )
+
+    def test_plan_with_action_variables_for_condition(self):
+        """
+        Test plan with update server variables and use new
+        value as condition for next plan line
+        """
+        # Add new variable to server
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_version.id,
+                "value_char": "14.0",
+                "server_id": self.server_test_1.id,
+            }
+        )
+        # Create new variable value to action to update existing server variable
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_version.id,
+                "value_char": "16.0",
+                "action_id": self.plan_line_1_action_1.id,
+            }
+        )
+        # Add condition with variable
+        self.plan_line_2.condition = (
+            "{{ " + self.variable_version.name + " }} == '14.0'"
+        )
+        # Execute plan
+        self.plan_1._execute_single(self.server_test_1)
+        # Check commands
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        # The second line of the plan should be skipped because the
+        # first line of the plan updated the value of the variable
+        self.assertTrue(
+            plan_log_records.command_log_ids[1].is_skipped,
+            msg="Second command must be skipped",
+        )
+
+        # Change condition for plan line
+        self.plan_line_2.condition = (
+            "{{ " + self.variable_version.name + " }} == '16.0'"
+        )
+        # Execute plan
+        self.plan_1._execute_single(self.server_test_1)
+        # Check commands
+        new_plan_log_records = (
+            self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
+            - plan_log_records
+        )
+        # The second line of the plan should be skipped because the
+        # first line of the plan updated the value of the variable
+        self.assertFalse(
+            new_plan_log_records.command_log_ids[1].is_skipped,
+            msg="The second plan line should not be skipped",
+        )
