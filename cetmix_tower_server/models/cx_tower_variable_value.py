@@ -31,6 +31,9 @@ class TowerVariableValue(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", index=True, ondelete="cascade"
     )
+    action_id = fields.Many2one(
+        comodel_name="cx.tower.plan.line.action", index=True, ondelete="cascade"
+    )
 
     _sql_constraints = [
         (
@@ -74,7 +77,10 @@ class TowerVariableValue(models.Model):
             Eg:
                 {"my.custom.model": ("much_model_id", "Much Model")}
         """
-        return {"cx.tower.server": ("server_id", "Server")}
+        return {
+            "cx.tower.server": ("server_id", "Server"),
+            "cx.tower.plan.line.action": ("action_id", "Action"),
+        }
 
     def _check_is_global(self):
         """
