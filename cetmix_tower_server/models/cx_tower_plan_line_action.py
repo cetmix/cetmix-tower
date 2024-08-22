@@ -4,6 +4,7 @@ from odoo import _, api, fields, models
 
 
 class CxTowerPlanLineAction(models.Model):
+    _inherit = ["cx.tower.variable.mixin"]
     _name = "cx.tower.plan.line.action"
     _description = "Cetmix Tower Flight Plan Line Action"
 
@@ -39,6 +40,9 @@ class CxTowerPlanLineAction(models.Model):
         related="line_id.access_level",
         readonly=True,
         store=True,
+    )
+    variable_value_ids = fields.One2many(
+        inverse_name="action_id"  # Other field properties are defined in mixin
     )
 
     @api.depends("condition", "action", "value_char")
