@@ -44,7 +44,6 @@ class TestTowerPlan(TestTowerCommon):
 
         NB: This test relies on demo data and might fail if it is modified
         """
-
         # Ensure demo date integrity just in case demo date is modified
         self.assertEqual(
             self.plan_1.line_ids[0].action_ids[1].custom_exit_code,
@@ -167,12 +166,11 @@ class TestTowerPlan(TestTowerCommon):
 
     def test_plan_execute_single(self):
         """Test plan execution results"""
-
         # Execute plan
         self.plan_1._execute_single(self.server_test_1)
 
         # Check plan log
-        plan_log_rec = self.PlanLog.search([])
+        plan_log_rec = self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
 
         # Must be a single record
         self.assertEqual(len(plan_log_rec), 1, msg="Must be a single plan record")
@@ -204,7 +202,9 @@ class TestTowerPlan(TestTowerCommon):
         self.plan_1._execute_single(self.server_test_1)
 
         # Check plan log
-        plan_log_records = self.PlanLog.search([])
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
 
         # Must be two plan log record
         self.assertEqual(len(plan_log_records), 2, msg="Must be 2 plan log records")
@@ -382,3 +382,85 @@ class TestTowerPlan(TestTowerCommon):
         created_plans.write({"access_level": "3"})
         # Check that all plans are updated successfully
         self.assertTrue(all(plan.access_level == "3" for plan in created_plans))
+
+    def test_plan_with_first_not_executable_condition(self):
+        """
+        Test plan with not executable condition for first plan line
+        """
+        # Add condition for the first plan line
+        self.plan_line_1.condition = "{{ odoo_version }} == '14.0'"
+        # Execute plan
+        self.plan_1._execute_single(self.server_test_1)
+        # Check plan log
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(
+            len(plan_log_records.command_log_ids),
+            2,
+            msg="Must be two command records",
+        )
+        self.assertTrue(
+            plan_log_records.command_log_ids[0].is_skipped,
+            msg="First command must be skipped",
+        )
+        self.assertFalse(
+            plan_log_records.command_log_ids[1].is_skipped,
+            msg="Second command not must be skipped",
+        )
+
+    def test_plan_with_second_not_executable_condition(self):
+        """
+        Test plan with not executable condition for second plan line
+        """
+        # Add condition for second plan line
+        self.plan_line_2.condition = "{{ odoo_version }} == '14.0'"
+        # Execute plan
+        self.plan_1._execute_single(self.server_test_1)
+        # Check plan log
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(
+            len(plan_log_records.command_log_ids),
+            2,
+            msg="Must be two command records",
+        )
+        self.assertTrue(
+            plan_log_records.command_log_ids[1].is_skipped,
+            msg="Second command must be skipped",
+        )
+        self.assertFalse(
+            plan_log_records.command_log_ids[0].is_skipped,
+            msg="First command not must be skipped",
+        )
+
+    def test_plan_with_executable_condition(self):
+        """
+        Test plan with executable condition for plan line
+        """
+        # Add condition for first plan line
+        self.plan_line_1.condition = "1 == 1"
+        # Create a global value for the 'Version' variable
+        self.VariableValues.create(
+            {"variable_id": self.variable_version.id, "value_char": "14.0"}
+        )
+        # Add condition with variable
+        self.plan_line_2.condition = (
+            "{{ " + self.variable_version.name + " }} == '14.0'"
+        )
+        # Execute plan
+        self.plan_1._execute_single(self.server_test_1)
+        # Check commands
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(
+            len(plan_log_records.command_log_ids),
+            2,
+            msg="Must be two command records",
+        )
+        self.assertTrue(
+            all(not command.is_skipped for command in plan_log_records.command_log_ids),
+            msg="All command should be executed",
+        )
