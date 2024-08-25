@@ -7,11 +7,10 @@ class CxTowerServerTemplate(models.Model):
     """Server Template. Used to simplify server creation"""
 
     _name = "cx.tower.server.template"
-    _inherit = ["cx.tower.variable.mixin", "mail.thread", "mail.activity.mixin"]
+    _inherit = ["cx.tower.reference.mixin", "mail.thread", "mail.activity.mixin"]
     _description = "Cetmix Tower Server Template"
 
     active = fields.Boolean(default=True)
-    name = fields.Char(required=True)
 
     # -- Connection
     ssh_username = fields.Char(string="SSH Username")

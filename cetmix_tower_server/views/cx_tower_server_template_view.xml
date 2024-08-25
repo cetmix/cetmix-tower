@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <kanban class="oe_background_grey o_kanban_dashboard" records_draggable="0">
                 <field name="name" />
+                <field name="reference" />
                 <field name="tag_ids" />
                 <field name="os_id" />
                 <field name="color" />
@@ -47,6 +48,9 @@
                         <div class="oe_kanban_content">
                             <div class="oe_kanban_global_click">
                                 <div class="col-12 pt8 o_kanban_primary_right">
+                                    <div>
+                                        <field name="reference" />
+                                    </div>
                                     <div attrs="{'invisible': [('os_id', '=', False)]}">
                                         <strong>Operating System:</strong>
                                         <field name="os_id" />
@@ -78,6 +82,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="reference" optional="show" />
                 <field
                     name="tag_ids"
                     widget="many2many_tags"
@@ -94,7 +99,6 @@
         <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <form>
-
                 <sheet>
                      <widget
                         name="web_ribbon"
@@ -112,6 +116,10 @@
                         <page name="General" string="General Settings">
                             <group name="root">
                                 <group name="main">
+                                    <field
+                                        name="reference"
+                                        placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                    />
                                     <field name="os_id" />
                                     <field name="active" invisible='1' />
                                     <field
