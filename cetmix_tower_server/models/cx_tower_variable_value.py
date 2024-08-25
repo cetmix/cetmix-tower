@@ -34,11 +34,14 @@ class TowerVariableValue(models.Model):
     action_id = fields.Many2one(
         comodel_name="cx.tower.plan.line.action", index=True, ondelete="cascade"
     )
+    server_template_id = fields.Many2one(
+        comodel_name="cx.tower.server.template", index=True, ondelete="cascade"
+    )
 
     _sql_constraints = [
         (
             "tower_variable_value_uniq",
-            "unique (variable_id,server_id,is_global)",
+            "unique (variable_id,server_id,server_template_id,is_global)",
             "Variable can be declared only once for the same record!",
         )
     ]
@@ -80,6 +83,7 @@ class TowerVariableValue(models.Model):
         return {
             "cx.tower.server": ("server_id", "Server"),
             "cx.tower.plan.line.action": ("action_id", "Action"),
+            "cx.tower.server.template": ("server_template_id", "Server Template"),
         }
 
     def _check_is_global(self):
@@ -104,7 +108,7 @@ class TowerVariableValue(models.Model):
                 break
         return is_global
 
-    @api.depends("server_id")
+    @api.depends("server_id", "server_template_id")
     def _compute_is_global(self):
         """
         If variable considered `global` when it's not linked to any record.
