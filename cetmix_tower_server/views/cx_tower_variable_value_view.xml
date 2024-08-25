@@ -8,7 +8,14 @@
             <tree editable="top" decoration-bf="is_global==True">
                 <field name="variable_id" />
                 <field name="is_global" widget="boolean_toggle" />
-                <field name="server_id" />
+                <field
+                    name="server_id"
+                    attrs="{'readonly': [('server_template_id', '!=', False)]}"
+                />
+                <field
+                    name="server_template_id"
+                    attrs="{'readonly': [('server_id', '!=', False)]}"
+                />
                 <field name="action_id" />
                 <field name="value_char" />
             </tree>
