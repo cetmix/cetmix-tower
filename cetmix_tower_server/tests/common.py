@@ -38,6 +38,18 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
+        # Server Template
+        self.ServerTemplate = self.env["cx.tower.server.template"]
+        self.server_template_sample = self.ServerTemplate.create(
+            {
+                "name": "Sample Template",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+
         # Server log
         self.ServerLog = self.env["cx.tower.server.log"]
 
