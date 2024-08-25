@@ -56,6 +56,16 @@ class CxTowerServerLog(models.Model):
     )
     log_text = fields.Html(readonly=True)
 
+    # --- Server template related
+    server_template_id = fields.Many2one("cx.tower.server.template", ondelete="cascade")
+    file_template_id = fields.Many2one(
+        "cx.tower.file.template",
+        ondelete="cascade",
+        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        help="This file template will be used to create log files"
+        " when server is created from a template",
+    )
+
     def _format_log_text(self, log_text):
         """Formats log text to prior to display it.
         Override this function to implement custom log formatting.
