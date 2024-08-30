@@ -229,7 +229,7 @@
                                         attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
                                     />
                                 </group>
-                                <field name="note" />
+                                <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
                         <page name="variables" string="Variables">

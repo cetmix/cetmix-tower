@@ -1,39 +1,50 @@
-Cetmix Tower offers a streamlined solution for managing remote servers via SSH directly from Odoo.
-This module is designed for versatility across different operating systems and software environments, providing a practical option for those looking to manage servers without getting tied down by vendor or technology constraints.
+[Cetmix Tower](http://cetmix.com/tower) offers a streamlined solution for managing remote servers via SSH or API calls directly from [Odoo](https:/odoo.com).
+It is designed for versatility across different operating systems and software environments, providing a practical option for those looking to manage servers without getting tied down by vendor or technology constraints.
 
-- **Why Cetmix Tower?**
+# Why Cetmix Tower?
 
-  - **Open Source:** Cetmix Tower is distributed under the AGPL-3 license.
-  - **Flexibility:** Use Cetmix Tower alongside other management methods without restriction, ensuring you're not limited to a single vendor.
-  - **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for full control over your server management.
-  - **Broad Compatibility:** Execute any software that's manageable via shell commands, from Docker or Kubernetes to direct OS package installations.
-  - **Odoo Integration:** Benefit from Odoo's ecosystem for server management tasks, like deploying servers in response to specific Odoo-triggered events.
-  - **Beyond Odoo:** While optimized for Odoo, Cetmix Tower supports a wide range of software applications, offering flexibility in server management tasks.
+- **Open Source:** [Cetmix Tower](http://cetmix.com/tower) is distributed under the AGPL-3 license
+- **Odoo Integration:** Benefit from [Odoo](https:/odoo.com) ecosystem for server management tasks, like deploying servers in response to specific Odoo-triggered events
+- **Extendability:** Build your own [Odoo](https:/odoo.com) modules using [Cetmix Tower](http://cetmix.com/tower) to implement your custom features
+- **Beyond Odoo:** While optimized for Odoo, Cetmix Tower can manage virtually any instance
+- **Flexibility:** Use Cetmix Tower alongside other management methods without restriction, ensuring you're not limited to a single vendor
+- **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for full control over your server management.
+- **Broad Compatibility:** Execute any software that's manageable via shell commands or API. From Docker or Kubernetes to direct OS package installations
 
-- **Connectivity**
+# Server Management
 
-  - Password and key based authentication when connection to remote server.
-  - Server wide variables that can be used for rendering commands.
+- Variable based flexible configuration
+- Create servers using pre-defined templates
 
-- **Commands**
+# Connectivity
 
-  - Execute commands on multiple servers at once.
-  - Render commands using variables.
-  - Store sensitive information in secret keys that are not visible in command preview.
+- Password and key based authentication for outgoing SSH connections
+- Built-in support of the Python [requests library](https://pypi.org/project/requests/) for outgoing API calls
 
-- **Flight Plans**
+# Commands
 
-  - Execute commands in series.
-  - Condition based flow: execute a command based on pre-defined condition or previous command result. Conditions are built using [Python syntax](https://www.w3schools.com/python/python_syntax.asp).
-- **Files**
+- Execute SSH commands on remote servers
+- Run Python code on the Tower Odoo server
+- Render commands using variables
+- Secret keys for private data storage
 
-  - Download files from remote server using SFTP.
-  - Upload files to remote server using SFTP.
-  - Manage files using templates.
+# Flight Plans
 
-- **Support and Technical Requirements**
+- Execute multiple commands in a row
+- Condition based flow:
+  - Based on condition using [Python syntax](https://www.w3schools.com/python/python_syntax.asp) 
+  - Based on the previous command exit code
 
-  - This module depends on the [OCA](http://odoo-community.org) free [Web Notify](https://github.com/OCA/web/tree/14.0/web_notify) module. Please ensure it is installed in your system for your Odoo version.
-  - Cetmix Tower is designed to be accessible, though some features might require a foundational understanding of server management principles.
-  - We offer dedicated support to help with any custom setup needs or questions that arise.
-  - For additional details, visit our website [cetmix.com](https://cetmix.com).
+# Files
+
+- Download files from remote server using SFTP
+- Upload files to remote server using SFTP
+- Support for `text` and `binary` file format
+- Manage files using pre-defined file templates
+
+# Support and Technical Requirements
+
+- Cetmix Tower with usability and simplicity in mind, though some features might require a foundational understanding of server management principles
+- We offer dedicated support to help with any custom setup needs or questions that may arise
+- This module depends on the [OCA](http://odoo-community.org) free [Web Notify](https://github.com/OCA/web/tree/14.0/web_notify) module. Please ensure it is installed in your system for your Odoo version
+- For additional details, visit our website [cetmix.com](https://cetmix.com)
