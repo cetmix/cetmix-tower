@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_server_template_create_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.create.wizard.view.form</field>
+        <field name="model">cx.tower.server.template.create.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group colspan="2">
+                        <field name="name" />
+                    </group>
+                    <group name="main">
+                        <field name="ip_v4_address" />
+                        <field name="ip_v6_address" />
+                    </group>
+                    <group name="ssh">
+                        <field name="ssh_auth_mode" />
+                        <field name="ssh_port" />
+                        <field name="ssh_username" />
+                        <field
+                            name="ssh_password"
+                            attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
+                            password="True"
+                        />
+                        <field
+                            name="ssh_key_id"
+                            attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
+                        />
+                    </group>
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Confirm"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

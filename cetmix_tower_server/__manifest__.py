@@ -34,6 +34,7 @@
         "data/ir_cron.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",
         "wizards/cx_tower_plan_execute_wizard_view.xml",
+        "wizards/cx_tower_server_template_create_wizard_view.xml",
         "views/web_assets_backend.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
