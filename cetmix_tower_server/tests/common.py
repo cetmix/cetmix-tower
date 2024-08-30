@@ -43,6 +43,7 @@ class TestTowerCommon(TransactionCase):
         self.server_template_sample = self.ServerTemplate.create(
             {
                 "name": "Sample Template",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",

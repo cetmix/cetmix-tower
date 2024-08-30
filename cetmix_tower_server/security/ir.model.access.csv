@@ -48,3 +48,4 @@ access_server_log_manager,Server Log->Manager,model_cx_tower_server_log,group_ma
 access_server_log_root,Server Log->Root,model_cx_tower_server_log,group_root,1,1,1,1
 access_server_template_manager,Server Template->Manager,model_cx_tower_server_template,group_manager,1,1,1,0
 access_server_template_root,Server Template->Root,model_cx_tower_server_template,group_root,1,1,1,1
+access_create_server_from_template_user,Create Server From Template->User,model_cx_tower_server_template_create_wizard,group_user,1,1,1,1

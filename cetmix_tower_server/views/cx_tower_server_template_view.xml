@@ -99,7 +99,29 @@
         <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button
+                        name="action_create_server"
+                        type="object"
+                        class="oe_highlight"
+                        string="Create Server"
+                    />
+                </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_servers"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-server"
+                        >
+                            <field
+                                name="server_count"
+                                widget="statinfo"
+                                string="Servers"
+                            />
+                        </button>
+                    </div>
                      <widget
                         name="web_ribbon"
                         title="Archived"
@@ -110,16 +132,19 @@
                         <h1 class="d-flex flex-grow justify-content-between">
                             <field name="name" />
                         </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                        </h3>
                         <field name="color" widget="color_picker" />
                     </div>
                     <notebook>
                         <page name="General" string="General Settings">
                             <group name="root">
                                 <group name="main">
-                                    <field
-                                        name="reference"
-                                        placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
-                                    />
+                                    <field name="flight_plan_id" />
                                     <field name="os_id" />
                                     <field name="active" invisible='1' />
                                     <field
@@ -130,6 +155,7 @@
                                 </group>
                                 <group name="ssh">
                                     <field name="ssh_auth_mode" />
+                                    <field name="ssh_port" />
                                     <field name="ssh_username" />
                                     <field name="use_sudo" />
                                     <field
@@ -142,6 +168,7 @@
                                         attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
                                     />
                                 </group>
+                                <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
                         <page name="variables" string="Variables">
