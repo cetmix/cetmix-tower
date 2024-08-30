@@ -40,7 +40,9 @@ class CxTowerFile(models.Model):
         compute="_compute_render",
     )
     template_id = fields.Many2one(
-        "cx.tower.file.template", inverse="_inverse_template_id"
+        "cx.tower.file.template",
+        inverse="_inverse_template_id",
+        index=True,
     )
     server_dir = fields.Char(
         string="Directory on server",

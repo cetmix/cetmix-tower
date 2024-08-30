@@ -29,7 +29,7 @@ class CxTowerServerLog(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char(required=True)
-    server_id = fields.Many2one("cx.tower.server", required=True, ondelete="cascade")
+    server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
     log_type = fields.Selection(
         selection=lambda self: self._selection_log_type(),
         required=True,

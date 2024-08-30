@@ -317,6 +317,12 @@ class CxTowerServer(models.Model):
         inverse_name="server_id",
     )
 
+    # ---- Related server template
+    server_template_id = fields.Many2one(
+        "cx.tower.server.template",
+        index=True,
+    )
+
     def _selection_status(self):
         """
         Status selection options

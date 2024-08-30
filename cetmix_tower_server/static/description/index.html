@@ -369,132 +369,104 @@ ul.auto-toc {
 !! source digest: sha256:c3bf405ccc18b72cc39e3f0a7d02542c62791cd0e0a06952c29347a6976c4cf3
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
-<p>Cetmix Tower offers a streamlined solution for managing remote servers
-via SSH directly from Odoo. This module is designed for versatility
-across different operating systems and software environments, providing
-a practical option for those looking to manage servers without getting
+<p><a class="reference external" href="http://cetmix.com/tower">Cetmix Tower</a> offers a streamlined solution
+for managing remote servers via SSH or API calls directly from
+<a class="reference external" href="https:/odoo.com">Odoo</a>. It is designed for versatility across
+different operating systems and software environments, providing a
+practical option for those looking to manage servers without getting
 tied down by vendor or technology constraints.</p>
+<div class="section" id="why-cetmix-tower">
+<h1>Why Cetmix Tower?</h1>
 <ul class="simple">
-<li><strong>Why Cetmix Tower?</strong><ul>
-<li><strong>Open Source:</strong> Cetmix Tower is distributed under the AGPL-3
-license.</li>
-<li><strong>Flexibility:</strong> Use Cetmix Tower alongside other management
-methods without restriction, ensuring you’re not limited to a
-single vendor.</li>
-<li><strong>Self-Hosting:</strong> Deploy Cetmix Tower on your own infrastructure
-for full control over your server management.</li>
-<li><strong>Broad Compatibility:</strong> Execute any software that’s manageable
-via shell commands, from Docker or Kubernetes to direct OS package
-installations.</li>
-<li><strong>Odoo Integration:</strong> Benefit from Odoo’s ecosystem for server
-management tasks, like deploying servers in response to specific
-Odoo-triggered events.</li>
-<li><strong>Beyond Odoo:</strong> While optimized for Odoo, Cetmix Tower supports a
-wide range of software applications, offering flexibility in
-server management tasks.</li>
+<li><strong>Open Source:</strong> <a class="reference external" href="http://cetmix.com/tower">Cetmix Tower</a> is
+distributed under the AGPL-3 license</li>
+<li><strong>Odoo Integration:</strong> Benefit from <a class="reference external" href="https:/odoo.com">Odoo</a>
+ecosystem for server management tasks, like deploying servers in
+response to specific Odoo-triggered events</li>
+<li><strong>Extendability:</strong> Build your own <a class="reference external" href="https:/odoo.com">Odoo</a> modules
+using <a class="reference external" href="http://cetmix.com/tower">Cetmix Tower</a> to implement your
+custom features</li>
+<li><strong>Beyond Odoo:</strong> While optimized for Odoo, Cetmix Tower can manage
+virtually any instance</li>
+<li><strong>Flexibility:</strong> Use Cetmix Tower alongside other management methods
+without restriction, ensuring you’re not limited to a single vendor</li>
+<li><strong>Self-Hosting:</strong> Deploy Cetmix Tower on your own infrastructure for
+full control over your server management.</li>
+<li><strong>Broad Compatibility:</strong> Execute any software that’s manageable via
+shell commands or API. From Docker or Kubernetes to direct OS package
+installations</li>
 </ul>
-</li>
-<li><strong>Connectivity</strong><ul>
-<li>Password and key based authentication when connection to remote
-server.</li>
-<li>Server wide variables that can be used for rendering commands.</li>
-</ul>
-</li>
-<li><strong>Commands</strong><ul>
-<li>Execute commands on multiple servers at once.</li>
-<li>Render commands using variables.</li>
-<li>Store sensitive information in secret keys that are not visible in
-command preview.</li>
-</ul>
-</li>
-<li><strong>Flight Plans</strong><ul>
-<li>Execute commands in series.</li>
-<li>Condition based flow: execute a command based on pre-defined
-condition or previous command result. Conditions are built using
-<a class="reference external" href="https://www.w3schools.com/python/python_syntax.asp">Python
-syntax</a>.</li>
-</ul>
-</li>
-<li><strong>Files</strong><ul>
-<li>Download files from remote server using SFTP.</li>
-<li>Upload files to remote server using SFTP.</li>
-<li>Manage files using templates.</li>
-</ul>
-</li>
-<li><strong>Support and Technical Requirements</strong><ul>
-<li>This module depends on the <a class="reference external" href="http://odoo-community.org">OCA</a>
-free <a class="reference external" href="https://github.com/OCA/web/tree/14.0/web_notify">Web
-Notify</a>
-module. Please ensure it is installed in your system for your Odoo
-version.</li>
-<li>Cetmix Tower is designed to be accessible, though some features
-might require a foundational understanding of server management
-principles.</li>
-<li>We offer dedicated support to help with any custom setup needs or
-questions that arise.</li>
-<li>For additional details, visit our website
-<a class="reference external" href="https://cetmix.com">cetmix.com</a>.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Table of contents</strong></p>
-<div class="contents local topic" id="contents">
+</div>
+<div class="section" id="server-management">
+<h1>Server Management</h1>
 <ul class="simple">
-<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
-<li><a class="reference internal" href="#user-access-configuration" id="toc-entry-2">User access configuration</a></li>
-<li><a class="reference internal" href="#configure-a-server" id="toc-entry-3">Configure a Server</a><ul>
-<li><a class="reference internal" href="#general-settings" id="toc-entry-4">General Settings</a></li>
-<li><a class="reference internal" href="#variables" id="toc-entry-5">Variables</a></li>
-<li><a class="reference internal" href="#secrets" id="toc-entry-6">Secrets</a></li>
-<li><a class="reference internal" href="#server-logs" id="toc-entry-7">Server Logs</a></li>
-<li><a class="reference internal" href="#files" id="toc-entry-8">Files</a></li>
+<li>Variable based flexible configuration</li>
+<li>Create servers using pre-defined templates</li>
 </ul>
-</li>
-<li><a class="reference internal" href="#configure-variables" id="toc-entry-9">Configure Variables</a><ul>
-<li><a class="reference internal" href="#variables-applicability" id="toc-entry-10">Variables Applicability</a></li>
-<li><a class="reference internal" href="#variable-types" id="toc-entry-11">Variable Types</a></li>
-<li><a class="reference internal" href="#tower-system-variable" id="toc-entry-12">‘tower’ System Variable</a></li>
+</div>
+<div class="section" id="connectivity">
+<h1>Connectivity</h1>
+<ul class="simple">
+<li>Password and key based authentication for outgoing SSH connections</li>
+<li>Built-in support of the Python <a class="reference external" href="https://pypi.org/project/requests/">requests
+library</a> for outgoing API
+calls</li>
 </ul>
-</li>
-<li><a class="reference internal" href="#configure-a-key-secret" id="toc-entry-13">Configure a Key/Secret</a><ul>
-<li><a class="reference internal" href="#keys-of-type-secret" id="toc-entry-14">Keys of type <tt class="docutils literal">Secret</tt></a></li>
+</div>
+<div class="section" id="commands">
+<h1>Commands</h1>
+<ul class="simple">
+<li>Execute SSH commands on remote servers</li>
+<li>Run Python code on the Tower Odoo server</li>
+<li>Render commands using variables</li>
+<li>Secret keys for private data storage</li>
 </ul>
-</li>
-<li><a class="reference internal" href="#configure-a-file" id="toc-entry-15">Configure a File</a><ul>
-<li><a class="reference internal" href="#file-templates" id="toc-entry-16">File Templates</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#configure-a-command" id="toc-entry-17">Configure a Command</a></li>
-<li><a class="reference internal" href="#configure-a-flight-plan" id="toc-entry-18">Configure a Flight Plan</a></li>
-<li><a class="reference internal" href="#configure-a-server-log" id="toc-entry-19">Configure a Server Log</a></li>
-<li><a class="reference internal" href="#configuration-best-practices" id="toc-entry-20">Configuration best practices</a><ul>
-<li><a class="reference internal" href="#use-simple-commands" id="toc-entry-21">Use simple commands</a></li>
-<li><a class="reference internal" href="#do-not-change-directory-using-shell-commands" id="toc-entry-22">Do not change directory using shell commands</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#usage" id="toc-entry-23">Usage</a><ul>
-<li><a class="reference internal" href="#running-a-command" id="toc-entry-24">Running a Command</a></li>
-<li><a class="reference internal" href="#running-a-flight-plan" id="toc-entry-25">Running a Flight Plan</a></li>
-<li><a class="reference internal" href="#checking-a-server-log" id="toc-entry-26">Checking a Server Log</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-27">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-28">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-29">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-30">Maintainers</a></li>
+</div>
+<div class="section" id="flight-plans">
+<h1>Flight Plans</h1>
+<ul class="simple">
+<li>Execute multiple commands in a row</li>
+<li>Condition based flow:<ul>
+<li>Based on condition using <a class="reference external" href="https://www.w3schools.com/python/python_syntax.asp">Python
+syntax</a></li>
+<li>Based on the previous command exit code</li>
 </ul>
 </li>
 </ul>
 </div>
+<div class="section" id="files">
+<h1>Files</h1>
+<ul class="simple">
+<li>Download files from remote server using SFTP</li>
+<li>Upload files to remote server using SFTP</li>
+<li>Support for <tt class="docutils literal">text</tt> and <tt class="docutils literal">binary</tt> file format</li>
+<li>Manage files using pre-defined file templates</li>
+</ul>
+</div>
+<div class="section" id="support-and-technical-requirements">
+<h1>Support and Technical Requirements</h1>
+<ul class="simple">
+<li>Cetmix Tower with usability and simplicity in mind, though some
+features might require a foundational understanding of server
+management principles</li>
+<li>We offer dedicated support to help with any custom setup needs or
+questions that may arise</li>
+<li>This module depends on the <a class="reference external" href="http://odoo-community.org">OCA</a> free
+<a class="reference external" href="https://github.com/OCA/web/tree/14.0/web_notify">Web Notify</a>
+module. Please ensure it is installed in your system for your Odoo
+version</li>
+<li>For additional details, visit our website
+<a class="reference external" href="https://cetmix.com">cetmix.com</a></li>
+</ul>
+<p><strong>Table of contents</strong></p>
+</div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
+<h1>Configuration</h1>
 <p>Please ensure that you have read and understood the documentation before
 running <a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> in the production
 environment.</p>
 <div class="section" id="user-access-configuration">
-<h2><a class="toc-backref" href="#toc-entry-2">User access configuration</a></h2>
+<h2>User access configuration</h2>
 <p>In order for a user to be able to use <a class="reference external" href="https://cetmix.com/tower">Cetmix
 Tower</a> features you need to provide access
 to in the the user settings. To configure it go to
@@ -524,14 +496,14 @@ entities with any <tt class="docutils literal">Access Level</tt> set.</li>
 additional access management variations.</p>
 </div>
 <div class="section" id="configure-a-server">
-<h2><a class="toc-backref" href="#toc-entry-3">Configure a Server</a></h2>
-<p>Go to the <tt class="docutils literal">Cetmix Tower/Servers/Servers</tt> menu and click <tt class="docutils literal">Create</tt>.</p>
-<p>Enter the server name and fill the values it the tabs below:</p>
-<div class="section" id="general-settings">
-<h3><a class="toc-backref" href="#toc-entry-4">General Settings</a></h3>
+<h2>Configure a Server</h2>
+<p>Go to the <tt class="docutils literal">Cetmix Tower/Servers/Servers</tt> menu and click <tt class="docutils literal">Create</tt>.
+Enter the server name and fill the values it the tabs below:</p>
+<p><strong>General Settings</strong></p>
 <ul class="simple">
 <li><strong>Partner</strong>: Partner this server belongs to</li>
 <li><strong>Operating System</strong>: Operating system that runs on the server</li>
+<li><strong>Tags</strong>: User-defined search tags</li>
 <li><strong>IPv4 Address</strong></li>
 <li><strong>IPv6 Address</strong>: Will be used if no IPv4 address is specified</li>
 <li><strong>SSH Auth Mode</strong>: Available options are “Password” and “Key”</li>
@@ -557,40 +529,66 @@ further customizations. Following pre-defined statuses are available:</p>
 <li>Restarting</li>
 </ul>
 <p>Default status is ‘Undefined’.</p>
-</div>
-<div class="section" id="variables">
-<h3><a class="toc-backref" href="#toc-entry-5">Variables</a></h3>
+<p><strong>Variables</strong></p>
 <p>Configure variable values to be used when rendering
 <a class="reference external" href="#configure-a-command">commands</a> and files on this server. Check the
 <a class="reference external" href="#configure-variables">Configuring Variables</a> section for more
 details.</p>
-</div>
-<div class="section" id="secrets">
-<h3><a class="toc-backref" href="#toc-entry-6">Secrets</a></h3>
+<p><strong>Secrets</strong></p>
 <p>Configure secret values to used when rendering commands and files on
 this server. Check the <a class="reference external" href="#configure-a-keysecret">Configuring
 Keys/Secrets</a> section for more details.</p>
-</div>
-<div class="section" id="server-logs">
-<h3><a class="toc-backref" href="#toc-entry-7">Server Logs</a></h3>
+<p><strong>Server Logs</strong></p>
 <p>Configure server logs in order to have convenient access to them. Logs
 can be fetched either from <a class="reference external" href="#configure-a-file">Files</a> or using
 <a class="reference external" href="#configure-a-command">Commands.</a> Check the <a class="reference external" href="#configure-a-server-log">Configuring a Server
 Log</a> section for more details.</p>
+<p>Following action buttons are located in the top of the form:</p>
+<ul class="simple">
+<li><strong>Command Logs</strong>: Shows all <a class="reference external" href="#configure-a-command">Command</a> logs
+for this server</li>
+<li><strong>Flight Plan Logs</strong>: Shows all <a class="reference external" href="#configure-a-flight-plan">Flight
+Plan</a> logs for this server</li>
+<li><strong>Files</strong>: Shows all <a class="reference external" href="#configure-a-file">Files</a> that belong to
+this server</li>
+</ul>
 </div>
-<div class="section" id="files">
-<h3><a class="toc-backref" href="#toc-entry-8">Files</a></h3>
-<p>Click the “Files” action button to access files that belong to this
-server. Check the <a class="reference external" href="#configure-a-file">Configuring Files</a> section for
-more details.</p>
-</div>
+<div class="section" id="configure-a-server-template">
+<h2>Configure a Server Template</h2>
+<p>Go to the <tt class="docutils literal">Cetmix Tower/Servers/Templates</tt> menu and click <tt class="docutils literal">Create</tt>.
+Add a name and a unique template reference. Leave the “reference” field
+blank in order for a reference to be generated automatically based on
+the template name.</p>
+<p>Fill the values it the tabs below:</p>
+<p><strong>General Settings</strong></p>
+<ul class="simple">
+<li><strong>Flight Plan</strong>: Select a flight plan to be executed after a server
+is created</li>
+<li><strong>Operating System</strong>: Default operating system for new servers</li>
+<li><strong>Tags</strong>: Default search tags for new servers</li>
+<li><strong>SSH Auth Mode</strong>: Default SSH auth mode for new servers. Available
+options are “Password” and “Key”</li>
+<li><strong>SSH Port</strong>: Default SSH port for new servers</li>
+<li><strong>SSH Username</strong>: Default SSH username for new servers</li>
+<li><strong>Use sudo</strong>: Default sudo mode for new servers</li>
+<li><strong>SSH Password</strong>: Default SSH password for new servers</li>
+<li><strong>SSH Private Key</strong>: Default SSH private key for new servers</li>
+<li><strong>Note</strong>: Comments or user notes</li>
+</ul>
+<p><strong>Variables</strong></p>
+<p>Configure default variable values for new servers. Check the
+<a class="reference external" href="#configure-variables">Configuring Variables</a> section for more
+details.</p>
+<p><strong>Server Logs</strong></p>
+<p>Please check the <a class="reference external" href="#configure-a-server-log">Configuring a Server Log</a>
+section for more details.</p>
 </div>
 <div class="section" id="configure-variables">
-<h2><a class="toc-backref" href="#toc-entry-9">Configure Variables</a></h2>
+<h2>Configure Variables</h2>
 <p>To configure variables go to the <tt class="docutils literal">Cetmix Tower/Settings</tt> and select
 the <tt class="docutils literal">Variables</tt> menu.</p>
 <div class="section" id="variables-applicability">
-<h3><a class="toc-backref" href="#toc-entry-10">Variables Applicability</a></h3>
+<h3>Variables Applicability</h3>
 <p><a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> supports <tt class="docutils literal">jinja2</tt> syntax
 for variables. You can use variables to render:</p>
 <ul class="simple">
@@ -618,7 +616,7 @@ docker run -d -p {{ odoo_port }}:8069 \
 </pre>
 </div>
 <div class="section" id="variable-types">
-<h3><a class="toc-backref" href="#toc-entry-11">Variable Types</a></h3>
+<h3>Variable Types</h3>
 <p>Following types of variable values available in <a class="reference external" href="https://cetmix.com/tower">Cetmix
 Tower</a>:</p>
 <ul class="simple">
@@ -637,7 +635,7 @@ values may expose that date in command preview and logs. Use
 <a class="reference external" href="#configure-a-keysecret">secrets</a> for storing such data instead.</p>
 </div>
 <div class="section" id="tower-system-variable">
-<h3><a class="toc-backref" href="#toc-entry-12">‘tower’ System Variable</a></h3>
+<h3>‘tower’ System Variable</h3>
 <p>There is a special <tt class="docutils literal">tower</tt> variable available which allows to access
 some system parameters and helper tools. <strong>Important!</strong> do not redefine
 the <tt class="docutils literal">tower</tt> variable unless you really need that on purpose.</p>
@@ -661,7 +659,7 @@ the <tt class="docutils literal">tower</tt> variable unless you really need that
 </div>
 </div>
 <div class="section" id="configure-a-key-secret">
-<h2><a class="toc-backref" href="#toc-entry-13">Configure a Key/Secret</a></h2>
+<h2>Configure a Key/Secret</h2>
 <p>Keys/Secrets are used to private SSH keys and sensitive data that is
 used for rendering commands. To configure a new key or secret go to
 <tt class="docutils literal">Cetmix Tower/Settings/Keys</tt> click <tt class="docutils literal">Create</tt> and put values in the
@@ -691,7 +689,7 @@ only for selected <a class="reference external" href="#configure-a-server">Serve
 <li><strong>Note</strong>: Put your notes here</li>
 </ul>
 <div class="section" id="keys-of-type-secret">
-<h3><a class="toc-backref" href="#toc-entry-14">Keys of type <tt class="docutils literal">Secret</tt></a></h3>
+<h3>Keys of type <tt class="docutils literal">Secret</tt></h3>
 <p>Keys of type <tt class="docutils literal">Secret</tt> (or “Secret”) are considered “Global” if no
 partner and no server are selected. Such keys are accessible all across
 the Tower. Global keys are overridden with partner keys with the same
@@ -723,7 +721,7 @@ mkdir<span class="w"> </span>/home/suchMuchFolder
 </div>
 </div>
 <div class="section" id="configure-a-file">
-<h2><a class="toc-backref" href="#toc-entry-15">Configure a File</a></h2>
+<h2>Configure a File</h2>
 <p><a class="reference external" href="https://cetmix.com/tower">Cetmix Tower</a> is using SFTP protocol for
 file transfer operations. Based on initial file location following file
 sources are available:</p>
@@ -775,7 +773,7 @@ only with <tt class="docutils literal">Tower</tt> source.</li>
 configuration. You should take care of filesystem access rights to
 ensure that file operations are performed without any issues.</p>
 <div class="section" id="file-templates">
-<h3><a class="toc-backref" href="#toc-entry-16">File Templates</a></h3>
+<h3>File Templates</h3>
 <p>File templates are used to create and manage multiple files in bulk.
 Once a template is modified all related files are automatically updated.</p>
 <p>To create a new file template go to <tt class="docutils literal">Cetmix Tower/Files/Templates</tt>
@@ -807,7 +805,7 @@ value from the <tt class="docutils literal">Template</tt> field before saving it
 </div>
 </div>
 <div class="section" id="configure-a-command">
-<h2><a class="toc-backref" href="#toc-entry-17">Configure a Command</a></h2>
+<h2>Configure a Command</h2>
 <p>Command is a shell command that is executed on remote server. To create
 a new command go to <tt class="docutils literal">Cetmix Tower/Commands/Commands</tt> click <tt class="docutils literal">Create</tt>
 and put values in the fields:</p>
@@ -846,7 +844,7 @@ details.</li>
 </ul>
 </div>
 <div class="section" id="configure-a-flight-plan">
-<h2><a class="toc-backref" href="#toc-entry-18">Configure a Flight Plan</a></h2>
+<h2>Configure a Flight Plan</h2>
 <p>Flight Plans are used to execute commands in series. They allow to build
 a flexible condition based execution flow. To create a new flight plan
 go to <tt class="docutils literal">Cetmix Tower/Commands/Flight Plans</tt> click <tt class="docutils literal">Create</tt> and put
@@ -917,7 +915,7 @@ next to this one.</li>
 </ul>
 </div>
 <div class="section" id="configure-a-server-log">
-<h2><a class="toc-backref" href="#toc-entry-19">Configure a Server Log</a></h2>
+<h2>Configure a Server Log</h2>
 <p>Server Logs allow to fetch and view logs of a server fast and convenient
 way. To configure a Server Log open the server form, navigate to the
 <tt class="docutils literal">Server Logs</tt> tab and add a new record in the list.</p>
@@ -948,16 +946,23 @@ is available only for <tt class="docutils literal">Log Type</tt> set to <tt clas
 please ensure that selected command can be executed multiple times in
 parallel to avoid any potential issues.</li>
 <li><strong>Use Sudo</strong>: Use <tt class="docutils literal">sudo</tt> if required to run this command.</li>
-<li><strong>File</strong>: A file that is used to fetch the log.</li>
+<li><strong>File</strong>: A file that is used to fetch the log. This option is not
+available when configuring a log for a <a class="reference external" href="#configure-a-server-template">Server
+Template</a></li>
+<li><strong>File Template</strong>: A file template that is used to create a file when
+a new <a class="reference external" href="#configure-a-server">Server</a> is created from a <a class="reference external" href="#configure-a-server-template">Server
+Template</a>. This option is available
+only when configuring a log for a <a class="reference external" href="#configure-a-server-template">Server
+Template</a></li>
 </ul>
 <p><strong>Developer hint</strong>: log output supports HTML formatting. You can
 implement your custom log formatter by overriding the
 <tt class="docutils literal">_format_log_text()</tt> function of the <tt class="docutils literal">cx.tower.server.log</tt> model.</p>
 </div>
 <div class="section" id="configuration-best-practices">
-<h2><a class="toc-backref" href="#toc-entry-20">Configuration best practices</a></h2>
+<h2>Configuration best practices</h2>
 <div class="section" id="use-simple-commands">
-<h3><a class="toc-backref" href="#toc-entry-21">Use simple commands</a></h3>
+<h3>Use simple commands</h3>
 <p>Try to avoid using <tt class="docutils literal">&amp;&amp;</tt> or <tt class="docutils literal">;</tt> joined commands unless this is really
 needed. Use flight plans instead.</p>
 <p><strong>Why?</strong></p>
@@ -982,7 +987,7 @@ apt-get<span class="w"> </span>install<span class="w"> </span>doge-meme-generato
 </pre>
 </div>
 <div class="section" id="do-not-change-directory-using-shell-commands">
-<h3><a class="toc-backref" href="#toc-entry-22">Do not change directory using shell commands</a></h3>
+<h3>Do not change directory using shell commands</h3>
 <p>Do not use <tt class="docutils literal">cd</tt> or <tt class="docutils literal">chdir</tt> commands. Use <tt class="docutils literal">Default Path</tt> field in
 command or <tt class="docutils literal">Path</tt> field in flight plan line.</p>
 <p><strong>Why?</strong></p>
@@ -1012,10 +1017,70 @@ cat<span class="w"> </span>my_doge_memes.txt
 </div>
 </div>
 <div class="section" id="usage">
-<h1><a class="toc-backref" href="#toc-entry-23">Usage</a></h1>
-<div class="section" id="running-a-command">
-<h2><a class="toc-backref" href="#toc-entry-24">Running a Command</a></h2>
-<p>To run a command:</p>
+<h1>Usage</h1>
+<div class="section" id="create-a-new-server-from-a-server-template">
+<h2>Create a new Server from a Server Template</h2>
+<ul class="simple">
+<li>Go to the <tt class="docutils literal">Cetmix Tower/Servers/Templates</tt> menu and select a
+<a class="reference external" href="CONFIGURE.md/#configure-a-server-template">Server Template</a></li>
+<li>Click “Create Server” button. A pop-up wizard will open with server
+parameters populated from the template</li>
+<li>Put the new server name, check the parameters and click “Confirm”
+button</li>
+<li>New server will be created</li>
+<li>If a <a class="reference external" href="CONFIGURE.md/#configure-a-flight-plan">Flight Plan</a> is
+defined in the server template it will be automatically executed
+after a new server is created</li>
+</ul>
+<p>You can also create a new server from template from code using a
+designated <tt class="docutils literal">create_server_from_template</tt> function of the
+<tt class="docutils literal">cx.tower.server.template</tt> model. This function takes the following
+arguments:</p>
+<pre class="code python literal-block">
+<span class="o">-</span> <span class="n">template_reference</span> <span class="p">(</span><span class="n">Char</span><span class="p">):</span> <span class="n">Server</span> <span class="n">template</span> <span class="n">reference</span><span class="w">
+</span><span class="o">-</span> <span class="n">server_name</span> <span class="p">(</span><span class="n">Char</span><span class="p">):</span> <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">new</span> <span class="n">server</span><span class="w">
+</span><span class="o">-</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">partner</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">partner</span><span class="p">(),</span> <span class="n">optional</span><span class="p">):</span> <span class="n">Partner</span> <span class="n">this</span> <span class="n">server</span> <span class="n">belongs</span> <span class="n">to</span><span class="o">.</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">ipv4</span> <span class="p">(</span><span class="n">Char</span><span class="p">,</span> <span class="n">optional</span><span class="p">):</span> <span class="n">IP</span> <span class="n">v4</span> <span class="n">address</span><span class="o">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="kc">None</span><span class="o">.</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">ipv6</span> <span class="p">(</span><span class="n">Char</span><span class="p">,</span> <span class="n">optional</span><span class="p">):</span> <span class="n">IP</span> <span class="n">v6</span> <span class="n">address</span><span class="o">.</span> <span class="n">Must</span> <span class="n">be</span> <span class="n">provided</span> <span class="ow">in</span> <span class="n">case</span> <span class="n">IP</span> <span class="n">v4</span> <span class="ow">is</span> <span class="ow">not</span><span class="o">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="kc">None</span><span class="o">.</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">ssh_password</span> <span class="p">(</span><span class="n">Char</span><span class="p">,</span> <span class="n">optional</span><span class="p">):</span> <span class="n">SSH</span> <span class="n">password</span><span class="o">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="kc">None</span><span class="o">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="kc">None</span><span class="o">.</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">ssh_private_key_value</span> <span class="p">(</span><span class="n">Char</span><span class="p">,</span> <span class="n">optional</span><span class="p">):</span> <span class="n">SSH</span> <span class="n">private</span> <span class="n">key</span> <span class="n">content</span><span class="o">.</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">ssh_private_key_value</span> <span class="p">(</span><span class="n">cx</span><span class="o">.</span><span class="n">tower</span><span class="o">.</span><span class="n">key</span><span class="p">(),</span> <span class="n">optional</span><span class="p">):</span> <span class="n">SSH</span> <span class="n">private</span> <span class="n">key</span> <span class="n">record</span><span class="o">.</span> <span class="n">Defaults</span> <span class="n">to</span> <span class="kc">None</span><span class="o">.</span><span class="w">
+</span>  <span class="o">-</span> <span class="n">configuration_variables</span> <span class="p">(</span><span class="n">Dict</span><span class="p">,</span> <span class="n">optional</span><span class="p">):</span> <span class="n">Custom</span> <span class="n">configuration</span> <span class="n">variable</span><span class="o">.</span><span class="w">
+</span>    <span class="n">Following</span> <span class="nb">format</span> <span class="ow">is</span> <span class="n">used</span><span class="p">:</span><span class="w">
+</span>      <span class="s1">'variable_name'</span><span class="p">:</span> <span class="s1">'variable_value_char'</span><span class="w">
+</span>      <span class="n">eg</span><span class="p">:</span><span class="w">
+</span>      <span class="p">{</span><span class="s1">'branch'</span><span class="p">:</span> <span class="s1">'prod'</span><span class="p">,</span> <span class="s1">'odoo_version'</span><span class="p">:</span> <span class="s1">'16.0'</span><span class="p">}</span>
+</pre>
+<p>Here is a short example of an Odoo automated action that creates a new
+server when a Sales Order is confirmed:</p>
+<p><img alt="Automatic action" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_from_template_auto_action.png" /></p>
+<pre class="code python literal-block">
+<span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span><span class="w">
+
+</span>  <span class="c1"># Check confirmed orders</span><span class="w">
+</span>  <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;sale&quot;</span><span class="p">:</span><span class="w">
+</span>    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="w">
+</span>      <span class="s2">&quot;ip_v4_address&quot;</span><span class="p">:</span> <span class="s2">&quot;host.docker.internal&quot;</span><span class="p">,</span><span class="w">
+</span>      <span class="s2">&quot;ssh_port&quot;</span><span class="p">:</span> <span class="mi">2222</span><span class="p">,</span><span class="w">
+</span>      <span class="s2">&quot;ssh_username&quot;</span><span class="p">:</span> <span class="s2">&quot;pepe&quot;</span><span class="p">,</span><span class="w">
+</span>      <span class="s2">&quot;ssh_password&quot;</span><span class="p">:</span> <span class="s2">&quot;frog&quot;</span><span class="p">,</span><span class="w">
+</span>      <span class="s2">&quot;ssh_auth_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span><span class="w">
+</span>      <span class="s2">&quot;configuration_variables&quot;</span><span class="p">:</span> <span class="p">{</span><span class="w">
+</span>        <span class="s2">&quot;odoo_version&quot;</span><span class="p">:</span> <span class="s2">&quot;16.0&quot;</span><span class="w">
+</span>        <span class="p">},</span><span class="w">
+</span>    <span class="p">}</span><span class="w">
+
+</span>    <span class="c1"># Create a new server from template with the 'demo_template' reference</span><span class="w">
+</span>    <span class="n">env</span><span class="p">[</span><span class="s2">&quot;cx.tower.server.template&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">create_server_from_template</span><span class="p">(</span><span class="w">
+</span>      <span class="n">template_reference</span><span class="o">=</span><span class="s2">&quot;demo_template&quot;</span><span class="p">,</span><span class="w">
+</span>      <span class="n">server_name</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w">
+</span>      <span class="o">**</span><span class="n">params</span><span class="w">
+</span>      <span class="p">)</span>
+</pre>
+</div>
+<div class="section" id="run-a-command">
+<h2>Run a Command</h2>
 <ul class="simple">
 <li>Select a server in the list view or open a server form view</li>
 <li>Open the <tt class="docutils literal">Actions</tt> menu and click <tt class="docutils literal">Execute Command</tt></li>
@@ -1050,9 +1115,8 @@ command log in a new wizard window.</li>
 delete a command you need to delete all its logs manually before doing
 that.</p>
 </div>
-<div class="section" id="running-a-flight-plan">
-<h2><a class="toc-backref" href="#toc-entry-25">Running a Flight Plan</a></h2>
-<p>To run a flight plan:</p>
+<div class="section" id="run-a-flight-plan">
+<h2>Run a Flight Plan</h2>
 <ul>
 <li><p class="first">Select a server in the list view or open a server form view</p>
 </li>
@@ -1077,8 +1141,8 @@ before doing that.</p>
 </li>
 </ul>
 </div>
-<div class="section" id="checking-a-server-log">
-<h2><a class="toc-backref" href="#toc-entry-26">Checking a Server Log</a></h2>
+<div class="section" id="check-a-server-log">
+<h2>Check a Server Log</h2>
 <p>To check a server log:</p>
 <ul class="simple">
 <li>Navigate to the <tt class="docutils literal">Server Logs</tt> tab on the Server form</li>
@@ -1097,7 +1161,7 @@ the HTML field below.</li>
 </div>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-27">Bug Tracker</a></h1>
+<h1>Bug Tracker</h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -1105,15 +1169,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-28">Credits</a></h1>
+<h1>Credits</h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-29">Authors</a></h2>
+<h2>Authors</h2>
 <ul class="simple">
 <li>Cetmix</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-30">Maintainers</a></h2>
+<h2>Maintainers</h2>
 <p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>

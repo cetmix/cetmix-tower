@@ -1,7 +1,64 @@
 
-## Running a Command
+## Create a new Server from a Server Template
 
-To run a command:
+- Go to the `Cetmix Tower/Servers/Templates` menu and select a [Server Template](CONFIGURE.md/#configure-a-server-template)
+- Click "Create Server" button. A pop-up wizard will open with server parameters populated from the template
+- Put the new server name, check the parameters and click "Confirm" button
+- New server will be created
+- If a [Flight Plan](CONFIGURE.md/#configure-a-flight-plan) is defined in the server template it will be automatically executed after a new server is created
+
+You can also create a new server from template from code using a designated `create_server_from_template` function of the `cx.tower.server.template` model.
+This function takes the following arguments:
+
+``` python
+- template_reference (Char): Server template reference
+- server_name (Char): Name of the new server
+- **kwargs:
+  - partner (res.partner(), optional): Partner this server belongs to.
+  - ipv4 (Char, optional): IP v4 address. Defaults to None.
+  - ipv6 (Char, optional): IP v6 address. Must be provided in case IP v4 is not. Defaults to None.
+  - ssh_password (Char, optional): SSH password. Defaults to None. Defaults to None.
+  - ssh_private_key_value (Char, optional): SSH private key content.
+  - ssh_private_key_value (cx.tower.key(), optional): SSH private key record. Defaults to None.
+  - configuration_variables (Dict, optional): Custom configuration variable.
+    Following format is used:
+      'variable_name': 'variable_value_char'
+      eg:
+      {'branch': 'prod', 'odoo_version': '16.0'}
+```
+
+Here is a short example of an Odoo automated action that creates a new server when a Sales Order is confirmed:
+
+![Automatic action](../static/description/images/server_from_template_auto_action.png)
+
+```python
+for record in records:
+  
+  # Check confirmed orders
+  if record.state == "sale":
+    params = {
+      "ip_v4_address": "host.docker.internal",
+      "ssh_port": 2222,
+      "ssh_username": "pepe",
+      "ssh_password": "frog",
+      "ssh_auth_mode": "p",
+      "configuration_variables": {
+        "odoo_version": "16.0"
+        },
+    }
+    
+    # Create a new server from template with the 'demo_template' reference 
+    env["cx.tower.server.template"].create_server_from_template(
+      template_reference="demo_template",
+      server_name=record.name,
+      **params
+      )
+    
+```
+
+
+
+## Run a Command
 
 - Select a server in the list view or open a server form view
 - Open the `Actions` menu and click `Execute Command`
@@ -24,9 +81,7 @@ There are two action buttons available in the wizard:
 You can check command execution logs in the `Cetmix Tower/Commands/Command Logs` menu.
 Important! If you want to delete a command you need to delete all its logs manually before doing that.
 
-## Running a Flight Plan
-
-To run a flight plan:
+## Run a Flight Plan
 
 - Select a server in the list view or open a server form view
 - Open the `Actions` menu and click `Execute Flight Plan`
@@ -42,7 +97,7 @@ To run a flight plan:
   You can check the flight plan results in the `Cetmix Tower/Commands/Flight Plan Logs` menu.
   Important! If you want to delete a command you need to delete all its logs manually before doing that.
 
-## Checking a Server Log
+## Check a Server Log
 
 To check a server log:
 

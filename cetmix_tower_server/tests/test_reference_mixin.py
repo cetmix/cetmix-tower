@@ -20,7 +20,7 @@ class TestTowerReference(TestTowerCommon):
         )
 
         # --- 2 ---
-        # Create a new template with custom reference
+        # Create a new server template with custom reference
         # and ensure that it's fixed according to the pattern
 
         new_template = self.ServerTemplate.create(
@@ -30,7 +30,7 @@ class TestTowerReference(TestTowerCommon):
         self.assertEqual(new_template.reference, "some_reference_x")
 
         # --- 3 ---
-        # Try to create another template with the same reference and ensure
+        # Try to create another server template with the same reference and ensure
         # that its reference is corrected automatically
 
         yet_another_template = self.ServerTemplate.create(
@@ -40,7 +40,7 @@ class TestTowerReference(TestTowerCommon):
         self.assertEqual(yet_another_template.reference, "some_reference_x_2")
 
         # -- 4 ---
-        # Duplicate template and ensure that its name and reference
+        # Duplicate the server template and ensure that its name and reference
         # are generated properly
 
         yet_another_template_copy = yet_another_template.copy()
@@ -56,3 +56,19 @@ class TestTowerReference(TestTowerCommon):
 
         yet_another_template_copy.write({"reference": " Some reference x*((*)) "})
         self.assertEqual(yet_another_template_copy.reference, "some_reference_x_3")
+
+    def test_search_by_reference(self):
+        """Search record by its reference"""
+
+        # Create a new server template with custom reference
+        server_template = self.ServerTemplate.create(
+            {"name": "Such Much Template", "reference": "such_much_template"}
+        )
+
+        # Search using correct template reference
+        search_result = self.ServerTemplate.get_by_reference("such_much_template")
+        self.assertEqual(server_template, search_result, "Template must be found")
+
+        # Search using malformed (case sensitive)
+        search_result = self.ServerTemplate.get_by_reference("not_much_template")
+        self.assertEqual(len(search_result), 0, "Result should be empty")

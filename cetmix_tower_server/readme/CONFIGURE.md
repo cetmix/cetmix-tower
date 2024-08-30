@@ -17,17 +17,15 @@ Users of this group have access to the entities with `Access Level` set to `Mana
 
 **NB:** Please keep in mind that some of the entities can have their additional access management variations.
 
-
 ## Configure a Server
 
-Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`.
+Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`. Enter the server name and fill the values it the tabs below:
 
-Enter the server name and fill the values it the tabs below:
-
-### General Settings
+**General Settings**
 
 - **Partner**: Partner this server belongs to
 - **Operating System**: Operating system that runs on the server
+- **Tags**: User-defined search tags
 - **IPv4 Address**
 - **IPv6 Address**: Will be used if no IPv4 address is specified
 - **SSH Auth Mode**: Available options are "Password" and "Key"
@@ -50,26 +48,55 @@ Following pre-defined statuses are available:
 
 Default status is 'Undefined'.
 
-### Variables
+**Variables**
 
 Configure variable values to be used when rendering [commands](#configure-a-command) and files on this server.
 Check the [Configuring Variables](#configure-variables) section for more details.
 
-### Secrets
+**Secrets**
 
 Configure secret values to used when rendering commands and files on this server.
 Check the [Configuring Keys/Secrets](#configure-a-keysecret) section for more details.
 
-### Server Logs
+**Server Logs**
 
 Configure server logs in order to have convenient access to them.
 Logs can be fetched either from [Files](#configure-a-file) or using [Commands.](#configure-a-command)
 Check the [Configuring a Server Log](#configure-a-server-log) section for more details.
 
-### Files
+Following action buttons are located in the top of the form:
 
-Click the "Files" action button to access files that belong to this server.
-Check the [Configuring Files](#configure-a-file) section for more details.
+- **Command Logs**: Shows all [Command](#configure-a-command) logs for this server
+- **Flight Plan Logs**: Shows all [Flight Plan](#configure-a-flight-plan) logs for this server
+- **Files**: Shows all [Files](#configure-a-file) that belong to this server
+
+## Configure a Server Template
+
+Go to the `Cetmix Tower/Servers/Templates` menu and click `Create`. Add a name and a unique template reference. Leave the "reference" field blank in order for a reference to be generated automatically based on the template name.
+
+Fill the values it the tabs below:
+
+**General Settings**
+
+- **Flight Plan**: Select a flight plan to be executed after a server is created
+- **Operating System**: Default operating system for new servers
+- **Tags**: Default search tags for new servers
+- **SSH Auth Mode**: Default SSH auth mode for new servers. Available options are "Password" and "Key"
+- **SSH Port**: Default SSH port for new servers
+- **SSH Username**: Default SSH username for new servers
+- **Use sudo**: Default sudo mode for new servers
+- **SSH Password**: Default SSH password for new servers
+- **SSH Private Key**: Default SSH private key for new servers
+- **Note**: Comments or user notes
+
+**Variables**
+
+Configure default variable values for new servers.
+Check the [Configuring Variables](#configure-variables) section for more details.
+
+**Server Logs**
+
+Please check the [Configuring a Server Log](#configure-a-server-log) section for more details.
 
 ## Configure Variables
 
@@ -296,7 +323,8 @@ Possible options:
   - `File`. Log is fetched from a file
 - **Command**: A command that is used to fetched the logs. This option is available only for `Log Type` set to `Command`. Important: please ensure that selected command can be executed multiple times in parallel to avoid any potential issues.
 - **Use Sudo**: Use `sudo` if required to run this command.
-- **File**: A file that is used to fetch the log.
+- **File**: A file that is used to fetch the log. This option is not available when configuring a log for a [Server Template](#configure-a-server-template)
+- **File Template**: A file template that is used to create a file when a new [Server](#configure-a-server) is created from a [Server Template](#configure-a-server-template). This option is available only when configuring a log for a [Server Template](#configure-a-server-template)
 
 **Developer hint**: log output supports HTML formatting. You can implement your custom log formatter by overriding the `_format_log_text()` function of the `cx.tower.server.log` model.
 
