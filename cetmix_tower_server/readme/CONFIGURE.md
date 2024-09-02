@@ -187,7 +187,7 @@ To create a new file go to `Cetmix Tower/Files/Files` click `Create` and put val
   - **Text**: Regular text. Eg configuration file or log
   - **Binary**: Binary file. Eg file archive or pdf document
 - **File**:  Is used to store binary file data.
-- **Template**: File template used to render this file. If selected file will be automatically updated every time template is modified. Used only with `Tower` source.
+- **Template**: File template used to render this file. If selected file will be automatically updated every time template is modified.
 - **Server**: Server where this file is located
 - **Directory on Server**: This is where the file is located on the remote server
 - **Full Server Path**: Full path to file on the remote server including filename
@@ -211,6 +211,7 @@ To create a new file template go to `Cetmix Tower/Files/Templates` click `Create
 - **Name**: Template name
 - **File Name**: Filesystem name of the file(s) created from this template. This field supports [Variables](#configure-variables).
 - **Directory on server**: Directory on remote server where this file will be stored. This field supports [Variables](#configure-variables).
+- **Source**: File source. Available options are `Server` and `Tower`. Check above for more details.
 - **File type**: Type of file contents. Possible options:
   - **Text**: Regular text. Eg configuration file or log
   - **Binary**: Binary file. Eg file archive or pdf document
@@ -233,9 +234,9 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 - **OSes**: List of operating systems this command is available. Leave this field blank to make the command available for all OSes.
 - **Tags**: Make usage as search more convenient.
 - **Action**: Action executed by the command. Possible options:
+  - `SSH command`: Execute a shell command using ssh connection on remote server.
   - `Execute Python code`: Execute a Python code on the Tower Server.
-  - `Execute shell command`: Execute a shell command using ssh connection on remote server.
-  - `Push file`: Create or update a file using selected file template and push it to remote server. If the file already exists on server it will be overwritten.
+  - `Create file using template`: Create or update a file using selected file template and push / pull it to remote server / tower. If the file already exists on server it will be overwritten.
 
 - **Default Path**: Specify path where command will be executed. This field supports [Variables](#configure-variables). Important: ensure ssh user has access to the location even if executing command using sudo.
 - **Code**: Code to execute. Can be an SSH command or Python code based on selected action. This field supports [Variables](#configure-variables).

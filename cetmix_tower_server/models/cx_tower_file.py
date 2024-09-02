@@ -59,7 +59,6 @@ class CxTowerFile(models.Model):
             ("tower", "Tower"),
             ("server", "Server"),
         ],
-        inverse="_inverse_source",
         help="""
             - Tower:  file is pushed from Tower to server.
             - Server: file is pulled from server to Tower.
@@ -196,25 +195,25 @@ class CxTowerFile(models.Model):
         """
         Replace file fields values by template values
         """
-        for file in self.filtered(
-            lambda rec: rec.template_id and rec.source == "tower"
-        ):
-            file.write(file._get_file_values_from_related_template())
-
-    def _inverse_source(self):
-        """
-        Unlink file template if source is not tower
-        """
-        self.filtered(lambda rec: rec.source != "tower").template_id = False
+        for file in self:
+            if file.template_id:
+                file.write(file._get_file_values_from_related_template())
 
     @api.onchange("template_id")
     def _onchange_template_id(self):
         """
         Update file data by template values
         """
-        for rec in self:
-            if rec.template_id:
-                rec.update(self._get_file_values_from_related_template())
+        for file in self:
+            if file.template_id:
+                file.update(file._get_file_values_from_related_template())
+
+    @api.onchange("source")
+    def _onchange_source(self):
+        """
+        Reset file template after change source
+        """
+        self.update({"template_id": False})
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -31,6 +31,7 @@
                         <group>
                             <field name="file_name" />
                             <field name="server_dir" />
+                            <field name="source" />
                             <field
                                 name="tag_ids"
                                 widget="many2many_tags"
@@ -45,7 +46,7 @@
                         <page
                             name="code"
                             string="Code"
-                            attrs="{'invisible': [('file_type', '=', 'binary')]}"
+                            attrs="{'invisible': ['|', ('file_type', '=', 'binary'), ('source', '=', 'server')]}"
                         >
                             <field name="code" nolabel="1" />
                         </page>
