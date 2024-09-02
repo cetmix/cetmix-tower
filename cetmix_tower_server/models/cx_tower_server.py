@@ -5,7 +5,7 @@ import io
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 from .constants import (
@@ -850,12 +850,13 @@ class CxTowerServer(models.Model):
         **kwargs,
     ):
         """
-        Run the command to create a file from a template and upload it to the server.
+        Run the command to create a file from a template and push to server if source
+        is 'tower' and pull to tower if source is 'server'.
 
-        This function attempts to create a new file on the server using the specified
-        file template. If the file creation is successful, it uploads the file to the
-        server. The function logs the status of the operation in the provided log
-        record.
+        This function attempts to create a new file on the server/tower using the
+        specified file template. If the file creation is successful, it uploads
+        the file to the server/tower. The function logs the status of the operation
+        in the provided log record.
 
         Args:
             log_record (recordset): The log record to update with the command's
@@ -876,14 +877,14 @@ class CxTowerServer(models.Model):
         """
         try:
             # Attempt to create a new file using the template for the current server
-            file_id = file_template_id.create_file(
+            file = file_template_id.create_file(
                 server=self,
                 server_dir=server_dir,
                 raise_if_exists=True,
             )
 
             # If file creation failed, log the failure and exit
-            if not file_id:
+            if not file:
                 command_result = {
                     "status": FILE_CREATION_FAILED,
                     "response": None,
@@ -899,8 +900,17 @@ class CxTowerServer(models.Model):
                 else:
                     return command_result
 
-            # Upload the newly created file to the server
-            file_id.action_push_to_server()
+            if file.source == "server":
+                file.action_pull_from_server()
+            elif file.source == "tower":
+                file.action_push_to_server()
+            else:
+                raise UserError(
+                    _(
+                        "File source cannot be determined: '%(source)s'",
+                        source=file.source,
+                    )
+                )
 
             # Log the successful creation and upload of the file
             return log_record.finish(
