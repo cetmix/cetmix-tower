@@ -18,6 +18,14 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     command_id = fields.Many2one(
         "cx.tower.command",
     )
+    action = fields.Selection(
+        selection=[
+            ("ssh_command", "SSH command"),
+            ("python_code", "Python code"),
+        ],
+        default="ssh_command",
+        required=True,
+    )
     path = fields.Char(
         compute="_compute_code",
         readonly=False,
@@ -48,24 +56,32 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     )
     result = fields.Text()
 
-    @api.depends("command_id", "server_ids")
+    @api.onchange("action")
+    def _onchange_action(self):
+        """
+        Reset command after change action
+        """
+        self.command_id = False
+
+    @api.depends("command_id", "server_ids", "action")
     def _compute_code(self):
         """
         Set code after change command
         """
         for record in self:
             if record.command_id and record.server_ids:
-                record.code = record.command_id.code
-                record.path = (
-                    record.server_ids[0]
-                    ._render_command(record.command_id)
-                    .get("rendered_path")
+                record.update(
+                    {
+                        "code": record.command_id.code,
+                        "path": record.server_ids[0]
+                        ._render_command(record.command_id)
+                        .get("rendered_path"),
+                    }
                 )
             else:
-                record.code = record.code
-                record.path = record.path
+                record.update({"code": False, "path": False})
 
-    @api.depends("code", "server_ids")
+    @api.depends("code", "server_ids", "action")
     def _compute_rendered_code(self):
         for record in self:
             if record.server_ids:
@@ -82,20 +98,21 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                 # Render template
                 if variable_values:
                     record.rendered_code = record.render_code(
-                        **variable_values.get(server_id.id)
+                        pythonic_mode=record.action == "python_code",
+                        **variable_values.get(server_id.id),
                     ).get(self.id)  # pylint: disable=no-member
                 else:
                     record.rendered_code = record.code
             else:
                 record.rendered_code = record.code
 
-    @api.depends("any_server", "server_ids", "tag_ids")
+    @api.depends("any_server", "server_ids", "tag_ids", "action")
     def _compute_command_domain(self):
         """Compose domain based on condition
         - any server: show commands compatible with any server
         """
         for record in self:
-            domain = [("action", "!=", "file_using_template")]
+            domain = [("action", "=", record.action)]
             if record.any_server:
                 domain.append(("server_ids", "=", False))
             elif record.server_ids:
@@ -194,13 +211,17 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         for server in self.server_ids:
             server_name = server.name
-            client = server._connect(raise_on_error=True)
-            command_result = server._execute_command_using_ssh(
-                client,
-                self.rendered_code,
-                self.path or None,
-                sudo=self.use_sudo if self.use_sudo else None,
-            )
+            if self.action == "python_code":
+                command_result = server._execute_python_code(
+                    code=self.rendered_code,
+                )
+            else:
+                command_result = server._execute_command_using_ssh(
+                    server._connect(raise_on_error=True),
+                    self.rendered_code,
+                    self.path or None,
+                    sudo=self.use_sudo if self.use_sudo else None,
+                )
             command_error = command_result["error"]
             command_response = command_result["response"]
             if command_error:
