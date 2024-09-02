@@ -603,14 +603,17 @@ class TestTowerCommand(TestTowerCommon):
         )
         self.assertIsNone(result_response, "Error in response must be set to None")
 
-    def test_command_action_file_using_template(self):
-        """Test action file using template"""
-
+    def test_tower_command_action_file_using_template(self):
+        """
+        Test action file using template for tower source
+        """
         with patch(
             "odoo.addons.cetmix_tower_server.models.cx_tower_server.CxTowerServer.upload_file",
             return_value="ok",
         ):
-            self.server_test_1.execute_command(self.command_create_file_with_template)
+            self.server_test_1.execute_command(
+                self.command_create_file_with_template_tower_source
+            )
 
         log_text_create_success = "File created and uploaded successfully"
         log_text_file_exists = "An error occurred: File already exists on server."
@@ -619,7 +622,11 @@ class TestTowerCommand(TestTowerCommon):
         log_record = self.CommandLog.search(
             [
                 ("server_id", "=", self.server_test_1.id),
-                ("command_id", "=", self.command_create_file_with_template.id),
+                (
+                    "command_id",
+                    "=",
+                    self.command_create_file_with_template_tower_source.id,
+                ),
                 ("command_response", "=", log_text_create_success),
             ]
         )
@@ -630,12 +637,79 @@ class TestTowerCommand(TestTowerCommon):
             "odoo.addons.cetmix_tower_server.models.cx_tower_server.CxTowerServer.upload_file",
             return_value="ok",
         ):
-            self.server_test_1.execute_command(self.command_create_file_with_template)
+            self.server_test_1.execute_command(
+                self.command_create_file_with_template_tower_source
+            )
 
         log_record_2 = self.CommandLog.search(
             [
                 ("server_id", "=", self.server_test_1.id),
-                ("command_id", "=", self.command_create_file_with_template.id),
+                (
+                    "command_id",
+                    "=",
+                    self.command_create_file_with_template_tower_source.id,
+                ),
+                ("command_error", "=", log_text_file_exists),
+            ]
+        )
+
+        self.assertEqual(len(log_record_2), 1, msg="Must be a single log record")
+
+    def test_server_command_action_file_using_template(self):
+        """
+        Test action file using template for server source
+        """
+        self.assertFalse(self.template_file_server.file_ids)
+
+        def download_file(this, remote_path):
+            return b"Hello, world!"
+
+        cx_tower_server_obj = self.registry["cx.tower.server"]
+
+        with patch.object(cx_tower_server_obj, "download_file", download_file):
+            self.server_test_1.execute_command(
+                self.command_create_file_with_template_server_source
+            )
+
+        log_text_create_success = "File created and uploaded successfully"
+        log_text_file_exists = "An error occurred: File already exists on server."
+
+        # Get command log
+        log_record = self.CommandLog.search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                (
+                    "command_id",
+                    "=",
+                    self.command_create_file_with_template_server_source.id,
+                ),
+                ("command_response", "=", log_text_create_success),
+            ]
+        )
+
+        self.assertEqual(len(log_record), 1, msg="Must be a single log record")
+        self.assertEqual(
+            len(self.template_file_server.file_ids), 1, msg="Must be one file!"
+        )
+        self.assertEqual(
+            self.template_file_server.file_ids.source,
+            "server",
+            msg="The File source must be 'server'",
+        )
+
+        with patch.object(cx_tower_server_obj, "download_file", download_file):
+            self.server_test_1.execute_command(
+                self.command_create_file_with_template_server_source
+            )
+
+        log_record_2 = self.CommandLog.search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                (
+                    "command_id",
+                    "=",
+                    self.command_create_file_with_template_server_source.id,
+                ),
                 ("command_error", "=", log_text_file_exists),
             ]
         )
