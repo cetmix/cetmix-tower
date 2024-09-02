@@ -44,7 +44,7 @@ class CxTowerCommand(models.Model):
         return [
             ("ssh_command", "SSH command"),
             ("python_code", "Execute Python code"),
-            ("file_using_template", "Push file using template"),
+            ("file_using_template", "Create file using template"),
         ]
 
     active = fields.Boolean(default=True)

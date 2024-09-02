@@ -44,6 +44,14 @@ class CxTowerFileTemplate(models.Model):
         default=lambda self: self.env["cx.tower.file"]._default_file_type(),
         required=True,
     )
+    source = fields.Selection(
+        [
+            ("tower", "Tower"),
+            ("server", "Server"),
+        ],
+        required=True,
+        default="tower",
+    )
 
     def write(self, vals):
         """
@@ -96,6 +104,7 @@ class CxTowerFileTemplate(models.Model):
                 ("template_id", "=", self.id),
                 ("server_id", "=", server.id),
                 ("server_dir", "=", server_dir or self.server_dir),
+                ("source", "=", self.source),
             ],
             limit=1,
         )
@@ -103,6 +112,8 @@ class CxTowerFileTemplate(models.Model):
             if raise_if_exists:
                 raise ValidationError(_("File already exists on server."))
             return existing_file
+
+        # TODO:
         return file_model.with_context(is_custom_server_dir=True).create(
             {
                 "template_id": self.id,
@@ -111,6 +122,6 @@ class CxTowerFileTemplate(models.Model):
                 "code_on_server": self.code,
                 "server_dir": server_dir or self.server_dir,
                 "file_type": self.file_type,
-                "source": "tower",
+                "source": self.source,
             }
         )
