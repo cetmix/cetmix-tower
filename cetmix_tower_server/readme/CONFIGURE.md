@@ -100,7 +100,7 @@ docker run -d -p {{ odoo_port }}:8069 \
 
 Following types of variable values available in [Cetmix Tower](https://cetmix.com/tower):
 
-- Local values. Those are values that are defined at a record level. For example for a server.
+- Local values. Those are values that are defined at a record level. For example for a server or an action.
 - Global values. Those are values that are defined at the [Cetmix Tower](https://cetmix.com/tower) level.
 
 When rendering an expression local values are used first. If no local value is found then global value will be used.
@@ -270,7 +270,7 @@ To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Cr
   - **Post Run Actions**: List of conditional actions to be triggered after the command is executed. Each of the actions has the following fields:
     - **Sequence**: Order this actions is triggered. Lower value = higher priority.
     - **Condition**: Uses command exit code.
-    - **Action**: Action to execute if condition is met. Possible options:
+    - **Action**: Action to execute if condition is met. Also, if variables with values are specified, these variables will be updated (for existing variables on the server) or added (for new variables) to the server variables. Possible options:
       - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command.
       - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one.
       - `Run next command`. Will continue flight plan execution.

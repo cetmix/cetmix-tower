@@ -9,6 +9,7 @@
                 <field name="variable_id" />
                 <field name="is_global" widget="boolean_toggle" />
                 <field name="server_id" />
+                <field name="action_id" />
                 <field name="value_char" />
             </tree>
         </field>
