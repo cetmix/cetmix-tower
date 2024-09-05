@@ -53,7 +53,7 @@
                             />
                                 <field
                                 name="template_id"
-                                attrs="{'invisible': [('source', '!=', 'tower')]}"
+                                domain="[('source', '=', source)]"
                             />
                                 <field name="server_id" />
                                 <label for="server_dir" />

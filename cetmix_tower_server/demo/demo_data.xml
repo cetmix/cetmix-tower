@@ -112,6 +112,17 @@
         />
     </record>
 
+    <record id="cx_tower_file_template_demo_4" model="cx.tower.file.template">
+        <field name="name">Demo File Template 4</field>
+        <field name="source">server</field>
+        <field name="file_name">server_demo_logs.txt</field>
+        <field name="server_dir">/var/log</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
     <!--  Files  -->
     <record id="cx_tower_file_tower_demo_1" model="cx.tower.file">
         <field name="source">tower</field>
@@ -128,6 +139,12 @@
     <record id="cx_tower_file_tower_demo_3" model="cx.tower.file">
         <field name="source">tower</field>
         <field name="template_id" ref="cx_tower_file_template_demo_3" />
+        <field name="server_id" ref="server_test_2" />
+    </record>
+
+    <record id="cx_tower_file_server_demo_logs" model="cx.tower.file">
+        <field name="source">server</field>
+        <field name="template_id" ref="cx_tower_file_template_demo_4" />
         <field name="server_id" ref="server_test_2" />
     </record>
 
@@ -215,6 +232,7 @@
         <field name="action">file_using_template</field>
         <field name="file_template_id" ref="cx_tower_file_template_demo_1" />
     </record>
+
     <record id="command_check_branch" model="cx.tower.command">
         <field name="name">Execute Python Code: Check Branch</field>
         <field name="action">python_code</field>
@@ -224,6 +242,13 @@ if {{ branch }}:
 else:
     COMMAND_RESULT={"exit_code": -1, "message": "Branch is not defined!"}
         </field>
+    </record>
+
+    <record id="command_download_file" model="cx.tower.command">
+        <field name="name">Download log file by template</field>
+        <field name="path">/home/{{ tower.server.username }}</field>
+        <field name="action">file_using_template</field>
+        <field name="file_template_id" ref="cx_tower_file_template_demo_4" />
     </record>
 
     <!-- Flight Plans -->

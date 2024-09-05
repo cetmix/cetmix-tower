@@ -69,21 +69,40 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
-        self.template_file = self.env["cx.tower.file.template"].create(
+        self.template_file_tower = self.env["cx.tower.file.template"].create(
             {
                 "name": "Test file template",
                 "file_name": "test_os.txt",
+                "source": "tower",
                 "server_dir": "/home/{{ tower.server.username }}",
                 "code": "Hello, world!",
             }
         )
 
-        self.command_create_file_with_template = self.Command.create(
+        self.template_file_server = self.env["cx.tower.file.template"].create(
             {
-                "name": "Test create file with template",
+                "name": "Test file template",
+                "file_name": "test_os.txt",
+                "source": "server",
+                "server_dir": "/home/{{ tower.server.username }}",
+            }
+        )
+
+        self.command_create_file_with_template_tower_source = self.Command.create(
+            {
+                "name": "Test create file with template with tower source",
                 "path": "/home/{{ tower.server.username }}",
                 "action": "file_using_template",
-                "file_template_id": self.template_file.id,
+                "file_template_id": self.template_file_tower.id,
+            }
+        )
+
+        self.command_create_file_with_template_server_source = self.Command.create(
+            {
+                "name": "Test create file with template with server source",
+                "path": "/home/{{ tower.server.username }}",
+                "action": "file_using_template",
+                "file_template_id": self.template_file_server.id,
             }
         )
 
