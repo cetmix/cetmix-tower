@@ -29,6 +29,10 @@
                             <field name="server_id" />
                             <field name="plan_id" />
                             <field
+                                name="parent_flight_plan_log_id"
+                                attrs="{'invisible': [('parent_flight_plan_log_id', '=', False)]}"
+                            />
+                            <field
                                 name="is_running"
                                 attrs="{'invisible': [('is_running', '=', False)]}"
                             />
