@@ -1,7 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, fields
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common import TestTowerCommon
 
@@ -600,4 +600,80 @@ class TestTowerPlan(TestTowerCommon):
         self.assertFalse(
             new_plan_log_records.command_log_ids[1].is_skipped,
             msg="The second plan line should not be skipped",
+        )
+
+    def test_plan_with_another_plan(self):
+        """
+        Test to check running another plan from current plan
+        """
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 2, msg="Should be 2 plan logs")
+
+        main_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(main_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(main_plan_log.plan_status, 0, "Plan log should success status")
+
+        additional_plan_log = plan_log_records - main_plan_log
+        self.assertEqual(
+            additional_plan_log.parent_flight_plan_log_id,
+            main_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            additional_plan_log.plan_status,
+            main_plan_log.command_log_ids.command_status,
+            "The command status of main plan should be equal "
+            "of status second flight plan",
+        )
+
+        # Check that we cannot add recursive plan
+        with self.assertRaisesRegex(
+            ValidationError, "Recursive plan call detected in plan.*"
+        ):
+            self.plan_line.create(
+                {
+                    "sequence": 20,
+                    "plan_id": self.plan_1.id,
+                    "command_id": self.command_run_flight_plan.id,
+                }
+            )
+
+        # Delete plan lines from first plan
+        self.plan_1.line_ids = False
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+        plan_log_records = (
+            self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
+            - plan_log_records
+        )
+
+        main_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(main_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(main_plan_log.plan_status, -1, "Plan log should failed status")
+
+        additional_plan_log = plan_log_records - main_plan_log
+        self.assertEqual(
+            additional_plan_log.parent_flight_plan_log_id,
+            main_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            additional_plan_log.plan_status,
+            main_plan_log.command_log_ids.command_status,
+            "The command status of main plan should be equal "
+            "of status second flight plan",
         )

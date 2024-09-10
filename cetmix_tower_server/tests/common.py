@@ -208,6 +208,30 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
+        # Command
+        self.command_run_flight_plan = self.Command.create(
+            {
+                "name": "Run Flight Plan",
+                "action": "plan",
+                "flight_plan_id": self.plan_1.id,
+            }
+        )
+
+        # Flight plan
+        self.plan_2 = self.Plan.create(
+            {
+                "name": "Test plan 2",
+                "note": "Run another flight plan",
+            }
+        )
+        self.plan_2_line_1 = self.plan_line.create(
+            {
+                "sequence": 5,
+                "plan_id": self.plan_2.id,
+                "command_id": self.command_run_flight_plan.id,
+            }
+        )
+
         # Flight plan log
         self.PlanLog = self.env["cx.tower.plan.log"]
 
