@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
@@ -68,6 +69,34 @@ class CxTowerPlanLine(models.Model):
             record.variable_ids = template_mixin_obj._prepare_variable_commands(
                 ["condition"], force_record=record
             )
+
+    @api.constrains("command_id")
+    def _check_command_id(self):
+        """
+        Check recursive plan line execution. If the command refers to another plan,
+        make sure there are no recursive references.
+        """
+        for line in self:
+            visited_plans = set()
+            self._check_recursive_plan(line.command_id, visited_plans)
+
+    def _check_recursive_plan(self, command, visited_plans):
+        """
+        Recursively check if the command plan creates a cycle.
+        Raise a ValidationError if a cycle is detected.
+        """
+        if command.flight_plan_id and command.action == "plan":
+            if command.flight_plan_id.id in visited_plans:
+                raise ValidationError(
+                    _(
+                        "Recursive plan call detected in plan %(name)s.",
+                        name=command.flight_plan_id.name,
+                    )
+                )
+            visited_plans.add(command.flight_plan_id.id)
+            # recursively check the lines in the plan
+            for line in command.flight_plan_id.line_ids:
+                self._check_recursive_plan(line.command_id, visited_plans)
 
     def _execute(self, server, plan_log_record, **kwargs):
         """Execute command from the Flight Plan line
