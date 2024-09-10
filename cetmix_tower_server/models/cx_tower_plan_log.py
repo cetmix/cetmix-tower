@@ -48,6 +48,9 @@ class CxTowerPlanLog(models.Model):
         comodel_name="cx.tower.command.log", inverse_name="plan_log_id", auto_join=True
     )
     plan_status = fields.Integer(string="Status")
+    parent_flight_plan_log_id = fields.Many2one(
+        "cx.tower.plan.log",
+    )
 
     @api.depends("server_id.name", "name")
     def _compute_name(self):

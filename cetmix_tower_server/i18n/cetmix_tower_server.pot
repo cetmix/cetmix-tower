@@ -969,6 +969,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
+msgid "Execute flight plan error"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Execute flight plan error %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
 msgid "Execute python code error: %(err)s"
 msgstr ""
 
@@ -1181,6 +1193,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
@@ -1832,6 +1845,11 @@ msgid "Operating System"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__parent_flight_plan_log_id
+msgid "Parent Flight Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__partner_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
@@ -1965,6 +1983,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__action__python_code
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Python code"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
+#, python-format
+msgid "Recursive plan call detected in plan %(name)s."
 msgstr ""
 
 #. module: cetmix_tower_server

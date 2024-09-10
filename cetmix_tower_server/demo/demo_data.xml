@@ -326,4 +326,23 @@ else:
         <field name="command_id" ref="command_upload_file" />
     </record>
 
+    <!-- Command -->
+    <record id="command_execute_flight_plan" model="cx.tower.command">
+        <field name="name">Run Test #1 Flight Plan</field>
+        <field name="action">plan</field>
+        <field name="flight_plan_id" ref="plan_test_1" />
+    </record>
+
+    <!-- Flight Plan -->
+    <record id="plan_test_2" model="cx.tower.plan">
+        <field name="name">Test #2</field>
+        <field name="note">Run another flight plan</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_test_2_line_1" model="cx.tower.plan.line">
+        <field name="sequence">5</field>
+        <field name="plan_id" ref="plan_test_2" />
+        <field name="command_id" ref="command_execute_flight_plan" />
+    </record>
+
 </odoo>
