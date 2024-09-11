@@ -18,7 +18,7 @@ access_interpreter_manager,Interpreter->Manager,model_cx_tower_interpreter,group
 access_interpreter_root,Interpreter->Root,model_cx_tower_interpreter,group_root,1,1,1,1
 access_command_user,Command->User,model_cx_tower_command,group_user,1,0,0,0
 access_command_manager,Command->Manager,model_cx_tower_command,group_manager,1,1,1,0
-access_command_root,Command->Root,model_cx_tower_command,group_root,1,1,1,1 
+access_command_root,Command->Root,model_cx_tower_command,group_root,1,1,1,1
 access_execute_command_user,Execute Command->User,model_cx_tower_command_execute_wizard,group_user,1,1,1,1
 access_execute_plan_user,Execute Plan->User,model_cx_tower_plan_execute_wizard,group_user,1,1,1,1
 access_key_user,Key->User,model_cx_tower_key,group_user,1,0,0,0
@@ -30,7 +30,7 @@ access_plan_user,Plan->User,model_cx_tower_plan,group_user,1,0,0,0
 access_plan_manager,Plan->Manager,model_cx_tower_plan,group_manager,1,1,1,0
 access_plan_root,Plan->Root,model_cx_tower_plan,group_root,1,1,1,1
 access_plan_line_user,Plan Line->User,model_cx_tower_plan_line,group_user,1,0,0,0
-access_plan_line_manager,Plan Line->Manager,model_cx_tower_plan_line,group_manager,1,1,1,0
+access_plan_line_manager,Plan Line->Manager,model_cx_tower_plan_line,group_manager,1,1,1,1
 access_plan_line_root,Plan Line->Root,model_cx_tower_plan_line,group_root,1,1,1,1
 access_plan_line_action_user,Plan Line Action->User,model_cx_tower_plan_line_action,group_user,1,0,0,0
 access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_line_action,group_manager,1,1,1,0
