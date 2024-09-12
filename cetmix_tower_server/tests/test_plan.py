@@ -735,3 +735,61 @@ class TestTowerPlan(TestTowerCommon):
             original_action.variable_value_ids.value_char,
             "Variable value should be the same in the copied action",
         )
+
+    def test_plan_lines_access_rights(self):
+
+        # Create a test plan with plan lines
+        self.plan_2 = self.Plan.create(
+            {
+                "name": "Test plan 2",
+                "note": "Test note",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+                "line_ids": [
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
+                    (0, 0, {"command_id": self.command_list_dir.id, "sequence": 2}),
+                ],
+            }
+        )
+        # Ensure default access level is correct
+        self.assertEqual(self.plan_2.access_level, "2")
+
+        # Remove user_bob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+
+        # Ensure that user without any group cannot access plan lines        
+        test_plan_2_as_bob = self.plan_2.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            plan_line_name = test_plan_2_as_bob.line_ids[0].command_id.name
+
+        # Add user_bob to `group_user` and test plan.line access
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Set access level to 1, so group_user can access the plan
+        self.plan_2.write({"access_level": "1"})
+        self.plan_2.line_ids[0].write({"access_level": "1"})
+
+        plan_line_name = test_plan_2_as_bob.line_ids[0].command_id.name
+        self.assertEqual(
+            plan_line_name, "Create directory", msg="User should access plan lines with access_level 1"
+        )
+
+        # Add user_bob to `group_manager` and test edit rights for plan.line
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        test_plan_2_as_bob.write({"access_level": "2"})
+        self.assertEqual(test_plan_2_as_bob.access_level, "2")
+        test_plan_2_as_bob.line_ids.write({"sequence": 3})
+        self.assertEqual(
+            test_plan_2_as_bob.line_ids[0].sequence, 3, msg="Manager should be able to update sequence"
+        )
+
+        # Ensure that manager cannot delete plan lines they did not create
+        with self.assertRaises(AccessError):
+            test_plan_2_as_bob.line_ids.unlink()

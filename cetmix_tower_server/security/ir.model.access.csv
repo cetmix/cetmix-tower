@@ -33,7 +33,7 @@ access_plan_line_user,Plan Line->User,model_cx_tower_plan_line,group_user,1,0,0,
 access_plan_line_manager,Plan Line->Manager,model_cx_tower_plan_line,group_manager,1,1,1,1
 access_plan_line_root,Plan Line->Root,model_cx_tower_plan_line,group_root,1,1,1,1
 access_plan_line_action_user,Plan Line Action->User,model_cx_tower_plan_line_action,group_user,1,0,0,0
-access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_line_action,group_manager,1,1,1,0
+access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_line_action,group_manager,1,1,1,1
 access_plan_line_action_root,Plan Line Action->Root,model_cx_tower_plan_line_action,group_root,1,1,1,1
 access_plan_log_user,Plan Log->User,model_cx_tower_plan_log,group_user,1,0,0,0
 access_plan_log_root,Plan Log->User,model_cx_tower_plan_log,group_root,1,1,1,1
