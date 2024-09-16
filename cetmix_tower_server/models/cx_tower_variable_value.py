@@ -26,7 +26,7 @@ class TowerVariableValue(models.Model):
         store=True,
     )
 
-    value_char = fields.Char(string="Value", required=True)
+    value_char = fields.Char(string="Value", required=False)
     note = fields.Text(related="variable_id.note", readonly=True)
     active = fields.Boolean(default=True)
 
