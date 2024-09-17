@@ -1,18 +1,18 @@
-.o_server_status_1 {
+.o_server_status_undefined {
     background-color: var(--info);
 }
 
-.o_server_status_4 {
+.o_server_status_running {
     background-color: var(--success);
 }
 
-.o_server_status_2 {
+.o_server_status_stopped {
     background-color: var(--danger);
 }
 
-.o_server_status_3,
-.o_server_status_5,
-.o_server_status_6 {
+.o_server_status_starting,
+.o_server_status_stopping,
+.o_server_status_restarting {
     background-color: var(--warning);
 }
 
