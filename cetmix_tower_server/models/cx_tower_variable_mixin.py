@@ -155,6 +155,7 @@ class TowerValueMixin(models.AbstractModel):
                 "partner_name": server.partner_id.name if server.partner_id else False,
                 "ipv4": server.ip_v4_address,
                 "ipv6": server.ip_v6_address,
+                "status": server.status,
             }
         return values
 
