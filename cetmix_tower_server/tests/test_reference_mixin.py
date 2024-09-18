@@ -45,7 +45,7 @@ class TestTowerReference(TestTowerCommon):
 
         yet_another_template_copy = yet_another_template.copy()
 
-        self.assertEqual(yet_another_template_copy.name, "Yet another template (Copy)")
+        self.assertEqual(yet_another_template_copy.name, "Yet another template (copy)")
 
         self.assertEqual(
             yet_another_template_copy.reference, "yet_another_template_copy"
@@ -56,6 +56,21 @@ class TestTowerReference(TestTowerCommon):
 
         yet_another_template_copy.write({"reference": " Some reference x*((*)) "})
         self.assertEqual(yet_another_template_copy.reference, "some_reference_x_3")
+
+        # -- 6 ---
+        # Update template with a new name and remove reference simultaneously
+        yet_another_template_copy.write({"name": "Doge so like", "reference": False})
+        self.assertEqual(yet_another_template_copy.reference, "doge_so_like")
+
+        # -- 7 ---
+        # Rename the template and ensure reference is not affected
+        yet_another_template_copy.write({"name": "Chad"})
+        self.assertEqual(yet_another_template_copy.reference, "doge_so_like")
+
+        # -- 8 ---
+        # Remove the reference and ensure it's regenerated from the name
+        yet_another_template_copy.write({"reference": False})
+        self.assertEqual(yet_another_template_copy.reference, "chad")
 
     def test_search_by_reference(self):
         """Search record by its reference"""
