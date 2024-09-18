@@ -104,6 +104,10 @@ class CxTowerCommand(models.Model):
         store=True,
         readonly=False,
     )
+    server_status = fields.Selection(
+        selection=lambda self: self.env["cx.tower.server"]._selection_status(),
+        string="Server Status",
+    )
 
     @api.depends("action")
     def _compute_code(self):

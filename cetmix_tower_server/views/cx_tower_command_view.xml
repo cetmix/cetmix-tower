@@ -56,6 +56,7 @@
                                 options="{'color_field': 'color'}"
                             />
                             <field name="access_level" />
+                            <field name="server_status" widget="server_status" />
                         </group>
                         <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
                         <field

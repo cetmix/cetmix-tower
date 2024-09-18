@@ -770,7 +770,7 @@ class CxTowerServer(models.Model):
         Returns:
             dict(): command execution result if `log_record` is defined else None
         """
-        return self._command_runner(
+        response = self._command_runner(
             command,
             log_record,
             rendered_command_code,
@@ -778,6 +778,15 @@ class CxTowerServer(models.Model):
             ssh_connection,
             **kwargs,
         )
+
+        if (
+            command.server_status
+            and (log_record and log_record.command_status == 0)
+            or (response and response["status"] == 0)
+        ):
+            self.write({"status": command.server_status})
+
+        return response
 
     def _command_runner(
         self,
