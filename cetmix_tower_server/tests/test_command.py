@@ -20,6 +20,30 @@ class TestTowerCommand(TestTowerCommon):
                 line.value_char = "/opt/tower"
             f.save()
 
+        # Secret key
+        self.secret_folder_key = self.Key.create(
+            {
+                "name": "Folder",
+                "key_ref": "FOLDER",
+                "secret_value": "secretFolder",
+                "key_type": "s",
+            }
+        )
+        # Command
+        self.command_create_new_command = self.Command.create(
+            {
+                "name": "Create new command",
+                "action": "python_code",
+                "code": """
+if #!cxtower.secret.FOLDER!# == "secretFolder":
+    command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
+    COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
+else:
+    COMMAND_RESULT = {"exit_code": -1, "message": "error"}
+""",
+            }
+        )
+
     def test_ssh_command_prepare_method_without_path(self):
         """Test ssh command preparation in different modes without path"""
 
@@ -323,16 +347,6 @@ class TestTowerCommand(TestTowerCommon):
         code = "cd {{ test_path_ }} && mkdir #!cxtower.secret.FOLDER!#"
         command_with_keys = self.Command.create(
             {"name": "Command with keys", "code": code}
-        )
-
-        # Key
-        self.Key.create(
-            {
-                "name": "Folder",
-                "key_ref": "FOLDER",
-                "secret_value": "secretFolder",
-                "key_type": "s",
-            }
         )
 
         # Parse command with key parser to ensure key is parsed correctly
@@ -744,15 +758,6 @@ class TestTowerCommand(TestTowerCommon):
         """
         Execute command with python action.
         """
-        self.Key.create(
-            {
-                "name": "Folder",
-                "key_ref": "FOLDER",
-                "secret_value": "secretFolder",
-                "key_type": "s",
-            }
-        )
-
         command_result = self.server_test_1.with_context(no_log=True).execute_command(
             self.command_create_new_command
         )
@@ -764,14 +769,9 @@ class TestTowerCommand(TestTowerCommon):
             "New command was created",
             "The response must be text",
         )
-        code = """
-if not #!cxtower.secret.FOLDER!#:
-    command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
-    COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
-else:
-    COMMAND_RESULT = {"exit_code": -1, "message": "error"}
-"""
-        self.command_create_new_command.code = code
+
+        # Check error is raises
+        self.secret_folder_key.secret_value = "not_a_secretFolder"
         command_result = self.server_test_1.with_context(no_log=True).execute_command(
             self.command_create_new_command
         )
@@ -788,14 +788,6 @@ else:
         """
         Test Execute python code
         """
-        self.Key.create(
-            {
-                "name": "Folder",
-                "key_ref": "FOLDER",
-                "secret_value": "secretFolder",
-                "key_type": "s",
-            }
-        )
         rendered_command = self.server_test_1._render_command(
             self.command_create_new_command
         )

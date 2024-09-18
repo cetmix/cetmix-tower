@@ -15,7 +15,8 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
     name = fields.Char(required=True)
     reference = fields.Char(
-        help="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+        index=True,
+        help="Can contain English letters, digits and '_'. Leave blank to autogenerate",
     )
 
     _sql_constraints = [
@@ -102,12 +103,14 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Returns:
             Result of the super `write` call.
         """
-        reference = vals.get("reference", False)
-        if not reference:
-            reference = self._generate_or_fix_reference(self.name)
-        else:
-            reference = self._generate_or_fix_reference(reference)
-        vals.update({"reference": reference})
+        if "reference" in vals:
+            reference = vals.get("reference", False)
+            if not reference:
+                # Use name as a basis for the new reference
+                reference = self._generate_or_fix_reference(vals.get("name", self.name))
+            else:
+                reference = self._generate_or_fix_reference(reference)
+            vals.update({"reference": reference})
         return super().write(vals)
 
     def _get_copied_name(self):
@@ -121,11 +124,15 @@ class CxTowerReferenceMixin(models.AbstractModel):
         """
         self.ensure_one()
         original_name = self.name
-        copy_name = _(f"{original_name} (Copy)")
+        copy_name = _("%(name)s (copy)", name=original_name)
+
         counter = 1
         while self.search_count([("name", "=", copy_name)]) > 0:
             counter += 1
-            copy_name = _(f"{original_name} (Copy {counter})")
+            copy_name = _(
+                "%(name)s (copy %(number)s)", name=original_name, number=str(counter)
+            )
+
         return copy_name
 
     def copy(self, default=None):

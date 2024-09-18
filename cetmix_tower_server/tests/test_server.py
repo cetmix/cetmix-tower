@@ -222,7 +222,7 @@ class TestTowerServer(TestTowerCommon):
         # Check if user Bob can create new server as member of group_manager
         new_server_1 = self.Server.with_user(self.user_bob).create(
             {
-                "name": "Test Server 2",
+                "name": "New Server 1",
                 "ip_v4_address": "localhost",
                 "ssh_username": "admin",
                 "ssh_password": "password",
@@ -232,7 +232,7 @@ class TestTowerServer(TestTowerCommon):
         )
         # Check if server has been created by Bob as member of group_manager
         self.assertEqual(
-            new_server_1.name, "Test Server 2", msg="Sever name does not match!"
+            new_server_1.name, "New Server 1", msg="Sever name does not match!"
         )
 
         # Check if user Bob can unlink new server as member of group_manager
