@@ -127,6 +127,11 @@ class CxTowerCommand(models.Model):
         for record in self:
             record.variable_ids = record._prepare_variable_commands(["code", "path"])
 
+    server_status = fields.Selection(
+        selection=lambda self: self.env["cx.tower.server"]._selection_status(),
+        string="Server Status",
+    )
+
     @api.depends("action")
     def _compute_code(self):
         """
