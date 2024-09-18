@@ -22,72 +22,88 @@ Cetmix Tower Server Management
 
 |badge1| |badge2| |badge3|
 
-Cetmix Tower offers a streamlined solution for managing remote servers
-via SSH directly from Odoo. This module is designed for versatility
-across different operating systems and software environments, providing
-a practical option for those looking to manage servers without getting
+`Cetmix Tower <http://cetmix.com/tower>`__ offers a streamlined solution
+for managing remote servers via SSH or API calls directly from
+`Odoo <https:/odoo.com>`__. It is designed for versatility across
+different operating systems and software environments, providing a
+practical option for those looking to manage servers without getting
 tied down by vendor or technology constraints.
 
--  **Why Cetmix Tower?**
+Why Cetmix Tower?
+=================
 
-   -  **Open Source:** Cetmix Tower is distributed under the AGPL-3
-      license.
-   -  **Flexibility:** Use Cetmix Tower alongside other management
-      methods without restriction, ensuring you're not limited to a
-      single vendor.
-   -  **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure
-      for full control over your server management.
-   -  **Broad Compatibility:** Execute any software that's manageable
-      via shell commands, from Docker or Kubernetes to direct OS package
-      installations.
-   -  **Odoo Integration:** Benefit from Odoo's ecosystem for server
-      management tasks, like deploying servers in response to specific
-      Odoo-triggered events.
-   -  **Beyond Odoo:** While optimized for Odoo, Cetmix Tower supports a
-      wide range of software applications, offering flexibility in
-      server management tasks.
+-  **Open Source:** `Cetmix Tower <http://cetmix.com/tower>`__ is
+   distributed under the AGPL-3 license
+-  **Odoo Integration:** Benefit from `Odoo <https:/odoo.com>`__
+   ecosystem for server management tasks, like deploying servers in
+   response to specific Odoo-triggered events
+-  **Extendability:** Build your own `Odoo <https:/odoo.com>`__ modules
+   using `Cetmix Tower <http://cetmix.com/tower>`__ to implement your
+   custom features
+-  **Beyond Odoo:** While optimized for Odoo, Cetmix Tower can manage
+   virtually any instance
+-  **Flexibility:** Use Cetmix Tower alongside other management methods
+   without restriction, ensuring you're not limited to a single vendor
+-  **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for
+   full control over your server management.
+-  **Broad Compatibility:** Execute any software that's manageable via
+   shell commands or API. From Docker or Kubernetes to direct OS package
+   installations
 
--  **Connectivity**
+Server Management
+=================
 
-   -  Password and key based authentication when connection to remote
-      server.
-   -  Server wide variables that can be used for rendering commands.
+-  Variable based flexible configuration
+-  Create servers using pre-defined templates
 
--  **Commands**
+Connectivity
+============
 
-   -  Execute commands on multiple servers at once.
-   -  Render commands using variables.
-   -  Store sensitive information in secret keys that are not visible in
-      command preview.
+-  Password and key based authentication for outgoing SSH connections
+-  Built-in support of the Python `requests
+   library <https://pypi.org/project/requests/>`__ for outgoing API
+   calls
 
--  **Flight Plans**
+Commands
+========
 
-   -  Execute commands in series.
-   -  Condition based flow: execute a command based on pre-defined
-      condition or previous command result. Conditions are built using
-      `Python
-      syntax <https://www.w3schools.com/python/python_syntax.asp>`__.
+-  Execute SSH commands on remote servers
+-  Run Python code on the Tower Odoo server
+-  Render commands using variables
+-  Secret keys for private data storage
 
--  **Files**
+Flight Plans
+============
 
-   -  Download files from remote server using SFTP.
-   -  Upload files to remote server using SFTP.
-   -  Manage files using templates.
+-  Execute multiple commands in a row
+-  Condition based flow:
 
--  **Support and Technical Requirements**
+   -  Based on condition using `Python
+      syntax <https://www.w3schools.com/python/python_syntax.asp>`__
+   -  Based on the previous command exit code
 
-   -  This module depends on the `OCA <http://odoo-community.org>`__
-      free `Web
-      Notify <https://github.com/OCA/web/tree/14.0/web_notify>`__
-      module. Please ensure it is installed in your system for your Odoo
-      version.
-   -  Cetmix Tower is designed to be accessible, though some features
-      might require a foundational understanding of server management
-      principles.
-   -  We offer dedicated support to help with any custom setup needs or
-      questions that arise.
-   -  For additional details, visit our website
-      `cetmix.com <https://cetmix.com>`__.
+Files
+=====
+
+-  Download files from remote server using SFTP
+-  Upload files to remote server using SFTP
+-  Support for ``text`` and ``binary`` file format
+-  Manage files using pre-defined file templates
+
+Support and Technical Requirements
+==================================
+
+-  Cetmix Tower with usability and simplicity in mind, though some
+   features might require a foundational understanding of server
+   management principles
+-  We offer dedicated support to help with any custom setup needs or
+   questions that may arise
+-  This module depends on the `OCA <http://odoo-community.org>`__ free
+   `Web Notify <https://github.com/OCA/web/tree/14.0/web_notify>`__
+   module. Please ensure it is installed in your system for your Odoo
+   version
+-  For additional details, visit our website
+   `cetmix.com <https://cetmix.com>`__
 
 **Table of contents**
 
@@ -138,14 +154,13 @@ Configure a Server
 ------------------
 
 Go to the ``Cetmix Tower/Servers/Servers`` menu and click ``Create``.
-
 Enter the server name and fill the values it the tabs below:
 
-General Settings
-~~~~~~~~~~~~~~~~
+**General Settings**
 
 -  **Partner**: Partner this server belongs to
 -  **Operating System**: Operating system that runs on the server
+-  **Tags**: User-defined search tags
 -  **IPv4 Address**
 -  **IPv6 Address**: Will be used if no IPv4 address is specified
 -  **SSH Auth Mode**: Available options are "Password" and "Key"
@@ -172,35 +187,70 @@ further customizations. Following pre-defined statuses are available:
 
 Default status is 'Undefined'.
 
-Variables
-~~~~~~~~~
+**Variables**
 
 Configure variable values to be used when rendering
 `commands <#configure-a-command>`__ and files on this server. Check the
 `Configuring Variables <#configure-variables>`__ section for more
 details.
 
-Secrets
-~~~~~~~
+**Secrets**
 
 Configure secret values to used when rendering commands and files on
 this server. Check the `Configuring
 Keys/Secrets <#configure-a-keysecret>`__ section for more details.
 
-Server Logs
-~~~~~~~~~~~
+**Server Logs**
 
 Configure server logs in order to have convenient access to them. Logs
 can be fetched either from `Files <#configure-a-file>`__ or using
 `Commands. <#configure-a-command>`__ Check the `Configuring a Server
 Log <#configure-a-server-log>`__ section for more details.
 
-Files
-~~~~~
+Following action buttons are located in the top of the form:
 
-Click the "Files" action button to access files that belong to this
-server. Check the `Configuring Files <#configure-a-file>`__ section for
-more details.
+-  **Command Logs**: Shows all `Command <#configure-a-command>`__ logs
+   for this server
+-  **Flight Plan Logs**: Shows all `Flight
+   Plan <#configure-a-flight-plan>`__ logs for this server
+-  **Files**: Shows all `Files <#configure-a-file>`__ that belong to
+   this server
+
+Configure a Server Template
+---------------------------
+
+Go to the ``Cetmix Tower/Servers/Templates`` menu and click ``Create``.
+Add a name and a unique template reference. Leave the "reference" field
+blank in order for a reference to be generated automatically based on
+the template name.
+
+Fill the values it the tabs below:
+
+**General Settings**
+
+-  **Flight Plan**: Select a flight plan to be executed after a server
+   is created
+-  **Operating System**: Default operating system for new servers
+-  **Tags**: Default search tags for new servers
+-  **SSH Auth Mode**: Default SSH auth mode for new servers. Available
+   options are "Password" and "Key"
+-  **SSH Port**: Default SSH port for new servers
+-  **SSH Username**: Default SSH username for new servers
+-  **Use sudo**: Default sudo mode for new servers
+-  **SSH Password**: Default SSH password for new servers
+-  **SSH Private Key**: Default SSH private key for new servers
+-  **Note**: Comments or user notes
+
+**Variables**
+
+Configure default variable values for new servers. Check the
+`Configuring Variables <#configure-variables>`__ section for more
+details.
+
+**Server Logs**
+
+Please check the `Configuring a Server Log <#configure-a-server-log>`__
+section for more details.
 
 Configure Variables
 -------------------
@@ -585,7 +635,14 @@ Following fields are available:
    please ensure that selected command can be executed multiple times in
    parallel to avoid any potential issues.
 -  **Use Sudo**: Use ``sudo`` if required to run this command.
--  **File**: A file that is used to fetch the log.
+-  **File**: A file that is used to fetch the log. This option is not
+   available when configuring a log for a `Server
+   Template <#configure-a-server-template>`__
+-  **File Template**: A file template that is used to create a file when
+   a new `Server <#configure-a-server>`__ is created from a `Server
+   Template <#configure-a-server-template>`__. This option is available
+   only when configuring a log for a `Server
+   Template <#configure-a-server-template>`__
 
 **Developer hint**: log output supports HTML formatting. You can
 implement your custom log formatter by overriding the
@@ -664,10 +721,74 @@ command or ``Path`` field in flight plan line.
 Usage
 =====
 
-Running a Command
------------------
+Create a new Server from a Server Template
+------------------------------------------
 
-To run a command:
+-  Go to the ``Cetmix Tower/Servers/Templates`` menu and select a
+   `Server Template <CONFIGURE.md/#configure-a-server-template>`__
+-  Click "Create Server" button. A pop-up wizard will open with server
+   parameters populated from the template
+-  Put the new server name, check the parameters and click "Confirm"
+   button
+-  New server will be created
+-  If a `Flight Plan <CONFIGURE.md/#configure-a-flight-plan>`__ is
+   defined in the server template it will be automatically executed
+   after a new server is created
+
+You can also create a new server from template from code using a
+designated ``create_server_from_template`` function of the
+``cx.tower.server.template`` model. This function takes the following
+arguments:
+
+.. code:: python
+
+   - template_reference (Char): Server template reference
+   - server_name (Char): Name of the new server
+   - **kwargs:
+     - partner (res.partner(), optional): Partner this server belongs to.
+     - ipv4 (Char, optional): IP v4 address. Defaults to None.
+     - ipv6 (Char, optional): IP v6 address. Must be provided in case IP v4 is not. Defaults to None.
+     - ssh_password (Char, optional): SSH password. Defaults to None. Defaults to None.
+     - ssh_private_key_value (Char, optional): SSH private key content.
+     - ssh_private_key_value (cx.tower.key(), optional): SSH private key record. Defaults to None.
+     - configuration_variables (Dict, optional): Custom configuration variable.
+       Following format is used:
+         'variable_name': 'variable_value_char'
+         eg:
+         {'branch': 'prod', 'odoo_version': '16.0'}
+
+Here is a short example of an Odoo automated action that creates a new
+server when a Sales Order is confirmed:
+
+|Automatic action|
+
+.. code:: python
+
+   for record in records:
+     
+     # Check confirmed orders
+     if record.state == "sale":
+       params = {
+         "ip_v4_address": "host.docker.internal",
+         "ssh_port": 2222,
+         "ssh_username": "pepe",
+         "ssh_password": "frog",
+         "ssh_auth_mode": "p",
+         "configuration_variables": {
+           "odoo_version": "16.0"
+           },
+       }
+       
+       # Create a new server from template with the 'demo_template' reference 
+       env["cx.tower.server.template"].create_server_from_template(
+         template_reference="demo_template",
+         server_name=record.name,
+         **params
+         )
+       
+
+Run a Command
+-------------
 
 -  Select a server in the list view or open a server form view
 -  Open the ``Actions`` menu and click ``Execute Command``
@@ -701,10 +822,8 @@ You can check command execution logs in the
 delete a command you need to delete all its logs manually before doing
 that.
 
-Running a Flight Plan
----------------------
-
-To run a flight plan:
+Run a Flight Plan
+-----------------
 
 -  Select a server in the list view or open a server form view
 
@@ -728,8 +847,8 @@ To run a flight plan:
    want to delete a command you need to delete all its logs manually
    before doing that.
 
-Checking a Server Log
----------------------
+Check a Server Log
+------------------
 
 To check a server log:
 
@@ -747,6 +866,7 @@ To check a server log:
 
 |Update server log|
 
+.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
 .. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
 .. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
 

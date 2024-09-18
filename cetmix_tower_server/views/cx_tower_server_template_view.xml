@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="cx_tower_server_view_kanban" model="ir.ui.view">
-        <field name="name">cx.tower.server.view.kanban</field>
-        <field name="model">cx.tower.server</field>
+    <record id="cx_tower_server_template_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.kanban</field>
+        <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <kanban class="oe_background_grey o_kanban_dashboard" records_draggable="0">
                 <field name="name" />
-                <field name="partner_id" />
+                <field name="reference" />
                 <field name="tag_ids" />
                 <field name="os_id" />
-                <field name="ip_v4_address" />
-                <field name="ip_v6_address" />
                 <field name="color" />
                 <templates>
                     <t t-name="kanban-box">
@@ -25,7 +23,6 @@
                                 <div class="o_primary">
                                     <field name="name" />
                                 </div>
-                                <field name="status" widget="server_status" />
                             </div>
                             <div class="o_kanban_manage_button_section">
                                 <a class="o_kanban_manage_toggle_button" href="#"><i
@@ -41,24 +38,6 @@
                                 class="container o_kanban_card_manage_pane dropdown-menu"
                                 role="menu"
                             >
-                                <div class="row">
-                                    <div class="col-8">
-                                        <div>
-                                            <a
-                                                role="menuitem"
-                                                type="action"
-                                                name="%(cetmix_tower_server.cx_tower_command_execute_wizard_action)d"
-                                            >Run Command</a>
-                                        </div>
-                                        <div>
-                                            <a
-                                                role="menuitem"
-                                                type="action"
-                                                name="%(cetmix_tower_server.cx_tower_plan_execute_wizard_action)d"
-                                            >Run Flight Plan</a>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="o_kanban_card_manage_settings row">
                                     <ul
                                         class="oe_kanban_colorpicker"
@@ -69,27 +48,12 @@
                         <div class="oe_kanban_content">
                             <div class="oe_kanban_global_click">
                                 <div class="col-12 pt8 o_kanban_primary_right">
-                                    <div
-                                            attrs="{'invisible': [('partner_id', '=', False)]}"
-                                        >
-                                        <strong>Partner:</strong>
-                                        <field name="partner_id" />
+                                    <div>
+                                        <field name="reference" />
                                     </div>
                                     <div attrs="{'invisible': [('os_id', '=', False)]}">
                                         <strong>Operating System:</strong>
                                         <field name="os_id" />
-                                    </div>
-                                    <div
-                                            attrs="{'invisible': [('ip_v4_address', '=', False)]}"
-                                        >
-                                        <strong>IPv4 Address:</strong>
-                                        <field name="ip_v4_address" />
-                                    </div>
-                                    <div
-                                            attrs="{'invisible': [('ip_v6_address', '=', False)]}"
-                                        >
-                                        <strong>IPv6 Address:</strong>
-                                        <field name="ip_v6_address" />
                                     </div>
                                 </div>
                             </div>
@@ -112,13 +76,13 @@
         </field>
     </record>
 
-    <record id="cx_tower_server_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.server.view.tree</field>
-        <field name="model">cx.tower.server</field>
+    <record id="cx_tower_server_template_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.tree</field>
+        <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="partner_id" optional="show" />
+                <field name="reference" optional="show" />
                 <field
                     name="tag_ids"
                     widget="many2many_tags"
@@ -126,60 +90,36 @@
                     optional="show"
                 />
                 <field name="color" widget="color_picker" optional="show" />
-                <field
-                    name="status"
-                    widget="badge"
-                    decoration-danger="status == '2'"
-                    decoration-info="status == '1'"
-                    decoration-success="status == '4'"
-                    decoration-warning="status in '356'"
-                />
             </tree>
         </field>
     </record>
 
-    <record id="cx_tower_server_view_form" model="ir.ui.view">
-        <field name="name">cx.tower.server.view.form</field>
-        <field name="model">cx.tower.server</field>
+    <record id="cx_tower_server_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.form</field>
+        <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <form>
                 <header>
                     <button
-                        name="test_ssh_connection"
+                        name="action_create_server"
                         type="object"
-                        string="Test Connection"
+                        class="oe_highlight"
+                        string="Create Server"
                     />
                 </header>
                 <sheet>
-
                     <div class="oe_button_box" name="button_box">
-                        <!-- <button name="preview_sale_order" type="object" class="oe_stat_button" icon="fa-globe icon">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Customer</span>
-                                <span class="o_stat_text">Preview</span>
-                            </div>
-                        </button> -->
                         <button
-                            name="action_open_command_logs"
-                            type="object"
-                            string="Command Logs"
-                            class="oe_stat_button"
-                            icon="fa-bars"
-                        />
-                        <button
-                            name="action_open_plan_logs"
-                            type="object"
-                            string="Flight Plan Logs"
-                            class="oe_stat_button"
-                            icon="fa-bars"
-                        />
-                        <button
-                            name="action_open_files"
+                            name="action_open_servers"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-pencil-square-o"
+                            icon="fa-server"
                         >
-                            <field name="file_count" widget="statinfo" string="Files" />
+                            <field
+                                name="server_count"
+                                widget="statinfo"
+                                string="Servers"
+                            />
                         </button>
                     </div>
                      <widget
@@ -191,19 +131,20 @@
                     <div class="oe_title">
                         <h1 class="d-flex flex-grow justify-content-between">
                             <field name="name" />
-                            <field
-                                name="status"
-                                widget="server_status"
-                                class="ml-auto"
-                            />
                         </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                        </h3>
                         <field name="color" widget="color_picker" />
                     </div>
                     <notebook>
                         <page name="General" string="General Settings">
                             <group name="root">
                                 <group name="main">
-                                    <field name="partner_id" />
+                                    <field name="flight_plan_id" />
                                     <field name="os_id" />
                                     <field name="active" invisible='1' />
                                     <field
@@ -211,8 +152,6 @@
                                         widget="many2many_tags"
                                         options="{'color_field': 'color'}"
                                     />
-                                    <field name="ip_v4_address" />
-                                    <field name="ip_v6_address" />
                                 </group>
                                 <group name="ssh">
                                     <field name="ssh_auth_mode" />
@@ -251,35 +190,43 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="secrets" string="Secrets">
-                            <field
-                                name="secret_ids"
-                                context="{'default_key_type': 's', 'from_server': True}"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="key_ref" />
-                                </tree>
-                            </field>
-                        </page>
                         <page name="logs" string="Server Logs">
-                            <button
-                                name="action_update_server_logs"
-                                string="Refresh All"
-                                type="object"
-                                class="oe_highlight"
-                            />
                             <field name="server_log_ids">
                                 <tree>
                                     <field name="name" />
-                                    <button
-                                        type="object"
-                                        string="Open"
-                                        name="action_open_log"
-                                        class="oe_highlight"
-                                        title="Open full form"
-                                    />
                                 </tree>
+                                <form>
+                                    <sheet>
+                                        <div class="oe_title">
+                                            <h1
+                                                class="d-flex flex-grow justify-content-between"
+                                            >
+                                                <field name="name" />
+                                            </h1>
+                                        </div>
+                                        <group>
+                                            <field
+                                                name="server_template_id"
+                                                invisible="1"
+                                            />
+                                            <field name="access_level" />
+                                            <field name="log_type" />
+                                            <field
+                                                name="command_id"
+                                                domain="[('server_ids', '=', False)]"
+                                                attrs="{'required':[('log_type', '=', 'command')], 'invisible':[('log_type', '!=', 'command')]}"
+                                            />
+                                            <field
+                                                name="use_sudo"
+                                                attrs="{'invisible':[('log_type', '!=', 'command')]}"
+                                            />
+                                            <field
+                                                name="file_template_id"
+                                                attrs="{'required':[('log_type', '=', 'file')], 'invisible':[('log_type', '!=', 'file')]}"
+                                            />
+                                        </group>
+                                    </sheet>
+                                </form>
                             </field>
                         </page>
                     </notebook>
@@ -293,30 +240,18 @@
         </field>
     </record>
 
-    <record id="cx_tower_server_search_view" model="ir.ui.view">
-        <field name="name">cx.tower.server.view.search</field>
-        <field name="model">cx.tower.server</field>
+    <record id="cx_tower_server_template_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.search</field>
+        <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
-            <search string="Search Servers">
+            <search string="Search Server Templates">
                 <field name="name" string="Server" />
-                <field name="status" />
                 <field name="os_id" />
                 <field name="tag_ids" />
                 <filter
                     string="Archived"
                     name="archived"
                     domain="[('active', '=', False)]"
-                />
-                <separator />
-                <filter
-                    string="Running"
-                    name="running"
-                    domain="[('status', '=', '4')]"
-                />
-                <filter
-                    string="Not Running"
-                    name="not_running"
-                    domain="[('status', 'in', ['2', '3', '5', '6'])]"
                 />
                 <group expand="0" string="Group By">
                     <filter
@@ -325,29 +260,18 @@
                         domain="[]"
                         context="{'group_by': 'os_id'}"
                     />
-                    <filter
-                        string="Partner"
-                        name="group_by_partner_id"
-                        domain="[]"
-                        context="{'group_by': 'partner_id'}"
-                    />
-                    <filter
-                        string="Status"
-                        name="group_by_status"
-                        context="{'group_by': 'status'}"
-                    />
                 </group>
             </search>
         </field>
     </record>
 
 
-    <record id="action_cx_tower_server" model="ir.actions.act_window">
-        <field name="name">Servers</field>
+    <record id="action_cx_tower_server_template" model="ir.actions.act_window">
+        <field name="name">Server Templates</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">cx.tower.server</field>
+        <field name="res_model">cx.tower.server.template</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="search_view_id" ref="cx_tower_server_search_view" />
+        <field name="search_view_id" ref="cx_tower_server_template_search_view" />
     </record>
 
 </odoo>
