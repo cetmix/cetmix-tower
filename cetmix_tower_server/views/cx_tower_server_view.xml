@@ -118,6 +118,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="reference" optional="hide" />
                 <field name="partner_id" optional="show" />
                 <field
                     name="tag_ids"
@@ -132,7 +133,7 @@
                     decoration-danger="status == '2'"
                     decoration-info="status == '1'"
                     decoration-success="status == '4'"
-                    decoration-warning="status in '356'"
+                    decoration-warning="status in ['3','5','6']"
                 />
             </tree>
         </field>
@@ -197,6 +198,12 @@
                                 class="ml-auto"
                             />
                         </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                        </h3>
                         <field name="color" widget="color_picker" />
                     </div>
                     <notebook>
@@ -298,7 +305,8 @@
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
             <search string="Search Servers">
-                <field name="name" string="Server" />
+                <field name="name" />
+                <field name="reference" />
                 <field name="status" />
                 <field name="os_id" />
                 <field name="tag_ids" />

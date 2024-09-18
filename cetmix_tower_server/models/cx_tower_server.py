@@ -231,13 +231,17 @@ class CxTowerServer(models.Model):
     """
 
     _name = "cx.tower.server"
-    _inherit = ["cx.tower.variable.mixin", "mail.thread", "mail.activity.mixin"]
+    _inherit = [
+        "cx.tower.variable.mixin",
+        "cx.tower.reference.mixin",
+        "mail.thread",
+        "mail.activity.mixin",
+    ]
     _description = "Cetmix Tower Server"
     _order = "name asc"
 
     # ---- Main
     active = fields.Boolean(default=True)
-    name = fields.Char(required=True)
     color = fields.Integer(help="For better visualization in views")
     partner_id = fields.Many2one(comodel_name="res.partner")
     status = fields.Selection(
@@ -399,8 +403,6 @@ class CxTowerServer(models.Model):
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
-        default["name"] = _("%(name)s (copy)", name=self.name)
-
         file_ids = self.env["cx.tower.file"]
         for file in self.file_ids:
             file_ids |= file.copy(

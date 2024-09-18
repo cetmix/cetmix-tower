@@ -64,6 +64,12 @@ class TestTowerCommon(TransactionCase):
         self.variable_url = self.Variable.create({"name": "test_url"})
         self.variable_version = self.Variable.create({"name": "test_version"})
 
+        # Key
+        self.Key = self.env["cx.tower.key"]
+
+        self.key_1 = self.Key.create({"name": "Test Key 1"})
+        self.secret_2 = self.Key.create({"name": "Test Key 2", "key_type": "s"})
+
         # Command
         self.sudo_prefix = "sudo -S -p ''"
         self.Command = self.env["cx.tower.command"]
@@ -119,27 +125,8 @@ class TestTowerCommon(TransactionCase):
             }
         )
 
-        self.command_create_new_command = self.Command.create(
-            {
-                "name": "Create new command",
-                "action": "python_code",
-                "code": """
-if #!cxtower.secret.FOLDER!#:
-    command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
-    COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
-else:
-    COMMAND_RESULT = {"exit_code": -1, "message": "error"}
-""",
-            }
-        )
         # Command log
         self.CommandLog = self.env["cx.tower.command.log"]
-
-        # Key
-        self.Key = self.env["cx.tower.key"]
-
-        self.key_1 = self.Key.create({"name": "Test Key 1"})
-        self.secret_2 = self.Key.create({"name": "Test Key 2", "key_type": "s"})
 
         # File template
         self.FileTemplate = self.env["cx.tower.file.template"]

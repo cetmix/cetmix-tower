@@ -19,7 +19,11 @@ Users of this group have access to the entities with `Access Level` set to `Mana
 
 ## Configure a Server
 
-Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`. Enter the server name and fill the values it the tabs below:
+Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`. 
+Enter server name and a unique server reference. Leave the "reference" field blank to generate a reference automatically.
+You can also select a color which is used to mark a server in the kanban view.
+
+Fill the values it the tabs below:
 
 **General Settings**
 
@@ -72,7 +76,8 @@ Following action buttons are located in the top of the form:
 
 ## Configure a Server Template
 
-Go to the `Cetmix Tower/Servers/Templates` menu and click `Create`. Add a name and a unique template reference. Leave the "reference" field blank in order for a reference to be generated automatically based on the template name.
+Go to the `Cetmix Tower/Servers/Templates` menu and click `Create`.
+Enter template name and a unique template reference. Leave the "reference" field blank to generate a reference automatically.
 
 Fill the values it the tabs below:
 
