@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -291,6 +291,52 @@ You can use any ``jinja2`` supported expressions. For example
        -v {{ odoo_config_location }}:/etc/odoo \
    {% endif %}
 
+Variable Rendering Modes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are two rendering modes available:
+
+-  Generic (or ssh) mode
+-  Pythonic mode
+
+Let use the following code as example:
+
+.. code:: bash
+
+   current_branch={{ branch }}
+   current_version={{ package_version }}
+   need_update={{ update_available }}
+
+where ``branch`` is ``main``, ``package_version`` is ``0.12`` and
+``update_available`` is ``False``
+
+Generic Mode
+^^^^^^^^^^^^
+
+Default mode which renders variable values "as is". It is done in order
+to keep compatibility with any code interpreter which may be used to run
+a command. The code from example will be rendered the following way:
+
+.. code:: bash
+
+   current_branch=main
+   current_version=0.12
+   need_update=False
+
+Pythonic Mode
+^^^^^^^^^^^^^
+
+This mode is used in `commands <#configure-a-command>`__ that run Python
+code (``Action: Execute Python code``). In this mode all variable values
+except Boolean and None are enclosed in double quotes. The code from
+example will be rendered the following way:
+
+.. code:: python
+
+   current_branch="main"
+   current_version="0.12"
+   need_update=False
+
 Variable Types
 ~~~~~~~~~~~~~~
 
@@ -531,7 +577,9 @@ and put values in the fields:
 
 -  **Code**: Code to execute. Can be an SSH command or Python code based
    on selected action. This field supports
-   `Variables <#configure-variables>`__.
+   `Variables <#configure-variables>`__. **Important!** Variables used
+   in command are rendered in `different
+   modes <#variable-rendering-modes>`__ based on the command action.
 
 -  **File Template**: File template that will be used to create or
    update file. Check `File Templates <#file-templates>`__ for more
@@ -718,8 +766,8 @@ command or ``Path`` field in flight plan line.
 
    cat my_doge_memes.txt
 
-.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png
-.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====
@@ -869,9 +917,9 @@ To check a server log:
 
 |Update server log|
 
-.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
-.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png
-.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png
+.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
+.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
+.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
 
 Bug Tracker
 ===========
@@ -879,7 +927,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -894,6 +942,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.

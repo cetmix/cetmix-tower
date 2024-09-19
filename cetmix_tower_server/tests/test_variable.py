@@ -445,7 +445,6 @@ class TestTowerVariable(TestTowerCommon):
         )
         self.assertEqual(variable_new_global_value_as_bob.value_char, "Global Value 1")
 
-    # @patch("uuid.uuid4", return_value="SuchMuchUUID4")
     def test_system_variable_server_type_values(self):
         """Test system variables of `server` type"""
 
@@ -548,4 +547,52 @@ class TestTowerVariable(TestTowerCommon):
             variable_values["tower"]["tools"]["now"],
             str(mock_now.return_value),
             "System variable doesn't match result provided by tools",
+        )
+
+    def test_make_value_pythonic(self):
+        """Test making variable values 'pythonic`"""
+
+        # Number
+        value = 12.34
+        expected_value = '"12.34"'
+        result_value = self.Command._make_value_pythonic(value)
+
+        self.assertEqual(
+            expected_value, result_value, "Result value doesn't match expected"
+        )
+
+        # Text
+        value = "Doge much like"
+        expected_value = '"Doge much like"'
+        result_value = self.Command._make_value_pythonic(value)
+
+        self.assertEqual(
+            expected_value, result_value, "Result value doesn't match expected"
+        )
+
+        # Boolean
+        value = True
+        expected_value = True
+        result_value = self.Command._make_value_pythonic(value)
+
+        self.assertEqual(
+            expected_value, result_value, "Result value doesn't match expected"
+        )
+
+        # None
+        value = None
+        expected_value = None
+        result_value = self.Command._make_value_pythonic(value)
+
+        self.assertEqual(
+            expected_value, result_value, "Result value doesn't match expected"
+        )
+
+        # Dict
+        value = {"doge": {"likes": "memes", "much": 200}}
+        expected_value = {"doge": {"likes": '"memes"', "much": '"200"'}}
+        result_value = self.Command._make_value_pythonic(value)
+
+        self.assertEqual(
+            expected_value, result_value, "Result value doesn't match expected"
         )

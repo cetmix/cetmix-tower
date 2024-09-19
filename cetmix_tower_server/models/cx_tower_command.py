@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
-requests = wrap_module(__import__("requests"), ["post", "get"])
+requests = wrap_module(__import__("requests"), ["post", "get", "request"])
 
 
 DEFAULT_PYTHON_CODE = """# Available variables:
