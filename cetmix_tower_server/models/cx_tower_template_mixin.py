@@ -45,18 +45,21 @@ class CxTowerTemplateMixin(models.AbstractModel):
         undeclared_variables = meta.find_undeclared_variables(ast)
         return list(undeclared_variables) if undeclared_variables else []
 
-    def render_code(self, **kwargs):
+    def render_code(self, pythonic_mode=False, **kwargs):
         """Render record 'code' field using variables from kwargs
         Call to render recordset of the inheriting models
 
         Args:
+            pythonic_mode (Bool): If True, all variables in kwargs are converted to
+                                  strings and wrapped in double quotes.
+                                  Default is False.
             **kwargs (dict): {variable: value, ...}
         Returns:
             dict {record_id: rendered_code, ...}}
         """
         res = {}
         for rec in self:
-            rendered_code = self.render_code_custom(rec.code, **kwargs)
+            rendered_code = self.render_code_custom(rec.code, pythonic_mode, **kwargs)
             res.update({rec.id: rendered_code})
 
         return res
@@ -82,11 +85,34 @@ class CxTowerTemplateMixin(models.AbstractModel):
         try:
             if pythonic_mode:
                 kwargs = {
-                    key: value
-                    if isinstance(value, bool) or value is None
-                    else f'"{value}"'
+                    key: self._make_value_pythonic(value)
                     for key, value in kwargs.items()
                 }
             return Template(code, trim_blocks=True).render(kwargs)
         except jn_exceptions.UndefinedError as e:
             raise UserError(e) from e
+
+    def _make_value_pythonic(self, value):
+        """Prepares value for use in 'pythonic' mode
+            by enclosing strings into double quotes
+
+        Args:
+            value (Char): value to process
+
+        Returns:
+            Char: processed value
+        """
+
+        # Nothing to do here
+        if isinstance(value, bool) or value is None:
+            result = value
+
+        # Handle nested dicts such as system variables
+        elif isinstance(value, dict):
+            result = {}
+            for key, val in value.items():
+                result.update({key: self._make_value_pythonic(val)})
+        else:
+            # Enclose in double quotes
+            result = f'"{value}"'
+        return result

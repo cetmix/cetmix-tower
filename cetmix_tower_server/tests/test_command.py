@@ -35,12 +35,13 @@ class TestTowerCommand(TestTowerCommon):
                 "name": "Create new command",
                 "action": "python_code",
                 "code": """
-if #!cxtower.secret.FOLDER!# == "secretFolder":
+server_name = {{ tower.server.name }}
+if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
     COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
 else:
     COMMAND_RESULT = {"exit_code": -1, "message": "error"}
-""",
+    """,
             }
         )
 
@@ -265,8 +266,8 @@ else:
             rendered_command["rendered_path"], "Rendered path doesn't match"
         )
 
-    def test_render_code_direct(self):
-        """Test code template direct rendering"""
+    def test_render_code_generic(self):
+        """Test generic (aka ssh) code template direct rendering"""
 
         # Only 'test_path_' must be rendered
         args = {"test_path_": "/tmp", "test_os": "debian"}
@@ -754,6 +755,35 @@ else:
             command_result["error"], "Command error doesn't match expected one"
         )
 
+    # ---------------------
+    # *********************
+    #   Python commands
+    # *********************
+    # ---------------------
+
+    def test_render_code_python(self):
+        """Test Python code template direct rendering"""
+
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_new_command
+        )
+
+        # Note: this is rendered as for Server Test 1
+        rendered_code_pythonic = f"""
+server_name = "{self.server_test_1.name}"
+if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
+    command = env["cx.tower.command"].create({{"name": "/opt/tower"}})
+    COMMAND_RESULT = {{"exit_code": 0, "message": "New command was created"}}
+else:
+    COMMAND_RESULT = {{"exit_code": -1, "message": "error"}}
+    """
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_pythonic,
+            "Rendered code doesn't match",
+        )
+
     def test_execute_python_command(self):
         """
         Execute command with python action.
@@ -786,15 +816,10 @@ else:
 
     def test_execute_python_code(self):
         """
-        Test Execute python code
+        Test python execution code
         """
         rendered_command = self.server_test_1._render_command(
             self.command_create_new_command
-        )
-        self.assertIn(
-            "/opt/tower",
-            rendered_command["rendered_code"],
-            "Rendered code doesn't contain '/opt/tower'",
         )
 
         command_result = self.server_test_1._execute_python_code(
