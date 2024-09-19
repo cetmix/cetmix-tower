@@ -6,21 +6,26 @@
         <field name="name">Tower command log: user access rule</field>
         <field name="model_id" ref="model_cx_tower_command_log" />
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
-        <field
-            name="domain_force"
-        >[('create_uid', '=', user.id), ('access_level', '=', '1')]</field>
-
-
+        <field name="domain_force">[
+            "|",
+            ('create_uid', '=', user.id),
+            "&amp;",
+            ('server_id.message_partner_ids', 'in', [user.partner_id.id]),
+            ('access_level', '=', '1')]
+        </field>
     </record>
 
     <record id="cx_tower_command_log_rule_group_manager_access" model="ir.rule">
         <field name="name">Tower command log: manager access rule</field>
         <field name="model_id" ref="model_cx_tower_command_log" />
-        <field name="domain_force">[
-            ('server_id.message_partner_ids', 'in', [user.partner_id.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
-
-
+        <field name="domain_force">[
+            "|",
+            ('create_uid', '=', user.id),
+            "&amp;",
+            ('server_id.message_partner_ids', 'in', [user.partner_id.id]),
+            ('access_level', '&lt;=', '2')]
+        </field>
     </record>
 
 
