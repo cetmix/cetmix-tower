@@ -128,6 +128,46 @@ docker run -d -p {{ odoo_port }}:8069 \
 {% endif %}
 ```
 
+### Variable Rendering Modes
+
+There are two rendering modes available:
+
+- Generic (or ssh) mode
+- Pythonic mode
+
+Let use the following code as example:
+
+```bash
+current_branch={{ branch }}
+current_version={{ package_version }}
+need_update={{ update_available }}
+```
+
+where `branch` is `main`, `package_version` is `0.12` and `update_available` is `False`
+
+#### Generic Mode
+
+Default mode which renders variable values "as is". It is done in order to keep compatibility with any code interpreter which may be used to run a command.
+The code from example will be rendered the following way:
+
+```bash
+current_branch=main
+current_version=0.12
+need_update=False
+```
+
+#### Pythonic Mode
+
+This mode is used in [commands](#configure-a-command) that run Python code (`Action: Execute Python code`).
+In this mode all variable values except Boolean and None are enclosed in double quotes.
+The code from example will be rendered the following way:
+
+```python
+current_branch="main"
+current_version="0.12"
+need_update=False
+```
+
 ### Variable Types
 
 Following types of variable values available in [Cetmix Tower](https://cetmix.com/tower):
@@ -272,6 +312,7 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 
 - **Default Path**: Specify path where command will be executed. This field supports [Variables](#configure-variables). Important: ensure ssh user has access to the location even if executing command using sudo.
 - **Code**: Code to execute. Can be an SSH command or Python code based on selected action. This field supports [Variables](#configure-variables).
+**Important!** Variables used in command are rendered in [different modes](#variable-rendering-modes) based on the command action.
 - **File Template**: File template that will be used to create or update file. Check [File Templates](#file-templates) for more details.
 
 ## Configure a Flight Plan
