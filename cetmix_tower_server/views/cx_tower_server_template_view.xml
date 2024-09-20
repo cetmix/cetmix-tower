@@ -245,7 +245,8 @@
         <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <search string="Search Server Templates">
-                <field name="name" string="Server" />
+                <field name="name" />
+                <field name="reference" />
                 <field name="os_id" />
                 <field name="tag_ids" />
                 <filter
