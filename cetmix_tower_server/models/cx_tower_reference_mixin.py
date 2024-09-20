@@ -3,6 +3,7 @@
 import re
 
 from odoo import _, api, fields, models, tools
+from odoo.osv import expression
 
 
 class CxTowerReferenceMixin(models.AbstractModel):
@@ -70,6 +71,35 @@ class CxTowerReferenceMixin(models.AbstractModel):
             final_reference = _(f"{reference}_{counter}")
 
         return final_reference
+
+    @api.model
+    def _name_search(
+        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        """
+        Search for records by matching either the 'reference' or 'name' fields
+        using the given search operator.
+
+        This method constructs a domain to search for records where either the
+        'reference' or 'name' field contains the search term provided in 'name'.
+        The domain also allows for additional search arguments to be passed via 'args'.
+
+        :param name: The search term to match against the 'reference' or 'name' field.
+        :param args: A list of additional domain conditions for the search.
+        :param operator: The comparison operator to use for the search.
+        :param limit: The maximum number of records to return (default: 100).
+        :param name_get_uid: The user ID used for access rights validation.
+        :return: A list of record IDs that match the search criteria.
+        """
+        if args is None:
+            args = []
+
+        search_domain = expression.OR(
+            [[("reference", operator, name)], [("name", operator, name)]]
+        )
+
+        domain = expression.AND([args, search_domain])
+        return self._search(domain, limit=limit, access_rights_uid=name_get_uid)
 
     @api.model_create_multi
     def create(self, vals_list):
