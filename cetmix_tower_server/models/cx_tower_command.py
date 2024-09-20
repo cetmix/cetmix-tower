@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from pytz import timezone
 
-from odoo import _, api, fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
@@ -31,7 +31,11 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 
 class CxTowerCommand(models.Model):
     _name = "cx.tower.command"
-    _inherit = ["cx.tower.template.mixin", "cx.tower.access.mixin"]
+    _inherit = [
+        "cx.tower.template.mixin",
+        "cx.tower.reference.mixin",
+        "cx.tower.access.mixin",
+    ]
     _description = "Cetmix Tower Command"
     _order = "name"
 
@@ -48,7 +52,6 @@ class CxTowerCommand(models.Model):
         ]
 
     active = fields.Boolean(default=True)
-    name = fields.Char()
     allow_parallel_run = fields.Boolean(
         help="If enabled command can be run on the same server "
         "while the same command is still running.\n"
@@ -129,12 +132,6 @@ class CxTowerCommand(models.Model):
             "UserError": UserError,
             "server": server or self._context.get("active_server"),
         }
-
-    @api.returns("self", lambda value: value.id)
-    def copy(self, default=None):
-        default = default or {}
-        default["name"] = _("%(cmd)s (copy)", cmd=self.name)
-        return super().copy(default=default)
 
     def name_get(self):
         # Add 'command_show_server_names' context key

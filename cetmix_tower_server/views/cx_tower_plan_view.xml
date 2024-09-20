@@ -29,6 +29,7 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="reference" />
                             <field name="allow_parallel_run" />
                             <label for="on_error_action" />
                             <div class="o_row">
@@ -83,6 +84,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="reference" optional="hide" />
                 <field
                     name="server_ids"
                     widget="many2many_tags"
