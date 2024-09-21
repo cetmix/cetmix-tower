@@ -7,11 +7,13 @@ from odoo.exceptions import ValidationError
 class TowerVariableValue(models.Model):
     _name = "cx.tower.variable.value"
     _description = "Cetmix Tower Variable Values"
-    _rec_name = "variable_name"
-    _order = "variable_name"
+    _rec_name = "variable_reference"
+    _order = "variable_reference"
 
     variable_id = fields.Many2one(string="Variable", comodel_name="cx.tower.variable")
-    variable_name = fields.Char(related="variable_id.name", store=True, index=True)
+    variable_reference = fields.Char(
+        related="variable_id.reference", store=True, index=True
+    )
     is_global = fields.Boolean(
         string="Global",
         compute="_compute_is_global",

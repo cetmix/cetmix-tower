@@ -154,12 +154,6 @@
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
-                        <!-- <button name="preview_sale_order" type="object" class="oe_stat_button" icon="fa-globe icon">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_text">Customer</span>
-                                <span class="o_stat_text">Preview</span>
-                            </div>
-                        </button> -->
                         <button
                             name="action_open_command_logs"
                             type="object"
@@ -239,16 +233,25 @@
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
-                        <page name="variables" string="Variables">
-                            <field name="variable_value_ids" order="variable_name">
+                        <page name="configuration" string="Configuration">
+                            <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
-                                    <field name="variable_name" invisible="1" />
+                                    <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
                                     <field name="value_char" />
                                 </tree>
                                 <form>
                                     <group>
-                                        <field name="variable_id" />
+                                        <label for="variable_id" />
+                                        <div class="o_row">
+                                            <field name="variable_id" />
+                                            <field
+                                                name="variable_reference"
+                                                widget="CopyClipboardChar"
+                                                options="{'string': 'Copy reference'}"
+                                            />
+                                        </div>
+
                                         <field name="value_char" />
                                     </group>
                                     <field
