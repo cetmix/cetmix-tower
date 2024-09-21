@@ -125,7 +125,7 @@ class TestTowerServer(TestTowerCommon):
         self.assertTrue(
             all(
                 [
-                    var_copy.variable_name == var_src.variable_name
+                    var_copy.variable_reference == var_src.variable_reference
                     and var_copy.value_char == var_src.value_char
                     for var_src, var_copy in zip(
                         self.server_test_2.variable_value_ids,
