@@ -22,7 +22,7 @@ This function takes the following arguments:
   - ssh_private_key_value (cx.tower.key(), optional): SSH private key record. Defaults to None.
   - configuration_variables (Dict, optional): Custom configuration variable.
     Following format is used:
-      'variable_name': 'variable_value_char'
+      'variable_reference': 'variable_value_char'
       eg:
       {'branch': 'prod', 'odoo_version': '16.0'}
 ```
