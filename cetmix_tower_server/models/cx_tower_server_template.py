@@ -148,7 +148,7 @@ class CxTowerServerTemplate(models.Model):
                 Defaults to None.
             configuration_variables (Dict, optional): Custom configuration variable.
                 Following format is used:
-                    `variable_name`: `variable_value_char`
+                    `variable_reference`: `variable_value_char`
                     eg:
                     {'branch': 'prod', 'odoo_version': '16.0'}
 
@@ -176,7 +176,7 @@ class CxTowerServerTemplate(models.Model):
                 Defaults to None.
             configuration_variables (Dict, optional): Custom configuration variable.
                 Following format is used:
-                    `variable_name`: `variable_value_char`
+                    `variable_reference`: `variable_value_char`
                     eg:
                     {'branch': 'prod', 'odoo_version': '16.0'}
 
@@ -274,12 +274,15 @@ class CxTowerServerTemplate(models.Model):
                 variable_vals_list = []
                 variable_obj = self.env["cx.tower.variable"]
 
-                for variable_name, variable_value in configuration_variables.items():
-                    variable = variable_obj.search([("name", "=", variable_name)])
+                for (
+                    variable_reference,
+                    variable_value,
+                ) in configuration_variables.items():
+                    variable = variable_obj.search([("name", "=", variable_reference)])
                     if not variable:
                         variable = variable_obj.create(
                             {
-                                "name": variable_name,
+                                "name": variable_reference,
                             }
                         )
 

@@ -52,10 +52,9 @@ Following pre-defined statuses are available:
 
 Default status is 'Undefined'.
 
-**Variables**
+**Configuration**
 
-Configure variable values to be used when rendering [commands](#configure-a-command) and files on this server.
-Check the [Configuring Variables](#configure-variables) section for more details.
+Configure [configuration variables](#configure-variables) values to be used when rendering [commands](#configure-a-command) and [files](#configure-a-file) on this server.
 
 **Secrets**
 
@@ -105,7 +104,11 @@ Please check the [Configuring a Server Log](#configure-a-server-log) section for
 
 ## Configure Variables
 
-To configure variables go to the `Cetmix Tower/Settings` and select the `Variables` menu.
+To configure variables go to the `Cetmix Tower/Settings` and select the `Variables` menu. Click `Create` and put values in the fields:
+
+- **Name**: Readable name
+- **Reference**: Unique identifier used to address variable in conditions and expressions. Leave blank to generate automatically based on name
+- **Note**: Put your notes here
 
 ### Variables Applicability
 
