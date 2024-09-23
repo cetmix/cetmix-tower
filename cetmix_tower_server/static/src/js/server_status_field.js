@@ -23,6 +23,10 @@ odoo.define("cetmix_tower_server.server_state_field", function (require) {
             return this.$("a[data-toggle='dropdown']");
         },
 
+        isSet: function () {
+            return true;
+        },
+
         /**
          * Prepares the state values to be rendered using the FormSelection.Items template.
          *
@@ -40,6 +44,12 @@ odoo.define("cetmix_tower_server.server_state_field", function (require) {
                     "o_server_status_" + value.name.toLowerCase().replace(/ /g, "_");
                 _data.push(value);
             });
+            _data.unshift({
+                name: false,
+                tooltip: "Undefined",
+                state_name: "Undefined",
+                state_class: "o_server_status_undefined",
+            });
             this.possible_state_classes = _.uniq(
                 _.map(_data, function (item) {
                     return item.state_class;
@@ -56,7 +66,12 @@ odoo.define("cetmix_tower_server.server_state_field", function (require) {
          */
         _render: function () {
             var states = this._prepareDropdownValues();
-            var currentState = _.findWhere(states, {name: this.value}) || states[0];
+
+            // Handle the case where value is false and display "Undefined"
+            var currentState =
+                _.findWhere(states, {name: this.value}) ||
+                _.findWhere(states, {name: false});
+
             this.$(".o_status_text").remove();
             this.$(".o_status")
                 .removeClass(this.possible_state_classes.join(" "))
@@ -81,6 +96,7 @@ odoo.define("cetmix_tower_server.server_state_field", function (require) {
             $dropdown.children().remove();
             $items.appendTo($dropdown);
 
+            // Handle the readonly mode to ensure dropdown is disabled when not in edit mode
             var isReadonly = this.record.evalModifiers(this.attrs.modifiers).readonly;
             this.$("a[data-toggle=dropdown]").toggleClass(
                 "disabled",
@@ -98,7 +114,7 @@ odoo.define("cetmix_tower_server.server_state_field", function (require) {
             ev.preventDefault();
             var $item = $(ev.currentTarget);
             var value = String($item.data("value"));
-            this._setValue(value);
+            this._setValue(value === "false" ? false : value); // Adjust for 'false' as string
             if (this.mode === "edit") {
                 this._render();
             }

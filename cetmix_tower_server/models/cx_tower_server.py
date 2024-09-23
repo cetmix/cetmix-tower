@@ -246,8 +246,8 @@ class CxTowerServer(models.Model):
     partner_id = fields.Many2one(comodel_name="res.partner")
     status = fields.Selection(
         selection=lambda self: self._selection_status(),
-        default=lambda self: self._default_status(),
-        required=True,
+        default=None,
+        required=False,
     )
 
     # ---- Connection
@@ -335,22 +335,12 @@ class CxTowerServer(models.Model):
             list: status selection options
         """
         return [
-            ("1", "Undefined"),
-            ("2", "Stopped"),
-            ("3", "Starting"),
-            ("4", "Running"),
-            ("5", "Stopping"),
-            ("6", "Restarting"),
+            ("stopped", "Stopped"),
+            ("starting", "Starting"),
+            ("running", "Running"),
+            ("stopping", "Stopping"),
+            ("restarting", "Restarting"),
         ]
-
-    def _default_status(self):
-        """
-        Default status
-
-        Returns:
-            str: default status
-        """
-        return "1"
 
     def server_toggle_active(self, self_active):
         """
@@ -403,6 +393,9 @@ class CxTowerServer(models.Model):
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
+        default["name"] = _("%(name)s (copy)", name=self.name)
+        default["status"] = None
+
         file_ids = self.env["cx.tower.file"]
         for file in self.file_ids:
             file_ids |= file.copy(
