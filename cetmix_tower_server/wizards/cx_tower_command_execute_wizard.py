@@ -30,7 +30,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         compute="_compute_code",
         readonly=False,
         store=True,
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_server.group_user,cetmix_tower_server.group_manager",
         help="Put custom path to run the command.\n"
         "IMPORTANT: this field does NOT support variables!",
     )
