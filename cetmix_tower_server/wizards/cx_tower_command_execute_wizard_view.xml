@@ -44,6 +44,7 @@
                     </div>
                     <field
                         name="path"
+                        groups="cetmix_tower_server.group_manager"
                         attrs="{'invisible': [('action', '=', 'python_code')]}"
                         placeholder="e.g. /home/user This field does NOT support variables"
                     />

@@ -30,7 +30,6 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         compute="_compute_code",
         readonly=False,
         store=True,
-        groups="cetmix_tower_server.group_manager",
         help="Put custom path to run the command.\n"
         "IMPORTANT: this field does NOT support variables!",
     )
@@ -153,7 +152,11 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         custom_values = {"log": {"label": log_label}}
         for server in self.server_ids:
             server.execute_command(
-                self.command_id, sudo=self.use_sudo, path=self.path, **custom_values
+                self.command_id,
+                sudo=self.use_sudo,
+                path=self.env.user.has_group("cetmix_tower_server.group_manager")
+                and self.path,
+                **custom_values,
             )
         return {
             "type": "ir.actions.act_window",
