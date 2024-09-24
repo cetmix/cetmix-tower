@@ -106,8 +106,27 @@ class TestTowerCommandWizard(TestTowerCommon):
         #  Add Bob to `user` group and ensure he can execute commands
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
         test_wizard.execute_command_on_server()
-        # Ensure that Bob has access to path field
-        test_wizard.read(["path"])
+        # Ensure that Bob has access to path field but can't read its value
+        allowed_path = (
+            test_wizard.path
+            if self.user_bob.has_group("cetmix_tower_server.group_manager")
+            and test_wizard.path
+            else None
+        )
+        self.assertEqual(allowed_path, None)
+        # Ensure that Bob can write to the path field as a member of `group_user`
+        # the result will be None
+        test_wizard.write({"path": "/new/invalid/path"})
+        allowed_path = (
+            test_wizard.path
+            if self.user_bob.has_group("cetmix_tower_server.group_manager")
+            and test_wizard.path
+            else None
+        )
+        self.assertEqual(allowed_path, None)
+
         # Add Bob to `manager` group and ensure access to execute commands
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
         test_wizard.execute_command_on_server()
+        # Check that path access is valid for the manager
+        test_wizard.read(["path"])
