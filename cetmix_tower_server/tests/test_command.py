@@ -837,3 +837,36 @@ else:
             command_result["error"],
             "Error in command result must be set to None",
         )
+
+    def test_execute_command_without_set_server_status(self):
+        """
+        Test command execution without setting server status
+        """
+        # Execute command
+        server_status = self.server_test_1.status
+
+        self.server_test_1.with_context(no_log=True).execute_command(
+            self.command_create_new_command
+        )
+
+        # Check command result
+        self.assertEqual(
+            self.server_test_1.status, server_status, "Server status must be 'running'"
+        )
+
+    def test_execute_command_with_set_server_status(self):
+        """
+        Test command execution with setting server status
+        """
+        # Set server status to "down"
+        self.command_create_new_command.write({"server_status": "stopping"})
+
+        # Execute command
+        self.server_test_1.with_context(no_log=True).execute_command(
+            self.command_create_new_command
+        )
+
+        # Check command result
+        self.assertEqual(
+            self.server_test_1.status, "stopping", "Server status must be 'stopping'"
+        )
