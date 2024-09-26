@@ -107,19 +107,22 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Overrides create to ensure 'reference' is auto-corrected
         or validated for each record.
 
+        Add `reference_mixin_override` context key to skip the reference check
+
         Args:
             vals_list (list[dict]): List of dictionaries with record values.
 
         Returns:
             Records: The created record(s).
         """
-        for vals in vals_list:
-            vals["name"] = vals["name"].strip()
-            # Generate reference
-            reference = self._generate_or_fix_reference(
-                vals.get("reference") or vals.get("name")
-            )
-            vals.update({"reference": reference})
+        if not self._context.get("reference_mixin_override"):
+            for vals in vals_list:
+                vals["name"] = vals["name"].strip()
+                # Generate reference
+                reference = self._generate_or_fix_reference(
+                    vals.get("reference") or vals.get("name")
+                )
+                vals.update({"reference": reference})
         return super().create(vals_list)
 
     def write(self, vals):
@@ -127,17 +130,31 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Updates record, auto-correcting or validating 'reference'
         based on 'name' or existing value.
 
+        Add `reference_mixin_override` context key to skip the reference check
+
         Args:
             vals (dict): Values to update, may include 'reference'.
 
         Returns:
             Result of the super `write` call.
         """
-        if "reference" in vals:
+        if not self._context.get("reference_mixin_override") and "reference" in vals:
             reference = vals.get("reference", False)
             if not reference:
-                # Use name as a basis for the new reference
-                reference = self._generate_or_fix_reference(vals.get("name", self.name))
+                # Get name from vals
+                updated_name = vals.get("name")
+
+                # No name in vals. Update records one by one
+                if not updated_name:
+                    for record in self:
+                        record_vals = vals.copy()
+                        record_vals.update(
+                            {"reference": self._generate_or_fix_reference(record.name)}
+                        )
+                        super(CxTowerReferenceMixin, record).write(record_vals)
+                    return
+                # Name is present in vals
+                reference = self._generate_or_fix_reference(updated_name)
             else:
                 reference = self._generate_or_fix_reference(reference)
             vals.update({"reference": reference})
