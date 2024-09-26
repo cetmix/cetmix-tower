@@ -737,7 +737,6 @@ class TestTowerPlan(TestTowerCommon):
         )
 
     def test_plan_lines_access_rights(self):
-
         # Create a test plan with plan lines
         self.plan_2 = self.Plan.create(
             {
@@ -765,20 +764,20 @@ class TestTowerPlan(TestTowerCommon):
             ],
         )
 
-        # Ensure that user without any group cannot access plan lines        
+        # Ensure that user without any group cannot access plan lines
         test_plan_2_as_bob = self.plan_2.with_user(self.user_bob)
         with self.assertRaises(AccessError):
             plan_line_name = test_plan_2_as_bob.line_ids[0].command_id.name
 
         # Add user_bob to `group_user` and test plan.line access
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Set access level to 1, so group_user can access the plan
+        # Set access level to 1, so group_user can access the plan lines
         self.plan_2.write({"access_level": "1"})
-        self.plan_2.line_ids[0].write({"access_level": "1"})
-
-        plan_line_name = test_plan_2_as_bob.line_ids[0].command_id.name
+        plan_line_name = test_plan_2_as_bob.line_ids[0].name
         self.assertEqual(
-            plan_line_name, "Create directory", msg="User should access plan lines with access_level 1"
+            plan_line_name,
+            "Test create directory",
+            msg="User should access plan lines with access_level 1",
         )
 
         # Add user_bob to `group_manager` and test edit rights for plan.line
@@ -787,9 +786,36 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(test_plan_2_as_bob.access_level, "2")
         test_plan_2_as_bob.line_ids.write({"sequence": 3})
         self.assertEqual(
-            test_plan_2_as_bob.line_ids[0].sequence, 3, msg="Manager should be able to update sequence"
+            test_plan_2_as_bob.line_ids[0].sequence,
+            3,
+            msg="Manager should be able to update sequence",
         )
 
         # Ensure that manager cannot delete plan lines they did not create
         with self.assertRaises(AccessError):
-            test_plan_2_as_bob.line_ids.unlink()
+            test_plan_2_as_bob.line_ids[0].unlink()
+
+        # Create a new plan line as user_bob (manager)
+        plan_line_as_bob = self.plan_line.with_user(self.user_bob).create(
+            {
+                "plan_id": test_plan_2_as_bob.id,
+                "command_id": self.command_create_dir.id,
+                "sequence": 10,
+            }
+        )
+
+        # Ensure the plan line was created and check that create_uid is user_bob
+        self.assertEqual(
+            plan_line_as_bob.create_uid.id,
+            self.user_bob.id,
+            msg="Create_uid should be user_bob",
+        )
+
+        # Check that user_bob can delete the plan line he has just created
+        plan_line_as_bob.unlink()
+
+        # Ensure the plan line has been deleted
+        self.assertFalse(
+            plan_line_as_bob.exists(),
+            msg="Manager should be able to delete own plan line",
+        )
