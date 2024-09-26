@@ -10,7 +10,15 @@
                     <group>
                         <group>
                             <field name="name" />
+                            <field name="reference" />
+                            <field
+                                name="reference_code"
+                                widget="CopyClipboardChar"
+                                options="{'string': 'Copy'}"
+                            />
                             <field name="key_type" />
+                        </group>
+                        <group>
                             <field
                                 name="partner_id"
                                 attrs="{'invisible': [('key_type', '=', 'k')]}"
@@ -21,15 +29,6 @@
                                 invisible="context.get('from_server',False)"
                                 attrs="{'invisible': [('key_type', '=', 'k')]}"
                                 placeholder="Leave blank to use with any server"
-                            />
-                        </group>
-                        <group>
-                            <field name="key_ref" />
-                            <field
-                                name="key_ref_complete"
-                                attrs="{'invisible': [('key_ref_complete', '=', False)]}"
-                                widget="CopyClipboardChar"
-                                options="{'string': 'Copy'}"
                             />
                             <field name="note" />
                         </group>
@@ -66,7 +65,7 @@
         <field name="arch" type="xml">
             <search string="Search Keys/Secrets">
                 <field name="name" string="SSH Key / Secret" />
-                <field name="key_ref" string="Reference" />
+                <field name="reference" string="Reference" />
                 <filter
                     string="SSH Key"
                     name="filter_ssh"

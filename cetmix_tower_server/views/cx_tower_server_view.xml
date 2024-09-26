@@ -251,7 +251,6 @@
                                                 options="{'string': 'Copy reference'}"
                                             />
                                         </div>
-
                                         <field name="value_char" />
                                     </group>
                                     <field
@@ -268,7 +267,7 @@
                             >
                                 <tree>
                                     <field name="name" />
-                                    <field name="key_ref" />
+                                    <field name="reference" />
                                 </tree>
                             </field>
                         </page>

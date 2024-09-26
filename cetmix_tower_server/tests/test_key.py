@@ -89,7 +89,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge dog",
                 "key_type": "s",
             }
@@ -107,7 +107,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge partner",
                 "key_type": "s",
                 "partner_id": self.user_bob.partner_id.id,
@@ -125,7 +125,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge server",
                 "key_type": "s",
                 "partner_id": self.user_bob.partner_id.id,
@@ -155,7 +155,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge dog",
                 "key_type": "s",
             }
@@ -174,7 +174,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge dog",
                 "key_type": "s",
             }
@@ -192,7 +192,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge partner",
                 "key_type": "s",
                 "partner_id": self.user_bob.partner_id.id,
@@ -210,7 +210,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge server",
                 "key_type": "s",
                 "partner_id": self.user_bob.partner_id.id,
@@ -265,7 +265,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "Meme key",
-                "key_ref": "MEME_KEY",
+                "reference": "MEME_KEY",
                 "secret_value": "Pepe Frog",
                 "key_type": "s",
             }
@@ -301,7 +301,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge dog",
                 "key_type": "s",
             }
@@ -326,7 +326,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge wow",
                 "key_type": "s",
                 "partner_id": self.user_bob.partner_id.id,
@@ -348,7 +348,7 @@ class TestTowerKey(TestTowerCommon):
         self.Key.create(
             {
                 "name": "doge key",
-                "key_ref": "DOGE_KEY",
+                "reference": "DOGE_KEY",
                 "secret_value": "Doge much",
                 "key_type": "s",
                 "partner_id": self.user_bob.partner_id.id,  # not needed but may keep it
