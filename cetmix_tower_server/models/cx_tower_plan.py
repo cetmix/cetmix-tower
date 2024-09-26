@@ -18,10 +18,12 @@ class CxTowerPlan(models.Model):
 
     _name = "cx.tower.plan"
     _description = "Cetmix Tower Flight Plan"
-    _inherit = "cx.tower.access.mixin"
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.access.mixin",
+    ]
 
     active = fields.Boolean(default=True)
-    name = fields.Char(required=True)
     allow_parallel_run = fields.Boolean(
         help="If enabled flightplan can be run on the same server "
         "while the same flightplan is still running.\n"

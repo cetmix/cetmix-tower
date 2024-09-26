@@ -19,7 +19,7 @@ Users of this group have access to the entities with `Access Level` set to `Mana
 
 ## Configure a Server
 
-Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`. 
+Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`.
 Enter server name and a unique server reference. Leave the "reference" field blank to generate a reference automatically.
 You can also select a color which is used to mark a server in the kanban view.
 
@@ -300,6 +300,7 @@ Command is a shell command that is executed on remote server.
 To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` and put values in the fields:
 
 - **Name**: Command readable name.
+- **Reference**: Leave the "reference" field blank to generate a reference automatically.
 - **Allow Parallel Run**: If disabled only one copy of this command can be run on the same server at the same time. Otherwise the same command can be run in parallel.
 - **Note**: Comments or user notes.
 - **Servers**: List of servers this command can be run on. Leave this field blank to make the command available to all servers.
@@ -320,7 +321,9 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 Flight Plans are used to execute commands in series. They allow to build a flexible condition based execution flow.
 To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Create` and put values in the fields:
 
+
 - **Name**: Flight Plan name
+- **Reference**: Leave the "reference" field blank to generate a reference automatically.
 - **On Error**: Default action to execute when an error happens during the flight plan execution. Possible options:
   - `Exit with command code`. Will terminate the flight plan execution and return an exit code of the failed command.
   - `Exit with custom code`. Will terminate the flight plan execution and return the custom code configured in the field next to this one.
