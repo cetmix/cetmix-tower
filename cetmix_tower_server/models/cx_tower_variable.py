@@ -6,9 +6,10 @@ from odoo import _, api, fields, models
 class TowerVariable(models.Model):
     _name = "cx.tower.variable"
     _description = "Cetmix Tower Variable"
+    _inherit = ["cx.tower.reference.mixin"]
+
     _order = "name"
 
-    name = fields.Char(string="Name", required=True)
     value_ids = fields.One2many(
         string="Values",
         comodel_name="cx.tower.variable.value",

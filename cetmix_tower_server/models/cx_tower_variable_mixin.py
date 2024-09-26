@@ -20,40 +20,41 @@ class TowerValueMixin(models.AbstractModel):
         help="Variable values for selected record",
     )
 
-    def get_variable_values(self, variable_names):
+    def get_variable_values(self, variable_references):
         """Get variable values for selected records
 
         Args:
-            variable_names (list of Char): variable names
+            variable_references (list of Char): variable names
 
         Returns:
-            dict {record_id: {variable_name: value}}
+            dict {record_id: {variable_reference: value}}
         """
         res = {}
 
         # Get global values first
-        if variable_names:
-            global_values = self.get_global_variable_values(variable_names)
+        if variable_references:
+            global_values = self.get_global_variable_values(variable_references)
 
             # Get record wise values
             for rec in self:
                 res_vars = global_values.get(
                     rec.id, {}
                 )  # set global values as defaults
-                for variable_name in variable_names:
+                for variable_reference in variable_references:
                     # Check if this is a system variable
-                    system_value = self._get_system_variable_value(variable_name)
+                    system_value = self._get_system_variable_value(variable_reference)
                     if system_value:
-                        res_vars.update({variable_name: system_value})
+                        res_vars.update({variable_reference: system_value})
 
                     # Get regular value
                     else:
                         value = rec.variable_value_ids.filtered(
-                            lambda v, variable_name=variable_name: v.variable_name
-                            == variable_name
+                            lambda v,
+                            variable_reference=variable_reference: v.variable_reference
+                            == variable_reference
                         )
                         if value:
-                            res_vars.update({variable_name: value.value_char})
+                            res_vars.update({variable_reference: value.value_char})
 
                 res.update({rec.id: res_vars})
 
@@ -63,7 +64,7 @@ class TowerValueMixin(models.AbstractModel):
 
         return res
 
-    def get_global_variable_values(self, variable_names):
+    def get_global_variable_values(self, variable_references):
         """Get global values for variables.
             Such values do not belong to any record.
 
@@ -71,26 +72,27 @@ class TowerValueMixin(models.AbstractModel):
         to compute fallback values.
 
         Args:
-            variable_names (list of Char): variable names
+            variable_references (list of Char): variable names
 
         Returns:
-            dict {record_id: {variable_name: value}}
+            dict {record_id: {variable_reference: value}}
         """
         res = {}
 
-        if variable_names:
+        if variable_references:
             values = self.env["cx.tower.variable.value"].search(
-                self._compose_variable_global_values_domain(variable_names)
+                self._compose_variable_global_values_domain(variable_references)
             )
             for rec in self:
                 res_vars = {}
-                for variable_name in variable_names:
+                for variable_reference in variable_references:
                     # Get variable value
                     value = values.filtered(
-                        lambda v, variable_name=variable_name: v.variable_name
-                        == variable_name
+                        lambda v,
+                        variable_reference=variable_reference: v.variable_reference
+                        == variable_reference
                     )
-                    res_vars.update({variable_name: value.value_char or None})
+                    res_vars.update({variable_reference: value.value_char or None})
                 res.update({rec.id: res_vars})
         return res
 
@@ -111,11 +113,11 @@ class TowerValueMixin(models.AbstractModel):
             server = None
         return server
 
-    def _get_system_variable_value(self, variable_name):
+    def _get_system_variable_value(self, variable_reference):
         """Get the value of a system variable. Eg `tower.server.partner_name`
 
         Args:
-            variable_name (Char): variable value
+            variable_reference (Char): variable value
 
         Returns:
             dict(): populates `tower` variable with with values.
@@ -129,7 +131,7 @@ class TowerValueMixin(models.AbstractModel):
         self.ensure_one()
 
         variable_value = {}
-        if variable_name == "tower":
+        if variable_reference == "tower":
             variable_value.update(
                 {
                     "server": self._parse_system_variable_server(),
@@ -172,17 +174,17 @@ class TowerValueMixin(models.AbstractModel):
         }
         return values
 
-    def _compose_variable_global_values_domain(self, variable_names):
+    def _compose_variable_global_values_domain(self, variable_references):
         """Compose domain for global variables
         Args:
-            variable_names (list of Char): variable names
+            variable_references (list of Char): variable names
 
         Returns:
             domain
         """
         domain = [
             ("is_global", "=", True),
-            ("variable_name", "in", variable_names),
+            ("variable_reference", "in", variable_references),
         ]
         return domain
 

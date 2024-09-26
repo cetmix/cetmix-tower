@@ -8,6 +8,7 @@ from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
 requests = wrap_module(__import__("requests"), ["post", "get", "request"])
+json = wrap_module(__import__("json"), ["dumps"])
 
 
 DEFAULT_PYTHON_CODE = """# Available variables:
@@ -15,7 +16,8 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #  - env: Odoo Environment on which the action is triggered
 #  - server: server on which the command is run
 #  - time, datetime, dateutil, timezone: useful Python libraries
-#  - requests: Python 'requests' library
+#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'request'
+#  - json: Python 'json' library. Available methods: 'dumps'
 #  - float_compare: Odoo function to compare floats based on specific precisions
 #  - UserError: Warning Exception to use with raise
 #
@@ -127,6 +129,7 @@ class CxTowerCommand(models.Model):
             "dateutil": tools.safe_eval.dateutil,
             "timezone": timezone,
             "requests": requests,
+            "json": json,
             "float_compare": float_compare,
             "env": self.env,
             "UserError": UserError,

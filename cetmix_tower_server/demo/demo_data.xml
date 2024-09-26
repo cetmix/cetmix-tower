@@ -165,25 +165,29 @@
 
     <!-- Variables -->
     <record id="variable_demo_path" model="cx.tower.variable">
-        <field name="name">test_path</field>
+        <field name="name">Test Path</field>
+        <field name="reference">test_path</field>
     </record>
     <record id="variable_demo_dir" model="cx.tower.variable">
-        <field name="name">dir</field>
+        <field name="name">Directory</field>
+        <field name="reference">dir</field>
     </record>
     <record id="variable_demo_os" model="cx.tower.variable">
-        <field name="name">os</field>
+        <field name="name">Operating System</field>
+        <field name="reference">os</field>
     </record>
     <record id="variable_demo_url" model="cx.tower.variable">
         <field name="name">URL</field>
     </record>
     <record id="variable_demo_version" model="cx.tower.variable">
-        <field name="name">version</field>
+        <field name="name">Version</field>
     </record>
     <record id="variable_demo_org" model="cx.tower.variable">
-        <field name="name">org</field>
+        <field name="name">Organisation</field>
+        <field name="reference">org</field>
     </record>
     <record id="variable_demo_branch" model="cx.tower.variable">
-        <field name="name">branch</field>
+        <field name="name">Branch</field>
     </record>
 
     <!-- Variable values -->

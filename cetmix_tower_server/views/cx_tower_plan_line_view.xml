@@ -59,12 +59,12 @@
                                     <group>
                                         <field
                                             name="variable_value_ids"
-                                            order="variable_name"
+                                            order="variable_reference"
                                             string="Set Variable Values"
                                         >
                                             <tree editable="bottom">
                                                 <field
-                                                    name="variable_name"
+                                                    name="variable_reference"
                                                     invisible="1"
                                                 />
                                                 <field name="variable_id" />

@@ -172,9 +172,9 @@
                             </group>
                         </page>
                         <page name="variables" string="Variables">
-                            <field name="variable_value_ids" order="variable_name">
+                            <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
-                                    <field name="variable_name" invisible="1" />
+                                    <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
                                     <field name="value_char" />
                                 </tree>
