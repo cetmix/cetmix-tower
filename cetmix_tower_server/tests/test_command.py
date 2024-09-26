@@ -24,7 +24,7 @@ class TestTowerCommand(TestTowerCommon):
         self.secret_folder_key = self.Key.create(
             {
                 "name": "Folder",
-                "key_ref": "FOLDER",
+                "reference": "FOLDER",
                 "secret_value": "secretFolder",
                 "key_type": "s",
             }
