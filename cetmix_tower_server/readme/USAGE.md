@@ -48,15 +48,13 @@ for record in records:
     }
     
     # Create a new server from template with the 'demo_template' reference 
-    env["cx.tower.server.template"].create_server_from_template(
+    env["cetmix.tower"].create_server_from_template(
       template_reference="demo_template",
       server_name=record.name,
       **params
       )
     
 ```
-
-
 
 ## Run a Command
 
@@ -109,3 +107,9 @@ To check a server log:
 Log output will be displayed in the HTML field below.
 
 ![Update server log](../static/description/images/server_log_usage_2.png)
+
+## Using Cetmix Tower in Odoo automation
+
+You can use various Cetmix Tower functions in Odoo automation. Such as server actions, automated actions or scheduled actions.
+While you can always call any public function directly most useful helper functions are located in a special abstract model "cetmix.tower".
+You can check those functions in the source code in the following file: `models/cetmix_tower.py`

@@ -12,6 +12,9 @@ class TestTowerCommon(TransactionCase):
         # Create core elements invoked in the tests
         # ***
 
+        # Cetmix Tower helper model
+        self.CetmixTower = self.env["cetmix.tower"]
+
         # Users
         self.Users = self.env["res.users"].with_context(no_reset_password=True)
         self.user_bob = self.Users.create(

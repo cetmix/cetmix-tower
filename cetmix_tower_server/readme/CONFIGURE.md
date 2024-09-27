@@ -319,6 +319,22 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 **Important!** Variables used in command are rendered in [different modes](#variable-rendering-modes) based on the command action.
 - **File Template**: File template that will be used to create or update file. Check [File Templates](#file-templates) for more details.
 
+To return result from Python assign exit code and message to the  COMMAND_RESULT variable of type `dict` like this:
+
+```python
+# Success
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": "This will be logged as a result message because exit code == 0",
+}
+
+# Error
+COMMAND_RESULT = {
+    "exit_code": 21,
+    "message": "This will be logged as an error message because exit code != 0",
+}
+```
+
 ## Configure a Flight Plan
 
 Flight Plans are used to execute commands in series. They allow to build a flexible condition based execution flow.
