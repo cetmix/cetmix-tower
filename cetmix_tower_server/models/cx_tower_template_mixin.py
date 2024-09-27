@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Cetmix OÜ
+# Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from jinja2 import Environment, Template, meta
 from jinja2 import exceptions as jn_exceptions
