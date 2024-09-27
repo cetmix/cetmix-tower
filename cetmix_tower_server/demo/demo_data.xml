@@ -35,10 +35,12 @@
     <record id="key_1" model="cx.tower.key">
         <field name="name">Key 1 SSH</field>
         <field name="key_type">k</field>
+        <field name="secret_value">Such Much SSH</field>
     </record>
     <record id="key_2" model="cx.tower.key">
         <field name="name">Key 2 Secret</field>
         <field name="key_type">s</field>
+        <field name="secret_value">Wow! Such much secret!</field>
     </record>
 
     <!-- Servers -->

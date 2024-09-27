@@ -718,6 +718,7 @@ class CxTowerServer(models.Model):
         key_vals.update({"server_id": self.id})  # pylint: disable=no-member
         if self.partner_id:
             key_vals.update({"partner_id": self.partner_id.id})
+        kwargs.update({"key": key_vals})
 
         # Save rendered code to log
         if no_log:
