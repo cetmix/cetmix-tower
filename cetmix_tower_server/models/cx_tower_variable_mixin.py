@@ -153,6 +153,7 @@ class TowerValueMixin(models.AbstractModel):
         if server:
             values = {
                 "name": server.name,
+                "reference": server.reference,
                 "username": server.ssh_username,
                 "partner_name": server.partner_id.name if server.partner_id else False,
                 "ipv4": server.ip_v4_address,

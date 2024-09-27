@@ -8,11 +8,10 @@
 
 /*
 :Author: David Goodger (goodger@python.org)
-:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
+:Id: $Id: html4css1.css 8954 2022-01-20 10:10:25Z milde $
 :Copyright: This stylesheet has been placed in the public domain.
 
 Default cascading style sheet for the HTML output of Docutils.
-Despite the name, some widely supported CSS2 features are used.
 
 See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
 customize this style sheet.
@@ -275,7 +274,7 @@ pre.literal-block, pre.doctest-block, pre.math, pre.code {
   margin-left: 2em ;
   margin-right: 2em }
 
-pre.code .ln { color: gray; } /* line numbers */
+pre.code .ln { color: grey; } /* line numbers */
 pre.code, code { background-color: #eeeeee }
 pre.code .comment, code .comment { color: #5C6576 }
 pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
@@ -301,7 +300,7 @@ span.option {
 span.pre {
   white-space: pre }
 
-span.problematic, pre.problematic {
+span.problematic {
   color: red }
 
 span.section-subtitle {
@@ -369,7 +368,7 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:b71a73f45edee8428c935aff93dd1aabaacb52196355ee2addb82190c4fcff5d
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
 <p><a class="reference external" href="http://cetmix.com/tower">Cetmix Tower</a> offers a streamlined solution
 for managing remote servers via SSH or API calls directly from
 <a class="reference external" href="https:/odoo.com">Odoo</a>. It is designed for versatility across
@@ -473,7 +472,7 @@ Tower</a> features you need to provide access
 to in the the user settings. To configure it go to
 <tt class="docutils literal">Setting/Users &amp; Companies/Users</tt> and open a user whom you would like
 to provide access to the Cetmix Tower.</p>
-<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png" /></p>
+<p><img alt="User profile" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png" /></p>
 <p>In <tt class="docutils literal">Other</tt> section find the <tt class="docutils literal">Cetmix Tower</tt> field and select one of
 the following options:</p>
 <ul class="simple">
@@ -691,6 +690,7 @@ the <tt class="docutils literal">tower</tt> variable unless you really need that
 <ul class="simple">
 <li>Server properties<ul>
 <li><tt class="docutils literal">tower.server.name</tt> Current server&nbsp;name</li>
+<li><tt class="docutils literal">tower.server.reference</tt> Current server&nbsp;reference</li>
 <li><tt class="docutils literal">tower.server.username</tt> Current server&nbsp;SSH Username​</li>
 <li><tt class="docutils literal">tower.server.ipv4</tt> Current server&nbsp;IPv4 Address​</li>
 <li><tt class="docutils literal">tower.server.ipv6</tt> Current server&nbsp;IPv6 Address​</li>
@@ -723,8 +723,8 @@ previewed in command preview and are replaced with placeholder in
 <a class="reference external" href="#configure-a-command">command</a> logs.</li>
 </ul>
 </li>
-<li><strong>Key ID</strong>: This values will be used for referencing this secret in
-commands and files</li>
+<li><strong>Reference</strong>: Key/secret record reference</li>
+<li><strong>Reference Code</strong>: Complete reference code for inline usage</li>
 <li><strong>Value</strong>: Key value. <strong>IMPORTANT:</strong> This is a write only field.
 Please ensure that you have saved your key/secret before saving it.
 Once saved it cannot be read from the user interface any longer.</li>
@@ -989,7 +989,7 @@ next to this one.</li>
 <p>Server Logs allow to fetch and view logs of a server fast and convenient
 way. To configure a Server Log open the server form, navigate to the
 <tt class="docutils literal">Server Logs</tt> tab and add a new record in the list.</p>
-<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
+<p><img alt="Server logs tab" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png" /></p>
 <p>Following fields are available:</p>
 <ul class="simple">
 <li><strong>Name</strong>: Readable name of the log</li>
@@ -1124,7 +1124,7 @@ arguments:</p>
 </pre>
 <p>Here is a short example of an Odoo automated action that creates a new
 server when a Sales Order is confirmed:</p>
-<p><img alt="Automatic action" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_from_template_auto_action.png" /></p>
+<p><img alt="Automatic action" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_from_template_auto_action.png" /></p>
 <pre class="code python literal-block">
 <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span><span class="w">
 
@@ -1220,14 +1220,14 @@ before doing that.</p>
 up window. Or click on the <tt class="docutils literal">Open</tt> button <strong>(2)</strong> to open it in the
 full form view</li>
 </ul>
-<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
+<p><img alt="Open server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png" /></p>
 <ul class="simple">
 <li>Click the <tt class="docutils literal">Refresh</tt> button to update the log. You can also click
 the <tt class="docutils literal">Refresh All</tt> button <strong>(3)</strong> located above the log list in
 order to refresh all logs at once. Log output will be displayed in
 the HTML field below.</li>
 </ul>
-<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
+<p><img alt="Update server log" src="https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png" /></p>
 </div>
 <div class="section" id="using-cetmix-tower-in-odoo-automation">
 <h2>Using Cetmix Tower in Odoo automation</h2>
@@ -1244,7 +1244,7 @@ those functions in the source code in the following file:
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -1257,7 +1257,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 </div>
 <div class="section" id="maintainers">
 <h2>Maintainers</h2>
-<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
 </div>

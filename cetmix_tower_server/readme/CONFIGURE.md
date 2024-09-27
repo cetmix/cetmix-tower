@@ -192,6 +192,7 @@ Following system variables are available:
 
 - Server properties
   - `tower.server.name` Current server name
+  - `tower.server.reference` Current server reference
   - `tower.server.username` Current server SSH Username​
   - `tower.server.ipv4` Current server IPv4 Address​
   - `tower.server.ipv6` Current server IPv6 Address​
@@ -211,7 +212,8 @@ To configure a new key or secret go to `Cetmix Tower/Settings/Keys` click `Creat
 - **Key Type**: Following values are available:
   - `SSH Key` is used to store SSH private keys. They are selectable in [Server settings](#configure-a-server)
   - `Secret` used to store sensitive information that can be used inline in commands. Eg a token or a password. Secrets cannot be previewed in command preview and are replaced with placeholder in [command](#configure-a-command) logs.
-- **Key ID**: This values will be used for referencing this secret in commands and files
+- **Reference**: Key/secret record reference
+- **Reference Code**: Complete reference code for inline usage
 - **Value**: Key value. **IMPORTANT:** This is a write only field. Please ensure that you have saved your key/secret before saving it. Once saved it cannot be read from the user interface any longer.
 - **Used For**: `SSH Key` type only. List of [Servers](#configure-a-server) where this SSH key is used
 - **Partner**: `Secret` type only. If selected this secret is used only for the [Servers](#configure-a-server) of selected partner
