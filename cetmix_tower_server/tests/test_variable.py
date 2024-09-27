@@ -480,6 +480,11 @@ class TestTowerVariable(TestTowerCommon):
             "System variable doesn't match server property",
         )
         self.assertEqual(
+            variable_values["tower"]["server"]["reference"],
+            self.server_test_1.reference,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
             variable_values["tower"]["server"]["username"],
             self.server_test_1.ssh_username,
             "System variable doesn't match server property",

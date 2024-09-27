@@ -375,6 +375,7 @@ Following system variables are available:
 -  Server properties
 
    -  ``tower.server.name`` Current server name
+   -  ``tower.server.reference`` Current server reference
    -  ``tower.server.username`` Current server SSH Username​
    -  ``tower.server.ipv4`` Current server IPv4 Address​
    -  ``tower.server.ipv6`` Current server IPv6 Address​
