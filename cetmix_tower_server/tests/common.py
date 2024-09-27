@@ -70,8 +70,12 @@ class TestTowerCommon(TransactionCase):
         # Key
         self.Key = self.env["cx.tower.key"]
 
-        self.key_1 = self.Key.create({"name": "Test Key 1"})
-        self.secret_2 = self.Key.create({"name": "Test Key 2", "key_type": "s"})
+        self.key_1 = self.Key.create(
+            {"name": "Test Key 1", "key_type": "k", "secret_value": "much key"}
+        )
+        self.secret_2 = self.Key.create(
+            {"name": "Test Key 2", "key_type": "s", "secret_value": "secret top"}
+        )
 
         # Command
         self.sudo_prefix = "sudo -S -p ''"
