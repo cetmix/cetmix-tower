@@ -24,7 +24,6 @@ class CxTowerKey(models.Model):
             ("s", "Secret"),
         ],
         required=True,
-        default="k",
     )
     reference_code = fields.Char(
         compute="_compute_reference_code",

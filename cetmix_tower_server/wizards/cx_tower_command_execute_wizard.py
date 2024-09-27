@@ -211,9 +211,16 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
         for server in self.server_ids:
             server_name = server.name
+            # Prepare key renderer values
+            key_vals = {
+                "server_id": server.id,
+                "partner_id": server.partner_id.id if server.partner_id else None,
+            }
+
+            kwargs = {"key": key_vals}
             if self.action == "python_code":
                 command_result = server._execute_python_code(
-                    code=self.rendered_code,
+                    code=self.rendered_code, **kwargs
                 )
             else:
                 command_result = server._execute_command_using_ssh(
@@ -221,6 +228,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                     self.rendered_code,
                     self.path or None,
                     sudo=self.use_sudo if self.use_sudo else None,
+                    **kwargs,
                 )
             command_error = command_result["error"]
             command_response = command_result["response"]
