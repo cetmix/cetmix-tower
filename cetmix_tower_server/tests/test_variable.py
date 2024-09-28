@@ -601,3 +601,61 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             expected_value, result_value, "Result value doesn't match expected"
         )
+
+    def test_get_by_variable_reference(self):
+        """Test getting variable values by variable reference"""
+
+        variable_meme = self.Variable.create(
+            {"name": "Meme Variable", "reference": "meme_variable"}
+        )
+        global_value = self.VariableValues.create(
+            {"variable_id": variable_meme.id, "value_char": "Memes Globalvs"}
+        )
+
+        # -- 1 -- Get value for Server with no server value defined
+        server_result = self.VariableValues.get_by_variable_reference(
+            variable_meme.reference, server_id=self.server_test_1.id
+        )
+        self.assertIsNone(server_result.get("server"))
+        self.assertIsNone(server_result.get("server_template"))
+        self.assertEqual(server_result.get("global"), global_value.value_char)
+
+        # -- 2 -- Add server value and try again
+        server_value = self.VariableValues.create(
+            {
+                "variable_id": variable_meme.id,
+                "value_char": "Memes Servervs",
+                "server_id": self.server_test_1.id,
+            }
+        )
+        server_result = self.VariableValues.get_by_variable_reference(
+            variable_meme.reference, server_id=self.server_test_1.id
+        )
+        self.assertEqual(server_result.get("server"), server_value.value_char)
+        self.assertEqual(server_result.get("global"), global_value.value_char)
+        self.assertIsNone(server_result.get("server_template"))
+
+        # -- 3 -- Do not fetch global value now
+        server_result = self.VariableValues.get_by_variable_reference(
+            variable_meme.reference, server_id=self.server_test_1.id, check_global=False
+        )
+        self.assertIsNone(server_result.get("global"))
+        self.assertEqual(server_result.get("server"), server_value.value_char)
+        self.assertIsNone(server_result.get("server_template"))
+
+        # -- 4 -- Check server template value
+        server_template_value = self.VariableValues.create(
+            {
+                "variable_id": variable_meme.id,
+                "value_char": "Memes Servervs Templatvs",
+                "server_template_id": self.server_template_sample.id,
+            }
+        )
+        server_result = self.VariableValues.get_by_variable_reference(
+            variable_meme.reference, server_template_id=self.server_template_sample.id
+        )
+        self.assertEqual(server_result.get("global"), global_value.value_char)
+        self.assertIsNone(server_result.get("server"))
+        self.assertEqual(
+            server_result.get("server_template"), server_template_value.value_char
+        )
