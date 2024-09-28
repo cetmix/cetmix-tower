@@ -836,10 +836,9 @@ class CxTowerServer(models.Model):
             need_check_server_status = True
 
         if need_check_server_status:
-            if (
-                command.server_status
-                and ((log_record and log_record.command_status == 0)
-                or (response and response["status"] == 0))
+            if command.server_status and (
+                (log_record and log_record.command_status == 0)
+                or (response and response["status"] == 0)
             ):
                 self.write({"status": command.server_status})
 
