@@ -15,6 +15,7 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #  - user: Current Odoo User
 #  - env: Odoo Environment on which the action is triggered
 #  - server: server on which the command is run
+#  - tower: 'cetmix.tower' helper class
 #  - time, datetime, dateutil, timezone: useful Python libraries
 #  - requests: Python 'requests' library. Available methods: 'post', 'get', 'request'
 #  - json: Python 'json' library. Available methods: 'dumps'
@@ -134,6 +135,7 @@ class CxTowerCommand(models.Model):
             "env": self.env,
             "UserError": UserError,
             "server": server or self._context.get("active_server"),
+            "tower": self.env["cetmix.tower"],
         }
 
     def name_get(self):
