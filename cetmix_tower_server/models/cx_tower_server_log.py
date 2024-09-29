@@ -83,6 +83,7 @@ class CxTowerServerLog(models.Model):
         Open log record in current window
         """
         self.ensure_one()
+        self.action_get_log_text()
         return {
             "type": "ir.actions.act_window",
             "name": self.name,

@@ -75,8 +75,22 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="reference" optional="show" />
+
                 <field name="value_ids_count" />
+
             </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_variable_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.search</field>
+        <field name="model">cx.tower.variable</field>
+        <field name="arch" type="xml">
+            <search string="Search Values">
+                <field name="name" />
+                <field name="reference" />
+            </search>
         </field>
     </record>
 

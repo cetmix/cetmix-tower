@@ -160,11 +160,16 @@ class CxTowerPlanLog(models.Model):
         Inherit to implement your own hooks
         """
         for log in self:
+            context_timestamp = fields.Datetime.context_timestamp(
+                self, fields.Datetime.now()
+            )
             if log.plan_status == 0:
                 log.create_uid.notify_success(
                     message=_(
+                        "%(timestamp)s<br/>"
                         "Flight Plan '%(name)s' finished successfully",
                         name=log.plan_id.name,
+                        timestamp=context_timestamp,
                     ),
                     title=log.server_id.name,
                     sticky=True,
@@ -172,10 +177,12 @@ class CxTowerPlanLog(models.Model):
             else:
                 log.create_uid.notify_danger(
                     message=_(
+                        "%(timestamp)s<br/>"
                         "Flight Plan '%(name)s'"
-                        " finished with error.\n"
+                        " finished with error. "
                         "Please check the flight plan log for details.",
                         name=log.plan_id.name,
+                        timestamp=context_timestamp,
                     ),
                     title=log.server_id.name,
                     sticky=True,

@@ -5,7 +5,7 @@ import uuid
 from odoo import fields, models
 
 
-class TowerValueMixin(models.AbstractModel):
+class TowerVariableMixin(models.AbstractModel):
     """Used to implement variables and variable values.
     Inherit in your model if you want to use variables in it.
     """
