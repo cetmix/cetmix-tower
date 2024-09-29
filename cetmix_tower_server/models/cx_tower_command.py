@@ -153,3 +153,13 @@ class CxTowerCommand(models.Model):
                 name = rec.name
             res.append((rec.id, name))
         return res
+
+    def action_open_command_logs(self):
+        """
+        Open current current command log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_command_log"
+        )
+        action["domain"] = [("command_id", "=", self.id)]
+        return action
