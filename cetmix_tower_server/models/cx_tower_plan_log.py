@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
 
-from .constants import PLAN_IS_EMPTY, PLAN_LINE_CONDITION_CHECK_FAILED
+from .constants import PLAN_IS_EMPTY
 
 
 class CxTowerPlanLog(models.Model):
@@ -116,8 +116,6 @@ class CxTowerPlanLog(models.Model):
         plan_log = self.sudo().create(vals)
 
         # Process each line until the first executable one is found
-        log_obj = self.env["cx.tower.command.log"]
-        now = fields.Datetime.now()
         for line, is_executable in get_executable_line(plan, server):
             if is_executable:
                 line._execute(server, plan_log, **kwargs)
@@ -125,22 +123,8 @@ class CxTowerPlanLog(models.Model):
             else:
                 if self._context.get("no_log"):
                     continue
-
-                # Log the unsuccessful execution attempt
-                log_vals = kwargs.get("log", {})
-                log_obj.record(
-                    server.id,
-                    line.command_id.id,
-                    now,
-                    now,
-                    PLAN_LINE_CONDITION_CHECK_FAILED,
-                    None,
-                    _("Plan line condition check failed."),
-                    plan_log_id=plan_log.id,
-                    condition=line.condition,
-                    is_skipped=True,
-                    **log_vals,
-                )
+                line._skip(server, plan_log)
+                break
         else:
             plan_log.sudo().write(
                 {
