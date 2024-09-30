@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import re
 
-from odoo import _, api, fields, models, tools
+from odoo import _, api, fields, models
 from odoo.osv import expression
 
 
@@ -214,7 +214,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         """
         return self.browse(self._get_id_by_reference(reference))
 
-    @tools.ormcache("reference")
+    # TODO: implement caching for this method
     def _get_id_by_reference(self, reference):
         """Get record id based on its reference.
 
