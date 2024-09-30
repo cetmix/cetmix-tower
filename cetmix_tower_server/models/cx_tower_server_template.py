@@ -278,7 +278,9 @@ class CxTowerServerTemplate(models.Model):
                     variable_reference,
                     variable_value,
                 ) in configuration_variables.items():
-                    variable = variable_obj.search([("name", "=", variable_reference)])
+                    variable = variable_obj.search(
+                        [("reference", "=", variable_reference)]
+                    )
                     if not variable:
                         variable = variable_obj.create(
                             {
