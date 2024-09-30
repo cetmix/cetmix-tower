@@ -1,7 +1,9 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import _, fields, models
 from odoo.tools.safe_eval import safe_eval
+
+from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
 
 
 class CxTowerPlanLine(models.Model):
@@ -76,7 +78,6 @@ class CxTowerPlanLine(models.Model):
 
         # Set path
         path = self.path or self.command_id.path
-
         server.execute_command(command_id, path, sudo=use_sudo, **kwargs)
 
     def _is_executable_line(self, server):
@@ -108,3 +109,30 @@ class CxTowerPlanLine(models.Model):
             return safe_eval(condition)
 
         return True  # Assume the line can be executed if no condition is specified
+
+    def _skip(self, server, plan_log_record, **kwargs):
+        """
+        Triggered when plan line skipped by condition
+        """
+        self.ensure_one()
+
+        # Set current line as currently executed in log
+        plan_log_record.plan_line_executed_id = self
+
+        # Log the unsuccessful execution attempt
+        now = fields.Datetime.now()
+        log_vals = kwargs.get("log", {})
+
+        self.env["cx.tower.command.log"].record(
+            server.id,
+            self.command_id.id,
+            now,
+            now,
+            PLAN_LINE_CONDITION_CHECK_FAILED,
+            None,
+            _("Plan line condition check failed."),
+            plan_log_id=plan_log_record.id,
+            condition=self.condition,
+            is_skipped=True,
+            **log_vals,
+        )
