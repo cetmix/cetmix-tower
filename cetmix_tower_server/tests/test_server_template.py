@@ -125,3 +125,77 @@ class TestTowerServerTemplate(TestTowerCommon):
             [("server_template_id", "=", self.server_template_sample.id)]
         )
         self.assertEqual(action["res_id"], server.id, "Server ids must be the same")
+
+    def test_create_server_from_template_action(self):
+        """
+        Create new server from action
+        """
+        name = "server from template"
+        self.assertFalse(
+            self.Server.search([("name", "=", name)]),
+            "Server should not exist",
+        )
+        # add variable values to server template
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "test template version",
+            }
+        )
+        self.VariableValues.create(
+            {
+                "variable_id": self.variable_url.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "test template url",
+            }
+        )
+
+        # create new server with new variable
+        self.ServerTemplate.create_server_from_template(
+            self.server_template_sample.reference,
+            "server from template",
+            ip_v4_address="localhost",
+            ssh_username="test",
+            ssh_password="test",
+            configuration_variables={
+                self.variable_version.reference: "test server version",
+                "new_variable": "new_value",
+            },
+        )
+        new_server = self.Server.search([("name", "=", name)])
+
+        self.assertTrue(new_server, "Server must exist!")
+        self.assertEqual(
+            len(new_server.variable_value_ids), 3, "Should be 3 variable values!"
+        )
+
+        # check variable values
+        var_version_value = new_server.variable_value_ids.filtered(
+            lambda rec: rec.variable_id == self.variable_version
+        )
+        self.assertEqual(
+            var_version_value.value_char,
+            "test server version",
+            "Version variable values should be with new values for "
+            "server from template",
+        )
+
+        var_url_value = new_server.variable_value_ids.filtered(
+            lambda rec: rec.variable_id == self.variable_url
+        )
+        self.assertEqual(
+            var_url_value.value_char,
+            "test template url",
+            "Url variable values should be same as in the template",
+        )
+
+        var_new_value = new_server.variable_value_ids.filtered(
+            lambda rec: rec.variable_id.reference == "new_variable"
+        )
+        self.assertTrue(var_new_value, "New variable should exist on the server")
+        self.assertEqual(
+            var_new_value.value_char,
+            "new_value",
+            "New variable values should be 'new_values'",
+        )
