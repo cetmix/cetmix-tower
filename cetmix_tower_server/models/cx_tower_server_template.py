@@ -234,7 +234,6 @@ class CxTowerServerTemplate(models.Model):
             list: A list of dictionaries representing the values for the new server
                   records.
         """
-
         model_fields = self._fields
         field_o2m_type = fields.One2many
 
@@ -299,7 +298,25 @@ class CxTowerServerTemplate(models.Model):
                         )
                     )
 
-                values["variable_value_ids"] = variable_vals_list
+                # update or add variable values
+                existing_variable_values = values.get("variable_value_ids", [])
+                variable_id_to_index = {
+                    cmd[2]["variable_id"]: idx
+                    for idx, cmd in enumerate(existing_variable_values)
+                    if cmd[0] == 0 and "variable_id" in cmd[2]
+                }
+
+                for new_command in variable_vals_list:
+                    variable_id = new_command[2]["variable_id"]
+                    if variable_id in variable_id_to_index:
+                        idx = variable_id_to_index[variable_id]
+                        # update exist command
+                        existing_variable_values[idx] = new_command
+                    else:
+                        # add new command
+                        existing_variable_values.append(new_command)
+
+                values["variable_value_ids"] = existing_variable_values
 
             # remove the `id` field to ensure a new record is created
             # instead of updating the existing one
