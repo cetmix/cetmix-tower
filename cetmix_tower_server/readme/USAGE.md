@@ -48,7 +48,7 @@ for record in records:
     }
     
     # Create a new server from template with the 'demo_template' reference 
-    env["cetmix.tower"].create_server_from_template(
+    env["cetmix.tower"].server_create_from_template(
       template_reference="demo_template",
       server_name=record.name,
       **params

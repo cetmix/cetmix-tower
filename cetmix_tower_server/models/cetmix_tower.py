@@ -18,7 +18,7 @@ class CetmixTower(models.AbstractModel):
     _description = "Tower automation helper model"
 
     @api.model
-    def create_server_from_template(self, template_reference, server_name, **kwargs):
+    def server_create_from_template(self, template_reference, server_name, **kwargs):
         """Shortcut for the same method of the 'cx.tower.server.template' model.
 
         Important! Add dedicated tests for this function if modified later.
@@ -68,3 +68,34 @@ class CetmixTower(models.AbstractModel):
             )
             result = {"exit_code": 0, "message": _("Variable value created")}
         return result
+
+    @api.model
+    def server_get_variable_value(
+        self, server_reference, variable_reference, check_global=True
+    ):
+        """Get variable value for selected server.
+
+        Args:
+            server_reference (Char): Server reference
+            variable_reference (Char): Variable reference
+            check_global (bool, optional): Check for global value if variable
+                is not defined for selected server. Defaults to True.
+        Returns:
+            Char: variable value or None
+        """
+
+        # Get server by reference
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
+            return None
+        result = self.env["cx.tower.variable.value"].get_by_variable_reference(
+            variable_reference, server.id, check_global
+        )
+
+        # Get server defined value first
+        value = result.get("server")
+
+        # Get global value if value is not set
+        if not value and check_global:
+            value = result.get("global")
+        return value
