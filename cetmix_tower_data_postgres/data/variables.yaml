@@ -1,0 +1,12 @@
+module: cetmix_tower_data_postgres
+variables:
+  postgres_image: "postgres:16"
+  postgres_instance: "postgres16"
+  postgres_path: "{{ postgres_root }}/{{ postgres_instance }}"
+  postgres_path_data: "{{ postgres_path }}/data"
+  postgres_password: "SECRET"
+  postgres_port: "5432"
+  postgres_restart_policy: always
+  postgres_root: "{{ tower_root }}/postgres"
+  postgres_shm_size: 1g
+  postgres_user: ""

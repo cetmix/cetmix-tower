@@ -1,0 +1,31 @@
+module: cetmix_tower_data_traefik
+commands:
+
+  traefik_docker_run:
+    name: Traefik - Create / Run container
+    code: |
+      docker run -d \
+        --name {{ traefik_instance }} \
+        -p 80:80 \
+        -p 443:443 \
+        -v {{ traefik_volume }}:/etc/traefik/acme:rw,Z \
+        -v /var/run/docker.sock:/var/run/docker.sock:ro \
+        --restart always \
+        {{ traefik_image}} \
+        --certificatesresolvers.myresolver.acme.httpchallenge=true \
+        --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web \
+        --certificatesresolvers.myresolver.acme.caserver={{ traefik_url }} \
+        --certificatesresolvers.myresolver.acme.email={{ traefik_email }} \
+        --certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme/acme.json \
+        --entryPoints.web.address=:80 \
+        --entrypoints.web.http.redirections.entryPoint.to=websecure \
+        --entrypoints.web.http.redirections.entryPoint.scheme=https \
+        --entryPoints.websecure.address=:443 \
+        --log.level={{ traefik_log_level }} \
+        --providers.docker.exposedbydefault=false
+
+  traefik_docker_rm:
+    name: Traefik - Stop / Remove container
+    code: |
+      docker stop {{ traefik_instance }} &amp;&amp; \
+      docker rm {{ traefik_instance }}

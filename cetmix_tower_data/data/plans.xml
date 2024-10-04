@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- FLIGHT PLAN: Tower - Init -->
+    <record id="plan_init_tower" model="cx.tower.plan">
+        <field name="readonly">True</field>
+        <field name="name">Tower - Init</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_data.tag_cetmix_tower_data')])]"
+        />
+        <field name="note">
+Update Debian
+Install curl &amp; docker
+
+        </field>
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_1" model="cx.tower.plan.line">
+        <field name="sequence">1</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_tower_update_debian_packages" />
+        <field name="use_sudo">1</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_2" model="cx.tower.plan.line">
+        <field name="sequence">2</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_tower_upgrade_debian_packages" />
+        <field name="use_sudo">1</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_3" model="cx.tower.plan.line">
+        <field name="sequence">3</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_tower_install_curl" />
+        <field name="use_sudo">1</field>
+    </record>
+    <!-- Action -->
+    <record id="plan_init_tower_line_3_action_1" model="cx.tower.plan.line.action">
+        <field name="line_id" ref="plan_init_tower_line_3" />
+        <field name="sequence">1</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_4" model="cx.tower.plan.line">
+        <field name="sequence">4</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_tower_install_docker" />
+        <field name="use_sudo">1</field>
+    </record>
+    <!-- Action -->
+    <record id="plan_init_tower_line_4_action_1" model="cx.tower.plan.line.action">
+        <field name="line_id" ref="plan_init_tower_line_4" />
+        <field name="sequence">1</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+    </record>
+    <!-- Line -->
+    <record id="plan_init_tower_line_5" model="cx.tower.plan.line">
+        <field name="sequence">5</field>
+        <field name="plan_id" ref="plan_init_tower" />
+        <field name="command_id" ref="command_tower_add_user_to_docker_group" />
+        <field name="use_sudo">1</field>
+    </record>
+
+</odoo>

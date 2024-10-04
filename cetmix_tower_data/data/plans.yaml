@@ -1,0 +1,27 @@
+module: cetmix_tower_data
+plans:
+
+  init_tower:
+    name: Tower - Init
+    note: |
+      Update Debian
+      Install curl &amp; docker
+    lines:
+    - command: tower_update_debian_packages
+      use_sudo: 1
+    - command: tower_upgrade_debian_packages
+      use_sudo: 1
+    - command: tower_install_curl
+      use_sudo: 1
+      actions:
+      - condition: "!="
+        value_char: 0
+        action: n
+    - command: tower_install_docker
+      use_sudo: 1
+      actions:
+      - condition: "!="
+        value_char: 0
+        action: n
+    - command: tower_add_user_to_docker_group
+      use_sudo: 1

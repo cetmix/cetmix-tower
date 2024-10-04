@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="tag_cetmix_tower_data_odoo" model="cx.tower.tag">
+        <field name="name">Odoo</field>
+    </record>
+    <record id="tag_cetmix_tower_data_odoo_config" model="cx.tower.tag">
+        <field name="name">Odoo Config</field>
+    </record>
+
+</odoo>
