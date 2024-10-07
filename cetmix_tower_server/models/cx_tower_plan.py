@@ -100,7 +100,7 @@ class CxTowerPlan(models.Model):
 
         # Check if the same plan is being executed on this server right now
         if not self.allow_parallel_run or self.env.context.get(
-            "disable_recursive_plan"
+            "prevent_plan_recursion"
         ):
             running_count = plan_log_obj.search_count(
                 [

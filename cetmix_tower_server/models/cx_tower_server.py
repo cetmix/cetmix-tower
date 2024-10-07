@@ -832,7 +832,7 @@ class CxTowerServer(models.Model):
             )
         elif command.action == "plan":
             return self.with_context(
-                disable_recursive_plan=True
+                prevent_plan_recursion=True
             )._command_runner_flight_plan(
                 log_record,
                 command.flight_plan_id,
