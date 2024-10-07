@@ -70,16 +70,10 @@
                             />
                             <field name="access_level" />
                         </group>
-                        <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
-                        <field
-                            name="code"
-                            placeholder="Type shell command here..."
-                            nolabel="1"
-                            attrs="{'invisible': [('action', '!=', 'ssh_command')],'required': [('action', '=', 'ssh_command')]}"
-                        />
                     </group>
-                    <notebook attrs="{'invisible': [('action', '!=', 'python_code')]}">
-                        <page name="python_code" string="Python Expression">
+                    <notebook>
+                        <page name="code" string="Code">
+                            <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
                             <field
                                 name="code"
                                 attrs="{'required': [('action', '=', 'python_code')]}"
@@ -88,7 +82,11 @@
                                 placeholder="Enter Python code here. Help about Python expression is available in the help tab of this document."
                             />
                         </page>
-                        <page string="Help" name="python_help_info">
+                        <page
+                            string="Help"
+                            name="python_help_info"
+                            attrs="{'invisible': [('action', '!=', 'python_code')]}"
+                        >
                             <div style="margin-top: 4px;">
                                 <h3>Help with Python expressions</h3>
                                 <p
@@ -101,12 +99,16 @@
                                         triggered</li>
                                     <li><code
                                         >server</code>: Server on which the command is run</li>
+                                    <li><code
+                                        >tower</code>: 'cetmix.tower' helper class shortcut</li>
                                     <li><code>time</code>, <code>datetime</code>, <code
                                         >dateutil</code>
                                         , <code
                                         >timezone</code>: useful Python libraries</li>
                                     <li><code
-                                        >requests</code>: Python 'requests' library</li>
+                                        >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'request'</li>
+                                    <li><code
+                                        >json</code>: Python 'json' library. Available methods: 'dumps'</li>
                                     <li><code
                                         >UserError</code>: Warning Exception to use with <code
                                         >
