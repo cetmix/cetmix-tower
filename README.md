@@ -1,6 +1,6 @@
 
 <!-- /!\ Non OCA Context : Set here the badge of your runbot / runboat instance. -->
-[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.cetmix.com/webui/builds.html?repo=cetmix/cetmix-tower&target_branch=14.0)
+[![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://runboat.cetmix.com/webui/builds.html?repo=cetmix/cetmix-tower&target_branch=14.0-dev)
 [![Pre-commit Status](https://github.com/cetmix/cetmix-tower/actions/workflows/pre-commit.yml/badge.svg?branch=14.0)](https://github.com/cetmix/cetmix-tower/actions/workflows/pre-commit.yml?query=branch%3A14.0)
 [![Build Status](https://github.com/cetmix/cetmix-tower/actions/workflows/test.yml/badge.svg?branch=14.0)](https://github.com/cetmix/cetmix-tower/actions/workflows/test.yml?query=branch%3A14.0)
 [![codecov](https://codecov.io/gh/cetmix/cetmix-tower/branch/14.0/graph/badge.svg)](https://codecov.io/gh/cetmix/cetmix-tower)
