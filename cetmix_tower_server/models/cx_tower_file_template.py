@@ -1,6 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
+
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
@@ -52,6 +53,27 @@ class CxTowerFileTemplate(models.Model):
         required=True,
         default="tower",
     )
+
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_file_template_variable_rel",
+        column1="file_template_id",
+        column2="variable_id",
+        string="Variables",
+        compute="_compute_variable_ids",
+        store=True,
+    )
+
+    @api.depends("code", "server_dir", "file_name")
+    def _compute_variable_ids(self):
+        """
+        Compute variable_ids based on code, server_dir, and file_name fields.
+        """
+        template_mixin_obj = self.env["cx.tower.template.mixin"]
+        for record in self:
+            record.variable_ids = template_mixin_obj._prepare_variable_commands(
+                ["code", "server_dir", "file_name"], force_record=record
+            )
 
     def write(self, vals):
         """
