@@ -105,6 +105,15 @@ class CxTowerCommand(models.Model):
         store=True,
         readonly=False,
     )
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_command_variable_rel",
+        column1="command_id",
+        column2="variable_id",
+        string="Variables",
+        compute="_compute_variable_ids",
+        store=True,
+    )
 
     @api.depends("action")
     def _compute_code(self):

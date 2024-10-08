@@ -3,7 +3,7 @@
 from jinja2 import Environment, Template, meta
 from jinja2 import exceptions as jn_exceptions
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -16,6 +16,29 @@ class CxTowerTemplateMixin(models.AbstractModel):
     _description = "Cetmix Tower template rendering mixin"
 
     code = fields.Text(string="Code", help="This field will be rendered by default")
+
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable", compute="_compute_variable_ids", store=True
+    )
+
+    @api.depends("code")
+    def _compute_variable_ids(self):
+        """
+        Compute and assign the variable_ids field by searching for variables
+        based on references from the code field. If no variables are found,
+        the field is cleared.
+        """
+        for record in self:
+            variables_dict = record.get_variables()
+
+            all_references = []
+            for variable_key in variables_dict:
+                all_references.extend(variables_dict[variable_key])
+
+            variables = self.env["cx.tower.variable"].search(
+                [("reference", "in", all_references)]
+            )
+            record.variable_ids = [(6, 0, variables.ids)] if variables else [(5, 0, 0)]
 
     def get_variables(self):
         """Get the list of variables for templates
