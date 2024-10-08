@@ -123,6 +123,25 @@ class CxTowerFile(models.Model):
     file = fields.Binary(
         attachment=True,
     )
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_file_variable_rel",
+        column1="file_id",
+        column2="variable_id",
+        string="Variables",
+        compute="_compute_variable_ids",
+        store=True,
+    )
+
+    @api.depends("code", "server_dir", "name")
+    def _compute_variable_ids(self):
+        """
+        Compute variable_ids based on code, server_dir, and name fields.
+        """
+        for record in self:
+            record.variable_ids = record._prepare_variable_commands(
+                ["code", "server_dir", "name"]
+            )
 
     def _selection_file_type(self):
         """Available file types
