@@ -1,0 +1,13 @@
+access_level: manager
+action: ssh_command
+allow_parallel_run: false
+cetmix_tower_yaml_version: 1
+code: |-
+  cd /home/{{ tower.server.ssh_username }} \
+  && ls -lha
+name: Test YAML
+note: |-
+  Test YAML command conversion.
+  Ensure all fields are rendered properly.
+path: false
+reference: test_yaml

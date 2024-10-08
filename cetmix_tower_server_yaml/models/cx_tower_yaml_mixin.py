@@ -24,8 +24,14 @@ class CxTowerYamlMixin(models.AbstractModel):
     _name = "cx.tower.yaml.mixin"
     _description = "Cetmix Tower YAML rendering mixin"
 
+    # File format version in order to track compatibility
+    CETMIX_TOWER_YAML_VERSION = 1
+
     # TO_YAML_* used to convert from Odoo field values to YAML
     TO_YAML_ACCESS_LEVEL = {"1": "user", "2": "manager", "3": "root"}
+
+    # TO_TOWER_* used to convert from YAML field values to Tower ones
+    TO_TOWER_ACCESS_LEVEL = {"user": "1", "manager": "2", "root": "3"}
 
     yaml_code = fields.Text(compute="_compute_yaml_code")
 
@@ -63,6 +69,9 @@ class CxTowerYamlMixin(models.AbstractModel):
         """
         # We don't need id because we are not using it
         values.pop("id")
+
+        # Add YAML format version
+        values.update({"cetmix_tower_yaml_version": self.CETMIX_TOWER_YAML_VERSION})
 
         # Parse access level
         if "access_level" in values:
