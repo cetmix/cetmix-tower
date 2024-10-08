@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
+
+from odoo import _, api, fields, models
 from odoo.tools.safe_eval import safe_eval
 
 from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
@@ -47,6 +48,26 @@ class CxTowerPlanLine(models.Model):
         help="Conditions under which this Flight Plan Line "
         "will be launched. e.g.: {{ odoo_version}} == '14.0'",
     )
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_plan_line_variable_rel",
+        column1="plan_line_id",
+        column2="variable_id",
+        string="Variables",
+        compute="_compute_variable_ids",
+        store=True,
+    )
+
+    @api.depends("condition")
+    def _compute_variable_ids(self):
+        """
+        Compute variable_ids based on condition field.
+        """
+        template_mixin_obj = self.env["cx.tower.template.mixin"]
+        for record in self:
+            record.variable_ids = template_mixin_obj._prepare_variable_commands(
+                ["condition"], force_record=record
+            )
 
     def _execute(self, server, plan_log_record, **kwargs):
         """Execute command from the Flight Plan line
