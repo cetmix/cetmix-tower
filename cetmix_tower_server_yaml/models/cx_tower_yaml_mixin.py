@@ -2,7 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import yaml
 
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CustomDumper(yaml.Dumper):
@@ -33,7 +34,10 @@ class CxTowerYamlMixin(models.AbstractModel):
     # TO_TOWER_* used to convert from YAML field values to Tower ones
     TO_TOWER_ACCESS_LEVEL = {"user": "1", "manager": "2", "root": "3"}
 
-    yaml_code = fields.Text(compute="_compute_yaml_code")
+    yaml_code = fields.Text(
+        compute="_compute_yaml_code",
+        inverse="_inverse_yaml_code",
+    )
 
     def _compute_yaml_code(self):
         """Compute YAML code based on model record data"""
@@ -43,10 +47,18 @@ class CxTowerYamlMixin(models.AbstractModel):
             yaml_keys = record._get_fields_for_yaml()
             record_dict = record.read(fields=yaml_keys)[0]
             record.yaml_code = yaml.dump(
-                self._post_process_record_values(record_dict),
+                record._post_process_record_values(record_dict),
                 Dumper=CustomDumper,
                 default_flow_style=False,
             )
+
+    def _inverse_yaml_code(self):
+        """Compose record based on provided YAML"""
+        for record in self:
+            if record.yaml_code:
+                record_yaml_dict = yaml.safe_load(record.yaml_code)
+                record_vals = record._post_process_yaml_dict_values(record_yaml_dict)
+                record.update(record_vals)
 
     def _get_fields_for_yaml(self):
         """Get ist of field to be present in YAML
@@ -54,7 +66,6 @@ class CxTowerYamlMixin(models.AbstractModel):
         Returns:
             list(): list of fields to be used as YAML keys
         """
-        self.ensure_one()
         return ["name", "reference"]
 
     def _post_process_record_values(self, values):
@@ -79,3 +90,41 @@ class CxTowerYamlMixin(models.AbstractModel):
                 {"access_level": self.TO_YAML_ACCESS_LEVEL[values["access_level"]]}
             )
         return values
+
+    def _post_process_yaml_dict_values(self, values):
+        """Post process dictionary values generated from YAML code
+
+        Args:
+            values (dict): Dictionary generated from YAML
+
+        Returns:
+            dict(): Post-processed values
+        """
+
+        # Check Cetmix Tower YAML version
+        yaml_version = values.pop("cetmix_tower_yaml_version")
+        if (
+            yaml_version
+            and isinstance(yaml_version, int)
+            and yaml_version > self.CETMIX_TOWER_YAML_VERSION
+        ):
+            raise ValidationError(
+                _(
+                    "YAML version is higher than version"
+                    " supported by your Cetmix Tower instance. %(code_version)s > %(tower_version)s",  # noqa
+                    code_version=yaml_version,
+                    tower_version=self.CETMIX_TOWER_YAML_VERSION,
+                )
+            )
+
+        # Parse access level
+        if "access_level" in values:
+            values.update(
+                {"access_level": self.TO_TOWER_ACCESS_LEVEL[values["access_level"]]}
+            )
+
+        # Leave supported keys only
+        supported_keys = self._get_fields_for_yaml()
+        filtered_values = {k: v for k, v in values.items() if k in supported_keys}
+
+        return filtered_values

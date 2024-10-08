@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <page name="code" position="after">
                 <page name="yaml" string="YAML">
-                    <field name="yaml_code" />
+                    <field name="yaml_code" widget="ace" />
                 </page>
             </page>
         </field>

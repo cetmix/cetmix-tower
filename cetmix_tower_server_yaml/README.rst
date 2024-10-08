@@ -27,10 +27,14 @@ Tower. <https://cetmix.com/tower>`__
 
 Following data models are supported:
 
--  Variables
 -  Commands
+
+Coming soon:
+
 -  Flight Plans
+-  Variables
 -  File Templates
+-  Server Templates
 
 **Table of contents**
 
