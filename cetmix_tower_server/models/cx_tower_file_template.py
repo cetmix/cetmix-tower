@@ -8,6 +8,7 @@ from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
 
 class CxTowerFileTemplate(models.Model):
     _name = "cx.tower.file.template"
+    _inherit = ["cx.tower.reference.mixin"]
     _description = "Cx Tower File Template"
 
     def _compute_file_count(self):
@@ -17,7 +18,6 @@ class CxTowerFileTemplate(models.Model):
         for template in self:
             template.file_count = len(template.file_ids)
 
-    name = fields.Char(help="Template Name")
     file_name = fields.Char(
         help="Default full file name with file type for example: test.txt",
     )

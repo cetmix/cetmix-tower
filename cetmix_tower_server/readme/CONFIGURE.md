@@ -286,6 +286,7 @@ File templates are used to create and manage multiple files in bulk. Once a temp
 To create a new file template go to `Cetmix Tower/Files/Templates` click `Create` and put values in the fields:
 
 - **Name**: Template name
+- **Reference**: Leave the "reference" field blank to generate a reference automatically.
 - **File Name**: Filesystem name of the file(s) created from this template. This field supports [Variables](#configure-variables).
 - **Directory on server**: Directory on remote server where this file will be stored. This field supports [Variables](#configure-variables).
 - **Source**: File source. Available options are `Server` and `Tower`. Check above for more details.
