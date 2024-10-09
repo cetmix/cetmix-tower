@@ -7,7 +7,15 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                    </div>
                     <div
                         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager"
                         class="alert alert-warning"

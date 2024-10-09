@@ -263,3 +263,13 @@ class CxTowerPlan(models.Model):
                 )
             else:
                 record.access_level_warn_msg = False
+
+    def action_open_plan_logs(self):
+        """
+        Open current flight plan log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan_log"
+        )
+        action["domain"] = [("plan_id", "=", self.id)]
+        return action

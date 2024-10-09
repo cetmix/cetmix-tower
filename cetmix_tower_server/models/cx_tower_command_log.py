@@ -179,13 +179,17 @@ class CxTowerCommandLog(models.Model):
         """
         # Trigger next flightplan line
         for rec in self:
+            context_timestamp = fields.Datetime.context_timestamp(
+                self, fields.Datetime.now()
+            )
             if rec.plan_log_id:  # type: ignore
                 rec.plan_log_id._plan_command_finished(rec)  # type: ignore
             elif rec.command_status == 0:
                 rec.create_uid.notify_success(
                     message=_(
-                        "Command '%(name)s' finished successfully",
+                        "%(timestamp)s<br/>" "Command '%(name)s' finished successfully",
                         name=rec.command_id.name,
+                        timestamp=context_timestamp,
                     ),
                     title=rec.server_id.name,
                     sticky=True,
@@ -193,10 +197,12 @@ class CxTowerCommandLog(models.Model):
             else:
                 rec.create_uid.notify_danger(
                     message=_(
+                        "%(timestamp)s<br/>"
                         "Command '%(name)s'"
-                        " finished with error.\n"
+                        " finished with error. "
                         "Please check the command log for details.",
                         name=rec.command_id.name,
+                        timestamp=context_timestamp,
                     ),
                     title=rec.server_id.name,
                     sticky=True,

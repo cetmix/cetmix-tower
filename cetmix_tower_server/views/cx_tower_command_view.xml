@@ -6,7 +6,18 @@
         <field name="model">cx.tower.command</field>
         <field name="arch" type="xml">
             <form>
+
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                    </div>
+
                     <div
                         class="alert alert-warning"
                         role="alert"
@@ -19,10 +30,12 @@
                             This command can be used only in Flight Plans.
                         </p>
                         <p attrs="{'invisible': [('action', '!=', 'python_code')]}">
-                            Remember: Python code is executed on the Tower server, not on the remote one.
+                            Remember: Python code is executed on the Tower server, not on the remote
+                            one.
                         </p>
                     </div>
                     <group>
+
                         <group>
                             <field name="name" />
                             <field name="reference" />
@@ -79,29 +92,35 @@
                             <div style="margin-top: 4px;">
                                 <h3>Help with Python expressions</h3>
                                 <p
-                                >Various fields may use Python code or Python expressions. The following variables can be used:</p>
+                                >Various fields may use Python code or Python expressions. The
+                                    following variables can be used:</p>
                                 <ul>
                                     <li><code>user</code>: Current Odoo user</li>
                                     <li><code
-                                        >env</code>: Odoo Environment on which the action is triggered</li>
+                                        >env</code>: Odoo Environment on which the action is
+                                        triggered</li>
                                     <li><code
                                         >server</code>: Server on which the command is run</li>
                                     <li><code>time</code>, <code>datetime</code>, <code
-                                        >dateutil</code>, <code
+                                        >dateutil</code>
+                                        , <code
                                         >timezone</code>: useful Python libraries</li>
                                     <li><code
                                         >requests</code>: Python 'requests' library</li>
                                     <li><code
                                         >UserError</code>: Warning Exception to use with <code
-                                        >raise</code></li>
+                                        >
+                                        raise</code></li>
                                     <li
-                                    >Each python code command returns the COMMAND_RESULT value which is a dictionary.</li>
+                                    >Each python code command returns the COMMAND_RESULT value
+                                        which is a dictionary.</li>
                                 </ul>
                                 <p
                                 >There are two default keys in the dictionary, e.g.:</p>
-<code style='white-space: pre-wrap'>
-x = 2*10
-COMMAND_RESULT = {"exit_code": x, "message": "This will be logged as an error message because exit code !=0"}
+                                <code style='white-space: pre-wrap'>
+                                    x = 2*10
+                                    COMMAND_RESULT = {"exit_code": x, "message": "This will be
+                                    logged as an error message because exit code !=0"}
 </code>
                             </div>
                         </page>
@@ -170,12 +189,17 @@ COMMAND_RESULT = {"exit_code": x, "message": "This will be logged as an error me
                 />
                 <separator />
                 <filter
-                    string="Run shell command"
+                    string="SSH Command"
                     name="filter_run_command"
                     domain="[('action', '=', 'ssh_command')]"
                 />
                 <filter
-                    string="Push file (template)"
+                    string="Python code"
+                    name="filter_python_command"
+                    domain="[('action', '=', 'python_code')]"
+                />
+                <filter
+                    string="File from template"
                     name="file_from_template"
                     domain="[('action', '=', 'file_using_template')]"
                 />
@@ -191,7 +215,15 @@ COMMAND_RESULT = {"exit_code": x, "message": "This will be logged as an error me
                     name="archived"
                     domain="[('active', '=', False)]"
                 />
-             </search>
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Action"
+                        name="group_action"
+                        domain="[]"
+                        context="{'group_by': 'action'}"
+                    />
+                </group>
+            </search>
         </field>
     </record>
 

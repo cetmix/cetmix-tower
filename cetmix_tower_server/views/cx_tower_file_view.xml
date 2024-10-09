@@ -155,6 +155,8 @@
                 <field name="server_id" />
                 <field name="full_server_path" optional="hide" />
                 <field name="sync_date_last" />
+                <field name="template_id" optional="show" />
+
             </tree>
         </field>
     </record>
