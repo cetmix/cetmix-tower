@@ -1,5 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import base64
+
 import yaml
 
 from odoo import _, fields, models
@@ -38,18 +40,31 @@ class CxTowerYamlMixin(models.AbstractModel):
         compute="_compute_yaml_code",
         inverse="_inverse_yaml_code",
     )
+    yaml_file = fields.Binary(compute="_compute_yaml_code", attachment=False)
+    yaml_file_name = fields.Char(compute="_compute_yaml_code")
 
     def _compute_yaml_code(self):
         """Compute YAML code based on model record data"""
+
+        # This is used for the file name.
+        # Eg cx.tower.command record will have 'command_' prefix.
+        model_prefix = self._name.split(".")[-1]
         for record in self:
             # We are reading field list for each record
             # because list of fields can differ from record to record
             yaml_keys = record._get_fields_for_yaml()
             record_dict = record.read(fields=yaml_keys)[0]
-            record.yaml_code = yaml.dump(
+            yaml_code = yaml.dump(
                 record._post_process_record_values(record_dict),
                 Dumper=CustomDumper,
                 default_flow_style=False,
+            )
+            record.update(
+                {
+                    "yaml_code": yaml_code,
+                    "yaml_file": base64.encodebytes(yaml_code.encode("utf-8")),
+                    "yaml_file_name": f"{model_prefix}_{record.reference}.yaml",
+                }
             )
 
     def _inverse_yaml_code(self):
@@ -81,8 +96,14 @@ class CxTowerYamlMixin(models.AbstractModel):
         # We don't need id because we are not using it
         values.pop("id")
 
-        # Add YAML format version
-        values.update({"cetmix_tower_yaml_version": self.CETMIX_TOWER_YAML_VERSION})
+        # Add YAML format version and model
+        model_name = self._name.replace("cx.tower.", "").replace(".", "_")
+        values.update(
+            {
+                "cetmix_tower_yaml_version": self.CETMIX_TOWER_YAML_VERSION,
+                "cetmix_tower_model": model_name,
+            }
+        )
 
         # Parse access level
         if "access_level" in values:
@@ -116,6 +137,11 @@ class CxTowerYamlMixin(models.AbstractModel):
                     tower_version=self.CETMIX_TOWER_YAML_VERSION,
                 )
             )
+
+        # Remove model data
+        # TODO: temp solution, use later for import
+        if "cetmix_tower_model" in values:
+            values.pop("cetmix_tower_model")
 
         # Parse access level
         if "access_level" in values:

@@ -13,6 +13,7 @@ class TestTowerCommand(TransactionCase):
         self.command_test_yaml = """access_level: manager
 action: ssh_command
 allow_parallel_run: false
+cetmix_tower_model: command
 cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
@@ -184,6 +185,7 @@ action: ssh_command
 doge: wow
 memes: much nice!
 allow_parallel_run: false
+cetmix_tower_model: command
 cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
