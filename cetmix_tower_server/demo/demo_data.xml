@@ -291,7 +291,7 @@ else:
     <!-- Action Variable Value -->
     <record id="action_1_value_branch" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_branch" />
-        <field name="action_id" ref="plan_test_1_line_1_action_1" />
+        <field name="plan_line_action_id" ref="plan_test_1_line_1_action_1" />
         <field name="value_char">production</field>
     </record>
     <!-- Line -->
