@@ -42,7 +42,8 @@ class CxTowerPlanLineAction(models.Model):
         store=True,
     )
     variable_value_ids = fields.One2many(
-        inverse_name="action_id"  # Other field properties are defined in mixin
+        # Other field properties are defined in mixin
+        inverse_name="plan_line_action_id"
     )
 
     @api.depends("condition", "action", "value_char")

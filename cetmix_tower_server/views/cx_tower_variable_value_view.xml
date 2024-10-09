@@ -16,7 +16,7 @@
                     name="server_template_id"
                     attrs="{'readonly': [('server_id', '!=', False)]}"
                 />
-                <field name="action_id" />
+                <field name="plan_line_action_id" />
                 <field name="value_char" />
             </tree>
         </field>

@@ -34,7 +34,7 @@ class TowerVariableValue(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", index=True, ondelete="cascade"
     )
-    action_id = fields.Many2one(
+    plan_line_action_id = fields.Many2one(
         comodel_name="cx.tower.plan.line.action", index=True, ondelete="cascade"
     )
     server_template_id = fields.Many2one(
@@ -44,9 +44,31 @@ class TowerVariableValue(models.Model):
     _sql_constraints = [
         (
             "tower_variable_value_uniq",
-            "unique (variable_id,server_id,server_template_id,is_global)",
+            "unique (variable_id, server_id, server_template_id, "
+            "plan_line_action_id, is_global)",
             "Variable can be declared only once for the same record!",
-        )
+        ),
+        (
+            "unique_variable_value_server",
+            "unique (variable_id, server_id)",
+            "A variable value cannot be assigned multiple times to the same server!",
+        ),
+        (
+            "unique_variable_value_template",
+            "unique (variable_id, server_template_id)",
+            (
+                "A variable value cannot be assigned multiple"
+                " times to the same server template!"
+            ),
+        ),
+        (
+            "unique_variable_value_action",
+            "unique (variable_id, plan_line_action_id)",
+            (
+                "A variable value cannot be assigned multiple"
+                " times to the same plan line action!"
+            ),
+        ),
     ]
 
     @api.constrains("is_global", "value_char")
@@ -85,7 +107,7 @@ class TowerVariableValue(models.Model):
         """
         return {
             "cx.tower.server": ("server_id", "Server"),
-            "cx.tower.plan.line.action": ("action_id", "Action"),
+            "cx.tower.plan.line.action": ("plan_line_action_id", "Action"),
             "cx.tower.server.template": ("server_template_id", "Server Template"),
         }
 
@@ -212,3 +234,26 @@ class TowerVariableValue(models.Model):
                 )
 
         return result
+
+    @api.constrains("server_id", "server_template_id", "plan_line_action_id")
+    def _check_single_assignment(self):
+        """Ensure that a variable is only assigned to one model at a time."""
+        for record in self:
+            # Check how many of the fields are set
+            count_assigned = sum(
+                1
+                for field in [
+                    record.server_id,
+                    record.server_template_id,
+                    record.plan_line_action_id,
+                ]
+                if field
+            )
+
+            if count_assigned > 1:
+                raise ValidationError(
+                    _(
+                        "A variable value can only be assigned to one of the models:"
+                        "Server, Server Template, or Plan Line Action."
+                    )
+                )
