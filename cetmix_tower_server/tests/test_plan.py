@@ -482,7 +482,7 @@ class TestTowerPlan(TestTowerCommon):
             {
                 "variable_id": self.variable_version.id,
                 "value_char": "16.0",
-                "action_id": self.plan_line_1_action_1.id,
+                "plan_line_action_id": self.plan_line_1_action_1.id,
             }
         )
         # Check that server contains server variable with value
@@ -505,7 +505,7 @@ class TestTowerPlan(TestTowerCommon):
             {
                 "variable_id": self.variable_os.id,
                 "value_char": "Ubuntu",
-                "action_id": self.plan_line_1_action_1.id,
+                "plan_line_action_id": self.plan_line_1_action_1.id,
             }
         )
         # Check that this field is not exist on server
@@ -564,7 +564,7 @@ class TestTowerPlan(TestTowerCommon):
             {
                 "variable_id": self.variable_version.id,
                 "value_char": "16.0",
-                "action_id": self.plan_line_1_action_1.id,
+                "plan_line_action_id": self.plan_line_1_action_1.id,
             }
         )
         # Add condition with variable
