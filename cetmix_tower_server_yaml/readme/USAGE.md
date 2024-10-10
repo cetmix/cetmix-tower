@@ -5,5 +5,5 @@ To export data into YAML format:
 
 To import data from YAML:
 
-- Open the record you would like to export
+- Open the record you would like to import
 - Insert YAML code from in the text field located under the "YAML" tab in the form view
