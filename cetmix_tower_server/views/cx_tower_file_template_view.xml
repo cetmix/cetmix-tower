@@ -26,6 +26,12 @@
                                 required="1"
                             />
                         </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                        </h3>
                     </div>
                     <group>
                         <group>
@@ -65,9 +71,10 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="reference" optional="show" />
                 <field name="file_type" optional="show" />
                 <field name="file_name" optional="show" />
-                <field name="server_dir" optional="show" />
+                <field name="server_dir" optional="hide" />
                 <field
                     name="tag_ids"
                     widget="many2many_tags"
@@ -84,6 +91,7 @@
         <field name="arch" type="xml">
             <search string="Search File Templates">
                 <field name="name" />
+                <field name="reference" />
                 <field name="server_dir" />
                 <field name="tag_ids" />
                 <filter
