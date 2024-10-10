@@ -19,6 +19,7 @@ class TowerVariable(models.Model):
         string="Value Count", compute="_compute_value_ids_count", store=True
     )
     note = fields.Text()
+    readonly = fields.Boolean(copy=False, readonly=True)
 
     _sql_constraints = [("name_uniq", "unique (name)", "Variable names must be unique")]
 

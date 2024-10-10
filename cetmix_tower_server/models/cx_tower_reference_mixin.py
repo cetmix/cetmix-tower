@@ -66,7 +66,15 @@ class CxTowerReferenceMixin(models.AbstractModel):
         # Check if the same reference already exists and add a suffix if yes
         counter = 1
         final_reference = reference
-        while self.search_count([("reference", "=", final_reference)]) > 0:
+        while (
+            self.search_count(
+                [
+                    ("reference", "=", final_reference),
+                    ("id", "!=", self.id),
+                ]
+            )
+            > 0
+        ):
             counter += 1
             final_reference = _(f"{reference}_{counter}")
 

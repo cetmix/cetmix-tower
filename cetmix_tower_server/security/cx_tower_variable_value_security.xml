@@ -10,15 +10,23 @@
             name="groups"
             eval="[(4, ref('cetmix_tower_server.group_user')), (4, ref('cetmix_tower_server.group_manager'))]"
         />
-
     </record>
-
 
     <record id="cx_tower_variable_value_rule_group_root_access" model="ir.rule">
         <field name="name">Tower variable value: root access rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4,ref('cetmix_tower_server.group_root'))]" />
+    </record>
+
+    <record id="cx_tower_variable_value_rule_readonly_xml_records" model="ir.rule">
+        <field name="name">Tower variable value: readonly</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">[('readonly', '=', False)]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
     </record>
 
 </odoo>

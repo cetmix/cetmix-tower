@@ -55,6 +55,7 @@ class CxTowerPlan(models.Model):
     custom_exit_code = fields.Integer(
         help="Will be used instead of the command exit code"
     )
+    readonly = fields.Boolean(copy=False, readonly=True)
 
     access_level_warn_msg = fields.Text(
         compute="_compute_command_access_level",

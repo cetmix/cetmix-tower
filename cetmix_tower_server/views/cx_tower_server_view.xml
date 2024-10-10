@@ -233,9 +233,10 @@
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
-                        <page name="configuration" string="Configuration">
+                        <page name="variables" string="Variables">
                             <field name="variable_value_ids" order="variable_reference">
-                                <tree editable="bottom">
+                                <tree editable="bottom" decoration-muted="readonly">
+                                    <field name="readonly" invisible="1" />
                                     <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
                                     <field name="value_char" />

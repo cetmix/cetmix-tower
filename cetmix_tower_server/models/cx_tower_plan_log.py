@@ -43,6 +43,7 @@ class CxTowerPlanLog(models.Model):
     plan_line_executed_id = fields.Many2one(
         comodel_name="cx.tower.plan.line",
         help="Flight Plan line that is being currently executed",
+        ondelete="restrict",
     )
     command_log_ids = fields.One2many(
         comodel_name="cx.tower.command.log", inverse_name="plan_log_id", auto_join=True

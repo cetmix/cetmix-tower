@@ -50,7 +50,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         help="Run commands using 'sudo'",
     )
     code = fields.Text(compute="_compute_code", readonly=False, store=True)
-    any_server = fields.Boolean()
+    any_server = fields.Boolean(default=lambda self: self._default_any_server())
     rendered_code = fields.Text(
         compute="_compute_rendered_code",
     )
@@ -120,6 +120,14 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             if record.tag_ids:
                 domain.append(("tag_ids", "in", record.tag_ids.ids))
             record.command_domain = domain
+
+    def _default_any_server(self):
+        any_server = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("cetmix_tower_server.any_server")
+        )
+        return any_server in ("1", "True", "true")
 
     def action_execute_command(self):
         """

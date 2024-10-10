@@ -15,14 +15,20 @@ class CxTowerPlanLine(models.Model):
     sequence = fields.Integer(default=10)
     name = fields.Char(related="command_id.name", readonly=True)
     plan_id = fields.Many2one(
-        string="Flight Plan", comodel_name="cx.tower.plan", auto_join=True
+        string="Flight Plan",
+        comodel_name="cx.tower.plan",
+        auto_join=True,
+        ondelete="cascade",
     )
-    command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
+    command_id = fields.Many2one(
+        comodel_name="cx.tower.command",
+        required=True,
+        ondelete="restrict",
+    )
     path = fields.Char(
         help="Location where command will be executed. Overrides command default path. "
         "You can use {{ variables }} in path",
     )
-
     use_sudo = fields.Boolean(
         help="Will use sudo based on server settings."
         "If no sudo is configured will run without sudo"

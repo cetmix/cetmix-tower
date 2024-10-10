@@ -43,6 +43,7 @@ class CxTowerFile(models.Model):
         "cx.tower.file.template",
         inverse="_inverse_template_id",
         index=True,
+        ondelete="restrict",
     )
     server_dir = fields.Char(
         string="Directory on server",
@@ -103,7 +104,11 @@ class CxTowerFile(models.Model):
         "Default value if no error happened is 'ok'.\n"
         "Otherwise there will be a server error message logged."
     )
-    server_id = fields.Many2one(comodel_name="cx.tower.server", required=True)
+    server_id = fields.Many2one(
+        comodel_name="cx.tower.server",
+        required=True,
+        ondelete="cascade",
+    )
     code_on_server = fields.Text(
         readonly=True,
         help="Latest version of file content on server",
