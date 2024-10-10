@@ -122,3 +122,24 @@ class TestTowerYamlMixin(TransactionCase):
                 ),
                 "Exception message doesn't match",
             )
+
+        # -- Test 3 --
+        # Submit wrong value for access level
+        source_values.update(
+            {
+                "access_level": "doge",
+                "cetmix_tower_yaml_version": self.YamlMixin.CETMIX_TOWER_YAML_VERSION,
+            }
+        )
+        with self.assertRaises(ValidationError) as e:
+            result_values = self.YamlMixin._post_process_yaml_dict_values(
+                source_values.copy()
+            )
+            self.assertEqual(
+                str(e),
+                _(
+                    "Wrong value for 'access_level' key: %(acv)s",
+                    acv="doge",
+                ),
+                "Exception message doesn't match",
+            )

@@ -145,9 +145,17 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # Parse access level
         if "access_level" in values:
-            values.update(
-                {"access_level": self.TO_TOWER_ACCESS_LEVEL[values["access_level"]]}
-            )
+            values_access_level = values["access_level"]
+            access_level = self.TO_TOWER_ACCESS_LEVEL.get(values_access_level)
+            if access_level:
+                values.update({"access_level": access_level})
+            else:
+                raise ValidationError(
+                    _(
+                        "Wrong value for 'access_level' key: %(acv)s",
+                        acv=values_access_level,
+                    )
+                )
 
         # Leave supported keys only
         supported_keys = self._get_fields_for_yaml()
