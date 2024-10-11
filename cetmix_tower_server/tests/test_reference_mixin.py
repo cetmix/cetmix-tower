@@ -72,6 +72,11 @@ class TestTowerReference(TestTowerCommon):
         yet_another_template_copy.write({"reference": False})
         self.assertEqual(yet_another_template_copy.reference, "chad")
 
+        # -- 9 --
+        # Update record with the same reference name and ensure it remains the same
+        yet_another_template_copy.write({"reference": "chad"})
+        self.assertEqual(yet_another_template_copy.reference, "chad")
+
     def test_search_by_reference(self):
         """Search record by its reference"""
 
