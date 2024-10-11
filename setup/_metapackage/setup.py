@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo14-addon-cetmix_tower_server',
         'odoo14-addon-cetmix_tower_server_queue',
+        'odoo14-addon-cetmix_tower_server_yaml',
     ],
     classifiers=[
         'Programming Language :: Python',
