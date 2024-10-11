@@ -66,9 +66,21 @@ class CxTowerReferenceMixin(models.AbstractModel):
         # Check if the same reference already exists and add a suffix if yes
         counter = 1
         final_reference = reference
-        while self.search_count([("reference", "=", final_reference)]) > 0:
+
+        # If exclude same records from search results
+        if self:
+            domain = [("id", "not in", self.ids)]
+        else:
+            domain = []
+
+        final_domain = expression.AND([domain, [("reference", "=", final_reference)]])
+
+        while self.search_count(final_domain) > 0:
             counter += 1
             final_reference = _(f"{reference}_{counter}")
+            final_domain = expression.AND(
+                [domain, [("reference", "=", final_reference)]]
+            )
 
         return final_reference
 
