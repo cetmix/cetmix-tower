@@ -1,0 +1,1 @@
+Being an Odoo module Cetmix Tower benefits from Odoo flexibility and extendability. However default Odoo data import/export format using `csv` and `xlsx` is not very convenient for Cetmix Tower entities such as commands and flight plans. There are more suitable formats for such data such as `YAML`. 
