@@ -1,8 +1,11 @@
 from unittest.mock import patch
 
+from psycopg2 import IntegrityError
+
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import Form
+from odoo.tools.misc import mute_logger
 
 from .common import TestTowerCommon
 
@@ -659,3 +662,67 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             server_result.get("server_template"), server_template_value.value_char
         )
+
+    def test_single_assignment(self):
+        """Test that a variable can only be assigned to one model at a time."""
+        # Create a variable value assigned to the server
+        variable_value = self.env["cx.tower.variable.value"].create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Branch = Main",
+                "server_id": self.server_test_1.id,
+            }
+        )
+
+        # Try to assign the same variable value to
+        # server template and expect a ValidationError
+        with self.assertRaises(ValidationError):
+            variable_value.write({"server_template_id": self.server_template_sample.id})
+
+        # Try to assign the same variable value to
+        # plan line action and expect a ValidationError
+        with self.assertRaises(ValidationError):
+            variable_value.write({"plan_line_action_id": self.plan_line_1_action_1.id})
+
+    def test_unique_assignment(self):
+        """Test that the same variable value cannot be
+        assigned multiple times to the same record.
+        """
+
+        # Create a variable
+        variable = self.env["cx.tower.variable"].create(
+            {"name": "Environment Type", "note": "The environment type for the server."}
+        )
+
+        # Create a server
+        server = self.env["cx.tower.server"].create(
+            {
+                "name": "Test Server",
+                "ip_v4_address": "127.0.0.1",
+                "ssh_username": "testuser",
+                "ssh_password": "testpassword",
+                "ssh_auth_mode": "p",
+            }
+        )
+
+        # Create a variable value for the server
+        self.env["cx.tower.variable.value"].create(
+            {
+                "variable_id": variable.id,
+                "value_char": "Production",
+                "server_id": server.id,
+            }
+        )
+
+        # Try to create a second variable value with the same variable and server
+        with mute_logger("odoo.sql_db"), self.assertRaises(
+            IntegrityError,
+            msg="A variable value cannot be assigned multiple times to the same server",
+        ):
+            self.env["cx.tower.variable.value"].create(
+                {
+                    "variable_id": variable.id,
+                    "value_char": "Production",
+                    "server_id": server.id,
+                }
+            )
