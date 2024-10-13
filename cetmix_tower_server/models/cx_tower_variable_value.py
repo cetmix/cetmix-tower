@@ -11,7 +11,11 @@ class TowerVariableValue(models.Model):
     _rec_name = "variable_reference"
     _order = "variable_reference"
 
-    variable_id = fields.Many2one(string="Variable", comodel_name="cx.tower.variable")
+    variable_id = fields.Many2one(
+        string="Variable",
+        comodel_name="cx.tower.variable",
+        ondelete="restrict",
+    )
     variable_reference = fields.Char(
         related="variable_id.reference", store=True, index=True
     )
@@ -22,7 +26,7 @@ class TowerVariableValue(models.Model):
         store=True,
     )
 
-    value_char = fields.Char(string="Value", required=True)
+    value_char = fields.Char(string="Value", required=False)
     note = fields.Text(related="variable_id.note", readonly=True)
     active = fields.Boolean(default=True)
 
@@ -40,6 +44,7 @@ class TowerVariableValue(models.Model):
     server_template_id = fields.Many2one(
         comodel_name="cx.tower.server.template", index=True, ondelete="cascade"
     )
+    readonly = fields.Boolean(copy=False, readonly=True)
 
     _sql_constraints = [
         (

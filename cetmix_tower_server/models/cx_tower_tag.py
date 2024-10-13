@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerTag(models.Model):
@@ -16,3 +17,11 @@ class CxTowerTag(models.Model):
         string="Servers",
     )
     color = fields.Integer(help="For better visualization in views")
+
+    def unlink(self):
+        for record in self:
+            if record.server_ids:
+                raise ValidationError(
+                    f"Tag {record.name} is used by {record.server_ids}."
+                )
+        return super().unlink()

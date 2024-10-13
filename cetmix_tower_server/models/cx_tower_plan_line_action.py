@@ -11,7 +11,11 @@ class CxTowerPlanLineAction(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(compute="_compute_name")
     sequence = fields.Integer(default=10)
-    line_id = fields.Many2one(comodel_name="cx.tower.plan.line", auto_join=True)
+    line_id = fields.Many2one(
+        comodel_name="cx.tower.plan.line",
+        auto_join=True,
+        ondelete="cascade",
+    )
     condition = fields.Selection(
         selection=[
             ("==", "=="),

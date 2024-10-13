@@ -136,7 +136,8 @@
         <field name="name">cx.tower.command.view.tree</field>
         <field name="model">cx.tower.command</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-muted="readonly">
+                <field name="readonly" invisible="1" />
                 <field name="name" />
                 <field name="reference" optional="hide" />
                 <field name="action" />
