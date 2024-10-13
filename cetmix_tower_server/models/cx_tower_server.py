@@ -809,7 +809,7 @@ class CxTowerServer(models.Model):
             dict(): command execution result if `log_record` is defined else None
         """
         response = None
-        need_check_server_status = False
+        need_check_server_status = True
         if command.action == "ssh_command":
             response = self._command_runner_ssh(
                 log_record,
@@ -818,7 +818,6 @@ class CxTowerServer(models.Model):
                 ssh_connection,
                 **kwargs,
             )
-            need_check_server_status = True
         elif command.action == "file_using_template":
             response = self._command_runner_file_using_template(
                 log_record,
@@ -826,22 +825,26 @@ class CxTowerServer(models.Model):
                 rendered_command_path,
                 **kwargs,
             )
-            need_check_server_status = True
         elif command.action == "python_code":
             response = self._command_runner_python_code(
                 log_record,
                 rendered_command_code,
                 **kwargs,
             )
-            need_check_server_status = True
+        else:
+            need_check_server_status = False
 
-        if need_check_server_status:
-            if command.server_status and (
+        if (
+            need_check_server_status
+            and command.server_status
+            and (
                 (log_record and log_record.command_status == 0)
                 or (response and response["status"] == 0)
-            ):
-                self.write({"status": command.server_status})
+            )
+        ):
+            self.write({"status": command.server_status})
 
+        if need_check_server_status:
             return response
 
         error_message = _(
