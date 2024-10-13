@@ -273,3 +273,30 @@ class CxTowerPlan(models.Model):
         )
         action["domain"] = [("plan_id", "=", self.id)]
         return action
+
+    def copy(self, default=None):
+        # Call the super method to handle basic duplication
+        default = dict(default or {})
+        new_plan = super().copy(default=default)
+
+        # Duplicate the lines from the original plan
+        for line in self.line_ids:
+            new_line = line.copy(
+                {
+                    # assign the new plan to the duplicated line
+                    "plan_id": new_plan.id,
+                }
+            )
+
+            # Duplicate actions linked to the line
+            for action in line.action_ids:
+                new_action = action.copy(
+                    # link new actions to the new line
+                    {"line_id": new_line.id}
+                )
+
+                # Duplicate variable values linked to the action
+                for variable_value in action.variable_value_ids:
+                    variable_value.copy({"plan_line_action_id": new_action.id})
+
+        return new_plan
