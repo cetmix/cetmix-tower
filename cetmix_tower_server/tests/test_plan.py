@@ -601,3 +601,137 @@ class TestTowerPlan(TestTowerCommon):
             new_plan_log_records.command_log_ids[1].is_skipped,
             msg="The second plan line should not be skipped",
         )
+
+    def test_flight_plan_copy(self):
+        """Test duplicating a Flight Plan with lines, actions, and variable values"""
+
+        # Create a Flight Plan
+        plan = self.Plan.create(
+            {
+                "name": "Test Flight Plan",
+                "note": "Test Note",
+            }
+        )
+
+        # Create a command for the plan line
+        command = self.Command.create(
+            {
+                "name": "Test Command",
+                # Command to get Linux kernel version
+                "code": "uname -r",
+            }
+        )
+
+        # Create a Flight Plan Line
+        plan_line = self.plan_line.create(
+            {
+                "plan_id": plan.id,
+                "command_id": command.id,
+                "path": "/test/path",
+                # Condition based on Linux version
+                "condition": '{{ linux_version }} >= "5.0"',
+            }
+        )
+
+        # Create a variable for the action
+        variable = self.Variable.create({"name": "linux_version"})
+
+        # Create an Action for the Plan Line
+        action = self.plan_line_action.create(
+            {
+                "line_id": plan_line.id,
+                "action": "n",  # next action
+                "condition": "==",
+                "value_char": "0",  # condition for success
+            }
+        )
+
+        # Create a Variable Value for the Action
+        self.env["cx.tower.variable.value"].create(
+            {
+                "variable_id": variable.id,
+                "value_char": "5.0",
+                "plan_line_action_id": action.id,
+            }
+        )
+
+        # Duplicate the Flight Plan
+        copied_plan = plan.copy()
+
+        # Ensure the new Flight Plan was created with a new ID
+        self.assertNotEqual(
+            copied_plan.id,
+            plan.id,
+            "Copied plan should have a different ID from the original",
+        )
+
+        # Check that the copied plan has the same number of lines
+        self.assertEqual(
+            len(copied_plan.line_ids),
+            len(plan.line_ids),
+            "Copied plan should have the same number of lines as the original",
+        )
+
+        # Check that the copied plan's lines have the same actions as the original
+        original_line = plan.line_ids
+        copied_line = copied_plan.line_ids
+
+        # Ensure the command, condition, and custom path are copied correctly
+        self.assertEqual(
+            copied_line.command_id.id,
+            original_line.command_id.id,
+            "Command should be the same in copied line",
+        )
+        self.assertEqual(
+            copied_line.path,
+            original_line.path,
+            "Custom path should be the same in copied line",
+        )
+        self.assertEqual(
+            copied_line.condition,
+            original_line.condition,
+            "Condition should be the same in copied line",
+        )
+
+        # Ensure actions were copied correctly
+        self.assertEqual(
+            len(copied_line.action_ids),
+            len(original_line.action_ids),
+            "Number of actions should be the same in the copied line",
+        )
+        self.assertEqual(
+            copied_line.action_ids.action,
+            original_line.action_ids.action,
+            "Action should be the same in the copied line",
+        )
+        self.assertEqual(
+            copied_line.action_ids.condition,
+            original_line.action_ids.condition,
+            "Action condition should be the same in the copied line",
+        )
+        self.assertEqual(
+            copied_line.action_ids.value_char,
+            original_line.action_ids.value_char,
+            "Action value should be the same in the copied line",
+        )
+
+        # Check that variable values were copied correctly
+        original_action = original_line.action_ids
+        copied_action = copied_line.action_ids
+
+        self.assertEqual(
+            len(copied_action.variable_value_ids),
+            len(original_action.variable_value_ids),
+            "Number of variable values should be the same in the copied action",
+        )
+
+        self.assertEqual(
+            copied_action.variable_value_ids.variable_id.id,
+            original_action.variable_value_ids.variable_id.id,
+            "Variable should be the same in the copied action",
+        )
+        self.assertEqual(
+            copied_action.variable_value_ids.value_char,
+            original_action.variable_value_ids.value_char,
+            "Variable value should be the same in the copied action",
+        )
