@@ -1,0 +1,201 @@
+module: cetmix_tower_data_odoo
+file_templates:
+  # noupdate
+  odoo_config:
+    name: "Odoo config"
+    file_name: "odoo.conf"
+    server_dir: "{{ odoo_path_config }}"
+    code: |
+      [options]
+      # odoo/odoo
+      addons_path = {{ odoo_conf_addons_path }}
+      admin_passwd = {{ odoo_conf_admin_passwd }}
+      csv_internal_sep = {{ odoo_conf_csv_internal_sep }}
+      data_dir = {{ odoo_conf_data_dir }}
+      db_host = {{ odoo_conf_db_host }}
+      # db_maxconn = {{ odoo_conf_db_maxconn }}
+      # db_maxconn_gevent = {{ odoo_conf_db_maxconn_gevent }}
+      db_name = {{ odoo_conf_db_name }}
+      db_password = {{ odoo_conf_db_password }}
+      db_port = {{ odoo_conf_db_port }}
+      db_sslmode = {{ odoo_conf_db_sslmode }}
+      db_template = {{ odoo_conf_db_template }}
+      db_user = {{ odoo_conf_db_user }}
+      dbfilter = {{ odoo_conf_dbfilter }}
+      # demo = {{ odoo_conf_demo }}
+      # email_from = {{ odoo_conf_email_from }}
+      # from_filter = {{ odoo_conf_from_filter }}
+      # geoip_city_db = {{ odoo_conf_geoip_city_db }}
+      # geoip_country_db = {{ odoo_conf_geoip_country_db }}
+      # gevent_port = {{ odoo_conf_gevent_port }}
+      http_enable = {{ odoo_conf_http_enable }}
+      http_interface = {{ odoo_conf_http_interface }}
+      http_port = {{ odoo_conf_http_port }}
+      # import_partial = {{ odoo_conf_import_partial }}
+      # limit_memory_hard = {{ odoo_conf_limit_memory_hard }}
+      # limit_memory_soft = {{ odoo_conf_limit_memory_soft }}
+      # limit_request = {{ odoo_conf_limit_request }}
+      # limit_time_cpu = {{ odoo_conf_limit_time_cpu }}
+      # limit_time_real = {{ odoo_conf_limit_time_real }}
+      # limit_time_real_cron = {{ odoo_conf_limit_time_real_cron }}
+      list_db = {{ odoo_conf_list_db }}
+      # log_db = {{ odoo_conf_log_db }}
+      # log_db_level = {{ odoo_conf_log_db_level }}
+      # log_handler = {{ odoo_conf_log_handler }}
+      # log_level = {{ odoo_conf_log_level }}
+      # logfile = {{ odoo_conf_logfile }}
+      # max_cron_threads = {{ odoo_conf_max_cron_threads }}
+      # osv_memory_count_limit = {{ odoo_conf_osv_memory_count_limit }}
+      # pg_path = {{ odoo_conf_pg_path }}
+      # pidfile = {{ odoo_conf_pidfile }}
+      proxy_mode = {{ odoo_conf_proxy_mode }}
+      # reportgz = {{ odoo_conf_reportgz }}
+      # screencasts = {{ odoo_conf_screencasts }}
+      # screenshots = {{ odoo_conf_screenshots }}
+      server_wide_modules = {{ odoo_conf_server_wide_modules }}
+      # smtp_password = {{ odoo_conf_smtp_password }}
+      # smtp_port = {{ odoo_conf_smtp_port }}
+      # smtp_server = {{ odoo_conf_smtp_server }}
+      # smtp_ssl = {{ odoo_conf_smtp_ssl }}
+      # smtp_ssl_certificate_filename = {{ odoo_conf_smtp_ssl_certificate_filename }}
+      # smtp_ssl_private_key_filename = {{ odoo_conf_smtp_ssl_private_key_filename }}
+      # smtp_user = {{ odoo_conf_smtp_user }}
+      # syslog = {{ odoo_conf_syslog }}
+      # test_enable = {{ odoo_conf_test_enable }}
+      # test_file = {{ odoo_conf_test_file }}
+      # test_tags = {{ odoo_conf_test_tags }}
+      # transient_age_limit = {{ odoo_conf_transient_age_limit }}
+      # translate_modules = {{ odoo_conf_translate_modules }}
+      # unaccent = {{ odoo_conf_unaccent }}
+      # upgrade_path = {{ odoo_conf_upgrade_path }}
+      # websocket_keep_alive_timeout = {{ odoo_conf_websocket_keep_alive_timeout }}
+      # websocket_rate_limit_burst = {{ odoo_conf_websocket_rate_limit_burst }}
+      # websocket_rate_limit_delay = {{ odoo_conf_websocket_rate_limit_delay }}
+      without_demo = {{ odoo_conf_without_demo }}
+      workers = {{ odoo_conf_workers }}
+      # OCA/server-auth/auth_admin_passkey
+      auth_admin_passkey_password: {{ odoo_conf_auth_admin_passkey_password }}
+      # auth_admin_passkey_password_sha512_encrypted: {{ odoo_conf_auth_admin_passkey_password_sha512_encrypted }}
+      # auth_admin_passkey_send_to_user: {{ odoo_conf_auth_admin_passkey_send_to_user }}
+      # auth_admin_passkey_sysadmin_email: {{ odoo_conf_auth_admin_passkey_sysadmin_email }}
+      # auth_admin_passkey_sysadmin_lang: {{ odoo_conf_auth_admin_passkey_sysadmin_lang }}
+
+  # noupdate
+  odoo_dockerfile:
+    name: "Dockerfile based on Odoo official image"
+    file_name: "Dockerfile"
+    server_dir: "{{ odoo_path_dockerfile }}"
+    note: ""
+    code: |
+      FROM odoo:{{ odoo_version }}
+      USER root
+
+      RUN apt update &amp;&amp; apt install -y \
+      {% if odoo_install_apt %}
+          {{ odoo_install_apt }} \
+      {% endif %}
+          git
+
+      RUN python3 -m pip install \
+      {% if odoo_install_pip %}
+          {{ odoo_install_pip }} \
+      {% endif %}
+          git+https://github.com/OCA/openupgradelib.git
+
+      USER odoo
+      ENTRYPOINT ["/entrypoint.sh"]
+      CMD ["odoo"]
+
+  # odoo_dockerfile:
+  #   name: "Dockerfile with git aggregator"
+  #   file_name: "Dockerfile"
+  #   server_dir: "{{ odoo_path_dockerfile }}"
+  #   note: |
+  #     Git aggregator is used for cloning complex repo configurations.
+  #     Ensure git-aggregator.yml file is present.
+  #   code: |
+  #     FROM odoo:{{ odoo_version }}
+
+  #     ARG ODOO_BRANCH={{ odoo_version }}
+  #     ARG GITHUB_TOKEN=&lt;token&gt;
+  #     ARG ODOO_ADDONS_TMP_LOCATION=/tmp/odoo-addons
+  #     ARG ODOO_ADDONS_LOCATION=/opt/odoo/extra-addons
+
+  #     USER root
+
+  #     # Install git
+  #     RUN DEBIAN_FRONTEND=noninteractive apt update &amp;&amp; \
+  #         apt-get install -qy --no-install-recommends \
+  #             git build-essential \
+  #             python3-pip python3-dev \
+  #             libffi-dev libssl-dev libsasl2-dev libxslt1-dev libldap2-dev \
+  #             libcups2 pkg-config libxmlsec1 libxmlsec1-dev
+
+  #     # Configure git
+  #     RUN git config --global user.email {{ git_config_user_email }} &amp;&amp; \
+  #         git config --global user.name {{ git_config_user_name }}
+
+  #     WORKDIR ${ODOO_ADDONS_TMP_LOCATION}
+
+  #     # Install git-aggregator and tools for requirements generation
+  #     RUN pip3 install --upgrade pip &amp;&amp; \
+  #         pip install manifestoo setuptools-odoo git-aggregator \
+  #             --ignore-installed PyYAML
+
+  #     # Copy git-aggregator.yml
+  #     COPY ./git-aggregator.yml ${ODOO_ADDONS_TMP_LOCATION}
+
+  #     # Run git-affregator
+  #     RUN gitaggregate -c  git-aggregator.yml --expand-env
+
+  #     # Make default
+  #     RUN find . -type d -maxdepth 2 -exec setuptools-odoo-make-default \
+  #         --addons-dir={} --odoo-version-override=${ODOO_BRANCH} \;
+
+  #     # Build requirements
+  #     RUN find . -type d -maxdepth 2 -exec setuptools-odoo-get-requirements \
+  #         --addons-dir={} --output={}/requirements.txt \;
+
+  #     # Merge all requirements into a single file
+  #     RUN find ./ -mindepth 0 -name requirements.txt \
+  #         -exec  cat {} &gt; all_requirements.txt +
+
+  #     # Move all modules to the final destination
+  #     RUN mkdir -p ${ODOO_ADDONS_LOCATION} &amp;&amp; \
+  #         find . -mindepth 2 -maxdepth 2 -type d \
+  #         -not \( -name '.*' -o -name 'setup' \) \
+  #         -exec cp -r {} ${ODOO_ADDONS_LOCATION} \; \
+  #         &amp;&amp; ls -lah ${ODOO_ADDONS_LOCATION} \
+  #         &amp;&amp; chown -R odoo ${ODOO_ADDONS_LOCATION}
+
+
+  #     # Install requirements
+  #     RUN find ./ -mindepth 0 -name requirements.txt \
+  #         -exec  cat {} &gt; all_requirements.txt + \
+  #         &amp;&amp; pip3 install -r all_requirements.txt
+
+  #     # Remove tmp location
+  #     RUN rm -rf ${ODOO_ADDONS_TMP_LOCATION}
+
+  #     # Let's go!
+  #     USER odoo
+
+  # odoo_git_aggregator:
+  #   name: "Git Aggregator Config"
+  #   file_name: "git-aggregator.yml"
+  #   server_dir: "{{ odoo_path_dockerfile }}"
+  #   note: |
+  #     This sample file template is used to configure the git-aggregator tool.
+  #     For more information about using git-aggregator, please see the
+  #     the developer's github page at https://github.com/acsone/git-aggregator.
+  #     IMPORTANT: ensure that Git Aggregator directories
+  #     are not overwritten by the direct Git cloned ones.
+  #   code: |
+  #     ./project:
+  #         remotes:
+  #             remote_1: https://github.com/OCA/project.git
+  #         merges:
+  #             -
+  #                 remote: remote_1
+  #                 ref: "{{ odoo_version }}"
+  #         target: remote_1 {{ odoo_version }}

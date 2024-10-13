@@ -1,0 +1,91 @@
+module: cetmix_tower_data
+commands:
+
+  tower_update_debian_packages:
+    name: Tower - Update Debian packages
+    code: apt update
+
+  tower_upgrade_debian_packages:
+    name: Tower - Upgrade Debian packages
+    code: apt upgrade
+
+  tower_install_curl:
+    name: Tower - Install curl
+    code: apt install -y curl
+
+  tower_install_docker:
+    name: Tower - Install Docker for production
+    note: https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+    code: |
+      sudo apt-get update \
+      &amp;&amp; sudo apt-get install ca-certificates curl \
+      &amp;&amp; sudo install -m 0755 -d /etc/apt/keyrings \
+      &amp;&amp; sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+        -o /etc/apt/keyrings/docker.asc \
+      &amp;&amp; sudo chmod a+r /etc/apt/keyrings/docker.asc \
+      &amp;&amp; echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+        https://download.docker.com/linux/ubuntu \
+        $(. /etc/os-release &amp;&amp; echo "$VERSION_CODENAME") stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null \
+      &amp;&amp; sudo apt-get update \
+      &amp;&amp; sudo apt-get install docker-ce docker-ce-cli \
+        containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # tower_install_docker_test:
+  #   name: Install Docker for testing
+  #   code: |
+  #     curl -fsSL https://get.docker.com -o get-docker.sh &amp;&amp; \
+  #     sh get-docker.sh
+
+  tower_add_user_to_docker_group:
+    name: Tower - Add user to docker group
+    note: |
+      Adds current user to "docker" group
+      to allow running Docker commands without 'sudo'.
+    code: usermod -a -G docker $USER
+
+  # # In use by flight plan "Rebuild Odoo container hard"
+
+  # docker_prune:
+  #   name: Docker prune
+  #   code: docker system prune -af
+
+  # # Not in use by any plan
+
+  # list_dir:
+  #   name: List files in directory
+  #   code: cd {{ path }} &amp;&amp; ls -l
+
+  # docker_show_logs:
+  #   name: Docker show logs
+  #   code: |
+  #       docker logs --since={{ docker_logs_time or '5m' }} {{ odoo_container_name }}
+
+  # install_docker_compose:
+  #   name: Install Docker Compose
+  #   code: apt install -y docker-compose
+
+  # install_git:
+  #   name: Install Git
+  #   code: apt install -y git
+
+  # list_docker_containers:
+  #   name: List docker containers
+  #   code: docker ps --all
+
+  # list_local_resources:
+  #   name: List local resources
+  #   code: cd / &amp;&amp; pwd &amp;&amp; ls -lha
+
+  # list_root_backup_folder_contents:
+  #   name: List root backup folder contents
+  #   code: ls -lah {{ backup_location }}
+
+  # reload_cron:
+  #   name: Reload cron
+  #   code: /etc/init.d/cron reload
+
+  # show_free_disk_space:
+  #   name: Show free disk space
+  #   code: df -BG

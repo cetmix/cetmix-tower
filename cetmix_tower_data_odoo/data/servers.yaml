@@ -1,0 +1,25 @@
+module: cetmix_tower_data_odoo
+servers:
+  template-odoo-client:
+    tags:
+      - tag_cetmix_tower_data_odoo
+    variables:
+      odoo_config: "odoo17"
+      odoo_instance: "client"
+      odoo_website_domain: "www.client.com"
+
+  template-odoo-config:
+    tags:
+      - tag_cetmix_tower_data_odoo_config
+    variables:
+      odoo_conf_addons_path: "/opt/odoo/auto/addons"
+      odoo_conf_admin_passwd: "SECRET"
+      odoo_conf_db_host: "{{ postgres_instance }}"
+      odoo_conf_db_password: "{{ postgres_password }}"
+      odoo_conf_db_port: "{{ postgres_port }}"
+      odoo_conf_db_user: "{{ postgres_user }}"
+      odoo_conf_dbfilter: "^%d$"
+      odoo_conf_proxy_mode: "True"
+      odoo_config: "odoo17"
+      odoo_instance: "odoo17"
+      odoo_version: "17.0"
