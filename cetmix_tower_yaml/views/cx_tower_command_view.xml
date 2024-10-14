@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_command_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.yaml.view.form</field>
+        <field name="model">cx.tower.command</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_command_view_form" />
+        <field name="arch" type="xml">
+            <page name="code" position="after">
+                <page name="yaml" string="YAML">
+                    <field name="yaml_code" widget="ace" />
+                    <field name="yaml_file" filename="yaml_file_name" />
+                    <field name="yaml_file_name" invisible="1" />
+                </page>
+            </page>
+        </field>
+    </record>
+
+</odoo>
