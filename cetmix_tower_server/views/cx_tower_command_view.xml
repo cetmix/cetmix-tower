@@ -69,6 +69,7 @@
                                 options="{'color_field': 'color'}"
                             />
                             <field name="access_level" />
+                            <field name="server_status" widget="server_status" />
                         </group>
                     </group>
                     <notebook>

@@ -808,8 +808,10 @@ class CxTowerServer(models.Model):
         Returns:
             dict(): command execution result if `log_record` is defined else None
         """
+        response = None
+        need_check_server_status = True
         if command.action == "ssh_command":
-            return self._command_runner_ssh(
+            response = self._command_runner_ssh(
                 log_record,
                 rendered_command_code,
                 rendered_command_path,
@@ -817,18 +819,33 @@ class CxTowerServer(models.Model):
                 **kwargs,
             )
         elif command.action == "file_using_template":
-            return self._command_runner_file_using_template(
+            response = self._command_runner_file_using_template(
                 log_record,
                 command.file_template_id,
                 rendered_command_path,
                 **kwargs,
             )
         elif command.action == "python_code":
-            return self._command_runner_python_code(
+            response = self._command_runner_python_code(
                 log_record,
                 rendered_command_code,
                 **kwargs,
             )
+        else:
+            need_check_server_status = False
+
+        if (
+            need_check_server_status
+            and command.server_status
+            and (
+                (log_record and log_record.command_status == 0)
+                or (response and response["status"] == 0)
+            )
+        ):
+            self.write({"status": command.server_status})
+
+        if need_check_server_status:
+            return response
 
         error_message = _(
             "No runner found for command action '%(cmd_action)s'",

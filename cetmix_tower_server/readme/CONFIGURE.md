@@ -321,6 +321,13 @@ To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` an
 - **Code**: Code to execute. Can be an SSH command or Python code based on selected action. This field supports [Variables](#configure-variables).
 **Important!** Variables used in command are rendered in [different modes](#variable-rendering-modes) based on the command action.
 - **File Template**: File template that will be used to create or update file. Check [File Templates](#file-templates) for more details.
+- **Server Status**: Server status to be set after command execution. Possible options:
+  - `Undefined`. Default status.
+  - `Stopped`. Server is stopped.
+  - `Starting`. Server is starting.
+  - `Running`. Server is running.
+  - `Stopping`. Server is stopping.
+  - `Restarting`. Server is restarting.
 
 To return result from Python assign exit code and message to the  COMMAND_RESULT variable of type `dict` like this:
 
