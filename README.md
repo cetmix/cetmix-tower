@@ -22,7 +22,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[cetmix_tower_server](cetmix_tower_server/) | 14.0.0.3.21 |  | Flexible Server Management directly from Odoo
+[cetmix_tower_server](cetmix_tower_server/) | 14.0.0.3.22 |  | Flexible Server Management directly from Odoo
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 14.0.1.0.3 |  | OCA Queue implementation for Cetmix Tower Server
 [cetmix_tower_server_yaml](cetmix_tower_server_yaml/) | 14.0.1.0.0 |  | Cetmix Tower YAML export/import
 
