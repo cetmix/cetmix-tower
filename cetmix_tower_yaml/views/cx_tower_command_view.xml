@@ -8,6 +8,9 @@
         <field name="arch" type="xml">
             <page name="code" position="after">
                 <page name="yaml" string="YAML">
+                    <group>
+                        <field name="yaml_explode" widget="boolean_toggle" />
+                    </group>
                     <field name="yaml_code" widget="ace" />
                     <field name="yaml_file" filename="yaml_file_name" />
                     <field name="yaml_file_name" invisible="1" />
