@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
 
@@ -6,18 +6,51 @@
         <field name="name">Tower plan line: user access rule</field>
         <field name="model_id" ref="model_cx_tower_plan_line" />
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
-        <field name="domain_force">[('access_level', '=', '1')]</field>
+        <field name="domain_force">
 
+            [
+            ('access_level', '=', '1'),
+            '|',
+            ('plan_id.server_ids', '=', False),
+            ('plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
 
+            ]
+        </field>
     </record>
 
     <record id="cx_tower_plan_line_rule_group_manager_access" model="ir.rule">
-        <field name="name">Tower plan line: manager access rule</field>
+        <field name="name">Tower plan line: manager Read/Write access rule</field>
         <field name="model_id" ref="model_cx_tower_plan_line" />
-        <field name="domain_force">[('access_level', '&lt;=', '2')]</field>
+        <field name="domain_force">
+            [
+            ('access_level', '&lt;=', '2'),
+            '|',
+            ('plan_id.server_ids', '=', False),
+            ('plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
+            ]
+        </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
 
 
+    <record id="cx_tower_plan_line_rule_group_manager_unlink" model="ir.rule">
+        <field name="name">Tower plan line: manager delete own records</field>
+        <field name="model_id" ref="model_cx_tower_plan_line" />
+        <field name="domain_force">
+            [
+            ('create_uid', '=', user.id),
+            ('access_level', '&lt;=', '2'),
+            '|',
+            ('plan_id.server_ids', '=', False),
+            ('plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
 
