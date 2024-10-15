@@ -266,7 +266,7 @@ class TestTowerCommon(TransactionCase):
             if status != 0:
                 if raise_on_error:
                     raise ValidationError(_("SSH execute command error"))
-                return self._parse_ssh_command_results(-1, [], error, secrets, **kwargs)
+                return self._parse_command_results(-1, [], error, secrets, **kwargs)
 
             command = self._prepare_ssh_command(command, command_path, sudo)
 
@@ -280,7 +280,7 @@ class TestTowerCommon(TransactionCase):
                     response_list += response
                     error_list += error
 
-            return self._parse_ssh_command_results(
+            return self._parse_command_results(
                 status, response, error, secrets, **kwargs
             )
 
