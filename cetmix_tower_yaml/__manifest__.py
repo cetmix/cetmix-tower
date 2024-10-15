@@ -14,5 +14,6 @@
     "external_dependencies": {"python": ["pyyaml"]},
     "data": [
         "views/cx_tower_command_view.xml",
+        "views/cx_tower_file_template_view.xml",
     ],
 }
