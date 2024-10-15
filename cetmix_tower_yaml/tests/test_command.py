@@ -108,9 +108,7 @@ Ensure all fields are rendered properly.""",
             "YAML value doesn't match Cetmix Tower one",
         )
 
-    # TODO: need to fix reference creation for this test to run
-    # https://github.com/cetmix/cetmix-tower/pull/102
-    def no_test_command_from_yaml(self):
+    def test_command_from_yaml(self):
         """Test if YAML is generated properly from a command"""
 
         def test_yaml(command):
