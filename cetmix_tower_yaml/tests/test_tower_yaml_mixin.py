@@ -143,3 +143,56 @@ class TestTowerYamlMixin(TransactionCase):
                 ),
                 "Exception message doesn't match",
             )
+
+    def test_process_m2o_value(self):
+        """Test many2one values processing"""
+
+        # We are using command with file template for that
+        file_template = self.env["cx.tower.file.template"].create(
+            {"name": "Test m2o", "reference": "test_m2o"}
+        )
+        command = self.env["cx.tower.command"].create(
+            {
+                "name": "Command test m2o",
+                "action": "file_using_template",
+                "file_template_id": file_template.id,
+            }
+        )
+
+        # -- 1 --
+        # Record -> Yaml
+        result = command._process_m2o_value(
+            field="file_template_id",
+            value=(command.file_template_id.id, command.file_template_id.name),
+            record_mode=True,
+        )
+        self.assertEqual(
+            result, file_template.reference, "Reference was not resolved correctly"
+        )
+
+        # -- 2 --
+        # Yaml -> Record
+        result = command._process_m2o_value(
+            field="file_template_id", value=file_template.reference, record_mode=False
+        )
+        self.assertEqual(
+            result, file_template.id, "Record ID was not resolved correctly"
+        )
+
+        # -- 3 --
+        # Yaml with non existing reference -> Record
+        result = command._process_m2o_value(
+            field="file_template_id", value="such_much_not_reference", record_mode=False
+        )
+        self.assertEqual(
+            result, self.env["cx.tower.file.template"], "Must be an empty recordset"
+        )
+
+        # -- 4 --
+        # No record -> Yaml
+        result = command._process_m2o_value(
+            field="file_template_id",
+            value=self.env["cx.tower.file.template"],
+            record_mode=True,
+        )
+        self.assertIsNone(result, "Result must be 'None'")
