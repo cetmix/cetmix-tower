@@ -6,6 +6,7 @@ import yaml
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import ormcache
 
 
 class CustomDumper(yaml.Dumper):
@@ -52,10 +53,8 @@ class CxTowerYamlMixin(models.AbstractModel):
         for record in self:
             # We are reading field list for each record
             # because list of fields can differ from record to record
-            yaml_keys = record._get_fields_for_yaml()
-            record_dict = record.read(fields=yaml_keys)[0]
             yaml_code = yaml.dump(
-                record._post_process_record_values(record_dict),
+                record._prepare_record_for_yaml(),
                 Dumper=CustomDumper,
                 default_flow_style=False,
             )
@@ -74,6 +73,17 @@ class CxTowerYamlMixin(models.AbstractModel):
                 record_yaml_dict = yaml.safe_load(record.yaml_code)
                 record_vals = record._post_process_yaml_dict_values(record_yaml_dict)
                 record.update(record_vals)
+
+    def _prepare_record_for_yaml(self):
+        """Reads and processes current record before converting it to YAML
+
+        Returns:
+            dict: values ready for YAML conversion
+        """
+        self.ensure_one()
+        yaml_keys = self._get_fields_for_yaml()
+        record_dict = self.read(fields=yaml_keys)[0]
+        return self._post_process_record_values(record_dict)
 
     def _get_fields_for_yaml(self):
         """Get ist of field to be present in YAML
@@ -110,7 +120,58 @@ class CxTowerYamlMixin(models.AbstractModel):
             values.update(
                 {"access_level": self.TO_YAML_ACCESS_LEVEL[values["access_level"]]}
             )
+        # Post process m2o fields
+        for key, value in values.items():
+            if key.endswith("_id"):
+                processed_value = self._process_m2o_value(key, value, record_mode=True)
+                values.update({key: processed_value})
+
         return values
+
+    def _process_m2o_value(self, field, value, record_mode=False):
+        """Post process many2one value
+
+        Args:
+            field (Char): Field the value belongs to
+            value (Char): Value to process
+            record_mode (Bool): If True process value as a record value
+                                else process value as a YAML value
+
+        Returns:
+            dict() or Char: record dictionary if fetch_record else reference
+        """
+
+        # Get destination model
+        if value:
+            field = self._fields.get(field)
+            if field:
+                comodel_name = field.comodel_name
+
+                # Process value
+                if comodel_name and self._model_supports_yaml(comodel_name):
+                    # Record -> Yaml
+                    if record_mode:
+                        record = self.env[comodel_name].browse(value[0])
+                        return record and record.reference
+
+                    # Yaml -> Record
+                    else:
+                        record = self.env[comodel_name].get_by_reference(value)
+                        return record and record.id
+
+    @ormcache("model_name")
+    def _model_supports_yaml(self, model_name):
+        """Checks if model supports YAML import/export
+
+        Args:
+            model_name (Char): model name
+
+        Returns:
+            Bool: True if YAML is supported
+        """
+        model = self.env[model_name]
+
+        return hasattr(model, "yaml_code")
 
     def _post_process_yaml_dict_values(self, values):
         """Post process dictionary values generated from YAML code
@@ -160,5 +221,11 @@ class CxTowerYamlMixin(models.AbstractModel):
         # Leave supported keys only
         supported_keys = self._get_fields_for_yaml()
         filtered_values = {k: v for k, v in values.items() if k in supported_keys}
+
+        # Post process m2o fields
+        for key, value in filtered_values.items():
+            if key.endswith("_id"):
+                processed_value = self._process_m2o_value(key, value, record_mode=False)
+                filtered_values.update({key: processed_value})
 
         return filtered_values
