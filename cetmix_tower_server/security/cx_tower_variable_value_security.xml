@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="cx_tower_variable_value_rule_group_manager_access" model="ir.rule">
-        <field name="name">Tower variable value: manager access rule</field>
+
+    <record
+        id="cx_tower_variable_value_rule_group_user_and_manager_access"
+        model="ir.rule"
+    >
+        <field name="name">Tower variable value: user and manager access rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">['|', ('is_global', '=', True),
             ('server_id.message_partner_ids', 'in', [user.partner_id.id])]</field>
@@ -11,6 +15,59 @@
             eval="[(4, ref('cetmix_tower_server.group_user')), (4, ref('cetmix_tower_server.group_manager'))]"
         />
 
+    </record>
+
+    <record id="cx_tower_variable_value_action_rule_group_user_access" model="ir.rule">
+        <field
+            name="name"
+        >Tower variable value: user access to variable values in plan line action
+            rule</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">
+            [
+            ('plan_line_action_id.access_level', '=', '1')
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+    </record>
+
+    <record
+        id="cx_tower_variable_value_action_rule_group_manager_access"
+        model="ir.rule"
+    >
+        <field
+            name="name"
+        >Tower variable value: manager access to variable values in plan line
+            action rule</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">
+            [
+            ('plan_line_action_id.access_level', '&lt;=', '2')
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record
+        id="cx_tower_variable_value_action_rule_group_manager_unlink"
+        model="ir.rule"
+    >
+        <field
+            name="name"
+        >Tower variable value: manager delete own variable values in plan line
+            action</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">
+            [
+            ('plan_line_action_id.create_uid', '=', user.id)
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_unlink" eval="1" />
     </record>
 
 
