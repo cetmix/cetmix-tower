@@ -205,7 +205,7 @@ class TestTowerYamlMixin(TransactionCase):
             value=self.env["cx.tower.file.template"],
             record_mode=True,
         )
-        self.assertIsNone(result, "Result must be 'None'")
+        self.assertFalse(result, "Result must be 'False'")
 
     def test_process_m2o_value_explode(self):
         """Test exploded m2m values
@@ -265,7 +265,7 @@ class TestTowerYamlMixin(TransactionCase):
         )
 
         # New record must be created
-        record = file_template = self.env["cx.tower.file.template"].browse(result)
+        record = self.env["cx.tower.file.template"].browse(result)
         self.assertEqual(
             record.name, file_template_values["name"], "New record value doesn't match"
         )
@@ -286,10 +286,40 @@ class TestTowerYamlMixin(TransactionCase):
         )
 
         # -- 4 --
+        # Yaml with no reference at all -> Record
+        values_with_no_references = {
+            "name": "Sorry no reference here",
+            "source": "tower",
+            "file_type": "binary",
+        }
+        result = command._process_m2o_value(
+            field="file_template_id", value=values_with_no_references, record_mode=False
+        )
+
+        # New record must be created
+        record = self.env["cx.tower.file.template"].browse(result)
+
+        self.assertEqual(
+            record.name,
+            values_with_no_references["name"],
+            "New record value doesn't match",
+        )
+        self.assertEqual(
+            record.source,
+            values_with_no_references["source"],
+            "New record value doesn't match",
+        )
+        self.assertEqual(
+            record.file_type,
+            values_with_no_references["file_type"],
+            "New record value doesn't match",
+        )
+
+        # -- 5 --
         # No record -> Yaml
         result = command._process_m2o_value(
             field="file_template_id",
             value=self.env["cx.tower.file.template"],
             record_mode=True,
         )
-        self.assertIsNone(result, "Result must be 'None'")
+        self.assertFalse(result, "Result must be 'False'")

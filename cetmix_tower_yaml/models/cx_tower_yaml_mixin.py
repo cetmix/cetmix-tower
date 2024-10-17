@@ -133,7 +133,9 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # Post process m2o fields
         for key, value in values.items():
-            # IMPORTANT: Odoo naming patterns must be followed for related fields
+            # IMPORTANT: Odoo naming patterns must be followed for related fields.
+            # This is why we are checking for the field name ending here.
+            # Further checks for the field type are done in _process_m2o_value()
             if key.endswith("_id"):
                 processed_value = self.with_context(
                     explode_related_record=explode_related_record
@@ -191,18 +193,14 @@ class CxTowerYamlMixin(models.AbstractModel):
         supported_keys = self._get_fields_for_yaml()
         filtered_values = {k: v for k, v in values.items() if k in supported_keys}
 
-        # Check if we need to return a record dict or just a reference
-        # Use context value first, revert to the record setting if not defined
-        explode_related_record = self._context.get("explode_related_record")
-        if explode_related_record is None:
-            explode_related_record = self.yaml_explode
-
         # Post process m2o fields
         for key, value in filtered_values.items():
-            # IMPORTANT: Odoo naming patterns must be followed for related fields
+            # IMPORTANT: Odoo naming patterns must be followed for related fields.
+            # This is why we are checking for the field name ending here.
+            # Further checks for the field type are done in _process_m2o_value()
             if key.endswith("_id"):
                 processed_value = self.with_context(
-                    explode_related_record=explode_related_record
+                    explode_related_record=True
                 )._process_m2o_value(key, value, record_mode=False)
                 filtered_values.update({key: processed_value})
 
@@ -240,18 +238,23 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # Return null if value is not set
         if not value:
-            return
+            return False
 
         # Get destination model
         field = self._fields.get(field)
 
         # Return null if field cannot be resolved
         if not field:
-            return
+            return False
 
         # Process value
         comodel_name = field.comodel_name
-        if comodel_name and self._model_supports_yaml(comodel_name):
+        field_type = field.type
+        if (
+            comodel_name
+            and field_type == "many2one"
+            and self._model_supports_yaml(comodel_name)
+        ):
             comodel = self.env[comodel_name]
 
             # Check if we need to return a record dict or just a reference
@@ -280,7 +283,7 @@ class CxTowerYamlMixin(models.AbstractModel):
                     reference = value.get("reference")
                     reference_is_dict = True
                 else:
-                    return
+                    return False
 
                 # Process if reference is provided
                 if reference:
@@ -295,11 +298,20 @@ class CxTowerYamlMixin(models.AbstractModel):
                         # ..new one
                         else:
                             record = comodel.create(
-                                record._post_process_yaml_dict_values(value)
+                                comodel._post_process_yaml_dict_values(value)
                             )
-                    result = record and record.id
+
+                # If no reference and value is dict create a new record
+                elif reference_is_dict:
+                    record = comodel.create(
+                        comodel._post_process_yaml_dict_values(value)
+                    )
+                # No reference and value is string
                 else:
-                    result = None
+                    record = False
+
+                # Assign final result
+                result = record and record.id
 
             # Return
             return result
