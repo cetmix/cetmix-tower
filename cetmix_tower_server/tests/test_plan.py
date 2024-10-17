@@ -1,12 +1,46 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from unittest.mock import patch
+
 from odoo import _, fields
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common import TestTowerCommon
 
 
 class TestTowerPlan(TestTowerCommon):
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
+        # Command
+        self.command_run_flight_plan_1 = self.Command.create(
+            {
+                "name": "Run Flight Plan",
+                "action": "plan",
+                "flight_plan_id": self.plan_1.id,
+            }
+        )
+
+        # Flight plan
+        self.plan_2 = self.Plan.create(
+            {
+                "name": "Test plan 2",
+                "note": "Run another flight plan",
+            }
+        )
+        self.plan_2_line_1 = self.plan_line.create(
+            {
+                "sequence": 5,
+                "plan_id": self.plan_2.id,
+                "command_id": self.command_run_flight_plan_1.id,
+            }
+        )
+        self.plan_2_line_2 = self.plan_line.create(
+            {
+                "sequence": 10,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+
     def test_plan_line_action_name(self):
         """Test plan line action naming"""
 
@@ -734,4 +768,433 @@ class TestTowerPlan(TestTowerCommon):
             copied_action.variable_value_ids.value_char,
             original_action.variable_value_ids.value_char,
             "Variable value should be the same in the copied action",
+        )
+
+    def test_plan_with_another_plan(self):
+        """
+        Test to check running another plan from current plan
+        """
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 2, msg="Should be 2 plan logs")
+
+        parent_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(
+            parent_plan_log.plan_status, 0, "Plan log should success status"
+        )
+
+        child_plan_log = plan_log_records - parent_plan_log
+        self.assertEqual(
+            child_plan_log.parent_flight_plan_log_id,
+            parent_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            child_plan_log.plan_status,
+            parent_plan_log.command_log_ids.command_status,
+            "The command status of main plan should be equal "
+            "of status second flight plan",
+        )
+
+        # Check that we cannot add recursive plan
+        with self.assertRaisesRegex(
+            ValidationError, "Recursive plan call detected in plan.*"
+        ):
+            self.plan_line.create(
+                {
+                    "sequence": 20,
+                    "plan_id": self.plan_1.id,
+                    "command_id": self.command_run_flight_plan_1.id,
+                }
+            )
+
+        # Delete plan lines from first plan
+        self.plan_1.line_ids = False
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+        plan_log_records = (
+            self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
+            - plan_log_records
+        )
+
+        parent_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(
+            parent_plan_log.plan_status, -1, "Plan log should failed status"
+        )
+
+        child_plan_log = plan_log_records - parent_plan_log
+        self.assertEqual(
+            child_plan_log.parent_flight_plan_log_id,
+            parent_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            child_plan_log.plan_status,
+            parent_plan_log.command_log_ids.command_status,
+            "The command status of parent plan should be equal "
+            "of status second flight plan",
+        )
+
+    def test_plan_with_two_plans(self):
+        """
+        Test to check two plans from plan
+        """
+        self.plan_line.create(
+            {
+                "sequence": 15,
+                "plan_id": self.plan_2.id,
+                "command_id": self.command_run_flight_plan_1.id,
+            }
+        )
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 3, msg="Should be 3 plan logs")
+
+    def test_plan_with_nested_plans(self):
+        """
+        Test to check two plans from plan
+        """
+        command_run_flight_plan_2 = self.Command.create(
+            {
+                "name": "Run Flight Plan",
+                "action": "plan",
+                "flight_plan_id": self.plan_2.id,
+            }
+        )
+        plan_3 = self.Plan.create(
+            {
+                "name": "Test plan 3",
+                "note": "Run flight plan 2",
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 5,
+                "plan_id": plan_3.id,
+                "command_id": command_run_flight_plan_2.id,
+            }
+        )
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        plan_3._execute_single(self.server_test_1)
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 3, msg="Should be 3 plan logs")
+
+        last_child_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_1
+        )
+        self.assertTrue(last_child_plan_log, "The log for Plan 1 must exist!")
+        self.assertEqual(
+            last_child_plan_log.plan_status, 0, "Plan log should success status"
+        )
+
+        self.assertIn(
+            last_child_plan_log.parent_flight_plan_log_id,
+            plan_log_records,
+            "Parent plan logs should exist",
+        )
+        self.assertEqual(
+            last_child_plan_log.parent_flight_plan_log_id.plan_id,
+            self.plan_2,
+            "Parent plan should be equal to plan 2",
+        )
+
+        child_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertIn(
+            child_plan_log.parent_flight_plan_log_id,
+            plan_log_records,
+            "Parent plan logs should exist",
+        )
+        self.assertEqual(
+            child_plan_log.parent_flight_plan_log_id.plan_id,
+            plan_3,
+            "Parent plan should be equal to plan 3",
+        )
+
+        # Check that we cannot change command with existing plan,
+        # because it's recursive plan
+        with self.assertRaisesRegex(
+            ValidationError, "Recursive plan call detected in plan.*"
+        ):
+            self.plan_line_1.write(
+                {
+                    "command_id": command_run_flight_plan_2.id,
+                }
+            )
+
+    def test_failed_first_child_plan_with_another_plan(self):
+        """
+        Check that child plan was failed then parent plan is failed too
+        """
+        # Add new plan line
+        self.plan_line.create(
+            {
+                "sequence": 15,
+                "plan_id": self.plan_2.id,
+                "command_id": self.command_run_flight_plan_1.id,
+            }
+        )
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+
+        cx_tower_plan_obj = self.registry["cx.tower.plan"]
+        _execute_single_super = cx_tower_plan_obj._execute_single
+
+        def _execute_single(this, *args, **kwargs):
+            if this == self.plan_1:
+                # simulate error for child plan
+                kwargs.update(
+                    {
+                        "simulated_result": {
+                            "status": -1,
+                            "response": None,
+                            "error": ["error"],
+                        }
+                    }
+                )
+            return _execute_single_super(this, *args, **kwargs)
+
+        with patch.object(cx_tower_plan_obj, "_execute_single", _execute_single):
+            # Execute plan
+            self.plan_2._execute_single(self.server_test_1)
+
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        # 2 logs only because plan should exist with error after first failed command
+        self.assertEqual(len(plan_log_records), 2, msg="Should be 2 plan logs")
+
+        parent_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(
+            parent_plan_log.plan_status, -1, "Plan log should failed status"
+        )
+
+        child_plan_log = plan_log_records - parent_plan_log
+        self.assertEqual(
+            child_plan_log.parent_flight_plan_log_id,
+            parent_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            child_plan_log.plan_status,
+            parent_plan_log.command_log_ids.command_status,
+            "The command status of main plan should be equal "
+            "of status second flight plan",
+        )
+
+    def test_failed_second_child_plan_with_another_plan(self):
+        """
+        Check that child plan was failed then parent plan is failed too
+        """
+        # Add new plan line
+        line = self.plan_line.create(
+            {
+                "sequence": 15,
+                "plan_id": self.plan_2.id,
+                "command_id": self.command_run_flight_plan_1.id,
+            }
+        )
+
+        cx_tower_plan_obj = self.registry["cx.tower.plan"]
+        _execute_single_super = cx_tower_plan_obj._execute_single
+
+        def _execute_single(this, *args, **kwargs):
+            if (
+                this == self.plan_1
+                and this.env["cx.tower.plan.log"]
+                .browse(kwargs["log"]["plan_log_id"])
+                .plan_line_executed_id
+                == line
+            ):
+                # simulate error for child plan
+                kwargs.update(
+                    {
+                        "simulated_result": {
+                            "status": -1,
+                            "response": None,
+                            "error": ["error"],
+                        }
+                    }
+                )
+            return _execute_single_super(this, *args, **kwargs)
+
+        with patch.object(cx_tower_plan_obj, "_execute_single", _execute_single):
+            # Execute plan
+            self.plan_2._execute_single(self.server_test_1)
+
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        # 3 logs because plan should exist with error after second failed command
+        self.assertEqual(len(plan_log_records), 3, msg="Should be 3 plan logs")
+
+        parent_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(
+            parent_plan_log.plan_status, -1, "Plan log should failed status"
+        )
+
+        child_plan_log = plan_log_records - parent_plan_log
+        self.assertEqual(
+            child_plan_log.parent_flight_plan_log_id,
+            parent_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            len(child_plan_log),
+            2,
+            "Must be 2 child plan logs",
+        )
+        self.assertIn(
+            -1,
+            child_plan_log.mapped("plan_status"),
+            "One of plan status of child plan must be -1",
+        )
+        self.assertIn(
+            0,
+            child_plan_log.mapped("plan_status"),
+            "One of plan status of child plan must be -1",
+        )
+
+    def test_plan_with_another_plan_with_condition(self):
+        """
+        Test that parent plan will success finished
+        if child plan executable by condition
+        """
+        # Add condition for first plan line
+        self.plan_line_1.condition = "1 == 1"
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+
+        self.assertEqual(len(plan_log_records), 2, msg="Should be 2 plan logs")
+
+        parent_plan_log = plan_log_records.filtered(
+            lambda rec: rec.plan_id == self.plan_2
+        )
+        self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
+        self.assertEqual(
+            parent_plan_log.plan_status, 0, "Plan log should success status"
+        )
+
+        child_plan_log = plan_log_records - parent_plan_log
+        self.assertEqual(
+            child_plan_log.parent_flight_plan_log_id,
+            parent_plan_log,
+            "Second plan log should contain parent log link",
+        )
+        self.assertEqual(
+            child_plan_log.plan_status,
+            parent_plan_log.command_log_ids.command_status,
+            "The command status of main plan should be equal "
+            "of status second flight plan",
+        )
+
+    def test_plan_with_another_plan_with_not_executable_condition(self):
+        """
+        Test plan with not executable condition for second plan line
+        """
+        # Add condition for first plan line
+        self.plan_line_1.condition = "{{ odoo_version }} == '14.0'"
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+
+        self.assertEqual(len(plan_log_records), 2, msg="Should be 2 plan logs")
+
+        self.assertIn(
+            -20,
+            plan_log_records.command_log_ids.mapped("command_status"),
+            "One of commands should be skipped",
+        )
+
+    def test_plan_with_another_plan_with_all_not_executable_condition(self):
+        """
+        Test plan with not executable condition for second plan line
+        """
+        # Add condition for all plan lines
+        self.plan_line_1.condition = "{{ odoo_version }} == '14.0'"
+        self.plan_line_2.condition = "{{ odoo_version }} == '14.0'"
+
+        self.plan_2_line_1.condition = "{{ odoo_version }} == '14.0'"
+        self.plan_2_line_2.condition = "{{ odoo_version }} == '14.0'"
+
+        # Check plan logs
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
+
+        # Check plan logs after execute command with plan action
+        plan_log_records = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+
+        self.assertEqual(len(plan_log_records), 1, msg="Should be 1 plan logs")
+        self.assertEqual(
+            -20,
+            plan_log_records.command_log_ids.command_status,
+            "Command status should be skipped",
         )
