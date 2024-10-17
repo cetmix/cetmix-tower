@@ -820,95 +820,110 @@ class TestTowerPlan(TestTowerCommon):
             msg="Manager should be able to delete own plan line",
         )
 
-    # def test_plan_line_action_access_rights(self):
-    # # Create a test plan with plan lines
-    #     self.plan_2 = self.Plan.create(
-    #         {
-    #             "name": "Test plan 2",
-    #             "note": "Test note",
-    #             "tag_ids": [
-    #                 (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-    #             ],
-    #             "line_ids": [
-    #                 (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
-    #             ],
-    #         }
-    #     )
+    def test_plan_line_action_access_rights(self):
+        # Create a test plan with plan lines
+        self.plan_2 = self.Plan.create(
+            {
+                "name": "Test plan 2",
+                "note": "Test note",
+                "tag_ids": [
+                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
+                ],
+                "line_ids": [
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
+                ],
+            }
+        )
+        # Create a plan line action for the first line
+        self.plan_line_action = self.env["cx.tower.plan.line.action"].create(
+            {
+                "line_id": self.plan_2.line_ids[0].id,
+                "condition": "==",
+                "value_char": "0",
+                "action": "n",
+            }
+        )
 
-    #     # Create a plan line action for the first line
-    #     self.plan_line_action = self.env['cx.tower.plan.line.action'].create({
-    #         "line_id": self.plan_2.line_ids[0].id,
-    #         "condition": "==",
-    #         "value_char": "0",
-    #         "action": "n",
-    #     })
+        # Ensure default access level is correct
+        self.assertEqual(self.plan_2.access_level, "2")
 
-    #     # Ensure default access level is correct
-    #     self.assertEqual(self.plan_2.access_level, "2")
+        # Remove user_bob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
 
-    #     # Remove user_bob from all cxtower_server groups
-    #     self.remove_from_group(
-    #         self.user_bob,
-    #         [
-    #             "cetmix_tower_server.group_user",
-    #             "cetmix_tower_server.group_manager",
-    #             "cetmix_tower_server.group_root",
-    #         ],
-    #     )
+        # Ensure that user_bob without any group cannot access plan line actions
+        test_plan_line_action_as_bob = self.plan_line_action.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            plan_line_action_read_result = test_plan_line_action_as_bob.read([])
 
-    #     # Ensure that user_bob without any group cannot access plan line actions
-    #     test_plan_line_action_as_bob = self.plan_line_action.with_user(self.user_bob)
-    #     with self.assertRaises(AccessError):
-    #         action_name = test_plan_line_action_as_bob.name
+        # Add user_bob to `group_user` and test plan.line.action access
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Set access level to 1, so group_user can access the plan line actions
+        self.plan_2.write({"access_level": "1"})
+        self.assertEqual(test_plan_line_action_as_bob.access_level, "1")
+        self.plan_2.invalidate_cache()
+        plan_line_action_read_result = test_plan_line_action_as_bob.condition
+        self.assertEqual(
+            plan_line_action_read_result,
+            test_plan_line_action_as_bob.condition,
+            msg="User should access plan line actions with access_level 1",
+        )
 
-    #     # Add user_bob to `group_user` and test plan.line.action access
-    #     self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-    #     # Set access level to 1, so group_user can access the plan line actions
-    #     self.plan_2.write({"access_level": "1"})
-    #     self.assertEqual(test_plan_line_action_as_bob.access_level, "1")
+        # Add user_bob to `group_manager` and test plan.line.action access
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Set access level to 2, so group_manager can access the plan line action
+        self.plan_2.write({"access_level": "2"})
+        self.assertEqual(test_plan_line_action_as_bob.access_level, "2")
+        # Ensure that user_bob as member of group_manager
+        #  can read to plan line actions
+        plan_line_action_read_result = test_plan_line_action_as_bob.read([])
+        self.assertEqual(
+            plan_line_action_read_result[0]["name"],
+            test_plan_line_action_as_bob.name,
+            msg="Name should be the same",
+        )
 
-    #     # action_condition_read = test_plan_line_action_as_bob.read([])
-    #     # self.assertEqual(
-    #     #     action_condition_read[0].name,
-    #     #     test_plan_line_action_as_bob[0].name,
-    #     #     msg="User should access plan line actions with access_level 1",
-    #     # )
+        # Ensure that manager can update plan line actions they did not create
+        test_plan_line_action_as_bob.write({"sequence": 3})
+        self.assertEqual(
+            test_plan_line_action_as_bob.sequence,
+            3,
+            msg="Manager should be able to update sequence",
+        )
 
-    #     # Add user_bob to `group_manager` and test edit rights for plan.line.action
-    #     self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-    #     test_plan_line_action_as_bob.write({"value_char": "1"})
-    #     self.assertEqual(
-    #         test_plan_line_action_as_bob.value_char,
-    #         "1",
-    #         msg="Manager should be able to update plan line action",
-    #     )
+        # Ensure that manager cannot delete plan line actions they did not create
+        with self.assertRaises(AccessError):
+            test_plan_line_action_as_bob.unlink()
 
-    #     # Ensure that manager cannot delete plan line actions they did not create
-    #     with self.assertRaises(AccessError):
-    #         test_plan_line_action_as_bob.unlink()
+        # Create a new plan line action as user_bob manager
 
-    #     # Create a new plan line action as user_bob (manager)
-    #     plan_line_action_as_bob = self.env['cx.tower.plan.line.action'].
-    # with_user(self.user_bob).create({
-    #         "line_id": test_plan_2_as_bob.line_ids[0].id,
-    #         "condition": ">",
-    #         "value_char": "100",
-    #         "action": "e",
-    #     })
+        self.new_plan_line_action = self.env["cx.tower.plan.line.action"].create(
+            {
+                "line_id": self.plan_2.line_ids[0].id,
+                "condition": ">",
+                "value_char": "100",
+                "action": "e",
+            }
+        )
 
-    #     # Ensure the plan line action was created
-    #  and check that create_uid is user_bob
-    #     self.assertEqual(
-    #         plan_line_action_as_bob.create_uid.id,
-    #         self.user_bob.id,
-    #         msg="Create_uid should be user_bob",
-    #     )
+        self.new_plan_line_action.write({"create_uid": self.user_bob})
+        self.assertEqual(
+            self.new_plan_line_action.create_uid.id,
+            self.user_bob.id,
+            msg="Create_uid should be user_bob",
+        )
 
-    #     # Check that user_bob can delete the plan line action he has just created
-    #     plan_line_action_as_bob.unlink()
+        #     # Check that user_bob can delete the plan line action he has created
+        self.new_plan_line_action.with_user(self.user_bob).unlink()
 
-    #     # Ensure the plan line action has been deleted
-    #     self.assertFalse(
-    #         plan_line_action_as_bob.exists(),
-    #         msg="Manager should be able to delete own plan line action",
-    #     )
+        # Ensure the plan line action has been deleted
+        self.assertFalse(
+            self.new_plan_line_action.exists(),
+            msg="Manager should be able to delete own plan line action",
+        )
