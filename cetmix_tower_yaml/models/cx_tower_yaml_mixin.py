@@ -6,6 +6,7 @@ import yaml
 
 from odoo import _, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import ormcache
 
 
 class CustomDumper(yaml.Dumper):
@@ -42,6 +43,10 @@ class CxTowerYamlMixin(models.AbstractModel):
     )
     yaml_file = fields.Binary(compute="_compute_yaml_code", attachment=False)
     yaml_file_name = fields.Char(compute="_compute_yaml_code")
+    yaml_explode = fields.Boolean(
+        string="Explode",
+        help="Add entire related record data instead of just a reference",
+    )
 
     def _compute_yaml_code(self):
         """Compute YAML code based on model record data"""
@@ -52,10 +57,8 @@ class CxTowerYamlMixin(models.AbstractModel):
         for record in self:
             # We are reading field list for each record
             # because list of fields can differ from record to record
-            yaml_keys = record._get_fields_for_yaml()
-            record_dict = record.read(fields=yaml_keys)[0]
             yaml_code = yaml.dump(
-                record._post_process_record_values(record_dict),
+                record._prepare_record_for_yaml(),
                 Dumper=CustomDumper,
                 default_flow_style=False,
             )
@@ -74,6 +77,17 @@ class CxTowerYamlMixin(models.AbstractModel):
                 record_yaml_dict = yaml.safe_load(record.yaml_code)
                 record_vals = record._post_process_yaml_dict_values(record_yaml_dict)
                 record.update(record_vals)
+
+    def _prepare_record_for_yaml(self):
+        """Reads and processes current record before converting it to YAML
+
+        Returns:
+            dict: values ready for YAML conversion
+        """
+        self.ensure_one()
+        yaml_keys = self._get_fields_for_yaml()
+        record_dict = self.read(fields=yaml_keys)[0]
+        return self._post_process_record_values(record_dict)
 
     def _get_fields_for_yaml(self):
         """Get ist of field to be present in YAML
@@ -110,6 +124,24 @@ class CxTowerYamlMixin(models.AbstractModel):
             values.update(
                 {"access_level": self.TO_YAML_ACCESS_LEVEL[values["access_level"]]}
             )
+
+        # Check if we need to return a record dict or just a reference
+        # Use context value first, revert to the record setting if not defined
+        explode_related_record = self._context.get("explode_related_record")
+        if explode_related_record is None:
+            explode_related_record = self.yaml_explode
+
+        # Post process m2o fields
+        for key, value in values.items():
+            # IMPORTANT: Odoo naming patterns must be followed for related fields.
+            # This is why we are checking for the field name ending here.
+            # Further checks for the field type are done in _process_m2o_value()
+            if key.endswith("_id"):
+                processed_value = self.with_context(
+                    explode_related_record=explode_related_record
+                )._process_m2o_value(key, value, record_mode=True)
+                values.update({key: processed_value})
+
         return values
 
     def _post_process_yaml_dict_values(self, values):
@@ -123,7 +155,7 @@ class CxTowerYamlMixin(models.AbstractModel):
         """
 
         # Check Cetmix Tower YAML version
-        yaml_version = values.pop("cetmix_tower_yaml_version")
+        yaml_version = values.pop("cetmix_tower_yaml_version", None)
         if (
             yaml_version
             and isinstance(yaml_version, int)
@@ -161,4 +193,125 @@ class CxTowerYamlMixin(models.AbstractModel):
         supported_keys = self._get_fields_for_yaml()
         filtered_values = {k: v for k, v in values.items() if k in supported_keys}
 
+        # Post process m2o fields
+        for key, value in filtered_values.items():
+            # IMPORTANT: Odoo naming patterns must be followed for related fields.
+            # This is why we are checking for the field name ending here.
+            # Further checks for the field type are done in _process_m2o_value()
+            if key.endswith("_id"):
+                processed_value = self.with_context(
+                    explode_related_record=True
+                )._process_m2o_value(key, value, record_mode=False)
+                filtered_values.update({key: processed_value})
+
         return filtered_values
+
+    @ormcache("model_name")
+    def _model_supports_yaml(self, model_name):
+        """Checks if model supports YAML import/export
+
+        Args:
+            model_name (Char): model name
+
+        Returns:
+            Bool: True if YAML is supported
+        """
+        model = self.env[model_name]
+
+        return hasattr(model, "yaml_code")
+
+    def _process_m2o_value(self, field, value, record_mode=False):
+        """Post process many2one value
+
+        Args:
+            field (Char): Field the value belongs to
+            value (Char): Value to process
+            record_mode (Bool): If True process value as a record value
+                                else process value as a YAML value
+            Context:
+                explode_related_record: if set will return entire record dictionary
+                    not just a reference
+
+        Returns:
+            dict() or Char: record dictionary if fetch_record else reference
+        """
+
+        # Return null if value is not set
+        if not value:
+            return False
+
+        # Get destination model
+        field = self._fields.get(field)
+
+        # Return null if field cannot be resolved
+        if not field:
+            return False
+
+        # Process value
+        comodel_name = field.comodel_name
+        field_type = field.type
+        if (
+            comodel_name
+            and field_type == "many2one"
+            and self._model_supports_yaml(comodel_name)
+        ):
+            comodel = self.env[comodel_name]
+
+            # Check if we need to return a record dict or just a reference
+            explode_related_record = self._context.get("explode_related_record")
+
+            # Record -> Yaml
+            if record_mode:
+                record = comodel.browse(value[0])
+
+                # Record dict
+                if explode_related_record:
+                    result = record._prepare_record_for_yaml()
+
+                # Just a reference
+                else:
+                    result = record and record.reference
+
+            # Yaml -> Record
+            else:
+                # Check if value is a reference or a related record dict.
+                # Set the reference accordingly.
+                if isinstance(value, str):
+                    reference = value
+                    reference_is_dict = False
+                elif isinstance(value, dict):
+                    reference = value.get("reference")
+                    reference_is_dict = True
+                else:
+                    return False
+
+                # Process if reference is provided
+                if reference:
+                    record = comodel.get_by_reference(reference)
+
+                    # Update related record
+                    if reference_is_dict:
+                        # ..existing one
+                        if record:
+                            record.write(record._post_process_yaml_dict_values(value))
+
+                        # ..new one
+                        else:
+                            record = comodel.create(
+                                comodel._post_process_yaml_dict_values(value)
+                            )
+
+                # If no reference and value is dict create a new record
+                elif reference_is_dict:
+                    record = comodel.create(
+                        comodel._post_process_yaml_dict_values(value)
+                    )
+                # No reference and value is string
+                else:
+                    record = False
+
+                # Assign final result
+                result = record and record.id
+
+            # Return
+            return result
