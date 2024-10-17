@@ -1107,9 +1107,7 @@ class CxTowerServer(models.Model):
                 response = []
                 error = [e]
 
-        return self._parse_ssh_command_results(
-            status, response, error, secrets, **kwargs
-        )
+        return self._parse_command_results(status, response, error, secrets, **kwargs)
 
     def _execute_python_code(
         self,
@@ -1141,6 +1139,7 @@ class CxTowerServer(models.Model):
         response = None
         error = None
         status = 0
+        secrets = None
 
         try:
             # Parse inline secrets
@@ -1149,6 +1148,7 @@ class CxTowerServer(models.Model):
             ]._parse_code_and_return_key_values(
                 code, pythonic_mode=True, **kwargs.get("key", {})
             )
+            secrets = code_and_secrets.get("key_values")
             command_code = code_and_secrets["code"]
 
             code = self.env["cx.tower.key"]._parse_code(
@@ -1178,8 +1178,7 @@ class CxTowerServer(models.Model):
             else:
                 status = PYTHON_COMMAND_ERROR
                 error = e
-
-        return {"status": status, "response": response, "error": error}
+        return self._parse_command_results(status, response, error, secrets, **kwargs)
 
     def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
         """Prepare ssh command
@@ -1258,18 +1257,21 @@ class CxTowerServer(models.Model):
 
         return result
 
-    def _parse_ssh_command_results(
+    def _parse_command_results(
         self, status, response, error, key_values=None, **kwargs
     ):
-        """Parse results of the command executed with sudo.
+        """
+        Parse results of the executed command executed with sudo (either SSH or Python).
+        Removes secrets and formats the response and error messages.
+
         Paramiko returns SSH response and error as list.
         When executing command with sudo with password we return status as a list too.
         _
 
         Args:
-            status_list (Int or list of int): Status or statuses
-            response_list (list): Response
-            error_list (list): Error
+            status (Int or list of int): Status or statuses
+            response (list): Response
+            error (list): Error
             key_values (list): Secrets that were discovered in code.
                 Used to clean up command result.
             kwargs (dict):  extra arguments. Use to pass external values.

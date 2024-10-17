@@ -45,6 +45,19 @@ else:
             }
         )
 
+        self.command_create_new_command_2 = self.Command.create(
+            {
+                "name": "Create new command",
+                "action": "python_code",
+                "code": """
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": #!cxtower.secret.key_2_secret!#,
+}
+    """,
+            }
+        )
+
     def test_ssh_command_prepare_method_without_path(self):
         """Test ssh command preparation in different modes without path"""
 
@@ -493,7 +506,7 @@ else:
         response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
         error = []
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
+        ssh_command_result = self.Server._parse_command_results(
             status, response, error, key_values=[f"{self.secret_2.secret_value}"]
         )
 
@@ -521,9 +534,7 @@ else:
         response = []
         error = ["Ooops", "I did", "it again"]
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
-        )
+        ssh_command_result = self.Server._parse_command_results(status, response, error)
 
         # Get result
         result_status = ssh_command_result["status"]
@@ -547,9 +558,7 @@ else:
         response = []
         error = ["Ooops", "I did", "it again"]
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
-        )
+        ssh_command_result = self.Server._parse_command_results(status, response, error)
 
         # Get result
         result_status = ssh_command_result["status"]
@@ -571,9 +580,7 @@ else:
         response = []
         error = ["Ooops", "I did", "it again"]
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
-        )
+        ssh_command_result = self.Server._parse_command_results(status, response, error)
 
         # Get result
         result_status = ssh_command_result["status"]
@@ -597,7 +604,7 @@ else:
         error = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
         response = []
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
+        ssh_command_result = self.Server._parse_command_results(
             status, response, error, key_values=[f"{self.secret_2.secret_value}"]
         )
 
@@ -831,6 +838,30 @@ else:
         self.assertEqual(
             command_result["response"],
             "New command was created",
+            "The response must be text",
+        )
+        self.assertIsNone(
+            command_result["error"],
+            "Error in command result must be set to None",
+        )
+
+    def test_execute_python_code_with_secret(self):
+        """
+        Test python execution code
+        """
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_new_command_2
+        )
+
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+        self.assertEqual(
+            command_result["response"],
+            "Wow! Such much secret!",
             "The response must be text",
         )
         self.assertIsNone(
