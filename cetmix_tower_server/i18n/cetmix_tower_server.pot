@@ -2764,6 +2764,11 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 msgid "Variables"
