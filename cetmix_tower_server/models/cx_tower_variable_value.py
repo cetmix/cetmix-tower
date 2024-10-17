@@ -1,5 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv.expression import OR
@@ -40,7 +41,15 @@ class TowerVariableValue(models.Model):
     server_template_id = fields.Many2one(
         comodel_name="cx.tower.server.template", index=True, ondelete="cascade"
     )
-
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_variable_value_variable_rel",
+        column1="variable_value_id",
+        column2="variable_id",
+        string="Variables",
+        compute="_compute_variable_ids",
+        store=True,
+    )
     _sql_constraints = [
         (
             "tower_variable_value_uniq",
@@ -95,6 +104,17 @@ class TowerVariableValue(models.Model):
                             var=rec.variable_id.name,
                         )
                     )
+
+    @api.depends("value_char")
+    def _compute_variable_ids(self):
+        """
+        Compute variable_ids based on value_char field.
+        """
+        template_mixin_obj = self.env["cx.tower.template.mixin"]
+        for record in self:
+            record.variable_ids = template_mixin_obj._prepare_variable_commands(
+                ["value_char"], force_record=record
+            )
 
     def _used_in_models(self):
         """Returns information about models which use this mixin.

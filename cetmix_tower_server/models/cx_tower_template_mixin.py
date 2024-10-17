@@ -45,6 +45,36 @@ class CxTowerTemplateMixin(models.AbstractModel):
         undeclared_variables = meta.find_undeclared_variables(ast)
         return list(undeclared_variables) if undeclared_variables else []
 
+    def _prepare_variable_commands(self, field_names, force_record=None):
+        """
+        Prepares commands to set variable references from the given fields.
+
+        Args:
+            field_names (list): List of field names to extract variable references from.
+            force_record (record, optional): A record to use instead of the current one.
+
+        Returns:
+            list: An Odoo command to assign or clear variable references.
+        """
+        record = force_record or self
+        record.ensure_one()
+
+        all_references = set()
+        for field_name in field_names:
+            value = getattr(record, field_name, None)
+            if value:
+                all_references.update(self.get_variables_from_code(value))
+
+        if all_references:
+            variables = self.env["cx.tower.variable"].search(
+                [("reference", "in", list(all_references))]
+            )
+            command = [(6, 0, variables.ids)]
+        else:
+            command = [(5, 0, 0)]
+
+        return command
+
     def render_code(self, pythonic_mode=False, **kwargs):
         """Render record 'code' field using variables from kwargs
         Call to render recordset of the inheriting models
