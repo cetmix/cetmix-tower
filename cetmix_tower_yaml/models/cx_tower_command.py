@@ -9,22 +9,13 @@ class CxTowerCommand(models.Model):
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
-        if self.action in ["ssh_command", "python_code"]:
-            res += [
-                "access_level",
-                "allow_parallel_run",
-                "path",
-                "note",
-                "code",
-                "action",
-            ]
-        elif self.action == "file_using_template":
-            res += [
-                "access_level",
-                "allow_parallel_run",
-                "path",
-                "note",
-                "action",
-                "file_template_id",
-            ]
+        res += [
+            "access_level",
+            "allow_parallel_run",
+            "action",
+            "code",
+            "file_template_id",
+            "note",
+            "path",
+        ]
         return res

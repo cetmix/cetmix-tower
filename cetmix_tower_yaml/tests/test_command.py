@@ -18,6 +18,7 @@ cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
+file_template_id: false
 name: Test YAML
 note: |-
   Test YAML command conversion.
@@ -188,6 +189,7 @@ cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
+file_template_id: false
 name: Test YAML
 note: |-
   Test YAML command conversion.
@@ -205,6 +207,7 @@ action: file_using_template
 allow_parallel_run: false
 cetmix_tower_model: command
 cetmix_tower_yaml_version: 1
+code: false
 file_template_id: my_custom_test_template
 name: Such Much Command
 note: Just a note
@@ -250,6 +253,7 @@ action: file_using_template
 allow_parallel_run: false
 cetmix_tower_model: command
 cetmix_tower_yaml_version: 1
+code: false
 file_template_id:
   cetmix_tower_model: file_template
   cetmix_tower_yaml_version: 1
