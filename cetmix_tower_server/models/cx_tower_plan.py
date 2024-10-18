@@ -99,7 +99,9 @@ class CxTowerPlan(models.Model):
         plan_log_obj = self.env["cx.tower.plan.log"].sudo()
 
         # Check if the same plan is being executed on this server right now
-        if not self.allow_parallel_run:
+        if not self.allow_parallel_run or self.env.context.get(
+            "prevent_plan_recursion"
+        ):
             running_count = plan_log_obj.search_count(
                 [
                     ("server_id", "=", server.id),
@@ -111,7 +113,9 @@ class CxTowerPlan(models.Model):
                 return ANOTHER_PLAN_RUNNING
 
         # Start Flight Plan log
-        plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)
+        return plan_log_obj.start(
+            server, self, fields.Datetime.now(), **kwargs
+        ).plan_status
 
     def _get_next_action_values(self, command_log):
         """Get next action values based of previous command result:

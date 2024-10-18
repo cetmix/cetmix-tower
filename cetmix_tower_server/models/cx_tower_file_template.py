@@ -135,7 +135,6 @@ class CxTowerFileTemplate(models.Model):
                 raise ValidationError(_("File already exists on server."))
             return existing_file
 
-        # TODO:
         return file_model.with_context(is_custom_server_dir=True).create(
             {
                 "template_id": self.id,

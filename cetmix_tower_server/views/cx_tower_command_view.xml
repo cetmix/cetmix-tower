@@ -21,11 +21,11 @@
                     <div
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('action', 'not in', ['file_using_template', 'python_code'])]}"
+                        attrs="{'invisible': [('action', 'not in', ['file_using_template', 'python_code', 'plan'])]}"
                         style="margin-bottom:0px;"
                     >
                         <p
-                            attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                            attrs="{'invisible': [('action', 'not in', ['file_using_template', 'plan'])]}"
                         >
                             This command can be used only in Flight Plans.
                         </p>
@@ -42,7 +42,11 @@
                             <field name="action" />
                             <field
                                 name="file_template_id"
-                                attrs="{'invisible': [('action', '!=', 'file_using_template')], 'required': [('action', '=', 'file_using_template')],}"
+                                attrs="{'invisible': [('action', '!=', 'file_using_template')], 'required': [('action', '=', 'file_using_template')]}"
+                            />
+                            <field
+                                name="flight_plan_id"
+                                attrs="{'invisible': [('action', '!=', 'plan')], 'required': [('action', '=', 'plan')]}"
                             />
                             <field
                                 name="path"

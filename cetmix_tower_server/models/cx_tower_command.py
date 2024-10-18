@@ -52,6 +52,7 @@ class CxTowerCommand(models.Model):
             ("ssh_command", "SSH command"),
             ("python_code", "Execute Python code"),
             ("file_using_template", "Create file using template"),
+            ("plan", "Run flight plan"),
         ]
 
     active = fields.Boolean(default=True)
@@ -104,6 +105,9 @@ class CxTowerCommand(models.Model):
         compute="_compute_code",
         store=True,
         readonly=False,
+    )
+    flight_plan_id = fields.Many2one(
+        comodel_name="cx.tower.plan",
     )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",

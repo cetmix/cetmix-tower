@@ -14,6 +14,7 @@ from .constants import (
     NO_COMMAND_RUNNER_FOUND,
     PYTHON_COMMAND_ERROR,
 )
+from .tools import generate_random_id
 
 _logger = logging.getLogger(__name__)
 
@@ -829,6 +830,14 @@ class CxTowerServer(models.Model):
                 rendered_command_code,
                 **kwargs,
             )
+        elif command.action == "plan":
+            return self.with_context(
+                prevent_plan_recursion=True
+            )._command_runner_flight_plan(
+                log_record,
+                command.flight_plan_id,
+                **kwargs,
+            )
 
         error_message = _(
             "No runner found for command action '%(cmd_action)s'",
@@ -1012,6 +1021,60 @@ class CxTowerServer(models.Model):
         )
 
         # Log result
+        if log_record:
+            log_record.finish(
+                fields.Datetime.now(),
+                result["status"],
+                result["response"],
+                result["error"],
+            )
+        else:
+            return result
+
+    def _command_runner_flight_plan(
+        self, log_record, flight_plan, raise_on_error=True, **kwargs
+    ):
+        """
+        Execute Flight plan from command.
+        Updates the record in the Command Log (cx.tower.command.log)
+
+        Args:
+            log_record (cx.tower.command.log()): Command log record.
+            flight_plan (cx.tower.plan()): Flight Plan to be executed.
+            raise_on_error (bool, optional): raise error on error.
+            kwargs (dict):  extra arguments. Use to pass external values.
+                    Following keys are supported by default:
+                        - "log": {values passed to logger}
+                        - "key": {values passed to key parser}
+
+        Returns:
+            dict(): python code execution result if `log_record` is
+                    not defined else None
+        """
+        response = None
+        error = None
+        status = 0
+        try:
+            # Generate custom label and add values for log
+            kwargs["plan_log"] = {
+                "label": generate_random_id(4),
+                "parent_flight_plan_log_id": log_record.plan_log_id.id,
+            }
+            plan_status = flight_plan._execute_single(self, **kwargs)
+        except Exception as e:
+            if raise_on_error:
+                raise ValidationError(
+                    _("Execute flight plan error %(err)s", err=e)
+                ) from e
+            else:
+                status = -1
+                error = e
+        else:
+            if plan_status != 0:
+                status = plan_status
+                error = _("Execute flight plan error")
+
+        result = {"status": status, "response": response, "error": error}
         if log_record:
             log_record.finish(
                 fields.Datetime.now(),
