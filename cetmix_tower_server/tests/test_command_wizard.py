@@ -108,12 +108,11 @@ class TestTowerCommandWizard(TestTowerCommon):
         test_wizard.execute_command_on_server()
         # Ensure that Bob has access to path field but can't read its value
         allowed_path = (
-            test_wizard.path
-            if self.user_bob.has_group("cetmix_tower_server.group_manager")
+            self.user_bob.has_group("cetmix_tower_server.group_manager")
             and test_wizard.path
-            else None
         )
-        self.assertEqual(allowed_path, None)
+
+        self.assertEqual(allowed_path, False)
         # Ensure that Bob can write to the path field as a member of `group_user`
         # the result will be None
         test_wizard.write({"path": "/new/invalid/path"})

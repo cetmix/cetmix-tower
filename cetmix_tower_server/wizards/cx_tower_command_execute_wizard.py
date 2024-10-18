@@ -154,10 +154,8 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             server.execute_command(
                 self.command_id,
                 sudo=self.use_sudo,
-                path=self.path
-                if self.env.user.has_group("cetmix_tower_server.group_manager")
-                and self.path
-                else None,
+                path=self.env.user.has_group("cetmix_tower_server.group_manager")
+                and self.path,
                 **custom_values,
             )
         return {
