@@ -222,7 +222,6 @@ class CxTowerYamlMixin(models.AbstractModel):
 
     def _process_m2o_value(self, field, value, record_mode=False):
         """Post process many2one value
-
         Args:
             field (Char): Field the value belongs to
             value (Char): Value to process
@@ -231,87 +230,73 @@ class CxTowerYamlMixin(models.AbstractModel):
             Context:
                 explode_related_record: if set will return entire record dictionary
                     not just a reference
-
         Returns:
             dict() or Char: record dictionary if fetch_record else reference
         """
 
-        # Return null if value is not set
+        # Step 1: Return False if the value is not set or the field is not found
         if not value:
             return False
 
-        # Get destination model
-        field = self._fields.get(field)
-
-        # Return null if field cannot be resolved
-        if not field:
+        field_obj = self._fields.get(field)
+        if not field_obj:
             return False
 
-        # Process value
-        comodel_name = field.comodel_name
-        field_type = field.type
-        if (
-            comodel_name
-            and field_type == "many2one"
-            and self._model_supports_yaml(comodel_name)
-        ):
-            comodel = self.env[comodel_name]
+        # Step 2: Return False if the field is not a many2one field or has no comodel
+        if field_obj.type != "many2one" or not field_obj.comodel_name:
+            return False
 
-            # Check if we need to return a record dict or just a reference
-            explode_related_record = self._context.get("explode_related_record")
+        comodel = self.env[field_obj.comodel_name]
+        explode_related_record = self._context.get("explode_related_record")
 
-            # Record -> Yaml
-            if record_mode:
-                record = comodel.browse(value[0])
+        # Step 3: Process value when working in record mode (Record -> YAML)
+        if record_mode:
+            # Retrieve the record based on the ID provided in the value
+            record = comodel.browse(value[0])
 
-                # Record dict
-                if explode_related_record:
-                    result = record._prepare_record_for_yaml()
+            # If the context specifies to explode the related record,
+            # return its dictionary representation
+            if explode_related_record:
+                return record._prepare_record_for_yaml() if record else False
 
-                # Just a reference
+            # Otherwise, return just the reference (or False if record does not exist)
+            return record.reference if record else False
+
+        # Step 4: Process value in normal mode (YAML -> Record)
+
+        # If the value is a string, it is treated as a reference
+        if isinstance(value, str):
+            reference = value
+
+        # If the value is a dictionary, extract the reference from it
+        elif isinstance(value, dict):
+            reference = value.get("reference")
+
+            # If reference is found, retrieve the corresponding record
+            if reference:
+                record = comodel.get_by_reference(reference)
+
+                # If the record exists, update it with the values from the dictionary
+                if record:
+                    record.write(record._post_process_yaml_dict_values(value))
+                # If the record does not exist, create a new one
                 else:
-                    result = record and record.reference
-
-            # Yaml -> Record
-            else:
-                # Check if value is a reference or a related record dict.
-                # Set the reference accordingly.
-                if isinstance(value, str):
-                    reference = value
-                    reference_is_dict = False
-                elif isinstance(value, dict):
-                    reference = value.get("reference")
-                    reference_is_dict = True
-                else:
-                    return False
-
-                # Process if reference is provided
-                if reference:
-                    record = comodel.get_by_reference(reference)
-
-                    # Update related record
-                    if reference_is_dict:
-                        # ..existing one
-                        if record:
-                            record.write(record._post_process_yaml_dict_values(value))
-
-                        # ..new one
-                        else:
-                            record = comodel.create(
-                                comodel._post_process_yaml_dict_values(value)
-                            )
-
-                # If no reference and value is dict create a new record
-                elif reference_is_dict:
                     record = comodel.create(
                         comodel._post_process_yaml_dict_values(value)
                     )
-                # No reference and value is string
-                else:
-                    record = False
 
-                # Assign final result
-                result = record and record.id
+            # If there's no reference but value is a dict, create a new record
+            else:
+                record = comodel.create(comodel._post_process_yaml_dict_values(value))
 
-            # Return
-            return result
+            # Return the record's ID if it exists, otherwise return False
+            return record.id if record else False
+
+        # If the value is neither string nor dict, return False
+        else:
+            return False
+
+        # Step 5: Final fallback: attempt to retrieve the record by reference if set,
+        #  return its ID or False
+        record = comodel.get_by_reference(reference) if reference else False
+        return record.id if record else False

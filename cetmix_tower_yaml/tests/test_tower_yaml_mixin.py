@@ -194,9 +194,7 @@ class TestTowerYamlMixin(TransactionCase):
         result = command._process_m2o_value(
             field="file_template_id", value="such_much_not_reference", record_mode=False
         )
-        self.assertEqual(
-            result, self.env["cx.tower.file.template"], "Must be an empty recordset"
-        )
+        self.assertFalse(result, "Must be an 'False'")
 
         # -- 4 --
         # No record -> Yaml
