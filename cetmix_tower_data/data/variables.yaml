@@ -1,0 +1,13 @@
+module: cetmix_tower_data
+variables:
+  tower_root: "/home/{{ tower.server.username }}"
+
+  # file_cron_location: /etc/cron.d
+  # git_config_user_email: "name@example.com"
+  # git_config_user_name: "Name"
+  # tmp_location: /tmp
+  # backup_location: ""
+  # docker_compose_location: ""
+  # docker_image_repo: ""
+  # file_cron_restore_content: ""
+  # path: ""
