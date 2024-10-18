@@ -148,14 +148,16 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             raise ValidationError(_("Please select a command to execute"))
         # Generate custom label. Will be used later to locate the command log
         log_label = generate_random_id(4)
+        path_value = (
+            self.env.user.has_group("cetmix_tower_server.group_manager") and self.path
+        )
         # Add custom values for log
         custom_values = {"log": {"label": log_label}}
         for server in self.server_ids:
             server.execute_command(
                 self.command_id,
                 sudo=self.use_sudo,
-                path=self.env.user.has_group("cetmix_tower_server.group_manager")
-                and self.path,
+                path=path_value,
                 **custom_values,
             )
         return {

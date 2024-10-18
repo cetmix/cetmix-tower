@@ -78,6 +78,12 @@
         <field name="note">This server has variables configured</field>
     </record>
 
+    <record id="mail_follower_server_test_2" model="mail.followers">
+        <field name="res_model">cx.tower.server</field>
+        <field name="res_id" ref="server_test_2" />
+        <field name="partner_id" ref="base.partner_demo" />
+    </record>
+
     <!--  File templates  -->
     <record id="cx_tower_file_template_demo_1" model="cx.tower.file.template">
         <field name="name">Demo File Template 1</field>
@@ -231,6 +237,7 @@
         <field name="name">List files in directory</field>
         <field name="path">/home/{{ tower.server.username }}</field>
         <field name="code">ls -l</field>
+        <field name="access_level">1</field>
     </record>
     <record id="command_upload_file" model="cx.tower.command">
         <field name="name">Upload file by template</field>
@@ -248,6 +255,7 @@ if {{ branch }}:
 else:
     COMMAND_RESULT={"exit_code": -1, "message": "Branch is not defined!"}
         </field>
+        <field name="access_level">1</field>
     </record>
 
     <record id="command_download_file" model="cx.tower.command">
@@ -266,6 +274,18 @@ else:
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
     </record>
+
+    <record id="plan_test_3" model="cx.tower.plan">
+        <field name="name">Test #3 User</field>
+        <field name="note">Demo of a user-accessible flight plan</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+        <field name="access_level">1</field>
+
+    </record>
+
     <!-- Line -->
     <record id="plan_test_1_line_1" model="cx.tower.plan.line">
         <field name="sequence">5</field>
@@ -343,6 +363,14 @@ else:
         <field name="sequence">5</field>
         <field name="plan_id" ref="plan_test_2" />
         <field name="command_id" ref="command_execute_flight_plan" />
+    </record>
+
+    <!-- Line -->
+    <record id="plan_test_3_line_1" model="cx.tower.plan.line">
+        <field name="sequence">1</field>
+        <field name="plan_id" ref="plan_test_3" />
+        <field name="command_id" ref="command_list_dir" />
+        <field name="path">/such/much/{{ test_path }}</field>
     </record>
 
 </odoo>
