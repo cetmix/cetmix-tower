@@ -1166,9 +1166,9 @@ class CxTowerServer(models.Model):
             if result:
                 status = result.get("exit_code", 0)
                 if status == 0:
-                    response = result.get("message")
+                    response = [result.get("message")]
                 else:
-                    error = result.get("message")
+                    error = [result.get("message")]
 
         except Exception as e:
             if raise_on_error:

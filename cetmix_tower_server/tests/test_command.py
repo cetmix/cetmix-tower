@@ -29,6 +29,14 @@ class TestTowerCommand(TestTowerCommon):
                 "key_type": "s",
             }
         )
+        self.secret_python_key = self.Key.create(
+            {
+                "name": "python",
+                "reference": "PYTHON",
+                "secret_value": "secretPythonCode",
+                "key_type": "s",
+            }
+        )
         # Command
         self.command_create_new_command = self.Command.create(
             {
@@ -45,14 +53,27 @@ else:
             }
         )
 
-        self.command_create_new_command_2 = self.Command.create(
+        self.command_create_python_command_1 = self.Command.create(
             {
-                "name": "Create new command",
+                "name": "Python command with secret #1",
                 "action": "python_code",
                 "code": """
 COMMAND_RESULT = {
     "exit_code": 0,
-    "message": #!cxtower.secret.key_2_secret!#,
+    "message": #!cxtower.secret.PYTHON!#,
+}
+    """,
+            }
+        )
+
+        self.command_create_python_command_2 = self.Command.create(
+            {
+                "name": "Python command with secret #2",
+                "action": "python_code",
+                "code": """
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": 'We use #!cxtower.secret.PYTHON!#' ,
 }
     """,
             }
@@ -847,24 +868,64 @@ else:
 
     def test_execute_python_code_with_secret(self):
         """
-        Test python execution code
+        Test execution of Python code with a secret value.
+        This test ensures that a command is rendered and executed correctly,
+        and that the secret value is correctly handled and replaced in the output.
         """
+        # Case 1
+        # Render the command using server_test_1
         rendered_command = self.server_test_1._render_command(
-            self.command_create_new_command_2
+            self.command_create_python_command_1
         )
 
+        # Execute the rendered Python code
         command_result = self.server_test_1._execute_python_code(
             rendered_command["rendered_code"]
         )
+
+        # Assert that the command execution status is 0 (indicating success)
         self.assertEqual(
             command_result["status"], 0, "The command result status must be 0"
         )
+
+        # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            "Wow! Such much secret!",
-            "The response must be text",
+            self.Key.SECRET_VALUE_SPOILER,
+            "The response must correctly include the secret value placeholder",
         )
+
+        # Assert that no error occurred during execution (error should be None)
         self.assertIsNone(
             command_result["error"],
-            "Error in command result must be set to None",
+            "The error in command result must be None",
+        )
+
+        # Case 2
+        # Render the command using server_test_1
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_python_command_2
+        )
+
+        # Execute the rendered Python code
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+
+        # Assert that the command execution status is 0 (indicating success)
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+
+        # Assert that the response contains the secret spoiler text
+        self.assertEqual(
+            command_result["response"],
+            f'We use "{self.Key.SECRET_VALUE_SPOILER}"',
+            "The response must correctly include the secret value placeholder",
+        )
+
+        # Assert that no error occurred during execution (error should be None)
+        self.assertIsNone(
+            command_result["error"],
+            "The error in command result must be None",
         )
