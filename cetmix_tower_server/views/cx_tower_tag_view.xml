@@ -13,6 +13,10 @@
                             <field name="color" widget="color_picker" />
                         </group>
                         <group>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
                             <field name="server_ids" widget="many2many_tags" />
                         </group>
                     </group>
@@ -28,8 +32,22 @@
             <tree>
                 <field name="name" />
                 <field name="server_ids" widget="many2many_tags" optional="show" />
+                <field name="reference" optional="hide" />
                 <field name="color" widget="color_picker" />
             </tree>
+        </field>
+    </record>
+
+
+     <record id="cx_tower_tag_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.tag.view.search</field>
+        <field name="model">cx.tower.tag</field>
+        <field name="arch" type="xml">
+            <search string="Search Tags">
+                <field name="name" />
+                <field name="reference" />
+                <field name="server_ids" />
+            </search>
         </field>
     </record>
 
@@ -38,6 +56,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.tag</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_tag_search_view" />
     </record>
 
 </odoo>

@@ -110,6 +110,15 @@ To configure variables go to the `Cetmix Tower/Settings` and select the `Variabl
 - **Reference**: Unique identifier used to address variable in conditions and expressions. Leave blank to generate automatically based on name
 - **Note**: Put your notes here
 
+## Configure Tags
+
+To configure variables go to the `Cetmix Tower/Settings` and select the `Tags` menu. Click `Create` and put values in the fields:
+
+- **Name**: Readable name
+- **Reference**: Unique identifier used to address the tag in conditions and expressions. Leave this field blank to generate it automatically based on the name
+- **Color**: Select a color for the tag
+- **Servers**: Select the servers associated with the tag.
+
 ### Variables Applicability
 
 [Cetmix Tower](https://cetmix.com/tower) supports `jinja2` syntax for variables. You can use variables to render:
