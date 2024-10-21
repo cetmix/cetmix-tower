@@ -325,3 +325,20 @@ class CxTowerServerTemplate(models.Model):
             values.update(kwargs)
 
         return vals_list
+
+    def copy(self, default=None):
+        """Duplicate the server template along with variable values and server logs."""
+        default = dict(default or {})
+
+        # Duplicate the server template itself
+        new_template = super().copy(default)
+
+        # Duplicate variable values
+        for variable_value in self.variable_value_ids:
+            variable_value.copy({"server_template_id": new_template.id})
+
+        # Duplicate server logs
+        for server_log in self.server_log_ids:
+            server_log.copy({"server_template_id": new_template.id})
+
+        return new_template
