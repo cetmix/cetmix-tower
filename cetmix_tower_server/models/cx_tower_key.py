@@ -442,14 +442,13 @@ class CxTowerKey(models.Model):
             Text: cleaned code
         """
 
-        ## No need to search if code is too short
-        if not key_values or len(code) <= len(self.KEY_PREFIX) + 3 + len(
-            self.KEY_TERMINATOR
-        ):  # at least one dot separator and two symbols
+        if not key_values:
             return code
 
         # Replace keys with values
         for key_value in key_values:
+            # If key_value includes quotes, remove them for the replacement
+            key_value = key_value.strip('"')
             # Replace key including key terminator
             code = code.replace(key_value, self.SECRET_VALUE_SPOILER)
 
