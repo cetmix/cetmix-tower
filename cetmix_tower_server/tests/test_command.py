@@ -29,6 +29,31 @@ class TestTowerCommand(TestTowerCommon):
                 "key_type": "s",
             }
         )
+        self.secret_python_key = self.Key.create(
+            {
+                "name": "python",
+                "reference": "PYTHON",
+                "secret_value": "secretPythonCode",
+                "key_type": "s",
+            }
+        )
+
+        self.secret_test_rsa_key = self.Key.create(
+            {
+                "name": "test rsa",
+                "reference": "test_rsa",
+                "secret_value": """-----BEGIN RSA PRIVATE KEY-----
+MIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu
+KUpRKfFLfRYC9AIKjbJTWit+CqvjWYzvQwECAwEAAQJAIJLixBy2qpFoS4DSmoEm
+o3qGy0t6z09AIJtH+5OeRV1be+N4cDYJKffGzDa88vQENZiRm0GRq6a+HPGQMd2k
+TQIhAKMSvzIBnni7ot/OSie2TmJLY4SwTQAevXysE2RbFDYdAiEBCUEaRQnMnbp7
+9mxDXDf6AU0cN/RPBjb9qSHDcWZHGzUCIG2Es59z8ugGrDY+pxLQnwfotadxd+Uy
+v/Ow5T0q5gIJAiEAyS4RaI9YG8EWx/2w0T67ZUVAw8eOMB6BIUg0Xcu+3okCIBOs
+/5OiPgoTdSy7bcF9IGpSE8ZgGKzgYQVZeN97YE00
+-----END RSA PRIVATE KEY----- """,
+                "key_type": "s",
+            }
+        )
         # Command
         self.command_create_new_command = self.Command.create(
             {
@@ -41,6 +66,45 @@ if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
 else:
     COMMAND_RESULT = {"exit_code": -1, "message": "error"}
+    """,
+            }
+        )
+
+        self.command_create_python_command_1 = self.Command.create(
+            {
+                "name": "Python command with secret #1",
+                "action": "python_code",
+                "code": """
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": #!cxtower.secret.PYTHON!#,
+}
+    """,
+            }
+        )
+
+        self.command_create_python_command_2 = self.Command.create(
+            {
+                "name": "Python command with secret #2",
+                "action": "python_code",
+                "code": """
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": 'We use #!cxtower.secret.PYTHON!#' ,
+}
+    """,
+            }
+        )
+
+        self.command_create_python_command_3 = self.Command.create(
+            {
+                "name": "Python command with secret #3",
+                "action": "python_code",
+                "code": """
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": ""#!cxtower.secret.test_rsa!#"" ,
+}
     """,
             }
         )
@@ -493,7 +557,7 @@ else:
         response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
         error = []
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
+        ssh_command_result = self.Server._parse_command_results(
             status, response, error, key_values=[f"{self.secret_2.secret_value}"]
         )
 
@@ -521,9 +585,7 @@ else:
         response = []
         error = ["Ooops", "I did", "it again"]
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
-        )
+        ssh_command_result = self.Server._parse_command_results(status, response, error)
 
         # Get result
         result_status = ssh_command_result["status"]
@@ -547,9 +609,7 @@ else:
         response = []
         error = ["Ooops", "I did", "it again"]
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
-        )
+        ssh_command_result = self.Server._parse_command_results(status, response, error)
 
         # Get result
         result_status = ssh_command_result["status"]
@@ -571,9 +631,7 @@ else:
         response = []
         error = ["Ooops", "I did", "it again"]
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
-            status, response, error
-        )
+        ssh_command_result = self.Server._parse_command_results(status, response, error)
 
         # Get result
         result_status = ssh_command_result["status"]
@@ -597,7 +655,7 @@ else:
         error = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
         response = []
 
-        ssh_command_result = self.Server._parse_ssh_command_results(
+        ssh_command_result = self.Server._parse_command_results(
             status, response, error, key_values=[f"{self.secret_2.secret_value}"]
         )
 
@@ -836,4 +894,97 @@ else:
         self.assertIsNone(
             command_result["error"],
             "Error in command result must be set to None",
+        )
+
+    def test_execute_python_code_with_secret(self):
+        """
+        Test execution of Python code with a secret value.
+        This test ensures that a command is rendered and executed correctly,
+        and that the secret value is correctly handled and replaced in the output.
+        """
+        # Case 1
+        # Render the command using server_test_1
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_python_command_1
+        )
+
+        # Execute the rendered Python code
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+
+        # Assert that the command execution status is 0 (indicating success)
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+
+        # Assert that the response contains the secret spoiler text
+        self.assertEqual(
+            command_result["response"],
+            self.Key.SECRET_VALUE_SPOILER,
+            "The response must correctly include the secret value placeholder",
+        )
+
+        # Assert that no error occurred during execution (error should be None)
+        self.assertIsNone(
+            command_result["error"],
+            "The error in command result must be None",
+        )
+
+        # Case 2
+        # Render the command using server_test_1
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_python_command_2
+        )
+
+        # Execute the rendered Python code
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+
+        # Assert that the command execution status is 0 (indicating success)
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+
+        # Assert that the response contains the secret spoiler text
+        self.assertEqual(
+            command_result["response"],
+            f'We use "{self.Key.SECRET_VALUE_SPOILER}"',
+            "The response must correctly include the secret value placeholder",
+        )
+
+        # Assert that no error occurred during execution (error should be None)
+        self.assertIsNone(
+            command_result["error"],
+            "The error in command result must be None",
+        )
+
+        # Case 2
+        # Render the command using server_test_1
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_python_command_3
+        )
+
+        # Execute the rendered Python code
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+
+        # Assert that the command execution status is 0 (indicating success)
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+
+        # Assert that the response contains the secret spoiler text
+        self.assertEqual(
+            command_result["response"],
+            self.Key.SECRET_VALUE_SPOILER,
+            "The response must correctly include the secret value placeholder",
+        )
+
+        # Assert that no error occurred during execution (error should be None)
+        self.assertIsNone(
+            command_result["error"],
+            "The error in command result must be None",
         )

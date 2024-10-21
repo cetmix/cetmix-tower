@@ -450,6 +450,8 @@ class CxTowerKey(models.Model):
 
         # Replace keys with values
         for key_value in key_values:
+            # If key_value includes quotes, remove them for the replacement
+            key_value = key_value.strip('"')
             # Replace key including key terminator
             code = code.replace(key_value, self.SECRET_VALUE_SPOILER)
 
