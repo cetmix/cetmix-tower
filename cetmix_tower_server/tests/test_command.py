@@ -481,6 +481,41 @@ else:
 
         command_name = cc_command.with_user(self.user_bob).name
         self.assertEqual(command_name, "CC Command", msg="Must return 'CC command'")
+        # Assign cc_command.server_ids to self.server_test_1
+        cc_command.write({"server_ids": [(6, 0, [self.server_test_1.id])]})
+        # Ensure Bob can't access cc_command if he is not a follower
+        #  of self.server_test_1
+        with self.assertRaises(AccessError):
+            cc_command.with_user(self.user_bob).read([])
+        # Add Bob to the manager group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+
+        # Ensure Bob as manager still can't access cc_command if he is not
+        # a follower of self.server_test_1
+        with self.assertRaises(AccessError):
+            cc_command.with_user(self.user_bob).read([])
+
+        # Subscribe Bob to self.server_test_1
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+
+        # Ensure Bob can now access cc_command as a follower of self.server_test_1
+        cc_command_read_result = cc_command.with_user(self.user_bob).read([])
+        self.assertEqual(
+            cc_command_read_result[0]["name"],
+            cc_command.name,
+            msg="Command name should be same",
+        )
+
+        # Remove Bob from manager group
+        self.remove_from_group(self.user_bob, ["cetmix_tower_server.group_manager"])
+
+        # Ensure Bob retains access to cc_command because he is a follower
+        cc_command_read_result = cc_command.with_user(self.user_bob).read([])
+        self.assertEqual(
+            cc_command_read_result[0]["name"],
+            cc_command.name,
+            msg="Command name should be same",
+        )
 
     def test_parse_ssh_command_result(self):
         """Test ssh command result parsing"""
