@@ -38,6 +38,14 @@ class TestTowerCommand(TestTowerCommon):
             }
         )
 
+        self.python_ssh_key = self.Key.create(
+            {
+                "name": "Test Python SSH Key",
+                "key_type": "k",
+                "secret_value": "Python much key",
+            }
+        )
+
         self.secret_test_rsa_key = self.Key.create(
             {
                 "name": "test rsa",
@@ -104,6 +112,20 @@ COMMAND_RESULT = {
 COMMAND_RESULT = {
     "exit_code": 0,
     "message": ""#!cxtower.secret.test_rsa!#"" ,
+}
+    """,
+            }
+        )
+
+        self.command_create_python_command_4 = self.Command.create(
+            {
+                "name": "Python command with secret #4",
+                "action": "python_code",
+                "code": """
+top_secret = #!cxtower.secret.test_python_ssh_key!#
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": top_secret ,
 }
     """,
             }
@@ -960,10 +982,39 @@ else:
             "The error in command result must be None",
         )
 
-        # Case 2
+        # Case 3
         # Render the command using server_test_1
         rendered_command = self.server_test_1._render_command(
             self.command_create_python_command_3
+        )
+
+        # Execute the rendered Python code
+        command_result = self.server_test_1._execute_python_code(
+            rendered_command["rendered_code"]
+        )
+
+        # Assert that the command execution status is 0 (indicating success)
+        self.assertEqual(
+            command_result["status"], 0, "The command result status must be 0"
+        )
+
+        # Assert that the response contains the secret spoiler text
+        self.assertEqual(
+            command_result["response"],
+            self.Key.SECRET_VALUE_SPOILER,
+            "The response must correctly include the secret value placeholder",
+        )
+
+        # Assert that no error occurred during execution (error should be None)
+        self.assertIsNone(
+            command_result["error"],
+            "The error in command result must be None",
+        )
+
+        # Case 4
+        # Render the command using server_test_1
+        rendered_command = self.server_test_1._render_command(
+            self.command_create_python_command_4
         )
 
         # Execute the rendered Python code

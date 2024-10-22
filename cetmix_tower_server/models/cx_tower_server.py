@@ -1238,7 +1238,7 @@ class CxTowerServer(models.Model):
                 ) from e
             else:
                 status = PYTHON_COMMAND_ERROR
-                error = e
+                error = [e]
         return self._parse_command_results(status, response, error, secrets, **kwargs)
 
     def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
