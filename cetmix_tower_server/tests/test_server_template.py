@@ -199,3 +199,99 @@ class TestTowerServerTemplate(TestTowerCommon):
             "new_value",
             "New variable values should be 'new_values'",
         )
+
+    def test_server_template_copy(self):
+        """
+        Test duplicating a Server Template with variable values and server logs
+        """
+
+        # A server template
+        server_template = self.server_template_sample
+
+        # Add variable values to the server template
+        original_variable_value = self.VariableValues.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": server_template.id,
+                "value_char": "test",
+            }
+        )
+
+        # Create a command for the server log
+        command_for_log = self.Command.create(
+            {
+                "name": "Get system info",
+                "code": "uname -a",
+            }
+        )
+
+        # Add server logs to the template
+        original_log = self.ServerLog.create(
+            {
+                "name": "Log from server template",
+                "server_template_id": server_template.id,
+                "log_type": "command",
+                "command_id": command_for_log.id,
+            }
+        )
+
+        # Duplicate the server template
+        copied_template = server_template.copy()
+
+        # Ensure the new server template was created with a new ID
+        self.assertNotEqual(
+            copied_template.id,
+            server_template.id,
+            "Copied server template should have a different ID from the original",
+        )
+
+        # Check that the copied template has the same number of variable values
+        self.assertEqual(
+            len(copied_template.variable_value_ids),
+            len(server_template.variable_value_ids),
+            (
+                "Copied template should have the same "
+                "number of variable values as the original"
+            ),
+        )
+
+        # Ensure the variable itself was copied (check variable_id)
+        copied_variable_value = copied_template.variable_value_ids
+        self.assertEqual(
+            copied_variable_value.variable_id.id,
+            original_variable_value.variable_id.id,
+            "Variable ID should be the same in the copied template",
+        )
+        self.assertEqual(
+            copied_variable_value.value_char,
+            original_variable_value.value_char,
+            "Variable value should be the same in the copied template",
+        )
+
+        # Check that the copied template has the same number of server logs
+        self.assertEqual(
+            len(copied_template.server_log_ids),
+            len(server_template.server_log_ids),
+            (
+                "Copied template should have the same "
+                "number of server logs as the original"
+            ),
+        )
+
+        # Ensure the first server log in the copied template matches the original
+        copied_log = copied_template.server_log_ids
+        self.assertEqual(
+            copied_log.name,
+            original_log.name,
+            "Server log name should be the same in the copied template",
+        )
+        self.assertEqual(
+            copied_log.command_id.id,
+            original_log.command_id.id,
+            "Command ID should be the same in the copied server log",
+        )
+        self.assertEqual(
+            copied_log.command_id.code,
+            original_log.command_id.code,
+            "Command code should be the same in the copied server log",
+        )
