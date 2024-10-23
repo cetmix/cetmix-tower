@@ -18,6 +18,7 @@ cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
+file_template_id: false
 name: Test YAML
 note: |-
   Test YAML command conversion.
@@ -108,9 +109,7 @@ Ensure all fields are rendered properly.""",
             "YAML value doesn't match Cetmix Tower one",
         )
 
-    # TODO: need to fix reference creation for this test to run
-    # https://github.com/cetmix/cetmix-tower/pull/102
-    def no_test_command_from_yaml(self):
+    def test_command_from_yaml(self):
         """Test if YAML is generated properly from a command"""
 
         def test_yaml(command):
@@ -190,6 +189,7 @@ cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
+file_template_id: false
 name: Test YAML
 note: |-
   Test YAML command conversion.
@@ -199,3 +199,82 @@ reference: test_yaml_in_tests
 """
         command_test.yaml_code = yaml_with_non_supported_keys
         test_yaml(command_test)
+
+    def test_command_with_action_file_template(self):
+        """Test command with 'File from template' action"""
+        yaml_with_reference = """access_level: manager
+action: file_using_template
+allow_parallel_run: false
+cetmix_tower_model: command
+cetmix_tower_yaml_version: 1
+code: false
+file_template_id: my_custom_test_template
+name: Such Much Command
+note: Just a note
+path: false
+reference: such_much_test_command
+"""
+        # Add file template
+        file_template = self.env["cx.tower.file.template"].create(
+            {
+                "name": "Such much demo",
+                "reference": "my_custom_test_template",
+                "file_name": "much_logs.txt",
+                "server_dir": "/var/log/my/files",
+                "source": "tower",
+                "file_type": "text",
+                "note": "Hey!",
+                "keep_when_deleted": False,
+            }
+        )
+        command_with_template = self.Command.create(
+            {
+                "name": "Such Much Command",
+                "reference": "such_much_test_command",
+                "action": "file_using_template",
+                "note": "Just a note",
+                "file_template_id": file_template.id,
+            }
+        )
+
+        # -- 1 --
+        # Check if final YAML composed correctly
+        self.assertEqual(
+            command_with_template.yaml_code,
+            yaml_with_reference,
+            "YAML is not composed correctly",
+        )
+
+        # -- 2 --
+        # Explode related record and check the YAML
+
+        yaml_with_reference_exploded = """access_level: manager
+action: file_using_template
+allow_parallel_run: false
+cetmix_tower_model: command
+cetmix_tower_yaml_version: 1
+code: false
+file_template_id:
+  cetmix_tower_model: file_template
+  cetmix_tower_yaml_version: 1
+  code: false
+  file_name: much_logs.txt
+  file_type: text
+  keep_when_deleted: false
+  name: Such much demo
+  note: Hey!
+  reference: my_custom_test_template
+  server_dir: /var/log/my/files
+  source: tower
+name: Such Much Command
+note: Just a note
+path: false
+reference: such_much_test_command
+"""
+        command_with_template.write({"yaml_explode": True})
+        command_with_template.invalidate_cache(["yaml_code"])
+        self.assertEqual(
+            command_with_template.yaml_code,
+            yaml_with_reference_exploded,
+            "YAML is not composed correctly",
+        )
