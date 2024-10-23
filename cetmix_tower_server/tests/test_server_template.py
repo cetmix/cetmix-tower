@@ -209,7 +209,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         server_template = self.server_template_sample
 
         # Add variable values to the server template
-        self.VariableValues.create(
+        original_variable_value = self.VariableValues.create(
             {
                 "variable_id": self.variable_version.id,
                 "server_template_id": server_template.id,
@@ -226,7 +226,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         )
 
         # Add server logs to the template
-        self.ServerLog.create(
+        original_log = self.ServerLog.create(
             {
                 "name": "Log from server template",
                 "server_template_id": server_template.id,
@@ -255,10 +255,13 @@ class TestTowerServerTemplate(TestTowerCommon):
             ),
         )
 
-        # Ensure the first variable value in the copied template matches the original
-        original_variable_value = server_template.variable_value_ids
+        # Ensure the variable itself was copied (check variable_id)
         copied_variable_value = copied_template.variable_value_ids
-
+        self.assertEqual(
+            copied_variable_value.variable_id.id,
+            original_variable_value.variable_id.id,
+            "Variable ID should be the same in the copied template",
+        )
         self.assertEqual(
             copied_variable_value.value_char,
             original_variable_value.value_char,
@@ -276,9 +279,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         )
 
         # Ensure the first server log in the copied template matches the original
-        original_log = server_template.server_log_ids
         copied_log = copied_template.server_log_ids
-
         self.assertEqual(
             copied_log.name,
             original_log.name,
