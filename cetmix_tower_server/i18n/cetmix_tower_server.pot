@@ -436,11 +436,13 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_view_form
 msgid ""
 "Can contain English letters, digits and '_'. Leave blank to autogenerate"
 msgstr ""
@@ -1999,6 +2001,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
@@ -2018,6 +2021,7 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_reference_mixin_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_template_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_tag_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 msgid "Reference must be unique"
 msgstr ""
@@ -2277,6 +2281,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Search Servers"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_search_view
+msgid "Search Tags"
 msgstr ""
 
 #. module: cetmix_tower_server
