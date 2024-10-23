@@ -991,6 +991,58 @@ class CxTowerServer(models.Model):
         else:
             return command_result
 
+    def _command_runner_flight_plan(
+        self, log_record, flight_plan, raise_on_error=True, **kwargs
+    ):
+        """
+        Execute Flight plan from command.
+        Updates the record in the Command Log (cx.tower.command.log)
+        Args:
+            log_record (cx.tower.command.log()): Command log record.
+            flight_plan (cx.tower.plan()): Flight Plan to be executed.
+            raise_on_error (bool, optional): raise error on error.
+            kwargs (dict):  extra arguments. Use to pass external values.
+                    Following keys are supported by default:
+                        - "log": {values passed to logger}
+                        - "key": {values passed to key parser}
+        Returns:
+            dict(): python code execution result if `log_record` is
+                    not defined else None
+        """
+        response = None
+        error = None
+        status = 0
+        try:
+            # Generate custom label and add values for log
+            kwargs["plan_log"] = {
+                "label": generate_random_id(4),
+                "parent_flight_plan_log_id": log_record.plan_log_id.id,
+            }
+            plan_status = flight_plan._execute_single(self, **kwargs)
+        except Exception as e:
+            if raise_on_error:
+                raise ValidationError(
+                    _("Execute flight plan error %(err)s", err=e)
+                ) from e
+            else:
+                status = -1
+                error = e
+        else:
+            if plan_status != 0:
+                status = plan_status
+                error = _("Execute flight plan error")
+
+        result = {"status": status, "response": response, "error": error}
+        if log_record:
+            log_record.finish(
+                fields.Datetime.now(),
+                result["status"],
+                result["response"],
+                result["error"],
+            )
+        else:
+            return result
+
     def _command_runner_python_code(
         self,
         log_record,
@@ -1021,60 +1073,6 @@ class CxTowerServer(models.Model):
         )
 
         # Log result
-        if log_record:
-            log_record.finish(
-                fields.Datetime.now(),
-                result["status"],
-                result["response"],
-                result["error"],
-            )
-        else:
-            return result
-
-    def _command_runner_flight_plan(
-        self, log_record, flight_plan, raise_on_error=True, **kwargs
-    ):
-        """
-        Execute Flight plan from command.
-        Updates the record in the Command Log (cx.tower.command.log)
-
-        Args:
-            log_record (cx.tower.command.log()): Command log record.
-            flight_plan (cx.tower.plan()): Flight Plan to be executed.
-            raise_on_error (bool, optional): raise error on error.
-            kwargs (dict):  extra arguments. Use to pass external values.
-                    Following keys are supported by default:
-                        - "log": {values passed to logger}
-                        - "key": {values passed to key parser}
-
-        Returns:
-            dict(): python code execution result if `log_record` is
-                    not defined else None
-        """
-        response = None
-        error = None
-        status = 0
-        try:
-            # Generate custom label and add values for log
-            kwargs["plan_log"] = {
-                "label": generate_random_id(4),
-                "parent_flight_plan_log_id": log_record.plan_log_id.id,
-            }
-            plan_status = flight_plan._execute_single(self, **kwargs)
-        except Exception as e:
-            if raise_on_error:
-                raise ValidationError(
-                    _("Execute flight plan error %(err)s", err=e)
-                ) from e
-            else:
-                status = -1
-                error = e
-        else:
-            if plan_status != 0:
-                status = plan_status
-                error = _("Execute flight plan error")
-
-        result = {"status": status, "response": response, "error": error}
         if log_record:
             log_record.finish(
                 fields.Datetime.now(),
@@ -1170,9 +1168,7 @@ class CxTowerServer(models.Model):
                 response = []
                 error = [e]
 
-        return self._parse_ssh_command_results(
-            status, response, error, secrets, **kwargs
-        )
+        return self._parse_command_results(status, response, error, secrets, **kwargs)
 
     def _execute_python_code(
         self,
@@ -1204,6 +1200,7 @@ class CxTowerServer(models.Model):
         response = None
         error = None
         status = 0
+        secrets = None
 
         try:
             # Parse inline secrets
@@ -1212,6 +1209,7 @@ class CxTowerServer(models.Model):
             ]._parse_code_and_return_key_values(
                 code, pythonic_mode=True, **kwargs.get("key", {})
             )
+            secrets = code_and_secrets.get("key_values")
             command_code = code_and_secrets["code"]
 
             code = self.env["cx.tower.key"]._parse_code(
@@ -1229,9 +1227,9 @@ class CxTowerServer(models.Model):
             if result:
                 status = result.get("exit_code", 0)
                 if status == 0:
-                    response = result.get("message")
+                    response = [result.get("message")]
                 else:
-                    error = result.get("message")
+                    error = [result.get("message")]
 
         except Exception as e:
             if raise_on_error:
@@ -1240,9 +1238,8 @@ class CxTowerServer(models.Model):
                 ) from e
             else:
                 status = PYTHON_COMMAND_ERROR
-                error = e
-
-        return {"status": status, "response": response, "error": error}
+                error = [e]
+        return self._parse_command_results(status, response, error, secrets, **kwargs)
 
     def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
         """Prepare ssh command
@@ -1321,18 +1318,21 @@ class CxTowerServer(models.Model):
 
         return result
 
-    def _parse_ssh_command_results(
+    def _parse_command_results(
         self, status, response, error, key_values=None, **kwargs
     ):
-        """Parse results of the command executed with sudo.
+        """
+        Parse results of the executed command executed with sudo (either SSH or Python).
+        Removes secrets and formats the response and error messages.
+
         Paramiko returns SSH response and error as list.
         When executing command with sudo with password we return status as a list too.
         _
 
         Args:
-            status_list (Int or list of int): Status or statuses
-            response_list (list): Response
-            error_list (list): Error
+            status (Int or list of int): Status or statuses
+            response (list): Response
+            error (list): Error
             key_values (list): Secrets that were discovered in code.
                 Used to clean up command result.
             kwargs (dict):  extra arguments. Use to pass external values.
