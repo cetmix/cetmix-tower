@@ -1060,7 +1060,9 @@ class CxTowerServer(models.Model):
                 "label": generate_random_id(4),
                 "parent_flight_plan_log_id": log_record.plan_log_id.id,
             }
-            plan_status = flight_plan._execute_single(self, **kwargs)
+            # add executed command with action "plan" to save link to plan log
+            kwargs["flight_plan_command_log"] = log_record
+            plan_status = flight_plan.with_context()._execute_single(self, **kwargs)
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(

@@ -33,6 +33,7 @@ class CxTowerCommandLog(models.Model):
     command_id = fields.Many2one(
         comodel_name="cx.tower.command", required=True, index=True, ondelete="restrict"
     )
+    command_action = fields.Selection(related="command_id.action")
     path = fields.Char(string="Execution Path", help="Where command was executed")
     code = fields.Text(string="Command Code")
     command_status = fields.Integer(string="Exit Code")
@@ -52,6 +53,7 @@ class CxTowerCommandLog(models.Model):
 
     # -- Flight Plan
     plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log", ondelete="cascade")
+    triggered_plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log")
 
     @api.depends("name", "command_id.name")
     def _compute_name(self):
@@ -156,7 +158,6 @@ class CxTowerCommandLog(models.Model):
         Returns:
             (cx.tower.command.log()) new command log record
         """
-
         vals = kwargs or {}
         vals.update(
             {

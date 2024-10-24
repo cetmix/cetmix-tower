@@ -116,6 +116,12 @@ class CxTowerPlanLine(models.Model):
         # Set current line as currently executed in log
         plan_log_record.plan_line_executed_id = self
 
+        # It is necessary to save information about which plan log
+        # was created for a command log that has the command action “plan”
+        flight_plan_command_log = kwargs.get("flight_plan_command_log")
+        if flight_plan_command_log:
+            flight_plan_command_log.triggered_plan_log_id = plan_log_record.id
+
         # Pass plan_log to command so it will be saved in command log
         log_vals = kwargs.get("log", {})
         log_vals.update({"plan_log_id": plan_log_record.id})
