@@ -15,8 +15,12 @@ class CxTowerServer(models.Model):
         ssh_connection=None,
         **kwargs,
     ):
-        # Use runner only if command log record is provided
-        if log_record:
+        # If the flight plan log has an entry on the parent flight plan log,
+        # it means that this flight plan was launched from another plan,
+        # this plan should be launched as a synchronous command to
+        # preserve the order of execution of commands with action “Run flight plan”.
+        # Use runner only if command log record is provided.
+        if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
             self.with_delay()._command_runner(
                 command,
                 log_record,
