@@ -807,6 +807,11 @@ class TestTowerPlan(TestTowerCommon):
             "The command status of main plan should be equal "
             "of status second flight plan",
         )
+        self.assertEqual(
+            parent_plan_log.command_log_ids.triggered_plan_log_id,
+            child_plan_log,
+            "The command triggered plan line should be equal to child plan",
+        )
 
         # Check that we cannot add recursive plan
         with self.assertRaisesRegex(
@@ -942,6 +947,23 @@ class TestTowerPlan(TestTowerCommon):
             child_plan_log.parent_flight_plan_log_id.plan_id,
             plan_3,
             "Parent plan should be equal to plan 3",
+        )
+        self.assertEqual(
+            child_plan_log.command_log_ids.triggered_plan_log_id,
+            last_child_plan_log,
+            "The command triggered plan line should be equal to last child plan",
+        )
+        self.assertEqual(
+            child_plan_log.command_log_ids.triggered_plan_log_id,
+            last_child_plan_log,
+            "The command triggered plan line should be equal to last child plan",
+        )
+        parent_plan_log = plan_log_records - child_plan_log - last_child_plan_log
+        self.assertEqual(
+            parent_plan_log.command_log_ids.triggered_plan_log_id,
+            child_plan_log,
+            "The command triggered plan line from parent plan "
+            "should be equal to child plan",
         )
 
         # Check that we cannot change command with existing plan,

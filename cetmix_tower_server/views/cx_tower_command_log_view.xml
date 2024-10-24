@@ -35,6 +35,7 @@
                             <field name="create_uid" />
                             <field name="server_id" />
                             <field name="command_id" />
+                            <field name="command_action" invisible="1" />
                             <field
                                 name="condition"
                                 attrs="{'invisible': [('condition', '=', False)]}"
@@ -54,6 +55,10 @@
                                 attrs="{'invisible': [('use_sudo', '=', False)]}"
                             />
                             <field name="command_status" />
+                            <field
+                                name="triggered_plan_log_id"
+                                attrs="{'invisible': [('triggered_plan_log_id', '=', False)]}"
+                            />
                         </group>
                         <group>
                             <field
@@ -65,7 +70,7 @@
                             <field name="duration_current" />
                         </group>
                     </group>
-                    <notebook>
+                    <notebook attrs="{'invisible': [('command_action', '=', 'plan')]}">
                         <page name="result" string="Result">
                             <field
                                 name="command_response"
