@@ -28,6 +28,7 @@ note: |-
 reference: dockerfile_unit_test
 server_dir: /opt
 source: tower
+tag_ids: false
 """  # noqa
 
         # YAML content translated into Python dict
@@ -212,6 +213,7 @@ note: |-
 reference: dockerfile_unit_test
 server_dir: /opt
 source: tower
+tag_ids: false
 """  # noqa
         file_template_test.yaml_code = yaml_with_non_supported_keys
         test_yaml(file_template_test)

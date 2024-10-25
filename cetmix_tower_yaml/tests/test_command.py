@@ -25,6 +25,7 @@ note: |-
   Ensure all fields are rendered properly.
 path: false
 reference: test_yaml_in_tests
+tag_ids: false
 """
 
         # YAML content translated into Python dict
@@ -196,6 +197,7 @@ note: |-
   Ensure all fields are rendered properly.
 path: false
 reference: test_yaml_in_tests
+tag_ids: false
 """
         command_test.yaml_code = yaml_with_non_supported_keys
         test_yaml(command_test)
@@ -213,6 +215,7 @@ name: Such Much Command
 note: Just a note
 path: false
 reference: such_much_test_command
+tag_ids: false
 """
         # Add file template
         file_template = self.env["cx.tower.file.template"].create(
@@ -266,10 +269,12 @@ file_template_id:
   reference: my_custom_test_template
   server_dir: /var/log/my/files
   source: tower
+  tag_ids: false
 name: Such Much Command
 note: Just a note
 path: false
 reference: such_much_test_command
+tag_ids: false
 """
         command_with_template.write({"yaml_explode": True})
         command_with_template.invalidate_cache(["yaml_code"])
