@@ -7,6 +7,9 @@ class TestTowerYamlMixin(TransactionCase):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
         self.YamlMixin = self.env["cx.tower.yaml.mixin"]
+        TowerTag = self.env["cx.tower.tag"]
+        self.tag_doge = TowerTag.create({"name": "Doge", "reference": "doge"})
+        self.tag_pepe = TowerTag.create({"name": "Pepe", "reference": "pepe"})
 
     def test_post_process_record_values(self):
         """Test value post processing.
@@ -152,9 +155,13 @@ class TestTowerYamlMixin(TransactionCase):
         # Restore original method
         self.YamlMixin._revert_method("_get_fields_for_yaml")
 
-    def test_process_m2o_value_no_explode(self):
-        """Test non exploded m2m values
-        Non exploded values represent related record with reference only
+    def test_process_relation_field_value_no_explode(self):
+        """Test non exploded related field values.
+        Non exploded values represent related record with reference only.
+
+        Covers the following child functions:
+            - _process_m2o_value(..)
+            - _process_x2m_values(..)
         """
 
         # We are using command with file template for that
@@ -166,12 +173,16 @@ class TestTowerYamlMixin(TransactionCase):
                 "name": "Command test m2o",
                 "action": "file_using_template",
                 "file_template_id": file_template.id,
+                "tag_ids": [(4, self.tag_doge.id), (4, self.tag_pepe.id)],
             }
         )
 
         # -- 1 --
         # Record -> Yaml
-        result = command._process_m2o_value(
+
+        # -- 1.1 --
+        # Many2one
+        result = command._process_relation_field_value(
             field="file_template_id",
             value=(command.file_template_id.id, command.file_template_id.name),
             record_mode=True,
@@ -179,35 +190,68 @@ class TestTowerYamlMixin(TransactionCase):
         self.assertEqual(
             result, file_template.reference, "Reference was not resolved correctly"
         )
+        # -- 1.2 --
+        # Many2many
+        result = command._process_relation_field_value(
+            field="tag_ids",
+            value=[self.tag_doge.id, self.tag_pepe.id],
+            record_mode=True,
+        )
+
+        self.assertEqual(len(result), 2, "Must be 2 references")
+        self.assertIn(
+            self.tag_doge.reference, result, "Reference was not resolved correctly"
+        )
+        self.assertIn(
+            self.tag_pepe.reference, result, "Reference was not resolved correctly"
+        )
 
         # -- 2 --
         # Yaml -> Record
-        result = command._process_m2o_value(
+
+        # -- 2.1. --
+        # Many2one
+        result = command._process_relation_field_value(
             field="file_template_id", value=file_template.reference, record_mode=False
         )
         self.assertEqual(
             result, file_template.id, "Record ID was not resolved correctly"
         )
 
+        # -- 2.2 --
+        # Many2many
+        result = command._process_relation_field_value(
+            field="tag_ids",
+            value=[self.tag_doge.reference, self.tag_pepe.reference],
+            record_mode=False,
+        )
+        self.assertEqual(len(result), 2, "Must be 2 records")
+        self.assertIn(self.tag_doge.id, result, "Record ID was not resolved correctly")
+        self.assertIn(self.tag_pepe.id, result, "Record ID was not resolved correctly")
+
         # -- 3 --
         # Yaml with non existing reference -> Record
-        result = command._process_m2o_value(
+        result = command._process_relation_field_value(
             field="file_template_id", value="such_much_not_reference", record_mode=False
         )
-        self.assertFalse(result, "Must be an 'False'")
+        self.assertFalse(result, "Must be 'False'")
 
         # -- 4 --
         # No record -> Yaml
-        result = command._process_m2o_value(
+        result = command._process_relation_field_value(
             field="file_template_id",
             value=self.env["cx.tower.file.template"],
             record_mode=True,
         )
         self.assertFalse(result, "Result must be 'False'")
 
-    def test_process_m2o_value_explode(self):
-        """Test exploded m2m values
-        Exploded values represent related record with a child YAML structure
+    def test_process_relation_field_value_explode(self):
+        """Test exploded related field values.
+        Exploded values represent related record with a child YAML structure.
+
+        Covers the following child functions:
+            - _process_m2o_value(..)
+            - _process_x2m_values(..)
         """
 
         # We are using command with file template for that
@@ -215,6 +259,8 @@ class TestTowerYamlMixin(TransactionCase):
             {"name": "Test m2o", "reference": "test_m2o"}
         )
         file_template_values = file_template._prepare_record_for_yaml()
+        tag_doge_values = self.tag_doge._prepare_record_for_yaml()
+        tag_pepe_values = self.tag_pepe._prepare_record_for_yaml()
         command = (
             self.env["cx.tower.command"]
             .create(
@@ -222,7 +268,8 @@ class TestTowerYamlMixin(TransactionCase):
                     "name": "Command test m2o",
                     "action": "file_using_template",
                     "file_template_id": file_template.id,
-                    "yaml_explode": True,  # This is not used
+                    "yaml_explode": True,  # Not used in tests because context has priority  # noqa
+                    "tag_ids": [(4, self.tag_doge.id), (4, self.tag_pepe.id)],
                 }
             )
             .with_context(explode_related_record=True)
@@ -230,7 +277,10 @@ class TestTowerYamlMixin(TransactionCase):
 
         # -- 1 --
         # Record -> Yaml
-        result = command._process_m2o_value(
+
+        # -- 1.1 --
+        # Many2one
+        result = command._process_relation_field_value(
             field="file_template_id",
             value=(command.file_template_id.id, command.file_template_id.name),
             record_mode=True,
@@ -239,15 +289,37 @@ class TestTowerYamlMixin(TransactionCase):
             result, file_template_values, "Reference was not resolved correctly"
         )
 
+        # -- 1.2 --
+        # Many2many
+        result = command._process_relation_field_value(
+            field="tag_ids",
+            value=[self.tag_doge.id, self.tag_pepe.id],
+            record_mode=True,
+        )
+        self.assertEqual(len(result), 2, "Must be 2 records")
+        self.assertIn(tag_doge_values, result, "Record ID was not resolved correctly")
+        self.assertIn(tag_pepe_values, result, "Record ID was not resolved correctly")
+
         # -- 2 --
         # Yaml -> Record
-        result = command._process_m2o_value(
+
+        # -- 2.1 --
+        # Many2one
+        result = command._process_relation_field_value(
             field="file_template_id", value=file_template_values, record_mode=False
         )
         self.assertEqual(
             result, file_template.id, "Record ID was not resolved correctly"
         )
 
+        # -- 2.2 --
+        # Many2many
+        result = command._process_relation_field_value(
+            field="tag_ids", value=[tag_doge_values, tag_pepe_values], record_mode=False
+        )
+        self.assertEqual(len(result), 2, "Must be 2 records")
+        self.assertIn(self.tag_doge.id, result, "Record ID was not resolved correctly")
+        self.assertIn(self.tag_pepe.id, result, "Record ID was not resolved correctly")
         # -- 3 --
         # Yaml with non existing reference -> Record
         file_template_values.update(
@@ -258,7 +330,7 @@ class TestTowerYamlMixin(TransactionCase):
                 "file_type": "binary",
             }
         )
-        result = command._process_m2o_value(
+        result = command._process_relation_field_value(
             field="file_template_id", value=file_template_values, record_mode=False
         )
 
@@ -290,7 +362,7 @@ class TestTowerYamlMixin(TransactionCase):
             "source": "tower",
             "file_type": "binary",
         }
-        result = command._process_m2o_value(
+        result = command._process_relation_field_value(
             field="file_template_id", value=values_with_no_references, record_mode=False
         )
 
@@ -315,9 +387,56 @@ class TestTowerYamlMixin(TransactionCase):
 
         # -- 5 --
         # No record -> Yaml
-        result = command._process_m2o_value(
+        result = command._process_relation_field_value(
             field="file_template_id",
             value=self.env["cx.tower.file.template"],
             record_mode=True,
         )
         self.assertFalse(result, "Result must be 'False'")
+
+    def test_update_or_create_related_record(self):
+        """Test if related record is updated or created correctly"""
+
+        # -- 1 --
+        # Update existing values
+        # We are using file template for that
+        FileTemplateModel = self.env["cx.tower.file.template"]
+        file_template = self.env["cx.tower.file.template"].create(
+            {"name": "Test m2o", "reference": "test_m2o"}
+        )
+        values_to_update = {"name": "Much new name"}
+        record = FileTemplateModel._update_or_create_related_record(
+            model=FileTemplateModel,
+            reference=file_template.reference,
+            values=values_to_update,
+        )
+        self.assertEqual(
+            record.name, values_to_update["name"], "Value was not updated properly"
+        )
+        self.assertEqual(record.id, file_template.id, "Same record must be updated")
+
+        # -- 2 --
+        # Reference not found. Must create a new record
+        values_to_update = {"name": "Doge file"}
+        record = FileTemplateModel._update_or_create_related_record(
+            model=FileTemplateModel,
+            reference="doge_file",
+            values=values_to_update,
+        )
+        self.assertEqual(
+            record.name, values_to_update["name"], "Value was not updated properly"
+        )
+        self.assertNotEqual(record.id, file_template.id, "New record must be created")
+
+        # -- 2 --
+        # Reference not provided. Must create a new record
+        values_to_update = {"name": "Doge file"}
+        record = FileTemplateModel._update_or_create_related_record(
+            model=FileTemplateModel,
+            reference=False,
+            values=values_to_update,
+        )
+        self.assertEqual(
+            record.name, values_to_update["name"], "Value was not updated properly"
+        )
+        self.assertNotEqual(record.id, file_template.id, "New record must be created")
