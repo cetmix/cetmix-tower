@@ -277,6 +277,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__access_level
