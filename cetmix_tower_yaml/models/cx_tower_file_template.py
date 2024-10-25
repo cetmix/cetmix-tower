@@ -17,5 +17,6 @@ class CxTowerFileTemplate(models.Model):
             "keep_when_deleted",
             "file_type",
             "source",
+            "tag_ids",
         ]
         return res

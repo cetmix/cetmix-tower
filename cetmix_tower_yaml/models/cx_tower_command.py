@@ -17,5 +17,6 @@ class CxTowerCommand(models.Model):
             "file_template_id",
             "note",
             "path",
+            "tag_ids",
         ]
         return res
