@@ -20,7 +20,14 @@ _logger = logging.getLogger(__name__)
 
 
 try:
-    from paramiko import AutoAddPolicy, RSAKey, SFTPClient, SSHClient
+    from paramiko import (
+        AutoAddPolicy,
+        Ed25519Key,
+        RSAKey,
+        SFTPClient,
+        SSHClient,
+        SSHException,
+    )
 except ImportError:
     _logger.error(
         "import 'paramiko' error, please try to install: pip install paramiko"
@@ -73,8 +80,20 @@ class SSH(object):
         Returns:
             Char: password ready to be used for connection parameters
         """
-        ssh_key = RSAKey.from_private_key(io.StringIO(self.ssh_key))  # type: ignore
-        return ssh_key
+        try:
+            ssh_key_file = io.StringIO(self.ssh_key)
+            if "-----BEGIN RSA PRIVATE KEY-----" in self.ssh_key:
+                ssh_key = RSAKey.from_private_key(io.StringIO(ssh_key_file))
+            elif "-----BEGIN OPENSSH PRIVATE KEY-----" in self.ssh_key:
+                ssh_key = Ed25519Key.from_private_key(ssh_key_file)
+            else:
+                raise UserError(_("Unsupported key format. Use RSA or Ed25519."))
+            return ssh_key
+        except SSHException as e:
+            _logger.error(f"Error SSHException: {e}")
+            raise ValidationError(
+                _("Error loading a private key. Check the format of the key.")
+            ) from e
 
     def _connect(self):
         """
@@ -1162,6 +1181,7 @@ class CxTowerServer(models.Model):
 
         except Exception as e:
             if raise_on_error:
+                _logger.error(f"SSH execute command error: {e}")
                 raise ValidationError(
                     _("SSH execute command error %(err)s", err=e)
                 ) from e
