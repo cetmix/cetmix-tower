@@ -2357,6 +2357,11 @@ msgid "Server Response"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__server_status
+msgid "Server Status"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__server_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__server_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__server_template_id
