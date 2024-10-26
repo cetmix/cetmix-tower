@@ -38,7 +38,8 @@ class CxTowerPlanLine(models.Model):
         " If empty next command will be executed",
     )
     command_code = fields.Text(related="command_id.code", readonly=True)
-
+    action = fields.Selection(related="command_id.action", readonly=True)
+    tag_ids = fields.Many2many(related="command_id.tag_ids", readonly=True)
     access_level = fields.Selection(
         related="plan_id.access_level",
         readonly=True,

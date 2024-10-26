@@ -20,7 +20,13 @@
                     Rendered code is shown as for the first selected server!
                 </h2>
                 <group>
-                    <field name="server_ids" widget="many2many_tags" required="1" />
+                    <field name="show_servers" invisible="1" />
+                    <field
+                        name="server_ids"
+                        widget="many2many_tags"
+                        required="1"
+                        attrs="{'invisible': [('show_servers', '=', False)]}"
+                    />
                     <field
                         name="tag_ids"
                         widget="many2many_tags"
