@@ -929,6 +929,12 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Error loading a private key. Check the format of the key."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
@@ -2684,6 +2690,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_unread_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_unread_counter
 msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Unsupported key format. Use RSA or Ed25519."
 msgstr ""
 
 #. module: cetmix_tower_server

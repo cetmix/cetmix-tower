@@ -434,6 +434,9 @@ class CxTowerServer(models.Model):
         for var_value in self.variable_value_ids:
             var_value.copy({"server_id": result.id})
 
+        for server_log in self.server_log_ids:
+            server_log.copy({"server_id": result.id})
+
         return result
 
     def action_update_server_logs(self):
