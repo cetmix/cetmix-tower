@@ -49,11 +49,24 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         help="Run commands using 'sudo'",
     )
     code = fields.Text(compute="_compute_code", readonly=False, store=True)
-    any_server = fields.Boolean()
+    any_server = fields.Boolean(default=True)
     rendered_code = fields.Text(
         compute="_compute_rendered_code",
     )
     result = fields.Text()
+    show_servers = fields.Boolean(
+        compute="_compute_show_servers",
+    )
+
+    @api.depends("server_ids")
+    def _compute_show_servers(self):
+        """
+        Show "Servers" field only if the number of servers is greater than 1.
+        """
+
+        self.show_servers = (
+            True if self.server_ids and len(self.server_ids) > 1 else False
+        )
 
     @api.onchange("action")
     def _onchange_action(self):

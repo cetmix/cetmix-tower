@@ -265,6 +265,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__action
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__action
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Action"
@@ -2401,6 +2402,12 @@ msgid "Settings"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__show_servers
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__show_servers
+msgid "Show Servers"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Skipped"
 msgstr ""
@@ -2496,6 +2503,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag

@@ -27,13 +27,26 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         column2="tag_id",
         string="Tags",
     )
-    any_server = fields.Boolean()
+    any_server = fields.Boolean(default=True)
     # Lines
     plan_line_ids = fields.One2many(
         string="Commands",
         comodel_name="cx.tower.plan.line",
         compute="_compute_plan_line_ids",
     )
+    show_servers = fields.Boolean(
+        compute="_compute_show_servers",
+    )
+
+    @api.depends("server_ids")
+    def _compute_show_servers(self):
+        """
+        Show "Servers" field only if the number of servers is greater than 1.
+        """
+
+        self.show_servers = (
+            True if self.server_ids and len(self.server_ids) > 1 else False
+        )
 
     @api.depends("plan_id")
     def _compute_plan_line_ids(self):

@@ -66,9 +66,20 @@
                     <notebook>
                         <page name="plan_lines" string="Code">
                             <field name="line_ids">
-                                <tree>
+                                <tree decoration-bf="action=='plan'">
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
+                                    <field
+                                        name="action"
+                                        optional="show"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
+                                    <field
+                                        name="tag_ids"
+                                        optional="show"
+                                        widget="many2many_tags"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
                                     <field name="use_sudo" optional="show" />
                                     <field name="path" optional="show" />
                                     <field
