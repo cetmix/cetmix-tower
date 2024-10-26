@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_plan_execute_wizard_view_form" model="ir.ui.view">
         <field name="name">cx.tower.plan.execute.wizard.view.form</field>
         <field name="model">cx.tower.plan.execute.wizard</field>
         <field name="arch" type="xml">
             <form string="Execute Plan">
                 <group>
-                    <field name="server_ids" widget="many2many_tags" required="1" />
+                     <field name="show_servers" invisible="1" />
+                    <field
+                        name="server_ids"
+                        widget="many2many_tags"
+                        required="1"
+                        attrs="{'invisible': [('show_servers', '=', False)]}"
+                    />
                     <field name="tag_ids" widget="many2many_tags" />
                     <label for="plan_id" />
                     <div class="o_row">
@@ -16,7 +21,22 @@
                         <span>show shared</span>
                         <field name="any_server" />
                     </div>
-                    <field name="plan_line_ids" />
+                    <field name="plan_line_ids">
+                        <tree decoration-bf="action=='plan'">
+                            <field name="name" />
+                            <field
+                                name="action"
+                                optional="show"
+                                groups="cetmix_tower_server.group_manager"
+                            />
+                            <field
+                                name="tag_ids"
+                                optional="show"
+                                groups="cetmix_tower_server.group_manager"
+                                widget="many2many_tags"
+                            />
+                        </tree>
+                    </field>
                 </group>
                 <footer>
                     <button
@@ -30,7 +50,6 @@
             </form>
         </field>
     </record>
-
     <record id="cx_tower_plan_execute_wizard_action" model="ir.actions.act_window">
         <field name="name">Cetmix Tower Execute Flight Plan</field>
         <field name="res_model">cx.tower.plan.execute.wizard</field>
@@ -40,5 +59,4 @@
         <field name="context">{'default_server_ids': [active_id]}</field>
         <field name="target">new</field>
     </record>
-
 </odoo>
