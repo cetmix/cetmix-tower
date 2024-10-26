@@ -65,6 +65,25 @@ class TestTowerServer(TestTowerCommon):
             "ssh_key_id",
         ]
 
+        # Crete a log from file of type 'server'
+        file_for_log = self.File.create(
+            {
+                "source": "server",
+                "name": "test.log",
+                "server_dir": "/tmp",
+                "server_id": self.server_test_2.id,
+                "code": "Some log record - server",
+            }
+        )
+
+        server_log_server = self.ServerLog.create(
+            {
+                "name": "Log from file",
+                "server_id": self.server_test_2.id,
+                "log_type": "file",
+                "file_id": file_for_log.id,
+            }
+        )
         # Copy server 2
         server_test_2_copy = self.server_test_2.copy()
 
@@ -72,6 +91,35 @@ class TestTowerServer(TestTowerCommon):
         self.assertTrue(
             server_test_2_copy.name == self.server_test_2.name + " (copy)",
             msg="Server name should contain '~ (copy)' suffix!",
+        )
+
+        # Check server logs
+        # Check that the copied server has the same number of server logs
+        self.assertEqual(
+            len(server_test_2_copy.server_log_ids),
+            len(self.server_test_2.server_log_ids),
+            (
+                "Copied template should have the same "
+                "number of server logs as the original"
+            ),
+        )
+
+        # Ensure the first server log in the copied server matches the original
+        copied_log = server_test_2_copy.server_log_ids
+        self.assertEqual(
+            copied_log.name,
+            server_log_server.name,
+            "Server log name should be the same in the copied server",
+        )
+        self.assertEqual(
+            copied_log.command_id.id,
+            server_log_server.command_id.id,
+            "Command ID should be the same in the copied server log",
+        )
+        self.assertEqual(
+            copied_log.command_id.code,
+            server_log_server.command_id.code,
+            "Command code should be the same in the copied server log",
         )
 
         # Check fields match list
