@@ -16,6 +16,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__yaml_explode
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file_template__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_tag__yaml_explode
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_explode
 msgid "Add entire related record data instead of just a reference"
 msgstr ""
@@ -23,6 +24,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_command
 msgid "Cetmix Tower Command"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_tag
+msgid "Cetmix Tower Tag"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -38,6 +44,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__display_name
 msgid "Display Name"
 msgstr ""
@@ -45,6 +52,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_explode
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_explode
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_explode
 msgid "Explode"
 msgstr ""
@@ -52,6 +60,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__id
 msgid "ID"
 msgstr ""
@@ -59,6 +68,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -88,6 +98,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_code
 msgid "Yaml Code"
 msgstr ""
@@ -95,6 +106,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_file
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_file
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_file
 msgid "Yaml File"
 msgstr ""
@@ -102,6 +114,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_file_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_file_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_file_name
 msgid "Yaml File Name"
 msgstr ""
