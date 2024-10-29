@@ -265,6 +265,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__action
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__action
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -903,7 +904,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
-msgid "Error loading a private key. Check the format of the key."
+msgid "Error loading a private key. Unsupported key format or incorrect key."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2636,6 +2637,11 @@ msgid "Tower automation helper model"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__triggered_plan_log_id
+msgid "Triggered Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__activity_exception_decoration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__activity_exception_decoration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__activity_exception_decoration
@@ -2670,12 +2676,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_unread_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
-msgid "Unsupported key format. Use RSA or Ed25519."
 msgstr ""
 
 #. module: cetmix_tower_server

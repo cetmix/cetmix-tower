@@ -22,6 +22,8 @@ _logger = logging.getLogger(__name__)
 try:
     from paramiko import (
         AutoAddPolicy,
+        DSSKey,
+        ECDSAKey,
         Ed25519Key,
         RSAKey,
         SFTPClient,
@@ -73,27 +75,33 @@ class SSH(object):
 
     def _get_ssh_key(self):
         """
-        Get ssh key
+        Retrieve the SSH key object for establishing an SSH connection.
 
-        This function prepares and returns ssh key for the ssh connection
+        This function attempts to load the key using supported formats
+        (RSA, DSS, ECDSA, Ed25519).
 
         Returns:
-            Char: password ready to be used for connection parameters
+            pkey object: The SSH key object for use in connection parameters.
+
+        Raises:
+            ValidationError: If the key format is unsupported or the key is
+            incorrect.
         """
-        try:
-            ssh_key_file = io.StringIO(self.ssh_key)
-            if "-----BEGIN RSA PRIVATE KEY-----" in self.ssh_key:
-                ssh_key = RSAKey.from_private_key(io.StringIO(ssh_key_file))
-            elif "-----BEGIN OPENSSH PRIVATE KEY-----" in self.ssh_key:
-                ssh_key = Ed25519Key.from_private_key(ssh_key_file)
-            else:
-                raise UserError(_("Unsupported key format. Use RSA or Ed25519."))
-            return ssh_key
-        except SSHException as e:
-            _logger.error(f"Error SSHException: {e}")
-            raise ValidationError(
-                _("Error loading a private key. Check the format of the key.")
-            ) from e
+        ssh_key_file = io.StringIO(self.ssh_key)
+        for pkey_class in (RSAKey, DSSKey, ECDSAKey, Ed25519Key):
+            try:
+                # reset file pointer to the start for each key format attempt
+                ssh_key_file.seek(0)
+                return pkey_class.from_private_key(ssh_key_file)
+            except SSHException:
+                _logger.warning(
+                    f"{pkey_class.__name__} failed to load key, trying next format."
+                )
+
+        _logger.error("Failed to load SSH key: unsupported format or incorrect key.")
+        raise ValidationError(
+            _("Error loading a private key. Unsupported key format or incorrect key.")
+        )
 
     def _connect(self):
         """
