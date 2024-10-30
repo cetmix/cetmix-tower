@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.osv.expression import OR
@@ -9,12 +10,16 @@ from odoo.osv.expression import OR
 class TowerVariableValue(models.Model):
     _name = "cx.tower.variable.value"
     _description = "Cetmix Tower Variable Values"
+    _inherit = [
+        "cx.tower.reference.mixin",
+    ]
     _rec_name = "variable_reference"
     _order = "variable_reference"
 
     variable_id = fields.Many2one(
         string="Variable", comodel_name="cx.tower.variable", required=True
     )
+    name = fields.Char(related="variable_id.name", readonly=True)
     variable_reference = fields.Char(
         related="variable_id.reference", store=True, index=True
     )
@@ -276,3 +281,11 @@ class TowerVariableValue(models.Model):
                         var=record.variable_id.name,
                     )
                 )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Use the common method from mixin
+        vals_list = self._populate_references(
+            "cx.tower.variable", "variable_id", vals_list, suffix="_variable"
+        )
+        return super().create(vals_list)

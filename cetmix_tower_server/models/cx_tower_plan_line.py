@@ -10,6 +10,9 @@ from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
 
 class CxTowerPlanLine(models.Model):
     _name = "cx.tower.plan.line"
+    _inherit = [
+        "cx.tower.reference.mixin",
+    ]
     _order = "sequence, plan_id"
     _description = "Cetmix Tower Flight Plan Line"
 
@@ -193,3 +196,11 @@ class CxTowerPlanLine(models.Model):
             is_skipped=True,
             **log_vals,
         )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Use the common method from mixin
+        vals_list = self._populate_references(
+            "cx.tower.plan", "plan_id", vals_list, suffix="_line"
+        )
+        return super().create(vals_list)
