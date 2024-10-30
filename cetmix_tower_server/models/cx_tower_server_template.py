@@ -358,7 +358,9 @@ class CxTowerServerTemplate(models.Model):
 
         # Duplicate variable values
         for variable_value in self.variable_value_ids:
-            variable_value.copy({"server_template_id": new_template.id})
+            variable_value.with_context(reference_mixin_skip_self=True).copy(
+                {"server_template_id": new_template.id}
+            )
 
         # Duplicate server logs
         for server_log in self.server_log_ids:

@@ -69,6 +69,7 @@
                                 <tree decoration-bf="action=='plan'">
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
+                                    <field name="reference" optional="hide" />
                                     <field
                                         name="action"
                                         optional="show"

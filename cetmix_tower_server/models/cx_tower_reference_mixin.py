@@ -1,6 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import re
+from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.osv import expression
@@ -68,13 +69,11 @@ class CxTowerReferenceMixin(models.AbstractModel):
         final_reference = reference
 
         # If exclude same records from search results
-        if self:
+        if self and not self.env.context.get("reference_mixin_skip_self"):
             domain = [("id", "not in", self.ids)]
         else:
             domain = []
-
         final_domain = expression.AND([domain, [("reference", "=", final_reference)]])
-
         while self.search_count(final_domain) > 0:
             counter += 1
             final_reference = _(f"{reference}_{counter}")
@@ -129,7 +128,8 @@ class CxTowerReferenceMixin(models.AbstractModel):
         """
         if not self._context.get("reference_mixin_override"):
             for vals in vals_list:
-                vals["name"] = vals["name"].strip()
+                if vals.get("name"):
+                    vals["name"] = vals["name"].strip()
                 # Generate reference
                 reference = self._generate_or_fix_reference(
                     vals.get("reference") or vals.get("name")
@@ -186,10 +186,14 @@ class CxTowerReferenceMixin(models.AbstractModel):
         copy_name = _("%(name)s (copy)", name=original_name)
 
         counter = 1
+        # Ensures that the generated copy name is unique by
+        # appending a counter until a unique name is found.
         while self.search_count([("name", "=", copy_name)]) > 0:
             counter += 1
             copy_name = _(
-                "%(name)s (copy %(number)s)", name=original_name, number=str(counter)
+                "%(name)s (copy %(number)s)",
+                name=original_name,
+                number=str(counter),
             )
 
         return copy_name
@@ -208,7 +212,11 @@ class CxTowerReferenceMixin(models.AbstractModel):
         self.ensure_one()
         if default is None:
             default = {}
-        default["name"] = self._get_copied_name()
+
+        # skip copy name because this function use in models
+        # where it field name non store
+        if not self.env.context.get("reference_mixin_skip_copy"):
+            default["name"] = self._get_copied_name()
         if "reference" not in default:
             default["reference"] = self._generate_or_fix_reference(default["name"])
         return super().copy(default=default)
@@ -242,3 +250,93 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
         # This is in case some models will remove reference uniqueness constraint
         return records and records[0].id
+
+    @api.model
+    def _prepare_references(self, model, key_name, vals_list):
+        """
+        Prepare a dictionary of references for given model records.
+
+        This function extracts unique IDs from a list of dictionaries (vals_list)
+        based on a specified key (key_name), fetches the corresponding records
+        from the specified model, and returns a dictionary mapping record IDs to
+        their references.
+
+        Args:
+            model (str): The name of the model to fetch records from.
+            key_name (str): The key in the dictionaries of vals_list that contains
+                            the record IDs.
+            vals_list (list of dict): A list of dictionaries containing the values
+                                    to be processed.
+
+        Returns:
+            dict: A dictionary mapping record IDs to their references.
+        """
+        if not vals_list:
+            # No entries to process, return an empty dictionary
+            return {}
+
+        try:
+            CxModel = self.env[model]
+        except KeyError as err:
+            raise ValueError(
+                _(
+                    (
+                        "Model '%(model)s' does not exist. "
+                        "Please provide a valid model name."
+                    ),
+                    model=model,
+                )
+            ) from err
+
+        # Extract all unique ids from vals_list
+        line_ids = {vals.get(key_name) for vals in vals_list if vals.get(key_name)}
+
+        # Fetch all line references in a single query
+        lines = CxModel.browse(line_ids)
+        return {line.id: line.reference for line in lines}
+
+    @api.model
+    def _populate_references(self, model_name, field_name, vals_list, suffix=""):
+        """
+        Populates reference fields in a list of dictionaries (vals_list)
+        intended for record creation.
+
+        This method generates unique references for each dictionary entry in
+        `vals_list` based on a specified field that links to records in
+        another model (indicated by `model_name`). It uses existing references
+        from the related records as a basis and appends a suffix and an
+        incrementing index to ensure uniqueness.
+
+        Args:
+            model_name (str): The name of the related model to extract
+                              reference data from.
+            field_name (str): The key in each dictionary in `vals_list`
+                              containing the related record's ID.
+            vals_list (list of dict): A list of dictionaries where each dictionary
+                               represents values for a new record.
+            suffix (str, optional): A suffix to append to each generated reference.
+                               Defaults to an empty string.
+
+        Returns:
+            list: The modified `vals_list`, with a unique 'reference'
+                  entry in each dictionary.
+        """
+
+        # Extract unique references from vals_list
+        refs = self._prepare_references(model_name, field_name, vals_list)
+        line_index_dict = defaultdict(int)
+
+        # Populate vals with references
+        for vals in vals_list:
+            record_id = vals.get(field_name)
+            if record_id and refs.get(record_id):
+                line_index_dict[record_id] += 1
+                line_index = line_index_dict[record_id]
+                vals["reference"] = f"{refs[record_id]}{suffix}_{line_index}"
+            else:
+                # Handle cases where the field is not present
+                line_index_dict["no_record"] += 1
+                line_index = line_index_dict["no_record"]
+                vals["reference"] = f"no_{suffix}_{line_index}"
+
+        return vals_list

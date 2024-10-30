@@ -294,13 +294,15 @@ class CxTowerPlan(models.Model):
 
             # Duplicate actions linked to the line
             for action in line.action_ids:
-                new_action = action.copy(
+                new_action = action.with_context(reference_mixin_skip_copy=True).copy(
                     # link new actions to the new line
-                    {"line_id": new_line.id}
+                    {"line_id": new_line.id, "name": line.name}
                 )
 
                 # Duplicate variable values linked to the action
                 for variable_value in action.variable_value_ids:
-                    variable_value.copy({"plan_line_action_id": new_action.id})
+                    variable_value.with_context(reference_mixin_skip_self=True).copy(
+                        {"plan_line_action_id": new_action.id}
+                    )
 
         return new_plan
