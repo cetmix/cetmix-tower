@@ -367,18 +367,18 @@ class TestTowerPlan(TestTowerCommon):
         command_1 = self.Command.create(
             {"name": "New Test Command", "access_level": "3"}
         )
-        self.plan_line_2_1 = self.plan_line.create(
-            {
-                "sequence": 5,
-                "command_id": command_1.id,
-            }
-        )
 
         self.plan_2 = self.Plan.create(
             {
                 "name": "Test plan 2",
                 "note": "Create directory and list its content",
-                "line_ids": [(4, self.plan_line_2_1.id)],
+            }
+        )
+        self.plan_line_2_1 = self.plan_line.create(
+            {
+                "sequence": 5,
+                "plan_id": self.plan_2.id,
+                "command_id": command_1.id,
             }
         )
         self.assertTrue(self.plan_2.access_level_warn_msg)
@@ -663,12 +663,12 @@ class TestTowerPlan(TestTowerCommon):
                 "command_id": command.id,
                 "path": "/test/path",
                 # Condition based on Linux version
-                "condition": '{{ linux_version }} >= "5.0"',
+                "condition": '{{ test_linux_version }} >= "5.0"',
             }
         )
 
         # Create a variable for the action
-        variable = self.Variable.create({"name": "linux_version"})
+        variable = self.Variable.create({"name": "test_linux_version"})
 
         # Create an Action for the Plan Line
         action = self.plan_line_action.create(

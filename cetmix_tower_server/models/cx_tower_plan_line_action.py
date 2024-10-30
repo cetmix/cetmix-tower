@@ -1,10 +1,11 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import _, api, fields, models
 
 
 class CxTowerPlanLineAction(models.Model):
-    _inherit = ["cx.tower.variable.mixin"]
+    _inherit = ["cx.tower.variable.mixin", "cx.tower.reference.mixin"]
     _name = "cx.tower.plan.line.action"
     _description = "Cetmix Tower Flight Plan Line Action"
 
@@ -76,3 +77,11 @@ class CxTowerPlanLineAction(models.Model):
                 )
             else:
                 rec.name = _("Wrong action")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Use the common method from mixin with a custom suffix
+        vals_list = self._populate_references(
+            "cx.tower.plan.line", "line_id", vals_list, suffix="_action"
+        )
+        return super().create(vals_list)

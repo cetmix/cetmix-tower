@@ -406,14 +406,18 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line_action__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_view_form
@@ -1703,6 +1707,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__name
 msgid "Name"
 msgstr ""
 
@@ -2014,12 +2019,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Reference"
@@ -2034,12 +2042,15 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_command_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_template_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_action_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_reference_mixin_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_template_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_tag_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
 msgid "Reference must be unique"
 msgstr ""
 
@@ -2809,6 +2820,11 @@ msgstr ""
 msgid ""
 "Variable '%(var)s' can only be assigned to one of the models at a time: "
 "Server, Server Template, or Plan Line Action."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
+msgid "Variable Reference"
 msgstr ""
 
 #. module: cetmix_tower_server
