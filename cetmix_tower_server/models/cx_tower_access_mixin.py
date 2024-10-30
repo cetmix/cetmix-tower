@@ -36,6 +36,5 @@ class CxTowerAccessMixin(models.AbstractModel):
         lambda self: self._selection_access_level(),
         string="Access Level",
         default=lambda self: self._default_access_level(),
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
         required=True,
     )
