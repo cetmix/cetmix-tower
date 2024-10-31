@@ -299,7 +299,7 @@ class TestTowerPlan(TestTowerCommon):
         with self.assertRaises(AccessError):
             plan_name = test_plan_2_as_bob.name
 
-        # Add user to group
+        # Add user to group_user
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
         # Ensure that user can access the plan with access_level 1
         plan_name = test_plan_2_as_bob.name
@@ -320,18 +320,59 @@ class TestTowerPlan(TestTowerCommon):
                 ],
             }
         )
-        self.assertTrue(self.plan_3)
+        self.assertTrue(
+            self.plan_3.exists(),
+            msg="Manager should be able to create a new plan",
+        )
 
-        # Check what manager can't unlink exisiting plan
+        # Check what manager can't unlink existing plan
         with self.assertRaises(AccessError):
             self.plan_3.with_user(self.user_bob).unlink()
 
         # Add user_bob to group_root
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
 
-        # Check what root can unlink exisiting plan
-        result = self.plan_3.with_user(self.user_bob).unlink()
-        self.assertTrue(result)
+        # Check what root can unlink existing plan
+        self.plan_3.with_user(self.user_bob).unlink()
+        self.assertFalse(self.plan_3.exists(), "Plan should be unlinked and not exist")
+        # Remove user_bob from root group to test access to flight plans related
+        # to servers user isn't subscribed
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Assign plan_1 to self.server_test_1
+        self.write_and_invalidate(
+            self.plan_2, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        )
+
+        # Ensure Bob can't access plan as manager if he is not a follower
+        #  of self.server_test_1
+        with self.assertRaises(AccessError):
+            self.plan_2.with_user(self.user_bob).read([])
+        # Subscribe Bob to self.server_test_1
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        # Ensure Bob can now access plan as a follower of self.server_test_1
+        plan_2_read_result = self.plan_2.with_user(self.user_bob).read([])
+        self.assertEqual(
+            plan_2_read_result[0]["name"],
+            self.plan_2.name,
+            msg="Plan name should be same",
+        )
+        # Remove Bob from manager group
+        self.remove_from_group(self.user_bob, ["cetmix_tower_server.group_manager"])
+        # Change plan access level
+        self.write_and_invalidate(self.plan_2, **{"access_level": "1"})
+
+        # Ensure Bob retains access to plan_2 as user because he is a follower
+        plan_2_read_result = self.plan_2.with_user(self.user_bob).read([])
+        self.assertEqual(
+            plan_2_read_result[0]["name"],
+            self.plan_2.name,
+            msg="Plan name should be same",
+        )
 
     def test_plan_and_command_access_level(self):
         # Remove userbob from all cxtower_server groups
