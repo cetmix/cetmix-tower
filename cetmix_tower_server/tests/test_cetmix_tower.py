@@ -29,7 +29,7 @@ class TestCetmixTower(TestTowerCommon):
         self.assertEqual(result["exit_code"], 0, "Exit code must be equal to 0")
 
         # Check variable value
-        variable_value = self.VariableValues.search(
+        variable_value = self.VariableValue.search(
             [("variable_id", "=", variable_meme.id)]
         )
 
@@ -50,7 +50,7 @@ class TestCetmixTower(TestTowerCommon):
         self.assertEqual(result["exit_code"], 0, "Exit code must be equal to 0")
 
         # Check variable value
-        variable_value = self.VariableValues.search(
+        variable_value = self.VariableValue.search(
             [("variable_id", "=", variable_meme.id)]
         )
 
@@ -62,7 +62,7 @@ class TestCetmixTower(TestTowerCommon):
         variable_meme = self.Variable.create(
             {"name": "Meme Variable", "reference": "meme_variable"}
         )
-        global_value = self.VariableValues.create(
+        global_value = self.VariableValue.create(
             {"variable_id": variable_meme.id, "value_char": "Memes Globalvs"}
         )
 
@@ -79,7 +79,7 @@ class TestCetmixTower(TestTowerCommon):
         self.assertIsNone(value)
 
         # -- 3 -- Add server value and try again
-        server_value = self.VariableValues.create(
+        server_value = self.VariableValue.create(
             {
                 "variable_id": variable_meme.id,
                 "value_char": "Memes Servervs",

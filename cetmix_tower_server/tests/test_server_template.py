@@ -13,7 +13,7 @@ class TestTowerServerTemplate(TestTowerCommon):
             "The servers shouldn't exist",
         )
         # add variable values to server template
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "server_template_id": self.server_template_sample.id,
@@ -136,14 +136,14 @@ class TestTowerServerTemplate(TestTowerCommon):
             "Server should not exist",
         )
         # add variable values to server template
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "server_template_id": self.server_template_sample.id,
                 "value_char": "test template version",
             }
         )
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_url.id,
                 "server_template_id": self.server_template_sample.id,
@@ -209,7 +209,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         server_template = self.server_template_sample
 
         # Add variable values to the server template
-        original_variable_value = self.VariableValues.create(
+        original_variable_value = self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "server_template_id": server_template.id,
