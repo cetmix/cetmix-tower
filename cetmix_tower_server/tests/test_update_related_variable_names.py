@@ -53,7 +53,7 @@ class TestUpdateRelatedVariableNames(TestTowerCommon):
             }
         )
 
-        self.test_variable_value = self.VariableValues.create(
+        self.test_variable_value = self.VariableValue.create(
             {
                 "variable_id": self.variable_os.id,
                 "value_char": "{{ var1 }} is here and {{ var2 }} too",
