@@ -476,7 +476,7 @@ class TestTowerPlan(TestTowerCommon):
         # Add condition for first plan line
         self.plan_line_1.condition = "1 == 1"
         # Create a global value for the 'Version' variable
-        self.VariableValues.create(
+        self.VariableValue.create(
             {"variable_id": self.variable_version.id, "value_char": "14.0"}
         )
         # Add condition with variable
@@ -504,7 +504,7 @@ class TestTowerPlan(TestTowerCommon):
         Test plan with update server variables
         """
         # Add new variable to server
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "value_char": "14.0",
@@ -512,7 +512,7 @@ class TestTowerPlan(TestTowerCommon):
             }
         )
         # Create new variable value to action to update existing server variable
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "value_char": "16.0",
@@ -535,7 +535,7 @@ class TestTowerPlan(TestTowerCommon):
         )
 
         # Add a new variable value to an action that does not exist on the server
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_os.id,
                 "value_char": "Ubuntu",
@@ -586,7 +586,7 @@ class TestTowerPlan(TestTowerCommon):
         value as condition for next plan line
         """
         # Add new variable to server
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "value_char": "14.0",
@@ -594,7 +594,7 @@ class TestTowerPlan(TestTowerCommon):
             }
         )
         # Create new variable value to action to update existing server variable
-        self.VariableValues.create(
+        self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
                 "value_char": "16.0",
