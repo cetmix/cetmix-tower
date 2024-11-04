@@ -305,6 +305,7 @@ COMMAND_RESULT = {
         of cx.tower.server
         """
 
+        # -- 1 --
         # Test with default path
         rendered_command = self.server_test_1._render_command(self.command_create_dir)
         rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
@@ -321,6 +322,7 @@ COMMAND_RESULT = {
             "Rendered path doesn't match",
         )
 
+        # -- 2 --
         # Test with custom path
         rendered_command = self.server_test_1._render_command(
             self.command_create_dir, path="/such/much/path"
@@ -339,6 +341,28 @@ COMMAND_RESULT = {
             "Rendered path doesn't match",
         )
 
+        # -- 3 --
+        # Set variable_path to None and check again
+        variable_value_path = self.server_test_1.variable_value_ids.filtered(
+            lambda var_val: var_val.variable_id.id == self.variable_path.id
+        )
+        variable_value_path.value_char = None
+        rendered_command = self.server_test_1._render_command(self.command_create_dir)
+        rendered_code_expected = "cd False && mkdir test-odoo-1"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # -- 4 --
         # Set both path and code to None
         self.write_and_invalidate(
             self.command_create_dir, **{"code": None, "path": None}
