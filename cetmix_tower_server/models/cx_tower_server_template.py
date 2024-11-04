@@ -14,7 +14,7 @@ class CxTowerServerTemplate(models.Model):
     active = fields.Boolean(default=True)
 
     # --- Connection
-    ssh_port = fields.Char(string="SSH port", required=True, default="22")
+    ssh_port = fields.Char(string="SSH port", default="22")
     ssh_username = fields.Char(string="SSH Username")
     ssh_password = fields.Char(string="SSH Password")
     ssh_key_id = fields.Many2one(
@@ -94,7 +94,8 @@ class CxTowerServerTemplate(models.Model):
         context = self.env.context.copy()
         context.update(
             {
-                "default_server_template_id": self.id,
+                "default_server_template_id": self.id,  # pylint: disable=no-member
+                "default_color": self.color,
                 "default_ssh_port": self.ssh_port,
                 "default_ssh_username": self.ssh_username,
                 "default_ssh_password": self.ssh_password,
@@ -102,6 +103,22 @@ class CxTowerServerTemplate(models.Model):
                 "default_ssh_auth_mode": self.ssh_auth_mode,
             }
         )
+        if self.variable_value_ids:
+            context.update(
+                {
+                    "default_line_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "variable_id": line.variable_id.id,
+                                "value_char": line.value_char,
+                            },
+                        )
+                        for line in self.variable_value_ids
+                    ]
+                }
+            )
         return {
             "type": "ir.actions.act_window",
             "name": _("Create Server"),
@@ -122,7 +139,7 @@ class CxTowerServerTemplate(models.Model):
         )
         action.update(
             {
-                "domain": [("server_template_id", "=", self.id)],
+                "domain": [("server_template_id", "=", self.id)],  # pylint: disable=no-member
             }
         )
         return action
@@ -183,10 +200,16 @@ class CxTowerServerTemplate(models.Model):
         Returns:
             cx.tower.server: newly created server record
         """
-        servers = self.env["cx.tower.server"].create(
-            self._prepare_server_values(
-                name=name, server_template_id=self.id, **kwargs
-            ),
+        servers = (
+            self.env["cx.tower.server"]
+            .with_context(skip_ssh_settings_check=True)
+            .create(
+                self._prepare_server_values(
+                    name=name,
+                    server_template_id=self.id,
+                    **kwargs,  # pylint: disable=no-member
+                ),
+            )
         )
 
         for server in servers:

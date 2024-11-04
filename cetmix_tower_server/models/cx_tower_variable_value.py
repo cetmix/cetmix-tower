@@ -155,7 +155,7 @@ class TowerVariableValue(models.Model):
                 break
         return is_global
 
-    @api.depends("server_id", "server_template_id")
+    @api.depends("server_id", "server_template_id", "plan_line_action_id")
     def _compute_is_global(self):
         """
         If variable considered `global` when it's not linked to any record.

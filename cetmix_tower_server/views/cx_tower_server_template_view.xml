@@ -33,18 +33,25 @@
                                         /></a>
                             </div>
                         </div>
-
-                            <div
+                        <div
                                 class="container o_kanban_card_manage_pane dropdown-menu"
                                 role="menu"
                             >
-                                <div class="o_kanban_card_manage_settings row">
-                                    <ul
-                                        class="oe_kanban_colorpicker"
-                                        data-field="color"
-                                    />
+                            <div class="row">
+                                <div class="col-8">
+                                    <div>
+                                        <a
+                                                role="menuitem"
+                                                type="object"
+                                                name="action_create_server"
+                                            >Create Server</a>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="o_kanban_card_manage_settings row">
+                                <ul class="oe_kanban_colorpicker" data-field="color" />
+                            </div>
+                        </div>
                         <div class="oe_kanban_content">
                             <div class="oe_kanban_global_click">
                                 <div class="col-12 pt8 o_kanban_primary_right">
@@ -158,20 +165,13 @@
                                     <field name="ssh_port" />
                                     <field name="ssh_username" />
                                     <field name="use_sudo" />
-                                    <field
-                                        name="ssh_password"
-                                        attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
-                                        password="True"
-                                    />
-                                    <field
-                                        name="ssh_key_id"
-                                        attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
-                                    />
+                                    <field name="ssh_password" password="True" />
+                                    <field name="ssh_key_id" />
                                 </group>
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
-                        <page name="variables" string="Variables">
+                        <page name="variables" string="Configuration">
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
