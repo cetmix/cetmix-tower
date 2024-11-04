@@ -48,6 +48,9 @@ class TestTowerVariable(TestTowerCommon):
     def test_variable_values(self):
         """Test common variable operations"""
 
+        # -- 1 --
+        #  Server specific variables
+
         # Add two variables
         with Form(self.server_test_1) as f:
             with f.variable_value_ids.new() as line:
@@ -87,9 +90,17 @@ class TestTowerVariable(TestTowerCommon):
             with f.variable_value_ids.new() as line:
                 line.variable_id = self.variable_os
                 line.value_char = "Debian"
+
+            # Add an empty variable value
+            with f.variable_value_ids.new() as line:
+                line.variable_id = self.variable_url
             f.save()
 
-        vals = [(self.variable_os.id, "Debian"), (self.variable_version.id, "10.0")]
+        vals = [
+            (self.variable_os.id, "Debian"),
+            (self.variable_version.id, "10.0"),
+            (self.variable_url.id, False),
+        ]
         self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Test 'get_variable_values' function
@@ -105,13 +116,12 @@ class TestTowerVariable(TestTowerCommon):
         var_version = res_vars["test_version"]
 
         self.assertIsNone(var_dir, msg="Variable 'dir' must be None")
-        self.assertIsNone(var_url, msg="Variable 'url' must be None")
+        self.assertFalse(var_url, msg="Variable 'url' must be False")
         self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
         self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
 
-        # ***
-        # *** Test global variable values ***
-        # ***
+        # -- 2 --
+        # Test global variable values
 
         # Create a global value for the 'dir' variable
         self.VariableValues.create(
@@ -131,7 +141,7 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             var_dir, "/global/dir", msg="Variable 'dir' must be equal to '/global/dir'"
         )
-        self.assertIsNone(var_url, msg="Variable 'url' must be None")
+        self.assertFalse(var_url, msg="Variable 'url' must be False")
         self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
         self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
 
@@ -157,7 +167,7 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             var_dir, "/opt/odoo", msg="Variable 'dir' must be equal to '/opt/odoo'"
         )
-        self.assertIsNone(var_url, msg="Variable 'url' must be None")
+        self.assertFalse(var_url, msg="Variable 'url' must be False")
         self.assertEqual(var_os, "Debian", msg="Variable 'os' must be 'Debian'")
         self.assertEqual(var_version, "10.0", msg="Variable 'version' must be '10.0'")
 

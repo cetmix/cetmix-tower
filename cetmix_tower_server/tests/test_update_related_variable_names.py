@@ -2,7 +2,7 @@ from .common import TestTowerCommon
 
 
 class TestUpdateRelatedVariableNames(TestTowerCommon):
-    """Test Update Related Variable Names."""
+    """Test Update Related Variable Names"""
 
     def setUp(self):
         super().setUp()
@@ -54,7 +54,10 @@ class TestUpdateRelatedVariableNames(TestTowerCommon):
         )
 
         self.test_variable_value = self.VariableValues.create(
-            {"value_char": "{{ var1 }} is here and {{ var2 }} too"}
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "{{ var1 }} is here and {{ var2 }} too",
+            }
         )
 
         self.test_file_template = self.FileTemplate.create(
