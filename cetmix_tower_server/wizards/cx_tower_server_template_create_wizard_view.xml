@@ -6,10 +6,13 @@
         <field name="model">cx.tower.server.template.create.wizard</field>
         <field name="arch" type="xml">
             <form>
+                <div class="oe_title">
+                    <h1 class="d-flex flex-grow justify-content-between">
+                        <field name="name" placeholder="new server name" />
+                    </h1>
+                    <field name="color" widget="color_picker" />
+                </div>
                 <group>
-                    <group colspan="2">
-                        <field name="name" />
-                    </group>
                     <group name="main">
                         <field name="ip_v4_address" />
                         <field name="ip_v6_address" />
@@ -17,23 +20,27 @@
                     <group name="ssh">
                         <field name="ssh_auth_mode" />
                         <field name="ssh_port" />
-                        <field name="ssh_username" />
                         <field
-                            name="ssh_password"
-                            attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
-                            password="True"
+                            name="ssh_username"
+                            placeholder="this can be changed later"
                         />
-                        <field
-                            name="ssh_key_id"
-                            attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
-                        />
+                        <field name="ssh_password" password="True" />
+                        <field name="ssh_key_id" />
                     </group>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="variable_reference" invisible="1" />
+                            <field name="variable_id" />
+                            <field name="value_char" />
+                        </tree>
+                    </field>
                 </group>
                 <footer>
                     <button
                         name="action_confirm"
                         type="object"
                         string="Confirm"
+                        confirm="Are you sure?"
                         class="oe_highlight"
                     />
                     <button string="Cancel" special="cancel" />

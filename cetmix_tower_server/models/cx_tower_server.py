@@ -403,20 +403,37 @@ class CxTowerServer(models.Model):
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
     def _constraint_ssh_settings(self):
-        """Ensure SSH settings are valid"""
+        """Ensure SSH settings are valid.
+        Set 'skip_ssh_settings_check' context key to skip the checks
+        """
+
+        # Skip the check if context key is set
+        if self._context.get("skip_ssh_settings_check"):
+            return
+
         for rec in self:
+            # Combine all errors together
+            validation_errors = []
             if not rec.ip_v4_address and not rec.ip_v6_address:
-                raise ValidationError(
-                    _("Please provide IPv4 or IPv6 address for %(srv)s", srv=rec.name)
+                validation_errors.append(
+                    _(
+                        "Please provide IPv4 or IPv6 address for %(srv)s",
+                        srv=rec.name,
+                    )
                 )
             if rec.ssh_auth_mode == "p" and not rec.ssh_password:
-                raise ValidationError(
+                validation_errors.append(
                     _("Please provide SSH password for %(srv)s", srv=rec.name)
                 )
             if rec.ssh_auth_mode == "k" and not rec.ssh_key_id:
-                raise ValidationError(
+                validation_errors.append(
                     _("Please provide SSH Key for %(srv)s", srv=rec.name)
                 )
+
+            # Raise errors if any
+            if validation_errors:
+                validation_error = "\n".join(validation_errors)
+                raise ValidationError(validation_error)
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
@@ -460,7 +477,7 @@ class CxTowerServer(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_command_log"
         )
-        action["domain"] = [("server_id", "=", self.id)]
+        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
         return action
 
     def action_open_plan_logs(self):
@@ -470,7 +487,7 @@ class CxTowerServer(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_plan_log"
         )
-        action["domain"] = [("server_id", "=", self.id)]
+        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
         return action
 
     def _get_password(self):
