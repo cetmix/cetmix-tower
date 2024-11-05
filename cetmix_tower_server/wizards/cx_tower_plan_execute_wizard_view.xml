@@ -21,6 +21,11 @@
                         <span>show shared</span>
                         <field name="any_server" />
                     </div>
+                    <field
+                        name="note"
+                        readonly="1"
+                        attrs="{'invisible': [('note', '=', False)]}"
+                    />
                     <field name="plan_line_ids">
                         <tree decoration-bf="action=='plan'">
                             <field name="name" />
@@ -34,6 +39,7 @@
                                 optional="show"
                                 groups="cetmix_tower_server.group_manager"
                                 widget="many2many_tags"
+                                options="{'color_field': 'color'}"
                             />
                         </tree>
                     </field>

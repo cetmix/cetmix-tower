@@ -18,6 +18,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     command_id = fields.Many2one(
         "cx.tower.command",
     )
+    note = fields.Text(related="command_id.note", readonly=True)
     action = fields.Selection(
         selection=[
             ("ssh_command", "SSH command"),

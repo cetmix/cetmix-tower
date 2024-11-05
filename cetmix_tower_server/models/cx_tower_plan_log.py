@@ -49,7 +49,7 @@ class CxTowerPlanLog(models.Model):
     )
     plan_status = fields.Integer(string="Status")
     parent_flight_plan_log_id = fields.Many2one(
-        "cx.tower.plan.log",
+        "cx.tower.plan.log", string="Main Log", ondelete="cascade"
     )
 
     @api.depends("server_id.name", "name")

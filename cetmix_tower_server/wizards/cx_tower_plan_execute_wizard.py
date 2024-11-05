@@ -17,6 +17,7 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         "cx.tower.plan",
         required=True,
     )
+    note = fields.Text(related="plan_id.note", readonly=True)
     plan_domain = fields.Binary(
         compute="_compute_plan_domain",
     )
