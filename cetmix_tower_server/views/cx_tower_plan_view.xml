@@ -79,6 +79,7 @@
                                         optional="show"
                                         widget="many2many_tags"
                                         groups="cetmix_tower_server.group_manager"
+                                        options="{'color_field': 'color'}"
                                     />
                                     <field name="use_sudo" optional="show" />
                                     <field name="path" optional="show" />

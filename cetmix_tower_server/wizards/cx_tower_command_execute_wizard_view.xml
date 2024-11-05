@@ -54,6 +54,11 @@
                         attrs="{'invisible': [('action', '=', 'python_code')]}"
                         placeholder="e.g. /home/user This field does NOT support variables"
                     />
+                    <field
+                        name="note"
+                        readonly="1"
+                        attrs="{'invisible': [('note', '=', False)]}"
+                    />
                 </group>
                     <field
                     name="result"
