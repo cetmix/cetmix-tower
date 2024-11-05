@@ -106,6 +106,7 @@
                 <field name="duration_current" optional="show" />
                 <field name="server_id" optional="show" />
                 <field name="command_id" optional="show" />
+                <field name="command_action" optional="show" />
                 <field name="command_status" optional="show" />
                 <field name="is_running" optional="hide" />
             </tree>
@@ -120,6 +121,28 @@
                 <field name="label" />
                 <field name="server_id" />
                 <field name="command_id" />
+                <separator />
+                <filter
+                    string="SSH command"
+                    name="filter_action_ssh_command"
+                    domain="[('command_action', '=', 'ssh_command')]"
+                />
+                <filter
+                    string="Python code"
+                    name="filter_action_python_code"
+                    domain="[('command_action', '=', 'python_code')]"
+                />
+                <filter
+                    string="File from template"
+                    name="filter_file_action"
+                    domain="[('command_action', '=', 'file_using_template')]"
+                />
+                <filter
+                    string="Run a flight plan"
+                    name="filter_plan_action"
+                    domain="[('command_action', '=', 'plan')]"
+                />
+                <separator />
                 <filter
                     string="Success"
                     name="filter_success"
@@ -153,6 +176,12 @@
                         name="group_command"
                         domain="[]"
                         context="{'group_by': 'command_id'}"
+                    />
+                    <filter
+                        string="Action"
+                        name="group_action"
+                        domain="[]"
+                        context="{'group_by': 'command_action'}"
                     />
                     <filter
                         string="Start date"
