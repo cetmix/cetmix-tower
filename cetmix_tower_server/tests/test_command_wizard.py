@@ -129,3 +129,56 @@ class TestTowerCommandWizard(TestTowerCommon):
         test_wizard.execute_command_on_server()
         # Check that path access is valid for the manager
         test_wizard.read(["path"])
+
+    def test_execute_command_in_wizard_multiple_servers(self):
+        """
+        Test that raises an error when multiple servers are selected
+        """
+
+        # Add Bob to `root` group in order to create a wizard
+
+        server_test_2 = self.Server.create(
+            {
+                "name": "Test 2",
+                "ip_v4_address": "localhost",
+                "ssh_username": "root",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+
+        # Create new wizard with multiple servers selected
+        test_wizard = (
+            self.env["cx.tower.command.execute.wizard"]
+            .with_user(self.user_bob)
+            .create(
+                {
+                    "server_ids": [self.server_test_1.id, server_test_2.id],
+                    "command_id": self.command_create_dir.id,
+                }
+            )
+        ).with_user(self.user_bob)
+
+        # Force rendered code computation
+        test_wizard._compute_rendered_code()
+
+        # Ensure that executing command with multiple servers
+        # selected raises a ValidationError
+        with self.assertRaises(
+            ValidationError,
+            msg="You cannot run custom code on multiple servers at once.",
+        ):
+            test_wizard.execute_command_in_wizard()
+
+        # Now, test with a single server selected
+        test_wizard.server_ids = [self.server_test_1.id]
+
+        # Ensure that executing command works with a single server selected
+        test_wizard.execute_command_in_wizard()
+        self.assertTrue(
+            test_wizard.result,
+            msg="Command execution should succeed with a single server selected",
+        )

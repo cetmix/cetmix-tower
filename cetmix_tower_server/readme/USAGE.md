@@ -69,12 +69,13 @@ for record in records:
   - **Path**: Directory where command will be executed. Important: this field does not support variables! Ensure that user has access to this location even if you run command using sudo.
   - **Code**: Raw command code
   - **Preview**: Command code rendered using server variables.
-  **IMPORTANT:** If several servers are selected preview will be rendered for the first one. However during the command execution command code will be rendered for each server separately.
+  **IMPORTANT:** If several servers are selected preview will not be rendered. However during the command execution command code will be rendered for each server separately.
 
 There are two action buttons available in the wizard:
 
 - **Run**. Executes a command using server "run" method and log command result into the "Command Log".
 - **Run in wizard**. Executes a command directly in the wizard and show command log in a new wizard window.
+**IMPORTANT:** Button will be show only if single server is selected. If you try to run a command for several servers from code, you will get a ValidationError.
 
 You can check command execution logs in the `Cetmix Tower/Commands/Command Logs` menu.
 Important! If you want to delete a command you need to delete all its logs manually before doing that.

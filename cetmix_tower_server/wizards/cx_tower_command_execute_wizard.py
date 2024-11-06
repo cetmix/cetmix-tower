@@ -65,9 +65,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         Show "Servers" field only if the number of servers is greater than 1.
         """
 
-        self.show_servers = (
-            True if self.server_ids and len(self.server_ids) > 1 else False
-        )
+        self.show_servers = self.server_ids and len(self.server_ids) > 1
 
     @api.onchange("action")
     def _onchange_action(self):
@@ -97,7 +95,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     @api.depends("code", "server_ids", "action")
     def _compute_rendered_code(self):
         for record in self:
-            if record.server_ids:
+            if record.server_ids and len(record.server_ids) == 1:
                 server_id = record.server_ids[0]  # TODO testing only!!!
 
                 # Get variable list
@@ -187,6 +185,11 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         """
         Executes a given code as is in wizard
         """
+        # Check if multiple servers are selected
+        if len(self.server_ids) > 1:
+            raise ValidationError(
+                _("You cannot run custom code on multiple servers at once.")
+            )
 
         # Raise access error if non manager is trying to call this method
         if not self.env.user.has_group(

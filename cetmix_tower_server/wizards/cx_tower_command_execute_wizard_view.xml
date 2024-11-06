@@ -77,7 +77,11 @@
                             groups="cetmix_tower_server.group_manager"
                         />
                     </page>
-                    <page name="preview" string="Preview">
+                    <page
+                        name="preview"
+                        string="Preview"
+                        attrs="{'invisible': [('show_servers', '=', True)]}"
+                    >
                         <field
                             name="rendered_code"
                             widget="ace"
@@ -102,7 +106,7 @@
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
                         groups="cetmix_tower_server.group_manager"
-                        attrs="{'invisible': ['|', ('result', '!=', False),('code', '=', False)]}"
+                        attrs="{'invisible': ['|', '|', ('result', '!=', False), ('code', '=', False), ('show_servers', '=', True)]}"
                     />
                     <button string="Cancel" special="cancel" />
                     <button
