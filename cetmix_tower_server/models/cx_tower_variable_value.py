@@ -262,20 +262,17 @@ class TowerVariableValue(models.Model):
         """Ensure that a variable is only assigned to one model at a time."""
         for record in self:
             # Check how many of the fields are set
-            count_assigned = sum(
-                1
-                for field in [
-                    record.server_id,
-                    record.server_template_id,
-                    record.plan_line_action_id,
-                ]
-                if field
+            count_assigned = (
+                bool(record.server_id)
+                + bool(record.server_template_id)
+                + bool(record.plan_line_action_id)
             )
-
             if count_assigned > 1:
                 raise ValidationError(
                     _(
-                        "A variable value can only be assigned to one of the models:"
-                        "Server, Server Template, or Plan Line Action."
+                        "Variable '%(var)s' can only be assigned to one of the models "
+                        "at a time: "
+                        "Server, Server Template, or Plan Line Action.",
+                        var=record.variable_id.name,
                     )
                 )
