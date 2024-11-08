@@ -268,6 +268,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__action
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Action"
 msgstr ""
@@ -586,6 +587,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_template_mixin
 msgid "Cetmix Tower template rendering mixin"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
+msgid "Child plans"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1085,6 +1091,7 @@ msgid "File downloaded!"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "File from template"
 msgstr ""
@@ -1618,6 +1625,21 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__parent_flight_plan_log_id
+msgid "Main Log"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
+msgid "Main plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
+msgid "Main plans"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_manager
 msgid "Manager"
 msgstr ""
@@ -1732,9 +1754,11 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__note
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__note
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__note
@@ -1825,11 +1849,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__os_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__os_id
 msgid "Operating System"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__parent_flight_plan_log_id
-msgid "Parent Flight Plan Log"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1964,6 +1983,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__action__python_code
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Python code"
 msgstr ""
@@ -2094,6 +2114,11 @@ msgid "Run Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
+msgid "Run a flight plan"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid ""
 "Run code as it appears in 'Rendered code' in wizard and return to wizard. "
@@ -2191,6 +2216,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__action__ssh_command
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 msgid "SSH command"
 msgstr ""
 
@@ -2395,6 +2421,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Set Variable Values"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__server_status
+msgid ""
+"Set the following status if command is executed successfully. Leave "
+"'Undefined' if you don't need to update the status"
 msgstr ""
 
 #. module: cetmix_tower_server
