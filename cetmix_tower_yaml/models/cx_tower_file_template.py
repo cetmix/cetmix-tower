@@ -10,13 +10,15 @@ class CxTowerFileTemplate(models.Model):
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
         res += [
-            "file_name",
-            "code",
-            "server_dir",
-            "note",
-            "keep_when_deleted",
-            "file_type",
+            "name",
             "source",
+            "file_type",
+            "server_dir",
+            "file_name",
+            "keep_when_deleted",
             "tag_ids",
+            "note",
+            "code",
+            "variable_ids",
         ]
         return res

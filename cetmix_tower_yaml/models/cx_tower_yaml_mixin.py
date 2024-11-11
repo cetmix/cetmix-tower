@@ -61,6 +61,7 @@ class CxTowerYamlMixin(models.AbstractModel):
                 record._prepare_record_for_yaml(),
                 Dumper=CustomDumper,
                 default_flow_style=False,
+                sort_keys=False,
             )
             record.update(
                 {
@@ -78,6 +79,20 @@ class CxTowerYamlMixin(models.AbstractModel):
                 record_vals = record._post_process_yaml_dict_values(record_yaml_dict)
                 record.update(record_vals)
 
+    def create(self, vals_list):
+        # Handle validation error when field values are not valid
+        try:
+            return super().create(vals_list)
+        except ValueError as e:
+            raise ValidationError(str(e)) from e
+
+    def write(self, vals):
+        # Handle validation error when field values are not valid
+        try:
+            return super().write(vals)
+        except ValueError as e:
+            raise ValidationError(str(e)) from e
+
     def _prepare_record_for_yaml(self):
         """Reads and processes current record before converting it to YAML
 
@@ -92,10 +107,13 @@ class CxTowerYamlMixin(models.AbstractModel):
     def _get_fields_for_yaml(self):
         """Get ist of field to be present in YAML
 
+        Set 'no_yaml_service_fields' context key to skip
+            service fields creation (cetmix_tower_yaml_version, cetmix_tower_model)
+
         Returns:
             list(): list of fields to be used as YAML keys
         """
-        return ["name", "reference"]
+        return ["reference"]
 
     def _post_process_record_values(self, values):
         """Post process record values
@@ -108,22 +126,26 @@ class CxTowerYamlMixin(models.AbstractModel):
             dict(): processed values
         """
         # We don't need id because we are not using it
-        values.pop("id")
+        values.pop("id", None)
 
         # Add YAML format version and model
-        model_name = self._name.replace("cx.tower.", "").replace(".", "_")
-        values.update(
-            {
+        if not self._context.get("no_yaml_service_fields"):
+            model_name = self._name.replace("cx.tower.", "").replace(".", "_")
+            model_values = {
                 "cetmix_tower_yaml_version": self.CETMIX_TOWER_YAML_VERSION,
                 "cetmix_tower_model": model_name,
             }
-        )
+        else:
+            model_values = {}
 
         # Parse access level
-        if "access_level" in values:
-            values.update(
-                {"access_level": self.TO_YAML_ACCESS_LEVEL[values["access_level"]]}
+        access_level = values.pop("access_level", None)
+        if access_level:
+            model_values.update(
+                {"access_level": self.TO_YAML_ACCESS_LEVEL[access_level]}
             )
+
+        values = {**model_values, **values}
 
         # Check if we need to return a record dict or just a reference
         # Use context value first, revert to the record setting if not defined
@@ -223,7 +245,7 @@ class CxTowerYamlMixin(models.AbstractModel):
         return hasattr(model, "yaml_code")
 
     def _process_relation_field_value(self, field, value, record_mode=False):
-        """Post process Many2many or Many2one value
+        """Post process One2many, Many2many or Many2one value
 
         Args:
             field (Char): Field the value belongs to
@@ -247,7 +269,10 @@ class CxTowerYamlMixin(models.AbstractModel):
         # Step 2: Return False if the field type doesn't match
         # or comodel is not defined
         field_type = field_obj.type
-        if field_type not in ["many2many", "many2one"] or not field_obj.comodel_name:
+        if (
+            field_type not in ["one2many", "many2many", "many2one"]
+            or not field_obj.comodel_name
+        ):
             return False
 
         comodel = self.env[field_obj.comodel_name]
@@ -258,9 +283,9 @@ class CxTowerYamlMixin(models.AbstractModel):
             return self._process_m2o_value(
                 comodel, value, explode_related_record, record_mode
             )
-        if field_type == "many2many":
+        if field_type in ["one2many", "many2many"]:
             return self._process_x2m_values(
-                comodel, value, explode_related_record, record_mode
+                comodel, field_type, value, explode_related_record, record_mode
             )
 
         # Step 4: fall back if field type is not supported
@@ -290,7 +315,13 @@ class CxTowerYamlMixin(models.AbstractModel):
             # If the context specifies to explode the related record,
             # return its dictionary representation
             if explode_related_record:
-                return record._prepare_record_for_yaml() if record else False
+                return (
+                    record.with_context(
+                        no_yaml_service_fields=True
+                    )._prepare_record_for_yaml()
+                    if record
+                    else False
+                )
 
             # Otherwise, return just the reference (or False if record does not exist)
             return record.reference if record else False
@@ -306,7 +337,9 @@ class CxTowerYamlMixin(models.AbstractModel):
         # If the value is a dictionary, extract the reference from it
         elif isinstance(value, dict):
             reference = value.get("reference")
-            record = self._update_or_create_related_record(comodel, reference, value)
+            record = self._update_or_create_related_record(
+                comodel, reference, value, create_immediately=True
+            )
         else:
             return False
 
@@ -317,11 +350,12 @@ class CxTowerYamlMixin(models.AbstractModel):
         return record.id if record else False
 
     def _process_x2m_values(
-        self, comodel, values, explode_related_record, record_mode=False
+        self, comodel, field_type, values, explode_related_record, record_mode=False
     ):
         """Post process many2many value
         Args:
             comodel (BaseClass): Model the value belongs to
+            field_type (Char): Field type
             values (list()): Values to process
             explode_related_record (Bool): If True return entire record dict
                 instead of a reference
@@ -343,7 +377,11 @@ class CxTowerYamlMixin(models.AbstractModel):
                 # return its dictionary representation
                 if explode_related_record:
                     record_list.append(
-                        record._prepare_record_for_yaml() if record else False
+                        record.with_context(
+                            no_yaml_service_fields=True
+                        )._prepare_record_for_yaml()
+                        if record
+                        else False
                     )
 
                 # Otherwise, return just the reference
@@ -367,7 +405,10 @@ class CxTowerYamlMixin(models.AbstractModel):
             elif isinstance(value, dict):
                 reference = value.get("reference")
                 record = self._update_or_create_related_record(
-                    comodel, reference, value
+                    comodel,
+                    reference,
+                    value,
+                    create_immediately=field_type == "many2many",
                 )
 
             # Step 2: Final fallback: attempt to retrieve the record by reference
@@ -375,22 +416,27 @@ class CxTowerYamlMixin(models.AbstractModel):
             if not record and reference:
                 record = comodel.get_by_reference(reference)
 
-            # Save record id
+            # Save record data
             if record:
-                record_ids.append(record.id)
+                record_ids.append(
+                    record if isinstance(record, tuple) else (4, record.id)
+                )
 
         return record_ids
 
-    def _update_or_create_related_record(self, model, reference, values):
+    def _update_or_create_related_record(
+        self, model, reference, values, create_immediately=False
+    ):
         """Update related record with provided values or create a new one
 
         Args:
             model (BaseModel): Related record model
             values (dict()): Values to update existing/create new record
             reference (Char): Record reference
-
+            create_immediately (Bool): If True create a new record immediately.
+                Used for Many2one fields.
         Returns:
-            record: Existing or new record
+            record: Existing record or new record tuple
         """
 
         # If reference is found, retrieve the corresponding record
@@ -400,13 +446,22 @@ class CxTowerYamlMixin(models.AbstractModel):
             # If the record exists, update it with the values from the dictionary
             if record:
                 record.write(record._post_process_yaml_dict_values(values))
+
             # If the record does not exist, create a new one
             else:
-                record = model.create(model._post_process_yaml_dict_values(values))
+                if create_immediately:
+                    record = model.create(model._post_process_yaml_dict_values(values))
+                else:
+                    # Use "Create" service command tuple
+                    record = (0, 0, model._post_process_yaml_dict_values(values))
 
         # If there's no reference but value is a dict, create a new record
         else:
-            record = model.create(model._post_process_yaml_dict_values(values))
+            if create_immediately:
+                record = model.create(model._post_process_yaml_dict_values(values))
+            else:
+                # Use "Create" service command tuple
+                record = (0, 0, model._post_process_yaml_dict_values(values))
 
         # Return the record's ID if it exists, otherwise return False
         return record or False
