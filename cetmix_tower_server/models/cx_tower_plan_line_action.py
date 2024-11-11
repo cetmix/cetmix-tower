@@ -78,10 +78,10 @@ class CxTowerPlanLineAction(models.Model):
             else:
                 rec.name = _("Wrong action")
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        # Use the common method from mixin with a custom suffix
-        vals_list = self._populate_references(
-            "cx.tower.plan.line", "line_id", vals_list, suffix="_action"
+    # Check cx.tower.reference.mixin for the function documentation
+    def _get_pre_populated_model_data(self):
+        res = super()._get_pre_populated_model_data()
+        res.update(
+            {"cx.tower.plan.line.action": ["cx.tower.plan.line", "line_id", "action"]}
         )
-        return super().create(vals_list)
+        return res

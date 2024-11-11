@@ -282,10 +282,16 @@ class TowerVariableValue(models.Model):
                     )
                 )
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        # Use the common method from mixin
-        vals_list = self._populate_references(
-            "cx.tower.variable", "variable_id", vals_list, suffix="_variable"
+    # Check cx.tower.reference.mixin for the function documentation
+    def _get_pre_populated_model_data(self):
+        res = super()._get_pre_populated_model_data()
+        res.update(
+            {
+                "cx.tower.variable.value": [
+                    "cx.tower.variable",
+                    "variable_id",
+                    "variable",
+                ]
+            }
         )
-        return super().create(vals_list)
+        return res
