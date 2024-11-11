@@ -137,7 +137,7 @@
                 />
                 <filter
                     string="Server tight"
-                    name="filter_global"
+                    name="server_tight"
                     domain="[('server_ids', '!=', False)]"
                 />
                 <separator />
