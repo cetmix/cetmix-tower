@@ -10,13 +10,16 @@
                 <field name="is_global" widget="boolean_toggle" />
                 <field
                     name="server_id"
-                    attrs="{'readonly': [('server_template_id', '!=', False)]}"
+                    attrs="{'readonly': ['|',('server_template_id', '!=', False), ('plan_line_action_id', '!=', False)]}"
                 />
-                <field
+            <field
                     name="server_template_id"
-                    attrs="{'readonly': [('server_id', '!=', False)]}"
+                    attrs="{'readonly': ['|',('server_id', '!=', False), ('plan_line_action_id', '!=', False)]}"
                 />
-                <field name="plan_line_action_id" />
+            <field
+                    name="plan_line_action_id"
+                    attrs="{'readonly': ['|',('server_id', '!=', False), ('server_template_id', '!=', False)]}"
+                />
                 <field name="value_char" />
             </tree>
         </field>

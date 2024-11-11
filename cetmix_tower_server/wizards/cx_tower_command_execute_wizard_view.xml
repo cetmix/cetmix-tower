@@ -16,9 +16,6 @@
                         Remember: Python code is executed on the Tower server, not on the remote one.
                     </p>
                 </div>
-                <h2>
-                    Rendered code is shown as for the first selected server!
-                </h2>
                 <group>
                     <field name="show_servers" invisible="1" />
                     <field
