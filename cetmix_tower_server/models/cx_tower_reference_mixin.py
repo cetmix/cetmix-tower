@@ -15,6 +15,11 @@ class CxTowerReferenceMixin(models.AbstractModel):
     _name = "cx.tower.reference.mixin"
     _description = "Cetmix Tower reference mixin"
 
+    # Used to check the reference before it's being fixed.
+    # THis is needed to ensure that there is at least one
+    # valid symbol that can be used later as a new reference basis.
+    REFERENCE_PRELIMINARY_PATTERN = r"[\da-zA-Z]"
+
     name = fields.Char(required=True)
     reference = fields.Char(
         index=True,
@@ -36,6 +41,18 @@ class CxTowerReferenceMixin(models.AbstractModel):
             str: A regex pattern
         """
         return "[a-z0-9_]"
+
+    def _get_pre_populated_model_data(self):
+        """Returns List of models that should try to generate
+        references based on the related model reference.
+
+        Eg flight plan lines references are generated based on the flight plan one.
+
+        Returns:
+            dict: Model values dictionary:
+            {model_name: [parent_model, relation_field, custom_suffix]}
+        """
+        return {}
 
     def _generate_or_fix_reference(self, reference_source):
         """
@@ -74,7 +91,10 @@ class CxTowerReferenceMixin(models.AbstractModel):
         else:
             domain = []
         final_domain = expression.AND([domain, [("reference", "=", final_reference)]])
-        while self.search_count(final_domain) > 0:
+
+        # Search all records without restrictions including archived
+        self_with_sudo_and_context = self.sudo().with_context(active_test=False)
+        while self_with_sudo_and_context.search_count(final_domain) > 0:
             counter += 1
             final_reference = _(f"{reference}_{counter}")
             final_domain = expression.AND(
@@ -126,15 +146,42 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Returns:
             Records: The created record(s).
         """
-        if not self._context.get("reference_mixin_override"):
-            for vals in vals_list:
-                if vals.get("name"):
-                    vals["name"] = vals["name"].strip()
-                # Generate reference
-                reference = self._generate_or_fix_reference(
-                    vals.get("reference") or vals.get("name")
+
+        if vals_list and not self._context.get("reference_mixin_override"):
+            # Check if we need to populate references based on parent record
+            auto_generate_settings = self._get_pre_populated_model_data().get(
+                self._name
+            )
+            if auto_generate_settings:
+                parent_model, relation_field, suffix = auto_generate_settings
+                vals_list = self._pre_populate_references(
+                    parent_model, relation_field, vals_list, suffix
                 )
-                vals.update({"reference": reference})
+
+            # Fix or create references
+            for vals in vals_list:
+                if not vals:
+                    continue
+
+                # Remove leading and trailing whitespaces from name
+                vals_name = vals.get("name", "")
+                name = vals_name.strip()
+
+                # Remove leading and trailing whitespaces from reference
+                reference = vals.get("reference", "").strip()
+
+                # Nothing can be done if no name or reference is provided
+                if not name and not reference:
+                    continue
+
+                # Save name back to vals if it was modified
+                if vals_name != name:
+                    vals["name"] = name
+
+                # Generate reference
+                vals.update(
+                    {"reference": self._generate_or_fix_reference(reference or name)}
+                )
         return super().create(vals_list)
 
     def write(self, vals):
@@ -289,14 +336,18 @@ class CxTowerReferenceMixin(models.AbstractModel):
             ) from err
 
         # Extract all unique ids from vals_list
-        line_ids = {vals.get(key_name) for vals in vals_list if vals.get(key_name)}
+        line_ids = {
+            vals.get(key_name)
+            for vals in vals_list
+            if vals.get(key_name) and not vals.get("reference")
+        }
 
         # Fetch all line references in a single query
         lines = CxModel.browse(line_ids)
-        return {line.id: line.reference for line in lines}
+        return {line.id: line.reference for line in lines if line.reference}
 
     @api.model
-    def _populate_references(self, model_name, field_name, vals_list, suffix=""):
+    def _pre_populate_references(self, model_name, field_name, vals_list, suffix=""):
         """
         Populates reference fields in a list of dictionaries (vals_list)
         intended for record creation.
@@ -306,6 +357,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         another model (indicated by `model_name`). It uses existing references
         from the related records as a basis and appends a suffix and an
         incrementing index to ensure uniqueness.
+        If reference is present in values it will not be overwritten.
 
         Args:
             model_name (str): The name of the related model to extract
@@ -322,17 +374,27 @@ class CxTowerReferenceMixin(models.AbstractModel):
                   entry in each dictionary.
         """
 
-        # Extract unique references from vals_list
-        refs = self._prepare_references(model_name, field_name, vals_list)
+        # Extract parent record references from vals_list
+        parent_record_refs = self._prepare_references(model_name, field_name, vals_list)
         line_index_dict = defaultdict(int)
 
         # Populate vals with references
         for vals in vals_list:
+            # Skip if reference is provided explicitly and has symbols
+            existing_reference = vals.get("reference")
+            if existing_reference and bool(
+                re.search(self.REFERENCE_PRELIMINARY_PATTERN, existing_reference)
+            ):
+                continue
+
+            # Compose based on related record reference if exists
             record_id = vals.get(field_name)
-            if record_id and refs.get(record_id):
+            if record_id and parent_record_refs.get(record_id):
                 line_index_dict[record_id] += 1
                 line_index = line_index_dict[record_id]
-                vals["reference"] = f"{refs[record_id]}{suffix}_{line_index}"
+                vals[
+                    "reference"
+                ] = f"{parent_record_refs[record_id]}_{suffix}_{line_index}"
             else:
                 # Handle cases where the field is not present
                 line_index_dict["no_record"] += 1
