@@ -3,14 +3,14 @@
 from odoo import models
 
 
-class CxTowerTag(models.Model):
-    _name = "cx.tower.tag"
-    _inherit = ["cx.tower.tag", "cx.tower.yaml.mixin"]
+class CxTowerVariableValue(models.Model):
+    _name = "cx.tower.variable.value"
+    _inherit = ["cx.tower.variable.value", "cx.tower.yaml.mixin"]
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
         res += [
-            "name",
-            "color",
+            "variable_id",
+            "value_char",
         ]
         return res

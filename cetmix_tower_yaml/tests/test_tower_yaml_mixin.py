@@ -226,8 +226,12 @@ class TestTowerYamlMixin(TransactionCase):
             record_mode=False,
         )
         self.assertEqual(len(result), 2, "Must be 2 records")
-        self.assertIn(self.tag_doge.id, result, "Record ID was not resolved correctly")
-        self.assertIn(self.tag_pepe.id, result, "Record ID was not resolved correctly")
+        self.assertIn(
+            (4, self.tag_doge.id), result, "Record ID was not resolved correctly"
+        )
+        self.assertIn(
+            (4, self.tag_pepe.id), result, "Record ID was not resolved correctly"
+        )
 
         # -- 3 --
         # Yaml with non existing reference -> Record
@@ -258,9 +262,15 @@ class TestTowerYamlMixin(TransactionCase):
         file_template = self.env["cx.tower.file.template"].create(
             {"name": "Test m2o", "reference": "test_m2o"}
         )
-        file_template_values = file_template._prepare_record_for_yaml()
-        tag_doge_values = self.tag_doge._prepare_record_for_yaml()
-        tag_pepe_values = self.tag_pepe._prepare_record_for_yaml()
+        file_template_values = file_template.with_context(
+            no_yaml_service_fields=True
+        )._prepare_record_for_yaml()
+        tag_doge_values = self.tag_doge.with_context(
+            no_yaml_service_fields=True
+        )._prepare_record_for_yaml()
+        tag_pepe_values = self.tag_pepe.with_context(
+            no_yaml_service_fields=True
+        )._prepare_record_for_yaml()
         command = (
             self.env["cx.tower.command"]
             .create(
@@ -318,8 +328,12 @@ class TestTowerYamlMixin(TransactionCase):
             field="tag_ids", value=[tag_doge_values, tag_pepe_values], record_mode=False
         )
         self.assertEqual(len(result), 2, "Must be 2 records")
-        self.assertIn(self.tag_doge.id, result, "Record ID was not resolved correctly")
-        self.assertIn(self.tag_pepe.id, result, "Record ID was not resolved correctly")
+        self.assertIn(
+            (4, self.tag_doge.id), result, "Record ID was not resolved correctly"
+        )
+        self.assertIn(
+            (4, self.tag_pepe.id), result, "Record ID was not resolved correctly"
+        )
         # -- 3 --
         # Yaml with non existing reference -> Record
         file_template_values.update(
@@ -422,6 +436,7 @@ class TestTowerYamlMixin(TransactionCase):
             model=FileTemplateModel,
             reference="doge_file",
             values=values_to_update,
+            create_immediately=True,
         )
         self.assertEqual(
             record.name, values_to_update["name"], "Value was not updated properly"
@@ -435,6 +450,7 @@ class TestTowerYamlMixin(TransactionCase):
             model=FileTemplateModel,
             reference=False,
             values=values_to_update,
+            create_immediately=True,
         )
         self.assertEqual(
             record.name, values_to_update["name"], "Value was not updated properly"

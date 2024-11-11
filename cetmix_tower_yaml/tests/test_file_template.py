@@ -10,25 +10,26 @@ class TestTowerFileTemplate(TransactionCase):
         self.FileTemplate = self.env["cx.tower.file.template"]
 
         # Expected YAML content of the test file template
-        self.file_template_test_yaml = """cetmix_tower_model: file_template
-cetmix_tower_yaml_version: 1
+        self.file_template_test_yaml = """cetmix_tower_yaml_version: 1
+cetmix_tower_model: file_template
+reference: dockerfile_unit_test
+name: Dockerfile Test
+source: tower
+file_type: text
+server_dir: /opt
+file_name: Dockerfile
+keep_when_deleted: true
+tag_ids: false
+note: |-
+  Used to build Odoo addons image.
+  Depends on Odoo core image.
 code: |-
   FROM odoo:{{ odoo_version }}
   # Install git-aggregator and tools for requirements generation
   RUN pip3 install --upgrade pip && pip install manifestoo setuptools-odoo git-aggregator
   # Let's go!
   USER odoo
-file_name: Dockerfile
-file_type: text
-keep_when_deleted: true
-name: Dockerfile Test
-note: |-
-  Used to build Odoo addons image.
-  Depends on Odoo core image.
-reference: dockerfile_unit_test
-server_dir: /opt
-source: tower
-tag_ids: false
+variable_ids: false
 """  # noqa
 
         # YAML content translated into Python dict
