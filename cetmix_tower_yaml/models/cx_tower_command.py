@@ -11,12 +11,16 @@ class CxTowerCommand(models.Model):
         res = super()._get_fields_for_yaml()
         res += [
             "access_level",
-            "allow_parallel_run",
+            "name",
             "action",
-            "code",
-            "file_template_id",
+            "allow_parallel_run",
             "note",
-            "path",
+            "os_ids",
             "tag_ids",
+            "path",
+            "file_template_id",
+            "flight_plan_id",
+            "code",
+            "variable_ids",
         ]
         return res

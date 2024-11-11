@@ -16,7 +16,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__yaml_explode
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file_template__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_os__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_explode
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_tag__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable__yaml_explode
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_explode
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_explode
 msgid "Add entire related record data instead of just a reference"
 msgstr ""
@@ -27,8 +33,38 @@ msgid "Cetmix Tower Command"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan
+msgid "Cetmix Tower Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line
+msgid "Cetmix Tower Flight Plan Line"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line_action
+msgid "Cetmix Tower Flight Plan Line Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_os
+msgid "Cetmix Tower Operating System"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_tag
 msgid "Cetmix Tower Tag"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable
+msgid "Cetmix Tower Variable"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_value
+msgid "Cetmix Tower Variable Values"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -44,7 +80,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__display_name
 msgid "Display Name"
 msgstr ""
@@ -52,7 +94,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_explode
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_explode
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_explode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_explode
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_explode
 msgid "Explode"
 msgstr ""
@@ -60,7 +108,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__id
 msgid "ID"
 msgstr ""
@@ -68,7 +122,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -83,6 +143,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 msgid "YAML"
 msgstr ""
 
@@ -98,7 +159,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_code
 msgid "Yaml Code"
 msgstr ""
@@ -106,7 +173,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_file
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_file
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_file
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_file
 msgid "Yaml File"
 msgstr ""
@@ -114,7 +187,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_file_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_file_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_file_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_file_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_file_name
 msgid "Yaml File Name"
 msgstr ""
