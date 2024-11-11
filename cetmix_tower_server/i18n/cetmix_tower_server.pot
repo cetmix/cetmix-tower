@@ -2949,6 +2949,12 @@ msgid "You cannot execute an empty command"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
+#, python-format
+msgid "You cannot run custom code on multiple servers at once."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
 msgid "_execute() function takes single server record only!"
