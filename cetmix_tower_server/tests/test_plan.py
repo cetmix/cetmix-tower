@@ -1585,3 +1585,98 @@ class TestTowerPlan(TestTowerCommon):
         self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
         with self.assertRaises(AccessError):
             plan_line_action_read_result = plan_line_action_as_bob.read([])
+
+    def test_plan_line_action_variable_values_access_rights(self):
+        # Remove User_bob from all groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Assign variable value to plan action
+
+        variable_value = self.env["cx.tower.variable.value"].create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Branch = Main",
+                "plan_line_action_id": self.plan_line_1_action_1.id,
+            }
+        )
+
+        # group_user:
+        # Plan not assigned to server, ensure access to variable value in plan line
+        # action
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.write_and_invalidate(self.plan_1, **{"access_level": "1"})
+        test_plan_line_action_as_bob = self.plan_line_1_action_1.with_user(
+            self.user_bob
+        )
+        plan_line_action_vv_read_result = (
+            test_plan_line_action_as_bob.variable_value_ids.read([])
+        )
+        self.assertEqual(
+            plan_line_action_vv_read_result[0]["value_char"],
+            variable_value.value_char,
+            msg="Value should be the same",
+        )
+        # User not subscribed to the server: ensure no access to variable value in
+        # plan line action
+        self.write_and_invalidate(
+            self.plan_1, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        )
+        with self.assertRaises(AccessError):
+            plan_line_action_vv_read_result = (
+                test_plan_line_action_as_bob.variable_value_ids.read([])
+            )
+        # User subscribed to the server: ensure access to variable value in
+        # plan line action
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        plan_line_action_vv_read_result = (
+            test_plan_line_action_as_bob.variable_value_ids.read([])
+        )
+        self.assertEqual(
+            plan_line_action_vv_read_result[0]["value_char"],
+            variable_value.value_char,
+            msg="Value should be the same",
+        )
+        # group_manager:
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.write_and_invalidate(self.plan_1, **{"access_level": "2"})
+        # User subscribed to the server: ensure user_bob cannot remove variable value
+        # from action line if he is not  creator of action line
+        with self.assertRaises(AccessError):
+            test_plan_line_action_as_bob.write({"variable_value_ids": [(5, 0, 0)]})
+        # User subscribed to the server: ensure user_bob can create variable value in
+        # plan line action
+
+        plan_line_action_as_bob = (
+            self.env["cx.tower.plan.line.action"]
+            .with_user(self.user_bob)
+            .create(
+                {
+                    "line_id": self.plan_line_1.id,
+                    "condition": ">",
+                    "value_char": "100",
+                    "action": "e",
+                    "variable_value_ids": [(4, variable_value.id)],
+                }
+            )
+        )
+
+        # Ensure that variable value has assigned properly
+        self.assertIn(
+            variable_value.id,
+            plan_line_action_as_bob.variable_value_ids.ids,
+            msg="variable_value_ids should contain variable_value.id",
+        )
+        # User subscribed to the server: ensure user_bob can delete their own variable
+        # value from  plan line action he created
+        plan_line_action_as_bob.write({"variable_value_ids": [(5, 0, 0)]})
+        self.assertFalse(
+            plan_line_action_as_bob.variable_value_ids,
+            msg="Manager should be able to delete variables from own plan line actions",
+        )

@@ -14,7 +14,6 @@
             name="groups"
             eval="[(4, ref('cetmix_tower_server.group_user')), (4, ref('cetmix_tower_server.group_manager'))]"
         />
-
     </record>
 
     <record id="cx_tower_variable_value_action_rule_group_user_access" model="ir.rule">
@@ -25,7 +24,10 @@
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
-            ('plan_line_action_id.access_level', '=', '1')
+            ('plan_line_action_id.access_level', '=', '1'),
+            '|',
+            ('plan_line_action_id.line_id.plan_id.server_ids', '=', False),
+            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
@@ -42,7 +44,10 @@
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
-            ('plan_line_action_id.access_level', '&lt;=', '2')
+            ('plan_line_action_id.access_level', '&lt;=', '2'),
+            '|',
+            ('plan_line_action_id.line_id.plan_id.server_ids', '=', False),
+            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
@@ -63,7 +68,11 @@
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
-            ('plan_line_action_id.create_uid', '=', user.id)
+            ('plan_line_action_id.create_uid', '=', user.id),
+            ('plan_line_action_id.access_level', '&lt;=', '2'),
+            '|',
+            ('plan_line_action_id.line_id.plan_id.server_ids', '=', False),
+            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
