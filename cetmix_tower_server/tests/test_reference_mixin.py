@@ -11,13 +11,13 @@ class TestTowerReference(TestTowerCommon):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
 
-        self.plan_reference_mixin = self.Plan.create(
+        self.plan_test_mixin = self.Plan.create(
             {"name": "Test Plan reference mixin", "note": "Test Note reference mixin"}
         )
 
         self.plan_line_reference_mixin = self.plan_line.create(
             {
-                "plan_id": self.plan_reference_mixin.id,
+                "plan_id": self.plan_test_mixin.id,
                 "sequence": 1,
                 "command_id": self.command_list_dir.id,
             }
@@ -106,6 +106,19 @@ class TestTowerReference(TestTowerCommon):
             "Reference doesn't match expected one",
         )
 
+        # -- 11 --
+        # Create new template with reference and name set to a non valid symbol
+        # Generic model reference should be used as a reference
+        expected_reference = self.ServerTemplate._get_model_generic_reference()
+        new_template_with_non_valid_reference = self.ServerTemplate.create(
+            {"name": "/", "reference": "/"}
+        )
+        self.assertEqual(
+            new_template_with_non_valid_reference.reference,
+            expected_reference,
+            "Reference doesn't match expected one",
+        )
+
     def test_search_by_reference(self):
         """Search record by its reference"""
 
@@ -127,20 +140,20 @@ class TestTowerReference(TestTowerCommon):
         Ensure references are correctly prepared for valid input.
         """
 
-        vals_list = [{"plan_id": self.plan_reference_mixin.id}]
+        vals_list = [{"plan_id": self.plan_test_mixin.id}]
         result = self.plan_line._prepare_references(
             "cx.tower.plan", "plan_id", vals_list
         )
 
         # Verify the result contains the expected reference
         self.assertIn(
-            self.plan_reference_mixin.id,
+            self.plan_test_mixin.id,
             result,
             "The reference ID should be in the result.",
         )
         self.assertEqual(
-            result[self.plan_reference_mixin.id],
-            self.plan_reference_mixin.reference,
+            result[self.plan_test_mixin.id],
+            self.plan_test_mixin.reference,
             "The reference should match the expected value.",
         )
 
@@ -149,7 +162,7 @@ class TestTowerReference(TestTowerCommon):
         Check that an error is raised for an invalid model name.
         """
 
-        vals_list = [{"plan_id": self.plan_reference_mixin.id}]
+        vals_list = [{"plan_id": self.plan_test_mixin.id}]
         with self.assertRaises(ValueError) as cm:
             self.plan_line._prepare_references("invalid.model", "plan_id", vals_list)
 
@@ -175,15 +188,15 @@ class TestTowerReference(TestTowerCommon):
         """
         Ensure references are populated correctly in the provided values list.
         """
-        vals_list = [{"plan_id": self.plan_reference_mixin.id}]
+        vals_list = [{"plan_id": self.plan_test_mixin.id}]
         updated_vals = self.plan_line._pre_populate_references(
-            "cx.tower.plan", "plan_id", vals_list, suffix="TEST"
+            "cx.tower.plan", "plan_id", vals_list
         )
 
         # Check the updated values contain the expected reference format
         self.assertEqual(
             updated_vals[0]["reference"],
-            f"{self.plan_reference_mixin.reference}_TEST_1",
+            f"{self.plan_test_mixin.reference}_plan_line_1",
             "The reference should be correctly populated with the suffix.",
         )
 
@@ -194,11 +207,11 @@ class TestTowerReference(TestTowerCommon):
 
         vals_list_with_missing_field = [{"another_key": 123}]
         updated_vals_with_missing = self.plan_line._pre_populate_references(
-            "cx.tower.plan", "plan_id", vals_list_with_missing_field, suffix="MISSING"
+            "cx.tower.plan", "plan_id", vals_list_with_missing_field
         )
         self.assertEqual(
             updated_vals_with_missing[0]["reference"],
-            "no_MISSING_1",
+            "no_plan_line_1",
             "Entries missing the required field should have a default reference.",
         )
 
@@ -208,22 +221,22 @@ class TestTowerReference(TestTowerCommon):
         handled and referenced.
         """
         vals_list = [
-            {"plan_id": self.plan_reference_mixin.id},
-            {"plan_id": self.plan_reference_mixin.id},
+            {"plan_id": self.plan_test_mixin.id},
+            {"plan_id": self.plan_test_mixin.id},
         ]
         updated_vals = self.plan_line._pre_populate_references(
-            "cx.tower.plan", "plan_id", vals_list, suffix="DUPLICATE"
+            "cx.tower.plan", "plan_id", vals_list
         )
 
         # Verify that each duplicate entry has a unique suffix
         self.assertEqual(
             updated_vals[0]["reference"],
-            f"{self.plan_reference_mixin.reference}_DUPLICATE_1",
+            f"{self.plan_test_mixin.reference}_plan_line_1",
             "The first duplicate reference should have the correct suffix.",
         )
         self.assertEqual(
             updated_vals[1]["reference"],
-            f"{self.plan_reference_mixin.reference}_DUPLICATE_2",
+            f"{self.plan_test_mixin.reference}_plan_line_2",
             "The second duplicate reference should have the correct suffix.",
         )
 
@@ -233,7 +246,7 @@ class TestTowerReference(TestTowerCommon):
         when populating references.
         """
         updated_vals = self.plan_line._pre_populate_references(
-            "cx.tower.plan", "plan_id", [], suffix="EMPTY"
+            "cx.tower.plan", "plan_id", []
         )
         self.assertEqual(
             updated_vals,
@@ -251,7 +264,7 @@ class TestTowerReference(TestTowerCommon):
             {"reference": "my_custom_line_2"},
         ]
         updated_vals = self.plan_line._pre_populate_references(
-            "cx.tower.plan", "plan_id", vals_list, suffix="MISSING"
+            "cx.tower.plan", "plan_id", vals_list
         )
         self.assertEqual(
             updated_vals[0]["reference"],
@@ -268,13 +281,13 @@ class TestTowerReference(TestTowerCommon):
         """Test mixed scenarios with existing and missing references"""
         vals_list = [
             {"reference": "my_custom_line_1"},
-            {"plan_id": self.plan_reference_mixin.id},  # No reference
+            {"plan_id": self.plan_test_mixin.id},  # No reference
             {"reference": "  "},  # Whitespace reference
             {"reference": ""},  # Empty reference
             {"reference": "\n_"},  # Some irrelevant symbols
         ]
         updated_vals = self.plan_line._pre_populate_references(
-            "cx.tower.plan", "plan_id", vals_list, suffix="MIXED"
+            "cx.tower.plan", "plan_id", vals_list
         )
 
         self.assertEqual(
@@ -284,21 +297,21 @@ class TestTowerReference(TestTowerCommon):
         )
         self.assertEqual(
             updated_vals[1]["reference"],
-            f"{self.plan_reference_mixin.reference}_MIXED_1",
+            f"{self.plan_test_mixin.reference}_plan_line_1",
             "Missing reference should be generated",
         )
         self.assertEqual(
             updated_vals[2]["reference"],
-            "no_MIXED_1",
+            "no_plan_line_1",
             "Missing reference should be generated",
         )
         self.assertEqual(
             updated_vals[3]["reference"],
-            "no_MIXED_2",
+            "no_plan_line_2",
             "Missing reference should be generated",
         )
         self.assertEqual(
             updated_vals[4]["reference"],
-            "no_MIXED_3",
+            "no_plan_line_3",
             "Missing reference should be generated",
         )

@@ -81,7 +81,5 @@ class CxTowerPlanLineAction(models.Model):
     # Check cx.tower.reference.mixin for the function documentation
     def _get_pre_populated_model_data(self):
         res = super()._get_pre_populated_model_data()
-        res.update(
-            {"cx.tower.plan.line.action": ["cx.tower.plan.line", "line_id", "action"]}
-        )
+        res.update({"cx.tower.plan.line.action": ["cx.tower.plan.line", "line_id"]})
         return res
