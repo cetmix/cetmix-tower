@@ -200,5 +200,5 @@ class CxTowerPlanLine(models.Model):
     # Check cx.tower.reference.mixin for the function documentation
     def _get_pre_populated_model_data(self):
         res = super()._get_pre_populated_model_data()
-        res.update({"cx.tower.plan.line": ["cx.tower.plan", "plan_id", "line"]})
+        res.update({"cx.tower.plan.line": ["cx.tower.plan", "plan_id"]})
         return res

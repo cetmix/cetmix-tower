@@ -285,13 +285,5 @@ class TowerVariableValue(models.Model):
     # Check cx.tower.reference.mixin for the function documentation
     def _get_pre_populated_model_data(self):
         res = super()._get_pre_populated_model_data()
-        res.update(
-            {
-                "cx.tower.variable.value": [
-                    "cx.tower.variable",
-                    "variable_id",
-                    "variable",
-                ]
-            }
-        )
+        res.update({"cx.tower.variable.value": ["cx.tower.variable", "variable_id"]})
         return res
