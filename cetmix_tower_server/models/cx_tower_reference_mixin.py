@@ -164,11 +164,12 @@ class CxTowerReferenceMixin(models.AbstractModel):
                     continue
 
                 # Remove leading and trailing whitespaces from name
-                vals_name = vals.get("name", "")
-                name = vals_name.strip()
+                vals_name = vals.get("name")
+                name = vals_name.strip() if vals_name else vals_name
 
                 # Remove leading and trailing whitespaces from reference
-                reference = vals.get("reference", "").strip()
+                vals_reference = vals.get("reference")
+                reference = vals_reference.strip() if vals_reference else vals_reference
 
                 # Nothing can be done if no name or reference is provided
                 if not name and not reference:
