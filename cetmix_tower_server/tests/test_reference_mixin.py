@@ -92,6 +92,20 @@ class TestTowerReference(TestTowerCommon):
         yet_another_template_copy.write({"reference": "chad"})
         self.assertEqual(yet_another_template_copy.reference, "chad")
 
+        # -- 10 --
+        # Create new template with reference set to False
+        expected_reference = self.ServerTemplate._generate_or_fix_reference(
+            "Such Much False Template"
+        )
+        new_template_with_false = self.ServerTemplate.create(
+            {"name": "Such Much False Template", "reference": False}
+        )
+        self.assertEqual(
+            new_template_with_false.reference,
+            expected_reference,
+            "Reference doesn't match expected one",
+        )
+
     def test_search_by_reference(self):
         """Search record by its reference"""
 
