@@ -2096,11 +2096,6 @@ msgid "Rendered Server Dir"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
-msgid "Rendered code is shown as for the first selected server!"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_response
 msgid "Response"
 msgstr ""
