@@ -121,6 +121,15 @@ To configure variables go to the `Cetmix Tower/Settings` and select the `Tags` m
 - **Servers**: Select the servers associated with the tag.
 
 
+## Configure OSs (Operating Systems)
+
+To configure operating systems, go to the `Cetmix Tower/Settings` and select the `OSs` menu. Click `Create` and fill in the values for the following fields:
+
+- **Name**: Readable name
+- **Reference**: Unique identifier used to address the OS in conditions and expressions. Leave this field blank to generate it automatically based on the name.
+- **Color**: Select a color for the OS.
+- **Previous Version**: Select the previous version of the current OS.
+
 ### Variables Applicability
 
 [Cetmix Tower](https://cetmix.com/tower) supports `jinja2` syntax for variables. You can use variables to render:

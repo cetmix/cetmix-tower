@@ -10,6 +10,10 @@
                     <group>
                         <group>
                             <field name="name" />
+                             <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
                             <field name="color" widget="color_picker" />
                         </group>
                         <group>
@@ -27,8 +31,21 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="reference" optional="show" />
                 <field name="parent_id" />
             </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_os_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.os.view.search</field>
+        <field name="model">cx.tower.os</field>
+        <field name="arch" type="xml">
+            <search string="Search OS">
+                <field name="name" />
+                <field name="reference" />
+                <field name="parent_id" />
+            </search>
         </field>
     </record>
 
@@ -37,6 +54,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.os</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_os_search_view" />
     </record>
 
 </odoo>
