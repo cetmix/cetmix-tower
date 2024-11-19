@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="cx_tower_command_view_form" model="ir.ui.view">
-        <field name="name">cx.tower.command.yaml.view.form</field>
-        <field name="model">cx.tower.command</field>
-        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_command_view_form" />
+    <record id="cx_tower_server_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.yaml.view.form</field>
+        <field name="model">cx.tower.server.template</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_server_template_view_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page name="yaml" string="YAML">
@@ -18,4 +21,5 @@
             </xpath>
         </field>
     </record>
+
 </odoo>

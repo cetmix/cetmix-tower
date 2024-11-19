@@ -6,7 +6,7 @@
         <field name="model">cx.tower.plan</field>
         <field name="inherit_id" ref="cetmix_tower_server.cx_tower_plan_view_form" />
         <field name="arch" type="xml">
-            <page name="plan_lines" position="after">
+            <xpath expr="//notebook" position="inside">
                 <page name="yaml" string="YAML">
                     <group>
                         <field name="yaml_explode" widget="boolean_toggle" />
@@ -15,7 +15,7 @@
                     <field name="yaml_file" filename="yaml_file_name" />
                     <field name="yaml_file_name" invisible="1" />
                 </page>
-            </page>
+            </xpath>
         </field>
     </record>
 
