@@ -16,5 +16,6 @@
         "views/cx_tower_command_view.xml",
         "views/cx_tower_file_template_view.xml",
         "views/cx_tower_plan_view.xml",
+        "views/cx_tower_server_template_view.xml",
     ],
 }
