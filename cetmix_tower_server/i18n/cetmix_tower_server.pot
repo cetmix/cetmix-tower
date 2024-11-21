@@ -411,6 +411,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line_action__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_tag__reference
@@ -420,6 +421,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_os_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_view_form
@@ -2026,6 +2028,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__reference
@@ -2050,6 +2053,7 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_reference_mixin_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_log_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_template_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_tag_reference_unique

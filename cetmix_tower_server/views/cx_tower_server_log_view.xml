@@ -20,23 +20,39 @@
                         <h1 class="d-flex flex-grow justify-content-between">
                             <field name="name" />
                         </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                groups="cetmix_tower_server.group_manager"
+                            />
+                        </h3>
                     </div>
                     <group>
                         <field name="server_id" invisible="1" />
                         <field name="server_template_id" invisible="1" />
-                        <field name="access_level" />
-                        <field name="log_type" />
+                        <field
+                            name="access_level"
+                            groups="cetmix_tower_server.group_manager"
+                        />
+                        <field
+                            name="log_type"
+                            groups="cetmix_tower_server.group_manager"
+                        />
                         <field
                             name="command_id"
                             attrs="{'required':[('log_type', '=', 'command')], 'invisible':[('log_type', '!=', 'command')]}"
+                            groups="cetmix_tower_server.group_manager"
                         />
                         <field
                             name="use_sudo"
                             attrs="{'invisible':[('log_type', '!=', 'command')]}"
+                            groups="cetmix_tower_server.group_manager"
                         />
                         <field
                             name="file_id"
                             attrs="{'required':[('log_type', '=', 'file')], 'invisible':[('log_type', '!=', 'file')]}"
+                            groups="cetmix_tower_server.group_manager"
                         />
                     </group>
                     <field name="log_text" />

@@ -11,7 +11,7 @@ class CxTowerServerLog(models.Model):
     """
 
     _name = "cx.tower.server.log"
-    _inherit = ["cx.tower.access.mixin"]
+    _inherit = ["cx.tower.access.mixin", "cx.tower.reference.mixin"]
     _description = "Cetmix Tower Server Log"
 
     NO_LOG_FETCHED_MESSAGE = _("<log is empty>")
@@ -28,7 +28,6 @@ class CxTowerServerLog(models.Model):
         ]
 
     active = fields.Boolean(default=True)
-    name = fields.Char(required=True)
     server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
     log_type = fields.Selection(
         selection=lambda self: self._selection_log_type(),
@@ -65,6 +64,15 @@ class CxTowerServerLog(models.Model):
         help="This file template will be used to create log files"
         " when server is created from a template",
     )
+
+    def copy(self, default=None):
+        return super(
+            CxTowerServerLog, self.with_context(reference_mixin_skip_self=True)
+        ).copy(default)
+
+    def _get_copied_name(self):
+        # Original name is preserved when log is duplicated
+        return self.name
 
     def _format_log_text(self, log_text):
         """Formats log text to prior to display it.
@@ -116,9 +124,9 @@ class CxTowerServerLog(models.Model):
         """
         self.ensure_one()
         if self.file_id.source == "server":
-            return self.file_id.code
+            return self.file_id.code or self.NO_LOG_FETCHED_MESSAGE
         if self.file_id.source == "tower":
-            return self.file_id.code_on_server
+            return self.file_id.code_on_server or self.NO_LOG_FETCHED_MESSAGE
 
     def _get_log_from_command(self):
         """Get log from a command.
