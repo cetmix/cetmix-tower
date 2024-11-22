@@ -1,15 +1,57 @@
 from odoo import _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import TransactionCase
 
 
 class TestTowerYamlMixin(TransactionCase):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
+        self.Users = self.env["res.users"].with_context(no_reset_password=True)
         self.YamlMixin = self.env["cx.tower.yaml.mixin"]
         TowerTag = self.env["cx.tower.tag"]
         self.tag_doge = TowerTag.create({"name": "Doge", "reference": "doge"})
         self.tag_pepe = TowerTag.create({"name": "Pepe", "reference": "pepe"})
+
+    def test_yaml_field_access(self):
+        # Create Root user with no access to the 'yaml_code field
+        user_root = self.Users.create(
+            {
+                "name": "Root User",
+                "login": "root@example.com",
+                "groups_id": [
+                    (4, self.env.ref("base.group_user").id),
+                    (4, self.env.ref("cetmix_tower_server.group_root").id),
+                ],
+            }
+        )
+        with self.assertRaises(AccessError):
+            self.tag_doge.with_user(user_root).read(["yaml_code"])
+
+        # Add user to the 'cetmix_tower_yaml.group_export' group
+        # and check if access is granted
+        user_root.write(
+            {"groups_id": [(4, self.env.ref("cetmix_tower_yaml.group_export").id)]}
+        )
+        yaml_code = (
+            self.tag_doge.with_user(user_root).read(["yaml_code"])[0].get("yaml_code")
+        )
+
+        # Modify YAML code and check if it's saved
+        yaml_code = yaml_code.replace("Doge", "WowDoge")
+        with self.assertRaises(AccessError):
+            self.tag_doge.with_user(user_root).write({"yaml_code": yaml_code})
+
+        # Add user to the 'cetmix_tower_yaml.group_import' group
+        # and check if access is granted
+        user_root.write(
+            {"groups_id": [(4, self.env.ref("cetmix_tower_yaml.group_import").id)]}
+        )
+        self.tag_doge.with_user(user_root).write({"yaml_code": yaml_code})
+        self.assertEqual(
+            self.tag_doge.with_user(user_root).yaml_code,
+            yaml_code,
+            "YAML code was not saved",
+        )
 
     def test_post_process_record_values(self):
         """Test value post processing.
@@ -278,7 +320,6 @@ class TestTowerYamlMixin(TransactionCase):
                     "name": "Command test m2o",
                     "action": "file_using_template",
                     "file_template_id": file_template.id,
-                    "yaml_explode": True,  # Not used in tests because context has priority  # noqa
                     "tag_ids": [(4, self.tag_doge.id), (4, self.tag_pepe.id)],
                 }
             )

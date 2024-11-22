@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+<record id="ir_module_category_tower_yaml" model="ir.module.category">
+    <field name="parent_id" ref="cetmix_tower_server.ir_module_category_tower" />
+    <field name="name">Cetmix Tower YAML</field>
+</record>
+
+<record id="group_export" model="res.groups">
+    <field name="name">Export</field>
+    <field name="category_id" ref="ir_module_category_tower_yaml" />
+    <field name="comment">
+        Export data to YAML.
+    </field>
+</record>
+
+<record id="group_import" model="res.groups">
+    <field name="name">Import</field>
+    <field name="category_id" ref="ir_module_category_tower_yaml" />
+    <field name="comment">
+        Import data from YAML.
+    </field>
+</record>
+
+</odoo>
