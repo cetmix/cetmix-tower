@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_yaml_import_wiz_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.yaml.import.wiz.view.form</field>
+        <field name="model">cx.tower.yaml.import.wiz</field>
+        <field name="arch" type="xml">
+            <form>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('update_existing_record', '!=', False)]}"
+                    style="margin-bottom:0px;"
+                >
+                <p>
+                    <strong
+                        >Important:</strong> To maintain data consistency, the following model records will always be updated if they exist in Odoo:
+                    <ul>
+                        <li>Variables</li>
+                        <li>Tags</li>
+                        <li>OSs</li>
+                    </ul>
+                    To create new entities instead of updating existing ones, remove or modify the <code
+                        >reference</code> field in the YAML code for those entities.
+                </p>
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('update_existing_record', '=', False)]}"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.
+                        If any of those related records doesn't exist, it will be created automatically.
+                    </p>
+                </div>
+                <group>
+                    <field name="model_name" invisible="1" />
+                    <field name="record_id" invisible="1" />
+                    <field
+                        name="model_description"
+                        attrs="{'invisible': [('model_name', '=', False)]}"
+                    />
+                    <field
+                        name="update_existing_record"
+                        attrs="{'invisible': ['|', ('record_id', '=', False),('record_id', '=', 0)]}"
+                    />
+                </group>
+                <field
+                    name="yaml_code"
+                    widget="ace"
+                    options="{'mode': 'yaml'}"
+                    force_save="1"
+                />
+                <footer>
+                    <button
+                        string="Update Existing Record"
+                        type="object"
+                        name="action_import_yaml"
+                        class="oe_highlight"
+                        confirm="This will overwrite the existing record. Proceed?"
+                        attrs="{'invisible': [('record_id', '!=', False), ('update_existing_record', '=', False)]}"
+                    />
+                    <button
+                        string="Open Existing Record"
+                        type="object"
+                        name="action_open_existing_record"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('record_id', '=', False), ('record_id', '=', 0)]}"
+                    />
+                    <button
+                        string="Create New Record"
+                        type="object"
+                        name="action_import_yaml"
+                        class="oe_highlight"
+                        confirm="This will create a new record. Proceed?"
+                        attrs="{'invisible': ['|', ('record_id', '=', False), ('update_existing_record', '=', True)]}"
+                    />
+                    <button string="Close" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

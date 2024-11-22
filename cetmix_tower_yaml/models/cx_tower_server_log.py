@@ -18,6 +18,5 @@ class CxTowerServerLog(models.Model):
             "command_id",
             "use_sudo",
             "file_template_id",
-            "note",
         ]
         return res

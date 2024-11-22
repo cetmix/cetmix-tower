@@ -1,15 +1,39 @@
-## Data Export/Import
+## Export into a YAML file
 
 To export data into YAML format:
 
-- Open the record you would like to export
-- Copy YAML code from the text field located under the "YAML" tab in the form view.
-Activate "Explode" switch if you want to export data in [exploded mode](#exploded-mode)
+- Open the record you would like to export.
+- On the "YAML" tab click the "Export YAML" button.
+- YAML export wizard will open:
+  - Activate "Explode Child Records" switch if you want to export data in [exploded mode](#exploded-mode).
+  - Click "Generate YAML File" button to save YAML file.
+- File download wizard will open:
+  - Click on the file name to save YAML file.
+  - Click the "Close" button to close the file download wizard.
+
+## Import from a YAML file
 
 To import data from YAML:
 
-- Open the record you would like to import
-- Insert YAML code from in the text field located under the "YAML" tab in the form view.
+- Go to "Cetmix Tower -> Tools -> Import YAML" menu.
+- Upload a YAML file and click the "Process" button.
+- YAML import wizard will open.
+  - If a record that is specified in the YAML file exists, there will be an "Update Existing Record" checkbox available.
+  - Uncheck the "Update Existing Record" checkbox if you want to create a new record instead of updating the existing one.
+- Click one of the available action buttons:
+  - "Update Existing Record" to update the existing record.
+  - "Open Existing Record" to open the record that is specified in the YAML file.
+  - "Create New Record" to create a new record.
+
+Important things to remember during import:
+
+- If a record that is specified in the YAML file does not exist in Odoo, new record will be created.
+- If a record that is specified in the YAML file exists in Odoo and the "Update Existing Record" checkbox is checked, it will be updated with new values from YAML.
+- If a record that is specified in the YAML file exists in Odoo and the "Update Existing Record" checkbox is not checked, new record will be created.
+- Following model records will be always tried to be resolved and updated even if "Create New Record" action is used:
+  - Variables
+  - Operating Systems
+  - Tags
 
 ## Data Export/Import Modes
 

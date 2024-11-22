@@ -13,9 +13,19 @@
     "depends": ["cetmix_tower_server"],
     "external_dependencies": {"python": ["pyyaml"]},
     "data": [
+        "security/cetmix_tower_yaml_groups.xml",
+        "security/ir.model.access.csv",
         "views/cx_tower_command_view.xml",
         "views/cx_tower_file_template_view.xml",
         "views/cx_tower_plan_view.xml",
         "views/cx_tower_server_template_view.xml",
+        "wizards/cx_tower_yaml_export_wiz.xml",
+        "wizards/cx_tower_yaml_export_wiz_download.xml",
+        "wizards/cx_tower_yaml_import_wiz_upload.xml",
+        "wizards/cx_tower_yaml_import_wiz.xml",
+        "views/menuitems.xml",
+    ],
+    "demo": [
+        "demo/demo_data.xml",
     ],
 }
