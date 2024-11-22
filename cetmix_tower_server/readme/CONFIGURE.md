@@ -3,11 +3,11 @@ Please ensure that you have read and understood the documentation before running
 ## User access configuration
 
 In order for a user to be able to use [Cetmix Tower](https://cetmix.com/tower) features you need to provide access to in the the user settings.
-To configure it go to `Setting/Users & Companies/Users` and open a user whom you would like to provide access to the Cetmix Tower.
+To configure it go to `Setting -> Users & Companies -> Users` and open a user whom you would like to provide access to the Cetmix Tower.
 
 ![User profile](../static/description/images/user_profile.png)
 
-In `Other` section find the `Cetmix Tower` field and select one of the following options:
+In the `Cetmix Tower` section select one of the following options in the `Access Level` field:
 
 - **User**. Members of this group have read access only to the [Servers](#configure-a-server) which they are added as followers.
 They also have access to the entities such as [Commands](#configure-a-command),  [Flight Plans](#configure-a-flight-plan) or [Server Logs](#configure-a-server-log) with `Access Level` set to `User`.
@@ -19,7 +19,7 @@ Users of this group have access to the entities with `Access Level` set to `Mana
 
 ## Configure a Server
 
-Go to the `Cetmix Tower/Servers/Servers` menu and click `Create`.
+Go to the `Cetmix Tower -> Servers -> Servers` menu and click `Create`.
 Enter server name and a unique server reference. Leave the "reference" field blank to generate a reference automatically.
 You can also select a color which is used to mark a server in the kanban view.
 
@@ -75,7 +75,7 @@ Following action buttons are located in the top of the form:
 
 ## Configure a Server Template
 
-Go to the `Cetmix Tower/Servers/Templates` menu and click `Create`.
+Go to the `Cetmix Tower -> Servers ->Templates` menu and click `Create`.
 Enter template name and a unique template reference. Leave the "reference" field blank to generate a reference automatically.
 
 Fill the values it the tabs below:
@@ -104,7 +104,7 @@ Please check the [Configuring a Server Log](#configure-a-server-log) section for
 
 ## Configure Variables
 
-To configure variables go to the `Cetmix Tower/Settings` and select the `Variables` menu. Click `Create` and put values in the fields:
+To configure variables go to the `Cetmix Tower -> Settings` and select the `Variables` menu. Click `Create` and put values in the fields:
 
 - **Name**: Readable name
 - **Reference**: Unique identifier used to address variable in conditions and expressions. Leave blank to generate automatically based on name
@@ -113,7 +113,7 @@ To configure variables go to the `Cetmix Tower/Settings` and select the `Variabl
 
 ## Configure Tags
 
-To configure variables go to the `Cetmix Tower/Settings` and select the `Tags` menu. Click `Create` and put values in the fields:
+To configure variables go to the `Cetmix Tower -> Settings` and select the `Tags` menu. Click `Create` and put values in the fields:
 
 - **Name**: Readable name
 - **Reference**: Unique identifier used to address the tag in conditions and expressions. Leave this field blank to generate it automatically based on the name
@@ -123,7 +123,7 @@ To configure variables go to the `Cetmix Tower/Settings` and select the `Tags` m
 
 ## Configure OSs (Operating Systems)
 
-To configure operating systems, go to the `Cetmix Tower/Settings` and select the `OSs` menu. Click `Create` and fill in the values for the following fields:
+To configure operating systems, go to the `Cetmix Tower -> Settings` and select the `OSs` menu. Click `Create` and fill in the values for the following fields:
 
 - **Name**: Readable name
 - **Reference**: Unique identifier used to address the OS in conditions and expressions. Leave this field blank to generate it automatically based on the name.
@@ -226,7 +226,7 @@ Following system variables are available:
 ## Configure a Key/Secret
 
 Keys/Secrets are used to private SSH keys and sensitive data that is used for rendering commands.
-To configure a new key or secret go to `Cetmix Tower/Settings/Keys` click `Create` and put values in the fields:
+To configure a new key or secret go to `Cetmix Tower -> Settings -> Keys` click `Create` and put values in the fields:
 
 - **Name**: Readable name
 - **Key Type**: Following values are available:
@@ -276,7 +276,7 @@ mkdir /home/suchMuchFolder
 - Tower. These are files that are initially formed in [Cetmix Tower](https://cetmix.com/tower) and are uploaded to remote server. For example configuration files.
 Such files are rendered using variables and can be created and managed using file templates.
 
-To create a new file go to `Cetmix Tower/Files/Files` click `Create` and put values in the fields:
+To create a new file go to `Cetmix Tower -> Files -> Files` click `Create` and put values in the fields:
 
 - **Name**: Filesystem filename
 - **Source**: File source. Available options are `Server` and `Tower`. Check above for more details.
@@ -303,7 +303,7 @@ Following fields are located in the tabs below:
 
 File templates are used to create and manage multiple files in bulk. Once a template is modified all related files are automatically updated.
 
-To create a new file template go to `Cetmix Tower/Files/Templates` click `Create` and put values in the fields:
+To create a new file template go to `Cetmix Tower -> Files -> Templates` click `Create` and put values in the fields:
 
 - **Name**: Template name
 - **Reference**: Leave the "reference" field blank to generate a reference automatically.
@@ -323,7 +323,7 @@ To create a new file template go to `Cetmix Tower/Files/Templates` click `Create
 ## Configure a Command
 
 Command is a shell command that is executed on remote server.
-To create a new command go to `Cetmix Tower/Commands/Commands` click `Create` and put values in the fields:
+To create a new command go to `Cetmix Tower -> Commands -> Commands` click `Create` and put values in the fields:
 
 - **Name**: Command readable name.
 - **Reference**: Leave the "reference" field blank to generate a reference automatically.
@@ -369,7 +369,7 @@ COMMAND_RESULT = {
 ## Configure a Flight Plan
 
 Flight Plans are used to execute commands in series. They allow to build a flexible condition based execution flow.
-To create a new flight plan go to `Cetmix Tower/Commands/Flight Plans` click `Create` and put values in the fields:
+To create a new flight plan go to `Cetmix Tower -> Commands -> Flight Plans` click `Create` and put values in the fields:
 
 
 - **Name**: Flight Plan name
