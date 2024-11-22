@@ -67,6 +67,14 @@
         parent="menu_cx_tower_command_root"
         sequence="72"
     />
+    <!-- Tools -->
+    <menuitem
+        id="menu_tools"
+        name="Tools"
+        parent="menu_root"
+        sequence="120"
+        groups="group_user"
+    />
 
     <!-- Settings -->
     <menuitem
