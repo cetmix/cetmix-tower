@@ -315,10 +315,9 @@ flight_plan_id: false
 code: false
 variable_ids: false
 """
-        command_with_template.write({"yaml_explode": True})
         command_with_template.invalidate_cache(["yaml_code"])
         self.assertEqual(
-            command_with_template.yaml_code,
+            command_with_template.with_context(explode_related_record=True).yaml_code,
             yaml_with_reference_exploded,
             "YAML is not composed correctly",
         )

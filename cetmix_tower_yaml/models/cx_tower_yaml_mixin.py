@@ -1,12 +1,10 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import base64
 
 import yaml
 
-from odoo import _, fields, models
-from odoo.exceptions import ValidationError
-from odoo.tools import ormcache
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, ValidationError
 
 
 class CustomDumper(yaml.Dumper):
@@ -40,12 +38,7 @@ class CxTowerYamlMixin(models.AbstractModel):
     yaml_code = fields.Text(
         compute="_compute_yaml_code",
         inverse="_inverse_yaml_code",
-    )
-    yaml_file = fields.Binary(compute="_compute_yaml_code", attachment=False)
-    yaml_file_name = fields.Char(compute="_compute_yaml_code")
-    yaml_explode = fields.Boolean(
-        string="Explode",
-        help="Add entire related record data instead of just a reference",
+        groups="cetmix_tower_yaml.group_export,cetmix_tower_yaml.group_import",
     )
 
     def _compute_yaml_code(self):
@@ -53,7 +46,6 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # This is used for the file name.
         # Eg cx.tower.command record will have 'command_' prefix.
-        model_prefix = self._name.split(".")[-1]
         for record in self:
             # We are reading field list for each record
             # because list of fields can differ from record to record
@@ -63,13 +55,7 @@ class CxTowerYamlMixin(models.AbstractModel):
                 default_flow_style=False,
                 sort_keys=False,
             )
-            record.update(
-                {
-                    "yaml_code": yaml_code,
-                    "yaml_file": base64.encodebytes(yaml_code.encode("utf-8")),
-                    "yaml_file_name": f"{model_prefix}_{record.reference}.yaml",
-                }
-            )
+            record.yaml_code = yaml_code
 
     def _inverse_yaml_code(self):
         """Compose record based on provided YAML"""
@@ -78,6 +64,15 @@ class CxTowerYamlMixin(models.AbstractModel):
                 record_yaml_dict = yaml.safe_load(record.yaml_code)
                 record_vals = record._post_process_yaml_dict_values(record_yaml_dict)
                 record.update(record_vals)
+
+    @api.constrains("yaml_code")
+    def _check_yaml_code_write_access(self):
+        """Check if user has access to create records from YAML"""
+        if (
+            not self.env.user.has_group("cetmix_tower_yaml.group_import")
+            and not self.env.user._is_superuser()
+        ):
+            raise AccessError(_("You are not allowed to create records from YAML"))
 
     def create(self, vals_list):
         # Handle validation error when field values are not valid
@@ -92,6 +87,16 @@ class CxTowerYamlMixin(models.AbstractModel):
             return super().write(vals)
         except ValueError as e:
             raise ValidationError(str(e)) from e
+
+    def action_open_yaml_export_wizard(self):
+        """Open YAML export wizard"""
+
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "cx.tower.yaml.export.wiz",
+            "view_mode": "form",
+            "target": "new",
+        }
 
     def _prepare_record_for_yaml(self):
         """Reads and processes current record before converting it to YAML
@@ -114,6 +119,19 @@ class CxTowerYamlMixin(models.AbstractModel):
             list(): list of fields to be used as YAML keys
         """
         return ["reference"]
+
+    def _get_force_x2m_resolve_models(self):
+        """List of models that will always try to be resolved
+        when referenced in x2m related fields.
+
+        This is useful for models that should always to use existing records
+        instead of creating new ones when referenced in x2m related fields.
+        Such as variables or tags.
+
+        Returns:
+            List: list of models that will always try to be resolved
+        """
+        return ["cx.tower.variable", "cx.tower.tag", "cx.tower.os"]
 
     def _post_process_record_values(self, values):
         """Post process record values
@@ -150,8 +168,6 @@ class CxTowerYamlMixin(models.AbstractModel):
         # Check if we need to return a record dict or just a reference
         # Use context value first, revert to the record setting if not defined
         explode_related_record = self._context.get("explode_related_record")
-        if explode_related_record is None:
-            explode_related_record = self.yaml_explode
 
         # Post process m2o and x2m fields
         for key, value in values.items():
@@ -229,20 +245,6 @@ class CxTowerYamlMixin(models.AbstractModel):
                 filtered_values.update({key: processed_value})
 
         return filtered_values
-
-    @ormcache("model_name")
-    def _model_supports_yaml(self, model_name):
-        """Checks if model supports YAML import/export
-
-        Args:
-            model_name (Char): model name
-
-        Returns:
-            Bool: True if YAML is supported
-        """
-        model = self.env[model_name]
-
-        return hasattr(model, "yaml_code")
 
     def _process_relation_field_value(self, field, value, record_mode=False):
         """Post process One2many, Many2many or Many2one value
@@ -435,12 +437,20 @@ class CxTowerYamlMixin(models.AbstractModel):
             reference (Char): Record reference
             create_immediately (Bool): If True create a new record immediately.
                 Used for Many2one fields.
+
+        Context:
+            force_create_related_record (Bool): If True, create a new record
+                even if reference is provided.
+
         Returns:
             record: Existing record or new record tuple
         """
 
         # If reference is found, retrieve the corresponding record
-        if reference:
+        if reference and (
+            model._name in self._get_force_x2m_resolve_models()
+            or not self._context.get("force_create_related_record")
+        ):
             record = model.get_by_reference(reference)
 
             # If the record exists, update it with the values from the dictionary

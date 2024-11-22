@@ -39,3 +39,11 @@ class CxTowerServerTemplate(models.Model):
         if res.get("ssh_password"):
             res["ssh_password"] = self.SSH_PASSWORD_MASK
         return res
+
+    def _get_force_x2m_resolve_models(self):
+        res = super()._get_force_x2m_resolve_models()
+
+        # Add Flight Plan in order to always try to use existing one
+        # This is useful to avoid duplicating existing plans
+        res.append("cx.tower.plan")
+        return res
