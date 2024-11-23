@@ -30,7 +30,12 @@ INTERVAL_TYPES = {
 
 class CxTowerFile(models.Model):
     _name = "cx.tower.file"
-    _inherit = ["cx.tower.template.mixin", "mail.thread", "mail.activity.mixin"]
+    _inherit = [
+        "cx.tower.template.mixin",
+        "mail.thread",
+        "mail.activity.mixin",
+        "cx.tower.key.mixin",
+    ]
     _description = "Cx Tower File"
     _order = "name"
 

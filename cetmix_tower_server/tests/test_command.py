@@ -1131,3 +1131,46 @@ else:
             command_result["error"],
             "The error in command result must be None",
         )
+
+    def test_command_with_secret(self):
+        """
+        Test case to verify that when a command includes a secret reference,
+        the secret key is automatically linked with the command.
+        """
+
+        # Command with a secret reference
+        code = "cd {{ test_path_ }} && mkdir #!cxtower.secret.FOLDER!#"
+
+        secrets = self.Command._extract_secret_ids(code)
+        secret_folder_key = self.secret_folder_key
+        self.assertIn(
+            secret_folder_key,
+            secrets,
+            msg=(
+                f"The expected secret ID #{secret_folder_key.id} "
+                "was not found in the provided code."
+            ),
+        )
+
+        command_with_keys = self.Command.create(
+            {"name": "Command with keys", "code": code}
+        )
+
+        # Assert that the secret key is linked with the command
+        self.assertIn(
+            secret_folder_key,
+            command_with_keys.secret_ids,
+            msg="The secret key is not linked with the command.",
+        )
+
+        # Update the command's code to remove the secret reference
+        code = "cd {{ test_path_ }} && mkdir new_folder"
+        command_with_keys.code = code
+
+        self.assertFalse(
+            command_with_keys.secret_ids,
+            msg=(
+                "The secret_ids field should be empty after "
+                "removing the secret reference from command."
+            ),
+        )

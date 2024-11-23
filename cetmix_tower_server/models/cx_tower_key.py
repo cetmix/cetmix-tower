@@ -347,20 +347,33 @@ class CxTowerKey(models.Model):
             str: key value or None if not able to parse
         """
 
+        key_parts = self._extract_key_parts(key_string)
+        if key_parts is None:
+            return None
+
+        key_type, reference = key_parts
+        key_value = self._resolve_key(key_type, reference, **kwargs)
+
+        return key_value
+
+    def _extract_key_parts(self, key_string):
+        """Extract and validate key parts from the key string.
+
+        Args:
+            key_string (str): key string
+
+        Returns:
+            tuple: (key_type, reference) if valid, else None
+        """
         key_parts = (
             key_string.replace(" ", "").replace(self.KEY_TERMINATOR, "").split(".")
         )
 
         # Must be 3 parts including pre!
-        if len(key_parts) != 3 or key_parts[0] != self.KEY_PREFIX:
-            return
+        if len(key_parts) == 3 and key_parts[0] == self.KEY_PREFIX:
+            return key_parts[1], key_parts[2]
 
-        key_type = key_parts[1]
-        reference = key_parts[2]
-
-        key_value = self._resolve_key(key_type, reference, **kwargs)
-
-        return key_value
+        return None
 
     def _resolve_key(self, key_type, reference, **kwargs):
         """Resolve key

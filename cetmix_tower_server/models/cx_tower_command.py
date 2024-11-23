@@ -43,6 +43,7 @@ class CxTowerCommand(models.Model):
         "cx.tower.template.mixin",
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
+        "cx.tower.key.mixin",
     ]
     _description = "Cetmix Tower Command"
     _order = "name"

@@ -74,6 +74,11 @@
                                 options="{'color_field': 'color'}"
                             />
                             <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            />
+                            <field
                                 name="tag_ids"
                                 widget="many2many_tags"
                                 options="{'color_field': 'color'}"
@@ -172,6 +177,12 @@
                     name="os_ids"
                     widget="many2many_tags"
                     options="{'color_field': 'color'}"
+                    optional="hide"
+                />
+                <field
+                    name="secret_ids"
+                    widget="many2many_tags"
+                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     optional="hide"
                 />
                 <field name="allow_parallel_run" optional="hide" />
