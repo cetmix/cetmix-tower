@@ -336,3 +336,59 @@ class TestTowerFile(TestTowerCommon):
                     "server_dir": "/var/tmp",
                 }
             )
+
+    def test_file_with_secret_key(self):
+        """
+        Test case to verify that when a file includes a secret reference,
+        the secret key is automatically linked with the file.
+        """
+
+        # Create a secret key
+        secret_python_key = self.Key.create(
+            {
+                "name": "python",
+                "reference": "PYTHON",
+                "secret_value": "secretPythonCode",
+                "key_type": "s",
+            }
+        )
+
+        # Create a file template with a reference to the secret key
+        file_template = self.env["cx.tower.file.template"].create(
+            {
+                "name": "Test",
+                "file_name": "test.txt",
+                "server_dir": "/var/tmp",
+                "code": "Please use this secret #!cxtower.secret.PYTHON!#",
+            }
+        )
+
+        # Create a file from the file template
+        file = file_template.create_file(
+            server=self.server_test_1, server_dir="/var/tmp/custom"
+        )
+
+        # Assert that the file's code matches the file template's code
+        self.assertEqual(
+            file.code,
+            file_template.code,
+            msg="The file's code does not match the file template's code.",
+        )
+
+        # Assert that the secret key is associated with the file
+        self.assertIn(
+            secret_python_key,
+            file.secret_ids,
+            msg="The secret key is not associated with the file.",
+        )
+
+        # Update the file's code to remove the secret reference
+        file.code = "Only text"
+
+        self.assertFalse(
+            file.secret_ids,
+            msg=(
+                "The secret_ids field should be empty after "
+                "removing the secret reference from file."
+            ),
+        )
