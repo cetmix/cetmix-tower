@@ -68,6 +68,11 @@
                                 name="keep_when_deleted"
                                 attrs="{'invisible': [('source', '!=', 'tower')]}"
                             />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            />
                             </group>
                             <group>
                                 <field name="auto_sync" />
@@ -158,7 +163,12 @@
                 <field name="full_server_path" optional="hide" />
                 <field name="sync_date_last" />
                 <field name="template_id" optional="show" />
-
+                <field
+                    name="secret_ids"
+                    widget="many2many_tags"
+                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    optional="hide"
+                />
             </tree>
         </field>
     </record>
