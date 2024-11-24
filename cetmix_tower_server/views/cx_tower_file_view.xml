@@ -13,6 +13,7 @@
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('source', '!=', 'tower')]}"
+                        groups="cetmix_tower_server.group_manager"
                     />
                     <button
                         name="action_pull_from_server"
@@ -20,6 +21,7 @@
                         type="object"
                         class="oe_highlight"
                         attrs="{'invisible': [('source', '!=', 'server')]}"
+                        groups="cetmix_tower_server.group_manager"
                     />
                 </header>
                 <sheet>
