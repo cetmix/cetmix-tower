@@ -30,6 +30,7 @@
         "security/cx_tower_server_log_security.xml",
         "security/cx_tower_command_log_security.xml",
         "security/cx_tower_server_template_security.xml",
+        "security/cx_tower_file_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",

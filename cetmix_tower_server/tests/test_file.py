@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from odoo import exceptions
+from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
 
@@ -243,3 +244,95 @@ class TestTowerFile(TestTowerCommon):
             raise_if_exists=False,
         )
         self.assertEqual(another_file, file)
+
+    def test_files_access_rule(self):
+        """
+        Test access rules for files
+        """
+        # Remove user_bob from all cx_tower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Test that users can only read files where they are followers of the server
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        test_file_as_bob = self.file.with_user(self.user_bob)
+        # Should not be able to read file where they are not follower
+        with self.assertRaises(AccessError):
+            file_read_result = test_file_as_bob.read([])
+        # Should be able to read file where they are follower
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        file_read_result = test_file_as_bob.read([])
+        self.assertEqual(
+            file_read_result[0]["name"],
+            self.file.name,
+            msg="Users should have access to files assigned to servers to which "
+            "they are subscribed",
+        )
+        # Test that users cannot write, create or delete files
+        with self.assertRaises(AccessError):
+            test_file_as_bob.write({"name": "new_name.txt"})
+        with self.assertRaises(AccessError):
+            self.File.with_user(self.user_bob).create(
+                {
+                    "name": "new_file.txt",
+                    "source": "tower",
+                    "server_id": self.server_test_1.id,
+                    "server_dir": "/var/tmp",
+                }
+            )
+        with self.assertRaises(AccessError):
+            test_file_as_bob.unlink()
+        # Test that managers can read, write and create files where they are followers
+        # of the server
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Should be able to read file where they are follower
+        file_read_result = test_file_as_bob.read([])
+        self.assertEqual(
+            file_read_result[0]["name"],
+            self.file.name,
+            msg="Managers should have access to files assigned to servers to which "
+            "they are subscribed",
+        )
+        # Should be able to write to file where they are follower
+        test_file_as_bob.write({"name": "updated_name.txt"})
+        self.assertEqual(
+            test_file_as_bob.name,
+            "updated_name.txt",
+            msg="Managers should have write access to files assigned to servers"
+            " to which they are subscribed",
+        )
+        # Should be able to create file for server where they are follower
+        new_file = self.File.with_user(self.user_bob).create(
+            {
+                "name": "new_file.txt",
+                "source": "tower",
+                "server_id": self.server_test_1.id,
+                "server_dir": "/var/tmp",
+            }
+        )
+        self.assertTrue(
+            new_file.exists(),
+            msg="Manager should be able to create a new file",
+        )
+        # Test that managers cannot delete files
+        with self.assertRaises(AccessError):
+            new_file.with_user(self.user_bob).unlink()
+        # Should not be able to read file where they are not follower
+        self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
+        with self.assertRaises(AccessError):
+            file_read_result = new_file.with_user(self.user_bob).read([])
+        # Should not be able to create file for server where they are not follower
+        with self.assertRaises(AccessError):
+            self.File.with_user(self.user_bob).create(
+                {
+                    "name": "new_file.txt",
+                    "source": "tower",
+                    "server_id": self.server_test_1.id,
+                    "server_dir": "/var/tmp",
+                }
+            )
