@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-
     <record id="cx_tower_plan_line_action_rule_group_user_access" model="ir.rule">
         <field name="name">Tower plan line action: user access rule</field>
         <field name="model_id" ref="model_cx_tower_plan_line_action" />
@@ -14,9 +13,9 @@
             ('line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
             ]
         </field>
-
-
+        <field name="perm_unlink" eval="0" />
     </record>
+
     <record id="cx_tower_plan_line_action_rule_group_manager_access" model="ir.rule">
         <field
             name="name"
@@ -32,8 +31,8 @@
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
         <field name="perm_unlink" eval="0" />
-
     </record>
+
     <record id="cx_tower_plan_line_action_rule_manager_unlink" model="ir.rule">
         <field name="name">Tower plan line action: manager delete own records</field>
         <field name="model_id" ref="model_cx_tower_plan_line_action" />
@@ -47,8 +46,10 @@
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
     </record>
-
 
     <record id="cx_tower_plan_line_action_rule_group_root_access" model="ir.rule">
         <field name="name">Tower plan line action: root access rule</field>
