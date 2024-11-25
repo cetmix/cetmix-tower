@@ -1,4 +1,4 @@
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import Form
 
 from .common import TestTowerCommon
@@ -741,3 +741,60 @@ class TestTowerServerTemplate(TestTowerCommon):
         # Checking the error message
         error_message = str(cm.exception)
         self.assertIn("Empty values for variables: test_path_, test_dir", error_message)
+
+    def test_server_template_variable_values_manager_access_rights(self):
+        """
+        Test manager access rights for variable values associated with server templates
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        server_template_sample_as_bob = self.server_template_sample.with_user(
+            self.user_bob
+        )
+        # Assure that manager cannot read variable values
+        with self.assertRaises(AccessError):
+            server_template_sample_as_bob.variable_value_ids.read([])
+        # Assure that manager can read variable values
+        self.server_template_sample.message_subscribe([self.user_bob.partner_id.id])
+        # add variable values to server template
+        alien_variable_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "alien_value",
+            }
+        )
+        variable_values_read = server_template_sample_as_bob.variable_value_ids.read([])
+        self.assertEqual(
+            variable_values_read[0]["value_char"],
+            alien_variable_value.value_char,
+            "Variable values should be the same",
+        )
+
+        # Assure that manager cannot unlink variable values
+        with self.assertRaises(AccessError):
+            alien_variable_value.with_user(self.user_bob).unlink()
+        # Assure that manager can unlink own variable values
+        own_variable_value = self.VariableValue.with_user(self.user_bob).create(
+            {
+                "variable_id": self.variable_url.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "odoo.com",
+            }
+        )
+        own_variable_value.unlink()
+        self.assertFalse(
+            self.VariableValue.search([("id", "=", own_variable_value.id)]),
+            "Own variable value should be deleted",
+        )
+        # Assure that manager can create variable values but cannot unlink them
+        # if he unsubscribed from the server template
+        other_own_variable_value = self.VariableValue.with_user(self.user_bob).create(
+            {
+                "variable_id": self.variable_url.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "odoo.sh",
+            }
+        )
+        self.server_template_sample.message_unsubscribe([self.user_bob.partner_id.id])
+        with self.assertRaises(AccessError):
+            other_own_variable_value.unlink()

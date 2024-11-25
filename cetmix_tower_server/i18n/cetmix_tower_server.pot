@@ -145,6 +145,22 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
+msgid ""
+"<code>hashlib</code>: Python 'hashlib' library.\n"
+"                                         Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br/>\n"
+"                                          'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
+msgid ""
+"<code>hmac</code>: Python 'hmac' library. Use 'new' to create HMAC objects.<br/>\n"
+"                                        Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br/>\n"
+"                                        Module-level function: 'compare_digest'."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "<code>json</code>: Python 'json' library. Available methods: 'dumps'"
 msgstr ""
 

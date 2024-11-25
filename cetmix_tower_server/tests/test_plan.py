@@ -40,6 +40,40 @@ class TestTowerPlan(TestTowerCommon):
                 "command_id": self.command_create_dir.id,
             }
         )
+        # Flight plan with access level 1 to test user access rights
+        self.plan_3 = self.Plan.create(
+            {
+                "name": "Test plan 3",
+                "note": "Test user access rights",
+                "access_level": "1",
+                "line_ids": [
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
+                ],
+            }
+        )
+        # Create line for plan 3
+        self.plan_3_line_1 = self.plan_line.create(
+            {
+                "plan_id": self.plan_3.id,
+                "command_id": self.command_create_dir.id,
+                "sequence": 10,
+            }
+        )
+        self.plan_3_line_1_action = self.env["cx.tower.plan.line.action"].create(
+            {
+                "line_id": self.plan_3_line_1.id,
+                "condition": "==",
+                "value_char": "test",
+                "action": "e",
+            }
+        )
+        self.variable_value = self.env["cx.tower.variable.value"].create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Windows 2k",
+                "plan_line_action_id": self.plan_3_line_1_action.id,
+            }
+        )
 
     def test_plan_line_action_name(self):
         """Test plan line action naming"""
@@ -1271,348 +1305,306 @@ class TestTowerPlan(TestTowerCommon):
             self.plan_line_action.search([("id", "in", plan_line_action_ids.ids)]),
             msg="Plan line action should be deleted when Plan line is deleted",
         )
-    def test_plan_lines_access_rights(self):
-        # Create a test plan with plan lines
-        self.plan_2 = self.Plan.create(
-            {
-                "name": "Test plan 2",
-                "note": "Test note",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
-                "line_ids": [
-                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
-                    (0, 0, {"command_id": self.command_list_dir.id, "sequence": 2}),
-                ],
-            }
-        )
-        # Ensure default access level is correct
-        self.assertEqual(self.plan_2.access_level, "2")
 
-        # Remove user_bob from all cxtower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-
+    def test_plan_lines_user_access_rights(self):
+        """
+        Test user access rights for plan lines
+        """
         # Ensure that user without any group cannot access plan lines
-        test_plan_2_as_bob = self.plan_2.with_user(self.user_bob)
+        test_plan_3_as_bob = self.plan_3.with_user(self.user_bob)
         with self.assertRaises(AccessError):
-            plan_line_read_result = test_plan_2_as_bob.line_ids[0].read([])
-
+            plan_line_read_result = test_plan_3_as_bob.line_ids[0].read([])
         # Add user_bob to `group_user` and test plan.line access
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Set access level to 1, so group_user can access the plan lines
-        self.write_and_invalidate(self.plan_2, **{"access_level": "1"})
-
-        plan_line_read_result = test_plan_2_as_bob.line_ids[0].read([])
+        plan_line_read_result = test_plan_3_as_bob.line_ids[0].read([])
         self.assertEqual(
             plan_line_read_result[0]["name"],
             "Test create directory",
             msg="User should access plan lines with access_level 1",
         )
+        # Test that user cannot write to plan lines
+        with self.assertRaises(AccessError):
+            test_plan_3_as_bob.line_ids[0].write({"sequence": 10})
 
-        # Add user_bob to `group_manager` and test edit rights for plan.line
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        test_plan_2_as_bob.write({"access_level": "2"})
-        self.assertEqual(test_plan_2_as_bob.access_level, "2")
-        test_plan_2_as_bob.line_ids.write({"sequence": 3})
+        # Test that user cannot unlink plan lines
+        with self.assertRaises(AccessError):
+            test_plan_3_as_bob.line_ids[0].unlink()
+
+    def test_plan_lines_subscribed_user_access_rights(self):
+        """
+        Test user access to the plan lines assigned to the server they are subscribed to
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Assign Plan_3 to the server_test_1
+        self.write_and_invalidate(
+            self.plan_3, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        )
+        # Ensure that user not subscribed to the server cannot access plan lines
+        test_plan_3_as_bob = self.plan_3.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            plan_line_read_result = test_plan_3_as_bob.line_ids[0].read([])
+        # Subscribe user to the server
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        # Check that user can access plan lines
+        plan_line_read_result = test_plan_3_as_bob.line_ids[0].read([])
         self.assertEqual(
-            test_plan_2_as_bob.line_ids[0].sequence,
-            3,
+            plan_line_read_result[0]["name"],
+            "Test create directory",
+            msg="User should access plan lines assigned to the server "
+            "they are subscribed to",
+        )
+
+    def test_plan_lines_manager_access_rights(self):
+        """
+        Test manager access rights for plan lines
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        test_plan_3_as_bob = self.plan_3.with_user(self.user_bob)
+        # Test that manager can write to plan lines
+        test_plan_3_as_bob.line_ids[0].write({"sequence": 10})
+        self.assertEqual(
+            test_plan_3_as_bob.line_ids[0].sequence,
+            10,
             msg="Manager should be able to update sequence",
         )
-
-        # Ensure that manager cannot delete plan lines they did not create
+        # Test that manager can not unlink plan lines they did not create
         with self.assertRaises(AccessError):
-            test_plan_2_as_bob.line_ids[0].unlink()
-
-        # Create a new plan line as user_bob (manager)
+            test_plan_3_as_bob.line_ids[0].unlink()
+        # Test that manager can create plan lines
         plan_line_as_bob = self.plan_line.with_user(self.user_bob).create(
             {
-                "plan_id": test_plan_2_as_bob.id,
-                "command_id": self.command_create_dir.id,
-                "sequence": 10,
-            }
-        )
-
-        # Ensure the plan line was created and check that create_uid is user_bob
-        self.assertEqual(
-            plan_line_as_bob.create_uid.id,
-            self.user_bob.id,
-            msg="Create_uid should be user_bob",
-        )
-
-        # Check that user_bob can delete the plan line he has just created
-        plan_line_as_bob.unlink()
-
-        # Ensure the plan line has been deleted
-        self.assertFalse(
-            plan_line_as_bob.exists(),
-            msg="Manager should be able to delete own plan line",
-        )
-        # Check unlink failure due to follower dependency
-
-        # Create a new plan line as user_bob
-        plan_line_as_bob = self.plan_line.with_user(self.user_bob).create(
-            {
-                "plan_id": self.plan_2.id,
+                "plan_id": test_plan_3_as_bob.id,
                 "command_id": self.command_create_dir.id,
                 "sequence": 11,
             }
         )
-        # Assign Plan_2 to the server_test_1
-        self.write_and_invalidate(
-            self.plan_2, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        self.assertTrue(
+            plan_line_as_bob.exists(),
+            msg="Manager should be able to create plan lines",
         )
-        # Ensure that managers cannot delete plan lines assigned to servers to which
-        # they aren't subscribed
-
-        with self.assertRaises(AccessError):
-            plan_line_as_bob.unlink()
-
-        # Check that managers can't access  plan line assigned to servers
-        #  to which they aren't subscribed
-        with self.assertRaises(AccessError):
-            plan_line_read_result = plan_line_as_bob.read([])
-        # Check that managers have access to plan line assigned to servers
-        #  to which they are subscribed
-        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-        plan_line_read_result = plan_line_as_bob.read([])
-        self.assertEqual(
-            plan_line_read_result[0]["name"],
-            "Test create directory",
-            msg="Manager should has access to plan lines assigned to servers to which "
-            "they are subscribed",
-        )
-        # Check that users have access to plan line assigned to servers
-        #  to which they are subscribed
-        self.write_and_invalidate(self.plan_2, **{"access_level": "1"})
-        # Remove user_bob from manager  group
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_manager",
-            ],
-        )
-        plan_line_read_result = plan_line_as_bob.read([])
-        self.assertEqual(
-            plan_line_read_result[0]["name"],
-            "Test create directory",
-            msg="User should has access to plan lines assigned to servers to which "
-            "they are subscribed",
-        )
-        # Check user can't access  plan line assigned to servers
-        #  to which they aren't subscribed
-        self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
-        with self.assertRaises(AccessError):
-            plan_line_read_result = plan_line_as_bob.read([])
-
-    def test_plan_line_action_access_rights(self):
-        # Create a test plan with plan lines
-        self.plan_2 = self.Plan.create(
-            {
-                "name": "Test plan 2",
-                "note": "Test note",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
-                "line_ids": [
-                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
-                ],
-            }
-        )
-        # Create a plan line action for the first line
-        self.plan_line_action = self.env["cx.tower.plan.line.action"].create(
-            {
-                "line_id": self.plan_2.line_ids[0].id,
-                "condition": "==",
-                "value_char": "0",
-                "action": "n",
-            }
-        )
-
-        # Ensure default access level is correct
-        self.assertEqual(self.plan_2.access_level, "2")
-
-        # Remove user_bob from all cxtower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-        self.write_and_invalidate(self.command_create_dir, **{"access_level": "1"})
-
-        # Ensure that user_bob without any group cannot access plan line actions
-        test_plan_line_action_as_bob = self.plan_line_action.with_user(self.user_bob)
-        with self.assertRaises(AccessError):
-            plan_line_action_read_result = test_plan_line_action_as_bob.read([])
-
-        # Add user_bob to `group_user` and test plan.line.action access
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Set access level to 1, so group_user can access the plan line actions
-        self.write_and_invalidate(self.plan_2, **{"access_level": "1"})
-        self.assertEqual(self.plan_line_action.access_level, "1")
-
-        plan_line_action_read_result = test_plan_line_action_as_bob.read([])
-        self.assertEqual(
-            plan_line_action_read_result[0]["condition"],
-            test_plan_line_action_as_bob.condition,
-            msg="User should access plan line actions with access_level 1",
-        )
-
-        # Add user_bob to `group_manager` and test plan.line.action access
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        # Set access level to 2, so group_manager can access the plan line action
-        self.write_and_invalidate(self.plan_2, **{"access_level": "2"})
-        # Ensure that user_bob as member of group_manager
-        #  can read to plan line actions
-        plan_line_action_read_result = test_plan_line_action_as_bob.read([])
-        self.assertEqual(
-            plan_line_action_read_result[0]["name"],
-            test_plan_line_action_as_bob.name,
-            msg="Name should be the same",
-        )
-
-        # Ensure that manager can update plan line actions they did not create
-        test_plan_line_action_as_bob.write({"sequence": 3})
-        self.assertEqual(
-            test_plan_line_action_as_bob.sequence,
-            3,
-            msg="Manager should be able to update sequence",
-        )
-
-        # Ensure that manager cannot delete plan line actions they did not create
-        with self.assertRaises(AccessError):
-            test_plan_line_action_as_bob.unlink()
-
-        # Create a new plan line action with user_bob as manager
-
-        new_plan_line_action = (
-            self.env["cx.tower.plan.line.action"]
-            .with_user(self.user_bob)
-            .create(
-                {
-                    "line_id": self.plan_2.line_ids[0].id,
-                    "condition": ">",
-                    "value_char": "100",
-                    "action": "e",
-                }
-            )
-        )
-
-        self.assertEqual(
-            new_plan_line_action.create_uid.id,
-            self.user_bob.id,
-            msg="Create_uid should be user_bob",
-        )
-
-        # Check that user_bob can delete the plan line action he has created
-        new_plan_line_action.with_user(self.user_bob).unlink()
-
-        # Ensure the plan line action has been deleted
+        # Test that manager can delete plan lines they created
+        plan_line_as_bob.unlink()
         self.assertFalse(
-            new_plan_line_action.exists(),
-            msg="Manager should be able to delete own plan line action",
+            plan_line_as_bob.exists(),
+            msg="Manager should be able to delete own plan lines",
         )
 
-        # Check unlink failure due to follower dependency
-        # Create a new plan line action as user_bob
-        plan_line_action_as_bob = (
+    def test_plan_lines_subscribed_manager_access_rights(self):
+        """
+        Test manager access rights for plan lines assigned to the server they are
+        subscribed to
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Assign Plan_3 to the server_test_1
+        self.write_and_invalidate(
+            self.plan_3, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        )
+        # Ensure that manager without subscribing to the server cannot access plan lines
+        test_plan_3_as_bob = self.plan_3.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            plan_line_read_result = test_plan_3_as_bob.line_ids[0].read([])
+        # Subscribe manager to the server
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        # Check that manager can access plan lines
+        plan_line_read_result = test_plan_3_as_bob.line_ids[0].read([])
+        self.assertEqual(
+            plan_line_read_result[0]["name"],
+            "Test create directory",
+            msg="Manager should access plan lines assigned to the server "
+            "they are subscribed to",
+        )
+        # Test that manager can create lines assigned to the server they are
+        #  subscribed to
+        plan_line_as_bob = self.plan_line.with_user(self.user_bob).create(
+            {
+                "plan_id": test_plan_3_as_bob.id,
+                "command_id": self.command_create_dir.id,
+                "sequence": 12,
+            }
+        )
+        self.assertTrue(
+            plan_line_as_bob.exists(),
+            msg="Manager should be able to create plan lines assigned to the server "
+            "they are subscribed to",
+        )
+        # Test that manager has no access to lines assigned to the server they
+        # are not subscribed to
+        self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
+        with self.assertRaises(AccessError):
+            plan_line_read_result = test_plan_3_as_bob.read([])
+
+    def test_plan_line_action_user_access_rights(self):
+        """
+        Test user access rights for plan line actions
+        """
+        # Ensure user without any group cannot access plan line actions
+        test_action_as_bob = self.plan_3_line_1_action.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            test_action_as_bob.read([])
+
+        # Add user to group_user and test access
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # User should be able to read plan line actions
+        action_read_result = test_action_as_bob.read([])
+        self.assertEqual(
+            action_read_result[0]["condition"],
+            "==",
+            msg="User should be able to read plan line actions",
+        )
+
+        # User should not be able to create/write/unlink
+        with self.assertRaises(AccessError):
+            self.env["cx.tower.plan.line.action"].with_user(self.user_bob).create(
+                {
+                    "line_id": self.plan_3_line_1.id,
+                    "condition": "==",
+                    "value_char": "test2",
+                    "action": "e",
+                }
+            )
+
+        with self.assertRaises(AccessError):
+            test_action_as_bob.write({"value_char": "modified"})
+
+        with self.assertRaises(AccessError):
+            test_action_as_bob.unlink()
+
+    def test_plan_line_action_subscribed_user_access_rights(self):
+        """
+        Test user access rights for plan line actions assigned to servers
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+
+        # Assign plan to server
+        self.write_and_invalidate(
+            self.plan_3, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        )
+
+        # User not subscribed - should not have access
+        test_action_as_bob = self.plan_3_line_1_action.with_user(self.user_bob)
+        with self.assertRaises(AccessError):
+            test_action_as_bob.read([])
+
+        # Subscribe user to server
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+
+        # User should now have read access
+        action_read_result = test_action_as_bob.read([])
+        self.assertEqual(
+            action_read_result[0]["condition"],
+            "==",
+            msg="Subscribed user should be able to read plan line actions",
+        )
+
+    def test_plan_line_action_manager_access_rights(self):
+        """
+        Test manager access rights for plan line actions
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        test_action_as_bob = self.plan_3_line_1_action.with_user(self.user_bob)
+
+        # Manager should be able to read and write
+        action_read_result = test_action_as_bob.read([])
+        self.assertEqual(
+            action_read_result[0]["condition"],
+            "==",
+            msg="Manager should be able to read plan line actions",
+        )
+
+        test_action_as_bob.write({"value_char": "modified"})
+        self.assertEqual(
+            test_action_as_bob.value_char,
+            "modified",
+            msg="Manager should be able to modify plan line actions",
+        )
+
+        # Manager should be able to create own actions
+        new_action_as_bob = (
             self.env["cx.tower.plan.line.action"]
             .with_user(self.user_bob)
             .create(
                 {
-                    "line_id": self.plan_2.line_ids[0].id,
-                    "condition": ">",
-                    "value_char": "100",
+                    "line_id": self.plan_3_line_1.id,
+                    "condition": "==",
+                    "value_char": "test2",
                     "action": "e",
                 }
             )
         )
-        self.assertEqual(
-            plan_line_action_as_bob.create_uid.id,
-            self.user_bob.id,
-            msg="Create_uid should be user_bob",
+
+        self.assertTrue(
+            new_action_as_bob.exists(),
+            msg="Manager should be able to create plan line actions",
         )
 
-        # Assign Plan_2 to the server_test_1
+        # Manager should be able to delete own actions but not others
+        with self.assertRaises(AccessError):
+            test_action_as_bob.unlink()
+
+        new_action_as_bob.unlink()
+        self.assertFalse(
+            new_action_as_bob.exists(),
+            msg="Manager should be able to delete own plan line actions",
+        )
+
+    def test_plan_line_action_subscribed_manager_access_rights(self):
+        """
+        Test manager access rights for plan line actions assigned to servers
+        """
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Assign plan to server
         self.write_and_invalidate(
-            self.plan_2, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+            self.plan_3, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
         )
-        # Ensure that managers cannot delete plan line actions assigned to servers to
-        # which they aren't subscribed
+        test_action_as_bob = self.plan_3_line_1_action.with_user(self.user_bob)
+
+        # Manager not subscribed - should not have access
         with self.assertRaises(AccessError):
-            plan_line_action_as_bob.unlink()
-        # Check that managers can't access  plan line actions assigned to servers
-        #  to which they aren't subscribed
-        with self.assertRaises(AccessError):
-            plan_line_action_read_result = plan_line_action_as_bob.read([])
-        # Check that managers have access to plan line assigned to servers
-        #  to which they are subscribed
+            test_action_as_bob.read([])
+
+        # Subscribe manager to server
         self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-        plan_line_action_read_result = plan_line_action_as_bob.read([])
+
+        # Manager should now have full access
+        action_read_result = test_action_as_bob.read([])
         self.assertEqual(
-            plan_line_action_read_result[0]["name"],
-            plan_line_action_as_bob.name,
-            msg="Name should be the same",
+            action_read_result[0]["condition"],
+            "==",
+            msg="Subscribed manager should be able to read plan line actions",
         )
-        # Check that users have access to plan line actions assigned to servers
-        #  to which they are subscribed
-        self.write_and_invalidate(self.plan_2, **{"access_level": "1"})
-        # Remove user_bob from manager  group
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_manager",
-            ],
+
+        # Create own action as subscribed manager
+        new_action_as_bob = (
+            self.env["cx.tower.plan.line.action"]
+            .with_user(self.user_bob)
+            .create(
+                {
+                    "line_id": self.plan_3_line_1.id,
+                    "condition": "==",
+                    "value_char": "test2",
+                    "action": "e",
+                }
+            )
         )
-        plan_line_action_read_result = plan_line_action_as_bob.read([])
-        self.assertEqual(
-            plan_line_action_read_result[0]["condition"],
-            plan_line_action_as_bob.condition,
-            msg="Condition should be the same",
+        self.assertTrue(
+            new_action_as_bob.exists(),
+            msg="Subscribed manager should be able to create plan line actions",
         )
-        # Check user can't access  plan line actions assigned to servers
-        #  to which they aren't subscribed
+        # Test that manager has no access to lines assigned to the server they
+        # are not subscribed to
         self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
         with self.assertRaises(AccessError):
-            plan_line_action_read_result = plan_line_action_as_bob.read([])
+            new_action_as_bob.read([])
 
-    def test_plan_line_action_variable_values_access_rights(self):
-        # Remove User_bob from all groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-        # Assign variable value to plan action
-
-        variable_value = self.env["cx.tower.variable.value"].create(
-            {
-                "variable_id": self.variable_os.id,
-                "value_char": "Branch = Main",
-                "plan_line_action_id": self.plan_line_1_action_1.id,
-            }
-        )
-
-        # group_user:
-        # Plan not assigned to server, ensure access to variable value in plan line
-        # action
+    def test_plan_line_action_variable_values_user_access_rights(self):
+        """
+        Test user access rights for variable values associated with plan line actions
+        """
+        # group_user: Plan not assigned to server, ensure access to variable value in
+        #  plan line action
         # Add user to group
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        self.write_and_invalidate(self.plan_1, **{"access_level": "1"})
-        test_plan_line_action_as_bob = self.plan_line_1_action_1.with_user(
+        test_plan_line_action_as_bob = self.plan_3_line_1_action.with_user(
             self.user_bob
         )
         plan_line_action_vv_read_result = (
@@ -1620,13 +1612,13 @@ class TestTowerPlan(TestTowerCommon):
         )
         self.assertEqual(
             plan_line_action_vv_read_result[0]["value_char"],
-            variable_value.value_char,
+            self.variable_value.value_char,
             msg="Value should be the same",
         )
         # User not subscribed to the server: ensure no access to variable value in
         # plan line action
         self.write_and_invalidate(
-            self.plan_1, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+            self.plan_3, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
         )
         with self.assertRaises(AccessError):
             plan_line_action_vv_read_result = (
@@ -1640,43 +1632,63 @@ class TestTowerPlan(TestTowerCommon):
         )
         self.assertEqual(
             plan_line_action_vv_read_result[0]["value_char"],
-            variable_value.value_char,
+            self.variable_value.value_char,
             msg="Value should be the same",
         )
-        # group_manager:
+
+    def test_plan_line_action_variable_values_manager_access_rights(self):
+        """
+        Test manager access rights for variable values associated with plan line actions
+        """
+        # add user_bob to group_manager
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        self.write_and_invalidate(self.plan_1, **{"access_level": "2"})
-        # User subscribed to the server: ensure user_bob cannot remove variable value
-        # from action line if he is not  creator of action line
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        self.write_and_invalidate(
+            self.plan_3, **{"server_ids": [(6, 0, [self.server_test_1.id])]}
+        )
+
+        # Manager subscribed to the server: ensure user_bob cannot remove variable value
+        # from action line if he is not creator of variable
         with self.assertRaises(AccessError):
-            test_plan_line_action_as_bob.write({"variable_value_ids": [(5, 0, 0)]})
+            self.variable_value.with_user(self.user_bob).unlink()
         # User subscribed to the server: ensure user_bob can create variable value in
         # plan line action
+        variable_value_as_bob = (
+            self.env["cx.tower.variable.value"]
+            .with_user(self.user_bob)
+            .create(
+                {
+                    "variable_id": self.variable_os.id,
+                    "value_char": "OS/2",
+                }
+            )
+        )
 
         plan_line_action_as_bob = (
             self.env["cx.tower.plan.line.action"]
             .with_user(self.user_bob)
             .create(
                 {
-                    "line_id": self.plan_line_1.id,
+                    "line_id": self.plan_3_line_1.id,
                     "condition": ">",
                     "value_char": "100",
                     "action": "e",
-                    "variable_value_ids": [(4, variable_value.id)],
+                    "variable_value_ids": [(4, variable_value_as_bob.id)],
                 }
             )
         )
 
         # Ensure that variable value has assigned properly
         self.assertIn(
-            variable_value.id,
+            variable_value_as_bob.id,
             plan_line_action_as_bob.variable_value_ids.ids,
             msg="variable_value_ids should contain variable_value.id",
         )
         # User subscribed to the server: ensure user_bob can delete their own variable
         # value from  plan line action he created
-        plan_line_action_as_bob.write({"variable_value_ids": [(5, 0, 0)]})
+        variable_value_as_bob.unlink()
+        # Ensure the variable value has been deleted
         self.assertFalse(
-            plan_line_action_as_bob.variable_value_ids,
-            msg="Manager should be able to delete variables from own plan line actions",
+            variable_value_as_bob.exists(),
+            msg="Manager should be able to delete own plan line action variable value",
         )

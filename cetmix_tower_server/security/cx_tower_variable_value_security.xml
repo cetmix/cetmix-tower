@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-
     <record
         id="cx_tower_variable_value_rule_group_user_and_manager_access"
         model="ir.rule"
@@ -27,10 +26,12 @@
             ('plan_line_action_id.access_level', '=', '1'),
             '|',
             ('plan_line_action_id.line_id.plan_id.server_ids', '=', False),
-            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
+            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in',
+            [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="perm_unlink" eval="0" />
     </record>
 
     <record
@@ -47,13 +48,11 @@
             ('plan_line_action_id.access_level', '&lt;=', '2'),
             '|',
             ('plan_line_action_id.line_id.plan_id.server_ids', '=', False),
-            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
+            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in',
+            [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
-        <field name="perm_read" eval="1" />
-        <field name="perm_create" eval="1" />
-        <field name="perm_write" eval="1" />
         <field name="perm_unlink" eval="0" />
     </record>
 
@@ -68,17 +67,56 @@
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
-            ('plan_line_action_id.create_uid', '=', user.id),
+            ('create_uid', '=', user.id),
             ('plan_line_action_id.access_level', '&lt;=', '2'),
             '|',
             ('plan_line_action_id.line_id.plan_id.server_ids', '=', False),
-            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in', [user.partner_id.id])
+            ('plan_line_action_id.line_id.plan_id.server_ids.message_partner_ids', 'in',
+            [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
-        <field name="perm_unlink" eval="1" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
     </record>
 
+    <record
+        id="cx_tower_variable_value_server_template_rule_group_manager_access"
+        model="ir.rule"
+    >
+        <field
+            name="name"
+        >Tower variable value: manager access to variable values in server
+            template rule</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">[
+            ('server_template_id.message_partner_ids', 'in', [user.partner_id.id]),
+            ]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record
+        id="cx_tower_variable_value_server_template_rule_group_manager_unlink"
+        model="ir.rule"
+    >
+        <field
+            name="name"
+        >Tower variable value: manager delete own variable values in server
+            template rule</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">
+            [
+            ('server_template_id.message_partner_ids', 'in', [user.partner_id.id]),
+            ('create_uid', '=', user.id)
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
+    </record>
 
     <record id="cx_tower_variable_value_rule_group_root_access" model="ir.rule">
         <field name="name">Tower variable value: root access rule</field>
