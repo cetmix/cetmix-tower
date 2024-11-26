@@ -5,7 +5,7 @@
         <field name="name">cx.tower.command.execute.wizard.view.form</field>
         <field name="model">cx.tower.command.execute.wizard</field>
         <field name="arch" type="xml">
-            <form string="Execute Command">
+            <form string="Run Command">
                 <div
                     class="alert alert-warning"
                     role="alert"
@@ -109,7 +109,7 @@
                     <button
                         name="action_execute_command"
                         type="object"
-                        string="Execute New Command"
+                        string="Run New Command"
                         class="oe_highlight"
                         attrs="{'invisible': [('result', '=', False)]}"
                     />

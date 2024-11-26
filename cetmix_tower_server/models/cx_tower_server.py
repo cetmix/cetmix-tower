@@ -1473,7 +1473,7 @@ class CxTowerServer(models.Model):
         )
         return {
             "type": "ir.actions.act_window",
-            "name": _("Execute Command"),
+            "name": _("Run Command"),
             "res_model": "cx.tower.command.execute.wizard",
             "view_mode": "form",
             "view_type": "form",
@@ -1493,7 +1493,7 @@ class CxTowerServer(models.Model):
         )
         return {
             "type": "ir.actions.act_window",
-            "name": _("Execute Flight Plan"),
+            "name": _("Run Flight Plan"),
             "res_model": "cx.tower.plan.execute.wizard",
             "view_mode": "form",
             "view_type": "form",

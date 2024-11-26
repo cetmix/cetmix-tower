@@ -15,27 +15,29 @@
                 <field name="color" />
                 <templates>
                     <t t-name="kanban-box">
-                    <div
+                        <div
                             t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
                         >
-                        <div t-attf-class="o_kanban_card_header">
-                            <div
+                            <div t-attf-class="o_kanban_card_header">
+                                <div
                                     class="o_kanban_card_header_title d-flex justify-content-between mr-4"
                                 >
-                                <div class="o_primary">
-                                    <field name="name" />
+                                    <div class="o_primary">
+                                        <field name="name" />
+                                    </div>
+                                    <field name="status" widget="server_status" />
                                 </div>
-                                <field name="status" widget="server_status" />
-                            </div>
-                            <div class="o_kanban_manage_button_section">
-                                <a class="o_kanban_manage_toggle_button" href="#"><i
+                                <div class="o_kanban_manage_button_section">
+                                    <a class="o_kanban_manage_toggle_button" href="#">
+                                        <i
                                             class="fa fa-ellipsis-v"
                                             aria-label="Selection"
                                             role="img"
                                             title="Selection"
-                                        /></a>
+                                        />
+                                    </a>
+                                </div>
                             </div>
-                        </div>
 
                             <div
                                 class="container o_kanban_card_manage_pane dropdown-menu"
@@ -48,14 +50,16 @@
                                                 role="menuitem"
                                                 type="action"
                                                 name="%(cetmix_tower_server.cx_tower_command_execute_wizard_action)d"
-                                            >Run Command</a>
+                                            >Run
+                                                Command</a>
                                         </div>
                                         <div>
                                             <a
                                                 role="menuitem"
                                                 type="action"
                                                 name="%(cetmix_tower_server.cx_tower_plan_execute_wizard_action)d"
-                                            >Run Flight Plan</a>
+                                            >Run
+                                                Flight Plan</a>
                                         </div>
                                     </div>
                                 </div>
@@ -66,46 +70,51 @@
                                     />
                                 </div>
                             </div>
-                        <div class="oe_kanban_content">
-                            <div class="oe_kanban_global_click">
-                                <div class="col-12 pt8 o_kanban_primary_right">
-                                    <div
+                            <div class="oe_kanban_content">
+                                <div class="oe_kanban_global_click">
+                                    <div class="col-12 pt8 o_kanban_primary_right">
+                                        <div
                                             attrs="{'invisible': [('partner_id', '=', False)]}"
                                         >
-                                        <strong>Partner:</strong>
-                                        <field name="partner_id" />
-                                    </div>
-                                    <div attrs="{'invisible': [('os_id', '=', False)]}">
-                                        <strong>Operating System:</strong>
-                                        <field name="os_id" />
-                                    </div>
-                                    <div
+                                            <strong>Partner:</strong>
+                                            <field name="partner_id" />
+                                        </div>
+                                        <div
+                                            attrs="{'invisible': [('os_id', '=', False)]}"
+                                        >
+                                            <strong>Operating System:</strong>
+                                            <field name="os_id" />
+                                        </div>
+                                        <div
                                             attrs="{'invisible': [('ip_v4_address', '=', False)]}"
                                         >
-                                        <strong>IPv4 Address:</strong>
-                                        <field name="ip_v4_address" />
-                                    </div>
-                                    <div
+                                            <strong>IPv4 Address:</strong>
+                                            <field name="ip_v4_address" />
+                                        </div>
+                                        <div
                                             attrs="{'invisible': [('ip_v6_address', '=', False)]}"
                                         >
-                                        <strong>IPv6 Address:</strong>
-                                        <field name="ip_v6_address" />
+                                            <strong>IPv6 Address:</strong>
+                                            <field name="ip_v6_address" />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="o_kanban_record_bottom">
-                                <div class="oe_kanban_bottom_left">
-                                </div>
-                                <div class="oe_kanban_bottom_right">
-                                    <div
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <div
                                             attrs="{'invisible': [('tag_ids', '=', False)]}"
                                         >
-                                        <field name="tag_ids" widget="many2many_tags" />
+                                            <field
+                                                name="tag_ids"
+                                                widget="many2many_tags"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </t>
                 </templates>
             </kanban>
@@ -145,15 +154,24 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+
                     <button
-                        name="test_ssh_connection"
+                        name="action_execute_command"
                         type="object"
-                        string="Test Connection"
+                        string="Run command"
+                        icon="fa-code"
+                    />
+                    <button
+                        name="action_execute_plan"
+                        type="object"
+                        string="Run Flight Plan"
+                        icon="fa-plane"
                     />
                 </header>
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
+
                         <button
                             name="action_open_command_logs"
                             type="object"
@@ -177,7 +195,7 @@
                             <field name="file_count" widget="statinfo" string="Files" />
                         </button>
                     </div>
-                     <widget
+                    <widget
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
@@ -214,6 +232,14 @@
                                     />
                                     <field name="ip_v4_address" />
                                     <field name="ip_v6_address" />
+                                    <br />
+                                    <button
+                                        name="test_ssh_connection"
+                                        type="object"
+                                        string="Test Connection"
+                                        class="btn-primary"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
                                 </group>
                                 <group name="ssh">
                                     <field name="ssh_auth_mode" />
@@ -230,10 +256,16 @@
                                         attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
                                     />
                                 </group>
+
+
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
-                        <page name="configuration" string="Configuration">
+                        <page
+                            name="configuration"
+                            string="Configuration"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
@@ -260,7 +292,11 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="secrets" string="Secrets">
+                        <page
+                            name="secrets"
+                            string="Secrets"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <field
                                 name="secret_ids"
                                 context="{'default_key_type': 's', 'from_server': True}"

@@ -31,6 +31,11 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 # }
 \n\n\n"""
 
+DEFAULT_SSH_CODE = """# Run any SSH command on the target system
+# Examples: ls, cd, pwd, mkdir, rm
+# Adapt commands to your specific OS.
+\n\n\n"""
+
 
 class CxTowerCommand(models.Model):
     _name = "cx.tower.command"
@@ -142,9 +147,11 @@ class CxTowerCommand(models.Model):
         Compute default code
         """
         for command in self:
-            if command.action == "python_code" and not command.code:
+            if command.action == "python_code":
                 command.code = DEFAULT_PYTHON_CODE
             elif command.action == "ssh_command":
+                command.code = DEFAULT_SSH_CODE
+            else:
                 command.code = False
 
     @api.model

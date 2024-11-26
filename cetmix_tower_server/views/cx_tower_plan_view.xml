@@ -16,6 +16,12 @@
                             icon="fa-bars"
                         />
                     </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
                     <div
                         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager"
                         class="alert alert-warning"
@@ -39,6 +45,7 @@
                             <field name="name" />
                             <field name="reference" />
                             <field name="allow_parallel_run" />
+                            <field name="active" invisible='1' />
                             <label for="on_error_action" />
                             <div class="o_row">
                                 <field name="on_error_action" />

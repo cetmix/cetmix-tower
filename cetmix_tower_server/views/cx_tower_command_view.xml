@@ -17,7 +17,12 @@
                             icon="fa-bars"
                         />
                     </div>
-
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
                     <div
                         class="alert alert-warning"
                         role="alert"
@@ -39,6 +44,7 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
+                            <field name="active" invisible='1' />
                             <field name="action" />
                             <field
                                 name="file_template_id"
@@ -77,7 +83,11 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="code" string="Code">
+                        <page
+                            name="code"
+                            string="Code"
+                            attrs="{'invisible': ['|',  ('action', '=', 'file_using_template'), ('action', '=', 'plan')]}"
+                        >
                             <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
                             <field
                                 name="code"

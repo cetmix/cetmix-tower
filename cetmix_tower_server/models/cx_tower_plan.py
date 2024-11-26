@@ -260,9 +260,9 @@ class CxTowerPlan(models.Model):
                 command_names = ", ".join(commands_with_higher_access.mapped("name"))
                 record.access_level_warn_msg = _(
                     "The access level of command(s) '%(command_names)s' included in the"
-                    "current Flight plan is higher than  the access level of the Flight"
-                    "plan itself. Ensure that you really want to give access to those"
-                    "command(s) to the flight plan users.",
+                    " current Flight plan is higher than the access level of the"
+                    " Flight plan itself. Please ensure that you want to allow"
+                    " those commands to be run anyway.",
                     command_names=command_names,
                 )
             else:
