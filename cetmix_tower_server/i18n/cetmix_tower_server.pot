@@ -23,10 +23,18 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:res.groups,comment:cetmix_tower_server.group_user
+msgid ""
+"\n"
+"        Basic actions for selected servers.\n"
+"    "
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:res.groups,comment:cetmix_tower_server.group_manager
 msgid ""
 "\n"
-"        Edit and create new servers.\n"
+"        Create and modify selected servers.\n"
 "    "
 msgstr ""
 
@@ -34,15 +42,7 @@ msgstr ""
 #: model:res.groups,comment:cetmix_tower_server.group_root
 msgid ""
 "\n"
-"        Full control.\n"
-"    "
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:res.groups,comment:cetmix_tower_server.group_user
-msgid ""
-"\n"
-"        Server monitoring and basic actions.\n"
+"        Full control over all servers.\n"
 "    "
 msgstr ""
 
@@ -246,6 +246,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__access_level
+#: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
 msgid "Access Level"
 msgstr ""
 
@@ -483,6 +484,7 @@ msgid "Cannot pull %(f)s from server: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_root
 msgid "Cetmix Tower"
 msgstr ""
@@ -546,7 +548,6 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server
-#: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
 msgid "Cetmix Tower Server"
 msgstr ""
 
@@ -2686,6 +2687,11 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__duration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__duration
 msgid "Time consumed for execution, seconds"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_tools
+msgid "Tools"
 msgstr ""
 
 #. module: cetmix_tower_server
