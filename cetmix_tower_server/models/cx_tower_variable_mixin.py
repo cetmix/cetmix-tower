@@ -159,6 +159,7 @@ class TowerVariableMixin(models.AbstractModel):
                 "ipv4": server.ip_v4_address,
                 "ipv6": server.ip_v6_address,
                 "status": server.status,
+                "os": server.os_id.name if server.os_id else False,
             }
         return values
 
