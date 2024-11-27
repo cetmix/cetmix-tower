@@ -51,9 +51,8 @@ class CxTowerYamlExportWiz(models.TransientModel):
         # Get model records
         records = self._get_model_record()
 
-        # No need to check context values here,
-        # we already checked them in _get_model_record()
-        model_prefix = self.env.context.get("active_model").split(".")[-1]
+        # Get model prefix
+        model_prefix = records._name.replace("cx.tower.", "").replace(".", "_")
 
         # Generate YAML file
         try:

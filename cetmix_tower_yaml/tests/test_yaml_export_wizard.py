@@ -18,11 +18,37 @@ class TestYamlExportWizard(TransactionCase):
             }
         )
 
+        # Create a flight plan
+        self.FlightPlan = self.env["cx.tower.plan"]
+        self.flight_plan_test_wizard = self.FlightPlan.create(
+            {
+                "name": "Test Flight Plan From Yaml",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": self.command_test_wizard.id,
+                        },
+                    )
+                ],
+            }
+        )
+
+        # Create a server template
+        self.ServerTemplate = self.env["cx.tower.server.template"]
+        self.server_template_test_wizard = self.ServerTemplate.create(
+            {
+                "name": "Test Server Template From Yaml",
+                "flight_plan_id": self.flight_plan_test_wizard.id,
+            }
+        )
+
         # Create a wizard and trigger onchange
         self.YamlExportWizard = self.env["cx.tower.yaml.export.wiz"]
         self.test_wizard = self.YamlExportWizard.with_context(
-            active_model="cx.tower.command",
-            active_ids=[self.command_test_wizard.id],
+            active_model="cx.tower.server.template",
+            active_ids=[self.server_template_test_wizard.id],
         ).create({})
         self.test_wizard.onchange_explode_child_records()
 
@@ -64,7 +90,7 @@ class TestYamlExportWizard(TransactionCase):
         # Test wizard creation
         self.assertEqual(
             self.test_wizard.yaml_code,
-            self.command_test_wizard.yaml_code,
+            self.server_template_test_wizard.yaml_code,
             "YAML code should be the same",
         )
 
@@ -89,7 +115,7 @@ class TestYamlExportWizard(TransactionCase):
         )
         self.assertEqual(
             download_wizard.yaml_file_name,
-            f"command_{self.command_test_wizard.reference}.yaml",
+            f"server_template_{self.server_template_test_wizard.reference}.yaml",
             "YAML file name should be generated based on record reference",
         )
 
@@ -100,7 +126,7 @@ class TestYamlExportWizard(TransactionCase):
         )
         self.assertEqual(
             yaml_file_content,
-            self.command_test_wizard.yaml_code,
+            self.server_template_test_wizard.yaml_code,
             "YAML file content should be the same as the original YAML code",
         )
 
