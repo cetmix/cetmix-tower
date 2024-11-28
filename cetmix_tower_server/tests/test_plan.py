@@ -1261,3 +1261,23 @@ class TestTowerPlan(TestTowerCommon):
             plan_log_records.command_log_ids.command_status,
             "Command status should be skipped",
         )
+
+    def test_plan_unlink(self):
+        plan = self.plan_1.copy()
+        plan_id = plan.id
+        plan_line_ids = plan.line_ids
+        plan_line_action_ids = plan.mapped("line_ids.action_ids")
+
+        plan.unlink()
+
+        self.assertFalse(
+            self.Plan.search([("id", "=", plan_id)]), msg="Plan should be deleted"
+        )
+        self.assertFalse(
+            self.plan_line.search([("id", "in", plan_line_ids.ids)]),
+            msg="Plan line should be deleted when Plan is deleted",
+        )
+        self.assertFalse(
+            self.plan_line_action.search([("id", "in", plan_line_action_ids.ids)]),
+            msg="Plan line action should be deleted when Plan line is deleted",
+        )

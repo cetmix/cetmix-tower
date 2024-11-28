@@ -14,14 +14,14 @@ class CxTowerPlanLog(models.Model):
     name = fields.Char(compute="_compute_name", compute_sudo=True, store=True)
     label = fields.Char(help="Custom label. Can be used for search/tracking")
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=True, index=True, ondelete="restrict"
+        comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"
     )
     plan_id = fields.Many2one(
         string="Flight Plan",
         comodel_name="cx.tower.plan",
         required=True,
         index=True,
-        ondelete="restrict",
+        ondelete="cascade",
     )
 
     # -- Time
