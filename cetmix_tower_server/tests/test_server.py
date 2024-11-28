@@ -299,3 +299,110 @@ class TestTowerServer(TestTowerCommon):
         server.toggle_active()
         server.toggle_active()
         self.assertTrue(server, msg="Server must be unarchived")
+
+    def test_server_unlink(self):
+        """
+        Test cascading deletion of server and its related records.
+        """
+
+        # Create a test server
+        server = self.Server.create(
+            {
+                "name": "Test Server #3",
+                "color": 3,
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "k",
+                "use_sudo": "p",
+                "ssh_key_id": self.key_1.id,
+                "os_id": self.os_ubuntu_20_04.id,
+                "secret_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "Secret 1",
+                            "secret_value": "secret_value_1",
+                            "key_type": "s",
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Create related file
+        file = self.File.create(
+            {"name": "Test File", "server_id": server.id, "source": "server"}
+        )
+
+        # Related secret
+        secret = server.secret_ids[0]
+
+        variable_meme = self.Variable.create({"name": "meme"})
+
+        # Create related variable value
+        variable_value = self.env["cx.tower.variable.value"].create(
+            {
+                "variable_id": variable_meme.id,  # Replace with valid reference
+                "value_char": "Test Value",
+                "server_id": server.id,
+            }
+        )
+        plan_1 = self.Plan.create(
+            {
+                "name": "Test plan",
+                "note": "Create directory and list its content",
+            }
+        )
+        # Create a related plan log
+        plan_log = self.PlanLog.create(
+            {
+                "server_id": server.id,
+                "plan_id": plan_1.id,  # Replace with valid reference
+            }
+        )
+
+        # Check that all records are created
+        self.assertTrue(server, "Server should be created successfully")
+        self.assertTrue(file, "File should be created successfully")
+        self.assertTrue(secret, "Secret should be created successfully")
+        self.assertTrue(variable_value, "Variable Value should be created successfully")
+        self.assertTrue(plan_log, "Plan Log should be created successfully")
+
+        # Collect IDs for verification post-deletion
+        file_id = file.id
+        secret_id = secret.id
+        variable_value_id = variable_value.id
+        plan_log_id = plan_log.id
+
+        # Delete the server
+        server.unlink()
+
+        # Verify that the server is deleted
+        self.assertFalse(
+            self.Server.search([("id", "=", server.id)]),
+            msg="Server should be deleted",
+        )
+        # Verify that related records are deleted
+        self.assertFalse(
+            self.File.search([("id", "=", file_id)]),
+            msg="File should be deleted when server is deleted",
+        )
+        # Verify that unrelated records are not affected
+        self.assertTrue(
+            self.Plan.search([("id", "=", plan_1.id)]),
+            msg="Unrelated plan should not be deleted when server is deleted",
+        )
+        self.assertFalse(
+            self.Key.search([("id", "=", secret_id)]),
+            msg="Secret should be deleted when server is deleted",
+        )
+        self.assertFalse(
+            self.VariableValue.search([("id", "=", variable_value_id)]),
+            msg="Variable Value should be deleted when server is deleted",
+        )
+        self.assertFalse(
+            self.PlanLog.search([("id", "=", plan_log_id)]),
+            msg="Plan Log should be deleted when server is deleted",
+        )

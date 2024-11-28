@@ -17,7 +17,10 @@ class TowerVariableValue(models.Model):
     _order = "variable_reference"
 
     variable_id = fields.Many2one(
-        string="Variable", comodel_name="cx.tower.variable", required=True
+        string="Variable",
+        comodel_name="cx.tower.variable",
+        required=True,
+        ondelete="cascade",
     )
     name = fields.Char(related="variable_id.name", readonly=True)
     variable_reference = fields.Char(
