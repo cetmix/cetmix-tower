@@ -1766,6 +1766,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__note
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__note
