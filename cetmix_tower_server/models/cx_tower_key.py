@@ -81,10 +81,25 @@ class CxTowerKey(models.Model):
             Records: The created record(s).
         """
         for vals in vals_list:
-            vals["name"] = vals["name"].strip()
+            # Remove leading and trailing whitespaces from name
+            vals_name = vals.get("name")
+            name = vals_name.strip() if vals_name else vals_name
+
+            # Remove leading and trailing whitespaces from reference
+            vals_reference = vals.get("reference")
+            reference = vals_reference.strip() if vals_reference else vals_reference
+
+            # Nothing can be done if no name or reference is provided
+            if not name and not reference:
+                continue
+
+            # Update the 'name' with the cleaned one
+            if name != vals_name:
+                vals.update({"name": name})
+
             # Generate reference
             reference = self._generate_or_fix_reference(
-                vals.get("reference") or vals.get("name"),
+                reference or name,
                 vals.get("partner_id"),
                 vals.get("server_id"),
             )
