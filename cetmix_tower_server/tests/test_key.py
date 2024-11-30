@@ -1,3 +1,5 @@
+from psycopg2.errors import NotNullViolation
+
 from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
@@ -6,6 +8,37 @@ from .common import TestTowerCommon
 class TestTowerKey(TestTowerCommon):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
+
+    def test_key_creation(self):
+        """
+        Test key creation.
+        We override create method so need to check if reference is generated properly
+        """
+
+        # -- 1--
+        #  Check new key values
+        key = self.Key.create(
+            {"name": " test key meme   ", "secret_value": "test value", "key_type": "s"}
+        )
+        self.assertEqual(
+            key.reference, "test_key_meme", "Reference must be 'test_key_meme'"
+        )
+        self.assertEqual(
+            key.name,
+            "test key meme",
+            "Trailing and leading whitespaces must be removed from name",
+        )
+
+        # -- 2 --
+        # Test if key without a name cannot be created
+        with self.assertRaises(NotNullViolation):
+            self.Key.create(
+                {
+                    "reference": "test_key_meme",
+                    "secret_value": "test value",
+                    "key_type": "s",
+                }
+            )
 
     def test_key_access_rights(self):
         """Test private key security features"""
