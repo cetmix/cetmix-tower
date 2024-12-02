@@ -60,6 +60,8 @@ class TowerVariableValue(models.Model):
         compute="_compute_variable_ids",
         store=True,
     )
+    required = fields.Boolean()
+
     _sql_constraints = [
         (
             "tower_variable_value_uniq",

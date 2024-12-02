@@ -295,3 +295,289 @@ class TestTowerServerTemplate(TestTowerCommon):
             original_log.command_id.code,
             "Command code should be the same in the copied server log",
         )
+
+    def test_required_flag_in_create_server_wizard(self):
+        """
+        Test that the 'Required' flag is correctly passed from the Server Template
+        to the New Server Wizard.
+        """
+        # Set the required flag for a variable
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "Test Value",
+                "required": True,
+            }
+        )
+
+        # Open the server creation wizard
+        action = self.server_template_sample.action_create_server()
+        wizard_context = action.get("context", {})
+        default_line_ids = wizard_context.get("default_line_ids", [])
+
+        # We check that required is passed to the wizard
+        self.assertTrue(
+            any(line[2].get("required") for line in default_line_ids),
+            "The 'Required' flag should be correctly passed to the wizard.",
+        )
+
+    def test_required_attribute_in_wizard_field(self):
+        """
+        Test that the 'required' attribute
+        is correctly applied to the 'value_char' field
+        in the wizard when the variable is marked as required.
+        """
+        # Create a required variable
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "Test Value",
+                "required": True,
+            }
+        )
+
+        # Open the wizard
+        wizard = self.env["cx.tower.server.template.create.wizard"].create(
+            {
+                "server_template_id": self.server_template_sample.id,
+                "name": "Test Server",
+                "ssh_username": "admin",
+            }
+        )
+
+        # Checking that the 'required' flag is passed to the form context
+        required_fields = [
+            line.required
+            for line in wizard.line_ids
+            if line.variable_id == self.variable_version
+        ]
+        self.assertTrue(
+            all(required_fields),
+            "The 'required' attribute should be correctly "
+            "applied to the 'value_char' field for required variables.",
+        )
+
+    def test_successful_server_creation_with_required_variables(self):
+        """
+        Test that a server is successfully created
+        when all required variables are filled in the wizard.
+        """
+        # Adding a required variable
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "",
+                "required": True,
+            }
+        )
+
+        # Open the wizard and fill in the data
+        wizard = self.env["cx.tower.server.template.create.wizard"].create(
+            {
+                "server_template_id": self.server_template_sample.id,
+                "name": "Test Server With Required Variables",
+                "ssh_username": "admin",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_version.id,
+                            "value_char": "Test Value",
+                            "required": True,
+                        },
+                    )
+                ],
+            }
+        )
+
+        # Checking the successful creation of the server
+        action = wizard.action_confirm()
+        self.assertTrue(action, "Server should be created successfully.")
+
+        # Checking that the server has been created
+        server = self.Server.search(
+            [
+                ("name", "=", "Test Server With Required Variables"),
+                ("server_template_id", "=", self.server_template_sample.id),
+            ]
+        )
+        self.assertTrue(server, "Server should exist.")
+        self.assertEqual(
+            server.variable_value_ids.filtered(
+                lambda v: v.variable_id == self.variable_version
+            ).value_char,
+            "Test Value",
+            "The variable value should be saved correctly.",
+        )
+
+    def test_optional_variable_with_empty_value(self):
+        """
+        Test that an optional variable
+        with an empty value is saved correctly
+        in the wizard and does not block server creation.
+        """
+        # Adding an optional variable
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_url.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "",
+                "required": False,
+            }
+        )
+
+        # Open the wizard
+        wizard = self.env["cx.tower.server.template.create.wizard"].create(
+            {
+                "server_template_id": self.server_template_sample.id,
+                "name": "Server With Optional Variable",
+                "ssh_username": "admin",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_url.id,
+                            "value_char": "",
+                            "required": False,
+                        },
+                    )
+                ],
+            }
+        )
+
+        # Checking that the wizard is saved without errors
+        wizard.action_confirm()
+
+        # Checking that the server has been created
+        server = self.Server.search(
+            [
+                ("name", "=", "Server With Optional Variable"),
+                ("server_template_id", "=", self.server_template_sample.id),
+            ]
+        )
+        self.assertTrue(
+            server, "Server should be created successfully with optional variables."
+        )
+
+        # Checking that an optional variable is saved with an empty value
+        variable = server.variable_value_ids.filtered(
+            lambda v: v.variable_id == self.variable_url
+        )
+        self.assertTrue(variable, "Optional variable should be attached to the server.")
+        self.assertEqual(
+            variable.value_char, "", "Optional variable should have an empty value."
+        )
+
+    def test_wizard_without_variables(self):
+        """
+        Test that the wizard does not display
+        any variables if the server template has none.
+        """
+        # Removing all variables from the template
+        self.VariableValue.search(
+            [("server_template_id", "=", self.server_template_sample.id)]
+        ).unlink()
+
+        # Open the wizard
+        wizard = self.env["cx.tower.server.template.create.wizard"].create(
+            {
+                "server_template_id": self.server_template_sample.id,
+                "name": "Server Without Variables",
+                "ssh_username": "admin",
+            }
+        )
+
+        # Checking that the wizard does not contain variables
+        self.assertFalse(wizard.line_ids, "Wizard should not display any variables.")
+
+    def test_update_required_variable_value(self):
+        """
+        Test that the value of a required variable
+        can be updated in the wizard and saved correctly.
+        """
+        # Adding a required variable
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_version.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "Old Value",
+                "required": True,
+            }
+        )
+
+        # Open the wizard and update the variable value
+        wizard = self.env["cx.tower.server.template.create.wizard"].create(
+            {
+                "server_template_id": self.server_template_sample.id,
+                "name": "Server With Updated Variable",
+                "ssh_username": "admin",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_version.id,
+                            "value_char": "New Value",
+                            "required": True,
+                        },
+                    )
+                ],
+            }
+        )
+        wizard.action_confirm()
+
+        # Checking that the variable value has been updated
+        server = self.Server.search([("name", "=", "Server With Updated Variable")])
+        variable = server.variable_value_ids.filtered(
+            lambda v: v.variable_id == self.variable_version
+        )
+        self.assertEqual(
+            variable.value_char,
+            "New Value",
+            "The variable value should be updated correctly.",
+        )
+
+    def test_optional_variable_handling(self):
+        """
+        Test that optional variables do not block server creation,
+        even if their values are empty or missing.
+        """
+        # Adding an optional variable to the template
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_url.id,
+                "server_template_id": self.server_template_sample.id,
+                "value_char": "",
+                "required": False,
+            }
+        )
+
+        # Specify an optional variable with an empty value
+        values = self.server_template_sample._prepare_server_values(
+            configuration_variables={self.variable_url.reference: ""}
+        )
+
+        # Checking that the optional variable is processed correctly
+        variable_data = next(
+            (
+                v
+                for v in values[0]["variable_value_ids"]
+                if v[2]["variable_id"] == self.variable_url.id
+            ),
+            None,
+        )
+        self.assertIsNotNone(
+            variable_data,
+            "The optional variable should be included "
+            "in the server values even if empty.",
+        )
+        self.assertEqual(
+            variable_data[2]["value_char"],
+            "",
+            "Optional variable should have an empty value.",
+        )
