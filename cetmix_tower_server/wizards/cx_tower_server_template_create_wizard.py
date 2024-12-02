@@ -1,7 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerServerTemplateCreateWizard(models.TransientModel):
@@ -47,7 +48,49 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
     line_ids = fields.One2many(
         comodel_name="cx.tower.server.template.create.wizard.line",
         inverse_name="wizard_id",
+        string=_("Configuration Variables"),
     )
+    has_missing_required_values = fields.Boolean(
+        string=_("Has Missing Required Values"),
+        compute="_compute_has_missing_required_values",
+    )
+    missing_required_variables = fields.Text(
+        string=_("Missing Required Variables"),
+        compute="_compute_missing_required_variables",
+    )
+    missing_required_variables_message = fields.Text(
+        string=_("Missing Variables Message"),
+        compute="_compute_missing_required_variables_message",
+    )
+
+    @api.depends("line_ids.value_char", "line_ids.required")
+    def _compute_has_missing_required_values(self):
+        """
+        Compute whether there are required variables with missing values.
+        """
+        for wizard in self:
+            missing_vars = wizard.line_ids.filtered(
+                lambda line: line.required and not line.value_char
+            )
+            wizard.has_missing_required_values = bool(missing_vars)
+            wizard.missing_required_variables = ", ".join(
+                missing_vars.mapped("variable_id.name")
+            )
+
+    @api.depends("has_missing_required_values")
+    def _compute_missing_required_variables_message(self):
+        """
+        Computes the user-friendly message for missing required variables.
+        """
+        for wizard in self:
+            if wizard.has_missing_required_values and wizard.missing_required_variables:
+                wizard.missing_required_variables_message = _(
+                    "Please provide values for the following "
+                    "configuration variables: %(variables)s",
+                    variables=wizard.missing_required_variables,
+                )
+            else:
+                wizard.missing_required_variables_message = False
 
     def _prepare_server_parameters(self):
         """Prepare new server parameters
@@ -81,6 +124,9 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
         """
         self.ensure_one()
 
+        if self.has_missing_required_values:
+            raise ValidationError(self.missing_required_variables_message)
+
         kwargs = self._prepare_server_parameters()
         server = self.server_template_id._create_new_server(self.name, **kwargs)
         action = self.env["ir.actions.actions"]._for_xml_id(
@@ -102,3 +148,7 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
     variable_id = fields.Many2one(comodel_name="cx.tower.variable", required=True)
     variable_reference = fields.Char(related="variable_id.reference", readonly=True)
     value_char = fields.Char(string="Value")
+    required = fields.Boolean(
+        string="Required",
+        help=_("Indicates if this variable is mandatory for server creation"),
+    )

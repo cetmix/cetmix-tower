@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerServerTemplate(models.Model):
@@ -113,6 +114,7 @@ class CxTowerServerTemplate(models.Model):
                             {
                                 "variable_id": line.variable_id.id,
                                 "value_char": line.value_char,
+                                "required": line.required,
                             },
                         )
                         for line in self.variable_value_ids
@@ -293,6 +295,9 @@ class CxTowerServerTemplate(models.Model):
             # custom specific variable values
             configuration_variables = kwargs.pop("configuration_variables", None)
             if configuration_variables:
+                # Validate required variables
+                self._validate_required_variables(configuration_variables)
+
                 variable_vals_list = []
                 variable_obj = self.env["cx.tower.variable"]
 
@@ -348,6 +353,50 @@ class CxTowerServerTemplate(models.Model):
             values.update(kwargs)
 
         return vals_list
+
+    def _validate_required_variables(self, configuration_variables):
+        """
+        Validate that all required variables are present and not empty.
+
+        Args:
+            configuration_variables (dict): A dictionary of variable references
+                                             and their values.
+
+        Raises:
+            ValidationError: If any required variables are missing or empty.
+        """
+        missing_variables = []
+        empty_variables = []
+
+        for variable in self.variable_value_ids.filtered("required"):
+            variable_ref = variable.variable_reference
+            if variable_ref not in configuration_variables:
+                missing_variables.append(variable_ref)
+            elif not configuration_variables[variable_ref]:
+                empty_variables.append(variable_ref)
+
+        # Construct error message if issues are found
+        if missing_variables or empty_variables:
+            self.variable_value_ids = self.variable_value_ids
+            error_message = _(
+                "Please resolve the following issues with configuration variables:\n"
+            )
+
+            if missing_variables:
+                error_message += _(
+                    "  - Missing variables: %(variables)s\n",
+                    variables=", ".join(missing_variables),
+                )
+
+            if empty_variables:
+                error_message += _(
+                    "  - Empty values for variables: %(variables)s",
+                    variables=", ".join(empty_variables),
+                )
+
+            self.env.context = dict(self.env.context, keep_variable_state=True)
+
+            raise ValidationError(error_message)
 
     def copy(self, default=None):
         """Duplicate the server template along with variable values and server logs."""
