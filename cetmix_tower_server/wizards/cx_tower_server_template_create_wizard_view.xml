@@ -31,10 +31,23 @@
                         <tree editable="bottom">
                             <field name="variable_reference" invisible="1" />
                             <field name="variable_id" />
-                            <field name="value_char" />
+                            <field name="value_char" placeholder="Enter value" />
+                            <field name="required" readonly="1" />
                         </tree>
                     </field>
                 </group>
+                <group>
+                    <field
+                        name="missing_required_variables_message"
+                        readonly="1"
+                        nolabel="1"
+                        attrs="{'invisible': [('has_missing_required_values', '=', False)]}"
+                        style="background-color: #fff3cd; border: 1px solid #ffeeba;
+                           padding: 8px; border-radius: 4px; color: #856404;"
+                    />
+                </group>
+                <field name="has_missing_required_values" invisible="1" />
+                <field name="missing_required_variables" invisible="1" />
                 <footer>
                     <button
                         name="action_confirm"
@@ -42,6 +55,7 @@
                         string="Confirm"
                         confirm="Are you sure?"
                         class="oe_highlight"
+                        attrs="{'invisible': [('has_missing_required_values', '=', True)]}"
                     />
                     <button string="Cancel" special="cancel" />
                 </footer>
