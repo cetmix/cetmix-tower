@@ -366,7 +366,9 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
@@ -505,11 +507,6 @@ msgid "Cetmix Tower Execute Command"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_plan_execute_wizard_action
-msgid "Cetmix Tower Execute Flight Plan"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.ir_cron_auto_pull_files_from_server_ir_actions_server
 #: model:ir.cron,cron_name:cetmix_tower_server.ir_cron_auto_pull_files_from_server
 #: model:ir.cron,name:cetmix_tower_server.ir_cron_auto_pull_files_from_server
@@ -544,6 +541,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_os
 msgid "Cetmix Tower Operating System"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_plan_execute_wizard_action
+msgid "Cetmix Tower Run Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -932,10 +934,7 @@ msgid "Error loading a private key. Unsupported key format or incorrect key."
 msgstr ""
 
 #. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
-#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #, python-format
 msgid "Execute Command"
 msgstr ""
@@ -946,25 +945,8 @@ msgid "Execute Command in Wizard"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_plan
-#, python-format
-msgid "Execute Flight Plan"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_execute_wizard
 msgid "Execute Flight Plan in Wizard"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
-msgid "Execute New Command"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
-msgid "Execute Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2136,12 +2118,42 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
-msgid "Run Command"
+msgid ""
+"Run\n"
+"                                                Command"
 msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
+msgid ""
+"Run\n"
+"                                                Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
+#, python-format
+msgid "Run Command"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_plan
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#, python-format
 msgid "Run Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
+msgid "Run New Command"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
+msgid "Run Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2159,6 +2171,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "Run code using sever method and log result"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Run command"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2613,10 +2630,9 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
 msgid ""
-"The access level of command(s) '%(command_names)s' included in thecurrent "
-"Flight plan is higher than  the access level of the Flightplan itself. "
-"Ensure that you really want to give access to thosecommand(s) to the flight "
-"plan users."
+"The access level of command(s) '%(command_names)s' included in the current "
+"Flight plan is higher than the access level of the Flight plan itself. "
+"Please ensure that you want to allow those commands to be run anyway."
 msgstr ""
 
 #. module: cetmix_tower_server
