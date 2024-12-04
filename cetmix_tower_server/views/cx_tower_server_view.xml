@@ -158,14 +158,22 @@
                     <button
                         name="action_execute_command"
                         type="object"
+                        class="btn-primary"
                         string="Run command"
                         icon="fa-code"
                     />
                     <button
                         name="action_execute_plan"
                         type="object"
+                        class="btn-primary"
                         string="Run Flight Plan"
                         icon="fa-plane"
+                    />
+                    <button
+                        name="test_ssh_connection"
+                        type="object"
+                        string="Test Connection"
+                        groups="cetmix_tower_server.group_manager"
                     />
                 </header>
                 <sheet>
@@ -232,14 +240,6 @@
                                     />
                                     <field name="ip_v4_address" />
                                     <field name="ip_v6_address" />
-                                    <br />
-                                    <button
-                                        name="test_ssh_connection"
-                                        type="object"
-                                        string="Test Connection"
-                                        class="btn-primary"
-                                        groups="cetmix_tower_server.group_manager"
-                                    />
                                 </group>
                                 <group name="ssh">
                                     <field name="ssh_auth_mode" />
