@@ -223,17 +223,20 @@ class CxTowerReferenceMixin(models.AbstractModel):
             vals.update({"reference": reference})
         return super().write(vals)
 
-    def _get_copied_name(self):
+    def _get_copied_name(self, force_name=None):
         """
         Return a copied name of the record
         by adding the suffix (copy) at the end
         and counter until the name is unique.
 
+        Args:
+            force_name (str): Used to use force name instead of record name.
+
         Returns:
             An unique name for the copied record
         """
         self.ensure_one()
-        original_name = self.name
+        original_name = force_name or self.name
         copy_name = _("%(name)s (copy)", name=original_name)
 
         counter = 1
@@ -267,7 +270,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         # skip copy name because this function use in models
         # where it field name non store
         if not self.env.context.get("reference_mixin_skip_copy"):
-            default["name"] = self._get_copied_name()
+            default["name"] = self._get_copied_name(force_name=default.get("name"))
         if "reference" not in default:
             default["reference"] = self._generate_or_fix_reference(default["name"])
         return super().copy(default=default)

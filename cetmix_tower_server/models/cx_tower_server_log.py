@@ -70,9 +70,9 @@ class CxTowerServerLog(models.Model):
             CxTowerServerLog, self.with_context(reference_mixin_skip_self=True)
         ).copy(default)
 
-    def _get_copied_name(self):
+    def _get_copied_name(self, force_name=None):
         # Original name is preserved when log is duplicated
-        return self.name
+        return force_name or self.name
 
     def _format_log_text(self, log_text):
         """Formats log text to prior to display it.
