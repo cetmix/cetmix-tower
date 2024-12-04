@@ -438,7 +438,6 @@ class CxTowerServer(models.Model):
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         default = default or {}
-        default["name"] = _("%(name)s (copy)", name=self.name)
         default["status"] = None
 
         file_ids = self.env["cx.tower.file"]
@@ -457,7 +456,14 @@ class CxTowerServer(models.Model):
             secret.sudo().copy({"server_id": result.id})
 
         for var_value in self.variable_value_ids:
-            var_value.copy({"server_id": result.id})
+            # Duplicating a server with variable values and then duplicating the
+            # duplicate causes a uniqueness constraint error for the 'reference' field
+            # in 'cx.tower.variable.value'. This happens because 'reference' is
+            # generated from the 'name' field, which is a related field  fetching the
+            # same value across duplications. To avoid this, we pass the existing
+            # 'reference' as 'name' during duplication, ensuring unique 'reference'
+            # generation for each copy.
+            var_value.copy({"server_id": result.id, "name": var_value.reference})
 
         for server_log in self.server_log_ids:
             server_log.copy({"server_id": result.id})
