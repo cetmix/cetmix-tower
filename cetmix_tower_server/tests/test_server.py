@@ -84,6 +84,15 @@ class TestTowerServer(TestTowerCommon):
                 "file_id": file_for_log.id,
             }
         )
+        # Add variable values to server
+        self.env["cx.tower.variable.value"].create(
+            {
+                "server_id": self.server_test_2.id,
+                "variable_id": self.variable_dir.id,
+                "value_char": "test",
+            }
+        )
+
         # Copy server 2
         server_test_2_copy = self.server_test_2.copy()
 
@@ -178,6 +187,28 @@ class TestTowerServer(TestTowerCommon):
                     for var_src, var_copy in zip(
                         self.server_test_2.variable_value_ids,
                         server_test_2_copy.variable_value_ids,
+                    )
+                ]
+            ),
+            msg=(
+                "Variable names and values in server copy "
+                "should be the same as in source server!"
+            ),
+        )
+
+        # Copy copied server
+        server_test_2_new_copy = server_test_2_copy.copy()
+        # Variable names and values in server copy should be the same
+        # as in source server
+        self.assertTrue(
+            all(
+                [
+                    var_copy.variable_reference == var_src.variable_reference
+                    and var_copy.value_char == var_src.value_char
+                    and var_copy.reference == f"{var_src.reference}_copy"
+                    for var_src, var_copy in zip(
+                        server_test_2_copy.variable_value_ids,
+                        server_test_2_new_copy.variable_value_ids,
                     )
                 ]
             ),
