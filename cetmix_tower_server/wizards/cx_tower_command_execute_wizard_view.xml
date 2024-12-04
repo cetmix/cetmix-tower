@@ -40,7 +40,11 @@
                             attrs="{'invisible': [('action', '=', 'python_code')]}"
                             placeholder="No sudo"
                         />
-                        <field name="command_id" domain="command_domain" />
+                        <field
+                            name="command_id"
+                            domain="command_domain"
+                            default_focus="1"
+                        />
                         <field name="command_domain" invisible="1" />
                         <span>show shared</span>
                         <field name="any_server" />

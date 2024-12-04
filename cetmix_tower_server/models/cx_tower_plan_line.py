@@ -23,6 +23,7 @@ class CxTowerPlanLine(models.Model):
         string="Flight Plan", comodel_name="cx.tower.plan", auto_join=True
     )
     command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
+    note = fields.Text(related="command_id.note", readonly=True)
     path = fields.Char(
         help="Location where command will be executed. Overrides command default path. "
         "You can use {{ variables }} in path",

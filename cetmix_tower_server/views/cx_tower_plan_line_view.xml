@@ -18,6 +18,11 @@
                                 name="command_id"
                                 context="{'command_show_server_names': True}"
                             />
+                            <field
+                                name="note"
+                                readonly="1"
+                                attrs="{'invisible': [('note', '=', False)]}"
+                            />
                             <field name="use_sudo" />
                             <field
                                 name="path"
