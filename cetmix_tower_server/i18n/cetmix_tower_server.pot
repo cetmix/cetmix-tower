@@ -47,12 +47,6 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
-msgid "%(name)s (copy)"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
