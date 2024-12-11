@@ -209,8 +209,7 @@ class CxTowerYamlMixin(models.AbstractModel):
                 )
             )
 
-        # Remove model data
-        # TODO: temp solution, use later for import
+        # Remove model data because it is not a field
         if "cetmix_tower_model" in values:
             values.pop("cetmix_tower_model")
 
