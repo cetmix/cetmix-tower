@@ -475,3 +475,29 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # Return the record's ID if it exists, otherwise return False
         return record or False
+
+    def _check_secret_value_for_placeholder(
+        self, secret_value, secret_value_placeholder
+    ):
+        """Check secret if secret value is the same as placeholder
+        that is used as a default secret mask in YAML.
+        This is done to prevent saving secret mask as a value.
+
+        Note: we are not using a constraint because we need to check
+        the value before creating or updating a record in the database.
+
+        Args:
+            secret_value (Char): secret value to check
+            secret_value_placeholder (Char): secret value placeholder
+        Raises:
+            ValidationError: If secret value fails the check
+        """
+
+        # Prevent saving secret mask as a value
+        if secret_value == secret_value_placeholder:
+            raise ValidationError(
+                _(
+                    "Value '%(val)s' is used as default secret mask and cannot be set as a secret value",  # noqa: E501
+                    val=secret_value_placeholder,
+                )
+            )

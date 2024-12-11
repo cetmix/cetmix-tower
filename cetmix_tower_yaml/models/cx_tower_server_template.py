@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models
+from odoo import api, models
 
 
 class CxTowerServerTemplate(models.Model):
@@ -11,6 +11,24 @@ class CxTowerServerTemplate(models.Model):
     ]
 
     SSH_PASSWORD_MASK = "********"
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Check secret value before creating a record
+        for vals in vals_list:
+            if "ssh_password" in vals:
+                self._check_secret_value_for_placeholder(
+                    vals["ssh_password"], self.SSH_PASSWORD_MASK
+                )
+        return super().create(vals_list)
+
+    def write(self, vals):
+        # Check secret value before updating a record
+        if "ssh_password" in vals:
+            self._check_secret_value_for_placeholder(
+                vals["ssh_password"], self.SSH_PASSWORD_MASK
+            )
+        return super().write(vals)
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()

@@ -421,6 +421,14 @@ msgid "Update Existing Record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#, python-format
+msgid ""
+"Value '%(val)s' is used as default secret mask and cannot be set as a secret"
+" value"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Variables"
 msgstr ""

@@ -1,3 +1,4 @@
+from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
 
 
@@ -19,3 +20,38 @@ class TestTowerServerTemplate(TransactionCase):
             f"Expected {self.ServerTemplate.SSH_PASSWORD_MASK},"
             f" but got: {record_dict.get('ssh_password')}",
         )
+
+    def test_server_template_ssh_password_mask_is_not_saved(self):
+        """Test that secret value mask cannot be saved as a value"""
+
+        # -- 1 --
+        # Create a record with ssh key mask as a value
+        with self.assertRaises(ValidationError):
+            self.ServerTemplate.create(
+                {
+                    "name": "such much name",
+                    "reference": "test_server_template_ssh_password_mask_is_not_saved",
+                    "ssh_auth_mode": "p",
+                    "ssh_password": self.ServerTemplate.SSH_PASSWORD_MASK,
+                }
+            )
+
+        # -- 2 --
+        # Create a record with a normal value
+        my_nice_server_template = self.ServerTemplate.create(
+            {
+                "name": "such much name",
+                "reference": "test_server_template_ssh_password_mask_is_not_saved",
+                "ssh_auth_mode": "p",
+                "ssh_password": "my_nice_ssh_password",
+            }
+        )
+
+        self.assertEqual(my_nice_server_template.ssh_password, "my_nice_ssh_password")
+
+        # -- 3 --
+        # Update the record with secret value mask as a value
+        with self.assertRaises(ValidationError):
+            my_nice_server_template.write(
+                {"ssh_password": self.ServerTemplate.SSH_PASSWORD_MASK}
+            )
