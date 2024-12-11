@@ -15,14 +15,14 @@ class TestTowerKey(TestTowerCommon):
 
         # -- 1--
         #  Check new key values
-        key = self.Key.create(
+        key_one = self.Key.create(
             {"name": " test key meme   ", "secret_value": "test value", "key_type": "s"}
         )
         self.assertEqual(
-            key.reference, "test_key_meme", "Reference must be 'test_key_meme'"
+            key_one.reference, "test_key_meme", "Reference must be 'test_key_meme'"
         )
         self.assertEqual(
-            key.name,
+            key_one.name,
             "test key meme",
             "Trailing and leading whitespaces must be removed from name",
         )

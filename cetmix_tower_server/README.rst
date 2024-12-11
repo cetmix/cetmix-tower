@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -32,75 +32,74 @@ tied down by vendor or technology constraints.
 Why Cetmix Tower?
 =================
 
--  **Open Source:** `Cetmix Tower <http://cetmix.com/tower>`__ is
-   distributed under the AGPL-3 license
--  **Odoo Integration:** Benefit from `Odoo <https:/odoo.com>`__
-   ecosystem for server management tasks, like deploying servers in
-   response to specific Odoo-triggered events
--  **Extendability:** Build your own `Odoo <https:/odoo.com>`__ modules
-   using `Cetmix Tower <http://cetmix.com/tower>`__ to implement your
-   custom features
--  **Beyond Odoo:** While optimized for Odoo, Cetmix Tower can manage
-   virtually any instance
--  **Flexibility:** Use Cetmix Tower alongside other management methods
-   without restriction, ensuring you're not limited to a single vendor
--  **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for
-   full control over your server management.
--  **Broad Compatibility:** Execute any software that's manageable via
-   shell commands or API. From Docker or Kubernetes to direct OS package
-   installations
+- **Open Source:** `Cetmix Tower <http://cetmix.com/tower>`__ is
+  distributed under the AGPL-3 license
+- **Odoo Integration:** Benefit from `Odoo <https:/odoo.com>`__
+  ecosystem for server management tasks, like deploying servers in
+  response to specific Odoo-triggered events
+- **Extendability:** Build your own `Odoo <https:/odoo.com>`__ modules
+  using `Cetmix Tower <http://cetmix.com/tower>`__ to implement your
+  custom features
+- **Beyond Odoo:** While optimized for Odoo, Cetmix Tower can manage
+  virtually any instance
+- **Flexibility:** Use Cetmix Tower alongside other management methods
+  without restriction, ensuring you're not limited to a single vendor
+- **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for
+  full control over your server management.
+- **Broad Compatibility:** Execute any software that's manageable via
+  shell commands or API. From Docker or Kubernetes to direct OS package
+  installations
 
 Server Management
 =================
 
--  Variable based flexible configuration
--  Create servers using pre-defined templates
+- Variable based flexible configuration
+- Create servers using pre-defined templates
 
 Connectivity
 ============
 
--  Password and key based authentication for outgoing SSH connections
--  Built-in support of the Python `requests
-   library <https://pypi.org/project/requests/>`__ for outgoing API
-   calls
+- Password and key based authentication for outgoing SSH connections
+- Built-in support of the Python `requests
+  library <https://pypi.org/project/requests/>`__ for outgoing API calls
 
 Commands
 ========
 
--  Execute SSH commands on remote servers
--  Run Python code on the Tower Odoo server
--  Run Flight Plan from command
--  Render commands using variables
--  Secret keys for private data storage
+- Execute SSH commands on remote servers
+- Run Python code on the Tower Odoo server
+- Run Flight Plan from command
+- Render commands using variables
+- Secret keys for private data storage
 
 Flight Plans
 ============
 
--  Execute multiple commands in a row
--  Condition based flow:
+- Execute multiple commands in a row
+- Condition based flow:
 
-   -  Based on condition using `Python
-      syntax <https://www.w3schools.com/python/python_syntax.asp>`__
-   -  Based on the previous command exit code
+  - Based on condition using `Python
+    syntax <https://www.w3schools.com/python/python_syntax.asp>`__
+  - Based on the previous command exit code
 
 Files
 =====
 
--  Download files from remote server using SFTP
--  Upload files to remote server using SFTP
--  Support for ``text`` and ``binary`` file format
--  Manage files using pre-defined file templates
+- Download files from remote server using SFTP
+- Upload files to remote server using SFTP
+- Support for ``text`` and ``binary`` file format
+- Manage files using pre-defined file templates
 
 Support and Technical Requirements
 ==================================
 
--  Cetmix Tower with usability and simplicity in mind, though some
-   features might require a foundational understanding of server
-   management principles
--  We offer dedicated support to help with any custom setup needs or
-   questions that may arise
--  For additional details, visit our website
-   `cetmix.com <https://cetmix.com>`__
+- Cetmix Tower with usability and simplicity in mind, though some
+  features might require a foundational understanding of server
+  management principles
+- We offer dedicated support to help with any custom setup needs or
+  questions that may arise
+- For additional details, visit our website
+  `cetmix.com <https://cetmix.com>`__
 
 **Table of contents**
 
@@ -128,21 +127,21 @@ like to provide access to the Cetmix Tower.
 In the ``Cetmix Tower`` section select one of the following options in
 the ``Access Level`` field:
 
--  **User**. Members of this group have read access only to the
-   `Servers <#configure-a-server>`__ which they are added as followers.
-   They also have access to the entities such as
-   `Commands <#configure-a-command>`__, `Flight
-   Plans <#configure-a-flight-plan>`__ or `Server
-   Logs <#configure-a-server-log>`__ with ``Access Level`` set to
-   ``User``.
--  **Manager**. Members of this group can modify
-   `Servers <#configure-a-server>`__ which they are added as followers.
-   They can create new `Servers <#configure-a-server>`__ too however
-   they cannot delete them. Users of this group have access to the
-   entities with ``Access Level`` set to ``Manager`` or ``User``.
--  **Root**. Members of this group can create, modify or delete any
-   `Server <#configure-a-server>`__. They also have access to the
-   entities with any ``Access Level`` set.
+- **User**. Members of this group have read access only to the
+  `Servers <#configure-a-server>`__ which they are added as followers.
+  They also have access to the entities such as
+  `Commands <#configure-a-command>`__, `Flight
+  Plans <#configure-a-flight-plan>`__ or `Server
+  Logs <#configure-a-server-log>`__ with ``Access Level`` set to
+  ``User``.
+- **Manager**. Members of this group can modify
+  `Servers <#configure-a-server>`__ which they are added as followers.
+  They can create new `Servers <#configure-a-server>`__ too however they
+  cannot delete them. Users of this group have access to the entities
+  with ``Access Level`` set to ``Manager`` or ``User``.
+- **Root**. Members of this group can create, modify or delete any
+  `Server <#configure-a-server>`__. They also have access to the
+  entities with any ``Access Level`` set.
 
 **NB:** Please keep in mind that some of the entities can have their
 additional access management variations.
@@ -159,32 +158,32 @@ Fill the values it the tabs below:
 
 **General Settings**
 
--  **Partner**: Partner this server belongs to
--  **Operating System**: Operating system that runs on the server
--  **Tags**: User-defined search tags
--  **IPv4 Address**
--  **IPv6 Address**: Will be used if no IPv4 address is specified
--  **SSH Auth Mode**: Available options are "Password" and "Key"
--  **SSH Port**
--  **SSH Username**
--  **Use sudo**: If sudo is required by default for running all commands
-   on this server
--  **SSH Password**: Used if Auth Mode is set to "Password" and for
-   running ``sudo`` commands with password
--  **SSH Private Key**: Used for authentication is SSH Auth Mode is set
-   to "Key"
--  **Note**: Comments or user notes
+- **Partner**: Partner this server belongs to
+- **Operating System**: Operating system that runs on the server
+- **Tags**: User-defined search tags
+- **IPv4 Address**
+- **IPv6 Address**: Will be used if no IPv4 address is specified
+- **SSH Auth Mode**: Available options are "Password" and "Key"
+- **SSH Port**
+- **SSH Username**
+- **Use sudo**: If sudo is required by default for running all commands
+  on this server
+- **SSH Password**: Used if Auth Mode is set to "Password" and for
+  running ``sudo`` commands with password
+- **SSH Private Key**: Used for authentication is SSH Auth Mode is set
+  to "Key"
+- **Note**: Comments or user notes
 
 There is a special **Status** field which indicates current Server
 status. It is meant to be updated automatically using external API with
 further customizations. Following pre-defined statuses are available:
 
--  Undefined
--  Stopped
--  Starting
--  Running
--  Stopping
--  Restarting
+- Undefined
+- Stopped
+- Starting
+- Running
+- Stopping
+- Restarting
 
 Default status is 'Undefined'.
 
@@ -209,12 +208,12 @@ Log <#configure-a-server-log>`__ section for more details.
 
 Following action buttons are located in the top of the form:
 
--  **Command Logs**: Shows all `Command <#configure-a-command>`__ logs
-   for this server
--  **Flight Plan Logs**: Shows all `Flight
-   Plan <#configure-a-flight-plan>`__ logs for this server
--  **Files**: Shows all `Files <#configure-a-file>`__ that belong to
-   this server
+- **Command Logs**: Shows all `Command <#configure-a-command>`__ logs
+  for this server
+- **Flight Plan Logs**: Shows all `Flight
+  Plan <#configure-a-flight-plan>`__ logs for this server
+- **Files**: Shows all `Files <#configure-a-file>`__ that belong to this
+  server
 
 Configure a Server Template
 ---------------------------
@@ -227,18 +226,18 @@ Fill the values it the tabs below:
 
 **General Settings**
 
--  **Flight Plan**: Select a flight plan to be executed after a server
-   is created
--  **Operating System**: Default operating system for new servers
--  **Tags**: Default search tags for new servers
--  **SSH Auth Mode**: Default SSH auth mode for new servers. Available
-   options are "Password" and "Key"
--  **SSH Port**: Default SSH port for new servers
--  **SSH Username**: Default SSH username for new servers
--  **Use sudo**: Default sudo mode for new servers
--  **SSH Password**: Default SSH password for new servers
--  **SSH Private Key**: Default SSH private key for new servers
--  **Note**: Comments or user notes
+- **Flight Plan**: Select a flight plan to be executed after a server is
+  created
+- **Operating System**: Default operating system for new servers
+- **Tags**: Default search tags for new servers
+- **SSH Auth Mode**: Default SSH auth mode for new servers. Available
+  options are "Password" and "Key"
+- **SSH Port**: Default SSH port for new servers
+- **SSH Username**: Default SSH username for new servers
+- **Use sudo**: Default sudo mode for new servers
+- **SSH Password**: Default SSH password for new servers
+- **SSH Private Key**: Default SSH private key for new servers
+- **Note**: Comments or user notes
 
 **Variables**
 
@@ -257,11 +256,11 @@ Configure Variables
 To configure variables go to the ``Cetmix Tower -> Settings`` and select
 the ``Variables`` menu. Click ``Create`` and put values in the fields:
 
--  **Name**: Readable name
--  **Reference**: Unique identifier used to address variable in
-   conditions and expressions. Leave blank to generate automatically
-   based on name
--  **Note**: Put your notes here
+- **Name**: Readable name
+- **Reference**: Unique identifier used to address variable in
+  conditions and expressions. Leave blank to generate automatically
+  based on name
+- **Note**: Put your notes here
 
 Configure Tags
 --------------
@@ -269,12 +268,12 @@ Configure Tags
 To configure variables go to the ``Cetmix Tower -> Settings`` and select
 the ``Tags`` menu. Click ``Create`` and put values in the fields:
 
--  **Name**: Readable name
--  **Reference**: Unique identifier used to address the tag in
-   conditions and expressions. Leave this field blank to generate it
-   automatically based on the name
--  **Color**: Select a color for the tag
--  **Servers**: Select the servers associated with the tag.
+- **Name**: Readable name
+- **Reference**: Unique identifier used to address the tag in conditions
+  and expressions. Leave this field blank to generate it automatically
+  based on the name
+- **Color**: Select a color for the tag
+- **Servers**: Select the servers associated with the tag.
 
 Configure OSs (Operating Systems)
 ---------------------------------
@@ -283,12 +282,12 @@ To configure operating systems, go to the ``Cetmix Tower -> Settings``
 and select the ``OSs`` menu. Click ``Create`` and fill in the values for
 the following fields:
 
--  **Name**: Readable name
--  **Reference**: Unique identifier used to address the OS in conditions
-   and expressions. Leave this field blank to generate it automatically
-   based on the name.
--  **Color**: Select a color for the OS.
--  **Previous Version**: Select the previous version of the current OS.
+- **Name**: Readable name
+- **Reference**: Unique identifier used to address the OS in conditions
+  and expressions. Leave this field blank to generate it automatically
+  based on the name.
+- **Color**: Select a color for the OS.
+- **Previous Version**: Select the previous version of the current OS.
 
 Variables Applicability
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -296,15 +295,15 @@ Variables Applicability
 `Cetmix Tower <https://cetmix.com/tower>`__ supports ``jinja2`` syntax
 for variables. You can use variables to render:
 
--  Commands. Eg ``ls -lh {{ file_store_location }}``
--  Files. Eg a "Dockerfile" file can have the following text in it:
-   ``ODOO_VERSION = {{ odoo_default_version }}``
--  File Templates. You can use variables for both file name and file
-   location on server. Eg ``File Name`` value is
-   ``backup_{{ instance_name }}_{{ odoo_db_name }}`` and
-   ``Directory on server`` is ``{{ file_cron_location }}``
--  Other Variables. Eg for an ``odoo_config_location`` variable can have
-   a value of ``{{ odoo_root}}/conf``
+- Commands. Eg ``ls -lh {{ file_store_location }}``
+- Files. Eg a "Dockerfile" file can have the following text in it:
+  ``ODOO_VERSION = {{ odoo_default_version }}``
+- File Templates. You can use variables for both file name and file
+  location on server. Eg ``File Name`` value is
+  ``backup_{{ instance_name }}_{{ odoo_db_name }}`` and
+  ``Directory on server`` is ``{{ file_cron_location }}``
+- Other Variables. Eg for an ``odoo_config_location`` variable can have
+  a value of ``{{ odoo_root}}/conf``
 
 You can use any ``jinja2`` supported expressions. For example
 ``if else`` statements:
@@ -325,8 +324,8 @@ Variable Rendering Modes
 
 There are two rendering modes available:
 
--  Generic (or ssh) mode
--  Pythonic mode
+- Generic (or ssh) mode
+- Pythonic mode
 
 Let use the following code as example:
 
@@ -372,10 +371,10 @@ Variable Types
 Following types of variable values available in `Cetmix
 Tower <https://cetmix.com/tower>`__:
 
--  Local values. Those are values that are defined at a record level.
-   For example for a server or an action.
--  Global values. Those are values that are defined at the `Cetmix
-   Tower <https://cetmix.com/tower>`__ level.
+- Local values. Those are values that are defined at a record level. For
+  example for a server or an action.
+- Global values. Those are values that are defined at the `Cetmix
+  Tower <https://cetmix.com/tower>`__ level.
 
 When rendering an expression local values are used first. If no local
 value is found then global value will be used. For example default value
@@ -396,20 +395,20 @@ the ``tower`` variable unless you really need that on purpose.
 
 Following system variables are available:
 
--  Server properties
+- Server properties
 
-   -  ``tower.server.name`` Current server name
-   -  ``tower.server.reference`` Current server reference
-   -  ``tower.server.username`` Current server SSH Username​
-   -  ``tower.server.ipv4`` Current server IPv4 Address​
-   -  ``tower.server.ipv6`` Current server IPv6 Address​
-   -  ``tower.server.partner_name`` Current server partner name
+  - ``tower.server.name`` Current server name
+  - ``tower.server.reference`` Current server reference
+  - ``tower.server.username`` Current server SSH Username​
+  - ``tower.server.ipv4`` Current server IPv4 Address​
+  - ``tower.server.ipv6`` Current server IPv6 Address​
+  - ``tower.server.partner_name`` Current server partner name
 
--  Helper tools
+- Helper tools
 
-   -  ``tower.tools.uuid`` Generates a random UUID4
-   -  ``tower.tools.today`` Current date
-   -  ``tower.tools.now`` Current date time
+  - ``tower.tools.uuid`` Generates a random UUID4
+  - ``tower.tools.today`` Current date
+  - ``tower.tools.now`` Current date time
 
 Configure a Key/Secret
 ----------------------
@@ -419,28 +418,28 @@ used for rendering commands. To configure a new key or secret go to
 ``Cetmix Tower -> Settings -> Keys`` click ``Create`` and put values in
 the fields:
 
--  **Name**: Readable name
--  **Key Type**: Following values are available:
+- **Name**: Readable name
+- **Key Type**: Following values are available:
 
-   -  ``SSH Key`` is used to store SSH private keys. They are selectable
-      in `Server settings <#configure-a-server>`__
-   -  ``Secret`` used to store sensitive information that can be used
-      inline in commands. Eg a token or a password. Secrets cannot be
-      previewed in command preview and are replaced with placeholder in
-      `command <#configure-a-command>`__ logs.
+  - ``SSH Key`` is used to store SSH private keys. They are selectable
+    in `Server settings <#configure-a-server>`__
+  - ``Secret`` used to store sensitive information that can be used
+    inline in commands. Eg a token or a password. Secrets cannot be
+    previewed in command preview and are replaced with placeholder in
+    `command <#configure-a-command>`__ logs.
 
--  **Reference**: Key/secret record reference
--  **Reference Code**: Complete reference code for inline usage
--  **Value**: Key value. **IMPORTANT:** This is a write only field.
-   Please ensure that you have saved your key/secret before saving it.
-   Once saved it cannot be read from the user interface any longer.
--  **Used For**: ``SSH Key`` type only. List of
-   `Servers <#configure-a-server>`__ where this SSH key is used
--  **Partner**: ``Secret`` type only. If selected this secret is used
-   only for the `Servers <#configure-a-server>`__ of selected partner
--  **Server**: ``Secret`` type only. If selected this secret is used
-   only for selected `Server <#configure-a-server>`__
--  **Note**: Put your notes here
+- **Reference**: Key/secret record reference
+- **Reference Code**: Complete reference code for inline usage
+- **Value**: Key value. **IMPORTANT:** This is a write only field.
+  Please ensure that you have saved your key/secret before saving it.
+  Once saved it cannot be read from the user interface any longer.
+- **Used For**: ``SSH Key`` type only. List of
+  `Servers <#configure-a-server>`__ where this SSH key is used
+- **Partner**: ``Secret`` type only. If selected this secret is used
+  only for the `Servers <#configure-a-server>`__ of selected partner
+- **Server**: ``Secret`` type only. If selected this secret is used only
+  for selected `Server <#configure-a-server>`__
+- **Note**: Put your notes here
 
 Keys of type ``Secret``
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -459,9 +458,9 @@ Secrets are inserted inline in code using the following pattern:
 ``#!cxtower.secret.REFERENCE!#``. It consists of three dot separated
 parts and is terminated with a mandatory ``!#`` suffix:
 
--  ``#!cxtower`` is used to declare a special Tower construction
--  ``secret`` is used to declare its type (secret)
--  ``REFERENCE`` secret id as it's written in the **Key ID** field
+- ``#!cxtower`` is used to declare a special Tower construction
+- ``secret`` is used to declare its type (secret)
+- ``REFERENCE`` secret id as it's written in the **Key ID** field
 
 **Example:**
 
@@ -485,49 +484,49 @@ Configure a File
 file transfer operations. Based on initial file location following file
 sources are available:
 
--  Server. These are files that are initially located on remote server
-   and are fetched to `Cetmix Tower <https://cetmix.com/tower>`__. For
-   example log files.
+- Server. These are files that are initially located on remote server
+  and are fetched to `Cetmix Tower <https://cetmix.com/tower>`__. For
+  example log files.
 
--  Tower. These are files that are initially formed in `Cetmix
-   Tower <https://cetmix.com/tower>`__ and are uploaded to remote
-   server. For example configuration files. Such files are rendered
-   using variables and can be created and managed using file templates.
+- Tower. These are files that are initially formed in `Cetmix
+  Tower <https://cetmix.com/tower>`__ and are uploaded to remote server.
+  For example configuration files. Such files are rendered using
+  variables and can be created and managed using file templates.
 
 To create a new file go to ``Cetmix Tower -> Files -> Files`` click
 ``Create`` and put values in the fields:
 
--  **Name**: Filesystem filename
--  **Source**: File source. Available options are ``Server`` and
-   ``Tower``. Check above for more details.
--  **File type**: Type of file contents. Possible options:
+- **Name**: Filesystem filename
+- **Source**: File source. Available options are ``Server`` and
+  ``Tower``. Check above for more details.
+- **File type**: Type of file contents. Possible options:
 
-   -  **Text**: Regular text. Eg configuration file or log
-   -  **Binary**: Binary file. Eg file archive or pdf document
+  - **Text**: Regular text. Eg configuration file or log
+  - **Binary**: Binary file. Eg file archive or pdf document
 
--  **File**: Is used to store binary file data.
--  **Template**: File template used to render this file. If selected
-   file will be automatically updated every time template is modified.
--  **Server**: Server where this file is located
--  **Directory on Server**: This is where the file is located on the
-   remote server
--  **Full Server Path**: Full path to file on the remote server
-   including filename
--  **Auto Sync**: If enabled the file will be automatically uploaded to
-   the remote server on after it is modified in `Cetmix
-   Tower <https://cetmix.com/tower>`__. Used only with ``Tower`` source.
--  **Keep when deleted**: If enabled, file will be kept on remote server
-   after removing it in the Odoo
+- **File**: Is used to store binary file data.
+- **Template**: File template used to render this file. If selected file
+  will be automatically updated every time template is modified.
+- **Server**: Server where this file is located
+- **Directory on Server**: This is where the file is located on the
+  remote server
+- **Full Server Path**: Full path to file on the remote server including
+  filename
+- **Auto Sync**: If enabled the file will be automatically uploaded to
+  the remote server on after it is modified in `Cetmix
+  Tower <https://cetmix.com/tower>`__. Used only with ``Tower`` source.
+- **Keep when deleted**: If enabled, file will be kept on remote server
+  after removing it in the Odoo
 
 Following fields are located in the tabs below:
 
--  **Code**: Raw file content. This field is editable for the ``Tower``
-   files and readonly for ``Server`` ones. This field supports
-   `Variables <#configure-variables>`__.
--  **Preview**: This is a rendered file content as it will be uploaded
-   to server. Used only with ``Tower`` source.
--  **Server Version**: Current file content fetched from server. Used
-   only with ``Tower`` source.
+- **Code**: Raw file content. This field is editable for the ``Tower``
+  files and readonly for ``Server`` ones. This field supports
+  `Variables <#configure-variables>`__.
+- **Preview**: This is a rendered file content as it will be uploaded to
+  server. Used only with ``Tower`` source.
+- **Server Version**: Current file content fetched from server. Used
+  only with ``Tower`` source.
 
 **NB**: File operations are performed using user credentials from server
 configuration. You should take care of filesystem access rights to
@@ -543,27 +542,27 @@ To create a new file template go to
 ``Cetmix Tower -> Files -> Templates`` click ``Create`` and put values
 in the fields:
 
--  **Name**: Template name
--  **Reference**: Leave the "reference" field blank to generate a
-   reference automatically.
--  **File Name**: Filesystem name of the file(s) created from this
-   template. This field supports `Variables <#configure-variables>`__.
--  **Directory on server**: Directory on remote server where this file
-   will be stored. This field supports
-   `Variables <#configure-variables>`__.
--  **Source**: File source. Available options are ``Server`` and
-   ``Tower``. Check above for more details.
--  **File type**: Type of file contents. Possible options:
+- **Name**: Template name
+- **Reference**: Leave the "reference" field blank to generate a
+  reference automatically.
+- **File Name**: Filesystem name of the file(s) created from this
+  template. This field supports `Variables <#configure-variables>`__.
+- **Directory on server**: Directory on remote server where this file
+  will be stored. This field supports
+  `Variables <#configure-variables>`__.
+- **Source**: File source. Available options are ``Server`` and
+  ``Tower``. Check above for more details.
+- **File type**: Type of file contents. Possible options:
 
-   -  **Text**: Regular text. Eg configuration file or log
-   -  **Binary**: Binary file. Eg file archive or pdf document
+  - **Text**: Regular text. Eg configuration file or log
+  - **Binary**: Binary file. Eg file archive or pdf document
 
--  **Tags**: Make usage as search more convenient
--  **Note**: Comments or user notes
--  **Code**: Raw file content. This field supports
-   `Variables <#configure-variables>`__.
--  **Keep when deleted**: If enabled, file(s) created from this template
-   will be kept on remote server after removing it(them) in the Odoo
+- **Tags**: Make usage as search more convenient
+- **Note**: Comments or user notes
+- **Code**: Raw file content. This field supports
+  `Variables <#configure-variables>`__.
+- **Keep when deleted**: If enabled, file(s) created from this template
+  will be kept on remote server after removing it(them) in the Odoo
 
 **Hint**: If you want to create a file from template but don't want
 further template modifications to be applied to this file remove the
@@ -576,62 +575,59 @@ Command is a shell command that is executed on remote server. To create
 a new command go to ``Cetmix Tower -> Commands -> Commands`` click
 ``Create`` and put values in the fields:
 
--  **Name**: Command readable name.
+- **Name**: Command readable name.
 
--  **Reference**: Leave the "reference" field blank to generate a
-   reference automatically.
+- **Reference**: Leave the "reference" field blank to generate a
+  reference automatically.
 
--  **Allow Parallel Run**: If disabled only one copy of this command can
-   be run on the same server at the same time. Otherwise the same
-   command can be run in parallel.
+- **Allow Parallel Run**: If disabled only one copy of this command can
+  be run on the same server at the same time. Otherwise the same command
+  can be run in parallel.
 
--  **Note**: Comments or user notes.
+- **Note**: Comments or user notes.
 
--  **Servers**: List of servers this command can be run on. Leave this
-   field blank to make the command available to all servers.
+- **Servers**: List of servers this command can be run on. Leave this
+  field blank to make the command available to all servers.
 
--  **OSes**: List of operating systems this command is available. Leave
-   this field blank to make the command available for all OSes.
+- **OSes**: List of operating systems this command is available. Leave
+  this field blank to make the command available for all OSes.
 
--  **Tags**: Make usage as search more convenient.
+- **Tags**: Make usage as search more convenient.
 
--  **Action**: Action executed by the command. Possible options:
+- **Action**: Action executed by the command. Possible options:
 
-   -  ``SSH command``: Execute a shell command using ssh connection on
-      remote server.
-   -  ``Execute Python code``: Execute a Python code on the Tower
-      Server.
-   -  ``Create file using template``: Create or update a file using
-      selected file template and push / pull it to remote server /
-      tower. If the file already exists on server it will be
-      overwritten.
-   -  ``Run flight plan``: Allow to start Flight Plan execution from
-      command ().
+  - ``SSH command``: Execute a shell command using ssh connection on
+    remote server.
+  - ``Execute Python code``: Execute a Python code on the Tower Server.
+  - ``Create file using template``: Create or update a file using
+    selected file template and push / pull it to remote server / tower.
+    If the file already exists on server it will be overwritten.
+  - ``Run flight plan``: Allow to start Flight Plan execution from
+    command ().
 
--  **Default Path**: Specify path where command will be executed. This
-   field supports `Variables <#configure-variables>`__. Important:
-   ensure ssh user has access to the location even if executing command
-   using sudo.
+- **Default Path**: Specify path where command will be executed. This
+  field supports `Variables <#configure-variables>`__. Important: ensure
+  ssh user has access to the location even if executing command using
+  sudo.
 
--  **Code**: Code to execute. Can be an SSH command or Python code based
-   on selected action. This field supports
-   `Variables <#configure-variables>`__. **Important!** Variables used
-   in command are rendered in `different
-   modes <#variable-rendering-modes>`__ based on the command action.
+- **Code**: Code to execute. Can be an SSH command or Python code based
+  on selected action. This field supports
+  `Variables <#configure-variables>`__. **Important!** Variables used in
+  command are rendered in `different
+  modes <#variable-rendering-modes>`__ based on the command action.
 
--  **File Template**: File template that will be used to create or
-   update file. Check `File Templates <#file-templates>`__ for more
-   details.
+- **File Template**: File template that will be used to create or update
+  file. Check `File Templates <#file-templates>`__ for more details.
 
--  **Server Status**: Server status to be set after command execution.
-   Possible options:
+- **Server Status**: Server status to be set after command execution.
+  Possible options:
 
-   -  ``Undefined``. Default status.
-   -  ``Stopped``. Server is stopped.
-   -  ``Starting``. Server is starting.
-   -  ``Running``. Server is running.
-   -  ``Stopping``. Server is stopping.
-   -  ``Restarting``. Server is restarting.
+  - ``Undefined``. Default status.
+  - ``Stopped``. Server is stopped.
+  - ``Starting``. Server is starting.
+  - ``Running``. Server is running.
+  - ``Stopping``. Server is stopping.
+  - ``Restarting``. Server is restarting.
 
 To return result from Python assign exit code and message to the
 COMMAND_RESULT variable of type ``dict`` like this:
@@ -658,66 +654,65 @@ a flexible condition based execution flow. To create a new flight plan
 go to ``Cetmix Tower -> Commands -> Flight Plans`` click ``Create`` and
 put values in the fields:
 
--  **Name**: Flight Plan name
+- **Name**: Flight Plan name
 
--  **Reference**: Leave the "reference" field blank to generate a
-   reference automatically.
+- **Reference**: Leave the "reference" field blank to generate a
+  reference automatically.
 
--  **On Error**: Default action to execute when an error happens during
-   the flight plan execution. Possible options:
+- **On Error**: Default action to execute when an error happens during
+  the flight plan execution. Possible options:
 
-   -  ``Exit with command code``. Will terminate the flight plan
-      execution and return an exit code of the failed command.
-   -  ``Exit with custom code``. Will terminate the flight plan
-      execution and return the custom code configured in the field next
-      to this one.
-   -  ``Run next command``. Will continue flight plan execution.
+  - ``Exit with command code``. Will terminate the flight plan execution
+    and return an exit code of the failed command.
+  - ``Exit with custom code``. Will terminate the flight plan execution
+    and return the custom code configured in the field next to this one.
+  - ``Run next command``. Will continue flight plan execution.
 
--  **Note**: Comments or user notes.
+- **Note**: Comments or user notes.
 
--  **Servers**: List of servers this command can be run on. Leave this
-   field blank to make the command available to all servers.
+- **Servers**: List of servers this command can be run on. Leave this
+  field blank to make the command available to all servers.
 
--  **Tags**: Make usage as search more convenient.
+- **Tags**: Make usage as search more convenient.
 
--  **Code**: List of commands to execute. Each of the commands has the
-   following fields:
+- **Code**: List of commands to execute. Each of the commands has the
+  following fields:
 
-   -  **Sequence**: Order this command is executed. Lower value = higher
-      priority.
-   -  **Condition**: `Python
-      expression <https://www.w3schools.com/python/python_syntax.asp>`__
-      to be matched for the command to be executed. Leave this field
-      blank for unconditional command execution. This field supports
-      `Variables <#configure-variables>`__. Example:
+  - **Sequence**: Order this command is executed. Lower value = higher
+    priority.
+  - **Condition**: `Python
+    expression <https://www.w3schools.com/python/python_syntax.asp>`__
+    to be matched for the command to be executed. Leave this field blank
+    for unconditional command execution. This field supports
+    `Variables <#configure-variables>`__. Example:
 
-   .. code:: python
+  .. code:: python
 
-      {{ odoo_version }} == "17.0" and ( {{ nginx_installed }} or {{ traefik_installed }} )
+     {{ odoo_version }} == "17.0" and ( {{ nginx_installed }} or {{ traefik_installed }} )
 
-   -  **Command**: `Command <#configure-a-command>`__ to be executed.
-   -  **Path**: Specify path where command will be executed. Overrides
-      ``Default Path`` of the command. This field supports
-      `Variables <#configure-variables>`__.
-   -  **Use Sudo**: Use ``sudo`` if required to run this command.
-   -  **Post Run Actions**: List of conditional actions to be triggered
-      after the command is executed. Each of the actions has the
-      following fields:
+  - **Command**: `Command <#configure-a-command>`__ to be executed.
+  - **Path**: Specify path where command will be executed. Overrides
+    ``Default Path`` of the command. This field supports
+    `Variables <#configure-variables>`__.
+  - **Use Sudo**: Use ``sudo`` if required to run this command.
+  - **Post Run Actions**: List of conditional actions to be triggered
+    after the command is executed. Each of the actions has the following
+    fields:
 
-      -  **Sequence**: Order this actions is triggered. Lower value =
-         higher priority.
-      -  **Condition**: Uses command exit code.
-      -  **Action**: Action to execute if condition is met. Also, if
-         variables with values are specified, these variables will be
-         updated (for existing variables on the server) or added (for
-         new variables) to the server variables. Possible options:
+    - **Sequence**: Order this actions is triggered. Lower value =
+      higher priority.
+    - **Condition**: Uses command exit code.
+    - **Action**: Action to execute if condition is met. Also, if
+      variables with values are specified, these variables will be
+      updated (for existing variables on the server) or added (for new
+      variables) to the server variables. Possible options:
 
-         -  ``Exit with command code``. Will terminate the flight plan
-            execution and return an exit code of the failed command.
-         -  ``Exit with custom code``. Will terminate the flight plan
-            execution and return the custom code configured in the field
-            next to this one.
-         -  ``Run next command``. Will continue flight plan execution.
+      - ``Exit with command code``. Will terminate the flight plan
+        execution and return an exit code of the failed command.
+      - ``Exit with custom code``. Will terminate the flight plan
+        execution and return the custom code configured in the field
+        next to this one.
+      - ``Run next command``. Will continue flight plan execution.
 
 Configure a Server Log
 ----------------------
@@ -730,38 +725,36 @@ way. To configure a Server Log open the server form, navigate to the
 
 Following fields are available:
 
--  **Name**: Readable name of the log
--  **Access Level**: Minimum access level required to access this
-   record. Please check the `User Access
-   Settings <#user-access-configuration>`__ section for more details.
-   Possible options:
+- **Name**: Readable name of the log
+- **Access Level**: Minimum access level required to access this record.
+  Please check the `User Access Settings <#user-access-configuration>`__
+  section for more details. Possible options:
 
-   -  ``User``. User must have at least ``Cetmix Tower / User`` access
-      group configured in the User Settings.
-   -  ``Manager``. User must have at least ``Cetmix Tower / Manager``
-      access group configured in the User Settings.
-   -  ``Root``. User must have ``Cetmix Tower / Root`` access group
-      configured in the User Settings.
+  - ``User``. User must have at least ``Cetmix Tower / User`` access
+    group configured in the User Settings.
+  - ``Manager``. User must have at least ``Cetmix Tower / Manager``
+    access group configured in the User Settings.
+  - ``Root``. User must have ``Cetmix Tower / Root`` access group
+    configured in the User Settings.
 
--  **Log Type**: Defines the way logs are fetched. Possible options:
+- **Log Type**: Defines the way logs are fetched. Possible options:
 
-   -  ``Command``. A command is run with its output being saved to the
-      log
-   -  ``File``. Log is fetched from a file
+  - ``Command``. A command is run with its output being saved to the log
+  - ``File``. Log is fetched from a file
 
--  **Command**: A command that is used to fetched the logs. This option
-   is available only for ``Log Type`` set to ``Command``. Important:
-   please ensure that selected command can be executed multiple times in
-   parallel to avoid any potential issues.
--  **Use Sudo**: Use ``sudo`` if required to run this command.
--  **File**: A file that is used to fetch the log. This option is not
-   available when configuring a log for a `Server
-   Template <#configure-a-server-template>`__
--  **File Template**: A file template that is used to create a file when
-   a new `Server <#configure-a-server>`__ is created from a `Server
-   Template <#configure-a-server-template>`__. This option is available
-   only when configuring a log for a `Server
-   Template <#configure-a-server-template>`__
+- **Command**: A command that is used to fetched the logs. This option
+  is available only for ``Log Type`` set to ``Command``. Important:
+  please ensure that selected command can be executed multiple times in
+  parallel to avoid any potential issues.
+- **Use Sudo**: Use ``sudo`` if required to run this command.
+- **File**: A file that is used to fetch the log. This option is not
+  available when configuring a log for a `Server
+  Template <#configure-a-server-template>`__
+- **File Template**: A file template that is used to create a file when
+  a new `Server <#configure-a-server>`__ is created from a `Server
+  Template <#configure-a-server-template>`__. This option is available
+  only when configuring a log for a `Server
+  Template <#configure-a-server-template>`__
 
 **Developer hint**: log output supports HTML formatting. You can
 implement your custom log formatter by overriding the
@@ -778,9 +771,9 @@ needed. Use flight plans instead.
 
 **Why?**
 
--  Simple commands are easier to reuse across multiple flight plans.
--  Commands run with ``sudo`` with password are be split and executed
-   one by one anyway.
+- Simple commands are easier to reuse across multiple flight plans.
+- Commands run with ``sudo`` with password are be split and executed one
+  by one anyway.
 
 **Not recommended:**
 
@@ -810,8 +803,8 @@ command or ``Path`` field in flight plan line.
 
 **Why?**
 
--  Tower will automatically adjust the command to ensure it is properly
-   executed in the specified location.
+- Tower will automatically adjust the command to ensure it is properly
+  executed in the specified location.
 
 **Do not do this:**
 
@@ -821,21 +814,21 @@ command or ``Path`` field in flight plan line.
 
 **Way to go:**
 
--  Add the following value in the ``Default Path`` command field or
-   ``Path`` field of a flight plan line:
+- Add the following value in the ``Default Path`` command field or
+  ``Path`` field of a flight plan line:
 
 .. code:: bash
 
    /home/{{ tower.server.username }}/memes
 
--  Leave the command code as follows:
+- Leave the command code as follows:
 
 .. code:: bash
 
    cat my_doge_memes.txt
 
-.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png
-.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====
@@ -843,16 +836,16 @@ Usage
 Create a new Server from a Server Template
 ------------------------------------------
 
--  Go to the ``Cetmix Tower/Servers/Templates`` menu and select a
-   `Server Template <CONFIGURE.md/#configure-a-server-template>`__
--  Click "Create Server" button. A pop-up wizard will open with server
-   parameters populated from the template
--  Put the new server name, check the parameters and click "Confirm"
-   button
--  New server will be created
--  If a `Flight Plan <CONFIGURE.md/#configure-a-flight-plan>`__ is
-   defined in the server template it will be automatically executed
-   after a new server is created
+- Go to the ``Cetmix Tower/Servers/Templates`` menu and select a `Server
+  Template <CONFIGURE.md/#configure-a-server-template>`__
+- Click "Create Server" button. A pop-up wizard will open with server
+  parameters populated from the template
+- Put the new server name, check the parameters and click "Confirm"
+  button
+- New server will be created
+- If a `Flight Plan <CONFIGURE.md/#configure-a-flight-plan>`__ is
+  defined in the server template it will be automatically executed after
+  a new server is created
 
 You can also create a new server from template from code using a
 designated ``create_server_from_template`` function of the
@@ -909,34 +902,34 @@ server when a Sales Order is confirmed:
 Run a Command
 -------------
 
--  Select a server in the list view or open a server form view
--  Open the ``Actions`` menu and click ``Execute Command``
--  A wizard is opened with the following fields:
+- Select a server in the list view or open a server form view
+- Open the ``Actions`` menu and click ``Execute Command``
+- A wizard is opened with the following fields:
 
-   -  **Servers**: Servers on which this command will be executed
-   -  **Tags**: If selected only commands with these tags will be shown
-   -  **Sudo**: ``sudo`` option for running this command
-   -  **Command**: Command to execute
-   -  **Show shared**: By default only commands available for the
-      selected server(s) are selectable. Activate this checkbox to
-      select any command
-   -  **Path**: Directory where command will be executed. Important:
-      this field does not support variables! Ensure that user has access
-      to this location even if you run command using sudo.
-   -  **Code**: Raw command code
-   -  **Preview**: Command code rendered using server variables.
-      **IMPORTANT:** If several servers are selected preview will not be
-      rendered. However during the command execution command code will
-      be rendered for each server separately.
+  - **Servers**: Servers on which this command will be executed
+  - **Tags**: If selected only commands with these tags will be shown
+  - **Sudo**: ``sudo`` option for running this command
+  - **Command**: Command to execute
+  - **Show shared**: By default only commands available for the selected
+    server(s) are selectable. Activate this checkbox to select any
+    command
+  - **Path**: Directory where command will be executed. Important: this
+    field does not support variables! Ensure that user has access to
+    this location even if you run command using sudo.
+  - **Code**: Raw command code
+  - **Preview**: Command code rendered using server variables.
+    **IMPORTANT:** If several servers are selected preview will not be
+    rendered. However during the command execution command code will be
+    rendered for each server separately.
 
 There are two action buttons available in the wizard:
 
--  **Run**. Executes a command using server "run" method and log command
-   result into the "Command Log".
--  **Run in wizard**. Executes a command directly in the wizard and show
-   command log in a new wizard window. **IMPORTANT:** Button will be
-   show only if single server is selected. If you try to run a command
-   for several servers from code, you will get a ValidationError.
+- **Run**. Executes a command using server "run" method and log command
+  result into the "Command Log".
+- **Run in wizard**. Executes a command directly in the wizard and show
+  command log in a new wizard window. **IMPORTANT:** Button will be show
+  only if single server is selected. If you try to run a command for
+  several servers from code, you will get a ValidationError.
 
 You can check command execution logs in the
 ``Cetmix Tower/Commands/Command Logs`` menu. Important! If you want to
@@ -946,44 +939,44 @@ that.
 Run a Flight Plan
 -----------------
 
--  Select a server in the list view or open a server form view
+- Select a server in the list view or open a server form view
 
--  Open the ``Actions`` menu and click ``Execute Flight Plan``
+- Open the ``Actions`` menu and click ``Execute Flight Plan``
 
--  A wizard is opened with the following fields:
+- A wizard is opened with the following fields:
 
-   -  **Servers**: Servers on which this command will be executed
-   -  **Tags**: If selected only commands with these tags will be shown
-   -  **Plan**: Flight plan to execute
-   -  **Show shared**: By default only flight plans available for the
-      selected server(s) are selectable. Activate this checkbox to
-      select any flight plan
-   -  **Commands**: Commands that will be executed in this flight plan.
-      This field is read only
+  - **Servers**: Servers on which this command will be executed
+  - **Tags**: If selected only commands with these tags will be shown
+  - **Plan**: Flight plan to execute
+  - **Show shared**: By default only flight plans available for the
+    selected server(s) are selectable. Activate this checkbox to select
+    any flight plan
+  - **Commands**: Commands that will be executed in this flight plan.
+    This field is read only
 
-   Click the **Run** button to execute a flight plan.
+  Click the **Run** button to execute a flight plan.
 
-   You can check the flight plan results in the
-   ``Cetmix Tower/Commands/Flight Plan Logs`` menu. Important! If you
-   want to delete a command you need to delete all its logs manually
-   before doing that.
+  You can check the flight plan results in the
+  ``Cetmix Tower/Commands/Flight Plan Logs`` menu. Important! If you
+  want to delete a command you need to delete all its logs manually
+  before doing that.
 
 Check a Server Log
 ------------------
 
 To check a server log:
 
--  Navigate to the ``Server Logs`` tab on the Server form
--  Click on the log **(1)** you would like to check to open in in a pop
-   up window. Or click on the ``Open`` button **(2)** to open it in the
-   full form view
+- Navigate to the ``Server Logs`` tab on the Server form
+- Click on the log **(1)** you would like to check to open in in a pop
+  up window. Or click on the ``Open`` button **(2)** to open it in the
+  full form view
 
 |Open server log|
 
--  Click the ``Refresh`` button to update the log. You can also click
-   the ``Refresh All`` button **(3)** located above the log list in
-   order to refresh all logs at once. Log output will be displayed in
-   the HTML field below.
+- Click the ``Refresh`` button to update the log. You can also click the
+  ``Refresh All`` button **(3)** located above the log list in order to
+  refresh all logs at once. Log output will be displayed in the HTML
+  field below.
 
 |Update server log|
 
@@ -997,9 +990,9 @@ are located in a special abstract model "cetmix.tower". You can check
 those functions in the source code in the following file:
 ``models/cetmix_tower.py``
 
-.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
-.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png
-.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png
+.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
+.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
+.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
 
 Bug Tracker
 ===========
@@ -1007,7 +1000,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -1022,6 +1015,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.
