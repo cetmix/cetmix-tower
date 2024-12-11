@@ -9,7 +9,7 @@ from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
 
 class CxTowerFileTemplate(models.Model):
     _name = "cx.tower.file.template"
-    _inherit = ["cx.tower.reference.mixin"]
+    _inherit = ["cx.tower.reference.mixin", "cx.tower.key.mixin"]
     _description = "Cx Tower File Template"
 
     def _compute_file_count(self):
