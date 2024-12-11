@@ -47,6 +47,12 @@
                                 name="keep_when_deleted"
                                 attrs="{'invisible': [('source', '=', 'server')]}"
                             />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                attrs="{'invisible': [('secret_ids', '=', False)]}"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            />
                             <field name="file_type" />
                             <field name="note" />
                         </group>
