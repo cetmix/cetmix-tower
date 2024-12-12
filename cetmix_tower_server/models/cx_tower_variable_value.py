@@ -36,6 +36,16 @@ class TowerVariableValue(models.Model):
     value_char = fields.Char(string="Value")
     note = fields.Text(related="variable_id.note", readonly=True)
     active = fields.Boolean(default=True)
+    option_id = fields.Many2one(
+        comodel_name="cx.tower.variable.option",
+        string="Option",
+        ondelete="set null",
+        domain="[('variable_id', '=', variable_id)]",
+    )
+    has_options = fields.Boolean(
+        string="Has Options",
+        compute="_compute_has_options",
+    )
 
     # Direct model relations.
     # Following functions should be updated when a new m2o field is added:
@@ -91,6 +101,14 @@ class TowerVariableValue(models.Model):
             ),
         ),
     ]
+
+    @api.depends("option_id", "variable_id")
+    def _compute_has_options(self):
+        """Determine if the variable has options."""
+        for record in self:
+            record.has_options = bool(record.variable_id.option_ids.ids)
+            if record.variable_id.option_ids.ids:
+                record.value_char = record.option_id.name
 
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):

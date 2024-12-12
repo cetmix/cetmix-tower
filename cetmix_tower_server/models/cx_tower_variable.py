@@ -18,6 +18,11 @@ class TowerVariable(models.Model):
     value_ids_count = fields.Integer(
         string="Value Count", compute="_compute_value_ids_count", store=True
     )
+    option_ids = fields.One2many(
+        comodel_name="cx.tower.variable.option",
+        inverse_name="variable_id",
+        string="Options",
+    )
     note = fields.Text()
 
     _sql_constraints = [("name_uniq", "unique (name)", "Variable names must be unique")]

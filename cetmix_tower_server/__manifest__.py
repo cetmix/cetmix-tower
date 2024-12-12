@@ -43,6 +43,7 @@
         "views/cx_tower_interpreter_view.xml",
         "views/cx_tower_variable_view.xml",
         "views/cx_tower_variable_value_view.xml",
+        "views/cx_tower_variable_option_view.xml",
         "views/cx_tower_command_view.xml",
         "views/cx_tower_plan_view.xml",
         "views/cx_tower_plan_line_view.xml",

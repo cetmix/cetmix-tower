@@ -25,6 +25,7 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
+                            <field name="option_ids" widget="one2many" />
                         </group>
                         <group>
                             <field name="note" />
