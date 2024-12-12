@@ -29,6 +29,7 @@
                         bg_color="bg-dark"
                         attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '!=', -20)]}"
                     />
+
                     <group>
                         <group>
                             <field name="is_skipped" invisible="1" />
