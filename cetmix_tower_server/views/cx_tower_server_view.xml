@@ -272,13 +272,16 @@
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
-                                    <field name="value_char" />
+                                    <field name="has_options" invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        attrs="{'readonly': [('has_options', '=', True)]}"
+                                    />
                                     <field
                                         name="option_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         attrs="{'readonly': [('has_options', '=', False)]}"
                                     />
-                                    <field name="has_options" invisible="1" />
                                 </tree>
                                 <form>
                                     <group>
@@ -291,13 +294,16 @@
                                                 options="{'string': 'Copy reference'}"
                                             />
                                         </div>
-                                        <field name="value_char" />
+                                        <field name="has_options" invisible="1" />
+                                        <field
+                                            name="value_char"
+                                            attrs="{'readonly': [('has_options', '=', True)]}"
+                                        />
                                         <field
                                             name="option_id"
                                             options="{'no_create': True, 'no_create_edit': True}"
                                             attrs="{'readonly': [('has_options', '=', False)]}"
                                         />
-                                        <field name="has_options" invisible="1" />
                                     </group>
                                     <field
                                         name="note"

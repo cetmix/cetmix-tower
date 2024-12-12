@@ -32,20 +32,19 @@ class TowerVariableValue(models.Model):
         inverse="_inverse_is_global",
         store=True,
     )
-
-    value_char = fields.Char(string="Value")
     note = fields.Text(related="variable_id.note", readonly=True)
     active = fields.Boolean(default=True)
+    has_options = fields.Boolean(
+        string="Has Options",
+        compute="_compute_has_options",
+    )
     option_id = fields.Many2one(
         comodel_name="cx.tower.variable.option",
         string="Option",
         ondelete="set null",
         domain="[('variable_id', '=', variable_id)]",
     )
-    has_options = fields.Boolean(
-        string="Has Options",
-        compute="_compute_has_options",
-    )
+    value_char = fields.Char(string="Value", compute="_compute_value_char", store=True)
 
     # Direct model relations.
     # Following functions should be updated when a new m2o field is added:
@@ -102,13 +101,20 @@ class TowerVariableValue(models.Model):
         ),
     ]
 
+    @api.depends("variable_id", "option_id")
+    def _compute_value_char(self):
+        for rec in self:
+            if rec.variable_id.option_ids and rec.option_id:
+                rec.value_char = rec.option_id.name
+
     @api.depends("option_id", "variable_id")
     def _compute_has_options(self):
-        """Determine if the variable has options."""
-        for record in self:
-            record.has_options = bool(record.variable_id.option_ids.ids)
-            if record.variable_id.option_ids.ids:
-                record.value_char = record.option_id.name
+        """
+        Compute the `has_options` field to indicate if the variable
+        has associated options.
+        """
+        for rec in self:
+            rec.has_options = bool(rec.variable_id.option_ids.ids)
 
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):
