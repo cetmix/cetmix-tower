@@ -57,18 +57,20 @@ class TestTowerVariableOption(TransactionCase):
 
     def test_unique_constraint(self):
         """Test the unique constraint on name and variable_id."""
+        # Create first option
         self.env["cx.tower.variable.option"].create(
             {
                 "name": "17.0",
                 "variable_id": self.variable.id,
             }
         )
-        duplicate_exists = self.env["cx.tower.variable.option"].search_count(
-            [
-                ("name", "=", "17.0"),
-                ("variable_id", "=", self.variable.id),
-            ]
-        )
-        self.assertEqual(
-            duplicate_exists, 1, "Duplicate record exists before the second create."
-        )
+
+        # Attempt to create duplicate should raise
+        with self.assertRaises(Exception) as context:
+            self.env["cx.tower.variable.option"].create(
+                {
+                    "name": "17.0",
+                    "variable_id": self.variable.id,
+                }
+            )
+        self.assertTrue("unique constraint" in str(context.exception).lower())

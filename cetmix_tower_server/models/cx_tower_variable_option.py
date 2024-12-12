@@ -16,6 +16,7 @@ class TowerVariableOption(models.Model):
         required=True,
         ondelete="cascade",
         default=lambda self: self.env.context.get("default_variable_id"),
+        index=True,
     )
 
     _sql_constraints = [
