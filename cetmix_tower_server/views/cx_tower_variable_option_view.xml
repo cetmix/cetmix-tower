@@ -8,7 +8,7 @@
                 <sheet>
                     <group>
                         <field name="name" />
-                        <field name="priority" />
+                        <field name="sequence" />
                     </group>
                 </sheet>
             </form>

@@ -8,7 +8,7 @@ from odoo import fields, models
 class TowerVariableOption(models.Model):
     _name = "cx.tower.variable.option"
     _description = "Cetmix Tower Variable Options"
-    _order = "priority, name"
+    _order = "sequence, name"
 
     name = fields.Char(string="Option Value", required=True)
     variable_id = fields.Many2one(
@@ -18,7 +18,7 @@ class TowerVariableOption(models.Model):
         ondelete="cascade",
         index=True,
     )
-    priority = fields.Integer(string="Priority", default=0)
+    sequence = fields.Integer(default=10)
 
     _sql_constraints = [
         (

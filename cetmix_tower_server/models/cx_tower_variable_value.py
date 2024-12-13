@@ -103,13 +103,13 @@ class TowerVariableValue(models.Model):
         ),
     ]
 
-    @api.depends("value_char", "option_id")
+    @api.depends("option_id", "variable_id.option_ids")
     def _compute_value_char(self):
         for rec in self:
             if rec.variable_id.option_ids and rec.option_id:
                 rec.value_char = rec.option_id.name
 
-    @api.depends("has_options", "variable_id.option_ids")
+    @api.depends("variable_id.option_ids")
     def _compute_has_options(self):
         """
         Compute the `has_options` field to indicate if the variable

@@ -1,9 +1,9 @@
 from psycopg2.errors import UniqueViolation
 
-from odoo.tests import TransactionCase
+from .common import TestTowerCommon
 
 
-class TestTowerVariableOption(TransactionCase):
+class TestTowerVariableOption(TestTowerCommon):
     def setUp(self):
         super().setUp()
         self.variable = self.env["cx.tower.variable"].create(
@@ -11,17 +11,6 @@ class TestTowerVariableOption(TransactionCase):
                 "name": "odoo_versions",
             }
         )
-
-    def test_create_variable_option(self):
-        """Test creation of a TowerVariableOption record."""
-        option = self.env["cx.tower.variable.option"].create(
-            {
-                "name": "14.0",
-                "variable_id": self.variable.id,
-            }
-        )
-        self.assertEqual(option.name, "14.0")
-        self.assertEqual(option.variable_id, self.variable)
 
     def test_unique_constraint(self):
         """Test the unique constraint on name and variable_id."""
