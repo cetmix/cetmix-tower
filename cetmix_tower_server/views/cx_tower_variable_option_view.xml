@@ -7,8 +7,8 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name" string="Option Value" />
-                        <field name="variable_id" invisible="1" />
+                        <field name="name" />
+                        <field name="priority" />
                     </group>
                 </sheet>
             </form>

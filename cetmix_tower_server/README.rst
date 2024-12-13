@@ -273,8 +273,10 @@ the ``Variables`` menu. Click ``Create`` and put values in the fields:
    based on name
 - **Options**: Define a list of pre-configured values for this variable using the `Options` tab. When options are defined:
 
-  - The "Option" field becomes editable in the variable value configuration view.
-  - The "Value" field is automatically updated based on the selected option.
+  - **Name**: The name of the option.
+  - **Priority**: A numerical field used to order the options. Options
+    are displayed in ascending order of priority (lower numbers first)
+    and then alphabetically by name if priorities are equal.
 -  **Note**: Put your notes here
 
 Configure Tags

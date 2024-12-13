@@ -8,6 +8,7 @@ from odoo import fields, models
 class TowerVariableOption(models.Model):
     _name = "cx.tower.variable.option"
     _description = "Cetmix Tower Variable Options"
+    _order = "priority, name"
 
     name = fields.Char(string="Option Value", required=True)
     variable_id = fields.Many2one(
@@ -15,14 +16,14 @@ class TowerVariableOption(models.Model):
         string="Variable",
         required=True,
         ondelete="cascade",
-        default=lambda self: self.env.context.get("default_variable_id"),
         index=True,
     )
+    priority = fields.Integer(string="Priority", default=0)
 
     _sql_constraints = [
         (
             "unique_variable_option",
             "unique (name, variable_id)",
-            "Option values must be unique for a variable!",
+            "The combination of Name and Variable must be unique.",
         )
     ]

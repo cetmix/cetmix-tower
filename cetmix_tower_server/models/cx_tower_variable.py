@@ -22,6 +22,7 @@ class TowerVariable(models.Model):
         comodel_name="cx.tower.variable.option",
         inverse_name="variable_id",
         string="Options",
+        auto_join=True,
     )
     note = fields.Text()
 

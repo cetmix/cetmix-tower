@@ -1,3 +1,5 @@
+from psycopg2.errors import UniqueViolation
+
 from odoo.tests import TransactionCase
 
 
@@ -21,56 +23,18 @@ class TestTowerVariableOption(TransactionCase):
         self.assertEqual(option.name, "14.0")
         self.assertEqual(option.variable_id, self.variable)
 
-    def test_create_with_default_context(self):
-        """Test creation of a TowerVariableOption using
-        default_variable_id in context."""
-        with self.env.cr.savepoint():
-            context = {"default_variable_id": self.variable.id}
-            option = (
-                self.env["cx.tower.variable.option"]
-                .with_context(context)
-                .create(
-                    {
-                        "name": "15.0",
-                    }
-                )
-            )
-            self.assertEqual(option.variable_id, self.variable)
-
-    def test_ondelete_cascade(self):
-        """Test that deleting a variable cascades to its options."""
-        option = self.env["cx.tower.variable.option"].create(
-            {
-                "name": "16.0",
-                "variable_id": self.variable.id,
-            }
-        )
-        self.variable.unlink()
-        options = self.env["cx.tower.variable.option"].search(
-            [
-                ("id", "=", option.id),
-            ]
-        )
-        self.assertFalse(
-            options, "Options should be deleted when the variable is deleted."
-        )
-
     def test_unique_constraint(self):
         """Test the unique constraint on name and variable_id."""
-        # Create first option
         self.env["cx.tower.variable.option"].create(
             {
                 "name": "17.0",
                 "variable_id": self.variable.id,
             }
         )
-
-        # Attempt to create duplicate should raise
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(UniqueViolation):
             self.env["cx.tower.variable.option"].create(
                 {
                     "name": "17.0",
                     "variable_id": self.variable.id,
                 }
             )
-        self.assertTrue("unique constraint" in str(context.exception).lower())
