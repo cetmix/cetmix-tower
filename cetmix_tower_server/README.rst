@@ -274,9 +274,9 @@ the ``Variables`` menu. Click ``Create`` and put values in the fields:
 - **Options**: Define a list of pre-configured values for this variable using the `Options` tab. When options are defined:
 
   - **Name**: The name of the option.
-  - **Priority**: A numerical field used to order the options. Options
-    are displayed in ascending order of priority (lower numbers first)
-    and then alphabetically by name if priorities are equal.
+  - **Sequence**: A numerical field used to order the options. Options
+    are displayed in ascending order of sequence (lower numbers first)
+    and then alphabetically by name.
 -  **Note**: Put your notes here
 
 Configure Tags
