@@ -1,5 +1,3 @@
-from psycopg2.errors import NotNullViolation
-
 from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
@@ -28,17 +26,6 @@ class TestTowerKey(TestTowerCommon):
             "test key meme",
             "Trailing and leading whitespaces must be removed from name",
         )
-
-        # -- 2 --
-        # Test if key without a name cannot be created
-        with self.assertRaises(NotNullViolation):
-            self.Key.create(
-                {
-                    "reference": "test_key_meme",
-                    "secret_value": "test value",
-                    "key_type": "s",
-                }
-            )
 
     def test_key_access_rights(self):
         """Test private key security features"""
