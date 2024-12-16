@@ -108,6 +108,9 @@ class TowerVariableValue(models.Model):
         for rec in self:
             if rec.variable_id.option_ids and rec.option_id:
                 rec.value_char = rec.option_id.name
+            elif not rec.variable_id.option_ids:
+                rec.value_char = ""
+                rec.option_id = None
 
     @api.depends("variable_id.option_ids")
     def _compute_has_options(self):

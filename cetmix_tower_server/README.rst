@@ -271,12 +271,11 @@ the ``Variables`` menu. Click ``Create`` and put values in the fields:
 -  **Reference**: Unique identifier used to address variable in
    conditions and expressions. Leave blank to generate automatically
    based on name
-- **Options**: Define a list of pre-configured values for this variable using the `Options` tab. When options are defined:
+- **Options**: In the Options tab, define a list of pre-configured values for the variable.
+  Options can be reordered manually using drag-and-drop functionality to determine
+  their display order..
 
   - **Name**: The name of the option.
-  - **Sequence**: A numerical field used to order the options. Options
-    are displayed in ascending order of sequence (lower numbers first)
-    and then alphabetically by name.
 -  **Note**: Put your notes here
 
 Configure Tags

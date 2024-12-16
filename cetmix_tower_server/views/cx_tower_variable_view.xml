@@ -25,7 +25,12 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
-                            <field name="option_ids" widget="one2many" />
+                            <field name="option_ids" widget="one2many">
+                                <tree editable="bottom" decoration-info="sequence == 1">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                </tree>
+                            </field>
                         </group>
                         <group>
                             <field name="note" />
