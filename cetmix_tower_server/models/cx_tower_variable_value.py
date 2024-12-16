@@ -105,6 +105,10 @@ class TowerVariableValue(models.Model):
 
     @api.depends("option_id", "variable_id.option_ids")
     def _compute_value_char(self):
+        """
+        Compute the 'value_char' field, which holds the string representation
+        of the selected option for the variable.
+        """
         for rec in self:
             if rec.variable_id.option_ids and rec.option_id:
                 rec.value_char = rec.option_id.name

@@ -24,6 +24,12 @@ class TowerVariable(models.Model):
         string="Options",
         auto_join=True,
     )
+    variable_type = fields.Selection(
+        selection=[("s", "String"), ("o", "Options")],
+        default="s",
+        required=True,
+        string="Type",
+    )
     note = fields.Text()
 
     _sql_constraints = [("name_uniq", "unique (name)", "Variable names must be unique")]
