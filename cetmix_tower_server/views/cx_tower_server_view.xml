@@ -272,15 +272,15 @@
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
-                                    <field name="has_options" invisible="1" />
+                                    <field name="variable_type" invisible="1" />
                                     <field
                                         name="value_char"
-                                        attrs="{'readonly': [('has_options', '=', True)]}"
+                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
                                     />
                                     <field
                                         name="option_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
-                                        attrs="{'readonly': [('has_options', '=', False)]}"
+                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
                                     />
                                 </tree>
                                 <form>
@@ -294,16 +294,6 @@
                                                 options="{'string': 'Copy reference'}"
                                             />
                                         </div>
-                                        <field name="has_options" invisible="1" />
-                                        <field
-                                            name="value_char"
-                                            attrs="{'readonly': [('has_options', '=', True)]}"
-                                        />
-                                        <field
-                                            name="option_id"
-                                            options="{'no_create': True, 'no_create_edit': True}"
-                                            attrs="{'readonly': [('has_options', '=', False)]}"
-                                        />
                                     </group>
                                     <field
                                         name="note"

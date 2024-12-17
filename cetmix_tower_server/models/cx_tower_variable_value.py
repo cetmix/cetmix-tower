@@ -34,14 +34,16 @@ class TowerVariableValue(models.Model):
     )
     note = fields.Text(related="variable_id.note", readonly=True)
     active = fields.Boolean(default=True)
-    has_options = fields.Boolean(
-        string="Has Options",
-        compute="_compute_has_options",
+    variable_type = fields.Selection(
+        selection=[("s", "String"), ("o", "Options")],
+        string="Variable Type",
+        related="variable_id.variable_type",
+        store=True,
+        readonly=True,
     )
     option_id = fields.Many2one(
         comodel_name="cx.tower.variable.option",
         string="Option",
-        ondelete="set null",
         domain="[('variable_id', '=', variable_id)]",
     )
     value_char = fields.Char(
@@ -115,15 +117,6 @@ class TowerVariableValue(models.Model):
             elif not rec.variable_id.option_ids:
                 rec.value_char = ""
                 rec.option_id = None
-
-    @api.depends("variable_id.option_ids")
-    def _compute_has_options(self):
-        """
-        Compute the `has_options` field to indicate if the variable
-        has associated options.
-        """
-        for rec in self:
-            rec.has_options = bool(rec.variable_id.option_ids.ids)
 
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):
