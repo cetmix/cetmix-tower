@@ -41,11 +41,7 @@ class TowerVariableValue(models.Model):
         store=True,
         readonly=True,
     )
-    option_id = fields.Many2one(
-        comodel_name="cx.tower.variable.option",
-        string="Option",
-        domain="[('variable_id', '=', variable_id)]",
-    )
+    option_id = fields.Many2one(comodel_name="cx.tower.variable.option")
     value_char = fields.Char(
         string="Value", compute="_compute_value_char", store=True, readonly=False
     )
@@ -115,7 +111,7 @@ class TowerVariableValue(models.Model):
             if rec.variable_id.option_ids and rec.option_id:
                 rec.value_char = rec.option_id.name
             elif not rec.variable_id.option_ids:
-                rec.value_char = ""
+                rec.value_char = rec.value_char or ""
                 rec.option_id = None
 
     @api.constrains("is_global", "value_char")
