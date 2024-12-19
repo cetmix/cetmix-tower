@@ -85,6 +85,14 @@
                             />
                             <field name="access_level" />
                             <field name="server_status" widget="server_status" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('variable_ids', '=', False)]}"
+                                optional="hide"
+                            />
                         </group>
                     </group>
                     <notebook>
