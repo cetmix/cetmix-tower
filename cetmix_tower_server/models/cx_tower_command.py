@@ -67,9 +67,6 @@ class CxTowerCommand(models.Model):
         "while the same command is still running.\n"
         "Returns ANOTHER_COMMAND_RUNNING if execution is blocked"
     )
-    interpreter_id = fields.Many2one(
-        comodel_name="cx.tower.interpreter",
-    )
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         relation="cx_tower_server_command_rel",

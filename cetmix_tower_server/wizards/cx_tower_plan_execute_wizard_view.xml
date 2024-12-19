@@ -13,7 +13,11 @@
                         required="1"
                         attrs="{'invisible': [('show_servers', '=', False)]}"
                     />
-                    <field name="tag_ids" widget="many2many_tags" />
+                    <field
+                        name="tag_ids"
+                        widget="many2many_tags"
+                        placeholder="Select tags to filter Flight Plans"
+                    />
                     <label for="plan_id" />
                     <div class="o_row">
                         <field name="plan_id" domain="plan_domain" default_focus="1" />

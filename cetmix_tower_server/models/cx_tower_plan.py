@@ -22,6 +22,7 @@ class CxTowerPlan(models.Model):
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
     ]
+    _order = "name asc"
 
     active = fields.Boolean(default=True)
     allow_parallel_run = fields.Boolean(

@@ -113,13 +113,6 @@
         sequence="100"
     />
     <menuitem
-        id="menu_cx_tower_interpreter"
-        name="Interpreters"
-        action="action_cx_tower_interpreter"
-        parent="menu_settings"
-        sequence="12"
-    />
-    <menuitem
         id="menu_cx_tower_tag"
         name="Tags"
         action="action_cx_tower_tag"
