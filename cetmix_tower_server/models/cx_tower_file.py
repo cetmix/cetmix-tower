@@ -133,22 +133,26 @@ class CxTowerFile(models.Model):
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_file_variable_rel",
-        column1="file_id",
-        column2="variable_id",
-        string="Variables",
-        compute="_compute_variable_ids",
-        store=True,
     )
 
-    @api.depends("code", "server_dir", "name")
-    def _compute_variable_ids(self):
+    @classmethod
+    def _get_depends_fields(cls):
         """
-        Compute variable_ids based on code, server_dir, and name fields.
+        Define dependent fields for computing `variable_ids` in file-related models.
+
+        This implementation specifies that the fields `code`, `server_dir`,
+        and `name` are used to compute the variables associated with a file.
+
+        Returns:
+            list: A list of field names (str) representing the dependencies.
+
+        Example:
+            The following fields trigger recomputation of `variable_ids`:
+            - `code`: The content of the file.
+            - `server_dir`: The directory on the server where the file is located.
+            - `name`: The name of the file.
         """
-        for record in self:
-            record.variable_ids = record._prepare_variable_commands(
-                ["code", "server_dir", "name"]
-            )
+        return ["code", "server_dir", "name"]
 
     def _selection_file_type(self):
         """Available file types

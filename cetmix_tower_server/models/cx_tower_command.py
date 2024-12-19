@@ -117,33 +117,34 @@ class CxTowerCommand(models.Model):
     flight_plan_id = fields.Many2one(
         comodel_name="cx.tower.plan",
     )
-    variable_ids = fields.Many2many(
-        comodel_name="cx.tower.variable",
-        relation="cx_tower_command_variable_rel",
-        column1="command_id",
-        column2="variable_id",
-        string="Variables",
-        compute="_compute_variable_ids",
-        store=True,
-    )
-
-    @api.depends("code", "path")
-    def _compute_variable_ids(self):
-        """
-        Compute variable_ids based on code and path fields.
-        """
-        for record in self:
-            record.variable_ids = record._prepare_variable_commands(["code", "path"])
-
-    # TODO: move this up
     server_status = fields.Selection(
         selection=lambda self: self.env["cx.tower.server"]._selection_status(),
         string="Server Status",
-        help=(
-            "Set the following status if command is executed successfully."
-            " Leave 'Undefined' if you don't need to update the status"
-        ),
+        help="Set the following status if command is executed successfully. "
+        "Leave 'Undefined' if you don't need to update the status",
     )
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_command_variable_rel",
+    )
+
+    @classmethod
+    def _get_depends_fields(cls):
+        """
+        Define dependent fields for computing `variable_ids` in command-related models.
+
+        This implementation specifies that the fields `code` and `path`
+        are used to determine the variables associated with a command.
+
+        Returns:
+            list: A list of field names (str) representing the dependencies.
+
+        Example:
+            The following fields trigger recomputation of `variable_ids`:
+            - `code`: The command's script or execution logic.
+            - `path`: The default execution path for the command.
+        """
+        return ["code", "path"]
 
     # Depend on related servers and partners
     @api.depends(
