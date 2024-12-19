@@ -3,7 +3,7 @@
 from jinja2 import Environment, Template, meta
 from jinja2 import exceptions as jn_exceptions
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -16,6 +16,100 @@ class CxTowerTemplateMixin(models.AbstractModel):
     _description = "Cetmix Tower template rendering mixin"
 
     code = fields.Text(string="Code", help="This field will be rendered by default")
+    variable_ids = fields.Many2many(
+        string="Variables",
+        comodel_name="cx.tower.variable",
+        compute="_compute_variable_ids",
+        store=True,
+    )
+
+    def _get_relation_params(self):
+        """
+        Retrieve metadata for the Many2many field `variable_ids`.
+
+        This method dynamically extracts and returns the `relation`,
+        `column1`, and `column2` parameters from the field definition
+        in the model. These parameters are used for defining and managing
+        Many2many relationships in Odoo.
+
+        Returns:
+            dict: A dictionary containing the following keys:
+                - `relation` (str): Name of the Many2many relationship table.
+                - `column1` (str): Name of the column representing the source model.
+                - `column2` (str): Name of the column representing the target model.
+                If the metadata is unavailable, all values will be `None`.
+
+        Example:
+            >>> params = self._get_relation_params()
+            >>> print(params)
+            {'relation': 'cx_tower_command_variable_rel',
+             'column1': 'command_id',
+             'column2': 'variable_id'}
+        """
+        field = self._fields.get("variable_ids")
+        if field and hasattr(field, "relation"):
+            return {
+                "relation": field.relation,
+                "column1": field.column1,
+                "column2": field.column2,
+            }
+        return {"relation": None, "column1": None, "column2": None}
+
+    @classmethod
+    def _get_depends_fields(cls):
+        """
+        Define dependent fields for the `variable_ids` computation.
+
+        This method should be overridden in inheriting models to provide
+        a list of fields that influence the computation of `variable_ids`.
+        These fields are used in the `@api.depends` decorator to trigger
+        recomputation when their values change.
+
+        Returns:
+            list: A list of field names (str) that are dependencies for
+                  the `variable_ids` computation. Default is an empty list.
+
+        Example:
+            In a subclass, override as follows:
+            >>> @classmethod
+            >>> def _get_depends_fields(cls):
+            >>>     return ["code", "path"]
+        """
+        return []
+
+    @api.depends(lambda self: self._get_depends_fields())
+    def _compute_variable_ids(self):
+        """
+        Compute the values of the `variable_ids`
+        field based on model-specific dependencies.
+
+        This method retrieves the dependent fields using `_get_depends_fields`
+        and dynamically calculates the values of `variable_ids` using the
+        `_prepare_variable_commands` method. The Many2many relation is managed
+        based on parameters returned by `_get_relation_params`.
+
+        If no dependent fields or relation parameters are defined, the field
+        is reset to an empty list.
+
+        Example:
+            If dependent fields include `code` and `path`, and the model-specific
+            logic links them to variables, this method will update the `variable_ids`
+            field accordingly.
+
+        Raises:
+            ValidationError: If the field metadata is incorrectly defined or
+                             missing required attributes.
+
+        Returns:
+            None: The field `variable_ids` is updated in-place for each record.
+        """
+        depends_fields = self._get_depends_fields()
+
+        for record in self:
+            if depends_fields:
+                record.variable_ids = record._prepare_variable_commands(depends_fields)
+            else:
+                record.variable_ids = [(5, 0, 0)]
 
     def get_variables(self):
         """Get the list of variables for templates

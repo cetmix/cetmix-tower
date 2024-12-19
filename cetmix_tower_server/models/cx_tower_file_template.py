@@ -1,7 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
@@ -9,7 +9,11 @@ from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
 
 class CxTowerFileTemplate(models.Model):
     _name = "cx.tower.file.template"
-    _inherit = ["cx.tower.reference.mixin", "cx.tower.key.mixin"]
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.key.mixin",
+        "cx.tower.template.mixin",
+    ]
     _description = "Cx Tower File Template"
 
     def _compute_file_count(self):
@@ -53,27 +57,33 @@ class CxTowerFileTemplate(models.Model):
         required=True,
         default="tower",
     )
-
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_file_template_variable_rel",
-        column1="file_template_id",
-        column2="variable_id",
-        string="Variables",
-        compute="_compute_variable_ids",
-        store=True,
     )
 
-    @api.depends("code", "server_dir", "file_name")
-    def _compute_variable_ids(self):
+    @classmethod
+    def _get_depends_fields(cls):
         """
-        Compute variable_ids based on code, server_dir, and file_name fields.
+        Define dependent fields for computing
+        `variable_ids` in file template-related models.
+
+        This implementation specifies that the fields `code`, `server_dir`,
+        and `file_name` are used to compute the
+        variables associated with a file template.
+
+        Returns:
+            list: A list of field names (str) representing the dependencies.
+
+        Example:
+            The following fields trigger recomputation
+            of `variable_ids`:
+            - `code`: The template content for the file.
+            - `server_dir`: The target directory on the
+            server where the template is applied.
+            - `file_name`: The name of the generated file.
         """
-        template_mixin_obj = self.env["cx.tower.template.mixin"]
-        for record in self:
-            record.variable_ids = template_mixin_obj._prepare_variable_commands(
-                ["code", "server_dir", "file_name"], force_record=record
-            )
+        return ["code", "server_dir", "file_name"]
 
     def write(self, vals):
         """
