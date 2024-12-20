@@ -38,10 +38,11 @@ class TowerVariableValue(models.Model):
         selection=[("s", "String"), ("o", "Options")],
         string="Variable Type",
         related="variable_id.variable_type",
-        store=True,
         readonly=True,
     )
-    option_id = fields.Many2one(comodel_name="cx.tower.variable.option")
+    option_id = fields.Many2one(
+        comodel_name="cx.tower.variable.option", ondelete="restrict"
+    )
     value_char = fields.Char(
         string="Value", compute="_compute_value_char", store=True, readonly=False
     )
@@ -112,6 +113,15 @@ class TowerVariableValue(models.Model):
                 rec.value_char = rec.option_id.name
             elif not rec.variable_id.option_ids:
                 rec.value_char = rec.value_char or ""
+
+    @api.onchange("variable_id")
+    def _onchange_variable_id(self):
+        """
+        Reset option_id when variable changes or
+        doesn't have options
+        """
+        for rec in self:
+            if not rec.variable_id.option_ids:
                 rec.option_id = None
 
     @api.constrains("is_global", "value_char")
