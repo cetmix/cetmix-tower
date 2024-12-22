@@ -48,18 +48,15 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
     line_ids = fields.One2many(
         comodel_name="cx.tower.server.template.create.wizard.line",
         inverse_name="wizard_id",
-        string=_("Configuration Variables"),
+        string="Configuration Variables",
     )
     has_missing_required_values = fields.Boolean(
-        string=_("Has Missing Required Values"),
         compute="_compute_has_missing_required_values",
     )
     missing_required_variables = fields.Text(
-        string=_("Missing Required Variables"),
-        compute="_compute_missing_required_variables",
+        compute="_compute_missing_required_variables_message",
     )
     missing_required_variables_message = fields.Text(
-        string=_("Missing Variables Message"),
         compute="_compute_missing_required_variables_message",
     )
 
@@ -149,6 +146,5 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
     variable_reference = fields.Char(related="variable_id.reference", readonly=True)
     value_char = fields.Char(string="Value")
     required = fields.Boolean(
-        string="Required",
-        help=_("Indicates if this variable is mandatory for server creation"),
+        help="Indicates if this variable is mandatory for server creation",
     )
