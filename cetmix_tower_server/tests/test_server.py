@@ -7,6 +7,7 @@ class TestTowerServer(TestTowerCommon):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
         self.os_ubuntu_20_04 = self.env["cx.tower.os"].create({"name": "Ubuntu 20.04"})
+
         self.server_test_2 = self.Server.create(
             {
                 "name": "Test Server #2",
@@ -38,9 +39,7 @@ class TestTowerServer(TestTowerCommon):
                         },
                     ),
                 ],
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_production").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_production.id])],
             }
         )
         # Files

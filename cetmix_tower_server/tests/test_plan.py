@@ -274,9 +274,7 @@ class TestTowerPlan(TestTowerCommon):
             {
                 "name": "Test plan 2",
                 "note": "Create directory and list its content",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_staging.id])],
             }
         )
         # Ensure that defaulf command access_level is equal to 2
@@ -315,9 +313,7 @@ class TestTowerPlan(TestTowerCommon):
             {
                 "name": "Test plan 3",
                 "note": "Create directory and list its content",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_staging.id])],
             }
         )
         self.assertTrue(
@@ -431,23 +427,17 @@ class TestTowerPlan(TestTowerCommon):
             {
                 "name": "Test Plan 1",
                 "note": "Plan 1 Note",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_staging.id])],
             },
             {
                 "name": "Test Plan 2",
                 "note": "Plan 2 Note",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_production").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_production.id])],
             },
             {
                 "name": "Test Plan 3",
                 "note": "Plan 3 Note",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_staging.id])],
             },
         ]
         created_plans = self.Plan.create(plans_data)
