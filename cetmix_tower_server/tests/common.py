@@ -15,6 +15,11 @@ class TestTowerCommon(TransactionCase):
         # Cetmix Tower helper model
         self.CetmixTower = self.env["cetmix.tower"]
 
+        # Tags
+        self.Tag = self.env["cx.tower.tag"]
+        self.tag_test_staging = self.Tag.create({"name": "Test Staging"})
+        self.tag_test_production = self.Tag.create({"name": "Test Production"})
+
         # Users
         self.Users = self.env["res.users"].with_context(no_reset_password=True)
         self.user_bob = self.Users.create(
@@ -150,9 +155,7 @@ class TestTowerCommon(TransactionCase):
             {
                 "name": "Test plan 1",
                 "note": "Create directory and list its content",
-                "tag_ids": [
-                    (6, 0, [self.env.ref("cetmix_tower_server.tag_staging").id])
-                ],
+                "tag_ids": [(6, 0, [self.tag_test_staging.id])],
             }
         )
         self.plan_line_1 = self.plan_line.create(
