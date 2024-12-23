@@ -115,8 +115,11 @@ class CetmixTower(models.AbstractModel):
                 Default is 15 seconds.
 
         Returns:
-            dict: {'code': int, 'message': Char} - Exit code and message
-            indicating the result.
+            dict: {
+                "code": int,  # 0 for success, -1 for not found,
+                 1 for connection error, 2 for retry limit exceeded
+                "message": str  # Description of the result
+            }
         """
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
@@ -129,7 +132,7 @@ class CetmixTower(models.AbstractModel):
             try:
                 # Create an SSH client
                 ssh_client = paramiko.SSHClient()
-                ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
                 ssh_client.connect(ssh_host, port=ssh_port, timeout=timeout)
                 ssh_client.close()
                 return {"code": 0, "message": _("SSH connection successful")}
