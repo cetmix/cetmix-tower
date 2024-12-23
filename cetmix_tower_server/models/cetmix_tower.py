@@ -1,6 +1,11 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import _, api, models
+from odoo.exceptions import ValidationError
+
+from .constants import SSH_CONNECTION_ERROR, SSH_CONNECTION_TIMEOUT
+from .cx_tower_server import SSH
 
 
 class CetmixTower(models.AbstractModel):
@@ -99,3 +104,75 @@ class CetmixTower(models.AbstractModel):
         if not value and check_global:
             value = result.get("global")
         return value
+
+    @api.model
+    def server_check_ssh_connection(self, server_reference, attempts=5, timeout=15):
+        """Check if SSH connection to the server is available.
+
+        Args:
+            server_reference (Char): Server reference.
+            attempts (int): Number of attempts to try the connection.
+                Default is 5.
+            timeout (int): Timeout in seconds for each connection attempt.
+                Default is 15 seconds.
+        Raises:
+            ValidationError:
+                If the provided server reference is invalid or
+                the server cannot be found.
+        Returns:
+            dict: {
+                "code": int,
+                    # 0 for success,
+                    # 408 if the SSH connection timed out after all attempts,
+                    # 503 if there was a generic SSH connection error.
+                "message": str  # Description of the result
+            }
+        """
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
+            raise ValidationError(_("No server found for the provided reference."))
+
+        # Prepare connection details
+        ssh_host = server.ip_v4_address or server.ip_v6_address
+        ssh_port = server.ssh_port if server.ssh_port else 22
+        username = server.ssh_username
+        password = server.ssh_password
+
+        ssh_connection = SSH(
+            host=ssh_host,
+            port=ssh_port,
+            username=username,
+            password=password,
+            mode="p" if password else "k",
+            allow_agent=False,
+            timeout=timeout,
+        )
+        max_attempts = attempts - 1
+        for attempt in range(attempts):
+            try:
+                ssh_connection.connection()
+                return {
+                    "code": 0,
+                    "message": _(
+                        "SSH connection successful on attempt %d" % (attempt + 1)
+                    ),
+                }
+            except TimeoutError as e:
+                if attempt == max_attempts:
+                    return {
+                        "code": SSH_CONNECTION_TIMEOUT,
+                        "message": _(
+                            "SSH connection timeout on last attempt. Error: %s" % str(e)
+                        ),
+                    }
+            except Exception as e:
+                if attempt == max_attempts:
+                    return {
+                        "code": SSH_CONNECTION_ERROR,
+                        "message": _(
+                            "Failed to connect after %d attempts. Error: %s"
+                            % (attempts, str(e))
+                        ),
+                    }
+            finally:
+                ssh_connection.disconnect()
