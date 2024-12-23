@@ -72,7 +72,6 @@
         </field>
     </record>
 
-
     <record id="cx_tower_variable_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.variable.view.tree</field>
         <field name="model">cx.tower.variable</field>

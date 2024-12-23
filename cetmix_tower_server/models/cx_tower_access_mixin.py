@@ -38,4 +38,3 @@ class CxTowerAccessMixin(models.AbstractModel):
             Char: `access_level` field selection value
         """
         return "2"
-      
