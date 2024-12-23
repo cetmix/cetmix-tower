@@ -1,6 +1,9 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import paramiko
+
 from odoo import _, api, models
+from odoo.tools.safe_eval import time
 
 
 class CetmixTower(models.AbstractModel):
@@ -99,3 +102,47 @@ class CetmixTower(models.AbstractModel):
         if not value and check_global:
             value = result.get("global")
         return value
+
+    @api.model
+    def server_check_ssh_connection(self, server_reference, attempts=5, timeout=15):
+        """Check if SSH connection to the server is available.
+
+        Args:
+            server_reference (Char): Server reference
+            attempts (int): Number of attempts to try the connection.
+                Default is 5.
+            timeout (int): Timeout in seconds for each connection attempt.
+                Default is 15 seconds.
+
+        Returns:
+            dict: {'code': int, 'message': Char} - Exit code and message
+            indicating the result.
+        """
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
+            return {"code": -1, "message": _("Server not found")}
+
+        ssh_host = server.ip_v4_address or server.ip_v6_address
+        ssh_port = server.ssh_port if server.ssh_port else 22
+
+        for attempt in range(attempts):
+            try:
+                # Create an SSH client
+                ssh_client = paramiko.SSHClient()
+                ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh_client.connect(ssh_host, port=ssh_port, timeout=timeout)
+                ssh_client.close()
+                return {"code": 0, "message": _("SSH connection successful")}
+            except (paramiko.AuthenticationException, paramiko.SSHException) as e:
+                return {"code": 1, "message": _("SSH connection error: %s" % str(e))}
+            except Exception as e:
+                if attempt < attempts - 1:
+                    time.sleep(timeout)
+                else:
+                    return {
+                        "code": 2,
+                        "message": _(
+                            "Failed to connect after %d attempts. Error: %s"
+                            % (attempts, str(e))
+                        ),
+                    }
