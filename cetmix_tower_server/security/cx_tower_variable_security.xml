@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+
     <!-- user -->
     <record id="cx_tower_variable_rule_group_user_access" model="ir.rule">
         <field name="name">Tower Variable: User Access Rule</field>
@@ -23,4 +24,5 @@
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
     </record>
+
 </odoo>

@@ -332,64 +332,14 @@ class TestTowerVariable(TestTowerCommon):
             "models/cx_tower_server.py",
         )
 
-    def test_variable_value_server_subscription(self):
-        """Test variable access based on server subscription"""
-        server = self.server_test_1
-
-        # Creating a private variable
-        variable_private = self.Variable.create({"name": "Private Variable"})
-        variable_private_value = self.VariableValue.create(
-            {
-                "variable_id": variable_private.id,
-                "server_id": server.id,
-                "value_char": "Private Value",
-            }
-        )
-
-        user_bob = self.user_bob
-
-        # Removing a user from all groups
-        self.remove_from_group(
-            user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-
-        # Adding a user to the user group
-        self.add_to_group(user_bob, "cetmix_tower_server.group_user")
-
-        # Test: User does not have access to private variable without subscription
-        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
-        with self.assertRaises(AccessError):
-            variable_private_value_as_bob.read([])
-
-        # User subscription to the server
-        server.message_subscribe([user_bob.partner_id.id])
-
-        # Cache Invalidation and Access Checking
-        variable_private_value_as_bob.invalidate_cache()
-        self.assertEqual(
-            variable_private_value_as_bob.value_char,
-            "Private Value",
-            msg="User should have access to private variables after subscription",
-        )
-
-        # Removing a subscription and checking for lack of access
-        server.message_unsubscribe([user_bob.partner_id.id])
-        variable_private_value_as_bob.invalidate_cache()
-        with self.assertRaises(AccessError):
-            variable_private_value_as_bob.read([])
-
     def test_variable_value_access(self):
         """Test access rules for variable values"""
         server = self.server_test_1
 
-        # Creating variables assigned to server
-        # Private variable
-        variable_private = self.Variable.create({"name": "Private Variable"})
+        # Create variables with different access levels
+        variable_private = self.Variable.create(
+            {"name": "Private Variable", "access_level": "1"}
+        )
         variable_private_value = self.VariableValue.create(
             {
                 "variable_id": variable_private.id,
@@ -398,8 +348,9 @@ class TestTowerVariable(TestTowerCommon):
             }
         )
 
-        # Global variable
-        variable_global = self.Variable.create({"name": "Global Variable"})
+        variable_global = self.Variable.create(
+            {"name": "Variable Global", "access_level": "1"}
+        )
         variable_global_value = self.VariableValue.create(
             {
                 "variable_id": variable_global.id,
@@ -410,7 +361,7 @@ class TestTowerVariable(TestTowerCommon):
 
         user_bob = self.user_bob
 
-        # Removing user_bob user from all security groups
+        # Ensure user_bob is not in any security groups initially
         self.remove_from_group(
             user_bob,
             [
@@ -420,38 +371,34 @@ class TestTowerVariable(TestTowerCommon):
             ],
         )
 
-        # Add a user to the group_user group
+        # Add user_bob to group_user
         self.add_to_group(user_bob, "cetmix_tower_server.group_user")
 
-        # Checking that the user has access to the global variable
+        # Check access to global values for group_user
         variable_global_value_as_bob = variable_global_value.with_user(user_bob)
-        global_value = variable_global_value_as_bob.value_char
         self.assertEqual(
-            global_value,
+            variable_global_value_as_bob.value_char,
             "Global Value",
-            msg="User must have access to global variable values",
+            msg="User must be able to access global values",
         )
 
-        # Checking that the user does not have access to a private variable
+        # Check that group_user member cannot access private values without subscription
         variable_private_value_as_bob = variable_private_value.with_user(user_bob)
         with self.assertRaises(AccessError):
-            variable_private_value_as_bob.read([])
+            _ = variable_private_value_as_bob.value_char
 
-        # Subscribe the user to the server
+        # Subscribe user_bob to the server
         server.message_subscribe([user_bob.partner_id.id])
 
-        # Invalidate cache before access
-        variable_private_value_as_bob.invalidate_cache()
-
-        # Checking access to a private variable after subscription
-        private_value = variable_private_value_as_bob.value_char
+        # Check access to private values for subscribed users
+        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
         self.assertEqual(
-            private_value,
+            variable_private_value_as_bob.value_char,
             "Private Value",
-            msg="User must have access to private variable values after subscription",
+            msg="User must be able to access private values after subscribing",
         )
 
-        # Checking that the user cannot create new variable values
+        # Check that user_bob cannot create new variable values
         with self.assertRaises(AccessError):
             self.VariableValue.with_user(user_bob).create(
                 {
@@ -461,12 +408,12 @@ class TestTowerVariable(TestTowerCommon):
                 }
             )
 
-        # Add a user to the group_manager group
+        # Add user_bob to group_manager
         self.add_to_group(user_bob, "cetmix_tower_server.group_manager")
 
-        # We check that the user can create new global and local variables
+        # Check that user_bob can create new variables with appropriate access levels
         variable_new_global_as_bob = self.Variable.with_user(user_bob).create(
-            {"name": "New Global Variable"}
+            {"name": "New Global Variable", "access_level": "2"}
         )
         variable_new_global_value_as_bob = self.VariableValue.with_user(
             user_bob
@@ -480,13 +427,13 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             variable_new_global_value_as_bob.value_char,
             "Global Value 1",
-            "Must return Global Value 1",
+            msg="Manager must be able to create global variable values",
         )
 
         variable_new_private_as_bob = self.Variable.with_user(user_bob).create(
-            {"name": "New Private Variable"}
+            {"name": "New Private Variable", "access_level": "2"}
         )
-        variable_value_new_private_as_bob = self.VariableValue.with_user(
+        variable_vale_new_private_as_bob = self.VariableValue.with_user(
             user_bob
         ).create(
             {
@@ -496,25 +443,32 @@ class TestTowerVariable(TestTowerCommon):
             }
         )
         self.assertEqual(
-            variable_value_new_private_as_bob.value_char,
+            variable_vale_new_private_as_bob.value_char,
             "New Private Value",
-            "Must return New Private Value",
+            msg="Manager must be able to create private variable values",
         )
 
-        # We remove the user from the server subscribers and check that he loses access
+        # Unsubscribe user from server and check access to private values
         server.message_unsubscribe([user_bob.partner_id.id])
-        variable_private_value_as_bob.invalidate_cache()
         with self.assertRaises(AccessError):
-            variable_private_value_as_bob.read([])
+            _ = variable_private_value_as_bob.value_char
 
-        # Add a user to the group group_root
+        # Add user_bob to group_root
         self.add_to_group(user_bob, "cetmix_tower_server.group_root")
 
-        # Checking that the user can see all variables
+        # Check that root can see all variable values
+        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
         self.assertEqual(
-            variable_value_new_private_as_bob.value_char, "New Private Value"
+            variable_private_value_as_bob.value_char,
+            "Private Value",
+            msg="Root must be able to access all private variable values",
         )
-        self.assertEqual(variable_new_global_value_as_bob.value_char, "Global Value 1")
+        variable_global_value_as_bob = variable_global_value.with_user(user_bob)
+        self.assertEqual(
+            variable_global_value_as_bob.value_char,
+            "Global Value",
+            msg="Root must be able to access all global variable values",
+        )
 
     def test_system_variable_server_type_values(self):
         """Test system variables of `server` type"""
@@ -794,3 +748,124 @@ class TestTowerVariable(TestTowerCommon):
                     "server_id": server.id,
                 }
             )
+
+    def test_variable_access_rules(self):
+        """Test access rules for `cx_tower_variable`."""
+        variable_private = self.Variable.create(
+            {"name": "Private Variable", "access_level": "1"}
+        )
+        variable_manager = self.Variable.create(
+            {"name": "Manager Variable", "access_level": "2"}
+        )
+        variable_root = self.Variable.create(
+            {"name": "Root Variable", "access_level": "3"}
+        )
+
+        user_bob = self.user_bob
+        # Remove the user from all groups and add to group_user
+        self.remove_from_group(
+            user_bob,
+            ["cetmix_tower_server.group_manager", "cetmix_tower_server.group_root"],
+        )
+        self.add_to_group(user_bob, "cetmix_tower_server.group_user")
+
+        # We check that user_bob sees only variables with access_level = 1
+        variables_as_bob = self.Variable.with_user(user_bob).search([])
+        self.assertIn(
+            variable_private, variables_as_bob, "User must see private variables"
+        )
+        self.assertNotIn(
+            variable_manager, variables_as_bob, "User must not see manager variables"
+        )
+        self.assertNotIn(
+            variable_root, variables_as_bob, "User must not see root variables"
+        )
+
+        # Add a user to group_manager
+        self.add_to_group(user_bob, "cetmix_tower_server.group_manager")
+        variables_as_bob = self.Variable.with_user(user_bob).search([])
+        self.assertIn(
+            variable_manager, variables_as_bob, "Manager must see manager variables"
+        )
+        self.assertNotIn(
+            variable_root, variables_as_bob, "Manager must not see root variables"
+        )
+
+        # Adding a user to group_root
+        self.add_to_group(user_bob, "cetmix_tower_server.group_root")
+        variables_as_bob = self.Variable.with_user(user_bob).search([])
+        self.assertIn(variable_root, variables_as_bob, "Root must see all variables")
+
+    def test_variable_value_access_rules(self):
+        """Test access rules for `cx_tower_variable_value`."""
+        server = self.server_test_1
+
+        # Creating variables and their values
+        variable_private = self.Variable.create(
+            {"name": "Private Variable", "access_level": "1"}
+        )
+        variable_private_value = self.VariableValue.create(
+            {
+                "variable_id": variable_private.id,
+                "server_id": server.id,
+                "value_char": "Private Value",
+            }
+        )
+
+        variable_global = self.Variable.create(
+            {"name": "Global Variable", "access_level": "1"}
+        )
+        variable_global_value = self.VariableValue.create(
+            {
+                "variable_id": variable_global.id,
+                "is_global": True,
+                "value_char": "Global Value",
+            }
+        )
+
+        user_bob = self.user_bob
+        # Remove the user from all groups and add to group_user
+        self.remove_from_group(
+            user_bob,
+            ["cetmix_tower_server.group_manager", "cetmix_tower_server.group_root"],
+        )
+        self.add_to_group(user_bob, "cetmix_tower_server.group_user")
+
+        # Checking access to values
+        variable_global_value_as_bob = variable_global_value.with_user(user_bob)
+        self.assertEqual(
+            variable_global_value_as_bob.value_char,
+            "Global Value",
+            "User must access global variable values",
+        )
+
+        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
+        with self.assertRaises(AccessError):
+            _ = variable_private_value_as_bob.value_char
+
+        # Subscribe the user to the server
+        server.message_subscribe([user_bob.partner_id.id])
+        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
+        self.assertEqual(
+            variable_private_value_as_bob.value_char,
+            "Private Value",
+            "User must access private variable values",
+        )
+
+        # Checking the manager's rights
+        self.add_to_group(user_bob, "cetmix_tower_server.group_manager")
+        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
+        self.assertEqual(
+            variable_private_value_as_bob.value_char,
+            "Private Value",
+            "Manager must access private variable values",
+        )
+
+        # Checking root rights
+        self.add_to_group(user_bob, "cetmix_tower_server.group_root")
+        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
+        self.assertEqual(
+            variable_private_value_as_bob.value_char,
+            "Private Value",
+            "Root must access all variable values",
+        )
