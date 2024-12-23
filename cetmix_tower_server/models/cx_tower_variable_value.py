@@ -12,6 +12,7 @@ class TowerVariableValue(models.Model):
     _description = "Cetmix Tower Variable Values"
     _inherit = [
         "cx.tower.reference.mixin",
+        "cx.tower.access.mixin",
     ]
     _rec_name = "variable_reference"
     _order = "variable_reference"

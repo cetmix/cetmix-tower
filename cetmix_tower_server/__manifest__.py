@@ -1,5 +1,6 @@
 # Copyright Cetmix OU
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
 {
     "name": "Cetmix Tower Server Management",
     "summary": "Flexible Server Management directly from Odoo",
@@ -23,6 +24,7 @@
         "security/cx_tower_server_security.xml",
         "security/cx_tower_command_security.xml",
         "security/cx_tower_variable_value_security.xml",
+        "security/cx_tower_variable_security.xml",
         "security/cx_tower_plan_security.xml",
         "security/cx_tower_plan_line_security.xml",
         "security/cx_tower_plan_line_action_security.xml",

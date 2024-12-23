@@ -25,6 +25,7 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
+                            <field name="access_level" />
                         </group>
                         <group>
                             <field name="note" />
@@ -76,9 +77,7 @@
             <tree>
                 <field name="name" />
                 <field name="reference" optional="show" />
-
                 <field name="value_ids_count" />
-
             </tree>
         </field>
     </record>
@@ -90,6 +89,7 @@
             <search string="Search Values">
                 <field name="name" />
                 <field name="reference" />
+                <field name="access_level" />
             </search>
         </field>
     </record>
