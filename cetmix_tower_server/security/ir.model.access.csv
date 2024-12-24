@@ -52,3 +52,4 @@ access_create_server_from_template_manager,Create Server From Template->Manager,
 access_create_server_from_template_line_manager,Create Server From Template Line->Manager,model_cx_tower_server_template_create_wizard_line,group_manager,1,1,1,1
 access_cx_tower_variable_option_user,Variable Option->User,model_cx_tower_variable_option,group_user,1,0,0,0
 access_cx_tower_variable_option_manager,Variable Option->Manager,model_cx_tower_variable_option,group_manager,1,1,1,1
+access_variable_option,access_variable_option,model_cx_tower_reference_variable_option,group_manager,1,1,1,1

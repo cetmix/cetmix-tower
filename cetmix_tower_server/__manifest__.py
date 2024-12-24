@@ -53,6 +53,7 @@
         "views/cx_tower_file_template_view.xml",
         "views/cx_tower_server_log_view.xml",
         "views/cx_tower_server_template_view.xml",
+        "views/cx_tower_variable_option_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [

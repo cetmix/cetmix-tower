@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_reference_variable_option_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.reference.variable.option.view.form</field>
+        <field name="model">cx.tower.reference.variable.option</field>
+        <field name="arch" type="xml">
+            <form string="Variable Option">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="variable_id" />
+                            <field name="option" />
+                        </group>
+                        <group>
+                            <field name="variable_option_reference" />
+                            <field name="reference" readonly="1" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_reference_variable_option_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.reference.variable.option.view.tree</field>
+        <field name="model">cx.tower.reference.variable.option</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="variable_id" />
+                <field name="option" />
+                <field name="variable_option_reference" />
+                <field name="reference" readonly="1" />
+            </tree>
+        </field>
+    </record>
+
+    <record
+        id="action_cx_tower_reference_variable_option"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Reference Variable Option</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.reference.variable.option</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

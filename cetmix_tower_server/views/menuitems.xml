@@ -92,6 +92,13 @@
         sequence="3"
     />
     <menuitem
+        id="menu_cx_tower_reference_variable_option"
+        name="Reference Variable Option"
+        action="action_cx_tower_reference_variable_option"
+        parent="menu_settings"
+        sequence="4"
+    />
+    <menuitem
         id="menu_cx_tower_variable_value"
         name="Variable Values"
         action="action_cx_tower_variable_value"
