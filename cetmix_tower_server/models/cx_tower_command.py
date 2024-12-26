@@ -9,7 +9,30 @@ from odoo.tools.safe_eval import wrap_module
 
 requests = wrap_module(__import__("requests"), ["post", "get", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
-
+hashlib = wrap_module(
+    __import__("hashlib"),
+    [
+        "sha1",
+        "sha224",
+        "sha256",
+        "sha384",
+        "sha512",
+        "sha3_224",
+        "sha3_256",
+        "sha3_384",
+        "sha3_512",
+        "shake_128",
+        "shake_256",
+        "blake2b",
+        "blake2s",
+        "md5",
+        "new",
+    ],
+)
+hmac = wrap_module(
+    __import__("hmac"),
+    ["new", "compare_digest"],
+)
 
 DEFAULT_PYTHON_CODE = """# Available variables:
 #  - user: Current Odoo User
@@ -19,6 +42,12 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #  - time, datetime, dateutil, timezone: useful Python libraries
 #  - requests: Python 'requests' library. Available methods: 'post', 'get', 'request'
 #  - json: Python 'json' library. Available methods: 'dumps'
+#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
+#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
+#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'
+#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
+#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
+#    Module-level function: 'compare_digest'.
 #  - float_compare: Odoo function to compare floats based on specific precisions
 #  - UserError: Warning Exception to use with raise
 #
@@ -188,6 +217,8 @@ class CxTowerCommand(models.Model):
             "UserError": UserError,
             "server": server or self._context.get("active_server"),
             "tower": self.env["cetmix.tower"],
+            "hashlib": hashlib,
+            "hmac": hmac,
         }
 
     def name_get(self):
