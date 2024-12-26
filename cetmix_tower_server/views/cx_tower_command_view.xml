@@ -137,6 +137,16 @@
                                         >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'request'</li>
                                     <li><code
                                         >json</code>: Python 'json' library. Available methods: 'dumps'</li>
+                                    <li><code>hashlib</code>: Python 'hashlib' library.
+                                         Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br
+                                        />
+                                          'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'</li>
+                                    <li><code
+                                        >hmac</code>: Python 'hmac' library. Use 'new' to create HMAC objects.<br
+                                        />
+                                        Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br
+                                        />
+                                        Module-level function: 'compare_digest'.</li>
                                     <li><code
                                         >UserError</code>: Warning Exception to use with <code
                                         >
