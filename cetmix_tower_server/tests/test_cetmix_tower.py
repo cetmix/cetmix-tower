@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
+from unittest.mock import patch
 
 from .common import TestTowerCommon
 
@@ -100,9 +100,15 @@ class TestCetmixTower(TestTowerCommon):
         self.assertEqual(result["code"], -1)
 
     def test_server_check_ssh_connection_success(self):
-        """Test that SSH connection succeeds"""
-        server_reference = self.server_test_1.reference
-
-        result = self.CetmixTower.server_check_ssh_connection(server_reference)
+        """
+        Test the successful SSH connection check
+        """
+        with patch(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_server.SSH.connection",
+            return_value=None,
+        ):
+            result = self.env["cetmix.tower"].server_check_ssh_connection(
+                self.server_test_1.reference
+            )
 
         self.assertEqual(result["code"], 0)
