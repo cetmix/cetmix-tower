@@ -1,10 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from unittest.mock import patch
 
-import paramiko
-
-from odoo import _
 
 from .common import TestTowerCommon
 
@@ -96,18 +92,17 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(value, server_value.value_char)
 
-    def test_server_check_ssh_connection_successful(self):
-        """Test server SSH connection success."""
-        with patch.object(paramiko.SSHClient, "connect") as mock_connect, patch.object(
-            paramiko.SSHClient, "close"
-        ) as mock_close:
-            mock_connect.return_value = None
-            mock_close.return_value = None
+    def test_server_check_ssh_connection_server_not_found(self):
+        """Test case for when the server reference is not found."""
+        result = self.env["cetmix.tower"].server_check_ssh_connection(
+            server_reference="non_existent_reference", attempts=3, timeout=10
+        )
+        self.assertEqual(result["code"], -1)
 
-            result = self.env["cetmix.tower"].server_check_ssh_connection(
-                server_reference=self.server_test_1.reference, attempts=3, timeout=10
-            )
+    def test_server_check_ssh_connection_success(self):
+        """Test that SSH connection succeeds"""
+        server_reference = self.server_test_1.reference
 
-            # Check if the connection is successful
-            self.assertEqual(result["code"], 0)
-            self.assertEqual(result["message"], _("SSH connection successful"))
+        result = self.CetmixTower.server_check_ssh_connection(server_reference)
+
+        self.assertEqual(result["code"], 0)

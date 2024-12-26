@@ -1,9 +1,19 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import paramiko
+import logging
+import time
 
 from odoo import _, api, models
-from odoo.tools.safe_eval import time
+
+from .constants import (
+    RETRY_LIMIT_EXCEEDED,
+    SERVER_NOT_FOUND,
+    SSH_CONNECTION_ERROR,
+    SUCCESS,
+)
+from .cx_tower_server import SSH
+
+_logger = logging.getLogger(__name__)
 
 
 class CetmixTower(models.AbstractModel):
@@ -108,7 +118,7 @@ class CetmixTower(models.AbstractModel):
         """Check if SSH connection to the server is available.
 
         Args:
-            server_reference (Char): Server reference
+            server_reference (Char): Server reference.
             attempts (int): Number of attempts to try the connection.
                 Default is 5.
             timeout (int): Timeout in seconds for each connection attempt.
@@ -116,36 +126,65 @@ class CetmixTower(models.AbstractModel):
 
         Returns:
             dict: {
-                "code": int,  # 0 for success, -1 for not found,
-                 1 for connection error, 2 for retry limit exceeded
+                "code": int,
+                    # 0 for success,
+                    # -1 for not found,
+                    # 1 for connection error,
+                    # 2 for retry limit exceeded
                 "message": str  # Description of the result
             }
         """
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
-            return {"code": -1, "message": _("Server not found")}
+            return {
+                "code": SERVER_NOT_FOUND,
+                "message": _("Server not found"),
+            }
 
+        # Prepare connection details
         ssh_host = server.ip_v4_address or server.ip_v6_address
         ssh_port = server.ssh_port if server.ssh_port else 22
+        username = server.ssh_username
+        password = server.ssh_password
+
+        ssh_connection = SSH(
+            host=ssh_host,
+            port=ssh_port,
+            username=username,
+            password=password,
+            mode="p" if password else "k",
+            allow_agent=False,
+            timeout=timeout,
+        )
 
         for attempt in range(attempts):
             try:
-                # Create an SSH client
-                ssh_client = paramiko.SSHClient()
-                ssh_client.set_missing_host_key_policy(paramiko.RejectPolicy())
-                ssh_client.connect(ssh_host, port=ssh_port, timeout=timeout)
-                ssh_client.close()
-                return {"code": 0, "message": _("SSH connection successful")}
-            except (paramiko.AuthenticationException, paramiko.SSHException) as e:
-                return {"code": 1, "message": _("SSH connection error: %s" % str(e))}
+                _logger.info(f"Attempt to connect to {ssh_host}:{ssh_port}")
+                ssh_connection.connection()
+                return {
+                    "code": SUCCESS,
+                    "message": _(
+                        "SSH connection successful on attempt %d" % (attempt + 1)
+                    ),
+                }
             except Exception as e:
+                _logger.error(f"Connection attempt {attempt + 1} failed: {str(e)}")
+
+                if attempt == 0:
+                    return {
+                        "code": SSH_CONNECTION_ERROR,
+                        "message": _("Connection error on first attempt: %s" % str(e)),
+                    }
+
                 if attempt < attempts - 1:
                     time.sleep(timeout)
                 else:
                     return {
-                        "code": 2,
+                        "code": RETRY_LIMIT_EXCEEDED,
                         "message": _(
                             "Failed to connect after %d attempts. Error: %s"
                             % (attempts, str(e))
                         ),
                     }
+            finally:
+                ssh_connection.disconnect()

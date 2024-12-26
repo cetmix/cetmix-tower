@@ -32,3 +32,15 @@ PLAN_LINE_CONDITION_CHECK_FAILED = -20
 
 # Returned when the command failed to execute due to a python code execution error
 PYTHON_COMMAND_ERROR = -24
+
+# Returned when the server is not found
+SERVER_NOT_FOUND = -1
+
+# Returned for successful operations
+SUCCESS = 0
+
+# Returned when an SSH connection error occurs
+SSH_CONNECTION_ERROR = 1
+
+# Returned when retry limit for SSH connection is exceeded
+RETRY_LIMIT_EXCEEDED = 2
