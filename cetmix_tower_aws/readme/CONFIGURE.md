@@ -1,10 +1,12 @@
-[ This file is not always required; it should explain **how to configure the module before using it**; it is aimed at users with administration privileges. 
+Once the module is installed, it automatically adds an AWS Server Template in **Cetmix
+Tower → Servers → Templates**. To set up the AWS Server Template, you need to provide
+the following details in the **Configuration** tab:
 
-Please be detailed on the path to configuration (eg: do you need to activate developer mode?), describe step by step configurations and the use of screenshots is strongly recommended.]
+1. **AWS Access Key:** Your unique AWS access key ID.
+2. **AWS Secret Key:** The corresponding secret key for your AWS access.
+3. **Region:** The AWS region where you want to deploy the server (default:
+   `eu-north-1`).
+4. **Instance Type:** Specify the EC2 instance type (default: `t3.micro`).
 
-
-To configure this module, you need to:
-
-- Go to *App* > Menu > Menu item
-- Activate boolean… > save
-- …
+After entering the above information, save the template to ensure your configuration is
+applied.

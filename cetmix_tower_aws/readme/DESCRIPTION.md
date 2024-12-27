@@ -1,7 +1,7 @@
-[ This file must be max 2-3 paragraphs, and is required.
+This module integrates Boto3, the Amazon Web Services (AWS) Software Development Kit (SDK) for Python, into the Cetmix Tower.
 
-The goal of this document is to explain quickly the features of this module: “what” this module does and “what” it is for. ]
+Key features:
+- **Server creation:** Provision AWS EC2 instances effortlessly.
+- **Template-based management:** Predefined templates to standardize server configurations.
+- **Configuration flexibility:** Define AWS credentials, region, instance type, and other preferences.
 
-Example:
-
-This module extends the functionality of ... to support ... and to allow users to ...
