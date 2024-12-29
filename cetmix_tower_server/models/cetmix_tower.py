@@ -115,7 +115,10 @@ class CetmixTower(models.AbstractModel):
                 Default is 5.
             timeout (int): Timeout in seconds for each connection attempt.
                 Default is 15 seconds.
-
+        Raises:
+            ValidationError:
+                If the provided server reference is invalid or
+                the server cannot be found.
         Returns:
             dict: {
                 "code": int,
