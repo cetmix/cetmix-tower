@@ -1,19 +1,11 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
-import time
 
 from odoo import _, api, models
+from odoo.exceptions import ValidationError
 
-from .constants import (
-    RETRY_LIMIT_EXCEEDED,
-    SERVER_NOT_FOUND,
-    SSH_CONNECTION_ERROR,
-    SUCCESS,
-)
+from .constants import SSH_CONNECTION_ERROR, SSH_CONNECTION_TIMEOUT
 from .cx_tower_server import SSH
-
-_logger = logging.getLogger(__name__)
 
 
 class CetmixTower(models.AbstractModel):
@@ -128,18 +120,14 @@ class CetmixTower(models.AbstractModel):
             dict: {
                 "code": int,
                     # 0 for success,
-                    # -1 for not found,
-                    # 1 for connection error,
-                    # 2 for retry limit exceeded
+                    # 408 if the SSH connection timed out after all attempts,
+                    # 503 if there was a generic SSH connection error.
                 "message": str  # Description of the result
             }
         """
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
-            return {
-                "code": SERVER_NOT_FOUND,
-                "message": _("Server not found"),
-            }
+            raise ValidationError(_("No server found for the provided reference."))
 
         # Prepare connection details
         ssh_host = server.ip_v4_address or server.ip_v6_address
@@ -156,31 +144,28 @@ class CetmixTower(models.AbstractModel):
             allow_agent=False,
             timeout=timeout,
         )
-
+        max_attempts = attempts - 1
         for attempt in range(attempts):
             try:
-                _logger.info(f"Attempt to connect to {ssh_host}:{ssh_port}")
                 ssh_connection.connection()
                 return {
-                    "code": SUCCESS,
+                    "code": 0,
                     "message": _(
                         "SSH connection successful on attempt %d" % (attempt + 1)
                     ),
                 }
+            except TimeoutError as e:
+                if attempt == max_attempts:
+                    return {
+                        "code": SSH_CONNECTION_TIMEOUT,
+                        "message": _(
+                            "SSH connection timeout on last attempt. Error: %s" % str(e)
+                        ),
+                    }
             except Exception as e:
-                _logger.error(f"Connection attempt {attempt + 1} failed: {str(e)}")
-
-                if attempt == 0:
+                if attempt == max_attempts:
                     return {
                         "code": SSH_CONNECTION_ERROR,
-                        "message": _("Connection error on first attempt: %s" % str(e)),
-                    }
-
-                if attempt < attempts - 1:
-                    time.sleep(timeout)
-                else:
-                    return {
-                        "code": RETRY_LIMIT_EXCEEDED,
                         "message": _(
                             "Failed to connect after %d attempts. Error: %s"
                             % (attempts, str(e))

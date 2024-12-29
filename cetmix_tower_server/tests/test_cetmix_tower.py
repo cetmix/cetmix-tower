@@ -92,13 +92,6 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(value, server_value.value_char)
 
-    def test_server_check_ssh_connection_server_not_found(self):
-        """Test case for when the server reference is not found."""
-        result = self.env["cetmix.tower"].server_check_ssh_connection(
-            server_reference="non_existent_reference", attempts=3, timeout=10
-        )
-        self.assertEqual(result["code"], -1)
-
     def test_server_check_ssh_connection_success(self):
         """
         Test the successful SSH connection check
@@ -112,3 +105,28 @@ class TestCetmixTower(TestTowerCommon):
             )
 
         self.assertEqual(result["code"], 0)
+
+    def test_server_check_ssh_connection_timeout(self):
+        """Test case for when the connection times out."""
+        with patch(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_server.SSH.connection",
+            side_effect=TimeoutError("Connection timed out"),
+        ):
+            result = self.env["cetmix.tower"].server_check_ssh_connection(
+                self.server_test_1.reference, attempts=3, timeout=10
+            )
+
+        self.assertEqual(result["code"], 504)
+        self.assertIn("timeout", result["message"].lower())
+
+    def test_server_check_ssh_connection_error(self):
+        """Test case for when an SSH connection fails after all attempts."""
+        with patch(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_server.SSH.connection",
+            side_effect=Exception("Connection failed"),
+        ):
+            result = self.env["cetmix.tower"].server_check_ssh_connection(
+                self.server_test_1.reference, attempts=3, timeout=10
+            )
+
+        self.assertEqual(result["code"], 503)
