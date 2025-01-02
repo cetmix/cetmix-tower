@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="cx_tower_git_remote_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.git.remote.tree</field>
+        <field name="model">cx.tower.git.remote</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="source_id" />
+                <field name="head_type" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="cx_tower_git_remote_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.git.remote.form</field>
+        <field name="model">cx.tower.git.remote</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Disabled"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('enabled', '=', True)]}"
+                    />
+                    <group>
+                        <field name="sequence" />
+                        <field name="enabled" />
+                        <field name="active" invisible="1" />
+                        <field name="is_private" />
+                        <field
+                            name="url_protocol"
+                            widget="radio"
+                            options="{'horizontal': true}"
+                            attrs="{'invisible': [('url', '=', False)]}"
+                        />
+                        <field
+                            name="repo_provider"
+                            widget="radio"
+                            options="{'horizontal': true}"
+                            attrs="{'invisible': [('url', '=', False)]}"
+                        />
+                        <field
+                            name="url"
+                            placeholder="Git remote URL. Eg 'https://github.com/cetmix/cetmix-tower.git' or 'git@github.com:cetmix/cetmix-tower.git'"
+                        />
+                        <field
+                            name="head_type"
+                            widget="radio"
+                            options="{'horizontal': true}"
+                            attrs="{'invisible': [('head', '=', False)]}"
+                        />
+                        <field
+                            name="head"
+                            placeholder="Branch/PR/commit number or link"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    </odoo>
