@@ -49,13 +49,9 @@ class CxTowerYamlMixin(models.AbstractModel):
         for record in self:
             # We are reading field list for each record
             # because list of fields can differ from record to record
-            yaml_code = yaml.dump(
-                record._prepare_record_for_yaml(),
-                Dumper=CustomDumper,
-                default_flow_style=False,
-                sort_keys=False,
+            record.yaml_code = self._convert_dict_to_yaml(
+                record._prepare_record_for_yaml()
             )
-            record.yaml_code = yaml_code
 
     def _inverse_yaml_code(self):
         """Compose record based on provided YAML"""
@@ -97,6 +93,39 @@ class CxTowerYamlMixin(models.AbstractModel):
             "view_mode": "form",
             "target": "new",
         }
+
+    def _convert_dict_to_yaml(self, values):
+        """Converts Python dictionary to YAML string.
+
+        This is a helper function that is designed to be used
+        by any models that need to convert a dictionary to YAML.
+
+           Args:
+               values (Dict): Dictionary containing data
+                    to be converted to YAML format
+           Returns:
+               Text: YAML string
+           Raises:
+               ValidationError: If values is not a dictionary
+                   or YAML conversion fails
+        """
+        if not isinstance(values, dict):
+            raise ValidationError(_("Values must be a dictionary"))
+        try:
+            yaml_code = yaml.dump(
+                values,
+                Dumper=CustomDumper,
+                default_flow_style=False,
+                sort_keys=False,
+            )
+            return yaml_code
+        except yaml.YAMLError as e:
+            raise ValidationError(
+                _(
+                    "Failed to convert dictionary" " to YAML: %(error)s",
+                    error=str(e),
+                )
+            ) from e
 
     def _prepare_record_for_yaml(self):
         """Reads and processes current record before converting it to YAML
