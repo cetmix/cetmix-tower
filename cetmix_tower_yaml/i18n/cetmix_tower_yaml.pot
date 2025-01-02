@@ -219,6 +219,12 @@ msgid "Export YAML"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#, python-format
+msgid "Failed to convert dictionary to YAML: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid ""
@@ -431,6 +437,13 @@ msgstr ""
 msgid ""
 "Value '%(val)s' is used as default secret mask and cannot be set as a secret"
 " value"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+#, python-format
+msgid "Values must be a dictionary"
 msgstr ""
 
 #. module: cetmix_tower_yaml
