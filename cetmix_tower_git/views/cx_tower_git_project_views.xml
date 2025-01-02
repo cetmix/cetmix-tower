@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="cx_tower_git_project_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.git.project.tree</field>
+        <field name="model">cx.tower.git.project</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="server_ids" widget="many2many_tags" />
+                <field name="active" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="cx_tower_git_project_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.git.project.form</field>
+        <field name="model">cx.tower.git.project</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Name" />
+                        </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                        </h3>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="server_ids" widget="many2many_tags" />
+                            <field name="active" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="sources" string="Sources">
+                            <field name="source_ids">
+                                <tree
+                                    decoration-muted="not enabled"
+                                    decoration-info="remote_count_private == remote_count and remote_count &gt; 0"
+                                    decoration-warning="remote_count_private != remote_count and remote_count &gt; 0 and remote_count_private &gt; 0"
+                                >
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="remote_count" optional="show" />
+                                    <field
+                                        name="remote_count_private"
+                                        optional="hide"
+                                    />
+                                    <field name="enabled" widget="boolean_toggle" />
+                                    <field name="reference" optional="hide" />
+                                </tree>
+                            </field>
+                            <field name="has_private_remotes" invisible="1" />
+                            <field name="has_partially_private_remotes" invisible="1" />
+                            <div
+                                class="text-info"
+                                attrs="{'invisible': [('has_private_remotes', '=', False)]}"
+                            >
+                                <p>
+                                    * Sources where all remotes are private
+                                </p>
+                            </div>
+                            <div
+                                class="text-warning"
+                                attrs="{'invisible': [('has_partially_private_remotes', '=', False)]}"
+                            >
+                                <p>
+                                    * Sources where some remotes are private
+                                </p>
+                            </div>
+                        </page>
+                        <page name="files" string="Files">
+                        <group>
+                            <field
+                                    name="git_aggregator_root_dir"
+                                    placeholder="Git aggregator root directory where sources will be cloned. Leave blank to use '.'"
+                                />
+                        </group>
+                        <field name="git_project_rel_ids">
+                            <tree editable="bottom">
+                                <field
+                                        name="server_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                    />
+                                <field
+                                        name="file_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                    />
+                                <field name="project_format" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="server_id" />
+                                    <field name="file_id" />
+                                    <field name="project_format" />
+                                </group>
+                            </form>
+                        </field>
+                        </page>
+                        <page name="yaml" string="YAML">
+                        <div groups="!cetmix_tower_yaml.group_export">
+                            <h3
+                                >You must be a member of the "YAML/Export" group to export data as YAML.</h3>
+                        </div>
+                        <button
+                                type="object"
+                                groups="cetmix_tower_yaml.group_export"
+                                class="oe_highlight"
+                                name="action_open_yaml_export_wizard"
+                                string="Export YAML"
+                            />
+                    </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="cx_tower_git_project_action" model="ir.actions.act_window">
+        <field name="name">Git Projects</field>
+        <field name="res_model">cx.tower.git.project</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_cx_tower_git_project"
+        name="Git Projects"
+        action="cx_tower_git_project_action"
+        sequence="10"
+        parent="cetmix_tower_server.menu_tools"
+    />
+</odoo>
