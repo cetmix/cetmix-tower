@@ -12,6 +12,25 @@ class TestTowerYamlMixin(TransactionCase):
         self.tag_doge = TowerTag.create({"name": "Doge", "reference": "doge"})
         self.tag_pepe = TowerTag.create({"name": "Pepe", "reference": "pepe"})
 
+    def test_convert_dict_to_yaml(self):
+        # -- 1 --
+        # Test regular flow
+        self.assertEqual(
+            self.YamlMixin._convert_dict_to_yaml({"a": 1, "b": 2}),
+            "a: 1\nb: 2\n",
+            "Dictionary was not converted to YAML correctly",
+        )
+
+        # -- 2 --
+        # Test flow with exception due to wrong values
+        with self.assertRaises(ValidationError) as e:
+            self.YamlMixin._convert_dict_to_yaml("not_a_dict")
+            self.assertEqual(
+                str(e),
+                _("Values must be a dictionary"),
+                "Exception message doesn't match",
+            )
+
     def test_yaml_field_access(self):
         # Create Root user with no access to the 'yaml_code field
         user_root = self.Users.create(
