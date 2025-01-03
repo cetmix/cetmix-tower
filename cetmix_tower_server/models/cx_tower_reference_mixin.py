@@ -30,6 +30,12 @@ class CxTowerReferenceMixin(models.AbstractModel):
         ("reference_unique", "UNIQUE(reference)", "Reference must be unique")
     ]
 
+    def generate_reference(self, reference_source):
+        """
+        Public method to generate or fix a reference.
+        """
+        return self._generate_or_fix_reference(reference_source)
+
     def _get_reference_pattern(self):
         """
         Returns the regex pattern used for validating and correcting references.

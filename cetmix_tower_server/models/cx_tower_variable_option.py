@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class TowerVariableOption(models.Model):
@@ -36,6 +36,7 @@ class TowerVariableOption(models.Model):
         ondelete="cascade",
     )
     sequence = fields.Integer(default=10)
+    reference = fields.Char(readonly=True, compute="_compute_reference")
 
     # Define a SQL constraint to ensure the combination of
     # 'name' and 'variable_id' is unique
@@ -46,3 +47,19 @@ class TowerVariableOption(models.Model):
             "The combination of Name and Variable must be unique.",
         )
     ]
+
+    @api.model
+    def _compute_reference(self):
+        """
+        Generates the custom reference for the variable option.
+        Example:
+        If a variable has a reference "odoo_version" and the record name is "15.0",
+        the resulting reference will be "odoo_version_option_150".
+        """
+        for record in self:
+            if record.variable_id and record.name:
+                variable_ref = record.variable_id.reference or ""
+                option_ref = self.env["cx.tower.variable"].generate_reference(
+                    record.name
+                )
+                record.reference = f"{variable_ref}_option_{option_ref}"

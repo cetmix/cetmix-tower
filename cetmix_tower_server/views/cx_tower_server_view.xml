@@ -283,6 +283,7 @@
                                         attrs="{'readonly': [('variable_type', '=', 's')]}"
                                         domain="option_ids_domain"
                                     />
+                                    <field name="option_reference" optional="show" />
                                     <field name="option_ids_domain" invisible="1" />
                                 </tree>
                                 <form>

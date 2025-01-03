@@ -42,6 +42,9 @@ class TowerVariableValue(models.Model):
     option_id = fields.Many2one(
         comodel_name="cx.tower.variable.option", ondelete="restrict"
     )
+    option_reference = fields.Char(
+        string="Reference", related="option_id.reference", readonly=True
+    )
     option_ids_domain = fields.Binary(compute="_compute_option_ids_domain")
     value_char = fields.Char(
         string="Value", compute="_compute_value_char", store=True, readonly=False
