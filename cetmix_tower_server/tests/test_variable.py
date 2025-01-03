@@ -869,3 +869,84 @@ class TestTowerVariable(TestTowerCommon):
             "Private Value",
             "Root must access all variable values",
         )
+
+    def test_variable_rendering_in_execution(self):
+        """
+        Test that all variables are used during
+        execution regardless of access level.
+        """
+        server = self.server_test_1
+
+        # Create variables with different access levels
+        variable_user = self.Variable.create(
+            {"name": "User Variable", "access_level": "1"}
+        )
+        variable_manager = self.Variable.create(
+            {"name": "Manager Variable", "access_level": "2"}
+        )
+        variable_root = self.Variable.create(
+            {"name": "Root Variable", "access_level": "3"}
+        )
+
+        # Creating variable values
+        variable_user_value = self.VariableValue.create(
+            {
+                "variable_id": variable_user.id,
+                "server_id": server.id,
+                "value_char": "User Value",
+            }
+        )
+        variable_manager_value = self.VariableValue.create(
+            {
+                "variable_id": variable_manager.id,
+                "server_id": server.id,
+                "value_char": "Manager Value",
+            }
+        )
+        variable_root_value = self.VariableValue.create(
+            {
+                "variable_id": variable_root.id,
+                "server_id": server.id,
+                "value_char": "Root Value",
+            }
+        )
+
+        # Check the visibility of variables for User
+        user_bob = self.user_bob
+        self.remove_from_group(
+            user_bob,
+            ["cetmix_tower_server.group_manager", "cetmix_tower_server.group_root"],
+        )
+        self.add_to_group(user_bob, "cetmix_tower_server.group_user")
+
+        # The user sees only User level variables
+        variables_as_bob = self.Variable.with_user(user_bob).search([])
+        self.assertIn(variable_user, variables_as_bob)
+        self.assertNotIn(variable_manager, variables_as_bob)
+        self.assertNotIn(variable_root, variables_as_bob)
+
+        # Check the use of variables in the process
+        # Emulate the execution of the command,
+        # which must take into account all variables
+        used_variables = {
+            "User Variable": variable_user_value.value_char,
+            "Manager Variable": variable_manager_value.value_char,
+            "Root Variable": variable_root_value.value_char,
+        }
+
+        # Let's make sure that all variables have been used
+        self.assertEqual(
+            used_variables["User Variable"],
+            "User Value",
+            "User variable must be used during execution",
+        )
+        self.assertEqual(
+            used_variables["Manager Variable"],
+            "Manager Value",
+            "Manager variable must be used during execution",
+        )
+        self.assertEqual(
+            used_variables["Root Variable"],
+            "Root Value",
+            "Root variable must be used during execution",
+        )
