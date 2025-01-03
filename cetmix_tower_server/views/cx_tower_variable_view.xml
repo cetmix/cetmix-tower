@@ -40,6 +40,7 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
+                                    <field name="reference" optional="show" />
                                 </tree>
                             </field>
                         </page>

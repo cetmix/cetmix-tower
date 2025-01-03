@@ -1,7 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-
 from odoo import fields, models
 
 
@@ -27,6 +26,7 @@ class TowerVariableOption(models.Model):
 
     _name = "cx.tower.variable.option"
     _description = "Cetmix Tower Variable Options"
+    _inherit = "cx.tower.reference.mixin"
     _order = "sequence, name"
 
     name = fields.Char(string="Option Value", required=True)
@@ -46,3 +46,11 @@ class TowerVariableOption(models.Model):
             "The combination of Name and Variable must be unique.",
         )
     ]
+
+    def _get_pre_populated_model_data(self):
+        """
+        Define the model relationships for reference generation.
+        """
+        res = super()._get_pre_populated_model_data()
+        res.update({"cx.tower.variable.option": ["cx.tower.variable", "variable_id"]})
+        return res
