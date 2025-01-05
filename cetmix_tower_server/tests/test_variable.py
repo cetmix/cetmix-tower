@@ -346,6 +346,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_private.id,
                 "server_id": server.id,
                 "value_char": "Private Value",
+                "access_level": "1",
             }
         )
 
@@ -377,11 +378,8 @@ class TestTowerVariable(TestTowerCommon):
 
         # Check access to global values for group_user
         variable_global_value_as_bob = variable_global_value.with_user(user_bob)
-        self.assertEqual(
-            variable_global_value_as_bob.value_char,
-            "Global Value",
-            msg="User must be able to access global values",
-        )
+        with self.assertRaises(AccessError):
+            _ = variable_global_value_as_bob.value_char
 
         # Check that group_user member cannot access private values without subscription
         variable_private_value_as_bob = variable_private_value.with_user(user_bob)
@@ -810,6 +808,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_private.id,
                 "server_id": server.id,
                 "value_char": "Private Value",
+                "access_level": "1",
             }
         )
 
@@ -834,11 +833,8 @@ class TestTowerVariable(TestTowerCommon):
 
         # Checking access to values
         variable_global_value_as_bob = variable_global_value.with_user(user_bob)
-        self.assertEqual(
-            variable_global_value_as_bob.value_char,
-            "Global Value",
-            "User must access global variable values",
-        )
+        with self.assertRaises(AccessError):
+            _ = variable_global_value_as_bob.value_char
 
         variable_private_value_as_bob = variable_private_value.with_user(user_bob)
         with self.assertRaises(AccessError):
