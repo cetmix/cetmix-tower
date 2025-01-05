@@ -3,6 +3,7 @@
 import re
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.osv.expression import OR
 
 
@@ -47,13 +48,49 @@ class CxTowerKey(models.Model):
     )
     note = fields.Text()
 
-    _sql_constraints = [
-        (
-            "reference_unique",
-            "UNIQUE(reference, partner_id, server_id)",
-            "Reference must be unique",
+    def init(self):
+        """
+        Remove constraint defined from the mixin
+        """
+        self._cr.execute(
+            """
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.table_constraints
+                    WHERE table_name = 'cx_tower_key' AND
+                    constraint_name = 'cx_tower_key_reference_unique'
+                ) THEN
+                    ALTER TABLE cx_tower_key
+                    DROP CONSTRAINT cx_tower_key_reference_unique;
+                END IF;
+            END$$;
+            """
         )
-    ]
+
+    @api.constrains("reference", "partner_id", "server_id")
+    def _check_reference_unique(self):
+        """ORM constraint to ensure uniqueness"""
+
+        # Need to check archive records as well
+        for rec in self.with_context(active_test=False):
+            if (
+                self.search_count(
+                    [
+                        ("reference", "=", rec.reference),
+                        ("partner_id", "=", rec.partner_id.id),
+                        ("server_id", "=", rec.server_id.id),
+                    ]
+                )
+                > 1
+            ):
+                raise ValidationError(
+                    _(
+                        "Reference must be unique for the combination of partner"
+                        " and server"
+                    )
+                )
 
     def _compute_reference_code(self):
         """Compute key reference

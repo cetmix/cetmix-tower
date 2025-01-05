@@ -51,7 +51,8 @@
                                                 type="action"
                                                 name="%(cetmix_tower_server.cx_tower_command_execute_wizard_action)d"
                                             >Run
-                                                Command</a>
+                                                Command
+                                            </a>
                                         </div>
                                         <div>
                                             <a
@@ -59,7 +60,8 @@
                                                 type="action"
                                                 name="%(cetmix_tower_server.cx_tower_plan_execute_wizard_action)d"
                                             >Run
-                                                Flight Plan</a>
+                                                Flight Plan
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -270,7 +272,18 @@
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
-                                    <field name="value_char" />
+                                    <field name="variable_type" invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                        domain="option_ids_domain"
+                                    />
+                                    <field name="option_ids_domain" invisible="1" />
                                 </tree>
                                 <form>
                                     <group>
@@ -283,7 +296,6 @@
                                                 options="{'string': 'Copy reference'}"
                                             />
                                         </div>
-                                        <field name="value_char" />
                                     </group>
                                     <field
                                         name="note"

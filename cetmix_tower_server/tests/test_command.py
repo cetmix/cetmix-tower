@@ -1156,6 +1156,7 @@ else:
             {"name": "Command with keys", "code": code}
         )
 
+        # -- 1 --
         # Assert that the secret key is linked with the command
         self.assertIn(
             secret_folder_key,
@@ -1163,9 +1164,10 @@ else:
             msg="The secret key is not linked with the command.",
         )
 
-        # Update the command's code to remove the secret reference
-        code = "cd {{ test_path_ }} && mkdir new_folder"
-        command_with_keys.code = code
+        # -- 2 --
+        #  Update the command's code to remove the secret reference
+        updated_code = "cd {{ test_path_ }} && mkdir new_folder"
+        command_with_keys.code = updated_code
 
         self.assertFalse(
             command_with_keys.secret_ids,
@@ -1173,4 +1175,116 @@ else:
                 "The secret_ids field should be empty after "
                 "removing the secret reference from command."
             ),
+        )
+
+        # -- 3 --
+        # Create a secret with the same reference but connected to another server
+        another_server = self.server_test_1.copy({"name": "another server"})
+        another_secret = self.Key.create(
+            {
+                "name": "another secret",
+                "reference": secret_folder_key.reference,
+                "server_id": another_server.id,
+                "key_type": "k",
+            }
+        )
+        # Set original code again
+        command_with_keys.code = code
+        self.assertEqual(
+            len(command_with_keys.secret_ids),
+            1,
+            msg="Must be only one secret",
+        )
+        self.assertIn(
+            secret_folder_key,
+            command_with_keys.secret_ids,
+            msg="The secret key is not linked with the command.",
+        )
+        self.assertNotIn(
+            another_secret,
+            command_with_keys.secret_ids,
+            msg="The another secret is linked with the command.",
+        )
+
+        # -- 4 --
+        # Connect command to server and secret to another server
+        # and ensure it's unlinked from the command.
+        yet_one_more_server = self.server_test_1.copy({"name": "yet one more server"})
+
+        self.write_and_invalidate(
+            secret_folder_key, **{"server_id": yet_one_more_server.id}
+        )
+        self.write_and_invalidate(
+            command_with_keys, **{"server_ids": self.server_test_1}
+        )
+        self.assertEqual(
+            len(command_with_keys.secret_ids),
+            0,
+            msg="Must be no secrets",
+        )
+
+        # -- 5 --
+        # Add servers back to command and ensure secrets are linked
+        self.write_and_invalidate(
+            command_with_keys,
+            **{"server_ids": another_server | self.server_test_1 | yet_one_more_server},
+        )
+        self.assertEqual(
+            len(command_with_keys.secret_ids),
+            2,
+            msg="Must be two secrets",
+        )
+        self.assertIn(
+            secret_folder_key,
+            command_with_keys.secret_ids,
+            msg="The secret key is not linked with the command.",
+        )
+        self.assertIn(
+            another_secret,
+            command_with_keys.secret_ids,
+            msg="The another secret is not linked with the command.",
+        )
+
+        # -- 6 --
+        # Link another secret to a new partner and ensure
+        # it's not linked with the command
+        another_partner = self.env["res.partner"].create({"name": "another partner"})
+        self.write_and_invalidate(
+            another_secret, **{"partner_id": another_partner.id, "server_id": False}
+        )
+        self.assertEqual(
+            len(command_with_keys.secret_ids),
+            1,
+            msg="Must one secret",
+        )
+        self.assertIn(
+            secret_folder_key,
+            command_with_keys.secret_ids,
+            msg="The secret key is not linked with the command.",
+        )
+        self.assertNotIn(
+            another_secret,
+            command_with_keys.secret_ids,
+            msg="The another secret is linked with the command.",
+        )
+
+        # -- 7 --
+        # Assign partner to a server and ensure secret is linked
+        self.write_and_invalidate(
+            self.server_test_1, **{"partner_id": another_partner.id}
+        )
+        self.assertEqual(
+            len(command_with_keys.secret_ids),
+            2,
+            msg="Must be two secrets",
+        )
+        self.assertIn(
+            secret_folder_key,
+            command_with_keys.secret_ids,
+            msg="The secret key is not linked with the command.",
+        )
+        self.assertIn(
+            another_secret,
+            command_with_keys.secret_ids,
+            msg="The another secret is not linked with the command.",
         )
