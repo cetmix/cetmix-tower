@@ -5,6 +5,7 @@ from odoo import api, fields, models
 
 class CxTowerYamlImportWiz(models.TransientModel):
     _name = "cx.tower.yaml.import.wiz"
+    _description = "Cetmix Tower YAML Import Wizard"
     """
     Process YAML data and create records in Odoo.
     """
