@@ -47,12 +47,6 @@
                                 name="keep_when_deleted"
                                 attrs="{'invisible': [('source', '=', 'server')]}"
                             />
-                            <field
-                                name="secret_ids"
-                                widget="many2many_tags"
-                                attrs="{'invisible': [('secret_ids', '=', False)]}"
-                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                            />
                             <field name="file_type" />
                             <field name="note" />
                             <field
@@ -60,8 +54,13 @@
                                 widget="many2many_tags"
                                 readonly="1"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                                attrs="{'invisible': [('variable_ids', '=', False)]}"
-                                optional="hide"
+                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                             />
                         </group>
                     </group>
