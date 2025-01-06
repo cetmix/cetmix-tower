@@ -32,3 +32,9 @@ PLAN_LINE_CONDITION_CHECK_FAILED = -20
 
 # Returned when the command failed to execute due to a python code execution error
 PYTHON_COMMAND_ERROR = -24
+
+# Returned when an SSH connection error occurs
+SSH_CONNECTION_ERROR = 503
+
+# Returned when the connection times out
+SSH_CONNECTION_TIMEOUT = 408
