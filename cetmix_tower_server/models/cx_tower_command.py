@@ -126,6 +126,8 @@ class CxTowerCommand(models.Model):
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_command_variable_rel",
+        column1="command_id",
+        column2="variable_id",
     )
 
     @classmethod
