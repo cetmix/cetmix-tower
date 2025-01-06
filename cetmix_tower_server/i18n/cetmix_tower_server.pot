@@ -47,6 +47,18 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
+#, python-format
+msgid "  - Empty values for variables: %(variables)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
+#, python-format
+msgid "  - Missing variables: %(variables)s"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
@@ -568,6 +580,11 @@ msgid "Cetmix Tower Variable"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable_option
+msgid "Cetmix Tower Variable Options"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable_value
 msgid "Cetmix Tower Variable Values"
 msgstr ""
@@ -709,6 +726,11 @@ msgid "Configuration"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__line_ids
+msgid "Configuration Variables"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "Confirm"
 msgstr ""
@@ -760,6 +782,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_uid
 msgid "Created by"
 msgstr ""
@@ -785,6 +808,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_date
 msgid "Created on"
 msgstr ""
@@ -869,6 +893,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
 msgid "Display Name"
 msgstr ""
@@ -913,6 +938,11 @@ msgstr ""
 msgid ""
 "Enter Python code here. Help about Python expression is available in the "
 "help tab of this document."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
+msgid "Enter value"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1284,6 +1314,11 @@ msgid "Group By"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__has_missing_required_values
+msgid "Has Missing Required Values"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Has Template"
 msgstr ""
@@ -1325,6 +1360,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__id
 msgid "ID"
 msgstr ""
@@ -1402,6 +1438,11 @@ msgstr ""
 #: code:addons/cetmix_tower_server/tests/test_plan.py:0
 #, python-format
 msgid "If exit code == 35 then Exit with command exit code"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
+msgid "Indicates if this variable is mandatory for server creation"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1501,6 +1542,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -1531,6 +1573,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -1556,6 +1599,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_date
 msgid "Last Updated on"
 msgstr ""
@@ -1582,7 +1626,6 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__line_id
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__line_ids
 msgid "Line"
 msgstr ""
 
@@ -1659,6 +1702,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_ids
 msgid "Messages"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables
+msgid "Missing Required Variables"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables_message
+msgid "Missing Required Variables Message"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1862,6 +1915,28 @@ msgid "Operating System"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__option_id
+msgid "Option"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__option_ids_domain
+msgid "Option Ids Domain"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__name
+msgid "Option Value"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__option_ids
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_variable__variable_type__o
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "Options"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__partner_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
@@ -1937,6 +2012,20 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Please provide SSH password for %(srv)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/wizards/cx_tower_server_template_create_wizard.py:0
+#, python-format
+msgid ""
+"Please provide values for the following configuration variables: "
+"%(variables)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
+#, python-format
+msgid "Please resolve the following issues with configuration variables:"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2020,7 +2109,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__reference
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Reference"
 msgstr ""
@@ -2046,6 +2134,12 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
 msgid "Reference must be unique"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
+#, python-format
+msgid "Reference must be unique for the combination of partner and server"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2087,6 +2181,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__rendered_server_dir
 msgid "Rendered Server Dir"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__required
+msgid "Required"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2366,6 +2466,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_mixin__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__secret_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -2375,6 +2476,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__sequence
 msgid "Sequence"
 msgstr ""
 
@@ -2478,6 +2580,13 @@ msgid "Servers"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__server_ids
+msgid ""
+"Servers on which the command will be executed.\n"
+"If empty, command canbe executed on all servers"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Set Variable Values"
 msgstr ""
@@ -2546,6 +2655,11 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_variable__variable_type__s
+msgid "String"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2642,6 +2756,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_unique_variable_option
+msgid "The combination of Name and Variable must be unique."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "The file %(f_path)s not found."
@@ -2677,6 +2796,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__code
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__command_code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_template_mixin__code
 msgid "This field will be rendered by default"
@@ -2741,6 +2861,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__triggered_plan_log_id
 msgid "Triggered Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_type
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_type
+msgid "Type"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2845,6 +2971,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Variable"
@@ -2859,7 +2986,7 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 msgid "Variable Reference"
 msgstr ""
 
@@ -2913,9 +3040,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable
 msgid "Variables"

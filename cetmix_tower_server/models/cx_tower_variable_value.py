@@ -24,7 +24,10 @@ class TowerVariableValue(models.Model):
     )
     name = fields.Char(related="variable_id.name", readonly=True)
     variable_reference = fields.Char(
-        related="variable_id.reference", store=True, index=True
+        string="Variable Reference",
+        related="variable_id.reference",
+        store=True,
+        index=True,
     )
     is_global = fields.Boolean(
         string="Global",
@@ -35,7 +38,6 @@ class TowerVariableValue(models.Model):
     note = fields.Text(related="variable_id.note", readonly=True)
     active = fields.Boolean(default=True)
     variable_type = fields.Selection(
-        selection=[("s", "String"), ("o", "Options")],
         related="variable_id.variable_type",
         readonly=True,
     )
