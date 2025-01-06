@@ -60,6 +60,8 @@ class CxTowerFileTemplate(models.Model):
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_file_template_variable_rel",
+        column1="file_template_id",
+        column2="variable_id",
     )
 
     @classmethod

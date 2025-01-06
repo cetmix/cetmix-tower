@@ -23,38 +23,6 @@ class CxTowerTemplateMixin(models.AbstractModel):
         store=True,
     )
 
-    def _get_relation_params(self):
-        """
-        Retrieve metadata for the Many2many field `variable_ids`.
-
-        This method dynamically extracts and returns the `relation`,
-        `column1`, and `column2` parameters from the field definition
-        in the model. These parameters are used for defining and managing
-        Many2many relationships in Odoo.
-
-        Returns:
-            dict: A dictionary containing the following keys:
-                - `relation` (str): Name of the Many2many relationship table.
-                - `column1` (str): Name of the column representing the source model.
-                - `column2` (str): Name of the column representing the target model.
-                If the metadata is unavailable, all values will be `None`.
-
-        Example:
-            >>> params = self._get_relation_params()
-            >>> print(params)
-            {'relation': 'cx_tower_command_variable_rel',
-             'column1': 'command_id',
-             'column2': 'variable_id'}
-        """
-        field = self._fields.get("variable_ids")
-        if field and hasattr(field, "relation"):
-            return {
-                "relation": field.relation,
-                "column1": field.column1,
-                "column2": field.column2,
-            }
-        return {"relation": None, "column1": None, "column2": None}
-
     @classmethod
     def _get_depends_fields(cls):
         """
@@ -85,8 +53,7 @@ class CxTowerTemplateMixin(models.AbstractModel):
 
         This method retrieves the dependent fields using `_get_depends_fields`
         and dynamically calculates the values of `variable_ids` using the
-        `_prepare_variable_commands` method. The Many2many relation is managed
-        based on parameters returned by `_get_relation_params`.
+        `_prepare_variable_commands` method.
 
         If no dependent fields or relation parameters are defined, the field
         is reset to an empty list.
