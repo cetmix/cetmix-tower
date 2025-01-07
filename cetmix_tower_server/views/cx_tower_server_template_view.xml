@@ -137,12 +137,12 @@
                     />
                     <div class="oe_title">
                         <h1 class="d-flex flex-grow justify-content-between">
-                            <field name="name" />
+                            <field name="name" placeholder="Name" />
                         </h1>
                         <h3>
                             <field
                                 name="reference"
-                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                             />
                         </h3>
                         <field name="color" widget="color_picker" />

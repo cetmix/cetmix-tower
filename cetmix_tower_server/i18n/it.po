@@ -598,11 +598,6 @@ msgid "Cetmix Tower Flight Plan Log"
 msgstr "Registro piano di volo Cetmix Tower"
 
 #. module: cetmix_tower_server
-#: model:ir.model,name:cetmix_tower_server.model_cx_tower_interpreter
-msgid "Cetmix Tower Interpreter"
-msgstr "Interprete Cetmix Towe"
-
-#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_os
 msgid "Cetmix Tower Operating System"
 msgstr "Sistema operativo Cetmix Tower"
@@ -687,7 +682,6 @@ msgid "Code On Server"
 msgstr "Codice sul server"
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__color
@@ -821,7 +815,6 @@ msgstr "Crea nuovo server da variabili modello"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__create_uid
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__create_uid
@@ -846,7 +839,6 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__create_date
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__create_date
@@ -927,7 +919,6 @@ msgstr "Cartella nel server"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__display_name
@@ -1319,7 +1310,6 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Font awesome icon es. fa-tasks"
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_interpreter__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__color
@@ -1389,7 +1379,6 @@ msgstr "Aiuto con le espressioni Python"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__id
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__id
@@ -1496,17 +1485,6 @@ msgstr ""
 "Se il codice di uscita == 35 allora esci con il comando codice di uscita"
 
 #. module: cetmix_tower_server
-#: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_interpreter
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__interpreter_id
-msgid "Interpreter"
-msgstr "Interprete"
-
-#. module: cetmix_tower_server
-#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_interpreter
-msgid "Interpreters"
-msgstr "Interpreti"
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_is_follower
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_is_follower
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_is_follower
@@ -1573,7 +1551,6 @@ msgstr "Etichettato"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan____last_update
@@ -1606,7 +1583,6 @@ msgstr "Ultima data sincronia"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__write_uid
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__write_uid
@@ -1631,7 +1607,6 @@ msgstr "Ultimo aggiornamento di"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__write_date
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__write_date
@@ -1772,7 +1747,6 @@ msgstr "Scadenza mia attività"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__name
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__name
@@ -1968,7 +1942,6 @@ msgstr "Password"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__path
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_interpreter__path
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__path
 msgid "Path"
 msgstr "Percorso"

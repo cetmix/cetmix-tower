@@ -20,16 +20,12 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" />
                         <h1>
-                            <field
-                                name="name"
-                                placeholder="Template Name"
-                                required="1"
-                            />
+                            <field name="name" placeholder="Name" required="1" />
                         </h1>
                         <h3>
                             <field
                                 name="reference"
-                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                             />
                         </h3>
                     </div>
