@@ -73,6 +73,8 @@ class CxTowerCommand(models.Model):
         column1="command_id",
         column2="server_id",
         string="Servers",
+        help="Servers on which the command will be executed.\n"
+        "If empty, command canbe executed on all servers",
     )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
@@ -112,32 +114,47 @@ class CxTowerCommand(models.Model):
     flight_plan_id = fields.Many2one(
         comodel_name="cx.tower.plan",
     )
+    server_status = fields.Selection(
+        selection=lambda self: self.env["cx.tower.server"]._selection_status(),
+        string="Server Status",
+        help="Set the following status if command is executed successfully. "
+        "Leave 'Undefined' if you don't need to update the status",
+    )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_command_variable_rel",
         column1="command_id",
         column2="variable_id",
-        string="Variables",
-        compute="_compute_variable_ids",
-        store=True,
     )
 
-    @api.depends("code", "path")
-    def _compute_variable_ids(self):
+    @classmethod
+    def _get_depends_fields(cls):
         """
-        Compute variable_ids based on code and path fields.
-        """
-        for record in self:
-            record.variable_ids = record._prepare_variable_commands(["code", "path"])
+        Define dependent fields for computing `variable_ids` in command-related models.
 
-    server_status = fields.Selection(
-        selection=lambda self: self.env["cx.tower.server"]._selection_status(),
-        string="Server Status",
-        help=(
-            "Set the following status if command is executed successfully."
-            " Leave 'Undefined' if you don't need to update the status"
-        ),
+        This implementation specifies that the fields `code` and `path`
+        are used to determine the variables associated with a command.
+
+        Returns:
+            list: A list of field names (str) representing the dependencies.
+
+        Example:
+            The following fields trigger recomputation of `variable_ids`:
+            - `code`: The command's script or execution logic.
+            - `path`: The default execution path for the command.
+        """
+        return ["code", "path"]
+
+    # Depend on related servers and partners
+    @api.depends(
+        "code",
+        "server_ids",
+        "server_ids.partner_id",
+        "secret_ids.server_id",
+        "secret_ids.partner_id",
     )
+    def _compute_secret_ids(self):
+        return super()._compute_secret_ids()
 
     @api.depends("action")
     def _compute_code(self):
@@ -198,3 +215,16 @@ class CxTowerCommand(models.Model):
         )
         action["domain"] = [("command_id", "=", self.id)]
         return action
+
+    def _compose_secret_search_domain(self, key_refs):
+        # Check server anb partner specific secrets
+        return [
+            ("reference", "in", key_refs),
+            "|",
+            "|",
+            ("server_id", "in", self.server_ids.ids),
+            ("partner_id", "in", self.server_ids.partner_id.ids),
+            "&",
+            ("server_id", "=", False),
+            ("partner_id", "=", False),
+        ]

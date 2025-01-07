@@ -1,3 +1,5 @@
+from odoo.exceptions import ValidationError
+
 from .common import TestTowerCommon
 
 
@@ -581,3 +583,155 @@ class TestTowerServerTemplate(TestTowerCommon):
             "",
             "Optional variable should have an empty value.",
         )
+
+    def test_server_creation_with_all_required_variables_removed(self):
+        """
+        Test that server creation fails if all required variables
+        are removed in the wizard.
+
+        Steps:
+        1. Create a server template with required variables.
+        2. Open the server creation wizard.
+        3. Remove all required variables from the wizard.
+        4. Attempt to create the server.
+
+        Expected Result:
+        - ValidationError is raised with a clear message listing missing variables.
+        """
+        # Create a server template with mandatory variables
+        template = self.ServerTemplate.create(
+            {
+                "name": "Template with required variables",
+                "ssh_port": 22,
+                "ssh_username": "admin",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_path.id,
+                            "value_char": "/var/log",
+                            "required": True,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_dir.id,
+                            "value_char": "logs",
+                            "required": True,
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Simulating the launch of a wizard with the removal of all variables
+        configuration_variables = {}  # All variables removed
+
+        # Checking that the server cannot be created
+        with self.assertRaises(ValidationError) as cm:
+            template._create_new_server(
+                name="Server with missing variables",
+                configuration_variables=configuration_variables,
+            )
+
+        # Checking that the error message contains all removed variables
+        error_message = str(cm.exception)
+        self.assertIn("Please resolve the following issues", error_message)
+        self.assertIn("Missing variables: test_path_, test_dir", error_message)
+
+    def test_partial_required_variables_provided(self):
+        """
+        Test that server creation fails if only some required variables
+        are provided, and the error message includes both missing and empty variables.
+        """
+        # Create a template with mandatory variables
+        template = self.ServerTemplate.create(
+            {
+                "name": "Template with partial variables",
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_path.id,
+                            "value_char": "/var/log",
+                            "required": False,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_dir.id,
+                            "required": True,
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Launch the wizard and specify only some of the required variables
+        configuration_variables = {"test_path_": "/var/log"}  # test_dir skipped
+
+        # Checking that the server is not being created
+        with self.assertRaises(ValidationError) as cm:
+            template._create_new_server(
+                name="Server with partial variables",
+                configuration_variables=configuration_variables,
+            )
+
+        # Checking the error message
+        error_message = str(cm.exception)
+        self.assertIn("Missing variables: test_dir", error_message)
+        self.assertNotIn("test_path_", error_message)  # test_path_ provided
+
+    def test_empty_values_for_required_variables(self):
+        """
+        Test that server creation fails if required variables
+        have empty values, and the error message includes these variables.
+        """
+        # Create a template with mandatory variables
+        template = self.ServerTemplate.create(
+            {
+                "name": "Template with empty values",
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_path.id,
+                            "value_char": "",
+                            "required": True,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_dir.id,
+                            "value_char": "",
+                            "required": True,
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Run the wizard with empty values for all variables
+        configuration_variables = {"test_path_": "", "test_dir": ""}
+
+        # Checking that the server is not being created
+        with self.assertRaises(ValidationError) as cm:
+            template._create_new_server(
+                name="Server with empty variables",
+                configuration_variables=configuration_variables,
+            )
+
+        # Checking the error message
+        error_message = str(cm.exception)
+        self.assertIn("Empty values for variables: test_path_, test_dir", error_message)

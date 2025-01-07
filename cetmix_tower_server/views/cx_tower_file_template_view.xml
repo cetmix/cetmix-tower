@@ -49,6 +49,19 @@
                             />
                             <field name="file_type" />
                             <field name="note" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            />
                         </group>
                     </group>
                     <notebook>

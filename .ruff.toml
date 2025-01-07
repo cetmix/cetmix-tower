@@ -8,6 +8,7 @@ extend-select = [
     "E501",  # line too long (default 88)
     "I",  # isort
 ]
+extend-safe-fixes = ["UP008"]
 exclude = ["setup/*"]
 
 [format]

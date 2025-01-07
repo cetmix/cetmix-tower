@@ -25,49 +25,50 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
+                            <field name="variable_type" />
                         </group>
                         <group>
                             <field name="note" />
                         </group>
-                        <field name="value_ids">
-                            <tree editable="top" decoration-bf="is_global==True">
-                                <field name="variable_id" invisible="1" />
-                                <field name="is_global" widget="boolean_toggle" />
-                                <field
-                                    name="server_id"
-                                    attrs="{'readonly': [('server_template_id', '!=', False)]}"
-                                />
-                                <field
-                                    name="server_template_id"
-                                    attrs="{'readonly': [('server_id', '!=', False)]}"
-                                />
-                                <field name="plan_line_action_id" />
-                                <field name="value_char" />
-                            </tree>
-                            <form>
-                                <group>
-                                    <field name="server_id" invisible="1" />
-                                    <field
-                                        name="is_global"
-                                        attrs="{'invisible':[('is_global', '=', False)]}"
-                                    />
-                                    <field
-                                        name="server_id"
-                                        attrs="{'invisible':[('is_global', '=', True)]}"
-                                    />
-                                    <field
-                                        name="server_template_id"
-                                        attrs="{'readonly': [('server_id', '!=', False)]}"
-                                    />
-                                    <field name="value_char" />
-                                </group>
-                            </form>
-                        </field>
                     </group>
+                    <notebook>
+                        <page
+                            string="Options"
+                            attrs="{'invisible': [('variable_type', '=', 's')]}"
+                        >
+                            <field name="option_ids" widget="one2many">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Values">
+                            <field name="value_ids">
+                                <tree editable="top" decoration-bf="is_global==True">
+                                    <field name="variable_id" invisible="1" />
+                                    <field name="is_global" widget="boolean_toggle" />
+                                    <field name="server_id" />
+                                    <field name="server_template_id" />
+                                    <field name="plan_line_action_id" />
+                                    <field name="value_char" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="server_id" invisible="1" />
+                                        <field name="is_global" />
+                                        <field name="server_template_id" />
+                                        <field name="value_char" />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
+
 
     <record id="cx_tower_variable_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.variable.view.tree</field>

@@ -54,8 +54,15 @@ class CxTowerKeyMixin(models.AbstractModel):
             if key_parts:
                 key_refs.append(key_parts[1])
 
-        return key_model.search(
-            [
-                ("reference", "in", key_refs),
-            ]
-        )
+        return key_model.search(self._compose_secret_search_domain(key_refs))
+
+    def _compose_secret_search_domain(self, key_refs):
+        """Compose domain for searching secrets by references.
+
+        Args:
+            key_refs (List[str]): List of secret references.
+
+        Returns:
+            List: final domain for searching secrets.
+        """
+        return [("reference", "in", key_refs)]

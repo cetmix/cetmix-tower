@@ -22,3 +22,4 @@ from . import cx_tower_plan_log
 from . import cx_tower_server_log
 from . import cx_tower_server_template
 from . import cetmix_tower
+from . import cx_tower_variable_option

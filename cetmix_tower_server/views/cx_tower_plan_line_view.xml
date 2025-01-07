@@ -80,7 +80,6 @@
                                                 <field
                                                     name="variable_reference"
                                                     optional="hide"
-                                                    string="Variable Reference"
                                                 />
                                                 <field name="variable_id" />
                                                 <field name="value_char" />

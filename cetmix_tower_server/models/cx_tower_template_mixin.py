@@ -3,7 +3,7 @@
 from jinja2 import Environment, Template, meta
 from jinja2 import exceptions as jn_exceptions
 
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -16,6 +16,67 @@ class CxTowerTemplateMixin(models.AbstractModel):
     _description = "Cetmix Tower template rendering mixin"
 
     code = fields.Text(string="Code", help="This field will be rendered by default")
+    variable_ids = fields.Many2many(
+        string="Variables",
+        comodel_name="cx.tower.variable",
+        compute="_compute_variable_ids",
+        store=True,
+    )
+
+    @classmethod
+    def _get_depends_fields(cls):
+        """
+        Define dependent fields for the `variable_ids` computation.
+
+        This method should be overridden in inheriting models to provide
+        a list of fields that influence the computation of `variable_ids`.
+        These fields are used in the `@api.depends` decorator to trigger
+        recomputation when their values change.
+
+        Returns:
+            list: A list of field names (str) that are dependencies for
+                  the `variable_ids` computation. Default is an empty list.
+
+        Example:
+            In a subclass, override as follows:
+            >>> @classmethod
+            >>> def _get_depends_fields(cls):
+            >>>     return ["code", "path"]
+        """
+        return []
+
+    @api.depends(lambda self: self._get_depends_fields())
+    def _compute_variable_ids(self):
+        """
+        Compute the values of the `variable_ids`
+        field based on model-specific dependencies.
+
+        This method retrieves the dependent fields using `_get_depends_fields`
+        and dynamically calculates the values of `variable_ids` using the
+        `_prepare_variable_commands` method.
+
+        If no dependent fields or relation parameters are defined, the field
+        is reset to an empty list.
+
+        Example:
+            If dependent fields include `code` and `path`, and the model-specific
+            logic links them to variables, this method will update the `variable_ids`
+            field accordingly.
+
+        Raises:
+            ValidationError: If the field metadata is incorrectly defined or
+                             missing required attributes.
+
+        Returns:
+            None: The field `variable_ids` is updated in-place for each record.
+        """
+        depends_fields = self._get_depends_fields()
+
+        for record in self:
+            if depends_fields:
+                record.variable_ids = record._prepare_variable_commands(depends_fields)
+            else:
+                record.variable_ids = [(5, 0, 0)]
 
     def get_variables(self):
         """Get the list of variables for templates

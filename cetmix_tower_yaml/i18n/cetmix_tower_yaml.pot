@@ -109,6 +109,11 @@ msgid "Cetmix Tower YAML Export Wizard"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz
+msgid "Cetmix Tower YAML Import Wizard"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz_upload
 msgid "Cetmix Tower YAML Import Wizard Upload"
 msgstr ""
@@ -522,9 +527,4 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz
-msgid "cx.tower.yaml.import.wiz"
 msgstr ""

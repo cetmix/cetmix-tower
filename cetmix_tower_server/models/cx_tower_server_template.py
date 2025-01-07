@@ -202,6 +202,12 @@ class CxTowerServerTemplate(models.Model):
         Returns:
             cx.tower.server: newly created server record
         """
+        # Retrieving the passed variables
+        configuration_variables = kwargs.get("configuration_variables", {})
+
+        # We validate mandatory variables
+        self._validate_required_variables(configuration_variables)
+
         servers = (
             self.env["cx.tower.server"]
             .with_context(skip_ssh_settings_check=True)
@@ -356,47 +362,56 @@ class CxTowerServerTemplate(models.Model):
 
     def _validate_required_variables(self, configuration_variables):
         """
-        Validate that all required variables are present and not empty.
+        Validate that all required variables are present, not empty,
+        and that no required variable is entirely missing from the configuration.
 
         Args:
             configuration_variables (dict): A dictionary of variable references
                                              and their values.
 
         Raises:
-            ValidationError: If any required variables are missing or empty.
+            ValidationError: If all required variables are
+                            missing from the configuration,
+                            or if any required variable is empty or missing.
         """
-        missing_variables = []
-        empty_variables = []
+        required_variables = self.variable_value_ids.filtered("required")
+        if not required_variables:
+            return
 
-        for variable in self.variable_value_ids.filtered("required"):
-            variable_ref = variable.variable_reference
-            if variable_ref not in configuration_variables:
-                missing_variables.append(variable_ref)
-            elif not configuration_variables[variable_ref]:
-                empty_variables.append(variable_ref)
+        required_refs = [var.variable_reference for var in required_variables]
+        config_refs = list(configuration_variables.keys())
 
-        # Construct error message if issues are found
-        if missing_variables or empty_variables:
-            self.variable_value_ids = self.variable_value_ids
-            error_message = _(
-                "Please resolve the following issues with configuration variables:\n"
-            )
+        missing_variables = [ref for ref in required_refs if ref not in config_refs]
+        empty_variables = [
+            ref
+            for ref in required_refs
+            if ref in config_refs and not configuration_variables[ref]
+        ]
 
-            if missing_variables:
-                error_message += _(
-                    "  - Missing variables: %(variables)s\n",
+        if not (missing_variables or empty_variables):
+            return
+
+        error_parts = [
+            _("Please resolve the following issues with configuration variables:")
+        ]
+
+        if missing_variables:
+            error_parts.append(
+                _(
+                    "  - Missing variables: %(variables)s",
                     variables=", ".join(missing_variables),
                 )
+            )
 
-            if empty_variables:
-                error_message += _(
+        if empty_variables:
+            error_parts.append(
+                _(
                     "  - Empty values for variables: %(variables)s",
                     variables=", ".join(empty_variables),
                 )
+            )
 
-            self.env.context = dict(self.env.context, keep_variable_state=True)
-
-            raise ValidationError(error_message)
+        raise ValidationError("\n".join(error_parts))
 
     def copy(self, default=None):
         """Duplicate the server template along with variable values and server logs."""
