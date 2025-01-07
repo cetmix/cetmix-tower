@@ -99,8 +99,10 @@
         <field name="model">cx.tower.command.log</field>
         <field name="arch" type="xml">
             <tree
-                decoration-danger="command_status != 0"
+                default_order="id"
+                decoration-danger="command_status not in [0, -20]"
                 decoration-info="is_running == True"
+                decoration-muted="command_status == -20"
             >
                 <field name="start_date" />
                 <field name="finish_date" optional="hide" />
