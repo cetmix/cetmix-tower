@@ -204,6 +204,7 @@
         <field name="arch" type="xml">
             <search string="Search Commands">
                 <field name="name" />
+                <field name="reference" />
                 <field name="code" />
                 <field name="server_ids" />
                 <field name="tag_ids" />

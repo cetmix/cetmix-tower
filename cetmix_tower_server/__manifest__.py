@@ -40,7 +40,6 @@
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
-        "views/cx_tower_interpreter_view.xml",
         "views/cx_tower_variable_view.xml",
         "views/cx_tower_variable_value_view.xml",
         "views/cx_tower_command_view.xml",
