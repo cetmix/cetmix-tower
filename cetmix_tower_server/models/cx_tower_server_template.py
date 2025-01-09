@@ -114,6 +114,7 @@ class CxTowerServerTemplate(models.Model):
                             {
                                 "variable_id": line.variable_id.id,
                                 "value_char": line.value_char,
+                                "option_id": line.option_id.id,
                                 "required": line.required,
                             },
                         )
@@ -300,6 +301,7 @@ class CxTowerServerTemplate(models.Model):
 
             # custom specific variable values
             configuration_variables = kwargs.pop("configuration_variables", None)
+            line_ids_variables = kwargs.pop("line_ids_variables", None)
             if configuration_variables:
                 # Validate required variables
                 self._validate_required_variables(configuration_variables)
@@ -320,14 +322,30 @@ class CxTowerServerTemplate(models.Model):
                                 "name": variable_reference,
                             }
                         )
+                    variable_option_id = variable_id = False
+
+                    if not variable_value and line_ids_variables:
+                        val_found = next(
+                            (
+                                v
+                                for v in line_ids_variables.values()
+                                if v.get("variable_reference") == variable_reference
+                            ),
+                            None,
+                        )
+                        if val_found:
+                            variable_value = val_found.get("value_char")
+                            variable_option_id = val_found.get("option_id", False)
+                            variable_id = val_found.get("variable_id", False)
 
                     variable_vals_list.append(
                         (
                             0,
                             0,
                             {
-                                "variable_id": variable.id,
-                                "value_char": variable_value,
+                                "variable_id": variable.id or variable_id,
+                                "value_char": variable_value or "",
+                                "option_id": variable_option_id,
                             },
                         )
                     )

@@ -29,7 +29,8 @@ class TowerVariableOption(models.Model):
     _inherit = "cx.tower.reference.mixin"
     _order = "sequence, name"
 
-    name = fields.Char(string="Option Value", required=True)
+    name = fields.Char(string="Name", required=True)
+    value_char = fields.Char(string="Value", required=True)
     variable_id = fields.Many2one(
         comodel_name="cx.tower.variable",
         required=True,
@@ -42,8 +43,8 @@ class TowerVariableOption(models.Model):
     _sql_constraints = [
         (
             "unique_variable_option",
-            "unique (name, variable_id)",
-            "The combination of Name and Variable must be unique.",
+            "unique (name, value_char, variable_id)",
+            "The combination of Name,Value and Variable must be unique.",
         )
     ]
 
