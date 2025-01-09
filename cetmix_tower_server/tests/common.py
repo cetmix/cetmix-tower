@@ -65,6 +65,7 @@ class TestTowerCommon(TransactionCase):
         # Variable
         self.Variable = self.env["cx.tower.variable"]
         self.VariableValue = self.env["cx.tower.variable.value"]
+        self.VariableOption = self.env["cx.tower.variable.option"]
 
         self.variable_path = self.Variable.create({"name": "test_path_"})
         self.variable_dir = self.Variable.create({"name": "test_dir"})

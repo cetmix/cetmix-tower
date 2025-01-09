@@ -42,6 +42,7 @@
     <record id="server_demo_1" model="cx.tower.server">
         <field name="name">Demo Server #1</field>
         <field name="color">1</field>
+        <field name="status">stopped</field>
         <field name="ip_v4_address">localhost</field>
         <field name="ssh_username">admin</field>
         <field name="ssh_password">password</field>
@@ -59,6 +60,7 @@
     <record id="server_demo_2" model="cx.tower.server">
         <field name="color">2</field>
         <field name="name">Demo Server #2</field>
+        <field name="status">running</field>
         <field name="ip_v4_address">localhost</field>
         <field name="ssh_username">admin</field>
         <field name="ssh_password">password</field>
@@ -171,8 +173,13 @@
         <field name="name">URL</field>
     </record>
     <record id="variable_demo_odoo_version" model="cx.tower.variable">
-        <field name="name">Odoo Version </field>
+        <field name="name">Odoo Version</field>
         <field name="reference">odoo__version</field>
+        <field name="variable_type">o</field>
+    </record>
+    <record id="variable_demo_language" model="cx.tower.variable">
+        <field name="name">Language</field>
+        <field name="reference">language</field>
         <field name="variable_type">o</field>
     </record>
     <record id="variable_demo_version" model="cx.tower.variable">
@@ -185,11 +192,92 @@
     <record id="variable_demo_branch" model="cx.tower.variable">
         <field name="name">Branch</field>
     </record>
+    <!-- Variables Options for Odoo Version -->
+    <record id="option_odoo_version_14" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="name">14.0</field>
+        <field name="value_char">14.0</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="option_odoo_version_15" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="name">15.0</field>
+        <field name="value_char">15.0</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="option_odoo_version_16" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="name">16.0</field>
+        <field name="value_char">16.0</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="option_odoo_version_17" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="name">17.0</field>
+        <field name="value_char">17.0</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="option_odoo_version_18" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="name">18.0</field>
+        <field name="value_char">18.0</field>
+        <field name="sequence">50</field>
+    </record>
+    <!-- Variables Options for Language -->
+    <record id="option_language_en_us" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="name">English (US)</field>
+        <field name="value_char">en_us</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="option_language_it" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="name">Italian</field>
+        <field name="value_char">it</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="option_language_es_mx" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="name">Spanish (Mexican)</field>
+        <field name="value_char">es_mx</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="option_language_de" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="name">German</field>
+        <field name="value_char">de</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="option_language_de_ch" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="name">German (Switzerland)</field>
+        <field name="value_char">de_ch</field>
+        <field name="sequence">50</field>
+    </record>
+
     <!-- Variable values -->
+    <record id="server_1_value_path" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_path" />
+        <field name="server_id" ref="server_demo_1" />
+        <field
+            name="value_char"
+        >/home/{{ tower.server.username }}/tower/{{ branch }}</field>
+    </record>
+    <record id="server_1_value_language" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="option_id" ref="option_language_es_mx" />
+    </record>
+    <record id="server_1_value_odoo_version" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="option_id" ref="option_odoo_version_16" />
+    </record>
+
     <record id="server_2_value_path" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_path" />
         <field name="server_id" ref="server_demo_2" />
-        <field name="value_char">/opt/cetmix-tower</field>
+        <field name="value_char">/opt/{{ tower.server.reference }}/cetmix-tower</field>
     </record>
     <record id="server_2_value_url" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_url" />
@@ -201,6 +289,17 @@
         <field name="server_id" ref="server_demo_2" />
         <field name="value_char">staging</field>
     </record>
+    <record id="server_2_value_odoo_version" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="option_id" ref="option_odoo_version_17" />
+    </record>
+    <record id="server_2_value_language" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="option_id" ref="option_language_de" />
+    </record>
+
     <record id="global_value_branch" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_branch" />
         <field name="value_char">prod</field>
@@ -350,6 +449,11 @@ else:
         <field name="plan_line_action_id" ref="plan_demo_1_line_1_action_1" />
         <field name="value_char">production</field>
     </record>
+    <record id="action_1_value_language" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="plan_line_action_id" ref="plan_demo_1_line_1_action_1" />
+        <field name="option_id" ref="option_language_en_us" />
+    </record>
     <!-- Line -->
     <record id="plan_demo_1_line_2" model="cx.tower.plan.line">
         <field name="sequence">20</field>
@@ -357,7 +461,7 @@ else:
         <field name="command_id" ref="command_list_dir" />
         <field
             name="condition"
-        >{{ branch }} == 'prod' and {{ odoo_version }} == "17.0"</field>
+        >{{ tower.server.status }} == 'running' and {{ odoo_version }} == "17.0"</field>
     </record>
     <!-- Actions -->
     <record id="plan_demo_1_line_2_action_1" model="cx.tower.plan.line.action">
@@ -467,13 +571,29 @@ else:
     <record id="demo_server_template_1_value_path" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_path" />
         <field name="server_template_id" ref="demo_server_template_1" />
-        <field name="value_char">/opt/cetmix-tower</field>
+        <field
+            name="value_char"
+        >/opt/{{ tower.server.reference }}/cetmix-tower/{{ branch }}</field>
     </record>
     <record id="demo_server_template_1_value_url" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_url" />
         <field name="server_template_id" ref="demo_server_template_1" />
         <field name="value_char">https://cetmix.com</field>
     </record>
+    <record id="demo_server_template_1_value_language" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_demo_language" />
+        <field name="server_template_id" ref="demo_server_template_1" />
+        <field name="option_id" ref="option_language_it" />
+    </record>
+    <record
+        id="demo_server_template_1_value_odoo_version"
+        model="cx.tower.variable.value"
+    >
+        <field name="variable_id" ref="variable_demo_odoo_version" />
+        <field name="server_template_id" ref="demo_server_template_1" />
+        <field name="option_id" ref="option_odoo_version_17" />
+    </record>
+
     <!-- Server Log of type "command" -->
     <record id="server_log_command_1" model="cx.tower.server.log">
         <field name="name">Command Log for Server #1</field>
@@ -569,30 +689,5 @@ else:
         <field name="plan_line_action_id" ref="plan_demo_1_line_2_action_1" />
         <field name="value_char">final_value</field>
     </record>
-    <!-- Variables Options -->
-    <record id="option_odoo_version_14" model="cx.tower.variable.option">
-        <field name="variable_id" ref="variable_demo_odoo_version" />
-        <field name="name">14.0</field>
-        <field name="sequence">10</field>
-    </record>
-    <record id="option_odoo_version_15" model="cx.tower.variable.option">
-        <field name="variable_id" ref="variable_demo_odoo_version" />
-        <field name="name">15.0</field>
-        <field name="sequence">20</field>
-    </record>
-    <record id="option_odoo_version_16" model="cx.tower.variable.option">
-        <field name="variable_id" ref="variable_demo_odoo_version" />
-        <field name="name">16.0</field>
-        <field name="sequence">30</field>
-    </record>
-    <record id="option_odoo_version_17" model="cx.tower.variable.option">
-        <field name="variable_id" ref="variable_demo_odoo_version" />
-        <field name="name">17.0</field>
-        <field name="sequence">40</field>
-    </record>
-    <record id="option_odoo_version_18" model="cx.tower.variable.option">
-        <field name="variable_id" ref="variable_demo_odoo_version" />
-        <field name="name">18.0</field>
-        <field name="sequence">50</field>
-    </record>
+
 </odoo>

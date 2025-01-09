@@ -287,15 +287,17 @@
                                 </tree>
                                 <form>
                                     <group>
-                                        <label for="variable_id" />
-                                        <div class="o_row">
-                                            <field name="variable_id" />
-                                            <field
-                                                name="variable_reference"
-                                                widget="CopyClipboardChar"
-                                                options="{'string': 'Copy reference'}"
-                                            />
-                                        </div>
+                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
                                     </group>
                                     <field
                                         name="note"
