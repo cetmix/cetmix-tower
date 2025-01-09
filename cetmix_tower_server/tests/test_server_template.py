@@ -1,4 +1,5 @@
 from odoo.exceptions import ValidationError
+from odoo.tests.common import Form
 
 from .common import TestTowerCommon
 
@@ -388,13 +389,18 @@ class TestTowerServerTemplate(TestTowerCommon):
                         0,
                         {
                             "variable_id": self.variable_version.id,
-                            "value_char": "Test Value",
                             "required": True,
                         },
                     )
                 ],
             }
         )
+
+        # Fill in the value for the required variable
+        with Form(wizard) as wizard_form:
+            with wizard_form.line_ids.edit(0) as line:
+                line.value_char = "Test Value"
+            wizard_form.save()
 
         # Checking the successful creation of the server
         action = wizard.action_confirm()

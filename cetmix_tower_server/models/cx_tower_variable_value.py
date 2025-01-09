@@ -46,7 +46,11 @@ class TowerVariableValue(models.Model):
     )
     option_ids_domain = fields.Binary(compute="_compute_option_ids_domain")
     value_char = fields.Char(
-        string="Value", compute="_compute_value_char", store=True, readonly=False
+        string="Value",
+        compute="_compute_value_char",
+        inverse="_inverse_value_char",
+        store=True,
+        readonly=False,
     )
 
     # Direct model relations.
@@ -122,7 +126,7 @@ class TowerVariableValue(models.Model):
         """
         for rec in self:
             if rec.variable_id.option_ids and rec.option_id:
-                rec.value_char = rec.option_id.name
+                rec.value_char = rec.option_id.value_char
             elif not rec.variable_id.option_ids:
                 rec.value_char = rec.value_char or ""
                 rec.option_id = None
@@ -175,6 +179,26 @@ class TowerVariableValue(models.Model):
             record.variable_ids = template_mixin_obj._prepare_variable_commands(
                 ["value_char"], force_record=record
             )
+
+    def _inverse_value_char(self):
+        """Set option_id based on value_char"""
+        for rec in self:
+            if rec.variable_type == "o" and (
+                not rec.option_id or rec.option_id.value_char != rec.value_char
+            ):
+                option = rec.variable_id.option_ids.filtered(
+                    lambda x, v=rec.value_char: x.value_char == v
+                )
+                if option:
+                    rec.option_id = option.id
+                else:
+                    raise ValidationError(
+                        _(
+                            "Option '%(val)s' is not available for variable '%(var)s'",
+                            val=rec.value_char,
+                            var=rec.variable_id.name,
+                        )
+                    )
 
     def _used_in_models(self):
         """Returns information about models which use this mixin.
