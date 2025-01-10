@@ -345,6 +345,12 @@ msgid "Add a new file template"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#, python-format
+msgid "All connection connection attempts have failed."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -731,11 +737,23 @@ msgid "Confirm"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#, python-format
+msgid "Connection successful."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid ""
 "Connection test passed! \n"
 "%(res)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#, python-format
+msgid "Connection timed out after %(attempts)s attempts. Error: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1016,6 +1034,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
 msgid "Failed"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#, python-format
+msgid "Failed to connect after %(attempts)s attempts. Error: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1777,6 +1801,12 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "No runner found for command action '%(cmd_action)s'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#, python-format
+msgid "No server found for the provided reference."
 msgstr ""
 
 #. module: cetmix_tower_server
