@@ -309,6 +309,11 @@ class CxTowerKey(models.Model):
                 if pythonic_mode:
                     # save key value as string in pythonic mode
                     key_value = f'"{key_value}"'
+                    # Escape newline characters to ensure the key value remains
+                    # a valid single-line string. This prevents syntax errors
+                    # when the string is used in contexts where unescaped
+                    # newlines would break Python syntax or evaluation logic.
+                    key_value = key_value.replace("\n", "\\n")
 
                 code = code.replace(key_string, key_value)
 
@@ -515,6 +520,8 @@ class CxTowerKey(models.Model):
         for key_value in key_values:
             # If key_value includes quotes, remove them for the replacement
             key_value = key_value.strip('"')
+            # If key_value contains an escaped line break replace then remove escaping
+            key_value = key_value.replace("\\n", "\n")
             # Replace key including key terminator
             code = code.replace(key_value, self.SECRET_VALUE_SPOILER)
 
