@@ -145,13 +145,10 @@ class CetmixTower(models.AbstractModel):
         elif server.ssh_auth_mode == "k":
             ssh_params["ssh_key"] = server.ssh_key_id.sudo().secret_value
 
-        # Initialize SSH connection instance
-        ssh_connection = SSH(**ssh_params)
-
         # Try connecting multiple times
         for attempt in range(1, attempts + 1):
             try:
-                ssh_connection.connection()
+                ssh_connection = SSH(**ssh_params)
                 return {
                     "code": 0,
                     "message": _("Connection successful."),
