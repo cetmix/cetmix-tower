@@ -4,7 +4,6 @@ from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
 from .constants import SSH_CONNECTION_ERROR, SSH_CONNECTION_TIMEOUT
-from .cx_tower_server import SSH
 
 
 class CetmixTower(models.AbstractModel):
@@ -131,25 +130,10 @@ class CetmixTower(models.AbstractModel):
         if not server:
             raise ValidationError(_("No server found for the provided reference."))
 
-        # Prepare SSH connection parameters
-        ssh_params = {
-            "host": server.ip_v4_address or server.ip_v6_address,
-            "username": server.ssh_username,
-            "port": int(server.ssh_port),
-            "timeout": timeout,
-            "mode": server.ssh_auth_mode,
-        }
-        ssh_connection = SSH(**ssh_params)
-
-        if server.ssh_auth_mode == "p":
-            ssh_params["password"] = server._get_password()
-        elif server.ssh_auth_mode == "k":
-            ssh_params["ssh_key"] = server._get_ssh_key()
-
         # Try connecting multiple times
         for attempt in range(1, attempts + 1):
             try:
-                ssh_connection._connect()
+                client = server._connect(raise_on_error=False)
                 return {
                     "code": 0,
                     "message": _("Connection successful."),
@@ -177,7 +161,7 @@ class CetmixTower(models.AbstractModel):
                         ),
                     }
             finally:
-                ssh_connection.disconnect()
+                client.disconnect()
 
         # If all attempts fail
         return {
