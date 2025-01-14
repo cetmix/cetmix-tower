@@ -535,6 +535,17 @@ COMMAND_RESULT = {
         # Ensure that user can access the command
         command_name = test_command_1_as_bob.name
         self.assertEqual(command_name, "Test command", msg="Must return 'Test command'")
+
+        # Check that user with "cetmix_tower_server.group_user" can execute ssh command
+        test_command.write(
+            {
+                "code": "ls -l",
+            }
+        )
+        self.server_test_1.with_user(self.user_bob).execute_command(
+            test_command,
+        )
+
         # Add user to group_manager
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
         # Create a new command with access_level 1

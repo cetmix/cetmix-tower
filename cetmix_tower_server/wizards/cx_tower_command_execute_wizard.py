@@ -53,6 +53,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     any_server = fields.Boolean(default=True)
     rendered_code = fields.Text(
         compute="_compute_rendered_code",
+        compute_sudo=True,
     )
     result = fields.Text()
     show_servers = fields.Boolean(

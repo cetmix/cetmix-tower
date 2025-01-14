@@ -220,7 +220,17 @@ class TestTowerCommon(TransactionCase):
         # Patch methods for testing
         def _get_ssh_client_patch(self, raise_on_error=True, timeout=5000):
             """Mock method for connection"""
-            return MagicMock()
+            # The original method uses sudo
+            self = self.sudo()
+            return MagicMock(
+                host=self.ip_v4_address or self.ip_v6_address,
+                port=self.ssh_port,
+                username=self.ssh_username,
+                mode=self.ssh_auth_mode,
+                password=self._get_password(),
+                ssh_key=self._get_ssh_key(),
+                timeout=timeout,
+            )
 
         def _execute_command_using_ssh_patch(
             self,

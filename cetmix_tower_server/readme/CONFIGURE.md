@@ -40,6 +40,8 @@ Fill the values it the tabs below:
 - **SSH Private Key**: Used for authentication is SSH Auth Mode is set to "Key"
 - **Note**: Comments or user notes
 
+Note: Some fields are visible based on the current user access level.
+
 There is a special **Status** field which indicates current Server status. It is meant to be updated automatically using external API with further customizations.
 Following pre-defined statuses are available:
 

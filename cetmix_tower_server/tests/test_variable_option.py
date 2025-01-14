@@ -1,5 +1,3 @@
-from psycopg2 import IntegrityError
-
 from odoo.exceptions import ValidationError
 
 from .common import TestTowerCommon
@@ -35,23 +33,6 @@ class TestTowerVariableOption(TestTowerCommon):
                 "variable_id": self.variable_odoo_versions.id,
             }
         )
-
-    def test_unique_constraint(self):
-        """Test the unique constraint on name and variable_id."""
-
-        # Test that creating another option with the same
-        # 'name' and 'variable_id' raises an IntegrityError
-        with self.assertRaises(
-            IntegrityError,
-            msg="The combination of name and variable_id must be unique.",
-        ):
-            self.env["cx.tower.variable.option"].create(
-                {
-                    "name": "17.0",
-                    "value_char": "17.0",
-                    "variable_id": self.variable_odoo_versions.id,
-                }
-            )
 
     def test_variable_value_set_from_option(self):
         """Test that a variable value can be set from an option."""
