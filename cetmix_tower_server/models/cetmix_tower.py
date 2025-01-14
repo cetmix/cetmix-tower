@@ -147,19 +147,18 @@ class CetmixTower(models.AbstractModel):
 
         # Initialize SSH connection instance
         ssh_connection = SSH(**ssh_params)
-
         # Try connecting multiple times
         for attempt in range(1, attempts + 1):
             try:
-                ssh_connection.connection()
+                ssh_connection._connect()
                 return {
-                    "code": 0,
+                    "exit_code": 0,
                     "message": _("Connection successful."),
                 }
             except TimeoutError as e:
                 if attempt == attempts:
                     return {
-                        "code": SSH_CONNECTION_TIMEOUT,
+                        "exit_code": SSH_CONNECTION_TIMEOUT,
                         "message": _(
                             "Connection timed out after %(attempts)s attempts. "
                             "Error: %(err)s",
@@ -170,7 +169,7 @@ class CetmixTower(models.AbstractModel):
             except Exception as e:
                 if attempt == attempts:
                     return {
-                        "code": SSH_CONNECTION_ERROR,
+                        "exit_code": SSH_CONNECTION_ERROR,
                         "message": _(
                             "Failed to connect after %(attempts)s attempts. "
                             "Error: %(err)s",
@@ -183,6 +182,6 @@ class CetmixTower(models.AbstractModel):
 
         # If all attempts fail
         return {
-            "code": SSH_CONNECTION_ERROR,
+            "exit_code": SSH_CONNECTION_ERROR,
             "message": _("All connection connection attempts have failed."),
         }
