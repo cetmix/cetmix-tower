@@ -81,24 +81,6 @@
                                             <strong>Partner:</strong>
                                             <field name="partner_id" />
                                         </div>
-                                        <div
-                                            attrs="{'invisible': [('os_id', '=', False)]}"
-                                        >
-                                            <strong>Operating System:</strong>
-                                            <field name="os_id" />
-                                        </div>
-                                        <div
-                                            attrs="{'invisible': [('ip_v4_address', '=', False)]}"
-                                        >
-                                            <strong>IPv4 Address:</strong>
-                                            <field name="ip_v4_address" />
-                                        </div>
-                                        <div
-                                            attrs="{'invisible': [('ip_v6_address', '=', False)]}"
-                                        >
-                                            <strong>IPv6 Address:</strong>
-                                            <field name="ip_v6_address" />
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="o_kanban_record_bottom">
@@ -122,6 +104,36 @@
             </kanban>
         </field>
     </record>
+
+    <record id="cx_tower_server_view_kanban_manager" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.kanban</field>
+        <field name="model">cx.tower.server</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_server_view_kanban"
+        />
+        <field
+            name="groups_id"
+            eval="[(4, ref('cetmix_tower_server.group_manager'))]"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_kanban_primary_right')]" position="inside">
+                <div attrs="{'invisible': [('os_id', '=', False)]}">
+                    <strong>Operating System:</strong>
+                    <field name="os_id" />
+                </div>
+                <div attrs="{'invisible': [('ip_v4_address', '=', False)]}">
+                    <strong>IPv4 Address:</strong>
+                    <field name="ip_v4_address" />
+                </div>
+                <div attrs="{'invisible': [('ip_v6_address', '=', False)]}">
+                    <strong>IPv6 Address:</strong>
+                    <field name="ip_v6_address" />
+                </div>
+            </xpath>
+        </field>
+    </record>
+
 
     <record id="cx_tower_server_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.server.view.tree</field>
@@ -389,6 +401,7 @@
                         name="group_by_os"
                         domain="[]"
                         context="{'group_by': 'os_id'}"
+                        groups="cetmix_tower_server.group_manager"
                     />
                     <filter
                         string="Partner"

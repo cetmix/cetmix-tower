@@ -392,3 +392,33 @@ class TestTowerFile(TestTowerCommon):
                 "removing the secret reference from file."
             ),
         )
+
+    def test_file_with_sensitive_variable(self):
+        """
+        Test case to verify that user has access to use file with sensitive variables.
+        """
+        # Create file with sensitive variable
+        file = self.File.create(
+            {
+                "source": "tower",
+                "name": "test.txt",
+                "server_id": self.server_test_1.id,
+                "code": "'IPv4 Address': {{ tower.server.ipv4 }}",
+            }
+        )
+        # Remove user_bob from all cx_tower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        # Add bob to user group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # Add bob as subscriber of the server to allow upload file
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        # Upload file to server
+        file.with_user(self.user_bob).action_push_to_server()
+        self.assertEqual(file.server_response, "ok")
