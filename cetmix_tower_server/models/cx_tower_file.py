@@ -43,6 +43,7 @@ class CxTowerFile(models.Model):
     name = fields.Char(help="File name WITHOUT path. Eg 'test.txt'")
     rendered_name = fields.Char(
         compute="_compute_render",
+        compute_sudo=True,
     )
     template_id = fields.Many2one(
         "cx.tower.file.template",
@@ -57,6 +58,7 @@ class CxTowerFile(models.Model):
     )
     rendered_server_dir = fields.Char(
         compute="_compute_render",
+        compute_sudo=True,
     )
     full_server_path = fields.Char(
         compute="_compute_full_server_path",
@@ -117,6 +119,7 @@ class CxTowerFile(models.Model):
     )
     rendered_code = fields.Char(
         compute="_compute_render",
+        compute_sudo=True,
         help="File content with variables rendered",
     )
     keep_when_deleted = fields.Boolean(
@@ -644,7 +647,7 @@ class CxTowerFile(models.Model):
                     )
                 else:
                     return False
-                file.server_response = "ok"
+                file.sudo().server_response = "ok"
             except Exception as error:
                 if raise_error:
                     raise ValidationError(
@@ -698,4 +701,4 @@ class CxTowerFile(models.Model):
                 )
             if file.server_response == "ok":
                 vals.update({"sync_date_last": last_sync_date})
-            file.write(vals)
+            file.sudo().write(vals)

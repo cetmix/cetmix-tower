@@ -130,6 +130,69 @@ class TestTowerCommandWizard(TestTowerCommon):
         # Check that path access is valid for the manager
         test_wizard.read(["path"])
 
+    def test_execute_command_with_sensitive_vars_on_server_access_rights(self):
+        """Test access rights for executing command on server"""
+        # create new command
+        command = self.Command.create(
+            {
+                "name": "Create new command",
+                "action": "python_code",
+                "code": """
+        properties = {
+            "Server Name": {{ tower.server.name }},
+            "Server Reference": {{ tower.server.reference }},
+            "SSH Username": {{ tower.server.username }},
+            "IPv4 Address": {{ tower.server.ipv4 }},
+            "IPv6 Address": {{ tower.server.ipv6 }},
+            "Partner Name": {{ tower.server.partner_name }}
+        }
+        COMMAND_RESULT = {"exit_code": 0, "message": properties}
+                        """,
+                "access_level": "1",
+            }
+        )
+
+        # Add Bob to `root` group in order to create a wizard
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+
+        server = self.Server.with_user(self.user_bob).create(
+            {
+                "name": "Test 2",
+                "ip_v4_address": "localhost",
+                "ssh_username": "root",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+
+        # Add user bob to group user
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+
+        # Create new wizard with Bob
+        test_wizard = (
+            self.env["cx.tower.command.execute.wizard"]
+            .with_user(self.user_bob)
+            .create(
+                {
+                    "server_ids": [server.id],
+                    "command_id": command.id,
+                }
+            )
+        ).with_user(self.user_bob)
+
+        # Ensure command can be executed by user
+        test_wizard.execute_command_on_server()
+
     def test_execute_command_in_wizard_multiple_servers(self):
         """
         Test that raises an error when multiple servers are selected

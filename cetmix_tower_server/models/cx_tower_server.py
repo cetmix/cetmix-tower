@@ -280,15 +280,29 @@ class CxTowerServer(models.Model):
     )
 
     # ---- Connection
-    ip_v4_address = fields.Char(string="IPv4 Address")
-    ip_v6_address = fields.Char(string="IPv6 Address")
-    ssh_port = fields.Char(string="SSH port", required=True, default="22")
-    ssh_username = fields.Char(string="SSH Username", required=True)
-    ssh_password = fields.Char(string="SSH Password")
+    ip_v4_address = fields.Char(
+        string="IPv4 Address", groups="cetmix_tower_server.group_manager"
+    )
+    ip_v6_address = fields.Char(
+        string="IPv6 Address", groups="cetmix_tower_server.group_manager"
+    )
+    ssh_port = fields.Char(
+        string="SSH port",
+        required=True,
+        default="22",
+        groups="cetmix_tower_server.group_manager",
+    )
+    ssh_username = fields.Char(
+        string="SSH Username", required=True, groups="cetmix_tower_server.group_manager"
+    )
+    ssh_password = fields.Char(
+        string="SSH Password", groups="cetmix_tower_server.group_manager"
+    )
     ssh_key_id = fields.Many2one(
         comodel_name="cx.tower.key",
         string="SSH Private Key",
         domain=[("key_type", "=", "k")],
+        groups="cetmix_tower_server.group_manager",
     )
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
@@ -298,11 +312,13 @@ class CxTowerServer(models.Model):
         ],
         default="p",
         required=True,
+        groups="cetmix_tower_server.group_manager",
     )
     use_sudo = fields.Selection(
         string="Use sudo",
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
+        groups="cetmix_tower_server.group_manager",
     )
     # ---- Variables
     variable_value_ids = fields.One2many(
@@ -318,7 +334,11 @@ class CxTowerServer(models.Model):
     )
 
     # ---- Attributes
-    os_id = fields.Many2one(string="Operating System", comodel_name="cx.tower.os")
+    os_id = fields.Many2one(
+        string="Operating System",
+        comodel_name="cx.tower.os",
+        groups="cetmix_tower_server.group_manager",
+    )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         relation="cx_tower_server_tag_rel",
@@ -606,6 +626,7 @@ class CxTowerServer(models.Model):
             SSH: SSH client instance or False and exception content
         """
         self.ensure_one()
+        self = self.sudo()
         try:
             client = SSH(
                 host=self.ip_v4_address or self.ip_v6_address,
@@ -795,7 +816,7 @@ class CxTowerServer(models.Model):
 
         # Get variable values for current server
         variable_values_dict = (
-            self.get_variable_values(variables)  # pylint: disable=no-member
+            self.sudo().get_variable_values(variables)  # pylint: disable=no-member
             if variables
             else False
         )
@@ -859,14 +880,13 @@ class CxTowerServer(models.Model):
             dict(): command execution result if `no_log` context value == True else None
         """
         self.ensure_one()
-
         # Populate `sudo` value from the server settings if not provided explicitly
         if sudo is None:
-            if self.ssh_username != "root" and self.use_sudo:
-                sudo = self.use_sudo
+            if self.sudo().ssh_username != "root" and self.sudo().use_sudo:
+                sudo = self.sudo().use_sudo
 
         # Disable `sudo` if user is root
-        elif sudo and self.ssh_username == "root":
+        elif sudo and self.sudo().ssh_username == "root":
             sudo = None
 
         # Check if no log record should be created
