@@ -601,7 +601,7 @@ class CxTowerServer(models.Model):
             }
         """
         self.ensure_one()
-        client = self._get_ssh_client(timeout=timeout)
+        client = self._get_ssh_client(raise_on_error=raise_on_error, timeout=timeout)
 
         if not try_command and not try_file:
             try:
@@ -1601,7 +1601,7 @@ class CxTowerServer(models.Model):
              (e.g. /test/my_file.txt).
         """
         self.ensure_one()
-        client = self._get_ssh_client(raise_on_error=False)
+        client = self._get_ssh_client(raise_on_error=True)
         client.delete_file(remote_path)
 
     def upload_file(self, data, remote_path, from_path=False):
@@ -1623,7 +1623,7 @@ class CxTowerServer(models.Model):
              uploaded file.
         """
         self.ensure_one()
-        client = self._get_ssh_client(raise_on_error=False)
+        client = self._get_ssh_client(raise_on_error=True)
         if from_path:
             result = client.upload_file(data, remote_path)
         else:
@@ -1649,7 +1649,7 @@ class CxTowerServer(models.Model):
             Result (Bytes): file content.
         """
         self.ensure_one()
-        client = self._get_ssh_client(raise_on_error=False)
+        client = self._get_ssh_client(raise_on_error=True)
         try:
             result = client.download_file(remote_path)
         except FileNotFoundError as fe:

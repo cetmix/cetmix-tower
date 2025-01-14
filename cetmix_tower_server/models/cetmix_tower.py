@@ -124,6 +124,10 @@ class CetmixTower(models.AbstractModel):
                 Default is 5.
             wait_time (int): Wait time in seconds between connection attempts.
                 Default is 10 seconds.
+            try_command (bool): Try to execute a command.
+                Default is True.
+            try_file (bool): Try file operations.
+                Default is True.
         Raises:
             ValidationError:
                 If the provided server reference is invalid or
@@ -131,9 +135,8 @@ class CetmixTower(models.AbstractModel):
         Returns:
             dict: {
                 "code": int,
-                    # 0 for success,
-                    # 408 if the SSH connection timed out after all attempts,
-                    # 503 if there was a generic SSH connection error.
+                    0 for success,
+                    error code for failure
                 "message": str  # Description of the result
             }
         """
