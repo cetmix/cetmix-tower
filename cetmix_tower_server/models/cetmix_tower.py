@@ -1,9 +1,11 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import time
+
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
-from .constants import SSH_CONNECTION_ERROR, SSH_CONNECTION_TIMEOUT
+from .constants import SSH_CONNECTION_ERROR
 
 
 class CetmixTower(models.AbstractModel):
@@ -104,15 +106,24 @@ class CetmixTower(models.AbstractModel):
         return value
 
     @api.model
-    def server_check_ssh_connection(self, server_reference, attempts=5, timeout=15):
+    def server_check_ssh_connection(
+        self,
+        server_reference,
+        attempts=5,
+        wait_time=10,
+        try_command=True,
+        try_file=True,
+    ):
         """Check if SSH connection to the server is available.
+        This method only checks if the connection is available,
+        it does not execute any commands to check if they are working.
 
         Args:
             server_reference (Char): Server reference.
             attempts (int): Number of attempts to try the connection.
                 Default is 5.
-            timeout (int): Timeout in seconds for each connection attempt.
-                Default is 15 seconds.
+            wait_time (int): Wait time in seconds between connection attempts.
+                Default is 10 seconds.
         Raises:
             ValidationError:
                 If the provided server reference is invalid or
@@ -132,39 +143,25 @@ class CetmixTower(models.AbstractModel):
 
         # Try connecting multiple times
         for attempt in range(1, attempts + 1):
-            try:
-                client = server._connect(raise_on_error=False)
+            result = server.test_ssh_connection(
+                raise_on_error=False,
+                return_notification=False,
+                try_command=try_command,
+                try_file=try_file,
+            )
+            if result.get("status") == 0:
                 return {
-                    "code": 0,
+                    "exit_code": 0,
                     "message": _("Connection successful."),
                 }
-            except TimeoutError as e:
-                if attempt == attempts:
-                    return {
-                        "code": SSH_CONNECTION_TIMEOUT,
-                        "message": _(
-                            "Connection timed out after %(attempts)s attempts. "
-                            "Error: %(err)s",
-                            attempts=attempts,
-                            err=str(e),
-                        ),
-                    }
-            except Exception as e:
-                if attempt == attempts:
-                    return {
-                        "code": SSH_CONNECTION_ERROR,
-                        "message": _(
-                            "Failed to connect after %(attempts)s attempts. "
-                            "Error: %(err)s",
-                            attempts=attempts,
-                            err=str(e),
-                        ),
-                    }
-            finally:
-                client.disconnect()
-
-        # If all attempts fail
-        return {
-            "code": SSH_CONNECTION_ERROR,
-            "message": _("All connection connection attempts have failed."),
-        }
+            if attempt == attempts:
+                return {
+                    "exit_code": SSH_CONNECTION_ERROR,
+                    "message": _(
+                        "Failed to connect after %(attempts)s attempts. "
+                        "Error: %(err)s",
+                        attempts=attempts,
+                        err=result.get("error", ""),
+                    ),
+                }
+            time.sleep(wait_time)
