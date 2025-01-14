@@ -139,16 +139,17 @@ class CetmixTower(models.AbstractModel):
             "timeout": timeout,
             "mode": server.ssh_auth_mode,
         }
+        ssh_connection = SSH(**ssh_params)
 
         if server.ssh_auth_mode == "p":
-            ssh_params["password"] = server.ssh_password
+            ssh_params["password"] = server._get_password()
         elif server.ssh_auth_mode == "k":
-            ssh_params["ssh_key"] = server.ssh_key_id.sudo().secret_value
+            ssh_params["ssh_key"] = server._get_ssh_key()
 
         # Try connecting multiple times
         for attempt in range(1, attempts + 1):
             try:
-                ssh_connection = SSH(**ssh_params)
+                ssh_connection._connect()
                 return {
                     "code": 0,
                     "message": _("Connection successful."),
