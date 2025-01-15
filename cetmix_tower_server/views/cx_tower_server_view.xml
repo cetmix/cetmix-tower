@@ -266,7 +266,7 @@
                         <page
                             name="configuration"
                             string="Configuration"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_user"
                         >
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
@@ -283,6 +283,7 @@
                                         attrs="{'readonly': [('variable_type', '=', 's')]}"
                                         domain="option_ids_domain"
                                     />
+                                    <field name="access_level" />
                                     <field name="option_ids_domain" invisible="1" />
                                 </tree>
                                 <form>
@@ -296,6 +297,9 @@
                                                 options="{'string': 'Copy reference'}"
                                             />
                                         </div>
+                                    </group>
+                                    <group>
+                                        <field name="access_level" />
                                     </group>
                                     <field
                                         name="note"

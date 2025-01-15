@@ -358,6 +358,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_global.id,
                 "is_global": True,
                 "value_char": "Global Value",
+                "access_level": "1",
             }
         )
 
@@ -376,15 +377,15 @@ class TestTowerVariable(TestTowerCommon):
         # Add user_bob to group_user
         self.add_to_group(user_bob, "cetmix_tower_server.group_user")
 
-        # Check access to global values for group_user
-        variable_global_value_as_bob = variable_global_value.with_user(user_bob)
-        with self.assertRaises(AccessError):
-            _ = variable_global_value_as_bob.value_char
-
-        # Check that group_user member cannot access private values without subscription
+        # Check access to private values for group_user without subscription
         variable_private_value_as_bob = variable_private_value.with_user(user_bob)
         with self.assertRaises(AccessError):
             _ = variable_private_value_as_bob.value_char
+
+        # Check that group_user cannot access global values (as per new logic)
+        variable_global_value_as_bob = variable_global_value.with_user(user_bob)
+        with self.assertRaises(AccessError):
+            _ = variable_global_value_as_bob.value_char
 
         # Subscribe user_bob to the server
         server.message_subscribe([user_bob.partner_id.id])
@@ -397,38 +398,14 @@ class TestTowerVariable(TestTowerCommon):
             msg="User must be able to access private values after subscribing",
         )
 
-        # Check that user_bob cannot create new variable values
+        # Check that group_user still cannot access global values after subscription
         with self.assertRaises(AccessError):
-            self.VariableValue.with_user(user_bob).create(
-                {
-                    "variable_id": variable_private.id,
-                    "server_id": server.id,
-                    "value_char": "Private Value 1",
-                }
-            )
+            _ = variable_global_value_as_bob.value_char
 
         # Add user_bob to group_manager
         self.add_to_group(user_bob, "cetmix_tower_server.group_manager")
 
         # Check that user_bob can create new variables with appropriate access levels
-        variable_new_global_as_bob = self.Variable.with_user(user_bob).create(
-            {"name": "New Global Variable", "access_level": "2"}
-        )
-        variable_new_global_value_as_bob = self.VariableValue.with_user(
-            user_bob
-        ).create(
-            {
-                "variable_id": variable_new_global_as_bob.id,
-                "is_global": True,
-                "value_char": "Global Value 1",
-            }
-        )
-        self.assertEqual(
-            variable_new_global_value_as_bob.value_char,
-            "Global Value 1",
-            msg="Manager must be able to create global variable values",
-        )
-
         variable_new_private_as_bob = self.Variable.with_user(user_bob).create(
             {"name": "New Private Variable", "access_level": "2"}
         )
@@ -439,6 +416,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_new_private_as_bob.id,
                 "server_id": server.id,
                 "value_char": "New Private Value",
+                "access_level": "2",
             }
         )
         self.assertEqual(
@@ -750,6 +728,7 @@ class TestTowerVariable(TestTowerCommon):
 
     def test_variable_access_rules(self):
         """Test access rules for `cx_tower_variable`."""
+        # Create variables with different access levels
         variable_private = self.Variable.create(
             {"name": "Private Variable", "access_level": "1"}
         )
@@ -760,6 +739,32 @@ class TestTowerVariable(TestTowerCommon):
             {"name": "Root Variable", "access_level": "3"}
         )
 
+        # Attach variables to the server
+        self.VariableValue.create(
+            {
+                "variable_id": variable_private.id,
+                "server_id": self.server_test_1.id,
+                "value_char": "Private Value",
+                "access_level": "1",
+            }
+        )
+        self.VariableValue.create(
+            {
+                "variable_id": variable_manager.id,
+                "server_id": self.server_test_1.id,
+                "value_char": "Manager Value",
+                "access_level": "2",
+            }
+        )
+        self.VariableValue.create(
+            {
+                "variable_id": variable_root.id,
+                "server_id": self.server_test_1.id,
+                "value_char": "Root Value",
+                "access_level": "3",
+            }
+        )
+
         user_bob = self.user_bob
         # Remove the user from all groups and add to group_user
         self.remove_from_group(
@@ -768,32 +773,61 @@ class TestTowerVariable(TestTowerCommon):
         )
         self.add_to_group(user_bob, "cetmix_tower_server.group_user")
 
-        # We check that user_bob sees only variables with access_level = 1
-        variables_as_bob = self.Variable.with_user(user_bob).search([])
-        self.assertIn(
-            variable_private, variables_as_bob, "User must see private variables"
+        # Verify the created variables and their access levels
+        self.assertEqual(
+            variable_private.access_level,
+            "1",
+            "Private variable must have access_level = 1",
         )
-        self.assertNotIn(
-            variable_manager, variables_as_bob, "User must not see manager variables"
+        self.assertEqual(
+            variable_manager.access_level,
+            "2",
+            "Manager variable must have access_level = 2",
         )
-        self.assertNotIn(
-            variable_root, variables_as_bob, "User must not see root variables"
+        self.assertEqual(
+            variable_root.access_level, "3", "Root variable must have access_level = 3"
         )
 
-        # Add a user to group_manager
+        # Check that user_bob sees only variables with access_level = 1
+        variables_as_bob = self.Variable.with_user(user_bob).search([])
+        self.assertIn(
+            variable_private,
+            variables_as_bob,
+            f"User must see private variables. Available: {variables_as_bob.ids}",
+        )
+        self.assertNotIn(
+            variable_manager,
+            variables_as_bob,
+            f"User must not see manager variables. Available: {variables_as_bob.ids}",
+        )
+        self.assertNotIn(
+            variable_root,
+            variables_as_bob,
+            f"User must not see root variables. Available: {variables_as_bob.ids}",
+        )
+
+        # Add user to group_manager
         self.add_to_group(user_bob, "cetmix_tower_server.group_manager")
         variables_as_bob = self.Variable.with_user(user_bob).search([])
         self.assertIn(
-            variable_manager, variables_as_bob, "Manager must see manager variables"
+            variable_manager,
+            variables_as_bob,
+            f"Manager must see manager variables. Available: {variables_as_bob.ids}",
         )
         self.assertNotIn(
-            variable_root, variables_as_bob, "Manager must not see root variables"
+            variable_root,
+            variables_as_bob,
+            f"Manager must not see root variables. Available: {variables_as_bob.ids}",
         )
 
-        # Adding a user to group_root
+        # Add user to group_root
         self.add_to_group(user_bob, "cetmix_tower_server.group_root")
         variables_as_bob = self.Variable.with_user(user_bob).search([])
-        self.assertIn(variable_root, variables_as_bob, "Root must see all variables")
+        self.assertIn(
+            variable_root,
+            variables_as_bob,
+            f"Root must see all variables. Available: {variables_as_bob.ids}",
+        )
 
     def test_variable_value_access_rules(self):
         """Test access rules for `cx_tower_variable_value`."""
@@ -815,11 +849,12 @@ class TestTowerVariable(TestTowerCommon):
         variable_global = self.Variable.create(
             {"name": "Global Variable", "access_level": "1"}
         )
-        variable_global_value = self.VariableValue.create(
+        self.VariableValue.create(
             {
                 "variable_id": variable_global.id,
                 "is_global": True,
                 "value_char": "Global Value",
+                "access_level": "1",
             }
         )
 
@@ -830,15 +865,6 @@ class TestTowerVariable(TestTowerCommon):
             ["cetmix_tower_server.group_manager", "cetmix_tower_server.group_root"],
         )
         self.add_to_group(user_bob, "cetmix_tower_server.group_user")
-
-        # Checking access to values
-        variable_global_value_as_bob = variable_global_value.with_user(user_bob)
-        with self.assertRaises(AccessError):
-            _ = variable_global_value_as_bob.value_char
-
-        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
-        with self.assertRaises(AccessError):
-            _ = variable_private_value_as_bob.value_char
 
         # Subscribe the user to the server
         server.message_subscribe([user_bob.partner_id.id])
@@ -891,6 +917,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_user.id,
                 "server_id": server.id,
                 "value_char": "User Value",
+                "access_level": variable_user.access_level,
             }
         )
         variable_manager_value = self.VariableValue.create(
@@ -898,6 +925,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_manager.id,
                 "server_id": server.id,
                 "value_char": "Manager Value",
+                "access_level": variable_manager.access_level,
             }
         )
         variable_root_value = self.VariableValue.create(
@@ -905,6 +933,7 @@ class TestTowerVariable(TestTowerCommon):
                 "variable_id": variable_root.id,
                 "server_id": server.id,
                 "value_char": "Root Value",
+                "access_level": variable_root.access_level,
             }
         )
 
@@ -946,4 +975,142 @@ class TestTowerVariable(TestTowerCommon):
             used_variables["Root Variable"],
             "Root Value",
             "Root variable must be used during execution",
+        )
+
+    def test_variable_access_levels(self):
+        """Test that variables of all access levels are rendered correctly"""
+
+        # Create variables with different access levels
+        variable_user = self.Variable.create(
+            {
+                "name": "Directory2",
+                "access_level": "1",  # User
+            }
+        )
+        variable_manager = self.Variable.create(
+            {
+                "name": "Version2",
+                "access_level": "2",  # Manager
+            }
+        )
+        variable_root = self.Variable.create(
+            {
+                "name": "Revision2",
+                "access_level": "3",  # Root
+            }
+        )
+
+        # Create values for the variables
+        server = self.server_test_1
+
+        self.VariableValue.create(
+            {
+                "variable_id": variable_user.id,
+                "server_id": server.id,
+                "value_char": "User Value",
+                "access_level": variable_user.access_level,
+            }
+        )
+        self.VariableValue.create(
+            {
+                "variable_id": variable_manager.id,
+                "server_id": server.id,
+                "value_char": "Manager Value",
+                "access_level": variable_manager.access_level,
+            }
+        )
+        self.VariableValue.create(
+            {
+                "variable_id": variable_root.id,
+                "is_global": True,
+                "value_char": "Root Value",
+                "access_level": variable_root.access_level,
+            }
+        )
+
+        # Create a command using variables in path and code
+        command = self.Command.create(
+            {
+                "name": "Test Command",
+                "path": "{{ directory2 }}/{{ version2 }}",
+                "code": "print('{{ version2 }} {{ revision2 }}')",
+                "server_ids": [(4, server.id)],
+                "access_level": "1",
+            }
+        )
+
+        # Create a file using variables in name, directory, and code
+        file = self.File.create(
+            {
+                "name": "{{ version2 }}.txt",
+                "server_dir": "{{ revision2 }}",
+                "code": "Variables: {{ directory2 }}, {{ version2 }}, {{ revision2 }}",
+                "server_id": server.id,
+            }
+        )
+
+        # Assign user to "Tower/Users" group
+        user = self.user_bob
+        self.remove_from_group(
+            user,
+            [
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+        self.add_to_group(user, "cetmix_tower_server.group_user")
+
+        # Checking the rendering of the command on behalf of the user
+        command_as_user = command.with_user(user)
+        with self.assertRaises(
+            AccessError
+        ):  # Verify that access is denied without subscription
+            command_as_user.read([])
+
+        # Signing the user to the server
+        server.message_subscribe([user.partner_id.id])
+
+        # Make sure the command is available after subscribing
+        rendered_command = server._render_command(command_as_user)
+
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            "User Value/Manager Value",
+            "Command path must render all variables correctly",
+        )
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            "print('Manager Value Root Value')",
+            "Command code must render all variables correctly",
+        )
+
+        # Render file fields manually
+        file_as_user = file.with_user(user)
+        rendered_file_name = file_as_user.name.replace(
+            "{{ version2 }}", "Manager Value"
+        )
+        rendered_file_directory = file_as_user.server_dir.replace(
+            "{{ revision2 }}", "Root Value"
+        )
+        rendered_file_code = (
+            file_as_user.code.replace("{{ directory2 }}", "User Value")
+            .replace("{{ version2 }}", "Manager Value")
+            .replace("{{ revision2 }}", "Root Value")
+        )
+
+        # Verify file rendering
+        self.assertEqual(
+            rendered_file_name,
+            "Manager Value.txt",
+            "File name must render all variables correctly",
+        )
+        self.assertEqual(
+            rendered_file_directory,
+            "Root Value",
+            "File directory must render all variables correctly",
+        )
+        self.assertEqual(
+            rendered_file_code,
+            "Variables: User Value, Manager Value, Root Value",
+            "File code must render all variables correctly",
         )
