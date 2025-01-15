@@ -110,7 +110,12 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
                     "configuration_variables": {
                         line.variable_reference: line.value_char
                         for line in self.line_ids
-                    }
+                    },
+                    "configuration_variable_options": {
+                        line.variable_reference: line.option_id.reference
+                        for line in self.line_ids
+                        if line.option_id
+                    },
                 }
             )
         return res
@@ -125,19 +130,9 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
             raise ValidationError(self.missing_required_variables_message)
 
         kwargs = self._prepare_server_parameters()
-        kwargs["line_ids_variables"] = {
-            line.id: {
-                "variable_id": line.id,
-                "variable_reference": line.variable_reference,
-                "value_char": line.option_id.value_char
-                if line.option_id
-                else line.value_char,
-                "option_id": line.option_id.id if line.option_id else None,
-                "variable_type": line.variable_type,
-            }
-            for line in self.line_ids.wizard_id.line_ids
-        }
-        server = self.server_template_id._create_new_server(self.name, **kwargs)
+        server = self.server_template_id._create_new_server(
+            self.name, pick_all_template_variables=False, **kwargs
+        )
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_server"
         )

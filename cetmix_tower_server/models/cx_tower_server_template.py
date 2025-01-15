@@ -169,6 +169,10 @@ class CxTowerServerTemplate(models.Model):
                     `variable_reference`: `variable_value_char`
                     eg:
                     {'branch': 'prod', 'odoo_version': '16.0'}
+            pick_all_template_variables (bool):  This parameter ensures that the server
+                being created considers existing variables from the template.
+                If enabled, the template variables will also be included in the server
+                variables. The default value is True.
 
         Returns:
             cx.tower.server: newly created server record
@@ -195,6 +199,10 @@ class CxTowerServerTemplate(models.Model):
                     `variable_reference`: `variable_value_char`
                     eg:
                     {'branch': 'prod', 'odoo_version': '16.0'}
+            pick_all_template_variables (bool):  This parameter ensures that the server
+                being created considers existing variables from the template.
+                If enabled, the template variables will also be included in the server
+                variables. The default value is True.
 
         Returns:
             cx.tower.server: newly created server record
@@ -247,7 +255,7 @@ class CxTowerServerTemplate(models.Model):
             "server_log_ids",
         ]
 
-    def _prepare_server_values(self, **kwargs):
+    def _prepare_server_values(self, pick_all_template_variables=True, **kwargs):
         """
         Prepare the server values to create a new server based on
         the current template. It reads all fields from the template, copies them,
@@ -256,6 +264,10 @@ class CxTowerServerTemplate(models.Model):
         data.
 
         Args:
+            pick_all_template_variables (bool):  This parameter ensures that the server
+                being created considers existing variables from the template.
+                If enabled, the template variables will also be included in the server
+                variables. The default value is True.
             **kwargs: Additional values to update in the final server record.
 
         Returns:
@@ -298,76 +310,136 @@ class CxTowerServerTemplate(models.Model):
 
                     values[field] = new_records
 
-            # custom specific variable values
+            # Handle configuration variables if provided.
             configuration_variables = kwargs.pop("configuration_variables", None)
-            line_ids_variables = kwargs.pop("line_ids_variables", None)
+            configuration_variable_options = kwargs.pop(
+                "configuration_variable_options", {}
+            )
+
             if configuration_variables:
                 # Validate required variables
                 self._validate_required_variables(configuration_variables)
 
-                variable_vals_list = []
-                variable_obj = self.env["cx.tower.variable"]
+                # Search for existing variable options.
+                option_references = list(configuration_variable_options.values())
+                existing_options = option_references and self.env[
+                    "cx.tower.variable.option"
+                ].search([("reference", "in", option_references)])
+                missing_options = list(
+                    set(option_references)
+                    - {option.reference for option in existing_options}
+                )
 
-                for (
-                    variable_reference,
-                    variable_value,
-                ) in configuration_variables.items():
-                    variable = variable_obj.search(
-                        [("reference", "=", variable_reference)]
+                if missing_options:
+                    # Map variable references to their corresponding
+                    # invalid option references.
+                    missing_options_to_variables = {
+                        var_ref: opt_ref
+                        for var_ref, opt_ref in configuration_variable_options.items()
+                        if opt_ref in missing_options
+                    }
+                    # Generate a detailed error message for invalid variable options.
+                    detailed_message = "\n".join(
+                        _(
+                            "Variable reference '%(var_ref)s' has an invalid "
+                            "option reference '%(opt_ref)s'.",
+                            var_ref=var_ref,
+                            opt_ref=opt_ref,
+                        )
+                        for var_ref, opt_ref in missing_options_to_variables.items()
                     )
-                    if not variable:
-                        variable = variable_obj.create(
-                            {
-                                "name": variable_reference,
-                            }
+                    raise ValidationError(
+                        _(
+                            "Some variable options are invalid:\n%(detailed_message)s",
+                            detailed_message=detailed_message,
                         )
-                    variable_option_id = variable_id = False
+                    )
 
-                    if not variable_value and line_ids_variables:
-                        val_found = next(
-                            (
-                                v
-                                for v in line_ids_variables.values()
-                                if v.get("variable_reference") == variable_reference
-                            ),
-                            None,
-                        )
-                        if val_found:
-                            variable_value = val_found.get("value_char")
-                            variable_option_id = val_found.get("option_id", False)
-                            variable_id = val_found.get("variable_id", False)
+                # Map variable options to their IDs.
+                configuration_variable_options_dict = {
+                    option.variable_id.id: option for option in existing_options
+                }
 
-                    variable_vals_list.append(
+                variable_obj = self.env["cx.tower.variable"]
+                variable_references = list(configuration_variables.keys())
+
+                # Search for existing variables or create new ones if missing.
+                exist_variables = variable_obj.search(
+                    [("reference", "in", variable_references)]
+                )
+                missing_references = list(
+                    set(variable_references)
+                    - {variable.reference for variable in exist_variables}
+                )
+                variable_vals_list = [
+                    {"name": reference} for reference in missing_references
+                ]
+                new_variables = variable_obj.create(variable_vals_list)
+                all_variables = exist_variables | new_variables
+
+                # Build a dictionary {variable: variable_value}.
+                configuration_variable_dict = {
+                    variable: configuration_variables[variable.reference]
+                    for variable in all_variables
+                }
+
+                server_variable_vals_list = []
+                for variable, variable_value in configuration_variable_dict.items():
+                    variable_option = configuration_variable_options_dict.get(
+                        variable.id
+                    )
+
+                    server_variable_vals_list.append(
                         (
                             0,
                             0,
                             {
-                                "variable_id": variable.id or variable_id,
-                                "value_char": variable_value or "",
-                                "option_id": variable_option_id,
+                                "variable_id": variable.id,
+                                "value_char": variable_option
+                                and variable_option.value_char
+                                or variable_value,
+                                "option_id": variable_option and variable_option.id,
                             },
                         )
                     )
 
-                # update or add variable values
-                existing_variable_values = values.get("variable_value_ids", [])
-                variable_id_to_index = {
-                    cmd[2]["variable_id"]: idx
-                    for idx, cmd in enumerate(existing_variable_values)
-                    if cmd[0] == 0 and "variable_id" in cmd[2]
-                }
+                if pick_all_template_variables:
+                    # update or add variable values
+                    existing_variable_values = values.get("variable_value_ids", [])
+                    variable_id_to_index = {
+                        cmd[2]["variable_id"]: idx
+                        for idx, cmd in enumerate(existing_variable_values)
+                        if cmd[0] == 0 and "variable_id" in cmd[2]
+                    }
 
-                for new_command in variable_vals_list:
-                    variable_id = new_command[2]["variable_id"]
-                    if variable_id in variable_id_to_index:
-                        idx = variable_id_to_index[variable_id]
-                        # update exist command
-                        existing_variable_values[idx] = new_command
-                    else:
-                        # add new command
-                        existing_variable_values.append(new_command)
+                    # Update exist variable options
+                    for exist_variable_id, index in variable_id_to_index.items():
+                        option = configuration_variable_options_dict.get(
+                            exist_variable_id
+                        )
+                        if not option:
+                            continue
+                        existing_variable_values[index][2].update(
+                            {
+                                "option_id": option.id,
+                                "value_char": option.value_char,
+                            }
+                        )
 
-                values["variable_value_ids"] = existing_variable_values
+                    # Prepare new command values for server variables
+                    for new_command in server_variable_vals_list:
+                        variable_id = new_command[2]["variable_id"]
+                        if variable_id in variable_id_to_index:
+                            idx = variable_id_to_index[variable_id]
+                            # update exist command
+                            existing_variable_values[idx] = new_command
+                        else:
+                            # add new command
+                            existing_variable_values.append(new_command)
+
+                    values["variable_value_ids"] = existing_variable_values
+                else:
+                    values["variable_value_ids"] = server_variable_vals_list
 
             # remove the `id` field to ensure a new record is created
             # instead of updating the existing one
