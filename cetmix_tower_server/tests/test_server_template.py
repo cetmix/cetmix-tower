@@ -153,6 +153,14 @@ class TestTowerServerTemplate(TestTowerCommon):
                 "value_char": "test template url",
             }
         )
+        # add variable option
+        variable_url_option = self.VariableOption.create(
+            {
+                "name": "localhost",
+                "value_char": "localhost",
+                "variable_id": self.variable_url.id,
+            }
+        )
 
         # create new server with new variable
         self.ServerTemplate.create_server_from_template(
@@ -164,6 +172,9 @@ class TestTowerServerTemplate(TestTowerCommon):
             configuration_variables={
                 self.variable_version.reference: "test server version",
                 "new_variable": "new_value",
+            },
+            configuration_variable_options={
+                self.variable_url.reference: variable_url_option.reference,
             },
         )
         new_server = self.Server.search([("name", "=", name)])
@@ -189,8 +200,8 @@ class TestTowerServerTemplate(TestTowerCommon):
         )
         self.assertEqual(
             var_url_value.value_char,
-            "test template url",
-            "Url variable values should be same as in the template",
+            variable_url_option.value_char,
+            "Url variable values should be same as option value",
         )
 
         var_new_value = new_server.variable_value_ids.filtered(
@@ -798,3 +809,70 @@ class TestTowerServerTemplate(TestTowerCommon):
         self.server_template_sample.message_unsubscribe([self.user_bob.partner_id.id])
         with self.assertRaises(AccessError):
             other_own_variable_value.unlink()
+
+    def test_with_partial_removed_variables_from_wizard(self):
+        """
+        Test that server creation only with specified
+        variables from wizard and option
+        """
+        # create new variable option
+        option = self.VariableOption.create(
+            {
+                "name": "test",
+                "value_char": "test",
+                "variable_id": self.variable_dir.id,
+            }
+        )
+
+        # template with variables
+        self.server_template_sample.variable_value_ids = [
+            (
+                0,
+                0,
+                {
+                    "variable_id": self.variable_path.id,
+                    "value_char": "/var/log",
+                    "required": False,
+                },
+            ),
+            (
+                0,
+                0,
+                {
+                    "variable_id": self.variable_dir.id,
+                    "option_id": option.id,
+                    "required": False,
+                },
+            ),
+        ]
+
+        action = self.server_template_sample.action_create_server()
+
+        # Open the wizard and fill in the data
+        wizard = (
+            self.env["cx.tower.server.template.create.wizard"]
+            .with_context(**action["context"])
+            .create(
+                {
+                    "name": "Server from Template",
+                    "ip_v4_address": "localhost",
+                    "server_template_id": self.server_template_sample.id,
+                }
+            )
+        )
+
+        with Form(wizard) as wizard_form:
+            wizard_form.line_ids.remove(0)
+            wizard_form.save()
+
+        wizard.action_confirm()
+
+        server = self.server_template_sample.server_ids
+        self.assertEqual(
+            len(server.variable_value_ids), 1, "Server variable must be 1!"
+        )
+        self.assertEqual(
+            server.variable_value_ids.value_char,
+            option.value_char,
+            "The variable value must be equal to the value from the option",
+        )
