@@ -24,6 +24,11 @@ This function takes the following arguments:
       'variable_reference': 'variable_value_char'
       eg:
       {'branch': 'prod', 'odoo_version': '16.0'}
+  - configuration_variable_options (Dict, optional): Custom configuration variable options.
+    Following format is used:
+      'variable_reference': 'option_reference'
+      eg:
+      {'language': 'language_variable_option_1'}
 ```
 
 Here is a short example of an Odoo automated action that creates a new server when a Sales Order is confirmed:
