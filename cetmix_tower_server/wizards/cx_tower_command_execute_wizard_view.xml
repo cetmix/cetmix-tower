@@ -28,6 +28,8 @@
                         name="tag_ids"
                         widget="many2many_tags"
                         attrs="{'invisible': [('result', '!=', False)]}"
+                        placeholder="Select tags to filter Commands"
+                        options="{'no_create': True}"
                     />
                     <label
                         for="command_id"
@@ -44,6 +46,7 @@
                             name="command_id"
                             domain="command_domain"
                             default_focus="1"
+                            options="{'no_create': True}"
                         />
                         <field name="command_domain" invisible="1" />
                         <span>show shared</span>
@@ -52,7 +55,7 @@
                     <field
                         name="path"
                         groups="cetmix_tower_server.group_manager"
-                        attrs="{'invisible': [('action', '=', 'python_code')]}"
+                        attrs="{'invisible': ['|', ('action', '=', 'python_code'), ('result', '!=', False)]}"
                         placeholder="e.g. /home/user This field does NOT support variables"
                     />
                     <field

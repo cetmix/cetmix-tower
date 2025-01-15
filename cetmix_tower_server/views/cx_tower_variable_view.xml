@@ -41,6 +41,8 @@
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
+                                    <field name="reference" optional="show" />
+                                    <field name="value_char" />
                                 </tree>
                             </field>
                         </page>

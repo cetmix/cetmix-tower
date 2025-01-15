@@ -137,12 +137,12 @@
                     />
                     <div class="oe_title">
                         <h1 class="d-flex flex-grow justify-content-between">
-                            <field name="name" />
+                            <field name="name" placeholder="Name" />
                         </h1>
                         <h3>
                             <field
                                 name="reference"
-                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                             />
                         </h3>
                         <field name="color" widget="color_picker" />
@@ -176,13 +176,33 @@
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
-                                    <field name="value_char" />
+                                    <field name="variable_type" invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                        domain="option_ids_domain"
+                                    />
+                                    <field name="option_ids_domain" invisible="1" />
                                     <field name="required" />
                                 </tree>
                                 <form>
                                     <group>
                                         <field name="variable_id" />
-                                        <field name="value_char" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
                                         <field name="required" />
                                     </group>
                                     <field

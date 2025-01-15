@@ -38,11 +38,17 @@ class TestTowerCommand(TestTowerCommon):
             }
         )
 
+        # secret value as multi line string
         self.python_ssh_key = self.Key.create(
             {
                 "name": "Test Python SSH Key",
+                "reference": "test_python_ssh_key",
                 "key_type": "k",
-                "secret_value": "Python much key",
+                "secret_value": """
+                Python
+                much
+                key
+                """,
             }
         )
 

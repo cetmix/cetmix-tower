@@ -135,6 +135,7 @@
         <field name="arch" type="xml">
             <search string="Search Flight Plans">
                 <field name="name" />
+                <field name="reference" />
                 <field name="server_ids" />
                 <field name="tag_ids" />
                 <filter

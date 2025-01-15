@@ -74,17 +74,25 @@
                                 options="{'color_field': 'color'}"
                             />
                             <field
-                                name="secret_ids"
-                                widget="many2many_tags"
-                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                            />
-                            <field
                                 name="tag_ids"
                                 widget="many2many_tags"
                                 options="{'color_field': 'color'}"
                             />
                             <field name="access_level" />
                             <field name="server_status" widget="server_status" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                            />
                         </group>
                     </group>
                     <notebook>
@@ -129,6 +137,16 @@
                                         >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'request'</li>
                                     <li><code
                                         >json</code>: Python 'json' library. Available methods: 'dumps'</li>
+                                    <li><code>hashlib</code>: Python 'hashlib' library.
+                                         Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br
+                                        />
+                                          'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'</li>
+                                    <li><code
+                                        >hmac</code>: Python 'hmac' library. Use 'new' to create HMAC objects.<br
+                                        />
+                                        Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br
+                                        />
+                                        Module-level function: 'compare_digest'.</li>
                                     <li><code
                                         >UserError</code>: Warning Exception to use with <code
                                         >
@@ -196,6 +214,7 @@
         <field name="arch" type="xml">
             <search string="Search Commands">
                 <field name="name" />
+                <field name="reference" />
                 <field name="code" />
                 <field name="server_ids" />
                 <field name="tag_ids" />

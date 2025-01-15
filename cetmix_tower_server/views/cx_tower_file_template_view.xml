@@ -20,16 +20,12 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only" />
                         <h1>
-                            <field
-                                name="name"
-                                placeholder="Template Name"
-                                required="1"
-                            />
+                            <field name="name" placeholder="Name" required="1" />
                         </h1>
                         <h3>
                             <field
                                 name="reference"
-                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                             />
                         </h3>
                     </div>
@@ -47,14 +43,21 @@
                                 name="keep_when_deleted"
                                 attrs="{'invisible': [('source', '=', 'server')]}"
                             />
+                            <field name="file_type" />
+                            <field name="note" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                            />
                             <field
                                 name="secret_ids"
                                 widget="many2many_tags"
-                                attrs="{'invisible': [('secret_ids', '=', False)]}"
+                                attrs="{'invisible': [('secret_ids', '=', [])]}"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                             />
-                            <field name="file_type" />
-                            <field name="note" />
                         </group>
                     </group>
                     <notebook>

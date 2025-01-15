@@ -9,7 +9,30 @@ from odoo.tools.safe_eval import wrap_module
 
 requests = wrap_module(__import__("requests"), ["post", "get", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
-
+hashlib = wrap_module(
+    __import__("hashlib"),
+    [
+        "sha1",
+        "sha224",
+        "sha256",
+        "sha384",
+        "sha512",
+        "sha3_224",
+        "sha3_256",
+        "sha3_384",
+        "sha3_512",
+        "shake_128",
+        "shake_256",
+        "blake2b",
+        "blake2s",
+        "md5",
+        "new",
+    ],
+)
+hmac = wrap_module(
+    __import__("hmac"),
+    ["new", "compare_digest"],
+)
 
 DEFAULT_PYTHON_CODE = """# Available variables:
 #  - user: Current Odoo User
@@ -19,6 +42,12 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #  - time, datetime, dateutil, timezone: useful Python libraries
 #  - requests: Python 'requests' library. Available methods: 'post', 'get', 'request'
 #  - json: Python 'json' library. Available methods: 'dumps'
+#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
+#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
+#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'
+#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
+#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
+#    Module-level function: 'compare_digest'.
 #  - float_compare: Odoo function to compare floats based on specific precisions
 #  - UserError: Warning Exception to use with raise
 #
@@ -67,9 +96,6 @@ class CxTowerCommand(models.Model):
         "while the same command is still running.\n"
         "Returns ANOTHER_COMMAND_RUNNING if execution is blocked"
     )
-    interpreter_id = fields.Many2one(
-        comodel_name="cx.tower.interpreter",
-    )
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         relation="cx_tower_server_command_rel",
@@ -117,33 +143,36 @@ class CxTowerCommand(models.Model):
     flight_plan_id = fields.Many2one(
         comodel_name="cx.tower.plan",
     )
+    server_status = fields.Selection(
+        selection=lambda self: self.env["cx.tower.server"]._selection_status(),
+        string="Server Status",
+        help="Set the following status if command is executed successfully. "
+        "Leave 'Undefined' if you don't need to update the status",
+    )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_command_variable_rel",
         column1="command_id",
         column2="variable_id",
-        string="Variables",
-        compute="_compute_variable_ids",
-        store=True,
     )
 
-    @api.depends("code", "path")
-    def _compute_variable_ids(self):
+    @classmethod
+    def _get_depends_fields(cls):
         """
-        Compute variable_ids based on code and path fields.
-        """
-        for record in self:
-            record.variable_ids = record._prepare_variable_commands(["code", "path"])
+        Define dependent fields for computing `variable_ids` in command-related models.
 
-    # TODO: move this up
-    server_status = fields.Selection(
-        selection=lambda self: self.env["cx.tower.server"]._selection_status(),
-        string="Server Status",
-        help=(
-            "Set the following status if command is executed successfully."
-            " Leave 'Undefined' if you don't need to update the status"
-        ),
-    )
+        This implementation specifies that the fields `code` and `path`
+        are used to determine the variables associated with a command.
+
+        Returns:
+            list: A list of field names (str) representing the dependencies.
+
+        Example:
+            The following fields trigger recomputation of `variable_ids`:
+            - `code`: The command's script or execution logic.
+            - `path`: The default execution path for the command.
+        """
+        return ["code", "path"]
 
     # Depend on related servers and partners
     @api.depends(
@@ -188,6 +217,8 @@ class CxTowerCommand(models.Model):
             "UserError": UserError,
             "server": server or self._context.get("active_server"),
             "tower": self.env["cetmix.tower"],
+            "hashlib": hashlib,
+            "hmac": hmac,
         }
 
     def name_get(self):

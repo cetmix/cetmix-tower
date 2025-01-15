@@ -125,6 +125,18 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
             raise ValidationError(self.missing_required_variables_message)
 
         kwargs = self._prepare_server_parameters()
+        kwargs["line_ids_variables"] = {
+            line.id: {
+                "variable_id": line.id,
+                "variable_reference": line.variable_reference,
+                "value_char": line.option_id.value_char
+                if line.option_id
+                else line.value_char,
+                "option_id": line.option_id.id if line.option_id else None,
+                "variable_type": line.variable_type,
+            }
+            for line in self.line_ids.wizard_id.line_ids
+        }
         server = self.server_template_id._create_new_server(self.name, **kwargs)
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_server"
@@ -144,7 +156,46 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
     wizard_id = fields.Many2one("cx.tower.server.template.create.wizard")
     variable_id = fields.Many2one(comodel_name="cx.tower.variable", required=True)
     variable_reference = fields.Char(related="variable_id.reference", readonly=True)
-    value_char = fields.Char(string="Value")
+    value_char = fields.Char(
+        string="Value",
+        compute="_compute_value_char",
+        readonly=False,
+        store=True,
+    )
     required = fields.Boolean(
         help="Indicates if this variable is mandatory for server creation",
     )
+    variable_type = fields.Selection(
+        related="variable_id.variable_type",
+        readonly=True,
+    )
+    option_id = fields.Many2one(comodel_name="cx.tower.variable.option")
+    option_ids_domain = fields.Binary(compute="_compute_option_ids_domain")
+
+    @api.depends("option_id", "variable_id", "variable_type")
+    def _compute_value_char(self):
+        for rec in self:
+            if rec.variable_id and rec.variable_type == "o" and rec.option_id:
+                rec.value_char = rec.option_id.value_char
+            else:
+                rec.value_char = ""
+
+    @api.depends("option_id", "variable_id.option_ids")
+    def _compute_option_ids_domain(self):
+        """
+        Compute the domain for the `option_ids_domain` field based on the related
+        `option_id` and the `option_ids` of the associated `variable_id`.
+        """
+        for rec in self:
+            if rec.variable_type == "o":
+                allowed_option_ids = rec.variable_id.option_ids.ids
+                rec.option_ids_domain = [("id", "in", allowed_option_ids)]
+            else:
+                rec.option_ids_domain = []
+
+    @api.onchange("variable_id")
+    def _onchange_variable_id(self):
+        """
+        Reset option_id when variable changes.
+        """
+        self.update({"option_id": None})
