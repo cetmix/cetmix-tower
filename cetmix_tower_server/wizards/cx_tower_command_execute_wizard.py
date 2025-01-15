@@ -246,7 +246,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                 )
             else:
                 command_result = server._execute_command_using_ssh(
-                    server._connect(raise_on_error=True),
+                    server._get_ssh_client(raise_on_error=True),
                     self.rendered_code,
                     self.path or None,
                     sudo=self.use_sudo if self.use_sudo else None,
