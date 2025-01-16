@@ -13,6 +13,7 @@ from .constants import (
     FILE_CREATION_FAILED,
     NO_COMMAND_RUNNER_FOUND,
     PYTHON_COMMAND_ERROR,
+    SSH_CONNECTION_ERROR,
 )
 from .tools import generate_random_id
 
@@ -531,13 +532,21 @@ class CxTowerServer(models.Model):
         command = "uname -a"
         return command
 
-    def _connect(self, raise_on_error=True):
-        """_summary_
+    def _get_ssh_client(self, raise_on_error=True, timeout=5000):
+        """Create a new SSH client instance
 
         Args:
             raise_on_error (bool, optional): If true will raise exception
              in case or error, otherwise False will be returned
             Defaults to True.
+            timeout (int, optional): SSH connection timeout in seconds.
+
+        Raises:
+            ValidationError: If the provided server reference is invalid or
+                the server cannot be found.
+
+        Returns:
+            SSH: SSH client instance or False and exception content
         """
         self.ensure_one()
         try:
@@ -548,6 +557,7 @@ class CxTowerServer(models.Model):
                 mode=self.ssh_auth_mode,
                 password=self._get_password(),
                 ssh_key=self._get_ssh_key(),
+                timeout=timeout,
             )
         except Exception as e:
             if raise_on_error:
@@ -556,66 +566,141 @@ class CxTowerServer(models.Model):
                 return False, e
         return client
 
-    def test_ssh_connection(self):
-        """Test SSH connection"""
+    def test_ssh_connection(
+        self,
+        raise_on_error=True,
+        return_notification=True,
+        try_command=True,
+        try_file=True,
+        timeout=60,
+    ):
+        """Test SSH connection.
+
+        Args:
+            raise_on_error (bool, optional): Raise exception in case of error.
+                Defaults to True.
+            return_notification (bool, optional): Show sticky notification
+                Defaults to True.
+            try_command (bool, optional): Try to run a command.
+                Defaults to True.
+            try_file (bool, optional): Try file operations.
+                Defaults to True.
+            timeout (int, optional): SSH connection timeout in seconds.
+                Defaults to 60.
+
+        Raises:
+            ValidationError: In case of SSH connection error.
+            ValidationError: In case of no output received.
+            ValidationError: In case of file operations error.
+
+        Returns:
+            dict: {
+                "status": int,
+                "response": str,
+                "error": str,
+            }
+        """
         self.ensure_one()
-        client = self._connect()
-        command = self._get_connection_test_command()
-        command_result = self._execute_command_using_ssh(client, command_code=command)
+        client = self._get_ssh_client(raise_on_error=raise_on_error, timeout=timeout)
 
-        if command_result["status"] != 0 or command_result["error"]:
-            raise ValidationError(
-                _(
-                    "Cannot execute command\n. CODE: %(status)s. "
-                    "RESULT: %(res)s. ERROR: %(err)s",
-                    status=command_result["status"],
-                    res=command_result["response"],
-                    err=command_result["error"],  # type: ignore
+        if not try_command and not try_file:
+            try:
+                client._connect()
+                return {
+                    "status": 0,
+                    "response": _("Connection successful."),
+                    "error": "",
+                }
+            except Exception as e:
+                if raise_on_error:
+                    raise ValidationError(
+                        _("SSH connection error %(err)s", err=e)
+                    ) from e
+                else:
+                    return {
+                        "status": SSH_CONNECTION_ERROR,
+                        "response": _("Connection failed."),
+                        "error": e,
+                    }
+
+        # Try command
+        if try_command:
+            command = self._get_connection_test_command()
+            test_result = self._execute_command_using_ssh(client, command_code=command)
+            status = test_result.get("status", 0)
+            response = test_result.get("response", "")
+            error = test_result.get("error", "")
+
+            # Got an error
+            if raise_on_error and (status != 0 or error):
+                raise ValidationError(
+                    _(
+                        "Cannot execute command\n. CODE: %(status)s. "
+                        "RESULT: %(res)s. ERROR: %(err)s",
+                        status=status,
+                        res=response,
+                        err=error,
+                    )
                 )
-            )
 
-        if not command_result["response"]:
-            raise ValidationError(
-                _(
-                    "No output received."
-                    " Please log in manually and check for any issues.\n"
-                    "===\nCODE: %(status)s",
-                    status=command_result["status"],
+            # No output received
+            if raise_on_error and not response:
+                raise ValidationError(
+                    _(
+                        "No output received."
+                        " Please log in manually and check for any issues.\n"
+                        "===\nCODE: %(status)s",
+                        status=status,
+                    )
                 )
+
+        if try_file:
+            # test upload file
+            self.upload_file("test", "/tmp/cetmix_tower_test_connection.txt")
+
+            # test download loaded file
+            self.download_file("/tmp/cetmix_tower_test_connection.txt")
+
+            # remove file from server
+            file_test_result = self._execute_command_using_ssh(
+                client, command_code="rm -rf /tmp/cetmix_tower_test_connection.txt"
             )
+            file_status = file_test_result.get("status", 0)
+            file_error = file_test_result.get("error", "")
 
-        # test upload file
-        self.upload_file("test", "/var/tmp/test.txt")
+            # In case of an error, raise or replace command result with file test result
+            if file_status != 0 or file_error:
+                if raise_on_error:
+                    raise ValidationError(
+                        _(
+                            "Cannot remove test file using command.\n "
+                            "CODE: %(status)s. ERROR: %(err)s",
+                            err=file_error,
+                            status=file_status,
+                        )
+                    )
 
-        # test download loaded file
-        self.download_file("/var/tmp/test.txt")
+                # Replace command result with file test result
+                test_result = file_test_result
 
-        # remove file from server
-        file_remove_result = self._execute_command_using_ssh(
-            client, command_code="rm -rf /var/tmp/test.txt"
-        )
-        if file_remove_result["status"] != 0 or command_result["error"]:
-            raise ValidationError(
-                _(
-                    "Cannot execute command\n. CODE: %(status)s. ERROR: %(err)s",
-                    err=file_remove_result["error"],  # type: ignore
-                    status=file_remove_result["status"],
-                )
-            )
+        # Return notification
+        if return_notification:
+            response = test_result.get("response", "")
+            notification = {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Success"),
+                    "message": _(
+                        "Connection test passed! \n%(res)s",
+                        res=response.rstrip(),
+                    ),
+                    "sticky": False,
+                },
+            }
+            return notification
 
-        notification = {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": _("Success"),
-                "message": _(
-                    "Connection test passed! \n%(res)s",
-                    res=command_result["response"].rstrip(),
-                ),
-                "sticky": False,
-            },
-        }
-        return notification
+        return test_result
 
     def _render_command(self, command, path=None):
         """Renders command code for selected command for current server
@@ -1039,7 +1124,7 @@ class CxTowerServer(models.Model):
             dict(): command execution result if `log_record` is defined else None
         """
         if not ssh_connection:
-            ssh_connection = self._connect(raise_on_error=False)
+            ssh_connection = self._get_ssh_client(raise_on_error=True)
 
         # Execute command
         command_result = self._execute_command_using_ssh(
@@ -1516,7 +1601,7 @@ class CxTowerServer(models.Model):
              (e.g. /test/my_file.txt).
         """
         self.ensure_one()
-        client = self._connect(raise_on_error=False)
+        client = self._get_ssh_client(raise_on_error=True)
         client.delete_file(remote_path)
 
     def upload_file(self, data, remote_path, from_path=False):
@@ -1538,7 +1623,7 @@ class CxTowerServer(models.Model):
              uploaded file.
         """
         self.ensure_one()
-        client = self._connect(raise_on_error=False)
+        client = self._get_ssh_client(raise_on_error=True)
         if from_path:
             result = client.upload_file(data, remote_path)
         else:
@@ -1564,7 +1649,7 @@ class CxTowerServer(models.Model):
             Result (Bytes): file content.
         """
         self.ensure_one()
-        client = self._connect(raise_on_error=False)
+        client = self._get_ssh_client(raise_on_error=True)
         try:
             result = client.download_file(remote_path)
         except FileNotFoundError as fe:
@@ -1580,7 +1665,7 @@ class CxTowerServer(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_file_action"
         )
-        action["domain"] = [("server_id", "=", self.id)]
+        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
 
         context = self._context.copy()
         if "context" in action and isinstance((action["context"]), str):
@@ -1590,7 +1675,7 @@ class CxTowerServer(models.Model):
 
         context.update(
             {
-                "default_server_id": self.id,
+                "default_server_id": self.id,  # pylint: disable=no-member
             }
         )
         action["context"] = context

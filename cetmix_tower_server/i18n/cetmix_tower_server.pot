@@ -361,12 +361,6 @@ msgid "Add a new file template"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
-msgid "All connection connection attempts have failed."
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -494,14 +488,6 @@ msgstr ""
 #, python-format
 msgid ""
 "Cannot execute command\n"
-". CODE: %(status)s. ERROR: %(err)s"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
-msgid ""
-"Cannot execute command\n"
 ". CODE: %(status)s. RESULT: %(res)s. ERROR: %(err)s"
 msgstr ""
 
@@ -509,6 +495,14 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Cannot pull %(f)s from server: %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid ""
+"Cannot remove test file using command.\n"
+" CODE: %(status)s. ERROR: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -750,7 +744,14 @@ msgid "Confirm"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Connection failed."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Connection successful."
 msgstr ""
@@ -761,12 +762,6 @@ msgstr ""
 msgid ""
 "Connection test passed! \n"
 "%(res)s"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
-msgid "Connection timed out after %(attempts)s attempts. Error: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1048,6 +1043,12 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Failed to connect after %(attempts)s attempts. Error: %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
+#, python-format
+msgid "Failed to connect. Error: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2402,6 +2403,7 @@ msgid "SSH command"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "SSH connection error %(err)s"

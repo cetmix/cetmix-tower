@@ -216,7 +216,7 @@ class TestTowerCommon(TransactionCase):
         self.PlanLog = self.env["cx.tower.plan.log"]
 
         # Patch methods for testing
-        def _connect_patch(self, raise_on_error=True):
+        def _get_ssh_client_patch(self, raise_on_error=True):
             """Mock method for connection"""
             return True
 
@@ -288,14 +288,14 @@ class TestTowerCommon(TransactionCase):
                 status, response, error, secrets, **kwargs
             )
 
-        self.Server._patch_method("_connect", _connect_patch)
+        self.Server._patch_method("_get_ssh_client", _get_ssh_client_patch)
         self.Server._patch_method(
             "_execute_command_using_ssh", _execute_command_using_ssh_patch
         )
 
     def tearDown(self):
         # Remove the monkey patches
-        self.Server._revert_method("_connect")
+        self.Server._revert_method("_get_ssh_client")
         self.Server._revert_method("_execute_command_using_ssh")
         super(TestTowerCommon, self).tearDown()
 
