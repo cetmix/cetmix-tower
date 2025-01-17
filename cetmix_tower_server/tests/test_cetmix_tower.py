@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from unittest.mock import patch
 
-from ..models.constants import SSH_CONNECTION_ERROR, SSH_CONNECTION_TIMEOUT
+from ..models.constants import SSH_CONNECTION_ERROR
 from .common import TestTowerCommon
 
 
@@ -99,63 +99,26 @@ class TestCetmixTower(TestTowerCommon):
         either returns a dictionary or raises an exception.
         """
 
-        def mock_server_check_ssh_connection(
-            this, server_reference, attempts=5, timeout=15
+        # Test successful connection
+        result = self.env["cetmix.tower"].server_check_ssh_connection(
+            self.server_test_1.reference,
+        )
+        self.assertEqual(result["exit_code"], 0, "SSH connection should be successful.")
+
+        def test_ssh_connection(this, *args, **kwargs):
+            return {"status": -1}
+
+        with patch.object(
+            self.registry["cx.tower.server"], "test_ssh_connection", test_ssh_connection
         ):
-            if server_reference == self.server_test_1.reference:
-                return {
-                    "code": 0,
-                    "message": "Mocked: SSH connection successful",
-                }
-            elif server_reference == "invalid_server":
-                raise ValueError("Mocked: Invalid server reference")
-            elif server_reference == "timeout_server":
-                raise TimeoutError("Mocked: SSH connection timed out")
-            elif server_reference == "max_attempts_timeout":
-                return {
-                    "code": SSH_CONNECTION_TIMEOUT,
-                    "message": "Mocked: SSH connection timeout on last attempt",
-                }
-            else:
-                return {
-                    "code": SSH_CONNECTION_ERROR,
-                    "message": "Mocked: Unknown server",
-                }
-
-        with patch(
-            "odoo.addons.cetmix_tower_server.models.cetmix_tower.CetmixTower.server_check_ssh_connection",
-            mock_server_check_ssh_connection,
-        ):
-            # Test successful connection
-            result = self.env["cetmix.tower"].server_check_ssh_connection(
-                self.server_test_1.reference
-            )
-            self.assertEqual(result["code"], 0, "SSH connection should be successful.")
-
-            # Test invalid server
-            with self.assertRaises(ValueError):
-                self.env["cetmix.tower"].server_check_ssh_connection("invalid_server")
-
-            # Test connection timeout
-            with self.assertRaises(TimeoutError):
-                self.env["cetmix.tower"].server_check_ssh_connection("timeout_server")
-
             # Test connection timeout after max attempts
             result = self.env["cetmix.tower"].server_check_ssh_connection(
-                "max_attempts_timeout", attempts=5
+                self.server_test_1.reference,
+                attempts=2,
+                wait_time=1,
             )
             self.assertEqual(
-                result["code"],
-                SSH_CONNECTION_TIMEOUT,
-                "SSH connection should timeout after maximum attempts.",
-            )
-
-            # Test unknown server
-            result = self.env["cetmix.tower"].server_check_ssh_connection(
-                "unknown_server"
-            )
-            self.assertEqual(
-                result["code"],
+                result["exit_code"],
                 SSH_CONNECTION_ERROR,
-                "Unknown server should return code 503.",
+                "SSH connection should timeout after maximum attempts.",
             )

@@ -1,5 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from unittest.mock import MagicMock
+
 from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
@@ -216,9 +218,9 @@ class TestTowerCommon(TransactionCase):
         self.PlanLog = self.env["cx.tower.plan.log"]
 
         # Patch methods for testing
-        def _get_ssh_client_patch(self, raise_on_error=True):
+        def _get_ssh_client_patch(self, raise_on_error=True, timeout=5000):
             """Mock method for connection"""
-            return True
+            return MagicMock()
 
         def _execute_command_using_ssh_patch(
             self,
