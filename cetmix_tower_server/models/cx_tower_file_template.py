@@ -24,6 +24,7 @@ class CxTowerFileTemplate(models.Model):
         for template in self:
             template.file_count = len(template.file_ids)
 
+    active = fields.Boolean(default=True)
     file_name = fields.Char(
         help="Default full file name with file type for example: test.txt",
     )
