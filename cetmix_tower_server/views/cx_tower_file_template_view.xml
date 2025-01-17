@@ -28,6 +28,7 @@
                                 placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                             />
                         </h3>
+                        <field name="active" invisible="1" />
                     </div>
                     <group>
                         <group>
@@ -132,6 +133,11 @@
                     name="filter_text"
                     string="Text"
                     domain="[('file_type', '=', 'text')]"
+                />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
                 />
                 <group expand="0" string="Group By">
                     <filter

@@ -25,6 +25,17 @@ class CxTowerPlanLine(models.Model):
         auto_join=True,
         ondelete="cascade",
     )
+    plan_line_ids = fields.One2many(
+        comodel_name="cx.tower.plan.line",
+        related="command_id.flight_plan_id.line_ids",
+        string="Flight Plan Lines",
+        readonly=True,
+    )
+    flight_plan_id = fields.Many2one(
+        comodel_name="cx.tower.plan",
+        related="command_id.flight_plan_id",
+        readonly=True,
+    )
     command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
     note = fields.Text(related="command_id.note", readonly=True)
     path = fields.Char(
@@ -44,7 +55,10 @@ class CxTowerPlanLine(models.Model):
         help="Actions trigger based on command result."
         " If empty next command will be executed",
     )
-    command_code = fields.Text(related="command_id.code", readonly=True)
+    command_code = fields.Text(
+        related="command_id.code",
+        readonly=True,
+    )
     action = fields.Selection(related="command_id.action", readonly=True)
     tag_ids = fields.Many2many(related="command_id.tag_ids", readonly=True)
     access_level = fields.Selection(
@@ -65,6 +79,16 @@ class CxTowerPlanLine(models.Model):
         string="Variables",
         compute="_compute_variable_ids",
         store=True,
+    )
+    file_template_id = fields.Many2one(
+        comodel_name="cx.tower.file.template",
+        related="command_id.file_template_id",
+        readonly=True,
+    )
+    file_template_code = fields.Text(
+        string="Template Code",
+        related="file_template_id.code",
+        readonly=True,
     )
 
     @api.depends("condition")
