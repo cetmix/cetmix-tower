@@ -23,6 +23,7 @@
         "security/cx_tower_server_security.xml",
         "security/cx_tower_command_security.xml",
         "security/cx_tower_variable_value_security.xml",
+        "security/cx_tower_variable_security.xml",
         "security/cx_tower_plan_security.xml",
         "security/cx_tower_plan_line_security.xml",
         "security/cx_tower_plan_line_action_security.xml",

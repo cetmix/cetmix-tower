@@ -290,7 +290,7 @@
                         <page
                             name="configuration"
                             string="Configuration"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_server.group_manager, cetmix_tower_server.group_user"
                         >
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
@@ -306,6 +306,7 @@
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         attrs="{'readonly': [('variable_type', '=', 's')]}"
                                     />
+                                    <field name="access_level" />
                                 </tree>
                                 <form>
                                     <group>
@@ -320,6 +321,9 @@
                                             widget="CopyClipboardChar"
                                             options="{'string': 'Copy value'}"
                                         />
+                                    </group>
+                                    <group>
+                                        <field name="access_level" />
                                     </group>
                                     <field
                                         name="note"

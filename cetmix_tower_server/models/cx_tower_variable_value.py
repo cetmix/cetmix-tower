@@ -12,6 +12,7 @@ class TowerVariableValue(models.Model):
     _description = "Cetmix Tower Variable Values"
     _inherit = [
         "cx.tower.reference.mixin",
+        "cx.tower.access.mixin",
     ]
     _rec_name = "variable_reference"
     _order = "variable_reference"
@@ -133,6 +134,15 @@ class TowerVariableValue(models.Model):
             if rec.variable_id.option_ids:
                 rec.value_char = False
 
+    @api.depends("variable_id")
+    def _compute_access_level(self):
+        """
+        Automatically set the `access_level` field based on the `variable_id`.
+        """
+        for rec in self:
+            if rec.variable_id:
+                rec.access_level = rec.variable_id.access_level
+
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):
         """Ensure that there is only one global value exist for the same variable
@@ -168,6 +178,35 @@ class TowerVariableValue(models.Model):
             record.variable_ids = template_mixin_obj._prepare_variable_commands(
                 ["value_char"], force_record=record
             )
+
+    @api.constrains("access_level", "variable_id")
+    def _check_access_level_consistency(self):
+        """
+        Ensure that the access level of the variable value is not lower than
+        the access level of the associated variable.
+        """
+        for rec in self:
+            if rec.variable_id and rec.access_level < rec.variable_id.access_level:
+                raise ValidationError(
+                    _(
+                        "The access level for Variable Value '%(value)s' cannot be"
+                        "lower than the access level of its Variable '%(variable)s'.\n"
+                        "Variable Access Level: %(var_level)s\n"
+                        "Variable Value Access Level: %(val_level)s",
+                        value=rec.value_char or "Undefined",
+                        variable=rec.variable_id.name,
+                        var_level=dict(
+                            rec.fields_get(["access_level"])["access_level"][
+                                "selection"
+                            ]
+                        )[rec.variable_id.access_level],
+                        val_level=dict(
+                            rec.fields_get(["access_level"])["access_level"][
+                                "selection"
+                            ]
+                        )[rec.access_level],
+                    )
+                )
 
     def _inverse_value_char(self):
         """Set option_id based on value_char"""

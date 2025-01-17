@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+
     <record id="cx_tower_variable_value_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.variable.value.view.tree</field>
         <field name="model">cx.tower.variable.value</field>
@@ -26,6 +27,7 @@
             </tree>
         </field>
     </record>
+
     <record id="cx_tower_variable_value_search_view" model="ir.ui.view">
         <field name="name">cx.tower.variable.value.view.search</field>
         <field name="model">cx.tower.variable.value</field>
@@ -34,6 +36,7 @@
                 <field name="reference" />
                 <field name="variable_id" string="Variable" />
                 <field name="value_char" string="Value" />
+                <field name="access_level" />
                 <filter
                     string="Local"
                     name="local"
@@ -47,10 +50,12 @@
             </search>
         </field>
     </record>
+
     <record id="action_cx_tower_variable_value" model="ir.actions.act_window">
         <field name="name">Variable Values</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">cx.tower.variable.value</field>
         <field name="view_mode">tree</field>
     </record>
+
 </odoo>

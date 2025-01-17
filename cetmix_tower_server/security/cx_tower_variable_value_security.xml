@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record
-        id="cx_tower_variable_value_rule_group_user_and_manager_access"
-        model="ir.rule"
-    >
-        <field name="name">Tower variable value: user and manager access rule</field>
+    <!-- user -->
+    <record id="cx_tower_variable_value_rule_group_user_access" model="ir.rule">
+        <field name="name">Tower Variable Value: User Access Rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
-        <field
-            name="domain_force"
-        >['|', '|', ('is_global', '=', True), ('create_uid', '=', user.id),
-            ('server_id.message_partner_ids', 'in', [user.partner_id.id])]</field>
-        <field
-            name="groups"
-            eval="[(4, ref('cetmix_tower_server.group_user')), (4, ref('cetmix_tower_server.group_manager'))]"
-        />
-        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">
+            [
+                '|',
+                ('access_level', '=', '1'),
+                '&amp;',
+                ('create_uid', '=', user.id),
+                ('server_id.message_partner_ids', 'in', [user.partner_id.id])
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+    </record>
+
+    <!-- manager -->
+    <record id="cx_tower_variable_value_rule_group_manager_access" model="ir.rule">
+        <field name="name">Tower Variable Value: Manager Access Rule</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">
+            [
+                ('access_level', '&lt;=', '2'),
+                '|',
+                ('is_global', '=', True),
+                ('create_uid', '=', user.id),
+                ('server_id.message_partner_ids', 'in', [user.partner_id.id])
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
     </record>
 
     <record id="cx_tower_variable_value_action_rule_group_user_access" model="ir.rule">
         <field
             name="name"
-        >Tower variable value: user access to variable values in plan line action
-            rule</field>
+        >Tower variable Value: User Access to Variable Values in Plan Line Action
+            Rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
@@ -43,8 +58,8 @@
     >
         <field
             name="name"
-        >Tower variable value: manager access to variable values in plan line
-            action rule</field>
+        >Tower Variable Value: Manager Access to Variable Values in Plan Line
+            Action Rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
@@ -65,8 +80,8 @@
     >
         <field
             name="name"
-        >Tower variable value: manager delete own variable values in plan line
-            action</field>
+        >Tower Variable Value: Manager Delete own Variable Values in Plan Line
+            Action</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
@@ -90,8 +105,8 @@
     >
         <field
             name="name"
-        >Tower variable value: manager access to variable values in server
-            template rule</field>
+        >Tower Variable Value: Manager Access to Variable Values in Server
+            Template Rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">[
             ('server_template_id.message_partner_ids', 'in', [user.partner_id.id]),
@@ -106,8 +121,8 @@
     >
         <field
             name="name"
-        >Tower variable value: manager delete own variable values in server
-            template rule</field>
+        >Tower Variable Value: Manager Delete own Variable Values in Server
+            Template Rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
@@ -121,11 +136,12 @@
         <field name="perm_write" eval="0" />
     </record>
 
+    <!-- root -->
     <record id="cx_tower_variable_value_rule_group_root_access" model="ir.rule">
-        <field name="name">Tower variable value: root access rule</field>
+        <field name="name">Tower Variable Value: Root Access Rule</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4,ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
     </record>
 
 </odoo>
