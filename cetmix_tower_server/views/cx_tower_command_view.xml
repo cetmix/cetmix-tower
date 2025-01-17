@@ -269,6 +269,11 @@
                     name="file_from_template"
                     domain="[('action', '=', 'file_using_template')]"
                 />
+                <filter
+                    string="Run Flight Plan"
+                    name="filter_flight_plan"
+                    domain="[('action', '=', 'plan')]"
+                />
                 <separator />
                 <filter
                     string="Tagged"

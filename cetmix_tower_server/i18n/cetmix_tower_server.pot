@@ -242,6 +242,11 @@ msgid "<strong>Partner:</strong>"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
+msgid "<strong>Servers:</strong>"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_action
 msgid ""
 "A variable value cannot be assigned multiple times to the same plan line "
@@ -336,6 +341,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__active
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__active
@@ -414,6 +420,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
@@ -716,11 +723,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Command Logs"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
-msgid "Command Preview"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1119,7 +1121,9 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__file_template_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_template_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "File Template"
 msgstr ""
 
@@ -1265,12 +1269,20 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__flight_plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_line_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
+msgid "Flight Plan Lines"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2116,6 +2128,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Preview"
 msgstr ""
 
@@ -2332,6 +2345,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_plan
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #, python-format
 msgid "Run Flight Plan"
@@ -2835,6 +2849,12 @@ msgid "Template"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__file_template_code
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
+msgid "Template Code"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_file_template_action
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_file_template
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_template
@@ -2928,6 +2948,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__command_code
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_template_mixin__code
 msgid "This field will be rendered by default"
 msgstr ""
@@ -2952,6 +2973,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__file_template_id
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 msgid "This template will be used to create or update the pushed file"
 msgstr ""
 
