@@ -353,7 +353,16 @@ class CxTowerServer(models.Model):
     # ---- Related server template
     server_template_id = fields.Many2one(
         "cx.tower.server.template",
+        readonly=True,
         index=True,
+    )
+
+    # ---- Delete plan
+    plan_delete_id = fields.Many2one(
+        "cx.tower.plan",
+        string="On Delete Plan",
+        groups="cetmix_tower_server.group_manager",
+        help="This Flightplan will be executed when the server is deleted",
     )
 
     def _selection_status(self):
@@ -369,6 +378,8 @@ class CxTowerServer(models.Model):
             ("running", "Running"),
             ("stopping", "Stopping"),
             ("restarting", "Restarting"),
+            ("deleting", "Deleting"),
+            ("delete_error", "Deletion Error"),
         ]
 
     def server_toggle_active(self, self_active):
@@ -435,6 +446,52 @@ class CxTowerServer(models.Model):
             if validation_errors:
                 validation_error = "\n".join(validation_errors)
                 raise ValidationError(validation_error)
+
+    def unlink(self):
+        servers_to_delete = self.env["cx.tower.server"]
+        flight_plan_log_obj = self.env["cx.tower.plan.log"]
+
+        for server in self:
+            # If forced, no delete plan, or already in deleting state,
+            # skip plan execution
+            if (
+                self._context.get("server_force_delete")
+                or not server.plan_delete_id
+                or server._is_being_deleted()
+            ):
+                servers_to_delete |= server
+                continue
+
+            plan_label = generate_random_id(4)
+            server.plan_delete_id.execute(server, plan_log={"label": plan_label})
+            plan_log = flight_plan_log_obj.search(
+                [
+                    ("server_id", "=", server.id),
+                    ("plan_id", "=", server.plan_delete_id.id),
+                    ("label", "=", plan_label),
+                ]
+            )
+
+            # If plan has finished, either mark for deletion or set an error
+            if plan_log and plan_log.finish_date:
+                if plan_log.plan_status == 0:
+                    servers_to_delete |= server
+                else:
+                    server.status = "delete_error"
+            else:
+                # Plan still in progress
+                server.status = "deleting"
+
+        return super(CxTowerServer, servers_to_delete).unlink()
+
+    def _is_being_deleted(self):
+        """Check if the server is being deleted.
+
+        Returns:
+            bool: True if the server is being deleted, False otherwise
+        """
+        self.ensure_one()
+        return self.status and self.status == "deleting"
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):

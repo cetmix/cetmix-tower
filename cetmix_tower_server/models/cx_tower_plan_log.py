@@ -156,7 +156,21 @@ class CxTowerPlanLog(models.Model):
         if kwargs:
             values.update(kwargs)
         self.sudo().write(values)
+
+        # Call hook
         self._plan_finished()
+
+        # Check if we were deleting a server
+        if (
+            self.server_id._is_being_deleted()
+            and self.server_id.plan_delete_id == self.plan_id
+        ):
+            if plan_status == 0:
+                # And finally delete the server
+                self.with_context(server_force_delete=True).server_id.unlink()
+            else:
+                # Set deletion error if flightplan failed
+                self.server_id.status = "delete_error"
 
     def _plan_finished(self):
         """Triggered when flightplan in finished
