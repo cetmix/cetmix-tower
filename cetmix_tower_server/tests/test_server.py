@@ -53,6 +53,38 @@ class TestTowerServer(TestTowerCommon):
             }
         )
 
+        # ---
+        # Flight plan to delete the server
+
+        # Add a command to delete the server
+        # This command will create a new partner with pre-defined ref
+        self.command_delete_server = self.Command.create(
+            {
+                "name": "Python command for deleting server",
+                "action": "python_code",
+                "code": """
+partner = env["res.partner"].create({"name": "Partner 1", "ref": "delete_server"})
+COMMAND_RESULT = {
+    "exit_code": 0,
+    "message": partner.name,
+}
+    """,
+            }
+        )
+
+        self.plan_delete_server = self.Plan.create(
+            {
+                "name": "Delete server",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {"command_id": self.command_delete_server.id},
+                    )
+                ],
+            }
+        )
+
     def test_server_copy(self):
         # Let's say we have auto sync enabled on one of the files in server 2
         self.server_test_2_file.auto_sync = True
@@ -435,4 +467,53 @@ class TestTowerServer(TestTowerCommon):
         self.assertFalse(
             self.PlanLog.search([("id", "=", plan_log_id)]),
             msg="Plan Log should be deleted when server is deleted",
+        )
+
+    def test_server_delete_plan_success(self):
+        """Test server delete plan"""
+
+        # Set plan to delete the server
+        self.server_test_2.plan_delete_id = self.plan_delete_server.id
+
+        # Delete the server
+        self.server_test_2.unlink()
+
+        # Check if the server has been deleted
+        self.assertFalse(
+            self.server_test_2.exists(),
+            msg="Server should be deleted",
+        )
+
+        # Check if the partner has been created
+        self.assertTrue(
+            self.env["res.partner"].search([("ref", "=", "delete_server")]),
+            msg="Partner should be created",
+        )
+
+    def test_server_delete_plan_error(self):
+        """Test server delete plan error"""
+
+        # Modify the command to fail
+        self.command_delete_server.code = """
+COMMAND_RESULT = {
+    "exit_code": 4,
+    "message": 'Such much error',
+}
+    """
+        # Set plan to delete the server
+        self.server_test_2.plan_delete_id = self.plan_delete_server.id
+
+        # Delete the server
+        self.server_test_2.unlink()
+
+        # Check if the server has been deleted
+        self.assertTrue(
+            self.server_test_2.exists(),
+            msg="Server should not be deleted",
+        )
+
+        self.assertEqual(
+            self.server_test_2.status,
+            "delete_error",
+            msg="Server status should be delete_error",
         )

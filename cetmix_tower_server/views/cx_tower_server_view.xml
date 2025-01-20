@@ -258,8 +258,13 @@
                                         attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
                                     />
                                 </group>
-
-
+                                <group extra="delete">
+                                    <field
+                                        name="server_template_id"
+                                        attrs="{'invisible': [('server_template_id', '=', False)]}"
+                                    />
+                                    <field name="plan_delete_id" />
+                                </group>
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
