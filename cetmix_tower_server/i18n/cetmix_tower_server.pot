@@ -1900,6 +1900,11 @@ msgid "OSs"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_delete_id
+msgid "On Delete Plan"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__on_error_action
 msgid "On Error"
 msgstr ""
@@ -2814,6 +2819,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "There are two default keys in the dictionary, e.g.:"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__plan_delete_id
+msgid "This Flightplan will be executed when the server is deleted"
 msgstr ""
 
 #. module: cetmix_tower_server
