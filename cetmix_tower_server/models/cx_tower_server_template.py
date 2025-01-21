@@ -162,9 +162,7 @@ class CxTowerServerTemplate(models.Model):
             ipv6 (Char, optional): IP v6 address.
                 Must be provided in case IP v4 is not. Defaults to None.
             ssh_password (Char, optional): SSH password. Defaults to None.
-            ssh_private_key_value (Char, optional): SSH private key content.
-                Defaults to None.
-            ssh_private_key_value (cx.tower.key(), optional): SSH private key record.
+            ssh_key (Char, optional): SSH private key record reference.
                 Defaults to None.
             configuration_variables (Dict, optional): Custom configuration variable.
                 Following format is used:
@@ -190,9 +188,7 @@ class CxTowerServerTemplate(models.Model):
             ipv6 (Char, optional): IP v6 address.
                 Must be provided in case IP v4 is not. Defaults to None.
             ssh_password (Char, optional): SSH password. Defaults to None.
-            ssh_private_key_value (Char, optional): SSH private key content.
-                Defaults to None.
-            ssh_private_key_value (cx.tower.key(), optional): SSH private key record.
+            ssh_key (Char, optional): SSH private key record reference.
                 Defaults to None.
             configuration_variables (Dict, optional): Custom configuration variable.
                 Following format is used:
@@ -275,6 +271,9 @@ class CxTowerServerTemplate(models.Model):
 
         # read all values required to create a new server from the template
         vals_list = self.read(self._get_fields_tower_server(), load=False)
+
+        # prepare server config values from kwargs
+        server_config_values = self._parse_server_config_values(kwargs)
 
         # process each template record
         for values in vals_list:
@@ -375,8 +374,55 @@ class CxTowerServerTemplate(models.Model):
             del values["id"]
             # update the values with additional arguments from kwargs
             values.update(kwargs)
+            # update server configs
+            values.update(server_config_values)
 
         return vals_list
+
+    def _parse_server_config_values(self, config_values):
+        """
+        Prepares server configuration values.
+
+        Args:
+            config_values (dict): A dictionary containing server configuration values.
+                Keys and their expected values:
+                    - partner (res.partner, optional): The partner this server
+                      belongs to.
+                    - ipv4 (str, optional): IPv4 address. Defaults to None.
+                    - ipv6 (str, optional): IPv6 address. Must be provided if IPv4 is
+                      not specified. Defaults to None.
+                    - ssh_key (str, optional): Reference to an SSH private key record.
+                      Defaults to None.
+
+        Returns:
+            dict: A dictionary containing parsed server configuration values with the
+                following keys:
+                    - partner_id (int, optional): ID of the partner.
+                    - ssh_key_id (int, optional): ID of the associated SSH key.
+                    - ip_v4_address (str, optional): Parsed IPv4 address.
+                    - ip_v6_address (str, optional): Parsed IPv6 address.
+        """
+        values = {}
+
+        partner = config_values.pop("partner", None)
+        if partner:
+            values["partner_id"] = partner.id
+
+        ssh_key_reference = config_values.pop("ssh_key", None)
+        if ssh_key_reference:
+            ssh_key = self.env["cx.tower.key"].get_by_reference(ssh_key_reference)
+            if ssh_key:
+                values["ssh_key_id"] = ssh_key.id
+
+        ipv4 = config_values.pop("ipv4", None)
+        if ipv4:
+            values["ip_v4_address"] = ipv4
+
+        ipv6 = config_values.pop("ipv6", None)
+        if ipv6:
+            values["ip_v6_address"] = ipv6
+
+        return values
 
     def _validate_required_variables(self, configuration_variables):
         """
