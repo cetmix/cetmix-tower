@@ -18,8 +18,7 @@ This function takes the following arguments:
   - ipv4 (Char, optional): IP v4 address. Defaults to None.
   - ipv6 (Char, optional): IP v6 address. Must be provided in case IP v4 is not. Defaults to None.
   - ssh_password (Char, optional): SSH password. Defaults to None. Defaults to None.
-  - ssh_private_key_value (Char, optional): SSH private key content.
-  - ssh_private_key_value (cx.tower.key(), optional): SSH private key record. Defaults to None.
+  - ssh_key (Char, optional): SSH private key record reference. Defaults to None.
   - configuration_variables (Dict, optional): Custom configuration variable.
     Following format is used:
       'variable_reference': 'variable_value_char'
@@ -33,7 +32,7 @@ Here is a short example of an Odoo automated action that creates a new server wh
 
 ```python
 for record in records:
-  
+
   # Check confirmed orders
   if record.state == "sale":
     params = {
@@ -46,14 +45,14 @@ for record in records:
         "odoo_version": "16.0"
         },
     }
-    
-    # Create a new server from template with the 'demo_template' reference 
+
+    # Create a new server from template with the 'demo_template' reference
     env["cetmix.tower"].server_create_from_template(
       template_reference="demo_template",
       server_name=record.name,
       **params
       )
-    
+
 ```
 
 ## Run a Command

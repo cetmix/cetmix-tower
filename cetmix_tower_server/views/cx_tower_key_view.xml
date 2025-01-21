@@ -10,10 +10,7 @@
                     <group>
                         <group>
                             <field name="name" />
-                            <field
-                                name="reference"
-                                attrs="{'invisible':[('key_type','=','k')]}"
-                            />
+                            <field name="reference" widget="CopyClipboardChar" />
                             <field
                                 name="reference_code"
                                 widget="CopyClipboardChar"
