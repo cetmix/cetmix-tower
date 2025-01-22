@@ -1,10 +1,13 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from unittest.mock import MagicMock
+import os
+from unittest.mock import MagicMock, patch
 
 from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
+
+from odoo.addons.cetmix_tower_server.models.cx_tower_server import SSH
 
 
 class TestTowerCommon(TransactionCase):
@@ -217,99 +220,112 @@ class TestTowerCommon(TransactionCase):
         # Flight plan log
         self.PlanLog = self.env["cx.tower.plan.log"]
 
-        # Patch methods for testing
-        def _get_ssh_client_patch(self, raise_on_error=True, timeout=5000):
-            """Mock method for connection"""
-            # The original method uses sudo
-            self = self.sudo()
-            return MagicMock(
-                host=self.ip_v4_address or self.ip_v6_address,
-                port=self.ssh_port,
-                username=self.ssh_username,
-                mode=self.ssh_auth_mode,
-                password=self._get_password(),
-                ssh_key=self._get_ssh_key(),
-                timeout=timeout,
-            )
+        # apply ssh connection patches
+        self.apply_patches()
 
-        def _execute_command_using_ssh_patch(
-            self,
-            client,
-            command_code,
-            command_path=None,
-            raise_on_error=True,
-            sudo=None,
-            **kwargs,
-        ):
-            """Mock function to test server command execution.
-            It will not execute any command but just return a pre-defined result
-            Pass "simulated_result" to kwargs for mocked response. Eg:
-            "simulated_result": {"status": [0], "response": ["ok"], "error": []}
+    def apply_patches(self):
+        """
+        Apply mock patches for SSH-related methods to simulate various scenarios
+        during testing.
 
+        This method sets up and applies the following mock patches:
 
-            Args:
-                client (Bool): Anything
-                command_code (Text): Command text
-                command_path (Char, optional): Directory where command is executed
-                raise_on_error (bool, optional): raise if error Defaults to True.
-                sudo (selection, optional): Use sudo for commands. Defaults to None.
+        1. `_connect` method:
+            - Returns a mocked SSH connection object that simulates the behavior of an
+              SSH connection.
+            - The `exec_command` method is patched to return:
+                - `stdin`: A `MagicMock` instance.
+                - `stdout`: A mocked object where:
+                    - `channel.recv_exit_status` returns:
+                        - `0` for successful commands.
+                        - `-1` for commands that simulate a failure
+                          (e.g., commands containing the string `"fail"`).
+                    - `readlines` returns:
+                        - `["ok"]` for successful commands.
+                        - An empty list for failed commands.
+                - `stderr`: A mocked object where:
+                    - `readlines` returns:
+                        - `["error"]` for failed commands.
+                        - An empty list for successful commands.
 
-            Returns:
-            status, [response], [error]
-            """
+        2. `download_file` method:
+            - Simulates the behavior of downloading a file and returns:
+                - A binary string `b"ok\x00"` for files with the `.zip` extension.
+                - A binary string `b"ok"` for files with all other extensions.
 
-            simulated_result = kwargs.get("simulated_result")
-            if simulated_result:
-                status = simulated_result["status"]
-                response = simulated_result["response"]
-                error = simulated_result["error"]
-            else:
-                status = 0
-                response = ["ok"]
-                error = []
+        3. `upload_file` method:
+            - Returns a `MagicMock` object to simulate file upload behavior without
+              actual execution.
 
-            # Parse inline secrets
-            code_and_secrets = self.env[
-                "cx.tower.key"
-            ]._parse_code_and_return_key_values(command_code, **kwargs.get("key", {}))
-            command_code = code_and_secrets["code"]
-            secrets = code_and_secrets["key_values"]
+        4. `delete_file` method:
+            - Returns a `MagicMock` object to simulate file deletion behavior without
+              actual execution.
 
-            command = self.env["cx.tower.key"]._parse_code(
-                command_code, **kwargs.get("key", {})
-            )
+        The patches are applied immediately using `patch.object` and are added to
+        `addCleanup` to ensure they are automatically stopped after the tests are
+        executed.
 
-            if status != 0:
-                if raise_on_error:
-                    raise ValidationError(_("SSH execute command error"))
-                return self._parse_command_results(-1, [], error, secrets, **kwargs)
+        This method should be called during the test setup phase to mock the required
+        behaviors.
+        """
 
-            command = self._prepare_ssh_command(command, command_path, sudo)
+        # Patch connection SSH method
+        def ssh_connect(self):
+            connection_mock = MagicMock()
 
-            # Compose response multiple commands: sudo with password
-            if isinstance(command, list):
-                status_list = []
-                response_list = []
-                error_list = []
-                for cmd in command:  # pylint: disable=unused-variable # noqa
-                    status_list.append(status)
-                    response_list += response
-                    error_list += error
+            # set up stdin with a condition for error simulation
+            def exec_command_side_effect(command, *args, **kwargs):
+                # Create mocks for stdin, stdout, and stderr
+                stdin_mock = MagicMock()
+                stdout_mock = MagicMock()
+                stderr_mock = MagicMock()
 
-            return self._parse_command_results(
-                status, response, error, secrets, **kwargs
-            )
+                if "fail" in command:
+                    # Simulate failure
+                    stdout_mock.channel.recv_exit_status.return_value = -1
+                    stdout_mock.readlines.return_value = []
+                    stderr_mock.readlines.return_value = ["error"]
+                    return stdin_mock, stdout_mock, stderr_mock
+                else:
+                    # Simulate success
+                    stdout_mock.channel.recv_exit_status.return_value = 0
+                    stdout_mock.readlines.return_value = ["ok"]
+                    stderr_mock.readlines.return_value = []
+                    return stdin_mock, stdout_mock, stderr_mock
 
-        self.Server._patch_method("_get_ssh_client", _get_ssh_client_patch)
-        self.Server._patch_method(
-            "_execute_command_using_ssh", _execute_command_using_ssh_patch
-        )
+            # Apply side effect to exec_command
+            connection_mock.exec_command.side_effect = exec_command_side_effect
 
-    def tearDown(self):
-        # Remove the monkey patches
-        self.Server._revert_method("_get_ssh_client")
-        self.Server._revert_method("_execute_command_using_ssh")
-        super(TestTowerCommon, self).tearDown()
+            return connection_mock
+
+        connect_patch = patch.object(SSH, "_connect", ssh_connect)
+        connect_patch.start()
+        self.addCleanup(connect_patch.stop)
+
+        # Patch file manipulation methods for testing
+        def ssh_download_file(self, remote_path):
+            _, extension = os.path.splitext(remote_path)
+            if extension == ".zip":
+                return b"ok\x00"
+            return b"ok"
+
+        download_file_patch = patch.object(SSH, "download_file", ssh_download_file)
+        download_file_patch.start()
+        self.addCleanup(download_file_patch.stop)
+
+        def ssh_upload_file(self, file, remote_path):
+            return MagicMock()
+
+        upload_file_patch = patch.object(SSH, "upload_file", ssh_upload_file)
+        upload_file_patch.start()
+        self.addCleanup(upload_file_patch.stop)
+
+        def ssh_delete_file(self, remote_path):
+            return MagicMock()
+
+        delete_file_patch = patch.object(SSH, "delete_file", ssh_delete_file)
+        delete_file_patch.start()
+        self.addCleanup(delete_file_patch.stop)
 
     def add_to_group(self, user, group_refs):
         """Add user to groups
