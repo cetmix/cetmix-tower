@@ -221,18 +221,18 @@ msgid "<span>show shared</span>"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv4 Address:</strong>"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv6 Address:</strong>"
 msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>Operating System:</strong>"
 msgstr ""
 
@@ -2415,12 +2415,6 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "SSH connection error %(err)s"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/tests/common.py:0
-#, python-format
-msgid "SSH execute command error"
 msgstr ""
 
 #. module: cetmix_tower_server

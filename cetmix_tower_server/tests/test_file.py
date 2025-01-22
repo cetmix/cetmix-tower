@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from odoo import exceptions
 from odoo.exceptions import AccessError
 
@@ -37,29 +35,16 @@ class TestTowerFile(TestTowerCommon):
         """
         Upload file from tower to server
         """
-        cx_tower_server_obj = self.registry["cx.tower.server"]
-
-        def upload_file(this, file, remote_path):
-            if file == "Hello, world!" and remote_path == "/var/tmp":
-                return "ok"
-
-        with patch.object(cx_tower_server_obj, "upload_file", upload_file):
-            self.file.action_push_to_server()
-            self.assertEqual(self.file.server_response, "ok")
+        self.file.action_push_to_server()
+        self.assertEqual(self.file.server_response, "ok")
 
     def test_delete_file(self):
         """
         Delete file remotely from server
         """
-        cx_tower_server_obj = self.registry["cx.tower.server"]
-
-        def delete_file(this, remote_path):
-            if remote_path == "/var/tmp":
-                return "ok"
-
-        with patch.object(cx_tower_server_obj, "delete_file", delete_file):
-            self.file.action_delete_from_server()
-            self.assertEqual(self.file.server_response, "ok")
+        result = self.file.action_delete_from_server()
+        self.assertTrue(isinstance(result, dict))
+        self.assertEqual(result["params"]["message"], "File deleted!")
 
     def test_delete_file_access(self):
         """
@@ -72,50 +57,28 @@ class TestTowerFile(TestTowerCommon):
         """
         Download file from server to tower
         """
+        self.file_2.action_pull_from_server()
+        self.assertEqual(self.file_2.code, "ok")
 
-        def download_file(this, remote_path):
-            if remote_path == "/var/tmp/test.txt":
-                return b"Hello, world!"
-            elif remote_path == "/var/tmp/binary.zip":
-                return b"Hello, world!\x00"
-
-        cx_tower_server_obj = self.registry["cx.tower.server"]
-
-        with patch.object(cx_tower_server_obj, "download_file", download_file):
-            self.file_2.action_pull_from_server()
-            self.assertEqual(self.file_2.code, "Hello, world!")
-
-            self.file_2.name = "binary.zip"
-            res = self.file_2.action_pull_from_server()
-            self.assertTrue(
-                isinstance(res, dict) and res["tag"] == "display_notification",
-                msg=(
-                    "If file type is 'text', then the result must be a dict "
-                    "representing the display_notification action."
-                ),
-            )
+        self.file_2.name = "binary.zip"
+        res = self.file_2.action_pull_from_server()
+        self.assertTrue(
+            isinstance(res, dict) and res["tag"] == "display_notification",
+            msg=(
+                "If file type is 'text', then the result must be a dict "
+                "representing the display_notification action."
+            ),
+        )
 
     def test_get_current_server_code(self):
         """
         Download file from server to tower
         """
-        cx_tower_server_obj = self.registry["cx.tower.server"]
+        self.file.action_push_to_server()
+        self.assertEqual(self.file.server_response, "ok")
 
-        def upload_file(this, file, remote_path):
-            if file == "Hello, world!" and remote_path == "/var/tmp":
-                return "ok"
-
-        with patch.object(cx_tower_server_obj, "upload_file", upload_file):
-            self.file.action_push_to_server()
-            self.assertEqual(self.file.server_response, "ok")
-
-        def download_file(this, remote_path):
-            if remote_path == "/var/tmp/test.txt":
-                return b"Hello, world!"
-
-        with patch.object(cx_tower_server_obj, "download_file", download_file):
-            self.file.action_get_current_server_code()
-            self.assertEqual(self.file.code_on_server, "Hello, world!")
+        self.file.action_get_current_server_code()
+        self.assertEqual(self.file.code_on_server, "ok")
 
     def test_modify_template_code(self):
         """Test how template code modification affects related files"""
@@ -150,36 +113,30 @@ class TestTowerFile(TestTowerCommon):
         )
 
     def test_modify_template_related_files(self):
-        # Create side effect for file write method
-        # to track if method was called during
-        # the test
+        """
+        Check that after change file template
+        all related files will update
+        """
+        self.assertEqual(self.file_template.file_name, "test.txt")
+        # related files
+        self.assertTrue(
+            all(file.name == "test.txt" for file in self.file_template.file_ids)
+        )
 
-        side_effect_target = {"write_called": False}
+        # update file template name
+        self.file_template.file_name = "new_test.txt"
+        # Related files must updated
+        self.assertTrue(
+            all(file.name == "new_test.txt" for file in self.file_template.file_ids)
+        )
 
-        def side_effect(this, vals):
-            side_effect_target["write_called"] = True
-            return False
-
-        # patch file write method with side effect
-        with patch.object(self.registry["cx.tower.file"], "write", side_effect):
-            # Modify template name to see if it won't trigger
-            # write method of the file
-            self.file_template.name = "New name"
-            self.assertFalse(
-                side_effect_target["write_called"],
-                msg=(
-                    "File write method should not be called "
-                    "after modifying template name."
-                ),
-            )
-
-            # Modify template code to see if it will trigger
-            # write method of the file
-            self.file_template.code = "New code"
-            self.assertTrue(
-                side_effect_target["write_called"],
-                msg="File write method should be called after modifying template code.",
-            )
+        self.assertEqual(self.file_template.code, "Hello, world!")
+        # update file template code
+        self.file_template.code = "New code"
+        # Related files must updated
+        self.assertTrue(
+            all(file.code == "New code" for file in self.file_template.file_ids)
+        )
 
     def test_create_file_with_template(self):
         """
@@ -420,5 +377,6 @@ class TestTowerFile(TestTowerCommon):
         # Add bob as subscriber of the server to allow upload file
         self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
         # Upload file to server
+        self.assertTrue(file.server_response != "ok")
         file.with_user(self.user_bob).action_push_to_server()
         self.assertEqual(file.server_response, "ok")

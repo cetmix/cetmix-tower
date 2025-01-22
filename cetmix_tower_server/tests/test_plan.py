@@ -1060,26 +1060,12 @@ class TestTowerPlan(TestTowerCommon):
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
 
-        cx_tower_plan_obj = self.registry["cx.tower.plan"]
-        _execute_single_super = cx_tower_plan_obj._execute_single
+        # Simulate a failed Plan 1. To achieve this, we need to update the command
+        # associated with Plan 1 to apply the desired side effect.
+        self.plan_1.line_ids.command_id[0].code = "fail"
 
-        def _execute_single(this, *args, **kwargs):
-            if this == self.plan_1:
-                # simulate error for child plan
-                kwargs.update(
-                    {
-                        "simulated_result": {
-                            "status": -1,
-                            "response": None,
-                            "error": ["error"],
-                        }
-                    }
-                )
-            return _execute_single_super(this, *args, **kwargs)
-
-        with patch.object(cx_tower_plan_obj, "_execute_single", _execute_single):
-            # Execute plan
-            self.plan_2._execute_single(self.server_test_1)
+        # Execute plan
+        self.plan_2._execute_single(self.server_test_1)
 
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
@@ -1133,16 +1119,9 @@ class TestTowerPlan(TestTowerCommon):
                 .plan_line_executed_id
                 == line
             ):
-                # simulate error for child plan
-                kwargs.update(
-                    {
-                        "simulated_result": {
-                            "status": -1,
-                            "response": None,
-                            "error": ["error"],
-                        }
-                    }
-                )
+                # Simulate a failed Plan 1. To achieve this, we need to update
+                # the command associated with Plan 1 to apply the desired side effect.
+                self.plan_1.line_ids.command_id[0].code = "fail"
             return _execute_single_super(this, *args, **kwargs)
 
         with patch.object(cx_tower_plan_obj, "_execute_single", _execute_single):
