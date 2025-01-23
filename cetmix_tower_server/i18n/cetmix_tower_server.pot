@@ -2665,6 +2665,14 @@ msgid "Some servers don't support this command"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
+#, python-format
+msgid ""
+"Some variable options are invalid:\n"
+"%(detailed_message)s"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__source
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__source
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
@@ -3062,6 +3070,14 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Variable not found"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
+#, python-format
+msgid ""
+"Variable reference '%(var_ref)s' has an invalid option reference "
+"'%(opt_ref)s'."
 msgstr ""
 
 #. module: cetmix_tower_server
