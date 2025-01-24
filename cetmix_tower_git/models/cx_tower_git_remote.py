@@ -50,7 +50,6 @@ class CxTowerGitRemote(models.Model):
         readonly=False,
     )
     head = fields.Char(
-        required=True,
         help="Git remote head. Link to branch, PR, commit or commit hash."
         " Leave blank to auto-detect",
     )
