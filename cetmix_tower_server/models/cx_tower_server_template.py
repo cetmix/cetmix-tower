@@ -68,6 +68,14 @@ class CxTowerServerTemplate(models.Model):
         domain="[('server_ids', '=', False)]",
     )
 
+    # ---- Delete plan
+    plan_delete_id = fields.Many2one(
+        "cx.tower.plan",
+        string="On Delete Plan",
+        groups="cetmix_tower_server.group_manager",
+        help="This Flightplan will be executed when the server is deleted",
+    )
+
     # --- Created Servers
     server_ids = fields.One2many(
         comodel_name="cx.tower.server",
@@ -102,6 +110,7 @@ class CxTowerServerTemplate(models.Model):
                 "default_ssh_password": self.ssh_password,
                 "default_ssh_key_id": self.ssh_key_id.id,
                 "default_ssh_auth_mode": self.ssh_auth_mode,
+                "default_plan_delete_id": self.plan_delete_id.id,
             }
         )
         if self.variable_value_ids:
@@ -250,6 +259,7 @@ class CxTowerServerTemplate(models.Model):
             "use_sudo",
             "color",
             "os_id",
+            "plan_delete_id",
             "tag_ids",
             "variable_value_ids",
             "server_log_ids",
@@ -475,6 +485,10 @@ class CxTowerServerTemplate(models.Model):
                     - ip_v6_address (str, optional): Parsed IPv6 address.
         """
         values = {}
+
+        # This field is always populated from Server Template and
+        # cannot be altered with function params.
+        config_values.pop("plan_delete_id", None)
 
         partner = config_values.pop("partner", None)
         if partner:
