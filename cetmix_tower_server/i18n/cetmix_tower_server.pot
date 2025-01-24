@@ -1901,6 +1901,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_delete_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__plan_delete_id
 msgid "On Delete Plan"
 msgstr ""
 
@@ -2825,6 +2826,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__plan_delete_id
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__plan_delete_id
 msgid "This Flightplan will be executed when the server is deleted"
 msgstr ""
 
