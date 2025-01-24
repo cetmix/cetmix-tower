@@ -24,6 +24,9 @@ class TestTowerServerTemplate(TestTowerCommon):
             }
         )
 
+        # add delete flight plan
+        self.server_template_sample.plan_delete_id = self.plan_1.id
+
         # add server logs to template
         command_for_log = self.Command.create(
             {"name": "Get system info", "code": "uname -a"}
@@ -51,7 +54,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         new_server = self.ServerTemplate.create_server_from_template(
             self.server_template_sample.reference,
             "server_from_template",
-            ip_v4_address="0.0.0.0",
+            ipv4="0.0.0.0",
         )
 
         server = self.Server.search(
@@ -85,6 +88,11 @@ class TestTowerServerTemplate(TestTowerCommon):
             len(self.variable_version.value_ids),
             2,
             "The variable must have two value only",
+        )
+        self.assertEqual(
+            new_server.plan_delete_id,
+            self.plan_1,
+            "Server On Delete Plan must be 'Test plan 1'",
         )
 
         server_log = self.ServerLog.search([("command_id", "=", command_for_log.id)])
@@ -166,9 +174,10 @@ class TestTowerServerTemplate(TestTowerCommon):
         self.ServerTemplate.create_server_from_template(
             self.server_template_sample.reference,
             "server from template",
-            ip_v4_address="localhost",
+            ipv4="localhost",
             ssh_username="test",
             ssh_password="test",
+            plan_delete_id=self.plan_1.id,
             configuration_variables={
                 self.variable_version.reference: "test server version",
                 "new_variable": "new_value",
@@ -180,6 +189,8 @@ class TestTowerServerTemplate(TestTowerCommon):
         new_server = self.Server.search([("name", "=", name)])
 
         self.assertTrue(new_server, "Server must exist!")
+        self.assertFalse(new_server.plan_delete_id, "On Delete Plan must be empty!")
+
         self.assertEqual(
             len(new_server.variable_value_ids), 3, "Should be 3 variable values!"
         )

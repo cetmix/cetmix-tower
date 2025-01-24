@@ -85,6 +85,7 @@ Fill the values it the tabs below:
 **General Settings**
 
 - **Flight Plan**: Select a flight plan to be executed after a server is created
+- **On Delete Plan**: Default ondelete Flight Plan for new servers
 - **Operating System**: Default operating system for new servers
 - **Tags**: Default search tags for new servers
 - **SSH Auth Mode**: Default SSH auth mode for new servers. Available options are "Password" and "Key"

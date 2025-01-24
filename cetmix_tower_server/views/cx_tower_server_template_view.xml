@@ -152,6 +152,7 @@
                             <group name="root">
                                 <group name="main">
                                     <field name="flight_plan_id" />
+                                    <field name="plan_delete_id" />
                                     <field name="os_id" />
                                     <field name="active" invisible='1' />
                                     <field
