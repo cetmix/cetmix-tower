@@ -287,10 +287,7 @@
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
-                        <page
-                            name="configuration"
-                            string="Configuration"
-                        >
+                        <page name="configuration" string="Configuration">
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
                                     <field name="variable_reference" invisible="1" />
