@@ -290,7 +290,6 @@
                         <page
                             name="configuration"
                             string="Configuration"
-                            groups="cetmix_tower_server.group_manager, cetmix_tower_server.group_user"
                         >
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">

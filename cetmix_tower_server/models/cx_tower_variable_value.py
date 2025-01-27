@@ -79,6 +79,10 @@ class TowerVariableValue(models.Model):
         store=True,
     )
     required = fields.Boolean()
+    access_level = fields.Selection(
+        compute="_compute_access_level",
+        readonly=False,
+    )
 
     _sql_constraints = [
         (
@@ -137,7 +141,8 @@ class TowerVariableValue(models.Model):
     @api.depends("variable_id")
     def _compute_access_level(self):
         """
-        Automatically set the `access_level` field based on the `variable_id`.
+        Automatically set the `access_level` based on `variable_id.access_level`
+        when adding a variable to the server.
         """
         for rec in self:
             if rec.variable_id:
