@@ -82,6 +82,7 @@ class TowerVariableValue(models.Model):
     access_level = fields.Selection(
         compute="_compute_access_level",
         readonly=False,
+        store=True,
     )
 
     _sql_constraints = [
