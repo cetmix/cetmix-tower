@@ -30,9 +30,6 @@ class TestTowerKey(TestTowerCommon):
     def test_key_access_rights(self):
         """Test private key security features"""
 
-        # Default message returned instead of key value
-        SECRET_VALUE_PLACEHOLDER = self.Key.SECRET_VALUE_PLACEHOLDER
-
         # Store key value
         self.write_and_invalidate(self.key_1, **{"secret_value": "pepe"})
 
@@ -45,15 +42,9 @@ class TestTowerKey(TestTowerCommon):
         # Add user to group
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
 
-        # Get value
-        key_value = key_bob.secret_value
-
-        # Ensure placeholder is used instead of the key value
-        self.assertEqual(
-            key_value,
-            SECRET_VALUE_PLACEHOLDER,
-            msg="Must return placeholder '{}'".format(SECRET_VALUE_PLACEHOLDER),
-        )
+        with self.assertRaises(AccessError):
+            # Get value
+            key_value = key_bob.secret_value
 
         # Test write
         with self.assertRaises(AccessError):

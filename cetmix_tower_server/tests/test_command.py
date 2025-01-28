@@ -511,6 +511,7 @@ COMMAND_RESULT = {
 
     def test_user_access_rule(self):
         """Test user access rule"""
+
         # Create the test command
         test_command = self.Command.create({"name": "Test command"})
 
