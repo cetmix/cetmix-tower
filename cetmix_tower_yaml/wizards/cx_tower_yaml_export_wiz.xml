@@ -9,14 +9,15 @@
                 <group>
                     <field name="comment" />
                     <field name="explode_child_records" widget="boolean_toggle" />
-                    <field
-                        name="yaml_code"
-                        widget="ace"
-                        options="{'mode': 'yaml'}"
-                        readonly="1"
-                        force_save="1"
-                    />
-                </group>
+                    <field name="remove_empty_values" widget="boolean_toggle" />
+                    </group>
+                <field
+                    name="yaml_code"
+                    widget="ace"
+                    options="{'mode': 'yaml'}"
+                    readonly="1"
+                    force_save="1"
+                />
                 <footer>
                     <button
                         string="Generate YAML file"

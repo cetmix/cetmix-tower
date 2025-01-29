@@ -3,18 +3,15 @@
 from odoo import models
 
 
-class CxTowerKey(models.Model):
-    _name = "cx.tower.key"
-    _inherit = [
-        "cx.tower.key",
-        "cx.tower.yaml.mixin",
-    ]
+class CxTowerVariableOption(models.Model):
+    _name = "cx.tower.variable.option"
+    _inherit = ["cx.tower.variable.option", "cx.tower.yaml.mixin"]
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
         res += [
+            "sequence",
             "name",
-            "key_type",
-            "note",
+            "value_char",
         ]
         return res
