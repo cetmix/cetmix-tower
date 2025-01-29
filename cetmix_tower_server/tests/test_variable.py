@@ -464,6 +464,7 @@ class TestTowerVariable(TestTowerCommon):
 
         # Modify server record for testing
         self.server_test_1.ip_v6_address = "suchmuchipv6"
+        self.server_test_1.url = "meme.example.com"
         self.server_test_1.partner_id = (
             self.env["res.partner"].create({"name": "Pepe Frog"}).id
         )
@@ -476,7 +477,8 @@ class TestTowerVariable(TestTowerCommon):
                 "{{ tower.server.username}} "
                 "{{ tower.server.partner_name }} "
                 "{{ tower.server.ipv4 }} "
-                " {{ tower.server.ipv6 }} ",
+                "{{ tower.server.ipv6 }} "
+                "{{ tower.server.url }} ",
             }
         )
 
@@ -521,6 +523,11 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             variable_values["tower"]["server"]["ipv6"],
             self.server_test_1.ip_v6_address,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["url"],
+            self.server_test_1.url,
             "System variable doesn't match server property",
         )
 
