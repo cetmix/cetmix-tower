@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <kanban class="oe_background_grey o_kanban_dashboard" records_draggable="0">
                 <field name="name" />
+                <field name="url" />
                 <field name="partner_id" />
                 <field name="tag_ids" />
                 <field name="os_id" />
@@ -27,6 +28,9 @@
                                     </div>
                                     <field name="status" widget="server_status" />
                                 </div>
+                                    <div t-if="record.url.raw_value">
+                                        <field name="url" widget="url" />
+                                    </div>
                                 <div class="o_kanban_manage_button_section">
                                     <a class="o_kanban_manage_toggle_button" href="#">
                                         <i
@@ -75,9 +79,7 @@
                             <div class="oe_kanban_content">
                                 <div class="oe_kanban_global_click">
                                     <div class="col-12 pt8 o_kanban_primary_right">
-                                        <div
-                                            attrs="{'invisible': [('partner_id', '=', False)]}"
-                                        >
+                                        <div t-if="record.partner_id.raw_value">
                                             <strong>Partner:</strong>
                                             <field name="partner_id" />
                                         </div>
@@ -118,15 +120,15 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('o_kanban_primary_right')]" position="inside">
-                <div attrs="{'invisible': [('os_id', '=', False)]}">
+                <div t-if="record.os_id.raw_value">
                     <strong>Operating System:</strong>
                     <field name="os_id" />
                 </div>
-                <div attrs="{'invisible': [('ip_v4_address', '=', False)]}">
+                <div t-if="record.ip_v4_address.raw_value">
                     <strong>IPv4 Address:</strong>
                     <field name="ip_v4_address" />
                 </div>
-                <div attrs="{'invisible': [('ip_v6_address', '=', False)]}">
+                <div t-if="record.ip_v6_address.raw_value">
                     <strong>IPv6 Address:</strong>
                     <field name="ip_v6_address" />
                 </div>
@@ -270,7 +272,12 @@
                                         attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
                                     />
                                 </group>
-                                <group extra="delete">
+                                <group name="extra">
+                                    <field
+                                        name="url"
+                                        placeholder="Server URL, eg 'https://doge.example.com'"
+                                        widget="url"
+                                    />
                                     <field
                                         name="server_template_id"
                                         attrs="{'invisible': [('server_template_id', '=', False)]}"

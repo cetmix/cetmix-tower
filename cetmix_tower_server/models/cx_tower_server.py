@@ -320,6 +320,9 @@ class CxTowerServer(models.Model):
         help="Run commands using 'sudo'",
         groups="cetmix_tower_server.group_manager",
     )
+    url = fields.Char(
+        string="URL", help="Server web interface, eg 'https://doge.example.com'"
+    )
     # ---- Variables
     variable_value_ids = fields.One2many(
         inverse_name="server_id"  # Other field properties are defined in mixin
