@@ -3,8 +3,15 @@ import base64
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+FILE_HEADER = """
+# This file is generated with Cetmix Tower.
+# Details and documentation: https://cetmix.com/tower
+"""
+
 
 class CxTowerYamlExportWiz(models.TransientModel):
+    """Cetmix Tower YAML Export Wizard"""
+
     _name = "cx.tower.yaml.export.wiz"
     _description = "Cetmix Tower YAML Export Wizard"
 
@@ -17,8 +24,14 @@ class CxTowerYamlExportWiz(models.TransientModel):
         help="Add entire child record definitions to the exported YAML file. "
         "Otherwise only references to child records will be added.",
     )
+    remove_empty_values = fields.Boolean(
+        string="Remove Empty x2m Field Values",
+        default=True,
+        help="Remove empty Many2one, Many2many and One2many"
+        " field values from the exported YAML file.",
+    )
 
-    @api.onchange("explode_child_records", "comment")
+    @api.onchange("explode_child_records", "comment", "remove_empty_values")
     def onchange_explode_child_records(self):
         """Compute YAML code and file content"""
 
@@ -27,14 +40,19 @@ class CxTowerYamlExportWiz(models.TransientModel):
         # Get model records
         records = self._get_model_record()
         explode_related_record = self.explode_child_records
-
+        remove_empty_values = self.remove_empty_values
         # Collact YAML code into a list
-        yaml_codes = [self._text_to_yaml_comment(self.comment)] if self.comment else []
+        yaml_codes = (
+            [FILE_HEADER + self._text_to_yaml_comment(self.comment)]
+            if self.comment
+            else [FILE_HEADER]
+        )
 
         # Concatenate all YAML codes from selected records
         for record in records:
             record_yaml_code = record.with_context(
-                explode_related_record=explode_related_record
+                explode_related_record=explode_related_record,
+                remove_empty_values=remove_empty_values,
             ).yaml_code
             if record_yaml_code:
                 yaml_codes.append(record_yaml_code)

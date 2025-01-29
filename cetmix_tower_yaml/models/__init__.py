@@ -6,6 +6,7 @@ from . import cx_tower_plan
 from . import cx_tower_plan_line
 from . import cx_tower_plan_line_action
 from . import cx_tower_variable
+from . import cx_tower_variable_option
 from . import cx_tower_variable_value
 from . import cx_tower_os
 from . import cx_tower_server_template

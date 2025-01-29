@@ -89,6 +89,11 @@ msgid "Cetmix Tower Variable"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_option
+msgid "Cetmix Tower Variable Options"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_value
 msgid "Cetmix Tower Variable Values"
 msgstr ""
@@ -184,6 +189,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__display_name
@@ -261,6 +267,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__id
@@ -313,6 +320,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download____last_update
@@ -404,6 +412,18 @@ msgid "Record ID to update"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid "Remove Empty x2m Field Values"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid ""
+"Remove empty Many2one, Many2many and One2many field values from the exported"
+" YAML file."
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Tags"
 msgstr ""
@@ -429,14 +449,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__update_existing_record
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Update Existing Record"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
-#, python-format
-msgid ""
-"Value '%(val)s' is used as default secret mask and cannot be set as a secret"
-" value"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -503,6 +515,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__yaml_code
