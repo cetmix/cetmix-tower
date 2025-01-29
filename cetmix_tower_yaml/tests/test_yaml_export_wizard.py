@@ -8,6 +8,12 @@ class TestYamlExportWizard(TransactionCase):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
 
+        # Used to ensure that the file header
+        # is present in the YAML code
+        self.file_header = """
+# This file is generated with Cetmix Tower.
+# Details and documentation: https://cetmix.com/tower
+"""
         # Create a command
         self.TowerCommand = self.env["cx.tower.command"]
         self.command_test_wizard = self.TowerCommand.create(
@@ -74,11 +80,13 @@ class TestYamlExportWizard(TransactionCase):
 
     def test_comment_inserted_into_yaml_code(self):
         """Test if comment is inserted into YAML code"""
+
         self.test_wizard.comment = "Test Comment"
         self.test_wizard.onchange_explode_child_records()
-        first_line_of_yaml_code = self.test_wizard.yaml_code.split("\n")[0]
+        # Because header takes 3 lines, we need to check the 4th line
+        fourth_line_of_yaml_code = self.test_wizard.yaml_code.split("\n")[3]
         self.assertEqual(
-            first_line_of_yaml_code,
+            fourth_line_of_yaml_code,
             f"# {self.test_wizard.comment}",
             "Comment should be properly prepended to YAML code",
         )
@@ -90,7 +98,7 @@ class TestYamlExportWizard(TransactionCase):
         # Test wizard creation
         self.assertEqual(
             self.test_wizard.yaml_code,
-            self.server_template_test_wizard.yaml_code,
+            f"{self.file_header}\n{self.server_template_test_wizard.yaml_code}",
             "YAML code should be the same",
         )
 
@@ -126,7 +134,7 @@ class TestYamlExportWizard(TransactionCase):
         )
         self.assertEqual(
             yaml_file_content,
-            self.server_template_test_wizard.yaml_code,
+            f"{self.file_header}\n{self.server_template_test_wizard.yaml_code}",
             "YAML file content should be the same as the original YAML code",
         )
 

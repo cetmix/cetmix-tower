@@ -153,14 +153,19 @@ class CxTowerYamlMixin(models.AbstractModel):
         """List of models that will always try to be resolved
         when referenced in x2m related fields.
 
-        This is useful for models that should always to use existing records
+        This is useful for models that should always use existing records
         instead of creating new ones when referenced in x2m related fields.
         Such as variables or tags.
 
         Returns:
             List: list of models that will always try to be resolved
         """
-        return ["cx.tower.variable", "cx.tower.tag", "cx.tower.os"]
+        return [
+            "cx.tower.variable",
+            "cx.tower.variable.option",
+            "cx.tower.tag",
+            "cx.tower.os",
+        ]
 
     def _post_process_record_values(self, values):
         """Post process record values
@@ -168,6 +173,11 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         Args:
             values (dict): values returned by 'read' method
+
+        Context:
+            explode_related_record: if set will return entire record dictionary
+                not just a reference
+            remove_empty_values: if set will remove empty values from the record
 
         Returns:
             dict(): processed values
@@ -193,10 +203,16 @@ class CxTowerYamlMixin(models.AbstractModel):
             )
 
         values = {**model_values, **values}
+        # Copy values to avoid modifying the original values
+        new_values = values.copy()
 
         # Check if we need to return a record dict or just a reference
         # Use context value first, revert to the record setting if not defined
         explode_related_record = self._context.get("explode_related_record")
+
+        # Check if we need to remove empty values
+        # Currently only x2m fields are supported
+        remove_empty_values = self._context.get("remove_empty_values")
 
         # Post process m2o and x2m fields
         for key, value in values.items():
@@ -205,12 +221,15 @@ class CxTowerYamlMixin(models.AbstractModel):
             # Further checks for the field type are done
             #  in _process_relation_field_value()
             if key.endswith("_id") or key.endswith("_ids"):
-                processed_value = self.with_context(
-                    explode_related_record=explode_related_record
-                )._process_relation_field_value(key, value, record_mode=True)
-                values.update({key: processed_value})
+                if not value and remove_empty_values:
+                    del new_values[key]
+                else:
+                    processed_value = self.with_context(
+                        explode_related_record=explode_related_record
+                    )._process_relation_field_value(key, value, record_mode=True)
+                    new_values.update({key: processed_value})
 
-        return values
+        return new_values
 
     def _post_process_yaml_dict_values(self, values):
         """Post process dictionary values generated from YAML code
@@ -503,29 +522,3 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # Return the record's ID if it exists, otherwise return False
         return record or False
-
-    def _check_secret_value_for_placeholder(
-        self, secret_value, secret_value_placeholder
-    ):
-        """Check secret if secret value is the same as placeholder
-        that is used as a default secret mask in YAML.
-        This is done to prevent saving secret mask as a value.
-
-        Note: we are not using a constraint because we need to check
-        the value before creating or updating a record in the database.
-
-        Args:
-            secret_value (Char): secret value to check
-            secret_value_placeholder (Char): secret value placeholder
-        Raises:
-            ValidationError: If secret value fails the check
-        """
-
-        # Prevent saving secret mask as a value
-        if secret_value == secret_value_placeholder:
-            raise ValidationError(
-                _(
-                    "Value '%(val)s' is used as default secret mask and cannot be set as a secret value",  # noqa: E501
-                    val=secret_value_placeholder,
-                )
-            )
