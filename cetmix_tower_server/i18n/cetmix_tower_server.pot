@@ -2587,6 +2587,11 @@ msgid "Server Templates"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Server URL, eg 'https://doge.example.com'"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Server Version"
 msgstr ""
@@ -2609,6 +2614,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 msgid "Server tight"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__url
+msgid "Server web interface, eg 'https://doge.example.com'"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2929,6 +2939,11 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__activity_exception_decoration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__activity_exception_decoration
 msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__url
+msgid "URL"
 msgstr ""
 
 #. module: cetmix_tower_server

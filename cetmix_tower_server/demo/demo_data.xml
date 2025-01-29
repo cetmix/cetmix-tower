@@ -48,6 +48,7 @@
         <field name="ssh_password">password</field>
         <field name="ssh_auth_mode">p</field>
         <field name="os_id" ref="os_debian_10" />
+        <field name="url">demo1.example.com</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
@@ -68,6 +69,7 @@
         <field name="use_sudo">p</field>
         <field name="ssh_key_id" ref="key_1" />
         <field name="os_id" ref="os_ubuntu_20_04" />
+        <field name="url">https://dogememe.example.com</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
