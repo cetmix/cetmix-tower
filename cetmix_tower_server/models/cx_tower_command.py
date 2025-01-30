@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
-requests = wrap_module(__import__("requests"), ["post", "get", "request"])
+requests = wrap_module(__import__("requests"), ["post", "get", "delete", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
 hashlib = wrap_module(
     __import__("hashlib"),
@@ -40,7 +40,7 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #  - server: server on which the command is run
 #  - tower: 'cetmix.tower' helper class
 #  - time, datetime, dateutil, timezone: useful Python libraries
-#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'request'
+#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'
 #  - json: Python 'json' library. Available methods: 'dumps'
 #  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
 #    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
@@ -58,7 +58,7 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #    "exit_code": x,
 #    "message": "This will be logged as an error message because exit code !=0",
 # }
-\n\n\n"""
+\n\n\n"""  # noqa: E501
 
 DEFAULT_SSH_CODE = """# Run any SSH command on the target system
 # Examples: ls, cd, pwd, mkdir, rm
