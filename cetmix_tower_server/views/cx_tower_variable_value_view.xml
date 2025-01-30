@@ -21,6 +21,8 @@
                     attrs="{'readonly': ['|',('server_id', '!=', False), ('server_template_id', '!=', False)]}"
                 />
                 <field name="value_char" />
+                <field name="option_id" optional="show" />
+                <field name="variable_ids" optional="hide" widget="many2many_tags" />
             </tree>
         </field>
     </record>

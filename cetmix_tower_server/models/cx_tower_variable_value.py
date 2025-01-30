@@ -42,9 +42,10 @@ class TowerVariableValue(models.Model):
         readonly=True,
     )
     option_id = fields.Many2one(
-        comodel_name="cx.tower.variable.option", ondelete="restrict"
+        comodel_name="cx.tower.variable.option",
+        ondelete="restrict",
+        domain="[('variable_id', '=', variable_id)]",
     )
-    option_ids_domain = fields.Binary(compute="_compute_option_ids_domain")
     value_char = fields.Char(
         string="Value",
         compute="_compute_value_char",
@@ -109,16 +110,6 @@ class TowerVariableValue(models.Model):
     ]
 
     @api.depends("option_id", "variable_id.option_ids")
-    def _compute_option_ids_domain(self):
-        """
-        Compute the domain for the `option_ids_domain` field based on the related
-        `option_id` and the `option_ids` of the associated `variable_id`.
-        """
-        for rec in self:
-            allowed_option_ids = rec.variable_id.option_ids.ids
-            rec.option_ids_domain = [("id", "in", allowed_option_ids)]
-
-    @api.depends("option_id", "variable_id.option_ids")
     def _compute_value_char(self):
         """
         Compute the 'value_char' field, which holds the string representation
@@ -138,11 +129,9 @@ class TowerVariableValue(models.Model):
         doesn't have options
         """
         for rec in self:
+            rec.option_id = False
             if rec.variable_id.option_ids:
-                allowed_option_ids = rec.variable_id.option_ids.ids
-                rec.option_ids_domain = [("id", "in", allowed_option_ids)]
-            else:
-                rec.option_id = None
+                rec.value_char = False
 
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):
