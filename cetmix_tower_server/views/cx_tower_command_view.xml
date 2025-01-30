@@ -134,7 +134,7 @@
                                         , <code
                                         >timezone</code>: useful Python libraries</li>
                                     <li><code
-                                        >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'request'</li>
+                                        >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'</li>
                                     <li><code
                                         >json</code>: Python 'json' library. Available methods: 'dumps'</li>
                                     <li><code>hashlib</code>: Python 'hashlib' library.
