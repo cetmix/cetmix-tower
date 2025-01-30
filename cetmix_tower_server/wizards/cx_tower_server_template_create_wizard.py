@@ -164,8 +164,10 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
         related="variable_id.variable_type",
         readonly=True,
     )
-    option_id = fields.Many2one(comodel_name="cx.tower.variable.option")
-    option_ids_domain = fields.Binary(compute="_compute_option_ids_domain")
+    option_id = fields.Many2one(
+        comodel_name="cx.tower.variable.option",
+        domain="[('variable_id', '=', variable_id)]",
+    )
 
     @api.depends("option_id", "variable_id", "variable_type")
     def _compute_value_char(self):
@@ -174,19 +176,6 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
                 rec.value_char = rec.option_id.value_char
             else:
                 rec.value_char = ""
-
-    @api.depends("option_id", "variable_id.option_ids")
-    def _compute_option_ids_domain(self):
-        """
-        Compute the domain for the `option_ids_domain` field based on the related
-        `option_id` and the `option_ids` of the associated `variable_id`.
-        """
-        for rec in self:
-            if rec.variable_type == "o":
-                allowed_option_ids = rec.variable_id.option_ids.ids
-                rec.option_ids_domain = [("id", "in", allowed_option_ids)]
-            else:
-                rec.option_ids_domain = []
 
     @api.onchange("variable_id")
     def _onchange_variable_id(self):
