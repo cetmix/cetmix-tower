@@ -645,6 +645,49 @@ COMMAND_RESULT = {
             msg="Command name should be same",
         )
 
+    def test_user_access_rule_with_keys(self):
+        """Test user access rule"""
+
+        # create server key
+        server_key = self.Key.create(
+            {
+                "name": "server key",
+                "secret_value": "server key value",
+                "key_type": "s",
+                "server_id": self.server_test_1.id,
+            }
+        )
+
+        # Create the test command with server key
+        code = f"mkdir {server_key.reference_code}"
+        command_with_key = self.Command.create(
+            {"name": "Command with key", "code": code, "access_level": "1"}
+        )
+
+        # Remove bob from all cxtower_server groups
+        self.remove_from_group(
+            self.user_bob,
+            [
+                "cetmix_tower_server.group_user",
+                "cetmix_tower_server.group_manager",
+                "cetmix_tower_server.group_root",
+            ],
+        )
+
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        # User can execute command with key
+        self.server_test_1.with_user(self.user_bob).execute_command(
+            command_with_key,
+        )
+
+        # Add user to group_manager
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Manager can execute command with key
+        self.server_test_1.with_user(self.user_bob).execute_command(
+            command_with_key,
+        )
+
     def test_parse_ssh_command_result(self):
         """Test ssh command result parsing"""
 

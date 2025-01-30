@@ -27,24 +27,24 @@ class TestTowerKey(TestTowerCommon):
             "Trailing and leading whitespaces must be removed from name",
         )
 
-    def test_key_access_rights(self):
-        """Test private key security features"""
+    def test_global_key_access_rights(self):
+        """Test global private key security features"""
 
-        # Store key value
+        # Store global key value
         self.write_and_invalidate(self.key_1, **{"secret_value": "pepe"})
 
         # Get key value as Bob
         key_bob = self.key_1.with_user(self.user_bob)
 
         with self.assertRaises(AccessError):
-            key_value = key_bob.secret_value
+            key_value = key_bob.read(["secret_value"])
 
         # Add user to group
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
 
         with self.assertRaises(AccessError):
             # Get value
-            key_value = key_bob.secret_value
+            key_value = key_bob.read(["secret_value"])
 
         # Test write
         with self.assertRaises(AccessError):
@@ -63,9 +63,96 @@ class TestTowerKey(TestTowerCommon):
         with self.assertRaises(AccessError):
             key_bob.unlink()
 
-        # Add Bob to Root group and test write again
+        # Add Bob to Root group and test delete again
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
         key_bob.unlink()
+
+    def test_server_key_access_rights(self):
+        """Test server private key security features"""
+
+        # Store server key value
+        self.write_and_invalidate(
+            self.key_1, **{"secret_value": "pepe", "server_id": self.server_test_1.id}
+        )
+
+        # Get key value as Bob
+        key_bob = self.key_1.with_user(self.user_bob)
+
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+
+        with self.assertRaises(AccessError):
+            # Get value
+            key_bob.read(["secret_value"])
+
+        # Test write
+        with self.assertRaises(AccessError):
+            self.write_and_invalidate(key_bob, **{"secret_value": "frog"})
+
+        # Add Bob as subscriber to server
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+
+        # User cannot read key value
+        with self.assertRaises(AccessError):
+            key_bob.read(["secret_value"])
+
+        # Remove Bob from server followers
+        self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
+
+        # Add Bob to Manager group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+
+        # Manager cannot read key value
+        with self.assertRaises(AccessError):
+            key_bob.read(["secret_value"])
+
+        # Add Bob as subscriber to server
+        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+
+        # Now manager server subscriber can read and update this key
+        key_bob.read(["secret_value"])
+        key_bob.write({"secret_value": "dog"})
+
+    def test_partner_key_access_rights(self):
+        """Test partner private key security features"""
+        # create test partner
+        partner = self.env["res.partner"].create({"name": "test partner"})
+
+        # update server for this partner
+        self.write_and_invalidate(self.server_test_1, **{"partner_id": partner.id})
+
+        # Store key partner
+        self.write_and_invalidate(self.key_1, **{"partner_id": partner.id})
+
+        # Get key value as Bob
+        key_bob = self.key_1.with_user(self.user_bob)
+
+        # Add user to group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+
+        # Ensure that user don't has access to key
+        with self.assertRaises(AccessError):
+            # Get value
+            key_bob.read(["secret_value"])
+
+        # Add Bob to Manager group
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+
+        # Ensure that manager don't has access to key
+        with self.assertRaises(AccessError):
+            # Get value
+            key_bob.read(["secret_value"])
+
+        # Ensure that key has no servers
+        self.assertFalse(self.key_1.server_id)
+        self.assertFalse(self.key_1.server_ssh_ids)
+
+        # Add Bob as subscriber to server
+        partner.server_ids.message_subscribe([self.user_bob.partner_id.id])
+
+        # Now manager server subscriber can read and update this key
+        key_bob.read(["secret_value"])
+        key_bob.write({"secret_value": "dog"})
 
     def test_extract_key_strings(self):
         """Check if key strings are extracted properly"""

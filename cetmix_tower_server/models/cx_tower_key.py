@@ -476,7 +476,7 @@ class CxTowerKey(models.Model):
             )
 
         # Fetch keys
-        keys = self.search(key_domain).sudo()
+        keys = self.sudo().search(key_domain)
         if not keys:
             return
 
