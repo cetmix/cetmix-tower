@@ -1583,6 +1583,8 @@ class TestTowerPlan(TestTowerCommon):
         #  plan line action
         # Add user to group
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.variable_os.write({"access_level": "1"})
+        self.variable_value.write({"access_level": "1"})
         test_plan_line_action_as_bob = self.plan_3_line_1_action.with_user(
             self.user_bob
         )
