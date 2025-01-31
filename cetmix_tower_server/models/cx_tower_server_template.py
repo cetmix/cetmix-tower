@@ -222,14 +222,15 @@ class CxTowerServerTemplate(models.Model):
         # We validate mandatory variables
         self._validate_required_variables(configuration_variables)
 
+        # We are using sudo to ensure all values are copied
         servers = (
             self.env["cx.tower.server"]
             .with_context(skip_ssh_settings_check=True)
             .create(
-                self._prepare_server_values(
+                self.sudo()._prepare_server_values(
                     name=name,
-                    server_template_id=self.id,
-                    **kwargs,  # pylint: disable=no-member
+                    server_template_id=self.id,  # pylint: disable=no-member
+                    **kwargs,
                 ),
             )
         )
