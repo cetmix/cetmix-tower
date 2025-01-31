@@ -1,0 +1,584 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_git
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"X-Generator: Poedit 2.3\n"
+"Last-Translator: \n"
+"Language: it\n"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+#, python-format
+msgid ""
+"\n"
+"# You need to set the following variables in your environment:\n"
+"# %(vars)s \n"
+"# and run git-aggregator with '--expand-env' parameter.\n"
+msgstr ""
+"\n"
+"# È necessario impostare le seguenti variabili d'ambiente:\n"
+"# %(vars)s \n"
+"# ed eseguire git-aggregator con il parametro '--expand-env'.\n"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+#, python-format
+msgid ""
+"# This file is generated with Cetmix Tower https://cetmix.com/tower\n"
+"# It's designed to be used with git-aggregator tool developed by Acsone.\n"
+"# Documentation for git-aggregator: https://github.com/acsone/git-"
+"aggregator\n"
+msgstr ""
+"# Questo file è generato con Cetmix Tower https://cetmix.com/tower\n"
+"# È progettato per essere usato con il tool git-aggregator sviluppato da "
+"Acsone.\n"
+"# Documentazione per git-aggregator: https://github.com/acsone/git-"
+"aggregator\n"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "* Sources where all remotes are private"
+msgstr "* Origini dove tutti i remote sono privati"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "* Sources where some remotes are private"
+msgstr "* Origini dove alcuni remote sono privati"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__active
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__active
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__active
+msgid "Active"
+msgstr "Attivo"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "Archived"
+msgstr "In archivio"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__repo_provider__bitbucket
+msgid "Bitbucket"
+msgstr "Bitbucket"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__branch
+msgid "Branch"
+msgstr "Branch"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_remote_view_form
+msgid "Branch/PR/commit number or link"
+msgstr "Numero o link branch/PR/commit"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__reference
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__reference
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_source__reference
+msgid ""
+"Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+"Può contenere lettere inglesi, numeri e '_'. Lasciare vuoto per "
+"autogenerarlo"
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project
+msgid "Cetmix Tower Git Configuration"
+msgstr "Configurazione Git Cetmix Tower"
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_remote
+msgid "Cetmix Tower Git Remote"
+msgstr "Remote Git Cetmix Tower"
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_source
+msgid "Cetmix Tower Git Source"
+msgstr "Origine Git Cetmix Tower"
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_server
+msgid "Cetmix Tower Server"
+msgstr "Server Cetmix Tower"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project_rel.py:0
+#, python-format
+msgid "Code generator function for '%(project_format)s' format not found."
+msgstr ""
+"Funzione generazione codice per il formato '%(project_format)s' non trovata."
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__commit
+msgid "Commit"
+msgstr "Commit"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_file
+msgid "Cx Tower File"
+msgstr "File Cx Tower"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_remote_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
+msgid "Disabled"
+msgstr "Disabilitato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__enabled
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_source__enabled
+msgid "Enable in configuration and exported to files"
+msgstr "Abilitato in configurazione ed esportato nei file"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__enabled
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__enabled
+msgid "Enabled"
+msgstr "Abilitato"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "Export YAML"
+msgstr "Esporta YAML"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__file_id
+msgid "File"
+msgstr "File"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project_rel.py:0
+#, python-format
+msgid "File '%(file)s' doesn't belong to server '%(server)s'"
+msgstr "Il file '%(file)s' non appartiene al server '%(server)s'"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_file.py:0
+#, python-format
+msgid ""
+"File '%(file)s' is related to multiple projects: %(projects)s \n"
+"Please select only one project."
+msgstr ""
+"Il file '%(file)s' è relativo a progetti multipli: %(projects)s \n"
+"Selezionare solo un progetto."
+
+#. module: cetmix_tower_git
+#: model:ir.model.constraint,message:cetmix_tower_git.constraint_cx_tower_git_project_rel_project_server_file_format_uniq
+msgid "File is already related to the same project and format"
+msgstr "Il file è già relativo allo stesso progetto e formato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__file_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "Files"
+msgstr "File"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__project_format
+msgid "Format"
+msgstr "Formato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__git_aggregator_root_dir
+msgid "Git Aggregator Root Dir"
+msgstr "Directory radice Git Aggregator"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+#, python-format
+msgid ""
+"Git Aggregator: Bitbucket does not support fetching PRs. Please use branch "
+"instead.\n"
+"\n"
+"Source: %(src)s\n"
+"URL: %(url)s\n"
+"Head: %(head)s"
+msgstr ""
+"Git Aggregator: Bitbucket non supporta il fetch delle PR. In alternativa "
+"usare branch.\n"
+"\n"
+"Origine: %(src)s\n"
+"URL: %(url)s\n"
+"Head: %(head)s"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+#, python-format
+msgid "Git Aggregator: Head number is empty in %(head)s"
+msgstr "Git Aggregator: il numero Head è vuoto in %(head)s"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__git_project_id
+msgid "Git Configuration"
+msgstr "Configurazione Git"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__git_project_id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__git_project_ids
+msgid "Git Project"
+msgstr "Progetto Git"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__git_project_rel_ids
+msgid "Git Project Rel"
+msgstr "Rel progetto Git"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__git_project_rel_ids
+msgid "Git Project Server File Relations"
+msgstr "Relazioni file server progetto Git"
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project_rel
+msgid "Git Project relation to other model records"
+msgstr "Relazione progetto Git ad altri record modello"
+
+#. module: cetmix_tower_git
+#: model:ir.actions.act_window,name:cetmix_tower_git.cx_tower_git_project_action
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_ids
+#: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
+msgid "Git Projects"
+msgstr "Progetti Git"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__git_aggregator_root_dir
+msgid ""
+"Git aggregator root directory where sources will be cloned. Eg '/tmp/git-"
+"aggregator' Will use '.' if not set"
+msgstr ""
+"La directory radice di Git Aggregator dove l'origine verrà clonata. Es. '/"
+"tmp/git-aggregator'. Verrà usato '.' se non impostata"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid ""
+"Git aggregator root directory where sources will be cloned. Leave blank to "
+"use '.'"
+msgstr ""
+"La directory radice di Git Aggregator dove l'origine verrà clonata. "
+"Lasciare vuoto per usare '.'"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__url
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_remote_view_form
+msgid ""
+"Git remote URL. Eg 'https://github.com/cetmix/cetmix-tower.git' or "
+"'git@github.com:cetmix/cetmix-tower.git'"
+msgstr ""
+"URL remote Git. Es. 'https://github.com/cetmix/cetmix-tower.git' o "
+"'git@github.com:cetmix/cetmix-tower.git'"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__head
+msgid ""
+"Git remote head. Link to branch, PR, commit or commit hash. Leave blank to "
+"auto-detect"
+msgstr ""
+"Head remote Git. Link al branch, PR, commit o commit hash. Lasciare vuoto "
+"per auto-selezione"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__repo_provider__github
+msgid "GitHub"
+msgstr "GitHub"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__repo_provider__gitlab
+msgid "GitLab"
+msgstr "GitLab"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__url_protocol__https
+msgid "HTTPS"
+msgstr "HTTPS"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__has_partially_private_remotes
+msgid "Has Partially Private Remotes"
+msgstr "Ha remote parzialmente privati"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__has_private_remotes
+msgid "Has Private Remotes"
+msgstr "Ha remote privati"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head
+msgid "Head"
+msgstr "Head"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_type
+msgid "Head Type"
+msgstr "Tipo head"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__id
+msgid "ID"
+msgstr "ID"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__has_partially_private_remotes
+msgid "Indicates if the project has any partially private remotes."
+msgstr "Indica se il progetto ha qualche remote parzialmente privato."
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__has_private_remotes
+msgid "Indicates if the project has any private remotes."
+msgstr "Indica se il progetto ha qualche remote privato."
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__is_private
+msgid "Is Private"
+msgstr "È privato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_uid
+msgid "Last Updated by"
+msgstr "Ultima modifica di"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__name
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
+msgid "Name"
+msgstr "Nome"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+#, python-format
+msgid "Not a valid URL. URL must end with '.git'"
+msgstr "URL non valido. URL deve finire con '.git'"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+#, python-format
+msgid "Not a valid URL. URL must start with 'https://' or 'git@'"
+msgstr "URL non valido. URL deve iniziare con 'https://' o 'git@'"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+#, python-format
+msgid ""
+"Not a valid URL: %(url_msg)s\n"
+"URL must contain at least two parts separated by dot."
+msgstr ""
+"URL non valdio: %(url_msg)s\n"
+"URL deve contenere almeno due parti separate da un punto."
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__repo_provider__other
+msgid "Other"
+msgstr "Altro"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
+msgid "Private"
+msgstr "Privato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_count_private
+msgid "Private Remotes"
+msgstr "Remote privati"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__pr
+msgid "Pull/Merge Request"
+msgstr "Pull/Merge Request"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__reference
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__reference
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__reference
+msgid "Reference"
+msgstr "Riferimento"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
+msgid ""
+"Reference. Can contain English letters, digits and '_'. Leave blank to "
+"autogenerate"
+msgstr ""
+"Riferimento. Può contenere lettere inglesi, numeri e '_'. Lasciare vuoto "
+"per autogenerazione"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_count
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
+msgid "Remotes"
+msgstr "Remote"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__repo_provider
+msgid "Repository Provider"
+msgstr "Fornitore repository"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__is_private
+msgid "Repository is private"
+msgstr "Il repository è privato"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__url_protocol__ssh
+msgid "SSH"
+msgstr "SSH"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__sequence
+msgid "Sequence"
+msgstr "Sequenza"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__server_id
+msgid "Server"
+msgstr "Server"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__server_ids
+msgid "Servers"
+msgstr "Server"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__server_ids
+msgid ""
+"Servers are added automatically based on the files linked to the project.\n"
+"IMPORTANT: This field may contain duplicates because of the relation nature!"
+msgstr ""
+"I server sono aggiunti automaticamente in base al file collegato al "
+"progetto.\n"
+"IMPORTANTE: questo campo può contenere duplicati per la natura della "
+"relazione!"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__source_id
+msgid "Source"
+msgstr "Origine"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__source_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "Sources"
+msgstr "Origini"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
+msgid ""
+"The top one remote will be used as a merge target.\n"
+"                            You can re-arrange remotes by dragging them or "
+"changing their sequence value."
+msgstr ""
+"Il remote in cima verrà utilizzato come destinazione del merge.\n"
+"                            Si possono ri-organizzare i remote "
+"trascinandoli o modificando il loro numero sequenza."
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__url
+msgid "URL"
+msgstr "URL"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__url_protocol
+msgid "URL Protocol"
+msgstr "Protocollo URL"
+
+#. module: cetmix_tower_git
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+#, python-format
+msgid "URL is required"
+msgstr "È richiesto l'URL"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__repo_provider
+msgid ""
+"Will be tried to be determined from the URL. Please select manually if auto-"
+"detection fails."
+msgstr ""
+"Si cercherà di determinarlo dall'URL. Selezionarlo manualmente se fallisce "
+"l'auto determinazione."
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "YAML"
+msgstr "YAML"
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__yaml_code
+msgid "Yaml Code"
+msgstr "Codice YAML"
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid ""
+"You must be a member of the \"YAML/Export\" group to export data as YAML."
+msgstr ""
+"Bisogna appartenere al gruppo \"YAML/Export\" per esportare dati in YAML."
