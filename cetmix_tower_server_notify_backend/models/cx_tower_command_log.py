@@ -14,9 +14,14 @@ class CxTowerCommandLog(models.Model):
         )
 
         for rec in self:
-            if rec.plan_log_id:  # type: ignore
+            # Record might be deleted before we get here.
+            # Eg in case Flight Plan is run on server deletion.
+            #
+            # Also do not send notification if command is run
+            # from a Flight Plan.
+            if not rec.exists() or rec.plan_log_id:  # type: ignore
                 continue
-            elif rec.command_status == 0:
+            if rec.command_status == 0:
                 rec.create_uid.notify_success(
                     message=_(
                         "%(timestamp)s<br/>" "Command '%(name)s' finished successfully",
