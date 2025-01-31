@@ -378,14 +378,20 @@ class TestTowerVariable(TestTowerCommon):
         self.add_to_group(user_bob, "cetmix_tower_server.group_user")
 
         # Check access to private values for group_user without subscription
-        variable_private_value_as_bob = variable_private_value.with_user(user_bob)
-        with self.assertRaises(AccessError):
-            _ = variable_private_value_as_bob.value_char
+        self.assertFalse(
+            self.VariableValue.with_user(user_bob).search(
+                [("id", "=", variable_private_value.id)]
+            ),
+            "User must not see private variable values without subscription",
+        )
 
         # Check that group_user cannot access global values (as per new logic)
-        variable_global_value_as_bob = variable_global_value.with_user(user_bob)
-        with self.assertRaises(AccessError):
-            _ = variable_global_value_as_bob.value_char
+        self.assertFalse(
+            self.VariableValue.with_user(user_bob).search(
+                [("id", "=", variable_global_value.id)]
+            ),
+            "User must not see global variable values",
+        )
 
         # Subscribe user_bob to the server
         server.message_subscribe([user_bob.partner_id.id])
@@ -399,8 +405,12 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Check that group_user still cannot access global values after subscription
-        with self.assertRaises(AccessError):
-            _ = variable_global_value_as_bob.value_char
+        self.assertFalse(
+            self.VariableValue.with_user(user_bob).search(
+                [("id", "=", variable_global_value.id)]
+            ),
+            "User must not see global variable values",
+        )
 
         # Add user_bob to group_manager
         self.add_to_group(user_bob, "cetmix_tower_server.group_manager")

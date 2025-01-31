@@ -81,6 +81,7 @@ class TowerVariableValue(models.Model):
     required = fields.Boolean()
     access_level = fields.Selection(
         compute="_compute_access_level",
+        inverse="_inverse_access_level",
         readonly=False,
         store=True,
     )
@@ -148,6 +149,15 @@ class TowerVariableValue(models.Model):
         for rec in self:
             if rec.variable_id:
                 rec.access_level = rec.variable_id.access_level
+
+    def _inverse_access_level(self):
+        """
+        Ensure that when `access_level` is updated, it
+        is also updated in related `variable.values`.
+        """
+        for rec in self:
+            if rec.variable_id:
+                rec.variable_id.write({"access_level": rec.access_level})
 
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):

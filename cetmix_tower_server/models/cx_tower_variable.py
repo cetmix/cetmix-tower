@@ -40,14 +40,6 @@ class TowerVariable(models.Model):
         for rec in self:
             rec.value_ids_count = len(rec.value_ids)
 
-    @api.onchange("access_level")
-    def _onchange_access_level(self):
-        """
-        Ensure all related variable values are updated when `access_level` changes.
-        """
-        for rec in self:
-            rec.value_ids.write({"access_level": rec.access_level})
-
     def action_open_values(self):
         context = self.env.context.copy()
         context.update(
