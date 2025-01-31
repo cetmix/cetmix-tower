@@ -830,8 +830,8 @@ command or ``Path`` field in flight plan line.
 
    cat my_doge_memes.txt
 
-.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png
-.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====

@@ -139,7 +139,7 @@ class TowerVariableValue(models.Model):
             if rec.variable_id.option_ids:
                 rec.value_char = False
 
-    @api.depends("variable_id")
+    @api.depends("variable_id.access_level")
     def _compute_access_level(self):
         """
         Automatically set the `access_level` based on `variable_id.access_level`
