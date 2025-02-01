@@ -63,8 +63,12 @@ class CxTowerYamlMixin(models.AbstractModel):
 
     @api.constrains("yaml_code")
     def _check_yaml_code_write_access(self):
-        """Check if user has access to create records from YAML"""
-        if (
+        """
+        Check if user has access to create records from YAML.
+        This is checked only when user already has access to export YAML.
+        Otherwise, the field is not accessible due to security group.
+        """
+        if self.env.user.has_group("cetmix_tower_yaml.group_export") and (
             not self.env.user.has_group("cetmix_tower_yaml.group_import")
             and not self.env.user._is_superuser()
         ):
