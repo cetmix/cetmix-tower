@@ -53,6 +53,8 @@
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
         />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
         <field name="note">
             This server is used in unit tests.
             No variables are defined.
@@ -74,6 +76,8 @@
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
         />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
         <field name="note">This server has variables configured</field>
     </record>
     <record id="mail_follower_server_demo_2" model="mail.followers">

@@ -34,6 +34,8 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         string="Commands",
         comodel_name="cx.tower.plan.line",
         compute="_compute_plan_line_ids",
+        compute_sudo=True,
+        groups="cetmix_tower_server.group_manager",
     )
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
