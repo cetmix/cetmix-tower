@@ -11,6 +11,7 @@ class CxTowerServer(models.Model):
         inverse_name="server_id",
         copy=False,
         depends=["git_project_ids"],
+        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root",
     )
 
     # Helper field to get all git projects related to server
@@ -23,4 +24,5 @@ class CxTowerServer(models.Model):
         readonly=True,
         copy=False,
         depends=["git_project_rel_ids"],
+        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root",
     )
