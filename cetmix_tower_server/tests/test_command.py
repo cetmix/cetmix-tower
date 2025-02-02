@@ -136,6 +136,277 @@ COMMAND_RESULT = {
     """,
             }
         )
+        self.server = self.Server.create(
+            {
+                "name": "Test Server",
+                "user_ids": [(6, 0, [self.user.id])],
+                "manager_ids": [(6, 0, [self.manager.id])],
+                "ssh_username": "test",
+                "ssh_password": "test",
+                "ip_v4_address": "127.0.0.1",
+            }
+        )
+
+    def _create_command(self, **kwargs):
+        """Helper to create a command record with default values."""
+        vals = {
+            "name": "Test Command",
+            "access_level": "1",  # override default
+            "user_ids": [(6, 0, [])],
+            "manager_ids": [(6, 0, [])],
+            "server_ids": [(6, 0, [])],
+        }
+        if kwargs:
+            vals.update(kwargs)
+        return self.Command.create(vals)
+
+    def test_user_read_access(self):
+        """
+        For a user:
+          Read access is allowed if access_level == "1" and either the command's
+          own user_ids includes the user OR a related server (via server_ids)
+          includes the user in its user_ids.
+        """
+        # Case 1: Command with access_level "1" and user in command.user_ids.
+        cmd1 = self._create_command(
+            **{
+                "access_level": "1",
+                "user_ids": [(6, 0, [self.user.id])],
+            }
+        )
+        recs1 = self.Command.with_user(self.user).search([("id", "=", cmd1.id)])
+        self.assertIn(
+            cmd1,
+            recs1,
+            "User should see the command if in command.user_ids"
+            " and access_level == '1'.",
+        )
+
+        # Case 2: Command with access_level "1" and user not in command.user_ids
+        # but in a related server.
+        cmd2 = self._create_command(
+            **{
+                "access_level": "1",
+                "user_ids": [(6, 0, [])],
+                "server_ids": [(6, 0, [self.server.id])],
+            }
+        )
+        recs2 = self.Command.with_user(self.user).search([("id", "=", cmd2.id)])
+        self.assertIn(
+            cmd2,
+            recs2,
+            "User should see the command if related server.user_ids includes the user.",
+        )
+
+        # Negative: If access_level is "1" but neither command.user_ids
+        # nor server_ids.user_ids includes the user.
+        cmd3 = self._create_command(
+            **{
+                "access_level": "1",
+                "user_ids": [(6, 0, [])],
+                "server_ids": [(6, 0, [])],
+            }
+        )
+        recs3 = self.Command.with_user(self.user).search([("id", "=", cmd3.id)])
+        self.assertNotIn(
+            cmd3,
+            recs3,
+            "User should not see the command if not granted access.",
+        )
+
+    def test_manager_read_access(self):
+        """
+        For a manager:
+          Allowed to read a command if access_level <= "2" AND
+          (either the command itself grants access via user_ids or manager_ids
+           OR there are no related servers OR a related server grants access via
+            its user_ids or manager_ids).
+        """
+        # Case 1: Command with access_level "2" and command.manager_ids
+        #  includes the manager but the server is not related to the command.
+        another_server = self.Server.create(
+            {
+                "name": "Another Server",
+                "ip_v4_address": "127.0.0.2",
+                "ssh_username": "test",
+                "ssh_password": "test",
+                "user_ids": [(6, 0, [])],
+                "manager_ids": [(6, 0, [])],
+            }
+        )
+        cmd1 = self._create_command(
+            **{
+                "access_level": "2",
+                "manager_ids": [(6, 0, [self.manager.id])],
+                "server_ids": [(6, 0, [another_server.id])],
+            }
+        )
+        recs1 = self.Command.with_user(self.manager).search([("id", "=", cmd1.id)])
+        self.assertIn(
+            cmd1,
+            recs1,
+            "Manager should see the command if in command.manager_ids"
+            " and access_level <= '2'.",
+        )
+
+        # Case 2: Command with access_level "2" that does not grant access
+        #  on the command itself, but a related server grants access via
+        # but a related server grants access via its manager_ids.
+        cmd2 = self._create_command(
+            **{
+                "access_level": "2",
+                "user_ids": [(6, 0, [])],
+                "manager_ids": [(6, 0, [])],
+                "server_ids": [(6, 0, [self.server.id])],
+            }
+        )
+        recs2 = self.Command.with_user(self.manager).search([("id", "=", cmd2.id)])
+        self.assertIn(
+            cmd2,
+            recs2,
+            "Manager should see the command if related server.manager_ids"
+            " includes the manager.",
+        )
+
+        # Positive: Command with access_level "2" without any granted access.
+        cmd3 = self._create_command(
+            **{
+                "access_level": "2",
+                "user_ids": [(6, 0, [])],
+                "manager_ids": [(6, 0, [])],
+                "server_ids": [(6, 0, [])],
+            }
+        )
+        recs3 = self.Command.with_user(self.manager).search([("id", "=", cmd3.id)])
+        self.assertIn(
+            cmd3,
+            recs3,
+            "Manager should see the command if not granted access "
+            "but not related to any server.",
+        )
+
+        # Case 3: Remove from manager in the cmd1.
+        # Should not see the command because it belongs to another server.
+        cmd1.manager_ids = [(3, self.manager.id)]
+        recs4 = self.Command.with_user(self.manager).search([("id", "=", cmd1.id)])
+        self.assertNotIn(
+            cmd1,
+            recs4,
+            "Manager should not see the command if "
+            "removed from command.manager_ids."
+            " and command belongs to another server.",
+        )
+
+    def test_manager_write_create_access(self):
+        """
+        For a manager:
+          Allowed to write and create a command if access_level <= "2" AND
+          the command's own manager_ids includes the manager.
+        """
+        # Case: Command with access_level "2" and manager_ids includes the manager.
+        cmd1 = self._create_command(
+            **{
+                "access_level": "2",
+                "manager_ids": [(6, 0, [self.manager.id])],
+            }
+        )
+        try:
+            cmd1.with_user(self.manager).write({"name": "Manager Updated Command"})
+        except AccessError:
+            self.fail(
+                "Manager should be able to update the command "
+                "if in command.manager_ids."
+            )
+        self.assertEqual(cmd1.with_user(self.manager).name, "Manager Updated Command")
+
+        # Attempt to create a command as manager without including their ID
+        #  in manager_ids should fail.
+        cmd_invalid_vals = {
+            "name": "Invalid Manager Create",
+            "access_level": "2",
+            "manager_ids": [(6, 0, [])],
+            "action": "python_code",
+            "code": "print('dummy')",
+        }
+        with self.assertRaises(AccessError):
+            self.Command.with_user(self.manager).create(cmd_invalid_vals)
+
+    def test_manager_unlink_access(self):
+        """
+        For a manager:
+          Allowed to delete a command if access_level <= "2",
+          the current user is the record creator,
+          AND the command's own manager_ids includes the manager.
+        """
+        # Scenario 1: Command created by the manager with manager_ids
+        # including the manager.
+        cmd1 = self.Command.with_user(self.manager).create(
+            {
+                "name": "Manager Created Command",
+                "access_level": "2",
+            }
+        )
+        try:
+            cmd1.unlink()
+        except AccessError:
+            self.fail(
+                "Manager should be able to delete a command "
+                "they created if in command.manager_ids."
+            )
+
+        # Scenario 2: Command created by someone else
+        # even if manager_ids includes the manager.
+        cmd2 = self._create_command(
+            **{
+                "access_level": "2",
+                "manager_ids": [(6, 0, [self.manager.id])],
+            }
+        )
+        with self.assertRaises(AccessError):
+            cmd2.with_user(self.manager).unlink()
+
+    def test_root_unrestricted_access(self):
+        """
+        For a root user:
+          Unlimited access: root can read, write, create, and delete commands
+          regardless of access_level or related servers.
+        """
+        cmd = self._create_command(
+            **{
+                "access_level": "3",  # above the threshold for managers
+            }
+        )
+        recs = self.Command.with_user(self.root).search([("id", "=", cmd.id)])
+        self.assertIn(
+            cmd,
+            recs,
+            "Root should see the command regardless of restrictions.",
+        )
+        try:
+            cmd.with_user(self.root).write({"name": "Root Updated Command"})
+        except AccessError:
+            self.fail(
+                "Root should be able to update the command " "without restrictions."
+            )
+        self.assertEqual(cmd.with_user(self.root).name, "Root Updated Command")
+        cmd2 = self.Command.with_user(self.root).create(
+            {
+                "name": "Root Created Command",
+                "access_level": "3",
+                "action": "python_code",
+                "code": "print('root')",
+            }
+        )
+        self.assertTrue(
+            cmd2,
+            "Root should be able to create a command " "without restrictions.",
+        )
+        cmd2.with_user(self.root).unlink()
+        recs_after = self.Command.with_user(self.root).search([("id", "=", cmd2.id)])
+        self.assertFalse(
+            recs_after,
+            "Root should be able to delete the command without restrictions.",
+        )
 
     def test_ssh_command_prepare_method_without_path(self):
         """Test ssh command preparation in different modes without path"""
@@ -507,141 +778,6 @@ COMMAND_RESULT = {
         )
         self.assertEqual(
             log_record.command_status, 0, msg="Command status must be equal to 0"
-        )
-
-    def test_user_access_rule(self):
-        """Test user access rule"""
-        # Create the test command
-        test_command = self.Command.create({"name": "Test command"})
-
-        # Ensure that defaulf command access_level is equal to 2
-        self.assertEqual(test_command.access_level, "2")
-        # Remove bob from all cxtower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-        # Ensure that regular user cannot access the command
-        test_command_1_as_bob = test_command.with_user(self.user_bob)
-        with self.assertRaises(AccessError):
-            command_name = test_command_1_as_bob.name
-        test_command.write({"access_level": "1"})
-        # Add user to group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Ensure that user can access the command
-        command_name = test_command_1_as_bob.name
-        self.assertEqual(command_name, "Test command", msg="Must return 'Test command'")
-
-        # Check that user with "cetmix_tower_server.group_user" can execute ssh command
-        test_command.write(
-            {
-                "code": "ls -l",
-            }
-        )
-        self.server_test_1.with_user(self.user_bob).execute_command(
-            test_command,
-        )
-
-        # Add user to group_manager
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        # Create a new command with access_level 1
-        new_command = self.Command.with_user(self.user_bob).create(
-            {"name": "New Test Command", "access_level": "1"}
-        )
-        self.assertEqual(new_command.access_level, "1")
-        # Try to elevate the access_level of new_command to 2
-        new_command.with_user(self.user_bob).write({"access_level": "2"})
-        self.assertEqual(new_command.access_level, "2")
-
-        # Ensure that manager user cannot see commands with access_level 3
-
-        restricted_command = self.Command.create(
-            {"name": "Restricted Command", "access_level": "3"}
-        )
-
-        user_bob_records = self.Command.with_user(self.user_bob).search([])
-        user_bob_records_access_level_3 = user_bob_records.filtered(
-            lambda r: r.access_level == "3"
-        )
-        self.assertFalse(user_bob_records_access_level_3, "Must return 0 records")
-        # Add user to group_root
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
-        # Ensure that root user can see commands with access_level 3
-        user_bob_records = self.Command.with_user(self.user_bob).search([])
-        user_bob_records_access_level_3 = user_bob_records.filtered(
-            lambda r: r.access_level == "3"
-        )
-        self.assertTrue(user_bob_records_access_level_3, "Must not be empty")
-        self.assertIn(
-            restricted_command,
-            user_bob_records_access_level_3,
-            "Restricted command must be in the list",
-        )
-
-        # Try to demote the access_level of new_command to 2
-        restricted_command.with_user(self.user_bob).write({"access_level": "2"})
-        self.assertEqual(restricted_command.access_level, "2")
-        # Checking the case that may require clearing the cache:
-        # Create a command with "Manager" access level.
-        cc_command = self.Command.create({"name": "CC Command", "access_level": "2"})
-
-        # Remove bob from all cxtower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-        # Add user to group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Check command list with "Tower-User" user. User cannot see this command.
-        with self.assertRaises(AccessError):
-            command_name = cc_command.with_user(self.user_bob).name
-        # Change the command access level to "User".
-        cc_command.write({"access_level": "1"})
-
-        command_name = cc_command.with_user(self.user_bob).name
-        self.assertEqual(command_name, "CC Command", msg="Must return 'CC command'")
-        # Assign cc_command.server_ids to self.server_test_1
-        cc_command.write({"server_ids": [(6, 0, [self.server_test_1.id])]})
-        # Ensure Bob can't access cc_command if he is not a follower
-        #  of self.server_test_1
-        with self.assertRaises(AccessError):
-            cc_command.with_user(self.user_bob).read([])
-        # Add Bob to the manager group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-
-        # Ensure Bob as manager still can't access cc_command if he is not
-        # a follower of self.server_test_1
-        with self.assertRaises(AccessError):
-            cc_command.with_user(self.user_bob).read([])
-
-        # Subscribe Bob to self.server_test_1
-        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-
-        # Ensure Bob can now access cc_command as a follower of self.server_test_1
-        cc_command_read_result = cc_command.with_user(self.user_bob).read([])
-        self.assertEqual(
-            cc_command_read_result[0]["name"],
-            cc_command.name,
-            msg="Command name should be same",
-        )
-
-        # Remove Bob from manager group
-        self.remove_from_group(self.user_bob, ["cetmix_tower_server.group_manager"])
-
-        # Ensure Bob retains access to cc_command because he is a follower
-        cc_command_read_result = cc_command.with_user(self.user_bob).read([])
-        self.assertEqual(
-            cc_command_read_result[0]["name"],
-            cc_command.name,
-            msg="Command name should be same",
         )
 
     def test_parse_ssh_command_result(self):

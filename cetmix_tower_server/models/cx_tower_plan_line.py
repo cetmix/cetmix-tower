@@ -137,12 +137,13 @@ class CxTowerPlanLine(models.Model):
 
         # Set 'sudo' value
         use_sudo = self.use_sudo and server.use_sudo
+
         # Use sudo to bypass access rules for execute command with higher access level
-        command_id = self.sudo().command_id
+        command_as_root = self.sudo().command_id
 
         # Set path
-        path = self.path or self.command_id.path
-        server.execute_command(command_id, path, sudo=use_sudo, **kwargs)
+        path = self.path or command_as_root.path
+        server.execute_command(command_as_root, path, sudo=use_sudo, **kwargs)
 
     def _is_executable_line(self, server):
         """

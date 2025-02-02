@@ -190,6 +190,9 @@ class TestTowerCommandWizard(TestTowerCommon):
             )
         ).with_user(self.user_bob)
 
+        # Add Bob as a user to the command
+        command.write({"user_ids": [(4, self.user_bob.id)]})
+
         # Ensure command can be executed by user
         test_wizard.execute_command_on_server()
 

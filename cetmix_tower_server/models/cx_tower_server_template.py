@@ -9,7 +9,12 @@ class CxTowerServerTemplate(models.Model):
     """Server Template. Used to simplify server creation"""
 
     _name = "cx.tower.server.template"
-    _inherit = ["cx.tower.reference.mixin", "mail.thread", "mail.activity.mixin"]
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "mail.thread",
+        "mail.activity.mixin",
+        "cx.tower.access.role.mixin",
+    ]
     _description = "Cetmix Tower Server Template"
 
     active = fields.Boolean(default=True)
@@ -87,6 +92,14 @@ class CxTowerServerTemplate(models.Model):
 
     # -- Other
     note = fields.Text()
+
+    # ---- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_server_template_user_rel",
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_server_template_manager_rel",
+    )
 
     def _compute_server_count(self):
         """
@@ -216,37 +229,53 @@ class CxTowerServerTemplate(models.Model):
         Returns:
             cx.tower.server: newly created server record
         """
-        # Retrieving the passed variables
+        self.ensure_one()
+
+        # Retrieve the passed variables
         configuration_variables = kwargs.get("configuration_variables", {})
 
         # We validate mandatory variables
         self._validate_required_variables(configuration_variables)
 
         # We are using sudo to ensure all values are copied
-        servers = (
-            self.env["cx.tower.server"]
-            .with_context(skip_ssh_settings_check=True)
-            .create(
-                self.sudo()._prepare_server_values(
-                    name=name,
-                    server_template_id=self.id,  # pylint: disable=no-member
-                    **kwargs,
-                ),
-            )
+        server_values = self.sudo()._prepare_server_values(
+            name=name,
+            server_template_id=self.id,  # pylint: disable=no-member
+            **kwargs,
         )
 
-        for server in servers:
-            logs = server.server_log_ids.filtered(lambda rec: rec.log_type == "file")
-            for log in logs:
-                log.file_id = log.file_template_id.create_file(
-                    server=server, raise_if_exists=False
-                ).id
+        # Pop variable values to add them after server creation.
+        # This is needed to ensure that access rules are applied properly.
+        variable_values = server_values.pop("variable_value_ids")
 
-            flight_plan = server.server_template_id.flight_plan_id
-            if flight_plan:
-                flight_plan.execute(server)
+        # Prepare context for server creation
+        context = self.env.context.copy()
 
-        return servers
+        # SSH setting may be added after server creation.
+        context.update({"skip_ssh_settings_check": True})
+        # We need to remove default_server_template_id to avoid it being used
+        # in variable values.
+        context.pop("default_server_template_id", None)
+
+        # Create server
+        server = self.env["cx.tower.server"].with_context(context).create(server_values)
+
+        # Add variable values
+        if variable_values:
+            server.with_context(context).write({"variable_value_ids": variable_values})
+
+        # Create server logs
+        logs = server.server_log_ids.filtered(lambda rec: rec.log_type == "file")
+        for log in logs:
+            log.file_id = log.file_template_id.create_file(
+                server=server, raise_if_exists=False
+            ).id
+
+        flight_plan = server.server_template_id.flight_plan_id
+        if flight_plan:
+            flight_plan.execute(server)
+
+        return server
 
     def _get_fields_tower_server(self):
         """
@@ -293,174 +322,175 @@ class CxTowerServerTemplate(models.Model):
         MAGIC_FIELDS = models.MAGIC_COLUMNS + [self.CONCURRENCY_CHECK_FIELD]
 
         # read all values required to create a new server from the template
-        vals_list = self.read(self._get_fields_tower_server(), load=False)
+        values = self.read(self._get_fields_tower_server(), load=False)[0]
 
         # prepare server config values from kwargs
         server_config_values = self._parse_server_config_values(kwargs)
+        template = self.browse(values["id"])
 
-        # process each template record
-        for values in vals_list:
-            template = self.browse(values["id"])
+        # Process each field in the template
+        for field in values.keys():
+            if isinstance(model_fields[field], field_o2m_type):
+                # get related records for One2many field
+                related_records = getattr(template, field)
+                new_records = []
+                # for each related record, read its data and prepare it for copying
+                for record in related_records:
+                    record_data = {
+                        k: v
+                        for k, v in record.read(load=False)[0].items()
+                        if k not in MAGIC_FIELDS
+                    }
+                    # set the inverse field (link back to the template)
+                    # to False to unlink from the original template
+                    record_data[model_fields[field].inverse_name] = False
+                    new_records.append((0, 0, record_data))
 
-            for field in values.keys():
-                if isinstance(model_fields[field], field_o2m_type):
-                    # get related records for One2many field
-                    related_records = getattr(template, field)
-                    new_records = []
-                    # for each related record, read its data and prepare it for copying
-                    for record in related_records:
-                        record_data = {
-                            k: v
-                            for k, v in record.read(load=False)[0].items()
-                            if k not in MAGIC_FIELDS
-                        }
-                        # set the inverse field (link back to the template)
-                        # to False to unlink from the original template
-                        record_data[model_fields[field].inverse_name] = False
-                        new_records.append((0, 0, record_data))
+                values[field] = new_records
 
-                    values[field] = new_records
+        # Handle configuration variables if provided.
+        configuration_variables = kwargs.pop("configuration_variables", None)
+        configuration_variable_options = kwargs.pop(
+            "configuration_variable_options", {}
+        )
 
-            # Handle configuration variables if provided.
-            configuration_variables = kwargs.pop("configuration_variables", None)
-            configuration_variable_options = kwargs.pop(
-                "configuration_variable_options", {}
+        if configuration_variables:
+            # Validate required variables
+            self._validate_required_variables(configuration_variables)
+
+            # Search for existing variable options.
+            option_references = list(configuration_variable_options.values())
+            existing_options = option_references and self.env[
+                "cx.tower.variable.option"
+            ].search([("reference", "in", option_references)])
+            missing_options = list(
+                set(option_references)
+                - {option.reference for option in existing_options}
             )
 
-            if configuration_variables:
-                # Validate required variables
-                self._validate_required_variables(configuration_variables)
-
-                # Search for existing variable options.
-                option_references = list(configuration_variable_options.values())
-                existing_options = option_references and self.env[
-                    "cx.tower.variable.option"
-                ].search([("reference", "in", option_references)])
-                missing_options = list(
-                    set(option_references)
-                    - {option.reference for option in existing_options}
+            if missing_options:
+                # Map variable references to their corresponding
+                # invalid option references.
+                missing_options_to_variables = {
+                    var_ref: opt_ref
+                    for var_ref, opt_ref in configuration_variable_options.items()
+                    if opt_ref in missing_options
+                }
+                # Generate a detailed error message for invalid variable options.
+                detailed_message = "\n".join(
+                    _(
+                        "Variable reference '%(var_ref)s' has an invalid "
+                        "option reference '%(opt_ref)s'.",
+                        var_ref=var_ref,
+                        opt_ref=opt_ref,
+                    )
+                    for var_ref, opt_ref in missing_options_to_variables.items()
+                )
+                raise ValidationError(
+                    _(
+                        "Some variable options are invalid:\n%(detailed_message)s",
+                        detailed_message=detailed_message,
+                    )
                 )
 
-                if missing_options:
-                    # Map variable references to their corresponding
-                    # invalid option references.
-                    missing_options_to_variables = {
-                        var_ref: opt_ref
-                        for var_ref, opt_ref in configuration_variable_options.items()
-                        if opt_ref in missing_options
-                    }
-                    # Generate a detailed error message for invalid variable options.
-                    detailed_message = "\n".join(
-                        _(
-                            "Variable reference '%(var_ref)s' has an invalid "
-                            "option reference '%(opt_ref)s'.",
-                            var_ref=var_ref,
-                            opt_ref=opt_ref,
-                        )
-                        for var_ref, opt_ref in missing_options_to_variables.items()
-                    )
-                    raise ValidationError(
-                        _(
-                            "Some variable options are invalid:\n%(detailed_message)s",
-                            detailed_message=detailed_message,
-                        )
-                    )
+            # Map variable options to their IDs.
+            configuration_variable_options_dict = {
+                option.variable_id.id: option for option in existing_options
+            }
 
-                # Map variable options to their IDs.
-                configuration_variable_options_dict = {
-                    option.variable_id.id: option for option in existing_options
+            variable_obj = self.env["cx.tower.variable"]
+            variable_references = list(configuration_variables.keys())
+
+            # Search for existing variables or create new ones if missing.
+            exist_variables = variable_obj.search(
+                [("reference", "in", variable_references)]
+            )
+            missing_references = list(
+                set(variable_references)
+                - {variable.reference for variable in exist_variables}
+            )
+            variable_vals_list = [
+                {"name": reference} for reference in missing_references
+            ]
+            new_variables = variable_obj.create(variable_vals_list)
+            all_variables = exist_variables | new_variables
+
+            # Build a dictionary {variable: variable_value}.
+            configuration_variable_dict = {
+                variable: configuration_variables[variable.reference]
+                for variable in all_variables
+            }
+
+            server_variable_vals_list = []
+            for variable, variable_value in configuration_variable_dict.items():
+                variable_option = configuration_variable_options_dict.get(variable.id)
+
+                server_variable_vals_list.append(
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": variable.id,
+                            "value_char": variable_option
+                            and variable_option.value_char
+                            or variable_value,
+                            "option_id": variable_option and variable_option.id,
+                        },
+                    )
+                )
+
+            if pick_all_template_variables:
+                # update or add variable values
+                existing_variable_values = values.get("variable_value_ids", [])
+                variable_id_to_index = {
+                    cmd[2]["variable_id"]: idx
+                    for idx, cmd in enumerate(existing_variable_values)
+                    if cmd[0] == 0 and "variable_id" in cmd[2]
                 }
 
-                variable_obj = self.env["cx.tower.variable"]
-                variable_references = list(configuration_variables.keys())
-
-                # Search for existing variables or create new ones if missing.
-                exist_variables = variable_obj.search(
-                    [("reference", "in", variable_references)]
-                )
-                missing_references = list(
-                    set(variable_references)
-                    - {variable.reference for variable in exist_variables}
-                )
-                variable_vals_list = [
-                    {"name": reference} for reference in missing_references
-                ]
-                new_variables = variable_obj.create(variable_vals_list)
-                all_variables = exist_variables | new_variables
-
-                # Build a dictionary {variable: variable_value}.
-                configuration_variable_dict = {
-                    variable: configuration_variables[variable.reference]
-                    for variable in all_variables
-                }
-
-                server_variable_vals_list = []
-                for variable, variable_value in configuration_variable_dict.items():
-                    variable_option = configuration_variable_options_dict.get(
-                        variable.id
+                # Update exist variable options
+                for exist_variable_id, index in variable_id_to_index.items():
+                    option = configuration_variable_options_dict.get(exist_variable_id)
+                    if not option:
+                        continue
+                    existing_variable_values[index][2].update(
+                        {
+                            "option_id": option.id,
+                            "value_char": option.value_char,
+                        }
                     )
 
-                    server_variable_vals_list.append(
-                        (
-                            0,
-                            0,
-                            {
-                                "variable_id": variable.id,
-                                "value_char": variable_option
-                                and variable_option.value_char
-                                or variable_value,
-                                "option_id": variable_option and variable_option.id,
-                            },
-                        )
-                    )
+                # Prepare new command values for server variables
+                for new_command in server_variable_vals_list:
+                    variable_id = new_command[2]["variable_id"]
+                    if variable_id in variable_id_to_index:
+                        idx = variable_id_to_index[variable_id]
+                        # update exist command
+                        existing_variable_values[idx] = new_command
+                    else:
+                        # add new command
+                        existing_variable_values.append(new_command)
 
-                if pick_all_template_variables:
-                    # update or add variable values
-                    existing_variable_values = values.get("variable_value_ids", [])
-                    variable_id_to_index = {
-                        cmd[2]["variable_id"]: idx
-                        for idx, cmd in enumerate(existing_variable_values)
-                        if cmd[0] == 0 and "variable_id" in cmd[2]
-                    }
+                values["variable_value_ids"] = existing_variable_values
+            else:
+                values["variable_value_ids"] = server_variable_vals_list
 
-                    # Update exist variable options
-                    for exist_variable_id, index in variable_id_to_index.items():
-                        option = configuration_variable_options_dict.get(
-                            exist_variable_id
-                        )
-                        if not option:
-                            continue
-                        existing_variable_values[index][2].update(
-                            {
-                                "option_id": option.id,
-                                "value_char": option.value_char,
-                            }
-                        )
+        # remove the `id` field to ensure a new record is created
+        # instead of updating the existing one
+        del values["id"]
+        # update the values with additional arguments from kwargs
+        values.update(kwargs)
+        # update server configs
+        values.update(server_config_values)
+        # Add current user as user/manager to the newly created server
+        values.update(
+            {
+                "user_ids": [(6, 0, self._default_user_ids())],
+                "manager_ids": [(6, 0, self._default_manager_ids())],
+            }
+        )
 
-                    # Prepare new command values for server variables
-                    for new_command in server_variable_vals_list:
-                        variable_id = new_command[2]["variable_id"]
-                        if variable_id in variable_id_to_index:
-                            idx = variable_id_to_index[variable_id]
-                            # update exist command
-                            existing_variable_values[idx] = new_command
-                        else:
-                            # add new command
-                            existing_variable_values.append(new_command)
-
-                    values["variable_value_ids"] = existing_variable_values
-                else:
-                    values["variable_value_ids"] = server_variable_vals_list
-
-            # remove the `id` field to ensure a new record is created
-            # instead of updating the existing one
-            del values["id"]
-            # update the values with additional arguments from kwargs
-            values.update(kwargs)
-            # update server configs
-            values.update(server_config_values)
-
-        return vals_list
+        return values
 
     def _parse_server_config_values(self, config_values):
         """

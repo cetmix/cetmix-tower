@@ -1,128 +1,263 @@
-from odoo.exceptions import AccessError
+# Copyright (C) 2025 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from odoo import fields
 
 from .common import TestTowerCommon
 
 
-class TestTowerCommandlog(TestTowerCommon):
-    def test_user_access_rule(self):
-        """Test user access rule"""
-        # Create the test command
-        test_command_log = self.CommandLog.create(
+class TestTowerCommandLog(TestTowerCommon):
+    """Test the cx.tower.command.log model access rights."""
+
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
+
+        # Create commands with different access levels
+        self.command_level_1 = self.Command.create(
             {
-                "server_id": self.server_test_1.id,
-                "command_id": self.command_create_dir.id,
+                "name": "Test Command L1",
+                "action": "ssh_command",
+                "access_level": "1",
             }
         )
-        # Remove bob from all cxtower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-        # Ensure that regular user cannot access the command log
-        test_command_log_as_bob = test_command_log.with_user(self.user_bob)
-        with self.assertRaises(AccessError):
-            command_log_read_result = test_command_log_as_bob.read([])
 
-        # Add user_bob to group user
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Ensure that user still doesn't have access to command log he did't create
-        with self.assertRaises(AccessError):
-            command_log_read_result = test_command_log_as_bob.read([])
-        # Add user_bob to group manager
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        # Ensure that manager doesn't have access to command belongs to server
-        #  he did't subscribed to
-        with self.assertRaises(AccessError):
-            command_log_read_result = test_command_log_as_bob.read([])
-        # Subscribe manager to server and test again
-        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-        command_log_read_result = test_command_log_as_bob.read([])
-        self.assertEqual(
-            command_log_read_result[0]["name"],
-            test_command_log_as_bob.name,
-            "Command name should be same",
-        )
-
-        # Check if user Bob can unlink command_log entry as member of group_manager
-        with self.assertRaises(
-            AccessError,
-            msg="member of group_manager should \
-                                not be able to unlink log entries",
-        ):
-            test_command_log_as_bob.unlink()
-
-        # Create a new command
-        test_command_1 = self.Command.create(
+        self.command_level_2 = self.Command.create(
             {
-                "name": "Test",
-                "code": "ls",
+                "name": "Test Command L2",
+                "action": "ssh_command",
+                "access_level": "2",
+            }
+        )
+
+        self.command_level_3 = self.Command.create(
+            {
+                "name": "Test Command L3",
+                "action": "ssh_command",
                 "access_level": "3",
             }
         )
 
-        # Create a new command log as user_bob
-        test_command_log_1 = self.CommandLog.create(
+        # Create test command logs with specific users
+        self.command_log_1 = (
+            self.CommandLog.with_user(self.user)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "command_id": self.command_level_1.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+
+        self.command_log_2 = (
+            self.CommandLog.with_user(self.manager)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "command_id": self.command_level_1.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+
+        # Create additional server for testing
+        self.server_2 = self.Server.create(
             {
-                "server_id": self.server_test_1.id,
-                "command_id": test_command_1.id,
-                "create_uid": self.user_bob.id,
+                "name": "Test Server 2",
+                "ip_v4_address": "localhost",
+                "ssh_username": "test2",
+                "ssh_password": "test2",
+                "ssh_port": 22,
+                "user_ids": [(6, 0, [])],
+                "manager_ids": [(6, 0, [])],
             }
         )
 
-        # Test if Manager can read command log of a command with "Root" access level
-        test_command_log_1_read_result = test_command_log_1.with_user(
-            self.user_bob
-        ).read([])
-        self.assertEqual(
-            test_command_log_1_read_result[0]["name"],
-            test_command_log_1.name,
-            "Command name should be same",
+    def test_user_read_access(self):
+        """Test user read access to command logs"""
+        # Add user to server's user_ids to isolate creator check
+        self.server_test_1.write(
+            {
+                "user_ids": [(6, 0, [self.user.id])],
+            }
         )
-        test_command_log_1_command_id = test_command_log_1.with_user(
-            self.user_bob
-        ).read(["command_id"])
-        self.assertEqual(
-            test_command_log_1_command_id[0]["command_id"][0],
-            test_command_log_1.command_id.id,
-            "Command name should be same",
+
+        # Case 1: User should be able to read when:
+        # - access_level == "1"
+        # - created by user
+        # - user is in server's user_ids
+        recs = self.CommandLog.with_user(self.user).search(
+            [("id", "in", [self.command_log_1.id, self.command_log_2.id])]
         )
-        # Remove user_bob from group_manager
-        self.remove_from_group(
-            self.user_bob,
+        self.assertEqual(
+            len(recs),
+            1,
+            "User should only be able to read their own logs",
+        )
+        self.assertIn(
+            self.command_log_1,
+            recs,
+            "User should be able to read own logs when conditions are met",
+        )
+        self.assertNotIn(
+            self.command_log_2,
+            recs,
+            "User should not be able to read logs created by others",
+        )
+
+        # Case 2: User should not be able to read when not in server's user_ids
+        self.server_test_1.write(
+            {
+                "user_ids": [(5, 0, 0)],  # Remove all users
+            }
+        )
+        recs = self.CommandLog.with_user(self.user).search(
+            [("id", "=", self.command_log_1.id)]
+        )
+        self.assertNotIn(
+            self.command_log_1,
+            recs,
+            "User should not be able to read when not in server's user_ids",
+        )
+
+        # Case 3: User should not be able to read when access_level > "1"
+        self.server_test_1.write(
+            {
+                "user_ids": [(6, 0, [self.user.id])],
+            }
+        )
+        high_access_log = (
+            self.CommandLog.with_user(self.user)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "command_id": self.command_level_2.id,  # Using command with access_level "2"  # noqa: E501
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+        recs = self.CommandLog.with_user(self.user).search(
+            [("id", "=", high_access_log.id)]
+        )
+        self.assertNotIn(
+            high_access_log,
+            recs,
+            "User should not be able to read logs with access_level > '1'"
+            " even if created by them",
+        )
+
+    def test_manager_read_access(self):
+        """Test manager read access to command logs"""
+        # Case 1: Manager should be able to read when:
+        # - access_level <= "2"
+        # - manager is in server's manager_ids
+        self.server_test_1.write(
+            {
+                "manager_ids": [(6, 0, [self.manager.id])],
+            }
+        )
+        recs = self.CommandLog.with_user(self.manager).search(
+            [("id", "in", [self.command_log_1.id, self.command_log_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read all logs when in server's manager_ids",
+        )
+
+        # Case 2: Manager should be able to read when in server's user_ids
+        self.server_test_1.write(
+            {
+                "manager_ids": [(5, 0, 0)],  # Remove all managers
+                "user_ids": [(6, 0, [self.manager.id])],
+            }
+        )
+        recs = self.CommandLog.with_user(self.manager).search(
+            [("id", "in", [self.command_log_1.id, self.command_log_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read all logs when in server's user_ids",
+        )
+
+        # Case 3: Manager should not be able to read when access_level > "2"
+        high_access_log = (
+            self.CommandLog.with_user(self.manager)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "command_id": self.command_level_3.id,  # Using command with access_level "3"  # noqa: E501
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+        recs = self.CommandLog.with_user(self.manager).search(
+            [("id", "=", high_access_log.id)]
+        )
+        self.assertNotIn(
+            high_access_log,
+            recs,
+            "Manager should not be able to read logs with access_level > '2'",
+        )
+
+        # Case 4: Manager should not be able to read when he is not
+        #  in users_ids or manager_ids
+        self.server_test_1.write(
+            {
+                "user_ids": [(5, 0, 0)],
+                "manager_ids": [(5, 0, 0)],
+            }
+        )
+        recs = self.CommandLog.with_user(self.manager).search(
+            [("id", "in", [self.command_log_1.id, self.command_log_2.id])]
+        )
+        self.assertNotIn(
+            self.command_log_1,
+            recs,
+            "Manager should not be able to read logs when he is not"
+            " in users_ids or manager_ids",
+        )
+
+    def test_root_unrestricted_access(self):
+        """Test root user unrestricted access"""
+        # Create test logs with various conditions
+        test_logs = self.CommandLog.with_user(self.root).create(
             [
-                "cetmix_tower_server.group_manager",
-            ],
+                {
+                    "server_id": self.server_2.id,
+                    "command_id": command.id,
+                    "start_date": fields.Datetime.now(),
+                }
+                for command in [
+                    self.command_level_1,
+                    self.command_level_2,
+                    self.command_level_3,
+                ]
+            ]
         )
 
-        # Update test_command access_level to "1"
-        self.write_and_invalidate(test_command_1, **{"access_level": "1"})
-
-        # Ensure that user_bob has access to test_command_log_1
-        test_command_log_1_as_bob = test_command_log_1.with_user(self.user_bob)
-        self.assertEqual(
-            test_command_log_1_as_bob.access_level,
-            test_command_1.access_level,
-            "Access  should be same",
+        # Root should be able to read all logs regardless of:
+        # - access_level
+        # - server relationships
+        # - who created them
+        recs = self.CommandLog.with_user(self.root).search(
+            [("id", "in", test_logs.ids)]
         )
-        test_command_log_1_read_result = test_command_log_1_as_bob.read([])
         self.assertEqual(
-            test_command_log_1_read_result[0]["name"],
-            test_command_log_1.name,
-            "Command name should be same",
+            len(recs),
+            3,
+            "Root should have unrestricted read access to all logs",
         )
-        # Update test_command access_level to "2"
-        self.write_and_invalidate(test_command_1, **{"access_level": "2"})
-        # Remove Bob from server followers
-        self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
 
-        # Bob must have access because he is a log creator
-        test_command_log_1_read_result = test_command_log_1_as_bob.read([])
-        self.assertEqual(
-            test_command_log_1_read_result[0]["name"],
-            test_command_log_1.name,
-            "Command name should be same",
+        # Test read on all records
+        all_recs = self.CommandLog.with_user(self.root).search([])
+        self.assertGreater(
+            len(all_recs),
+            0,
+            "Root should be able to read all command logs",
         )
