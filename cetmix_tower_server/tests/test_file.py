@@ -31,6 +31,156 @@ class TestTowerFile(TestTowerCommon):
             }
         )
 
+        # Create a dummy Server record that will be referenced by file records.
+        self.server = self.Server.create(
+            {
+                "name": "Test Server",
+                "manager_ids": [(6, 0, [self.manager.id])],
+                "user_ids": [(6, 0, [self.user.id])],
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "ip_v4_address": "localhost",
+            }
+        )
+
+    def test_user_read_access(self):
+        """
+        Test that a user in the custom User group can read a file record
+        when their ID is in the related server's user_ids.
+        """
+        file_record = self.File.create(
+            {
+                "name": "Test File",
+                "server_dir": "/tmp",
+                "file_type": "text",
+                "source": "tower",
+                "server_id": self.server.id,
+            }
+        )
+        # As the user, the file record should be visible.
+        files_for_user = self.File.with_user(self.user).search(
+            [("id", "=", file_record.id)]
+        )
+        self.assertTrue(
+            files_for_user,
+            "User should be able to read the file record "
+            "because they are in server.user_ids.",
+        )
+
+        # Remove user from server.user_ids.
+        self.server.write({"user_ids": [(3, self.user.id)]})
+        files_for_user = self.File.with_user(self.user).search(
+            [("id", "=", file_record.id)]
+        )
+        self.assertFalse(
+            files_for_user,
+            "User should not be able to read the file record "
+            "because he is not in server.user_ids.",
+        )
+
+    def test_manager_write_create_access(self):
+        """
+        Test that a manager in the custom Manager group can create and write
+        file records when his ID is in the related server's manager_ids.
+        """
+        # Test creation: the manager is in server.manager_ids.
+        file_record = self.File.with_user(self.manager).create(
+            {
+                "name": "Manager Created File",
+                "server_dir": "/tmp",
+                "file_type": "text",
+                "source": "tower",
+                "server_id": self.server.id,
+            }
+        )
+        self.assertTrue(
+            file_record,
+            "Manager should be able to create a file record "
+            "because they are in server.manager_ids.",
+        )
+
+        # Test updating (write access).
+        try:
+            file_record.with_user(self.manager).write({"name": "Manager Updated File"})
+        except AccessError:
+            self.fail(
+                "Manager should be able to update the file record "
+                "because he is in server.manager_ids."
+            )
+        self.assertEqual(
+            file_record.with_user(self.manager).name,
+            "Manager Updated File",
+            "File record name should be updated by the manager.",
+        )
+
+        # Test that a manager who is not in the server's manager_ids
+        # cannot write or create.
+        # Remove manager from server.manager_ids.
+        self.server.write({"manager_ids": [(3, self.manager.id)]})
+        # Create a file record on this server.
+        file_record2 = self.File.create(
+            {
+                "name": "File on Server Without Manager",
+                "server_dir": "/tmp",
+                "file_type": "text",
+                "source": "tower",
+                "server_id": self.server.id,
+            }
+        )
+        with self.assertRaises(AccessError):
+            file_record2.with_user(self.manager).write({"name": "Should Not Update"})
+
+        # Test create access for a manager not in manager_ids.
+        with self.assertRaises(AccessError):
+            self.File.with_user(self.manager).create(
+                {
+                    "name": "Invalid File",
+                    "server_dir": "/tmp",
+                    "file_type": "text",
+                    "source": "tower",
+                    "server_id": self.server.id,
+                }
+            )
+
+    def test_manager_unlink_access(self):
+        """
+        Test that a manager in the custom Manager group can unlink (delete) a file
+        record only if he is in the related server's manager_ids
+        and they are the record's creator.
+        """
+        # Scenario 1: Record created by the manager.
+        file_record = self.File.with_user(self.manager).create(
+            {
+                "name": "File to Delete",
+                "server_dir": "/tmp",
+                "file_type": "text",
+                "source": "tower",
+                "server_id": self.server.id,
+            }
+        )
+        try:
+            file_record.with_user(self.manager).unlink()
+        except AccessError:
+            self.fail(
+                "Manager should be able to delete their own file"
+                " record when in server.manager_ids."
+            )
+
+        # Scenario 2: Record created by someone else (e.g., the admin).
+        file_record2 = self.File.create(
+            {
+                "name": "File Not Deletable by Manager",
+                "server_dir": "/tmp",
+                "file_type": "text",
+                "source": "tower",
+                "server_id": self.server.id,
+            }
+        )
+        with self.assertRaises(AccessError):
+            file_record2.with_user(self.manager).unlink()
+
     def test_upload_file(self):
         """
         Upload file from tower to server
@@ -202,98 +352,6 @@ class TestTowerFile(TestTowerCommon):
         )
         self.assertEqual(another_file, file)
 
-    def test_files_access_rule(self):
-        """
-        Test access rules for files
-        """
-        # Remove user_bob from all cx_tower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
-        )
-        # Test that users can only read files where they are followers of the server
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        test_file_as_bob = self.file.with_user(self.user_bob)
-        # Should not be able to read file where they are not follower
-        with self.assertRaises(AccessError):
-            file_read_result = test_file_as_bob.read([])
-        # Should be able to read file where they are follower
-        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-        file_read_result = test_file_as_bob.read([])
-        self.assertEqual(
-            file_read_result[0]["name"],
-            self.file.name,
-            msg="Users should have access to files assigned to servers to which "
-            "they are subscribed",
-        )
-        # Test that users cannot write, create or delete files
-        with self.assertRaises(AccessError):
-            test_file_as_bob.write({"name": "new_name.txt"})
-        with self.assertRaises(AccessError):
-            self.File.with_user(self.user_bob).create(
-                {
-                    "name": "new_file.txt",
-                    "source": "tower",
-                    "server_id": self.server_test_1.id,
-                    "server_dir": "/var/tmp",
-                }
-            )
-        with self.assertRaises(AccessError):
-            test_file_as_bob.unlink()
-        # Test that managers can read, write and create files where they are followers
-        # of the server
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        # Should be able to read file where they are follower
-        file_read_result = test_file_as_bob.read([])
-        self.assertEqual(
-            file_read_result[0]["name"],
-            self.file.name,
-            msg="Managers should have access to files assigned to servers to which "
-            "they are subscribed",
-        )
-        # Should be able to write to file where they are follower
-        test_file_as_bob.write({"name": "updated_name.txt"})
-        self.assertEqual(
-            test_file_as_bob.name,
-            "updated_name.txt",
-            msg="Managers should have write access to files assigned to servers"
-            " to which they are subscribed",
-        )
-        # Should be able to create file for server where they are follower
-        new_file = self.File.with_user(self.user_bob).create(
-            {
-                "name": "new_file.txt",
-                "source": "tower",
-                "server_id": self.server_test_1.id,
-                "server_dir": "/var/tmp",
-            }
-        )
-        self.assertTrue(
-            new_file.exists(),
-            msg="Manager should be able to create a new file",
-        )
-        # Test that managers cannot delete files
-        with self.assertRaises(AccessError):
-            new_file.with_user(self.user_bob).unlink()
-        # Should not be able to read file where they are not follower
-        self.server_test_1.message_unsubscribe([self.user_bob.partner_id.id])
-        with self.assertRaises(AccessError):
-            file_read_result = new_file.with_user(self.user_bob).read([])
-        # Should not be able to create file for server where they are not follower
-        with self.assertRaises(AccessError):
-            self.File.with_user(self.user_bob).create(
-                {
-                    "name": "new_file.txt",
-                    "source": "tower",
-                    "server_id": self.server_test_1.id,
-                    "server_dir": "/var/tmp",
-                }
-            )
-
     def test_file_with_secret_key(self):
         """
         Test case to verify that when a file includes a secret reference,
@@ -375,7 +433,7 @@ class TestTowerFile(TestTowerCommon):
         # Add bob to user group
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
         # Add bob as subscriber of the server to allow upload file
-        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
+        self.server_test_1.write({"user_ids": [(4, self.user_bob.id)]})
         # Upload file to server
         self.assertTrue(file.server_response != "ok")
         file.with_user(self.user_bob).action_push_to_server()

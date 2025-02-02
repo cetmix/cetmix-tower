@@ -13,9 +13,14 @@ from odoo.addons.cetmix_tower_server.models.cx_tower_server import SSH
 class TestTowerCommon(TransactionCase):
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
-        # ***
-        # Create core elements invoked in the tests
-        # ***
+
+        # ----------------------------------------------
+        # -- Create core elements invoked in the tests
+        # ----------------------------------------------
+        # Group XML records
+        self.group_user = self.env.ref("cetmix_tower_server.group_user")
+        self.group_manager = self.env.ref("cetmix_tower_server.group_manager")
+        self.group_root = self.env.ref("cetmix_tower_server.group_root")
 
         # Cetmix Tower helper model
         self.CetmixTower = self.env["cetmix.tower"]
@@ -32,6 +37,30 @@ class TestTowerCommon(TransactionCase):
                 "name": "Bob",
                 "login": "bob",
                 "groups_id": [(4, self.env.ref("base.group_user").id)],
+            }
+        )
+        self.user = self.Users.create(
+            {
+                "name": "Test User",
+                "login": "test_user",
+                "email": "test_user@example.com",
+                "groups_id": [(6, 0, [self.group_user.id])],
+            }
+        )
+        self.manager = self.Users.create(
+            {
+                "name": "Test Manager",
+                "login": "test_manager",
+                "email": "test_manager@example.com",
+                "groups_id": [(6, 0, [self.group_manager.id])],
+            }
+        )
+        self.root = self.Users.create(
+            {
+                "name": "Test Root",
+                "login": "test_root",
+                "email": "test_root@example.com",
+                "groups_id": [(6, 0, [self.group_root.id])],
             }
         )
 

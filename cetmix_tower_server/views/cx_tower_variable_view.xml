@@ -25,6 +25,7 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
+                            <field name="access_level" />
                             <field name="variable_type" />
                         </group>
                         <group>
@@ -42,6 +43,7 @@
                                     <field name="name" />
                                     <field name="reference" optional="show" />
                                     <field name="value_char" />
+                                    <field name="access_level" optional="show" />
                                 </tree>
                             </field>
                         </page>
@@ -79,8 +81,8 @@
             <tree>
                 <field name="name" />
                 <field name="reference" optional="show" />
-
-                <field name="value_ids_count" />
+                <field name="access_level" optional="show" />
+                <field name="value_ids_count" optional="show" />
 
             </tree>
         </field>

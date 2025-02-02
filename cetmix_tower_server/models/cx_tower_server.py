@@ -261,6 +261,7 @@ class CxTowerServer(models.Model):
 
     _name = "cx.tower.server"
     _inherit = [
+        "cx.tower.access.role.mixin",
         "cx.tower.variable.mixin",
         "cx.tower.reference.mixin",
         "mail.thread",
@@ -386,6 +387,15 @@ class CxTowerServer(models.Model):
         string="On Delete Plan",
         groups="cetmix_tower_server.group_manager",
         help="This Flightplan will be executed when the server is deleted",
+    )
+
+    # ---- Access. Add relation for mixin fields
+
+    user_ids = fields.Many2many(
+        relation="cx_tower_server_user_rel",
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_server_manager_rel",
     )
 
     def _selection_status(self):

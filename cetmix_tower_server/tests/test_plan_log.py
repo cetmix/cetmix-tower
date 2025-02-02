@@ -1,57 +1,254 @@
-from odoo.exceptions import AccessError
+# Copyright (C) 2025 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from odoo import fields
 
 from .common import TestTowerCommon
 
 
-class TestTowerPlanlog(TestTowerCommon):
-    def test_user_access_rule(self):
-        """Test user access rule"""
-        # Create the test command
-        test_plan_log = self.PlanLog.create(
+class TestTowerPlanLog(TestTowerCommon):
+    """Test the cx.tower.plan.log model access rights."""
+
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
+
+        # Create plans with different access levels
+        self.plan_level_1 = self.Plan.create(
             {
-                "server_id": self.server_test_1.id,
-                "plan_id": self.plan_1.id,
+                "name": "Test Plan L1",
+                "access_level": "1",
             }
         )
-        # Remove bob from all cxtower_server groups
-        self.remove_from_group(
-            self.user_bob,
-            [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
-            ],
+
+        self.plan_level_2 = self.Plan.create(
+            {
+                "name": "Test Plan L2",
+                "access_level": "2",
+            }
         )
-        # Ensure that regular user cannot access the command log
-        test_plan_log_as_bob = test_plan_log.with_user(self.user_bob)
-        test_plan_log_as_bob.invalidate_cache()
-        with self.assertRaises(AccessError):
-            plan_name = test_plan_log_as_bob.read(["name"])
 
-        # Add user_bob to group user
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        # Ensure that user still doesn't have access to command he did't create
-        with self.assertRaises(AccessError):
-            plan_name = test_plan_log_as_bob.read(["name"])
+        self.plan_level_3 = self.Plan.create(
+            {
+                "name": "Test Plan L3",
+                "access_level": "3",
+            }
+        )
 
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        # Ensure that manager doesn't have access to command belongs to server
-        #  he did't subscribed to
-        with self.assertRaises(AccessError):
-            plan_name = test_plan_log_as_bob.read(["name"])
-        # Subscibe manager to server and test again
-        self.server_test_1.message_subscribe([self.user_bob.partner_id.id])
-        plan_name = test_plan_log_as_bob.read(["name"])
+        # Create test plan logs with specific users
+        self.plan_log_1 = (
+            self.PlanLog.with_user(self.user)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "plan_id": self.plan_level_1.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+
+        self.plan_log_2 = (
+            self.PlanLog.with_user(self.manager)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "plan_id": self.plan_level_1.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+
+        # Create additional server for testing
+        self.server_2 = self.Server.create(
+            {
+                "name": "Test Server 2",
+                "ip_v4_address": "localhost",
+                "ssh_username": "test2",
+                "ssh_password": "test2",
+                "ssh_port": 22,
+                "user_ids": [(6, 0, [])],
+                "manager_ids": [(6, 0, [])],
+            }
+        )
+
+    def test_user_read_access(self):
+        """Test user read access to plan logs"""
+        # Add user to server's user_ids to isolate creator check
+        self.server_test_1.write(
+            {
+                "user_ids": [(6, 0, [self.user.id])],
+            }
+        )
+
+        # Case 1: User should be able to read when:
+        # - access_level == "1"
+        # - created by user
+        # - user is in server's user_ids
+        recs = self.PlanLog.with_user(self.user).search(
+            [("id", "in", [self.plan_log_1.id, self.plan_log_2.id])]
+        )
         self.assertEqual(
-            plan_name[0]["name"],
-            test_plan_log_as_bob.name,
-            "Plan name should be same",
+            len(recs),
+            1,
+            "User should only be able to read their own logs",
+        )
+        self.assertIn(
+            self.plan_log_1,
+            recs,
+            "User should be able to read own logs when conditions are met",
+        )
+        self.assertNotIn(
+            self.plan_log_2,
+            recs,
+            "User should not be able to read logs created by others",
         )
 
-        # Check if user Bob can unlink command_log entry as member of group_manager
-        with self.assertRaises(
-            AccessError,
-            msg="member of group_manager should \
-                                not be able to unlink log entries",
-        ):
-            test_plan_log_as_bob.unlink()
+        # Case 2: User should not be able to read when not in server's user_ids
+        self.server_test_1.write(
+            {
+                "user_ids": [(5, 0, 0)],  # Remove all users
+            }
+        )
+        recs = self.PlanLog.with_user(self.user).search(
+            [("id", "=", self.plan_log_1.id)]
+        )
+        self.assertNotIn(
+            self.plan_log_1,
+            recs,
+            "User should not be able to read when not in server's user_ids",
+        )
+
+        # Case 3: User should not be able to read when access_level > "1"
+        self.server_test_1.write(
+            {
+                "user_ids": [(6, 0, [self.user.id])],
+            }
+        )
+        high_access_log = (
+            self.PlanLog.with_user(self.user)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "plan_id": self.plan_level_2.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+        recs = self.PlanLog.with_user(self.user).search(
+            [("id", "=", high_access_log.id)]
+        )
+        self.assertNotIn(
+            high_access_log,
+            recs,
+            "User should not be able to read logs with access_level > '1'"
+            " even if created by them",
+        )
+
+    def test_manager_read_access(self):
+        """Test manager read access to plan logs"""
+        # Case 1: Manager should be able to read when:
+        # - access_level <= "2"
+        # - manager is in server's manager_ids
+        self.server_test_1.write(
+            {
+                "manager_ids": [(6, 0, [self.manager.id])],
+            }
+        )
+        recs = self.PlanLog.with_user(self.manager).search(
+            [("id", "in", [self.plan_log_1.id, self.plan_log_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read all logs when in server's manager_ids",
+        )
+
+        # Case 2: Manager should be able to read when in server's user_ids
+        self.server_test_1.write(
+            {
+                "manager_ids": [(5, 0, 0)],  # Remove all managers
+                "user_ids": [(6, 0, [self.manager.id])],
+            }
+        )
+        recs = self.PlanLog.with_user(self.manager).search(
+            [("id", "in", [self.plan_log_1.id, self.plan_log_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read all logs when in server's user_ids",
+        )
+
+        # Case 3: Manager should not be able to read when access_level > "2"
+        high_access_log = (
+            self.PlanLog.with_user(self.manager)
+            .sudo()
+            .create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "plan_id": self.plan_level_3.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+        )
+        recs = self.PlanLog.with_user(self.manager).search(
+            [("id", "=", high_access_log.id)]
+        )
+        self.assertNotIn(
+            high_access_log,
+            recs,
+            "Manager should not be able to read logs with access_level > '2'",
+        )
+
+        # Case 4: Manager should not be able to read when he is not
+        #  in users_ids or manager_ids
+        self.server_test_1.write(
+            {
+                "user_ids": [(5, 0, 0)],
+                "manager_ids": [(5, 0, 0)],
+            }
+        )
+        recs = self.PlanLog.with_user(self.manager).search(
+            [("id", "in", [self.plan_log_1.id, self.plan_log_2.id])]
+        )
+        self.assertNotIn(
+            self.plan_log_1,
+            recs,
+            "Manager should not be able to read logs when he is not"
+            " in users_ids or manager_ids",
+        )
+
+    def test_root_unrestricted_access(self):
+        """Test root user unrestricted access"""
+        # Create test logs with various conditions
+        test_logs = self.PlanLog.with_user(self.root).create(
+            [
+                {
+                    "server_id": self.server_2.id,
+                    "plan_id": plan.id,
+                    "start_date": fields.Datetime.now(),
+                }
+                for plan in [self.plan_level_1, self.plan_level_2, self.plan_level_3]
+            ]
+        )
+
+        # Root should be able to read all logs regardless of:
+        # - access_level
+        # - server relationships
+        # - who created them
+        recs = self.PlanLog.with_user(self.root).search([("id", "in", test_logs.ids)])
+        self.assertEqual(
+            len(recs),
+            3,
+            "Root should have unrestricted read access to all logs",
+        )
+
+        # Test read on all records
+        all_recs = self.PlanLog.with_user(self.root).search([])
+        self.assertGreater(
+            len(all_recs),
+            0,
+            "Root should be able to read all plan logs",
+        )

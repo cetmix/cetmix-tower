@@ -126,7 +126,7 @@ msgid ""
 "                                    x = 2*10\n"
 "                                    COMMAND_RESULT = {\"exit_code\": x, \"message\": \"This will be\n"
 "                                    logged as an error message because exit code !=0\"}\n"
-"</code>"
+"                                </code>"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -261,13 +261,26 @@ msgid "A variable value cannot be assigned multiple times to the same server!"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Access"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__access_level
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
 msgid "Access Level"
 msgstr ""
@@ -275,6 +288,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__access_level_warn_msg
 msgid "Access Level Warn Msg"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_option.py:0
+#, python-format
+msgid "Access level is not defined for '%(option)s'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
+#, python-format
+msgid "Access level is not defined for '%(variable)s'"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -604,6 +629,11 @@ msgid "Cetmix Tower access mixin"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_access_role_mixin
+msgid "Cetmix Tower access role mixin"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_key
 msgid "Cetmix Tower private key storage"
 msgstr ""
@@ -888,6 +918,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__display_name
@@ -1235,6 +1266,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
@@ -1360,6 +1392,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__id
@@ -1530,6 +1563,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log____last_update
@@ -1697,6 +1731,26 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_manager
 msgid "Manager"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__manager_ids
+msgid "Managers"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_access_role_mixin__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__manager_ids
+msgid "Managers who can modify this record"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2799,6 +2853,24 @@ msgid "Text"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_option.py:0
+#, python-format
+msgid ""
+"The access level for Variable Option '%(value)s' cannot be lower than the access level of its Variable '%(variable)s'.\n"
+"Variable Access Level: %(var_level)s\n"
+"Variable Option Access Level: %(val_level)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
+#, python-format
+msgid ""
+"The access level for Variable Value '%(value)s' cannot be lower than the access level of its Variable '%(variable)s'.\n"
+"Variable Access Level: %(var_level)s\n"
+"Variable Value Access Level: %(val_level)s"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
 msgid ""
@@ -3015,6 +3087,26 @@ msgid "User"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__user_ids
+msgid "Users"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_access_role_mixin__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__user_ids
+msgid "Users who can view this record"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__value_char
@@ -3193,12 +3285,6 @@ msgid "You cannot run custom code on multiple servers at once."
 msgstr ""
 
 #. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
-#, python-format
-msgid "_execute() function takes single server record only!"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "e.g. /home/user This field does NOT support variables"
 msgstr ""
@@ -3213,6 +3299,23 @@ msgstr ""
 #: code:addons/cetmix_tower_server/tests/common.py:0
 #, python-format
 msgid "groups_ref must be string or list of strings!"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+msgid "managers who can modify this record"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "managers who can modify this server"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+msgid "managers who can modify this template"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3240,4 +3343,21 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "this can be changed later"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "users who can access this server"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+msgid "users who can access this template"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+msgid "users who can view this record"
 msgstr ""

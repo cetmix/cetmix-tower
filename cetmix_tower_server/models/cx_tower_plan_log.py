@@ -23,6 +23,12 @@ class CxTowerPlanLog(models.Model):
         index=True,
         ondelete="cascade",
     )
+    access_level = fields.Selection(
+        related="plan_id.access_level",
+        readonly=True,
+        store=True,
+        index=True,
+    )
 
     # -- Time
     start_date = fields.Datetime(string="Started")
