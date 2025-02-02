@@ -33,6 +33,13 @@ class CxTowerCommandLog(models.Model):
     command_id = fields.Many2one(
         comodel_name="cx.tower.command", required=True, index=True, ondelete="restrict"
     )
+    access_level = fields.Selection(
+        related="command_id.access_level",
+        readonly=True,
+        store=True,
+        index=True,
+    )
+
     command_action = fields.Selection(related="command_id.action", store=True)
     path = fields.Char(string="Execution Path", help="Where command was executed")
     code = fields.Text(string="Command Code")
@@ -49,11 +56,6 @@ class CxTowerCommandLog(models.Model):
     )
     is_skipped = fields.Boolean(
         readonly=True,
-    )
-    access_level = fields.Selection(
-        related="command_id.access_level",
-        readonly=True,
-        store=True,
     )
 
     # -- Flight Plan

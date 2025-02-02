@@ -95,11 +95,16 @@
                                                     options="{'no_create': True, 'no_create_edit': True}"
                                                     attrs="{'readonly': [('variable_type', '=', 's')]}"
                                                 />
+                                                <field
+                                                    name="access_level"
+                                                    optional="show"
+                                                />
                                             </tree>
                                             <form>
                                                 <group>
                                                     <field name="variable_id" />
                                                     <field name="value_char" />
+                                                    <field name="access_level" />
                                                 </group>
                                                 <field
                                                     name="note"

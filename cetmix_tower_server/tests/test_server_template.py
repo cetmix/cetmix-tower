@@ -5,6 +5,31 @@ from .common import TestTowerCommon
 
 
 class TestTowerServerTemplate(TestTowerCommon):
+    """
+    Test the server template model
+    """
+
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
+
+        # Create two "Manager" group users
+        self.manager1 = self.Users.create(
+            {
+                "name": "Manager 1",
+                "login": "manager1",
+                "email": "manager1@example.com",
+                "groups_id": [(6, 0, [self.group_manager.id])],
+            }
+        )
+        self.manager2 = self.Users.create(
+            {
+                "name": "Manager 2",
+                "login": "manager2",
+                "email": "manager2@example.com",
+                "groups_id": [(6, 0, [self.group_manager.id])],
+            }
+        )
+
     def test_create_server_from_template(self):
         """
         Create new server from template
@@ -389,6 +414,9 @@ class TestTowerServerTemplate(TestTowerCommon):
         Test that a server is successfully created
         when all required variables are filled in the wizard.
         """
+        # Add manager as user of template
+        self.server_template_sample.user_ids = self.manager
+
         # Adding a required variable
         self.VariableValue.create(
             {
@@ -399,23 +427,27 @@ class TestTowerServerTemplate(TestTowerCommon):
             }
         )
 
-        # Open the wizard and fill in the data
-        wizard = self.env["cx.tower.server.template.create.wizard"].create(
-            {
-                "server_template_id": self.server_template_sample.id,
-                "name": "Test Server With Required Variables",
-                "ssh_username": "admin",
-                "line_ids": [
-                    (
-                        0,
-                        0,
-                        {
-                            "variable_id": self.variable_version.id,
-                            "required": True,
-                        },
-                    )
-                ],
-            }
+        # Open the wizard and fill in the data as manager
+        wizard = (
+            self.env["cx.tower.server.template.create.wizard"]
+            .with_user(self.manager)
+            .create(
+                {
+                    "server_template_id": self.server_template_sample.id,
+                    "name": "Test Server With Required Variables",
+                    "ssh_username": "admin",
+                    "line_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "variable_id": self.variable_version.id,
+                                "required": True,
+                            },
+                        )
+                    ],
+                }
+            )
         )
 
         # Fill in the value for the required variable
@@ -596,7 +628,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         variable_data = next(
             (
                 v
-                for v in values[0]["variable_value_ids"]
+                for v in values["variable_value_ids"]
                 if v[2]["variable_id"] == self.variable_url.id
             ),
             None,
@@ -764,63 +796,6 @@ class TestTowerServerTemplate(TestTowerCommon):
         error_message = str(cm.exception)
         self.assertIn("Empty values for variables: test_path_, test_dir", error_message)
 
-    def test_server_template_variable_values_manager_access_rights(self):
-        """
-        Test manager access rights for variable values associated with server templates
-        """
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        server_template_sample_as_bob = self.server_template_sample.with_user(
-            self.user_bob
-        )
-        # Assure that manager cannot read variable values
-        with self.assertRaises(AccessError):
-            server_template_sample_as_bob.variable_value_ids.read([])
-        # Assure that manager can read variable values
-        self.server_template_sample.message_subscribe([self.user_bob.partner_id.id])
-        # add variable values to server template
-        alien_variable_value = self.VariableValue.create(
-            {
-                "variable_id": self.variable_version.id,
-                "server_template_id": self.server_template_sample.id,
-                "value_char": "alien_value",
-            }
-        )
-        variable_values_read = server_template_sample_as_bob.variable_value_ids.read([])
-        self.assertEqual(
-            variable_values_read[0]["value_char"],
-            alien_variable_value.value_char,
-            "Variable values should be the same",
-        )
-
-        # Assure that manager cannot unlink variable values
-        with self.assertRaises(AccessError):
-            alien_variable_value.with_user(self.user_bob).unlink()
-        # Assure that manager can unlink own variable values
-        own_variable_value = self.VariableValue.with_user(self.user_bob).create(
-            {
-                "variable_id": self.variable_url.id,
-                "server_template_id": self.server_template_sample.id,
-                "value_char": "odoo.com",
-            }
-        )
-        own_variable_value.unlink()
-        self.assertFalse(
-            self.VariableValue.search([("id", "=", own_variable_value.id)]),
-            "Own variable value should be deleted",
-        )
-        # Assure that manager can create variable values but cannot unlink them
-        # if he unsubscribed from the server template
-        other_own_variable_value = self.VariableValue.with_user(self.user_bob).create(
-            {
-                "variable_id": self.variable_url.id,
-                "server_template_id": self.server_template_sample.id,
-                "value_char": "odoo.sh",
-            }
-        )
-        self.server_template_sample.message_unsubscribe([self.user_bob.partner_id.id])
-        with self.assertRaises(AccessError):
-            other_own_variable_value.unlink()
-
     def test_with_partial_removed_variables_from_wizard(self):
         """
         Test that server creation only with specified
@@ -836,26 +811,30 @@ class TestTowerServerTemplate(TestTowerCommon):
         )
 
         # template with variables
-        self.server_template_sample.variable_value_ids = [
-            (
-                0,
-                0,
-                {
-                    "variable_id": self.variable_path.id,
-                    "value_char": "/var/log",
-                    "required": False,
-                },
-            ),
-            (
-                0,
-                0,
-                {
-                    "variable_id": self.variable_dir.id,
-                    "option_id": option.id,
-                    "required": False,
-                },
-            ),
-        ]
+        self.server_template_sample.write(
+            {
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_path.id,
+                            "value_char": "/var/log",
+                            "required": False,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_dir.id,
+                            "option_id": option.id,
+                            "required": False,
+                        },
+                    ),
+                ],
+            }
+        )
 
         action = self.server_template_sample.action_create_server()
 
@@ -887,3 +866,171 @@ class TestTowerServerTemplate(TestTowerCommon):
             option.value_char,
             "The variable value must be equal to the value from the option",
         )
+
+    def test_manager_access_rights(self):
+        """
+        Test manager access rights for Server Template records:
+        - Read: user is in user_ids or manager_ids
+        - Write: user is in manager_ids
+        """
+        record = self.ServerTemplate.create(
+            {
+                "name": "Manager Access Test",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "user_ids": [(5, 0, 0)],
+                "manager_ids": [(5, 0, 0)],
+            }
+        )
+
+        # Case 1: No access rights
+        records = self.ServerTemplate.with_user(self.manager1).search(
+            [("id", "=", record.id)]
+        )
+        self.assertEqual(
+            len(records),
+            0,
+            "Manager should not see the record if not added to user_ids or manager_ids",
+        )
+
+        # Case 2: Read access through user_ids
+        record.write({"user_ids": [(4, self.manager1.id)]})
+        records = self.ServerTemplate.with_user(self.manager1).search(
+            [("id", "=", record.id)]
+        )
+        self.assertEqual(
+            len(records),
+            1,
+            "Manager should see the record when added to user_ids",
+        )
+
+        # Write access should still be forbidden
+        with self.assertRaises(AccessError):
+            record.with_user(self.manager1).write({"name": "Updated Name"})
+
+        # Case 3: Full access through manager_ids
+        record.write(
+            {
+                "user_ids": [(5, 0, 0)],
+                "manager_ids": [(4, self.manager1.id)],
+            }
+        )
+
+        records = self.ServerTemplate.with_user(self.manager1).search(
+            [("id", "=", record.id)]
+        )
+        self.assertEqual(
+            len(records),
+            1,
+            "Manager should see the record when added to manager_ids",
+        )
+
+        # Write access should now work
+        try:
+            record.with_user(self.manager1).write({"name": "Updated Name"})
+        except AccessError:
+            self.fail("Manager should be able to update the record when in manager_ids")
+
+    def test_manager_create_access(self):
+        """
+        Test that a manager can only create a Server Template record
+        if they add themselves to manager_ids.
+        """
+        # Try to create without adding to manager_ids
+        with self.assertRaises(AccessError):
+            self.ServerTemplate.with_user(self.manager1).create(
+                {
+                    "name": "Create Access Test - Should Fail",
+                    "ssh_port": "22",
+                    "ssh_username": "admin",
+                    "ssh_auth_mode": "p",
+                    "os_id": self.os_debian_10.id,
+                    "manager_ids": [(5, 0, 0)],
+                }
+            )
+
+        # Create with manager_ids - should succeed
+        record = self.ServerTemplate.with_user(self.manager1).create(
+            {
+                "name": "Create Access Test - Should Succeed",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "manager_ids": [(4, self.manager1.id)],
+            }
+        )
+        self.assertEqual(
+            len(self.ServerTemplate.search([("id", "=", record.id)])),
+            1,
+            "Manager should be able to create record when added to manager_ids",
+        )
+
+    def test_manager_delete_access(self):
+        """
+        Test that a manager can only delete a Server Template record if:
+        - They are in manager_ids
+        - They created the record
+        """
+        # Scenario 1: Manager1 creates and tries to delete their own record
+        record = self.ServerTemplate.with_user(self.manager1).create(
+            {
+                "name": "Delete Access Test - Own Record",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "manager_ids": [(4, self.manager1.id)],
+            }
+        )
+
+        try:
+            record.with_user(self.manager1).unlink()
+        except AccessError:
+            self.fail(
+                "Manager should be able to delete their own record if in manager_ids"
+            )
+
+        # Scenario 2: Manager2 creates record, Manager1 tries to delete
+        record2 = self.ServerTemplate.with_user(self.manager2).create(
+            {
+                "name": "Delete Access Test - Other's Record",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "manager_ids": [(6, 0, [self.manager1.id, self.manager2.id])],
+            }
+        )
+
+        # Manager1 should not be able to delete Manager2's record
+        with self.assertRaises(AccessError):
+            record2.with_user(self.manager1).unlink()
+
+        # Remove Manager2 from manager_ids
+        record2.write({"manager_ids": [(5, 0, 0)]})
+
+        # Manager2 should not be able to delete their record now
+        with self.assertRaises(AccessError):
+            record2.with_user(self.manager2).unlink()
+
+        # Scenario 3: Manager1 creates record but is later removed from manager_ids
+        record3 = self.ServerTemplate.with_user(self.manager1).create(
+            {
+                "name": "Delete Access Test - Removed Manager",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "manager_ids": [(4, self.manager1.id)],
+            }
+        )
+
+        # Remove Manager1 from manager_ids
+        record3.write({"manager_ids": [(5, 0, 0)]})
+
+        # Manager1 should not be able to delete their record after being removed
+        with self.assertRaises(AccessError):
+            record3.with_user(self.manager1).unlink()
