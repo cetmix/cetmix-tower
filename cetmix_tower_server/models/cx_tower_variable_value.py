@@ -140,7 +140,7 @@ class TowerVariableValue(models.Model):
             if rec.variable_id.option_ids:
                 rec.value_char = False
 
-    @api.depends("variable_id.access_level")
+    @api.depends("variable_id", "variable_id.access_level")
     def _compute_access_level(self):
         """
         Automatically set the `access_level` based on `variable_id.access_level`
@@ -149,15 +149,6 @@ class TowerVariableValue(models.Model):
         for rec in self:
             if rec.variable_id:
                 rec.access_level = rec.variable_id.access_level
-
-    def _inverse_access_level(self):
-        """
-        Ensure that when `access_level` is updated, it
-        is also updated in related `variable.values`.
-        """
-        for rec in self:
-            if rec.variable_id:
-                rec.variable_id.write({"access_level": rec.access_level})
 
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):
@@ -195,14 +186,9 @@ class TowerVariableValue(models.Model):
                 ["value_char"], force_record=record
             )
 
-    @api.constrains("access_level", "variable_id")
-    def _check_access_level_consistency(self):
-        """
-        Ensure that the access level of the variable value is not lower than
-        the access level of the associated variable.
-        """
+    def _inverse_access_level(self):
         for rec in self:
-            if rec.variable_id and rec.access_level < rec.variable_id.access_level:
+            if rec.access_level < rec.variable_id.access_level:
                 raise ValidationError(
                     _(
                         "The access level for Variable Value '%(value)s' cannot be"

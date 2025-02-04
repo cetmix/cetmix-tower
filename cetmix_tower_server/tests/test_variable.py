@@ -1131,3 +1131,61 @@ class TestTowerVariable(TestTowerCommon):
             "Variables: User Value, Manager Value, Root Value",
             "File code must render all variables correctly",
         )
+
+    def test_variable_value_access_level_update(self):
+        """
+        Test that when the access level of a variable is updated in code,
+        all related variable values are also updated accordingly.
+        """
+        # Create a variable with access level "Manager"
+        variable = self.Variable.create({"name": "Test Variable", "access_level": "2"})
+
+        # Create the value of the variable on the server
+        variable_value = self.VariableValue.create(
+            {
+                "variable_id": variable.id,
+                "server_id": self.server_test_1.id,
+                "value_char": "Test Value",
+            }
+        )
+
+        # Check that the access level of the value matches the variable
+        self.assertEqual(
+            variable_value.access_level,
+            variable.access_level,
+            "Initial access level of variable value must match the variable",
+        )
+
+        # Update the access level of the variable through the code
+        variable.write({"access_level": "1"})
+
+        # Rereading the variable value object
+        variable_value.invalidate_cache()
+
+        # Check that the access level of the value has also been updated
+        self.assertEqual(
+            variable_value.access_level,
+            "1",
+            "Access level of variable value must be updated "
+            "when variable's access level changes",
+        )
+
+        # Let's try to increase the access level
+        # of the variable again through the code
+        variable.write({"access_level": "3"})
+
+        # Re-reading the object
+        variable_value.invalidate_cache()
+
+        # Check that the change is reflected in the value of
+        self.assertEqual(
+            variable_value.access_level,
+            "3",
+            "Access level of variable value must update to "
+            "reflect the variable's access level",
+        )
+
+        # Check that it is impossible to set the level lower
+        # than that of the variable (we will get an error)
+        with self.assertRaises(ValidationError):
+            variable_value.write({"access_level": "1"})
