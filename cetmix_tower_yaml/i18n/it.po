@@ -103,6 +103,11 @@ msgid "Cetmix Tower Variable"
 msgstr "Variabile Cetmix Tower"
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_option
+msgid "Cetmix Tower Variable Options"
+msgstr "Opzioni variabile Cetmix Tower"
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_value
 msgid "Cetmix Tower Variable Values"
 msgstr "Valore variabile Cetmix Tower"
@@ -121,6 +126,11 @@ msgstr "Scarico file esportazione YAML Cetmix Tower"
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_export_wiz
 msgid "Cetmix Tower YAML Export Wizard"
 msgstr "Procedura guidata esportazione YAML Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz
+msgid "Cetmix Tower YAML Import Wizard"
+msgstr "Procedura guidata importazione YAML Cetmix Tower"
 
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz_upload
@@ -193,6 +203,7 @@ msgstr "Modello file Cx Tower"
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__display_name
@@ -234,6 +245,12 @@ msgid "Export YAML"
 msgstr "Esporta YAML"
 
 #. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#, python-format
+msgid "Failed to convert dictionary to YAML: %(error)s"
+msgstr "Conversione dizionario in YAML fallita: %(error)s"
+
+#. module: cetmix_tower_yaml
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid ""
@@ -272,6 +289,7 @@ msgstr "Genera file YAML"
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__id
@@ -326,6 +344,7 @@ msgstr "Modello non valido indicato nel file YAML"
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download____last_update
@@ -417,6 +436,20 @@ msgid "Record ID to update"
 msgstr "ID record da aggiornare"
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid "Remove Empty x2m Field Values"
+msgstr "Rimozione dei valori campo x2m vuoti"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid ""
+"Remove empty Many2one, Many2many and One2many field values from the exported "
+"YAML file."
+msgstr ""
+"Rimozione dei valori campi Many2one, Many2many e One2many vuoti dal file "
+"YAML esportato."
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Tags"
 msgstr "Etichette"
@@ -446,6 +479,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Update Existing Record"
 msgstr "Aggiorna record esistente"
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+#, python-format
+msgid "Values must be a dictionary"
+msgstr "I valori devono essere un dizionario"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
@@ -508,6 +548,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__yaml_code
@@ -550,10 +591,8 @@ msgstr ""
 "Bosogna essere un membro del gruppo \"YAML/Esporta\" per esportare dati in "
 "YAML."
 
-#. module: cetmix_tower_yaml
-#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz
-msgid "cx.tower.yaml.import.wiz"
-msgstr "cx.tower.yaml.import.wiz"
+#~ msgid "cx.tower.yaml.import.wiz"
+#~ msgstr "cx.tower.yaml.import.wiz"
 
 #~ msgid "Add entire related record data instead of just a reference"
 #~ msgstr ""
