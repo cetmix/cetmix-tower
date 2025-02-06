@@ -4,7 +4,7 @@ from psycopg2 import IntegrityError
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests.common import Form
+from odoo.tests.common import Form, tagged
 from odoo.tools.misc import mute_logger
 
 from .common import TestTowerCommon

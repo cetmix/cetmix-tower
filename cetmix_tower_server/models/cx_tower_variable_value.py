@@ -81,7 +81,6 @@ class TowerVariableValue(models.Model):
     required = fields.Boolean()
     access_level = fields.Selection(
         compute="_compute_access_level",
-        inverse="_inverse_access_level",
         readonly=False,
         store=True,
     )
@@ -186,9 +185,14 @@ class TowerVariableValue(models.Model):
                 ["value_char"], force_record=record
             )
 
-    def _inverse_access_level(self):
+    @api.constrains("access_level", "variable_id")
+    def _check_access_level_consistency(self):
+        """
+        Ensure that the access level of the variable value is not lower than
+        the access level of the associated variable.
+        """
         for rec in self:
-            if rec.access_level < rec.variable_id.access_level:
+            if rec.variable_id and rec.access_level < rec.variable_id.access_level:
                 raise ValidationError(
                     _(
                         "The access level for Variable Value '%(value)s' cannot be"
