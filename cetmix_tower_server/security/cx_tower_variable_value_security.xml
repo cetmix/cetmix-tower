@@ -12,7 +12,6 @@
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
-        <field name="perm_unlink" eval="0" />
     </record>
 
     <!-- manager -->
