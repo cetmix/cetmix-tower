@@ -4,7 +4,7 @@ from psycopg2 import IntegrityError
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests.common import Form, tagged
+from odoo.tests.common import Form
 from odoo.tools.misc import mute_logger
 
 from .common import TestTowerCommon
@@ -434,6 +434,9 @@ class TestTowerVariable(TestTowerCommon):
             "New Private Value",
             msg="Manager must be able to create private variable values",
         )
+
+        # Remove user_bob from group_manager before unsubscribing
+        self.remove_from_group(user_bob, "cetmix_tower_server.group_manager")
 
         # Unsubscribe user from server and check access to private values
         server.message_unsubscribe([user_bob.partner_id.id])

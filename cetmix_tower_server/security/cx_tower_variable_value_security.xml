@@ -7,14 +7,12 @@
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
-                '|',
                 ('access_level', '=', '1'),
-                '&amp;',
-                ('create_uid', '=', user.id),
                 ('server_id.message_partner_ids', 'in', [user.partner_id.id])
             ]
         </field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="perm_unlink" eval="0" />
     </record>
 
     <!-- manager -->
@@ -23,6 +21,7 @@
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field name="domain_force">
             [
+                '|', '|',
                 ('access_level', '&lt;=', '2'),
                 '|',
                 ('is_global', '=', True),
