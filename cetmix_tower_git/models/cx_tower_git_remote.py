@@ -33,6 +33,12 @@ class CxTowerGitRemote(models.Model):
         ondelete="cascade",
         auto_join=True,
     )
+    git_project_id = fields.Many2one(
+        comodel_name="cx.tower.git.project",
+        related="source_id.git_project_id",
+        store=True,
+        readonly=True,
+    )
     url = fields.Char(
         required=True,
         string="URL",
@@ -144,11 +150,7 @@ class CxTowerGitRemote(models.Model):
 
     def _update_related_files(self):
         # Update related files on update
-        related_files = (
-            self.mapped("source_id")
-            .mapped("git_project_id")
-            .mapped("git_project_rel_ids")
-        )
+        related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
         if related_files:
             related_files._save_to_file()
 
