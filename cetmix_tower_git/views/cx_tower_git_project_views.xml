@@ -110,6 +110,46 @@
                             </form>
                         </field>
                         </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                            <div
+                                class="alert alert-warning"
+                                role="alert"
+                                style="margin-bottom:0px;"
+                            >
+                                <ul>
+                                    <li>
+                                        <b
+                                        >Users.</b> All users who have "Manager" group and are either set in "Users" or in "Managers" in <b
+                                        ><u>all</u></b> related servers.
+                                    </li>
+                                    <li>
+                                        <b
+                                        >Managers.</b> All users who have "Manager" group and are set as "Managers" in <b
+                                        ><u>all</u></b> related servers.
+                                        This is done to avoid unpredictable consequences when some of the servers are not updated due to access restrictions when a project is updated.
+                                    </li>
+                                </ul>
+                                You can edit these fields at your own risk. However keep in mind that they will be automatically updated each time related servers are added, removed or updated.
+                            </div>
+                        </page>
                         <page name="yaml" string="YAML">
                         <div groups="!cetmix_tower_yaml.group_export">
                             <h3
