@@ -1,10 +1,185 @@
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common import CommonTest
 
 
 class TestRemote(CommonTest):
     """Test class for git remote."""
+
+    def setUp(self):
+        super().setUp()
+        # Create another manager for testing
+        self.manager_2 = self.Users.create(
+            {
+                "name": "Second Manager",
+                "login": "manager2",
+                "email": "manager2@test.com",
+                "groups_id": [
+                    (4, self.env.ref("cetmix_tower_server.group_manager").id)
+                ],
+            }
+        )
+
+        # Create test project and source as root
+        self.project = self.GitProject.create(
+            {
+                "name": "Test Project",
+            }
+        )
+        self.source = self.GitSource.create(
+            {
+                "name": "Test Source",
+                "git_project_id": self.project.id,
+            }
+        )
+        self.remote = self.GitRemote.create(
+            {
+                "url": "https://github.com/cetmix/cetmix-tower.git",
+                "source_id": self.source.id,
+                "head": "main",
+            }
+        )
+
+    def test_user_access(self):
+        """Test that regular users have no access to git remotes"""
+        user_remote = self.GitRemote.with_user(self.user)
+
+        # Test CRUD operations
+        with self.assertRaises(AccessError):
+            user_remote.create(
+                {
+                    "url": "https://github.com/cetmix/test.git",
+                    "source_id": self.source.id,
+                    "head": "main",
+                }
+            )
+        with self.assertRaises(AccessError):
+            user_remote.search([("id", "=", self.remote.id)])
+        with self.assertRaises(AccessError):
+            self.remote.with_user(self.user).write({"head": "dev"})
+        with self.assertRaises(AccessError):
+            self.remote.with_user(self.user).unlink()
+
+    def test_manager_read_access(self):
+        """Test manager read access rules"""
+        manager_remote = self.GitRemote.with_user(self.manager)
+
+        # Manager not in project user_ids or manager_ids - should not read
+        self.assertFalse(manager_remote.search([("id", "=", self.remote.id)]))
+
+        # Add manager to project user_ids - should read
+        self.project.write({"user_ids": [(4, self.manager.id)]})
+        remote = manager_remote.search([("id", "=", self.remote.id)])
+        self.assertTrue(remote)
+        self.assertEqual(remote.head, "main")
+
+        # Remove from user_ids, add to manager_ids - should read
+        self.project.write(
+            {"user_ids": [(3, self.manager.id)], "manager_ids": [(4, self.manager.id)]}
+        )
+        remote = manager_remote.search([("id", "=", self.remote.id)])
+        self.assertTrue(remote.exists())
+
+    def test_manager_write_access(self):
+        """Test manager write/create access rules"""
+        manager_remote = self.GitRemote.with_user(self.manager)
+
+        # Create project as manager - should be added to manager_ids automatically
+        project = self.GitProject.with_user(self.manager).create(
+            {
+                "name": "Manager Project",
+            }
+        )
+        source = self.GitSource.create(
+            {
+                "name": "Manager Source",
+                "git_project_id": project.id,
+            }
+        )
+
+        # Create remote in own project - should succeed
+        new_remote = manager_remote.create(
+            {
+                "url": "https://github.com/cetmix/test.git",
+                "source_id": source.id,
+                "head": "main",
+            }
+        )
+        self.assertTrue(new_remote.exists())
+
+        # Write to own remote - should succeed
+        new_remote.write({"head": "dev"})
+        self.assertEqual(new_remote.head, "dev")
+
+        # Write to other's remote - should fail
+        with self.assertRaises(AccessError):
+            self.remote.with_user(self.manager).write({"head": "dev"})
+
+    def test_manager_unlink_access(self):
+        """Test manager unlink access rules"""
+        # Create project and remote as manager_2
+        project = self.GitProject.with_user(self.manager_2).create(
+            {
+                "name": "Manager 2 Project",
+            }
+        )
+        source = self.GitSource.create(
+            {
+                "name": "Manager 2 Source",
+                "git_project_id": project.id,
+            }
+        )
+        remote = self.GitRemote.with_user(self.manager_2).create(
+            {
+                "url": "https://github.com/cetmix/test.git",
+                "source_id": source.id,
+                "head": "main",
+            }
+        )
+
+        # Try delete as different manager - should fail even if added to manager_ids
+        project.write({"manager_ids": [(4, self.manager.id)]})
+        with self.assertRaises(AccessError):
+            remote.with_user(self.manager).unlink()
+
+        # Create remote as manager and try delete - should succeed
+        own_remote = self.GitRemote.with_user(self.manager).create(
+            {
+                "url": "https://github.com/cetmix/test2.git",
+                "source_id": source.id,
+                "head": "main",
+            }
+        )
+        self.assertTrue(own_remote.exists())
+        own_remote.with_user(self.manager).unlink()
+        self.assertFalse(own_remote.exists())
+
+    def test_root_access(self):
+        """Test root access rules"""
+        root_remote = self.GitRemote.with_user(self.root)
+
+        # Create
+        new_remote = root_remote.create(
+            {
+                "url": "https://github.com/cetmix/test.git",
+                "source_id": self.source.id,
+                "head": "main",
+            }
+        )
+        self.assertTrue(new_remote.exists())
+
+        # Read
+        remote = root_remote.search([("id", "=", self.remote.id)])
+        self.assertTrue(remote)
+        self.assertEqual(remote.head, "main")
+
+        # Write
+        self.remote.with_user(self.root).write({"head": "dev"})
+        self.assertEqual(self.remote.head, "dev")
+
+        # Delete
+        new_remote.with_user(self.root).unlink()
+        self.assertFalse(new_remote.exists())
 
     def test_remote_provider_protocol_and_name(self):
         """Test if remote provider is detected correctly"""
