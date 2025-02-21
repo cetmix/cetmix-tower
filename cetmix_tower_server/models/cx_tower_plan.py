@@ -25,6 +25,10 @@ class CxTowerPlan(models.Model):
     ]
     _order = "name asc"
 
+    def _get_post_create_fields(self):
+        res = super()._get_post_create_fields()
+        return res + ["line_ids"]
+
     active = fields.Boolean(default=True)
     allow_parallel_run = fields.Boolean(
         help="If enabled flightplan can be run on the same server "
