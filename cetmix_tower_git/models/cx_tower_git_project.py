@@ -21,6 +21,10 @@ class CxTowerGitProject(models.Model):
         "cx.tower.access.role.mixin",
     ]
 
+    def _get_post_create_fields(self):
+        res = super()._get_post_create_fields()
+        return res + ["source_ids", "git_project_rel_ids"]
+
     active = fields.Boolean(default=True)
     # IMPORTANT: This field may contain duplicates because of the relation nature!
     server_ids = fields.Many2many(
