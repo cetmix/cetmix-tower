@@ -18,6 +18,7 @@ class CxTowerGitProject(models.Model):
     _inherit = [
         "cx.tower.reference.mixin",
         "cx.tower.yaml.mixin",
+        "cx.tower.access.role.mixin",
     ]
 
     active = fields.Boolean(default=True)
@@ -60,6 +61,20 @@ class CxTowerGitProject(models.Model):
         copy=False,
     )
 
+    # ---- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_git_project_user_rel",
+        compute="_compute_user_ids",
+        readonly=False,
+        store=True,
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_git_project_manager_rel",
+        compute="_compute_user_ids",
+        readonly=False,
+        store=True,
+    )
+
     # -- UI/UX fields
     has_private_remotes = fields.Boolean(
         compute="_compute_has_private_remotes",
@@ -76,6 +91,52 @@ class CxTowerGitProject(models.Model):
         " Eg '/tmp/git-aggregator'"
         " Will use '.' if not set",
     )
+
+    @api.depends("server_ids", "server_ids.user_ids", "server_ids.manager_ids")
+    def _compute_user_ids(self):
+        """
+        Users. All users who have "Manager" group and are either set in "Users"
+        or in "Managers" in all related servers.
+        Managers. All users who have "Manager" group and are set as "Managers"
+        in all related servers.
+
+        This is done to avoid unpredictable consequences when some of the servers
+        are not updated due to access restrictions when a project is updated.
+        """
+        for project in self:
+            # Do not compute if no servers are related
+            if not project.server_ids:
+                continue
+
+            # Get all user and manager ids from related servers
+            all_user_ids = project.server_ids.user_ids.ids
+            all_manager_ids = project.server_ids.manager_ids.ids
+
+            # Create a final list of user and manager ids
+            user_ids = []
+            manager_ids = []
+            # Check if user is present in all servers
+            for user_id in all_user_ids:
+                if all(
+                    user_id in server.user_ids.ids or user_id in server.manager_ids.ids
+                    for server in project.server_ids
+                ):
+                    user_ids.append(user_id)
+            # Check if manager is present in all servers
+            for manager_id in all_manager_ids:
+                if all(
+                    manager_id in server.manager_ids.ids
+                    for server in project.server_ids
+                ):
+                    manager_ids.append(manager_id)
+
+            # Set the final lists
+            project.update(
+                {
+                    "user_ids": [(6, 0, user_ids)],
+                    "manager_ids": [(6, 0, manager_ids)],
+                }
+            )
 
     @api.depends(
         "source_ids", "source_ids.remote_ids", "source_ids.remote_ids.is_private"

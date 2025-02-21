@@ -72,6 +72,7 @@ class CxTowerCommand(models.Model):
         "cx.tower.template.mixin",
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
+        "cx.tower.access.role.mixin",
         "cx.tower.key.mixin",
     ]
     _description = "Cetmix Tower Command"
@@ -154,6 +155,14 @@ class CxTowerCommand(models.Model):
         relation="cx_tower_command_variable_rel",
         column1="command_id",
         column2="variable_id",
+    )
+
+    # ---- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_command_user_rel",
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_command_manager_rel",
     )
 
     @classmethod
