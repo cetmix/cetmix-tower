@@ -1,6 +1,6 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class CxTowerAccessRoleMixin(models.AbstractModel):
@@ -58,3 +58,42 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         help="Managers who can modify this record",
         copy=False,
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Create records with post-create fields.
+        """
+        post_create_fields = self._get_post_create_fields()
+        post_create_vals_list = []
+        for vals in vals_list:
+            post_create_vals = {}
+            for key in post_create_fields:
+                if key in vals:
+                    post_create_vals[key] = vals.pop(key)
+            post_create_vals_list.append(post_create_vals)
+
+        # Create records without post-create fields
+        res = super().create(vals_list)
+        if post_create_vals_list:
+            # Create related records with post-create field
+            for post_create_vals, record in zip(post_create_vals_list, res):
+                if post_create_vals:
+                    record.write(post_create_vals)
+
+        return res
+
+    def _get_post_create_fields(self):
+        """
+        Get post-create fields.
+
+        Some records may create related records which use rules
+        that depend on `user_ids` and `manager_ids` fields.
+        However at the moment of record creation, these fields are not yet set.
+        So first we create the record without these fields, then we create
+        the related records to avoid access violations.
+
+        Returns:
+            list: List of fields to be set after record creation.
+        """
+        return []

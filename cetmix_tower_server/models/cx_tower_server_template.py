@@ -17,6 +17,10 @@ class CxTowerServerTemplate(models.Model):
     ]
     _description = "Cetmix Tower Server Template"
 
+    def _get_post_create_fields(self):
+        res = super()._get_post_create_fields()
+        return res + ["variable_value_ids", "server_log_ids"]
+
     active = fields.Boolean(default=True)
 
     # --- Connection
