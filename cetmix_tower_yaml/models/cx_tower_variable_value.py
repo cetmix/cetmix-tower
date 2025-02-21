@@ -10,6 +10,7 @@ class CxTowerVariableValue(models.Model):
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
         res += [
+            "access_level",
             "variable_id",
             "value_char",
             "variable_ids",
