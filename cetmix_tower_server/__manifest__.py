@@ -34,6 +34,7 @@
         "security/cx_tower_variable_security.xml",
         "security/cx_tower_variable_value_security.xml",
         "security/cx_tower_variable_option_security.xml",
+        "security/cx_tower_key_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",

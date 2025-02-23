@@ -4,8 +4,43 @@ from .common import TestTowerCommon
 
 
 class TestTowerKey(TestTowerCommon):
+    """Test class for tower key."""
+
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
+        # Create another manager for testing
+        self.manager_2 = self.Users.create(
+            {
+                "name": "Second Manager",
+                "login": "manager2",
+                "email": "manager2@test.com",
+                "groups_id": [
+                    (4, self.env.ref("cetmix_tower_server.group_manager").id)
+                ],
+            }
+        )
+
+        # Create test servers
+        self.server_1 = self.Server.create(
+            {
+                "name": "Test Server 1",
+                "ip_v4_address": "192.168.1.1",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+            }
+        )
+        self.server_2 = self.Server.create(
+            {
+                "name": "Test Server 2",
+                "ip_v4_address": "192.168.1.2",
+                "ssh_port": "22",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+            }
+        )
 
     def test_key_creation(self):
         """
@@ -34,7 +69,9 @@ class TestTowerKey(TestTowerCommon):
         SECRET_VALUE_PLACEHOLDER = self.Key.SECRET_VALUE_PLACEHOLDER
 
         # Store key value
-        self.write_and_invalidate(self.key_1, **{"secret_value": "pepe"})
+        self.write_and_invalidate(
+            self.key_1, **{"secret_value": "pepe", "key_type": "s"}
+        )
 
         # Get key value as Bob
         key_bob = self.key_1.with_user(self.user_bob)
@@ -43,7 +80,11 @@ class TestTowerKey(TestTowerCommon):
             key_value = key_bob.secret_value
 
         # Add user to group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Add user to server
+        self.server_test_1.write({"user_ids": [(4, self.user_bob.id)]})
+        # Add server to key
+        self.write_and_invalidate(self.key_1, **{"server_id": self.server_test_1.id})
 
         # Get value
         key_value = key_bob.secret_value
@@ -59,22 +100,14 @@ class TestTowerKey(TestTowerCommon):
         with self.assertRaises(AccessError):
             self.write_and_invalidate(key_bob, **{"secret_value": "frog"})
 
-        # Add Bob to Manager group and test write again
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        self.write_and_invalidate(key_bob, **{"secret_value": "frog"})
-
-        # Read as sudo and check if the value is updated
-        key_sudo = self.key_1.sudo()
-        key_value = key_sudo.secret_value
-        self.assertEqual(key_value, "frog", msg="Must return key value 'frog'")
-
-        # Try deleting key. Should raise access error
-        with self.assertRaises(AccessError):
-            key_bob.unlink()
-
         # Add Bob to Root group and test write again
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
-        key_bob.unlink()
+        self.write_and_invalidate(key_bob, **{"secret_value": "frog"})
+
+        # Read with context and check if secret value is returned
+        key_with_context = self.key_1.with_context(show_secret_value=True)
+        key_value = key_with_context.secret_value
+        self.assertEqual(key_value, "frog", msg="Must return key value 'frog'")
 
     def test_extract_key_strings(self):
         """Check if key strings are extracted properly"""
@@ -417,3 +450,253 @@ class TestTowerKey(TestTowerCommon):
         key_values = ["Wow much", "No like"]
         result = self.Key._replace_with_spoiler(code, key_values)
         self.assertEqual(result, code, "Result doesn't match expected code")
+
+    def test_user_access(self):
+        """Test that regular users have no access"""
+        Key = self.env["cx.tower.key"].with_user(self.user)
+
+        # Try to read - should fail with access error
+        with self.assertRaises(AccessError):
+            Key.search([])
+
+        # Try to create - should fail
+        with self.assertRaises(AccessError):
+            Key.create(
+                {
+                    "name": "User Key",
+                    "key_type": "k",
+                    "secret_value": "user_key",
+                }
+            )
+
+        # Try to write - should fail
+        with self.assertRaises(AccessError):
+            self.key_1.with_user(self.user).write({"name": "New Name"})
+
+        # Try to unlink - should fail
+        with self.assertRaises(AccessError):
+            self.key_1.with_user(self.user).unlink()
+
+    def test_manager_read_ssh_key(self):
+        """Test manager read access for SSH keys"""
+        Key = self.env["cx.tower.key"].with_user(self.manager)
+
+        # Create SSH key with server reference
+        ssh_key = self.Key.create(
+            {
+                "name": "Test SSH Key",
+                "key_type": "k",
+                "secret_value": "test_key",
+            }
+        )
+        # Link SSH key to server
+        self.server_test_1.write({"ssh_key_id": ssh_key.id})
+
+        # No access initially
+        self.assertFalse(Key.search([("id", "=", ssh_key.id)]))
+
+        # Add as user - should read
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+        self.assertTrue(Key.search([("id", "=", ssh_key.id)]))
+
+        # Remove user, add as manager - should read
+        self.server_test_1.write(
+            {
+                "user_ids": [(3, self.manager.id)],
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        self.assertTrue(Key.search([("id", "=", ssh_key.id)]))
+
+        # Remove manager, add as user to key - should read
+        ssh_key.write({"user_ids": [(4, self.manager.id)]})
+        self.assertTrue(Key.search([("id", "=", ssh_key.id)]))
+
+        # Remove  user, add as manager to key - should read
+        ssh_key.write(
+            {"manager_ids": [(4, self.manager.id)], "user_ids": [(3, self.manager.id)]}
+        )
+        self.assertTrue(Key.search([("id", "=", ssh_key.id)]))
+
+    def test_manager_read_secret(self):
+        """Test manager read access for secrets"""
+        Key = self.env["cx.tower.key"].with_user(self.manager)
+
+        # Create secret
+        secret = self.Key.create(
+            {
+                "name": "Test Secret",
+                "key_type": "s",
+                "secret_value": "test_secret",
+                "server_id": self.server_1.id,
+            }
+        )
+
+        # No access initially
+        self.assertFalse(Key.search([("id", "=", secret.id)]))
+
+        # Add as user - should read
+        self.server_1.write({"user_ids": [(4, self.manager.id)]})
+        self.assertTrue(Key.search([("id", "=", secret.id)]))
+
+        # Remove user, add as manager - should read
+        self.server_1.write(
+            {
+                "user_ids": [(3, self.manager.id)],
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        self.assertTrue(Key.search([("id", "=", secret.id)]))
+
+    def test_manager_write_ssh_key(self):
+        """Test manager write/create access for SSH keys"""
+        Key = self.env["cx.tower.key"].with_user(self.manager)
+
+        # Try create without server access - should fail
+        with self.assertRaises(AccessError):
+            Key.create(
+                {
+                    "name": "Manager SSH Key",
+                    "key_type": "k",
+                    "secret_value": "manager_key",
+                    "user_ids": [],
+                    "manager_ids": [],
+                }
+            )
+
+        # Add manager to server
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Create SSH key and link to server - should succeed
+        ssh_key = Key.create(
+            {
+                "name": "Manager SSH Key",
+                "key_type": "k",
+                "secret_value": "manager_key",
+            }
+        ).with_context(show_secret_value=True)
+        self.server_test_1.write({"ssh_key_id": ssh_key.id})
+
+        # Write - should succeed
+        self.write_and_invalidate(ssh_key, **{"secret_value": "updated_key"})
+        self.assertEqual(ssh_key.secret_value, "updated_key")
+
+        # Remove manager from server and add as manager to key
+        # Should succeed
+        self.server_test_1.write({"manager_ids": [(3, self.manager.id)]})
+        ssh_key.write({"manager_ids": [(4, self.manager.id)]})
+        self.write_and_invalidate(ssh_key, **{"secret_value": "updated_key_2"})
+        self.assertEqual(ssh_key.secret_value, "updated_key_2")
+
+    def test_manager_write_secret(self):
+        """Test manager write/create access for secrets"""
+        Key = self.env["cx.tower.key"].with_user(self.manager)
+
+        # Add manager to server
+        self.server_1.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Create secret - should succeed
+        secret = Key.create(
+            {
+                "name": "Manager Secret",
+                "key_type": "s",
+                "secret_value": "manager_secret",
+                "server_id": self.server_1.id,
+            }
+        ).with_context(show_secret_value=True)
+        self.assertTrue(secret.exists())
+
+        # Write - should succeed
+        self.write_and_invalidate(secret, **{"secret_value": "updated_secret"})
+        self.assertEqual(secret.secret_value, "updated_secret")
+
+        # Try write to secret of another server - should fail
+        other_secret = self.Key.create(
+            {
+                "name": "Other Secret",
+                "key_type": "s",
+                "secret_value": "other_secret",
+                "server_id": self.server_2.id,
+            }
+        ).with_context(show_secret_value=True)
+        with self.assertRaises(AccessError):
+            other_secret.with_user(self.manager).write({"secret_value": "try_update"})
+
+    def test_manager_unlink(self):
+        """Test manager unlink access"""
+        # Add manager_2 to server first
+        self.server_test_1.write({"manager_ids": [(4, self.manager_2.id)]})
+
+        # Create keys as manager_2
+        Key = self.env["cx.tower.key"].with_user(self.manager_2)
+
+        # Create SSH key and link to server
+        ssh_key = Key.create(
+            {
+                "name": "Manager SSH Key",
+                "key_type": "k",
+                "secret_value": "manager_ssh_key",
+            }
+        )
+        self.server_test_1.write({"ssh_key_id": ssh_key.id})
+
+        # Create secret
+        secret = Key.create(
+            {
+                "name": "Manager Secret",
+                "key_type": "s",
+                "secret_value": "manager_secret",
+                "server_id": self.server_test_1.id,
+            }
+        )
+
+        # Try delete as different manager - should fail
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
+        with self.assertRaises(AccessError):
+            ssh_key.with_user(self.manager).unlink()
+        with self.assertRaises(AccessError):
+            secret.with_user(self.manager).unlink()
+
+        # Delete own keys - should succeed
+        ssh_key.with_user(self.manager_2).unlink()
+        secret.with_user(self.manager_2).unlink()
+        self.assertFalse(ssh_key.exists())
+        self.assertFalse(secret.exists())
+
+    def test_root_access(self):
+        """Test root access"""
+        Key = self.env["cx.tower.key"].with_user(self.root)
+
+        # Create
+        ssh_key = Key.create(
+            {
+                "name": "Root SSH Key",
+                "key_type": "k",
+                "secret_value": "root_ssh_key",
+            }
+        )
+        secret = Key.create(
+            {
+                "name": "Root Secret",
+                "key_type": "s",
+                "secret_value": "root_secret",
+                "server_id": self.server_1.id,
+            }
+        )
+        self.assertTrue(ssh_key.exists())
+        self.assertTrue(secret.exists())
+
+        # Read
+        self.assertTrue(Key.search([]))
+
+        # Write
+        ssh_key.write({"secret_value": "updated_ssh_key"})
+        secret.write({"secret_value": "updated_secret"})
+        self.assertEqual(ssh_key.secret_value, "updated_ssh_key")
+        self.assertEqual(secret.secret_value, "updated_secret")
+
+        # Delete
+        ssh_key.unlink()
+        secret.unlink()
+        self.assertFalse(ssh_key.exists())
+        self.assertFalse(secret.exists())
