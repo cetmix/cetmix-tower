@@ -12,7 +12,7 @@ class CxTowerKey(models.Model):
 
     _name = "cx.tower.key"
     _description = "Cetmix Tower private key storage"
-    _inherit = ["cx.tower.reference.mixin"]
+    _inherit = ["cx.tower.reference.mixin", "cx.tower.access.role.mixin"]
 
     KEY_PREFIX = "#!cxtower"
     KEY_TERMINATOR = "!#"
@@ -47,6 +47,17 @@ class CxTowerKey(models.Model):
         comodel_name="res.partner", help="Leave blank to use for any partner"
     )
     note = fields.Text()
+
+    # ---- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_key_user_rel",
+        domain=lambda self: [
+            ("groups_id", "in", [self.env.ref("cetmix_tower_server.group_manager").id])
+        ],
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_key_manager_rel",
+    )
 
     def init(self):
         """
@@ -259,7 +270,9 @@ class CxTowerKey(models.Model):
     def _read(self, fields):
         """Substitute fields based on api"""
         super()._read(fields)
-        if not self.env.is_superuser() and ("secret_value" in fields or fields == []):
+        if not self.env.context.get("show_secret_value") and (
+            "secret_value" in fields or fields == []
+        ):
             # Public user used for substitution
             for record in self:
                 try:
@@ -476,7 +489,7 @@ class CxTowerKey(models.Model):
             )
 
         # Fetch keys
-        keys = self.search(key_domain).sudo()
+        keys = self.sudo().search(key_domain)
         if not keys:
             return
 
@@ -493,7 +506,12 @@ class CxTowerKey(models.Model):
             # Fallback to a global key
             key = keys
 
-        key_value = key[0].secret_value
+        # Read the first key secret value. Use context to show secret value
+        key_value = (
+            key.with_context(show_secret_value=True)
+            .read(["secret_value"])[0]
+            .get("secret_value")
+        )
         return key_value
 
     def _replace_with_spoiler(self, code, key_values):
