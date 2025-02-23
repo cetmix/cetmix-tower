@@ -339,6 +339,7 @@ class CxTowerServer(models.Model):
         comodel_name="cx.tower.key",
         inverse_name="server_id",
         domain=[("key_type", "=", "s")],
+        groups="cetmix_tower_server.group_manager",
     )
 
     # ---- Attributes
@@ -611,8 +612,16 @@ class CxTowerServer(models.Model):
             Char: SSH private key
         """
         self.ensure_one()
+        # To ensure that key will be read
+        # regardless of access rights
+        self = self.sudo()
         if self.ssh_key_id:
-            ssh_key = self.ssh_key_id.sudo().secret_value
+            # Use context key to read secret value
+            ssh_key = (
+                self.ssh_key_id.sudo()
+                .with_context(show_secret_value=True)
+                .read(["secret_value"])[0]["secret_value"]
+            )
         else:
             ssh_key = None
         return ssh_key
