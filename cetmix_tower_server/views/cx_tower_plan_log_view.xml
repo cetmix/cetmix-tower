@@ -56,7 +56,6 @@
                         </group>
                         <field name="command_log_ids">
                             <tree
-                                default_order="id"
                                 decoration-danger="command_status not in [0, -20]"
                                 decoration-info="is_running == True"
                                 decoration-muted="command_status == -20"

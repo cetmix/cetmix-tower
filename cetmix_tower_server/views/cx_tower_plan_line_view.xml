@@ -23,23 +23,75 @@
                                 readonly="1"
                                 attrs="{'invisible': [('note', '=', False)]}"
                             />
-                            <field name="use_sudo" />
+                            <field
+                                name="use_sudo"
+                                attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
+                            />
                             <field
                                 name="path"
                                 placeholder="e.g. /such/much/{{ path }}, overrides command path"
+                                attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
                             />
                         </group>
-
-
+                        <group>
+                            <field name="action" />
+                            <field
+                                name="flight_plan_id"
+                                string="Flight Plan"
+                                attrs="{'invisible': [('action', '!=', 'plan')]}"
+                            />
+                            <field
+                                name="file_template_id"
+                                string="File Template"
+                                attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                            />
+                        </group>
                     </group>
                     <group>
                     <field name="condition" widget="ace" options="{'mode': 'python'}" />
             </group>
                     <notebook>
-                        <page name="preview" string="Command Preview">
-                            <group>
-                                <field name="command_code" />
-                            </group>
+                        <page name="preview" string="Preview">
+                            <field
+                                name="command_code"
+                                attrs="{'invisible': [('action', 'not in', ['ssh_command', 'python_code'])]}"
+                            />
+                            <field
+                                name="file_template_code"
+                                string="Template Code"
+                                attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                            />
+                            <field
+                                name="plan_line_ids"
+                                string="Flight Plan Lines"
+                                attrs="{'invisible': [('action', '!=', 'plan')]}"
+                            >
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field
+                                        name="action"
+                                        optional="show"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
+                                    <field
+                                        name="tag_ids"
+                                        optional="show"
+                                        widget="many2many_tags"
+                                        groups="cetmix_tower_server.group_manager"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                    <field name="use_sudo" optional="show" />
+                                    <field name="path" optional="show" />
+                                    <field
+                                        name="condition"
+                                        widget="ace"
+                                        options="{'mode': 'python'}"
+                                        optional="show"
+                                    />
+                                </tree>
+                            </field>
                         </page>
                         <page name="actions" string="Post Run Actions">
                             <field name="action_ids">

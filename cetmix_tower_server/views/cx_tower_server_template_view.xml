@@ -11,6 +11,7 @@
                 <field name="tag_ids" />
                 <field name="os_id" />
                 <field name="color" />
+                <field name="server_count" />
                 <templates>
                     <t t-name="kanban-box">
                     <div
@@ -55,24 +56,34 @@
                         <div class="oe_kanban_content">
                             <div class="oe_kanban_global_click">
                                 <div class="col-12 pt8 o_kanban_primary_right">
-                                    <div>
-                                        <field name="reference" />
-                                    </div>
-                                    <div attrs="{'invisible': [('os_id', '=', False)]}">
-                                        <strong>Operating System:</strong>
-                                        <field name="os_id" />
-                                    </div>
+                                    <t t-if="record.server_count.value &gt; 0">
+                                        <div>
+                                            <strong>Servers:</strong>
+                                            <span>
+                                                <t t-esc="record.server_count.value" />
+                                            </span>
+                                        </div>
+                                    </t>
+                                    <t t-if="record.os_id.raw_value">
+                                        <div>
+                                            <strong>Operating System:</strong>
+                                            <field name="os_id" />
+                                        </div>
+                                    </t>
                                 </div>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
                                 </div>
                                 <div class="oe_kanban_bottom_right">
-                                    <div
-                                            attrs="{'invisible': [('tag_ids', '=', False)]}"
-                                        >
-                                        <field name="tag_ids" widget="many2many_tags" />
-                                    </div>
+                                    <t t-if="record.tag_ids.raw_value">
+                                        <div>
+                                            <field
+                                                    name="tag_ids"
+                                                    widget="many2many_tags"
+                                                />
+                                        </div>
+                                    </t>
                                 </div>
                             </div>
                         </div>
