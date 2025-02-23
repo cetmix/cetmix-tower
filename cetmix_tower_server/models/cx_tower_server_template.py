@@ -100,6 +100,9 @@ class CxTowerServerTemplate(models.Model):
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
         relation="cx_tower_server_template_user_rel",
+        domain=lambda self: [
+            ("groups_id", "in", [self.env.ref("cetmix_tower_server.group_manager").id])
+        ],
     )
     manager_ids = fields.Many2many(
         relation="cx_tower_server_template_manager_rel",
