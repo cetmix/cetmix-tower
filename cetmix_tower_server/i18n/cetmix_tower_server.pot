@@ -215,12 +215,6 @@ msgid "<log is empty>"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
-msgid "<span>show shared</span>"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv4 Address:</strong>"
 msgstr ""
@@ -412,9 +406,9 @@ msgid "Another instance of the command is already running"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__any_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__any_server
-msgid "Any Server"
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__applicability
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__applicability
+msgid "Applicability"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -698,6 +692,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Command"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Command '%(cmd)s' is not compatible with the server '%(server)s'."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1270,6 +1270,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__flight_plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__plan_id
@@ -1305,6 +1306,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
+#, python-format
+msgid "Flight plan '%(plan)s' is not compatible with the server '%(server)s'."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1349,6 +1356,12 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__duration_current
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__duration_current
 msgid "For how long a flight plan is already running"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__applicability__this
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_execute_wizard__applicability__this
+msgid "For selected server(s)"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1897,6 +1910,12 @@ msgid "No sudo"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__applicability__shared
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_execute_wizard__applicability__shared
+msgid "Non server restricted"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Not Running"
 msgstr ""
@@ -2044,11 +2063,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__path
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__path
 msgid "Path"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__plan_id
-msgid "Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2406,6 +2420,12 @@ msgid "Run next command"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
+msgid "Run on"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
@@ -2574,13 +2594,17 @@ msgid "Secrets"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
-msgid "Select tags to filter Commands"
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__applicability
+msgid ""
+"Selected server(s): only Commands that are specific to the selected server(s)\n"
+"Non server restricted: all Commands that are not specific to any server"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
-msgid "Select tags to filter Flight Plans"
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_execute_wizard__applicability
+msgid ""
+"Selected server(s): only Flight Plans that are specific to the selected server(s)\n"
+"Non server restricted: all Flight Plans that are not specific to any server"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2658,7 +2682,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
-msgid "Server URL, eg 'https://doge.example.com'"
+msgid "Server URL, eg 'https://meme.example.com'"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2726,6 +2750,16 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_settings
 msgid "Settings"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
+msgid "Show Commands"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
+msgid "Show Flight Plans"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3398,4 +3432,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "users who can view this record"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
+msgid "with tags"
 msgstr ""
