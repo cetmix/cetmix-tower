@@ -270,6 +270,10 @@ class CxTowerServer(models.Model):
     _description = "Cetmix Tower Server"
     _order = "name asc"
 
+    def _get_post_create_fields(self):
+        res = super()._get_post_create_fields()
+        return res + ["variable_value_ids", "server_log_ids", "secret_ids"]
+
     # ---- Main
     active = fields.Boolean(default=True)
     color = fields.Integer(help="For better visualization in views")
@@ -334,7 +338,7 @@ class CxTowerServer(models.Model):
         string="Secrets",
         comodel_name="cx.tower.key",
         inverse_name="server_id",
-        domain=[("key_type", "!=", "k")],
+        domain=[("key_type", "=", "s")],
     )
 
     # ---- Attributes
