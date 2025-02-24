@@ -946,6 +946,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -1430,6 +1431,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__id
 msgid "ID"
 msgstr ""
 
@@ -1601,6 +1603,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -2604,6 +2607,11 @@ msgid "Server"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_ir_actions_server
+msgid "Server Action"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__server_count
 msgid "Server Count"
 msgstr ""
@@ -3304,6 +3312,14 @@ msgstr ""
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "You cannot run custom code on multiple servers at once."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/ir_actions_server.py:0
+#, python-format
+msgid ""
+"You need to have 'write' access to all servers you want to run this action "
+"on."
 msgstr ""
 
 #. module: cetmix_tower_server
