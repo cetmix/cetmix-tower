@@ -73,8 +73,8 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[cetmix_tower_git](cetmix_tower_git/) | 14.0.1.0.1 |  | Cetmix Tower Git Management Tools
-[cetmix_tower_server](cetmix_tower_server/) | 14.0.0.4.10 |  | Flexible Server Management directly from Odoo
+[cetmix_tower_git](cetmix_tower_git/) | 14.0.1.0.2 |  | Cetmix Tower Git Management Tools
+[cetmix_tower_server](cetmix_tower_server/) | 14.0.0.4.11 |  | Flexible Server Management directly from Odoo
 [cetmix_tower_server_notify_backend](cetmix_tower_server_notify_backend/) | 14.0.1.0.1 |  | Backend notifications for Cetmix Tower
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 14.0.1.0.3 |  | OCA Queue implementation for Cetmix Tower Server
 [cetmix_tower_yaml](cetmix_tower_yaml/) | 14.0.1.0.1 |  | Cetmix Tower YAML export/import
