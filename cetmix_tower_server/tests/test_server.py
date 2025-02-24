@@ -1,4 +1,4 @@
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common import TestTowerCommon
 
@@ -720,3 +720,44 @@ COMMAND_RESULT = {
         # because he is not in manager_ids.
         with self.assertRaises(AccessError):
             record2.with_user(self.manager2).unlink()
+
+    def test_command_server_compatibility(self):
+        """Test command compatibility with servers"""
+        # Create a command restricted to specific servers
+        command = self.Command.create(
+            {
+                "name": "Restricted Command",
+                "action": "ssh_command",
+                "code": "echo 'test'",
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+            }
+        )
+
+        # Should work on allowed server
+        try:
+            self.server_test_1.execute_command(command)
+        except Exception as e:
+            self.fail(f"Command should execute on allowed server but failed: {e}")
+
+        # Should fail on non-allowed server
+        with self.assertRaises(
+            ValidationError, msg="Command should not execute on non-allowed server"
+        ):
+            self.server_test_2.execute_command(command)
+
+        # Command without server restrictions should work on any server
+        unrestricted_command = self.Command.create(
+            {
+                "name": "Unrestricted Command",
+                "action": "ssh_command",
+                "code": "echo 'test'",
+            }
+        )
+
+        try:
+            self.server_test_1.execute_command(unrestricted_command)
+            self.server_test_2.execute_command(unrestricted_command)
+        except Exception as e:
+            self.fail(
+                f"Unrestricted command should execute on any server but failed: {e}"
+            )

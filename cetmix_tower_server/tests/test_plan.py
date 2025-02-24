@@ -1521,3 +1521,42 @@ class TestTowerPlan(TestTowerCommon):
             self.plan_line_action.search([("id", "in", plan_line_action_ids.ids)]),
             msg="Plan line action should be deleted when Plan line is deleted",
         )
+
+    def test_plan_command_server_compatibility(self):
+        """Test plan execution with server-restricted flight plans"""
+        # Create a new test server
+        test_server = self.Server.create(
+            {
+                "name": "Test Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+            }
+        )
+
+        # Create a flight plan restricted to the test server
+        plan = self.Plan.create(
+            {
+                "name": "Server Restricted Plan",
+                "server_ids": [(6, 0, [test_server.id])],
+                "line_ids": [
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1})
+                ],
+            }
+        )
+
+        # Should fail when executing on non-allowed server
+        with self.assertRaisesRegex(
+            ValidationError,
+            f"Flight plan '{plan.name}' is not compatible "
+            f"with the server '{self.server_test_1.name}'.",
+        ):
+            plan._execute_single(self.server_test_1)
+
+        # Should work on allowed server
+        plan._execute_single(test_server)
+        plan_log = self.PlanLog.search(
+            [("plan_id", "=", plan.id), ("server_id", "=", test_server.id)], limit=1
+        )
+        self.assertEqual(plan_log.command_log_ids.command_status, 0)
