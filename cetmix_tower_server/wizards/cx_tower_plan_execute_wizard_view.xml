@@ -11,14 +11,23 @@
                         name="server_ids"
                         widget="many2many_tags"
                         required="1"
-                        attrs="{'invisible': [('show_servers', '=', False)]}"
+                        string="Run on"
                     />
-                    <field
-                        name="tag_ids"
-                        widget="many2many_tags"
-                        placeholder="Select tags to filter Flight Plans"
-                        options="{'no_create': True}"
-                    />
+                    <label for="applicability" string="Show Flight Plans" />
+                    <div class="o_row">
+                        <field
+                            name="applicability"
+                            widget="radio"
+                            options="{'horizontal': True}"
+                            attrs="{'readonly': [('show_servers', '=', True)]}"
+                        />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="with tags"
+                            options="{'no_create': True}"
+                        />
+                    </div>
                     <label for="plan_id" />
                     <div class="o_row">
                         <field
@@ -28,8 +37,6 @@
                             options="{'no_create': True}"
                         />
                         <field name="plan_domain" invisible="1" />
-                        <span>show shared</span>
-                        <field name="any_server" />
                     </div>
                     <field
                         name="note"

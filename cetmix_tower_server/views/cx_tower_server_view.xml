@@ -193,9 +193,7 @@
                     />
                 </header>
                 <sheet>
-
                     <div class="oe_button_box" name="button_box">
-
                         <button
                             name="action_open_command_logs"
                             type="object"
@@ -234,14 +232,19 @@
                                 class="ml-auto"
                             />
                         </h1>
-                        <h3>
-                            <field
-                                name="reference"
-                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
-                            />
-                        </h3>
                         <field name="color" widget="color_picker" />
                     </div>
+                    <group>
+                        <field
+                            name="reference"
+                            placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                        />
+                        <field
+                            name="url"
+                            placeholder="Server URL, eg 'https://meme.example.com'"
+                            widget="url"
+                        />
+                    </group>
                     <notebook>
                         <page name="General" string="General Settings">
                             <group name="root">
@@ -273,11 +276,6 @@
                                     />
                                 </group>
                                 <group name="extra">
-                                    <field
-                                        name="url"
-                                        placeholder="Server URL, eg 'https://doge.example.com'"
-                                        widget="url"
-                                    />
                                     <field
                                         name="server_template_id"
                                         attrs="{'invisible': [('server_template_id', '=', False)]}"

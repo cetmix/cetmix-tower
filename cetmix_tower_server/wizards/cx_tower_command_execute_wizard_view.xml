@@ -22,20 +22,35 @@
                         name="server_ids"
                         widget="many2many_tags"
                         required="1"
-                        attrs="{'invisible': [('show_servers', '=', False)]}"
-                    />
-                    <field
-                        name="tag_ids"
-                        widget="many2many_tags"
+                        string="Run on"
                         attrs="{'invisible': [('result', '!=', False)]}"
-                        placeholder="Select tags to filter Commands"
-                        options="{'no_create': True}"
                     />
+                    <label
+                        for="applicability"
+                        string="Show Commands"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+                        <field
+                            name="applicability"
+                            widget="radio"
+                            options="{'horizontal': True}"
+                            attrs="{'readonly': [('show_servers', '=', True)], 'invisible': [('result', '!=', False)]}"
+                        />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            attrs="{'invisible': [('result', '!=', False)]}"
+                            placeholder="with tags"
+                            options="{'no_create': True}"
+                        />
+                    </div>
                     <label
                         for="command_id"
                         attrs="{'invisible': [('result', '!=', False)]}"
                     />
                     <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+
                         <field name="action" nolabel="1" />
                         <field
                             name="use_sudo"
@@ -49,8 +64,6 @@
                             options="{'no_create': True}"
                         />
                         <field name="command_domain" invisible="1" />
-                        <span>show shared</span>
-                        <field name="any_server" />
                     </div>
                     <field
                         name="path"

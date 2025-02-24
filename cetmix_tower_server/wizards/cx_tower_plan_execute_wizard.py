@@ -14,7 +14,8 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         string="Servers",
     )
     plan_id = fields.Many2one(
-        "cx.tower.plan",
+        string="Flight Plan",
+        comodel_name="cx.tower.plan",
         required=True,
     )
     note = fields.Text(related="plan_id.note", readonly=True)
@@ -28,7 +29,21 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         column2="tag_id",
         string="Tags",
     )
-    any_server = fields.Boolean(default=True)
+    applicability = fields.Selection(
+        selection=[
+            ("this", "For selected server(s)"),
+            ("shared", "Non server restricted"),
+        ],
+        default="shared",
+        required=True,
+        compute="_compute_show_servers",
+        readonly=False,
+        store=True,
+        help="Selected server(s): only Flight Plans that are specific"
+        " to the selected server(s)\n"
+        "Non server restricted: all Flight Plans that are "
+        "not specific to any server",
+    )
     # Lines
     plan_line_ids = fields.One2many(
         string="Commands",
@@ -39,6 +54,7 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
     )
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
+        compute_sudo=True,
     )
 
     @api.depends("server_ids")
@@ -46,10 +62,15 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         """
         Show "Servers" field only if the number of servers is greater than 1.
         """
-
-        self.show_servers = (
-            True if self.server_ids and len(self.server_ids) > 1 else False
-        )
+        for rec in self:
+            show_servers = True if rec.server_ids and len(rec.server_ids) > 1 else False
+            applicability = "shared" if show_servers else "this"
+            rec.update(
+                {
+                    "show_servers": show_servers,
+                    "applicability": applicability,
+                }
+            )
 
     @api.depends("plan_id")
     def _compute_plan_line_ids(self):
@@ -60,20 +81,23 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
             else:
                 rec.plan_line_ids = None
 
-    @api.depends("any_server", "server_ids", "tag_ids")
+    @api.depends("applicability", "server_ids", "tag_ids")
     def _compute_plan_domain(self):
-        """Compose domain based on condition
-        - any server: show commands compatible with any server
-        """
+        """Compose domain based on condition"""
         for record in self:
             domain = []
-            if record.any_server:
+            if record.applicability == "shared":
                 domain = [("server_ids", "=", False)]
-            elif record.server_ids:
+            elif record.applicability == "this":
                 domain.append(("server_ids", "in", record.server_ids.ids))
             if record.tag_ids:
                 domain.append(("tag_ids", "in", record.tag_ids.ids))
             record.plan_domain = domain
+
+    @api.onchange("applicability")
+    def _onchange_applicability(self):
+        """Reset plan after change record type"""
+        self.plan_id = False
 
     def execute(self):
         """Render selected command rendered using server method"""
