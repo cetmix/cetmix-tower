@@ -50,7 +50,21 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         help="Run commands using 'sudo'",
     )
     code = fields.Text(compute="_compute_code", readonly=False, store=True)
-    any_server = fields.Boolean(default=True)
+    applicability = fields.Selection(
+        selection=[
+            ("this", "For selected server(s)"),
+            ("shared", "Non server restricted"),
+        ],
+        default="shared",
+        required=True,
+        compute="_compute_show_servers",
+        readonly=False,
+        store=True,
+        help="Selected server(s): only Commands that are specific"
+        " to the selected server(s)\n"
+        "Non server restricted: all Commands that are "
+        "not specific to any server",
+    )
     rendered_code = fields.Text(
         compute="_compute_rendered_code",
         compute_sudo=True,
@@ -58,6 +72,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     result = fields.Text()
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
+        compute_sudo=True,
     )
 
     @api.depends("server_ids")
@@ -65,10 +80,17 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         """
         Show "Servers" field only if the number of servers is greater than 1.
         """
+        for record in self:
+            show_servers = record.server_ids and len(record.server_ids) > 1
+            applicability = "shared" if show_servers else "this"
+            record.update(
+                {
+                    "show_servers": show_servers,
+                    "applicability": applicability,
+                }
+            )
 
-        self.show_servers = self.server_ids and len(self.server_ids) > 1
-
-    @api.onchange("action")
+    @api.onchange("action", "applicability")
     def _onchange_action(self):
         """
         Reset command after change action
@@ -118,16 +140,16 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             else:
                 record.rendered_code = record.code
 
-    @api.depends("any_server", "server_ids", "tag_ids", "action")
+    @api.depends("applicability", "server_ids", "tag_ids", "action")
     def _compute_command_domain(self):
-        """Compose domain based on condition
-        - any server: show commands compatible with any server
+        """
+        Compose domain based on condition
         """
         for record in self:
             domain = [("action", "=", record.action)]
-            if record.any_server:
+            if record.applicability == "shared":
                 domain.append(("server_ids", "=", False))
-            elif record.server_ids:
+            elif record.applicability == "this":
                 domain.append(("server_ids", "in", record.server_ids.ids))
             if record.tag_ids:
                 domain.append(("tag_ids", "in", record.tag_ids.ids))
