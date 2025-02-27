@@ -76,7 +76,10 @@ v/Ow5T0q5gIJAiEAyS4RaI9YG8EWx/2w0T67ZUVAw8eOMB6BIUg0Xcu+3okCIBOs
                 "code": """
 server_name = {{ tower.server.name }}
 if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
-    command = env["cx.tower.command"].create({"name": {{ test_path_ }}})
+    # We don't actually create a new command because it will raise
+    # access error if user doesn't have access to 'create' operation.
+    # Instead we just return a dummy command result.
+    command = "new command"
     COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
 else:
     COMMAND_RESULT = {"exit_code": -1, "message": "error"}
@@ -1064,7 +1067,10 @@ COMMAND_RESULT = {
         rendered_code_pythonic = f"""
 server_name = "{self.server_test_1.name}"
 if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
-    command = env["cx.tower.command"].create({{"name": "/opt/tower"}})
+    # We don't actually create a new command because it will raise
+    # access error if user doesn't have access to 'create' operation.
+    # Instead we just return a dummy command result.
+    command = "new command"
     COMMAND_RESULT = {{"exit_code": 0, "message": "New command was created"}}
 else:
     COMMAND_RESULT = {{"exit_code": -1, "message": "error"}}
@@ -1134,14 +1140,28 @@ else:
         """
         Test command execution without setting server status
         """
+        # Set command access level to "user"
+        self.command_create_new_command.write({"access_level": "1"})
+
+        # Add user to command
+        self.write_and_invalidate(
+            self.server_test_1, **{"user_ids": [(4, self.user.id)]}
+        )
+
+        # Reset access rule cache
+        self.env["ir.rule"].invalidate_cache()
+
         # Execute command
         server_status = self.server_test_1.status
 
-        self.server_test_1.with_context(no_log=True).execute_command(
-            self.command_create_new_command
+        result = (
+            self.server_test_1.with_context(no_log=True)
+            .with_user(self.user)
+            .execute_command(self.command_create_new_command)
         )
 
         # Check command result
+        self.assertEqual(result["status"], 0, "Command status must be 0")
         self.assertEqual(
             self.server_test_1.status, server_status, "Server status must be 'running'"
         )
