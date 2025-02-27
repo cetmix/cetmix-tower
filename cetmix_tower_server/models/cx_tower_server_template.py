@@ -24,7 +24,7 @@ class CxTowerServerTemplate(models.Model):
     active = fields.Boolean(default=True)
 
     # --- Connection
-    ssh_port = fields.Char(string="SSH port", default="22")
+    ssh_port = fields.Integer(string="SSH port", default=22)
     ssh_username = fields.Char(string="SSH Username")
     ssh_password = fields.Char(string="SSH Password")
     ssh_key_id = fields.Many2one(

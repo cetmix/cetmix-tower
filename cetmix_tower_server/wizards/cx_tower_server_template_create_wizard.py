@@ -23,7 +23,7 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
     color = fields.Integer(help="For better visualization in views")
     ip_v4_address = fields.Char(string="IPv4 Address")
     ip_v6_address = fields.Char(string="IPv6 Address")
-    ssh_port = fields.Char(string="SSH port", default="22")
+    ssh_port = fields.Integer(string="SSH port", default=22)
     ssh_username = fields.Char(
         string="SSH Username",
         required=True,

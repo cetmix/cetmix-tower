@@ -7,7 +7,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
 
-from odoo.addons.cetmix_tower_server.models.cx_tower_server import SSH
+from ..ssh.ssh import SftpService, SSHConnection
 
 
 class TestTowerCommon(TransactionCase):
@@ -254,48 +254,21 @@ class TestTowerCommon(TransactionCase):
 
     def apply_patches(self):
         """
-        Apply mock patches for SSH-related methods to simulate various scenarios
-        during testing.
+        Apply mock patches for SSH-related methods to simulate various
+        scenarios during testing.
 
-        This method sets up and applies the following mock patches:
-
-        1. `_connect` method:
-            - Returns a mocked SSH connection object that simulates the behavior of an
-              SSH connection.
-            - The `exec_command` method is patched to return:
-                - `stdin`: A `MagicMock` instance.
-                - `stdout`: A mocked object where:
-                    - `channel.recv_exit_status` returns:
-                        - `0` for successful commands.
-                        - `-1` for commands that simulate a failure
-                          (e.g., commands containing the string `"fail"`).
-                    - `readlines` returns:
-                        - `["ok"]` for successful commands.
-                        - An empty list for failed commands.
-                - `stderr`: A mocked object where:
-                    - `readlines` returns:
-                        - `["error"]` for failed commands.
-                        - An empty list for successful commands.
-
-        2. `download_file` method:
-            - Simulates the behavior of downloading a file and returns:
-                - A binary string `b"ok\x00"` for files with the `.zip` extension.
-                - A binary string `b"ok"` for files with all other extensions.
-
-        3. `upload_file` method:
-            - Returns a `MagicMock` object to simulate file upload behavior without
-              actual execution.
-
-        4. `delete_file` method:
-            - Returns a `MagicMock` object to simulate file deletion behavior without
-              actual execution.
-
-        The patches are applied immediately using `patch.object` and are added to
-        `addCleanup` to ensure they are automatically stopped after the tests are
-        executed.
-
-        This method should be called during the test setup phase to mock the required
-        behaviors.
+        Patches:
+        1. SSHConnection.connect:
+            - Returns a mock connection with a fake exec_command method,
+            which returns a successful or unsuccessful result depending on the
+            command content.
+        2. SftpService.download_file:
+            - Returns b"ok\x00" for files with the .zip extension and
+            b"ok" for the rest.
+        3. SftpService.upload_file:
+            - Returns MagicMock, simulating file upload.
+        4. SftpService.delete_file:
+            - Returns MagicMock, simulating file deletion.
         """
 
         # Patch connection SSH method
@@ -327,7 +300,7 @@ class TestTowerCommon(TransactionCase):
 
             return connection_mock
 
-        connect_patch = patch.object(SSH, "_connect", ssh_connect)
+        connect_patch = patch.object(SSHConnection, "connect", new=ssh_connect)
         connect_patch.start()
         self.addCleanup(connect_patch.stop)
 
@@ -338,23 +311,25 @@ class TestTowerCommon(TransactionCase):
                 return b"ok\x00"
             return b"ok"
 
-        download_file_patch = patch.object(SSH, "download_file", ssh_download_file)
-        download_file_patch.start()
-        self.addCleanup(download_file_patch.stop)
+        download_patch = patch.object(
+            SftpService, "download_file", new=ssh_download_file
+        )
+        download_patch.start()
+        self.addCleanup(download_patch.stop)
 
         def ssh_upload_file(self, file, remote_path):
             return MagicMock()
 
-        upload_file_patch = patch.object(SSH, "upload_file", ssh_upload_file)
-        upload_file_patch.start()
-        self.addCleanup(upload_file_patch.stop)
+        upload_patch = patch.object(SftpService, "upload_file", new=ssh_upload_file)
+        upload_patch.start()
+        self.addCleanup(upload_patch.stop)
 
         def ssh_delete_file(self, remote_path):
             return MagicMock()
 
-        delete_file_patch = patch.object(SSH, "delete_file", ssh_delete_file)
-        delete_file_patch.start()
-        self.addCleanup(delete_file_patch.stop)
+        delete_patch = patch.object(SftpService, "delete_file", new=ssh_delete_file)
+        delete_patch.start()
+        self.addCleanup(delete_patch.stop)
 
     def add_to_group(self, user, group_refs):
         """Add user to groups
