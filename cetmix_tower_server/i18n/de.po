@@ -5,14 +5,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
-"Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
+"PO-Revision-Date: 2025-02-28 14:15+0000\n"
+"Last-Translator: AquaMCU <o.arnold@projektbox.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/"
+"tower-server-14-0-dev/cetmix_tower_server/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__source
@@ -30,6 +33,9 @@ msgid ""
 "        Basic actions for selected servers.\n"
 "    "
 msgstr ""
+"\n"
+"        Basisaktionen für die ausgewählten Server.\n"
+"    "
 
 #. module: cetmix_tower_server
 #: model:res.groups,comment:cetmix_tower_server.group_manager
@@ -38,6 +44,9 @@ msgid ""
 "        Create and modify selected servers.\n"
 "    "
 msgstr ""
+"\n"
+"        Erstelle und editiere den gewählten Server.\n"
+"    "
 
 #. module: cetmix_tower_server
 #: model:res.groups,comment:cetmix_tower_server.group_root
@@ -46,6 +55,9 @@ msgid ""
 "        Full control over all servers.\n"
 "    "
 msgstr ""
+"\n"
+"        Alle Rechte für alle Server.\n"
+"    "
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
@@ -64,61 +76,63 @@ msgstr ""
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
 msgstr ""
+"... speichere um das Ergebnis zu sehen oder klicke in die Zeile zum "
+"Editieren."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-days
 msgid "1 day"
-msgstr ""
+msgstr "1 Tag"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-hours
 msgid "1 hour"
-msgstr ""
+msgstr "1 Stunde"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-months
 msgid "1 month"
-msgstr ""
+msgstr "1 Monat"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-weeks
 msgid "1 week"
-msgstr ""
+msgstr "1 Woche"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-years
 msgid "1 year"
-msgstr ""
+msgstr "1 Jahr"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__10-minutes
 msgid "10 min"
-msgstr ""
+msgstr "10 Minuten"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__12-hours
 msgid "12 hour"
-msgstr ""
+msgstr "12 Stunden"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__2-hours
 msgid "2 hour"
-msgstr ""
+msgstr "2 Stunden"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__30-minutes
 msgid "30 min"
-msgstr ""
+msgstr "30 Minuten"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__6-hours
 msgid "6 hour"
-msgstr ""
+msgstr "6 Stunden"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "<b>AND</b>"
-msgstr ""
+msgstr "<b>UND</b>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -218,35 +232,35 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv4 Address:</strong>"
-msgstr ""
+msgstr "<strong>IPv4 Addresse:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv6 Address:</strong>"
-msgstr ""
+msgstr "<strong>IPv6 Addresse:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>Operating System:</strong>"
-msgstr ""
+msgstr "<strong>Betriebssystem:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 msgid "<strong>Partner:</strong>"
-msgstr ""
+msgstr "<strong>Partner:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 msgid "<strong>Servers:</strong>"
-msgstr ""
+msgstr "<strong>Server:</strong>"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_action
 msgid ""
 "A variable value cannot be assigned multiple times to the same plan line "
 "action!"
-msgstr ""
+msgstr "Ein Wert kann nicht mehrmals in der gleichen Planaktion genutzt werden!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_template
