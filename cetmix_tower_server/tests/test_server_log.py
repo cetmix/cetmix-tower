@@ -46,7 +46,7 @@ class TestTowerServerLog(TestTowerCommon):
                 "ip_v4_address": "localhost",
                 "ssh_username": "test2",
                 "ssh_password": "test2",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "user_ids": [(6, 0, [])],
                 "manager_ids": [(6, 0, [])],
             }
