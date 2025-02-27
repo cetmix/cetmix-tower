@@ -5,17 +5,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-02-28 14:15+0000\n"
+"Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/"
+"tower-server-14-0-dev/cetmix_tower_server/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__source
@@ -387,7 +388,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__active
 msgid "Active"
-msgstr "Attiva"
+msgstr "Attivo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_ids
@@ -2008,7 +2009,7 @@ msgstr "SO"
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
 msgid "OSs"
-msgstr "OS"
+msgstr "SO"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_delete_id
