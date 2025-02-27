@@ -97,7 +97,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         self.assertEqual(
             new_server.os_id, self.os_debian_10, "Server os must be Debian"
         )
-        self.assertEqual(new_server.ssh_port, "22", "Server SSH Port must be 22")
+        self.assertEqual(new_server.ssh_port, 22, "Server SSH Port must be 22")
         self.assertEqual(
             new_server.ssh_username, "admin", "Server SSH Username must be 'admin'"
         )
@@ -876,7 +876,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         record = self.ServerTemplate.create(
             {
                 "name": "Manager Access Test",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_auth_mode": "p",
                 "os_id": self.os_debian_10.id,
@@ -943,7 +943,7 @@ class TestTowerServerTemplate(TestTowerCommon):
             self.ServerTemplate.with_user(self.manager1).create(
                 {
                     "name": "Create Access Test - Should Fail",
-                    "ssh_port": "22",
+                    "ssh_port": 22,
                     "ssh_username": "admin",
                     "ssh_auth_mode": "p",
                     "os_id": self.os_debian_10.id,
@@ -955,7 +955,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         record = self.ServerTemplate.with_user(self.manager1).create(
             {
                 "name": "Create Access Test - Should Succeed",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_auth_mode": "p",
                 "os_id": self.os_debian_10.id,
@@ -978,7 +978,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         record = self.ServerTemplate.with_user(self.manager1).create(
             {
                 "name": "Delete Access Test - Own Record",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_auth_mode": "p",
                 "os_id": self.os_debian_10.id,
@@ -997,7 +997,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         record2 = self.ServerTemplate.with_user(self.manager2).create(
             {
                 "name": "Delete Access Test - Other's Record",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_auth_mode": "p",
                 "os_id": self.os_debian_10.id,
@@ -1020,7 +1020,7 @@ class TestTowerServerTemplate(TestTowerCommon):
         record3 = self.ServerTemplate.with_user(self.manager1).create(
             {
                 "name": "Delete Access Test - Removed Manager",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_auth_mode": "p",
                 "os_id": self.os_debian_10.id,
