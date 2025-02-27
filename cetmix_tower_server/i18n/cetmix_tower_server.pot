@@ -262,6 +262,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -1765,6 +1766,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__manager_ids
@@ -1775,6 +1777,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_access_role_mixin__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__manager_ids
@@ -3154,6 +3157,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__user_ids
@@ -3164,6 +3168,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_access_role_mixin__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__user_ids
@@ -3376,6 +3381,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "managers who can modify this record"
 msgstr ""
@@ -3430,6 +3436,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "users who can view this record"
 msgstr ""
