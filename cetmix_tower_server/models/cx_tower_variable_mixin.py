@@ -1,5 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import re
 import uuid
 
 from odoo import fields, models
@@ -170,10 +171,14 @@ class TowerVariableMixin(models.AbstractModel):
         Returns:
             dict(): `server` values of the `tower` variable.
         """
+        today = str(fields.Date.today())
+        now = str(fields.Datetime.now())
         values = {
             "uuid": uuid.uuid4(),
-            "today": str(fields.Date.today()),
-            "now": str(fields.Datetime.now()),
+            "today": today,
+            "now": now,
+            "today_underscore": re.sub(r"[-: .\/]", "_", today),
+            "now_underscore": re.sub(r"[-: .\/]", "_", now),
         }
         return values
 
