@@ -6,16 +6,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Language-Team: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2025-02-28 14:15+0000\n"
+"Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/"
+"tower-server-14-0-dev/cetmix_tower_git/it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"X-Generator: Poedit 2.3\n"
-"Last-Translator: \n"
-"Language: it\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.3-dev\n"
 
 #. module: cetmix_tower_git
 #: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
@@ -90,8 +91,8 @@ msgstr "Numero o link branch/PR/commit"
 msgid ""
 "Can contain English letters, digits and '_'. Leave blank to autogenerate"
 msgstr ""
-"Può contenere lettere inglesi, numeri e '_'. Lasciare vuoto per "
-"autogenerarlo"
+"Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la "
+"generazione automatica"
 
 #. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project
@@ -343,7 +344,7 @@ msgstr "Ha remote privati"
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head
 msgid "Head"
-msgstr "Head"
+msgstr "Intestazione"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_type
@@ -390,7 +391,7 @@ msgstr "Ultima modifica il"
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_uid
 msgid "Last Updated by"
-msgstr "Ultima modifica di"
+msgstr "Ultimo aggiornamento di"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__write_date
@@ -465,8 +466,8 @@ msgid ""
 "Reference. Can contain English letters, digits and '_'. Leave blank to "
 "autogenerate"
 msgstr ""
-"Riferimento. Può contenere lettere inglesi, numeri e '_'. Lasciare vuoto "
-"per autogenerazione"
+"Riferimento. Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per "
+"la generazione automatica"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_count
