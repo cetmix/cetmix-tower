@@ -265,7 +265,13 @@ class CxTowerServerTemplate(models.Model):
         context.pop("default_server_template_id", None)
 
         # Create server
-        server = self.env["cx.tower.server"].with_context(context).create(server_values)
+        server = (
+            self.env["cx.tower.server"]
+            .sudo()
+            .with_context(context)
+            .create(server_values)
+            .sudo()
+        )
 
         # Add variable values
         if variable_values:
@@ -273,7 +279,7 @@ class CxTowerServerTemplate(models.Model):
 
         # Create server logs
         logs = server.server_log_ids.filtered(lambda rec: rec.log_type == "file")
-        for log in logs:
+        for log in logs.sudo():
             log.file_id = log.file_template_id.create_file(
                 server=server, raise_if_exists=False
             ).id
