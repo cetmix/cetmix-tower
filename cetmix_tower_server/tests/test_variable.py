@@ -448,6 +448,26 @@ class TestTowerVariable(TestTowerCommon):
             str(mock_now.return_value),
             "System variable doesn't match result provided by tools",
         )
+        self.assertEqual(
+            variable_values["tower"]["tools"]["today_underscore"],
+            str(mock_today.return_value)
+            .replace("-", "_")
+            .replace(" ", "_")
+            .replace(":", "_")
+            .replace(".", "_")
+            .replace("/", "_"),
+            "System variable doesn't match result provided by tools",
+        )
+        self.assertEqual(
+            variable_values["tower"]["tools"]["now_underscore"],
+            str(mock_now.return_value)
+            .replace("-", "_")
+            .replace(":", "_")
+            .replace(" ", "_")
+            .replace(".", "_")
+            .replace("/", "_"),
+            "System variable doesn't match result provided by tools",
+        )
 
     def test_make_value_pythonic(self):
         """Test making variable values 'pythonic`"""
