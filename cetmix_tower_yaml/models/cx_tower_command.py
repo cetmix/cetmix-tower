@@ -21,6 +21,8 @@ class CxTowerCommand(models.Model):
             "file_template_id",
             "flight_plan_id",
             "code",
+            "server_status",
             "variable_ids",
+            "secret_ids",
         ]
         return res

@@ -20,5 +20,6 @@ class CxTowerFileTemplate(models.Model):
             "note",
             "code",
             "variable_ids",
+            "secret_ids",
         ]
         return res

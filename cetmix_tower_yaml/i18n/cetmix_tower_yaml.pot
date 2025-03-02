@@ -44,6 +44,14 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid ""
+"After import, please check and provide secret values if needed for the "
+"following secrets: %(secrets)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_command
 msgid "Cetmix Tower Command"
 msgstr ""
@@ -347,6 +355,11 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
+msgid "List of secrets present in the YAML file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_description
 msgid "Model"
 msgstr ""
@@ -421,6 +434,11 @@ msgstr ""
 msgid ""
 "Remove empty Many2one, Many2many and One2many field values from the exported"
 " YAML file."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
+msgid "Secret List"
 msgstr ""
 
 #. module: cetmix_tower_yaml
