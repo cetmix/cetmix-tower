@@ -30,6 +30,7 @@ code: |-
   # Let's go!
   USER odoo
 variable_ids: false
+secret_ids: false
 """  # noqa
 
         # Expected YAML content of the test file template
