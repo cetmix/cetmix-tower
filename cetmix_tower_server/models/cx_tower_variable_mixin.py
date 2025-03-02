@@ -171,8 +171,8 @@ class TowerVariableMixin(models.AbstractModel):
         Returns:
             dict(): `server` values of the `tower` variable.
         """
-        today = str(fields.Date.today())
-        now = str(fields.Datetime.now())
+        today = fields.Date.to_string(fields.Date.today())
+        now = fields.Datetime.to_string(fields.Datetime.now())
         values = {
             "uuid": uuid.uuid4(),
             "today": today,
