@@ -48,6 +48,10 @@
                     />
                 </group>
                 <field
+                    name="secret_list"
+                    attrs="{'invisible': [('secret_list', '=', False)]}"
+                />
+                <field
                     name="yaml_code"
                     widget="ace"
                     options="{'mode': 'yaml'}"

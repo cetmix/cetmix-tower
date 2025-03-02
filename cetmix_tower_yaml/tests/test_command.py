@@ -29,7 +29,9 @@ flight_plan_id: false
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
+server_status: false
 variable_ids: false
+secret_ids: false
 """
 
         # YAML content translated into Python dict
@@ -253,7 +255,9 @@ path: false
 file_template_id: my_custom_test_template
 flight_plan_id: false
 code: false
+server_status: false
 variable_ids: false
+secret_ids: false
 """
         # Add file template
         file_template = self.env["cx.tower.file.template"].create(
@@ -311,9 +315,12 @@ file_template_id:
   note: Hey!
   code: false
   variable_ids: false
+  secret_ids: false
 flight_plan_id: false
 code: false
+server_status: false
 variable_ids: false
+secret_ids: false
 """
         command_with_template.invalidate_cache(["yaml_code"])
         self.assertEqual(
