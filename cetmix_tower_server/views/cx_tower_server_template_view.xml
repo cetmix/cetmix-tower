@@ -186,6 +186,7 @@
                         <page name="variables" string="Configuration">
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
                                     <field name="variable_reference" invisible="1" />
                                     <field name="variable_id" />
                                     <field name="variable_type" invisible="1" />
