@@ -36,7 +36,18 @@ class CxTowerPlanLine(models.Model):
         related="command_id.flight_plan_id",
         readonly=True,
     )
-    command_id = fields.Many2one(comodel_name="cx.tower.command", required=True)
+    action = fields.Selection(
+        selection=lambda self: self.command_id._selection_action(),
+        compute="_compute_action",
+        required=True,
+        readonly=False,
+    )
+    command_id = fields.Many2one(
+        comodel_name="cx.tower.command",
+        required=True,
+        ondelete="restrict",
+        domain="[('action', '=', action)]",
+    )
     note = fields.Text(related="command_id.note", readonly=True)
     path = fields.Char(
         help="Location where command will be executed. Overrides command default path. "
@@ -59,7 +70,6 @@ class CxTowerPlanLine(models.Model):
         related="command_id.code",
         readonly=True,
     )
-    action = fields.Selection(related="command_id.action", readonly=True)
     tag_ids = fields.Many2many(related="command_id.tag_ids", readonly=True)
     access_level = fields.Selection(
         related="plan_id.access_level",
@@ -91,6 +101,16 @@ class CxTowerPlanLine(models.Model):
         readonly=True,
     )
 
+    @api.constrains("command_id")
+    def _check_command_id(self):
+        """
+        Check recursive plan line execution.
+        """
+        for line in self:
+            # Check recursive plan line execution
+            visited_plans = set()
+            self._check_recursive_plan(line.command_id, visited_plans)
+
     @api.depends("condition")
     def _compute_variable_ids(self):
         """
@@ -102,15 +122,24 @@ class CxTowerPlanLine(models.Model):
                 ["condition"], force_record=record
             )
 
-    @api.constrains("command_id")
-    def _check_command_id(self):
+    def _compute_action(self):
         """
-        Check recursive plan line execution. If the command refers to another plan,
-        make sure there are no recursive references.
+        Compute action based on command.
         """
-        for line in self:
-            visited_plans = set()
-            self._check_recursive_plan(line.command_id, visited_plans)
+        for record in self:
+            if record.action:
+                continue
+            if record.command_id:
+                record.action = record.command_id.action
+            else:
+                record.action = False
+
+    @api.onchange("action")
+    def _inverse_action(self):
+        """
+        Reset command when action changes.
+        """
+        self.command_id = False
 
     def _check_recursive_plan(self, command, visited_plans):
         """
