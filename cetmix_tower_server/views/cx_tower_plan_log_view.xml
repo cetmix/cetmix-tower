@@ -59,7 +59,9 @@
                                 decoration-danger="command_status not in [0, -20]"
                                 decoration-info="is_running == True"
                                 decoration-muted="command_status == -20"
+                                default_order="id asc"
                             >
+                            <field name="id" invisible="1" />
                             <field name="command_id" optional="show" />
                             <field name="command_action" optional="show" />
                             <field name="start_date" optional="hide" />
