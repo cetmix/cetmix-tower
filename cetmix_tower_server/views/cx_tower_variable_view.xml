@@ -40,11 +40,26 @@
                             <field name="option_ids" widget="one2many">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
+                                    <field name="reference" optional="hide" />
                                     <field name="name" />
-                                    <field name="reference" optional="show" />
                                     <field name="value_char" />
                                     <field name="access_level" optional="show" />
                                 </tree>
+                                <form>
+                                    <group>
+                                        <field name="name" />
+                                        <field
+                                            name="reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                    </group>
+                                </form>
                             </field>
                         </page>
                         <page string="Values">
@@ -56,13 +71,18 @@
                                     <field name="server_template_id" />
                                     <field name="plan_line_action_id" />
                                     <field name="value_char" />
+                                    <field name="option_id" />
                                 </tree>
                                 <form>
                                     <group>
                                         <field name="server_id" invisible="1" />
                                         <field name="is_global" />
                                         <field name="server_template_id" />
-                                        <field name="value_char" />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
                                     </group>
                                 </form>
                             </field>
