@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
-"PO-Revision-Date: 2025-02-28 14:15+0000\n"
-"Last-Translator: AquaMCU <o.arnold@projektbox.de>\n"
+"PO-Revision-Date: 2025-03-03 12:07+0000\n"
+"Last-Translator: CetmixWeblateBot <weblate@cetmix.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/"
 "tower-server-14-0-dev/cetmix_tower_server/de/>\n"
 "Language: de\n"
@@ -76,8 +76,7 @@ msgstr ""
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
 msgstr ""
-"... speichere um das Ergebnis zu sehen oder klicke in die Zeile zum "
-"Editieren."
+"... speichere um das Ergebnis zu sehen oder klicke in die Zeile zum Editieren"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-days
