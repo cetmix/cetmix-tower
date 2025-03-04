@@ -1,3 +1,5 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import base64
 
 from odoo import _, api, fields, models
@@ -30,6 +32,7 @@ class CxTowerYamlExportWiz(models.TransientModel):
         help="Remove empty Many2one, Many2many and One2many"
         " field values from the exported YAML file.",
     )
+    preview_code = fields.Boolean()
 
     @api.onchange("explode_child_records", "comment", "remove_empty_values")
     def onchange_explode_child_records(self):

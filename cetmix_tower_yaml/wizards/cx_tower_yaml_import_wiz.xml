@@ -6,10 +6,19 @@
         <field name="model">cx.tower.yaml.import.wiz</field>
         <field name="arch" type="xml">
             <form>
+                <group>
+                    <field name="model_name" invisible="1" />
+                    <field name="record_id" invisible="1" />
+                    <field
+                        name="model_description"
+                        attrs="{'invisible': [('model_name', '=', False)]}"
+                    />
+                    <field name="if_record_exists" />
+                </group>
                 <div
                     class="alert alert-warning"
                     role="alert"
-                    attrs="{'invisible': [('update_existing_record', '!=', False)]}"
+                    attrs="{'invisible': [('if_record_exists', '=', 'update')]}"
                     style="margin-bottom:0px;"
                 >
                 <p>
@@ -17,6 +26,7 @@
                         >Important:</strong> To maintain data consistency, the following model records will always be updated if they exist in Odoo:
                     <ul>
                         <li>Variables</li>
+                        <li>Key/Secrets</li>
                         <li>Tags</li>
                         <li>OSs</li>
                     </ul>
@@ -27,7 +37,7 @@
                 <div
                     class="alert alert-warning"
                     role="alert"
-                    attrs="{'invisible': [('update_existing_record', '=', False)]}"
+                    attrs="{'invisible': [('if_record_exists', '=', 'create')]}"
                     style="margin-bottom:0px;"
                 >
                     <p>
@@ -35,27 +45,25 @@
                         If any of those related records doesn't exist, it will be created automatically.
                     </p>
                 </div>
-                <group>
-                    <field name="model_name" invisible="1" />
-                    <field name="record_id" invisible="1" />
-                    <field
-                        name="model_description"
-                        attrs="{'invisible': [('model_name', '=', False)]}"
-                    />
-                    <field
-                        name="update_existing_record"
-                        attrs="{'invisible': ['|', ('record_id', '=', False),('record_id', '=', 0)]}"
-                    />
-                </group>
-                <field
-                    name="secret_list"
+                <div
+                    class="alert alert-info"
+                    role="alert"
                     attrs="{'invisible': [('secret_list', '=', False)]}"
-                />
+                >
+                    <field
+                        name="secret_list"
+                        attrs="{'invisible': [('secret_list', '=', False)]}"
+                    />
+                </div>
+                <group>
+                    <field name="preview_code" />
+                </group>
                 <field
                     name="yaml_code"
                     widget="ace"
                     options="{'mode': 'yaml'}"
                     force_save="1"
+                    attrs="{'invisible': [('preview_code', '=', False)]}"
                 />
                 <footer>
                     <button
@@ -64,7 +72,7 @@
                         name="action_import_yaml"
                         class="oe_highlight"
                         confirm="This will overwrite the existing record. Proceed?"
-                        attrs="{'invisible': [('record_id', '!=', False), ('update_existing_record', '=', False)]}"
+                        attrs="{'invisible': [('record_id', '!=', False), ('if_record_exists', '=', 'create')]}"
                     />
                     <button
                         string="Open Existing Record"
@@ -79,7 +87,7 @@
                         name="action_import_yaml"
                         class="oe_highlight"
                         confirm="This will create a new record. Proceed?"
-                        attrs="{'invisible': ['|', ('record_id', '=', False), ('update_existing_record', '=', True)]}"
+                        attrs="{'invisible': ['|', ('record_id', '=', False), ('if_record_exists', '=', 'update')]}"
                     />
                     <button string="Close" special="cancel" />
                 </footer>
