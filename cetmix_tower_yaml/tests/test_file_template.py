@@ -24,7 +24,7 @@ note: |-
   Used to build Odoo addons image.
   Depends on Odoo core image.
 code: |-
-  FROM odoo:{{ odoo_version }}
+  FROM odoo:{{ odoo_test_version }}
   # Install git-aggregator and tools for requirements generation
   RUN pip3 install --upgrade pip && pip install manifestoo setuptools-odoo git-aggregator
   # Let's go!
@@ -48,7 +48,7 @@ note: |-
   Used to build Odoo addons image.
   Depends on Odoo core image.
 code: |-
-  FROM odoo:{{ odoo_version }}
+  FROM odoo:{{ odoo_test_version }}
   # Install git-aggregator and tools for requirements generation
   RUN pip3 install --upgrade pip && pip install manifestoo setuptools-odoo git-aggregator
   # Let's go!
@@ -76,7 +76,7 @@ code: |-
                 "source": "tower",
                 "keep_when_deleted": True,
                 "file_type": "text",
-                "code": """FROM odoo:{{ odoo_version }}
+                "code": """FROM odoo:{{ odoo_test_version }}
 # Install git-aggregator and tools for requirements generation
 RUN pip3 install --upgrade pip && pip install manifestoo setuptools-odoo git-aggregator
 # Let's go!
@@ -167,7 +167,7 @@ Depends on Odoo core image.""",
                 "source": "tower",
                 "keep_when_deleted": True,
                 "file_type": "text",
-                "code": """FROM odoo:{{ odoo_version }}
+                "code": """FROM odoo:{{ odoo_test_version }}
 # Install git-aggregator and tools for requirements generation
 RUN pip3 install --upgrade pip && pip install manifestoo setuptools-odoo git-aggregator
 # Let's go!
@@ -317,7 +317,7 @@ Depends on Odoo core image.""",
         yaml_with_non_supported_keys = """cetmix_tower_model: file_template
 cetmix_tower_yaml_version: 1
 code: |-
-  FROM odoo:{{ odoo_version }}
+  FROM odoo:{{ odoo_test_version }}
   # Install git-aggregator and tools for requirements generation
   RUN pip3 install --upgrade pip && pip install manifestoo setuptools-odoo git-aggregator
   # Let's go!
