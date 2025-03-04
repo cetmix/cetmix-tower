@@ -215,6 +215,12 @@ msgid "<log is empty>"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
+msgid ""
+"<span attrs=\"{'invisible': [('action', '!=', 'ssh_command')]}\">sudo</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv4 Address:</strong>"
 msgstr ""
@@ -2614,6 +2620,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__sequence
 msgid "Sequence"
 msgstr ""
 
