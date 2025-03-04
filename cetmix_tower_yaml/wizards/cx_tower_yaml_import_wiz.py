@@ -16,16 +16,21 @@ class CxTowerYamlImportWiz(models.TransientModel):
         string="Model", readonly=True, compute="_compute_model_description"
     )
     record_id = fields.Integer(readonly=True, help="Record ID to update")
-    update_existing_record = fields.Boolean(
-        default=True,
-        help="If enabled, existing records will be updated with the new data."
-        " Otherwise, new records will be created.",
+    if_record_exists = fields.Selection(
+        selection=[
+            ("update", "Update existing record"),
+            ("create", "Create a new record"),
+        ],
+        default="update",
+        required=True,
+        help="What to do if record with the same reference already exists",
     )
     secret_list = fields.Char(
         readonly=True,
         help="List of secrets present in the YAML file",
         compute="_compute_secret_list",
     )
+    preview_code = fields.Boolean()
 
     @api.depends("model_name")
     def _compute_model_description(self):
@@ -59,14 +64,14 @@ class CxTowerYamlImportWiz(models.TransientModel):
         if (
             self.record_id
             and yaml_data.get("reference")
-            and self.update_existing_record
+            and self.if_record_exists == "update"
         ):
             record = self.env[self.model_name].browse(self.record_id)
             record.update({"yaml_code": self.yaml_code})
         else:
             model = self.env[self.model_name]
             record_values = model.with_context(
-                force_create_related_record=True
+                force_create_related_record=(self.if_record_exists == "create")
             )._post_process_yaml_dict_values(yaml_data)
             record = model.create(record_values)
 

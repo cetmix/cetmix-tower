@@ -37,7 +37,7 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
                 "yaml_code": decoded_file,
                 "model_name": model_name,
                 "record_id": record_id,
-                "update_existing_record": bool(record_id),
+                "if_record_exists": "update" if record_id else "create",
             }
         )
 
