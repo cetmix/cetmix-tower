@@ -156,12 +156,18 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__comment
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "Comment to be added to the beginning of exported YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Create New Record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__create
+msgid "Create a new record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -286,10 +292,8 @@ msgid "ID"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__update_existing_record
-msgid ""
-"If enabled, existing records will be updated with the new data. Otherwise, "
-"new records will be created."
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
+msgid "If Record Exists"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -314,6 +318,11 @@ msgstr ""
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "Invalid model specified in the YAML file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Key/Secrets"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -410,6 +419,12 @@ msgid "Open Existing Record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__preview_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
+msgid "Preview Code"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
 msgid "Process"
 msgstr ""
@@ -464,9 +479,13 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__update_existing_record
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Update Existing Record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__update
+msgid "Update existing record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -479,6 +498,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Variables"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
+msgid "What to do if record with the same reference already exists"
 msgstr ""
 
 #. module: cetmix_tower_yaml
