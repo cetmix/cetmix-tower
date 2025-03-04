@@ -6,15 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
-"PO-Revision-Date: 2025-03-03 12:07+0000\n"
-"Last-Translator: CetmixWeblateBot <weblate@cetmix.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/"
-"tower-server-14-0-dev/cetmix_tower_server/de/>\n"
-"Language: de\n"
+"PO-Revision-Date: 2025-03-03 14:10+0000\n"
+"Last-Translator: Bole <bole@dajmi5.com>\n"
+"Language-Team: Croatian <https://hosted.weblate.org/projects/"
+"tower-server-14-0-dev/cetmix_tower_server/hr/>\n"
+"Language: hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.10.3-dev\n"
 
 #. module: cetmix_tower_server
@@ -25,6 +26,10 @@ msgid ""
 "            - Server: file is pulled from server to Tower.\n"
 "        "
 msgstr ""
+"\n"
+"            - Tower:  datoteka se kopira sa Tower na server.\n"
+"            - Server: datoteka se povlači sa servera na Tower.\n"
+"        "
 
 #. module: cetmix_tower_server
 #: model:res.groups,comment:cetmix_tower_server.group_user
@@ -34,7 +39,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"        Basisaktionen für die ausgewählten Server.\n"
+"        Osnovne radnje za odabrane servere.\n"
 "    "
 
 #. module: cetmix_tower_server
@@ -45,7 +50,7 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"        Erstelle und editiere den gewählten Server.\n"
+"        Kreiraj i uredi odabrane servere.\n"
 "    "
 
 #. module: cetmix_tower_server
@@ -56,82 +61,83 @@ msgid ""
 "    "
 msgstr ""
 "\n"
-"        Alle Rechte für alle Server.\n"
+"        Puna kontrola nad svim serverima.\n"
 "    "
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #, python-format
 msgid "  - Empty values for variables: %(variables)s"
-msgstr ""
+msgstr "  - Isprazni vrijednosti za varijable: %(variables)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #, python-format
 msgid "  - Missing variables: %(variables)s"
-msgstr ""
+msgstr "  - Nedostaju variable: %(variables)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
 msgstr ""
-"... speichere um das Ergebnis zu sehen oder klicke in die Zeile zum Editieren"
+"... spremite zapis da biste vidjeli konačni izraz ili kliknite na liniju za "
+"uređivanje"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-days
 msgid "1 day"
-msgstr "1 Tag"
+msgstr "1 dan"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-hours
 msgid "1 hour"
-msgstr "1 Stunde"
+msgstr "1 sat"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-months
 msgid "1 month"
-msgstr "1 Monat"
+msgstr "1 mjesec"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-weeks
 msgid "1 week"
-msgstr "1 Woche"
+msgstr "1 tjedan"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__1-years
 msgid "1 year"
-msgstr "1 Jahr"
+msgstr "1 godina"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__10-minutes
 msgid "10 min"
-msgstr "10 Minuten"
+msgstr "10 min"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__12-hours
 msgid "12 hour"
-msgstr "12 Stunden"
+msgstr "12 sati"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__2-hours
 msgid "2 hour"
-msgstr "2 Stunden"
+msgstr "2 sata"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__30-minutes
 msgid "30 min"
-msgstr "30 Minuten"
+msgstr "30 min"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__auto_sync_interval__6-hours
 msgid "6 hour"
-msgstr "6 Stunden"
+msgstr "6 sati"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "<b>AND</b>"
-msgstr "<b>UND</b>"
+msgstr "<b>I</b>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -142,6 +148,13 @@ msgid ""
 "                                    logged as an error message because exit code !=0\"}\n"
 "                                </code>"
 msgstr ""
+"<code style=\"white-space: pre-wrap\">\n"
+"                                    x = 2*10\n"
+"                                    COMMAND_RESULT = {\"exit_code\": x, "
+"\"message\": \"Ovo će biti \n"
+"                                    zapisano kao poruka greške jer je kod "
+"izlaza !=0\"}\n"
+"                                </code>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -149,6 +162,8 @@ msgid ""
 "<code>UserError</code>: Warning Exception to use with <code>\n"
 "                                        raise</code>"
 msgstr ""
+"<code>UserError</code>: Poruka greške za korištenje sa <code>\n"
+"                                        raise</code>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -156,6 +171,8 @@ msgid ""
 "<code>env</code>: Odoo Environment on which the action is\n"
 "                                        triggered"
 msgstr ""
+"<code>env</code>: Odoo Environment na kojem se pokreće\n"
+"                                        akcija"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -164,6 +181,11 @@ msgid ""
 "                                         Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br/>\n"
 "                                          'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
 msgstr ""
+"<code>hashlib</code>: Python 'hashlib' library.\n"
+"                                         Dostupne metode: 'sha1', 'sha224', "
+"'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br/>\n"
+"                                          'sha3_384', 'sha3_512', "
+"'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -176,7 +198,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "<code>json</code>: Python 'json' library. Available methods: 'dumps'"
-msgstr ""
+msgstr "<code>json</code>: Python 'json' library. Dostupne metode: 'dumps'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -184,11 +206,13 @@ msgid ""
 "<code>requests</code>: Python 'requests' library. Available methods: 'post',"
 " 'get', 'delete', 'request'"
 msgstr ""
+"<code>requests</code>: Python 'requests' library. Dostupne metode: 'post', "
+"'get', 'delete', 'request'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "<code>server</code>: Server on which the command is run"
-msgstr ""
+msgstr "<code>server</code>: Server na kojem se pokreće naredba"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -205,7 +229,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "<code>user</code>: Current Odoo user"
-msgstr ""
+msgstr "<code>user</code>: Trenutni Odoo korisnik"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
@@ -214,6 +238,8 @@ msgid ""
 "<i class=\"fa fa-ellipsis-v\" aria-label=\"Selection\" role=\"img\" "
 "title=\"Selection\"/>"
 msgstr ""
+"<i class=\"fa fa-ellipsis-v\" aria-label=\"Odabir\" role=\"img\" title="
+"\"Odabir\"/>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
@@ -226,40 +252,41 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server_log.py:0
 #, python-format
 msgid "<log is empty>"
-msgstr ""
+msgstr "<log je prazan>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv4 Address:</strong>"
-msgstr "<strong>IPv4 Addresse:</strong>"
+msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv6 Address:</strong>"
-msgstr "<strong>IPv6 Addresse:</strong>"
+msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>Operating System:</strong>"
-msgstr "<strong>Betriebssystem:</strong>"
+msgstr "<strong>Operativni sistem:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 msgid "<strong>Partner:</strong>"
-msgstr "<strong>Partner:</strong>"
+msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 msgid "<strong>Servers:</strong>"
-msgstr "<strong>Server:</strong>"
+msgstr "<strong>Serveri:</strong>"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_action
 msgid ""
 "A variable value cannot be assigned multiple times to the same plan line "
 "action!"
-msgstr "Ein Wert kann nicht mehrmals in der gleichen Planaktion genutzt werden!"
+msgstr ""
+"Vrijednost varijable nije moguće dodijeliti više puta na jednu akciju plana!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_template
@@ -267,11 +294,13 @@ msgid ""
 "A variable value cannot be assigned multiple times to the same server "
 "template!"
 msgstr ""
+"Vrijednost varijable nije moguće dodijeliti više puta na jedan predložak "
+"servera!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_server
 msgid "A variable value cannot be assigned multiple times to the same server!"
-msgstr ""
+msgstr "Vrijednost varijable nije moguće dodijeliti više puta na isti server!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -281,7 +310,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Access"
-msgstr ""
+msgstr "Pristup"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__access_level
@@ -297,24 +326,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__access_level
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
 msgid "Access Level"
-msgstr ""
+msgstr "Razina pristupa"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__access_level_warn_msg
 msgid "Access Level Warn Msg"
-msgstr ""
+msgstr "Poruka upozorenja za Razinu pristupa"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_option.py:0
 #, python-format
 msgid "Access level is not defined for '%(option)s'"
-msgstr ""
+msgstr "Razina pristupa nije definirana za '%(option)s'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 #, python-format
 msgid "Access level is not defined for '%(variable)s'"
-msgstr ""
+msgstr "Razina pristupa nije definirana za '%(variable)s'"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__action
@@ -325,19 +354,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Action"
-msgstr ""
+msgstr "Akcija"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_needaction
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_needaction
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Potrebna radnja"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__action_ids
 msgid "Actions"
-msgstr ""
+msgstr "Akcije"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__action_ids
@@ -345,6 +374,8 @@ msgid ""
 "Actions trigger based on command result. If empty next command will be "
 "executed"
 msgstr ""
+"Pokretač akcije baziran na rezultatu naredbe. Ako je prazno sljedeća naredba "
+"će biti izvršena"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__active
@@ -360,71 +391,71 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__active
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_exception_decoration
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_exception_decoration
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Dekoracija izuzetka aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_state
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_state
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Status aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_type_icon
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_type_icon
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Ikona tipa aktivnosti"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.actions.act_window,help:cetmix_tower_server.cx_tower_file_action
 msgid "Add a new file"
-msgstr ""
+msgstr "Dodaj novu datoteku"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.actions.act_window,help:cetmix_tower_server.cx_tower_file_template_action
 msgid "Add a new file template"
-msgstr ""
+msgstr "Dodaj novi predložak"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Allow Parallel Run"
-msgstr ""
+msgstr "Dozvoli paralelno pokretanje"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "An error occurred: %(error)s"
-msgstr ""
+msgstr "Došlo je do greške: %(error)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "Another instance of the command is already running"
-msgstr ""
+msgstr "Druga instanca naredbe je već pokrenuta"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__applicability
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__applicability
 msgid "Applicability"
-msgstr ""
+msgstr "Primjenjivost"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -437,35 +468,35 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "Are you sure?"
-msgstr ""
+msgstr "Jeste li sigurni?"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_attachment_count
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_attachment_count
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Broj priloga"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__auto_sync
 msgid "Auto Sync"
-msgstr ""
+msgstr "Auto sinkronizacija"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__auto_sync_interval
 msgid "Auto Sync Interval"
-msgstr ""
+msgstr "Interval auto sinkronizacije"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Binary"
-msgstr ""
+msgstr "Binarno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__reference
@@ -492,13 +523,15 @@ msgstr ""
 msgid ""
 "Can contain English letters, digits and '_'. Leave blank to autogenerate"
 msgstr ""
+"Može sadržavati slova engleske abecede, brojke i ':'. Ostavite prazno za "
+"automatsko generiranje"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Odustani"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
@@ -507,6 +540,9 @@ msgid ""
 "Cannot change 'global' status for '%(var)s' with value '%(val)s'.\n"
 "Try to assigns it to a record instead."
 msgstr ""
+"Nije moguće promijeniti status 'global' za '%(var)s' sa vrijednošću "
+"'%(val)s'.\n"
+"Pokušajte ju dodijeliti nekom zapisu."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/tests/test_variable.py:0
@@ -515,6 +551,8 @@ msgid ""
 "Cannot change 'global' status for 'meme' with value 'Pepe'.\n"
 "Try to assigns it to a record instead."
 msgstr ""
+"Nije moguće promijeniti 'global' status za 'meme' sa vrijednosti 'Pepe'.\n"
+"Pokušajte ju dodijeliti nekom zapisu."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
@@ -523,6 +561,8 @@ msgid ""
 "Cannot download %(f)s from server: Binary content is not supported for "
 "'Text' file type"
 msgstr ""
+"Nije moguće preuzeti %(f)s sa servera: Binarni sadržaj nije podržan za "
+"datoteke tipa 'Tekst'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
@@ -531,12 +571,14 @@ msgid ""
 "Cannot execute command\n"
 ". CODE: %(status)s. RESULT: %(res)s. ERROR: %(err)s"
 msgstr ""
+"Nije moguće izvršiti naredbu\n"
+". CODE: %(status)s. RESULT: %(res)s. ERROR: %(err)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Cannot pull %(f)s from server: %(err)s"
-msgstr ""
+msgstr "Nije moguće preuzeti %(f)s sa servera: %(err)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
@@ -545,64 +587,66 @@ msgid ""
 "Cannot remove test file using command.\n"
 " CODE: %(status)s. ERROR: %(err)s"
 msgstr ""
+"Nije moguće ukloniti datoteku korištenjem naredbe.\n"
+" CODE: %(status)s. ERROR: %(err)s"
 
 #. module: cetmix_tower_server
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_root
 msgid "Cetmix Tower"
-msgstr ""
+msgstr "Cetmix Tower"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command
 msgid "Cetmix Tower Command"
-msgstr ""
+msgstr "Cetmix Tower Naredba"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command_log
 msgid "Cetmix Tower Command Log"
-msgstr ""
+msgstr "Cetmix Tower Log Naredbi"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_command_execute_wizard_action
 msgid "Cetmix Tower Execute Command"
-msgstr ""
+msgstr "Cetmix Tower Izvrši naredbu"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.ir_cron_auto_pull_files_from_server_ir_actions_server
 #: model:ir.cron,cron_name:cetmix_tower_server.ir_cron_auto_pull_files_from_server
 #: model:ir.cron,name:cetmix_tower_server.ir_cron_auto_pull_files_from_server
 msgid "Cetmix Tower File Management: Auto pull files from server"
-msgstr ""
+msgstr "Cetmix Tower Upravljanje datotekama: Automatski povuci sa servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan
 msgid "Cetmix Tower Flight Plan"
-msgstr ""
+msgstr "Cetmix Tower Plan leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_line
 msgid "Cetmix Tower Flight Plan Line"
-msgstr ""
+msgstr "Cetmix Tower Stavka plana leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_line_action
 msgid "Cetmix Tower Flight Plan Line Action"
-msgstr ""
+msgstr "Cetmix Tower Akcija stavke plana leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_log
 msgid "Cetmix Tower Flight Plan Log"
-msgstr ""
+msgstr "Cetmix Tower Log plana leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_os
 msgid "Cetmix Tower Operating System"
-msgstr ""
+msgstr "Cetmix Tower Operativni sustav"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_plan_execute_wizard_action
 msgid "Cetmix Tower Run Flight Plan"
-msgstr ""
+msgstr "Cetmix Tower pokreni Plan leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server
@@ -617,27 +661,27 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server_template
 msgid "Cetmix Tower Server Template"
-msgstr ""
+msgstr "Cetmix Tower Predložak servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_tag
 msgid "Cetmix Tower Tag"
-msgstr ""
+msgstr "Cetmix Tower Oznaka"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable
 msgid "Cetmix Tower Variable"
-msgstr ""
+msgstr "Cetix Tower Varijabla"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable_option
 msgid "Cetmix Tower Variable Options"
-msgstr ""
+msgstr "Cetmix Tower Opcija varijable"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable_value
 msgid "Cetmix Tower Variable Values"
-msgstr ""
+msgstr "Cetmix Tower Vrijednosti varijabli"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_access_mixin
@@ -652,7 +696,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_key
 msgid "Cetmix Tower private key storage"
-msgstr ""
+msgstr "Cetmix Tower pohrana privatnih ključeva"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_reference_mixin
@@ -667,7 +711,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Child plans"
-msgstr ""
+msgstr "Podređeni planovi"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__code
@@ -681,12 +725,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "Code"
-msgstr ""
+msgstr "Kod"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__code_on_server
 msgid "Code On Server"
-msgstr ""
+msgstr "Kod na serveru"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__color
@@ -696,7 +740,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__color
 msgid "Color"
-msgstr ""
+msgstr "Boja"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_command
@@ -707,23 +751,23 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Command"
-msgstr ""
+msgstr "Naredba"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Command '%(cmd)s' is not compatible with the server '%(server)s'."
-msgstr ""
+msgstr "Naredba '%(cmd)s' nije kompatabilna sa serverom '%(server)s'."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__code
 msgid "Command Code"
-msgstr ""
+msgstr "Kod naredbe"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__command_domain
 msgid "Command Domain"
-msgstr ""
+msgstr "Domena naredbe"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
@@ -733,17 +777,17 @@ msgstr ""
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_log
 #, python-format
 msgid "Command Log"
-msgstr ""
+msgstr "Log naredbe"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Command Logs"
-msgstr ""
+msgstr "Logovi naredbi"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__is_running
 msgid "Command is being executed right now"
-msgstr ""
+msgstr "Naredba se upravo izvršava"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__command_id
@@ -751,6 +795,8 @@ msgid ""
 "Command that will be executed to get the log data.\n"
 "Be careful with commands that don't support parallel execution!"
 msgstr ""
+"Naredba koja će biti izvršena za dohvaćanje podataka loga.\n"
+"Budite oprezni sa naredbama koje ne podržavaju paralelno izvršavanje!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__line_ids
@@ -758,14 +804,14 @@ msgstr ""
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_root
 msgid "Commands"
-msgstr ""
+msgstr "Naredbe"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__condition
 msgid "Condition"
-msgstr ""
+msgstr "Uvijet"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__condition
@@ -773,35 +819,37 @@ msgid ""
 "Conditions under which this Flight Plan Line will be launched. e.g.: {{ "
 "odoo_version}} == '14.0'"
 msgstr ""
+"Uvijeti pod kojima će se ovaj PlanLeta pokrenuti, nrp: {{ odoo_version }} == "
+"'14.0'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Configuration"
-msgstr ""
+msgstr "Konfiguracija"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__line_ids
 msgid "Configuration Variables"
-msgstr ""
+msgstr "Varijable konfiguracije"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "Confirm"
-msgstr ""
+msgstr "Potvrdi"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Connection failed."
-msgstr ""
+msgstr "Uspostava veze nije uspjela."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Connection successful."
-msgstr ""
+msgstr "Veza uspostavljena uspješno."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
@@ -810,6 +858,8 @@ msgid ""
 "Connection test passed! \n"
 "%(res)s"
 msgstr ""
+"Test veze prošao! \n"
+"%(res)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
@@ -817,17 +867,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 #, python-format
 msgid "Create Server"
-msgstr ""
+msgstr "Kreiraj server"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server_template_create_wizard
 msgid "Create new server from template"
-msgstr ""
+msgstr "Kreiraj novi server iz predloška"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server_template_create_wizard_line
 msgid "Create new server from template variables"
-msgstr ""
+msgstr "Kreiraj novi server iz varijabli predloška"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__create_uid
@@ -852,7 +902,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Kreirao"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__create_date
@@ -877,60 +927,60 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Kreirano"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__custom_exit_code
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__custom_exit_code
 msgid "Custom Exit Code"
-msgstr ""
+msgstr "Prilagođeni kod izlaza"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Custom label. Can be used for search/tracking"
-msgstr ""
+msgstr "Prilagođeni natpis. Može se koristiti za pretraživanje/praćenje"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_file
 msgid "Cx Tower File"
-msgstr ""
+msgstr "Cx Tower datoteka"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_file_template
 msgid "Cx Tower File Template"
-msgstr ""
+msgstr "Cx Tower Predložak datoteke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__sync_date_last
 msgid "Date and time of the latest successful synchronisation"
-msgstr ""
+msgstr "Datum i vrijeme posljednje uspješne sinkronizacije"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__sync_date_next
 msgid "Date and time of the next synchronisation"
-msgstr ""
+msgstr "Datum i vrijeme sljedeće sinkronizacije"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__path
 msgid "Default Path"
-msgstr ""
+msgstr "Zadana putanja"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__file_name
 msgid "Default full file name with file type for example: test.txt"
-msgstr ""
+msgstr "Zadani puni naziv datoteke sa vrstom datoteke: npr: test.txt"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.cetmix_tower_file_delete_action
 msgid "Delete from server"
-msgstr ""
+msgstr "Obriši sa servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__server_dir
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__server_dir
 msgid "Directory on server"
-msgstr ""
+msgstr "Direktorij na serveru"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__display_name
@@ -963,30 +1013,30 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Naziv za prikaz"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.cetmix_tower_file_download_action
 msgid "Download"
-msgstr ""
+msgstr "Preuzmi"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Due to security restrictions you are not allowed to delete %(fp)s"
-msgstr ""
+msgstr "Zbog sigurnosnih ograničenja nije vam dozvoljeno brisanje: %(fp)s"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__duration
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__duration
 msgid "Duration"
-msgstr ""
+msgstr "Trajanje"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__duration_current
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__duration_current
 msgid "Duration, sec"
-msgstr ""
+msgstr "Trajanje, sek"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -994,11 +1044,13 @@ msgid ""
 "Each python code command returns the COMMAND_RESULT value\n"
 "                                        which is a dictionary."
 msgstr ""
+"Svaka naredba tipa python code vraća COMMAND_RESULT vrijednost\n"
+"                                        koja je dictionary."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__server_dir
 msgid "Eg '/home/user' or '/var/log'"
-msgstr ""
+msgstr "Npr. '/home/user' ili '/var/log'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -1006,99 +1058,103 @@ msgid ""
 "Enter Python code here. Help about Python expression is available in the "
 "help tab of this document."
 msgstr ""
+"Unesite python kod ovdje. Pomoć oko Python izraza je dostupna na kartici "
+"pomoći ovog dokumenta."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_error
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Error"
-msgstr ""
+msgstr "Greška"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Error loading a private key. Unsupported key format or incorrect key."
 msgstr ""
+"Greška pri učitavanju privatnog ključa. Nepodržani format ključa ili "
+"neispravan ključ."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "Execute Command"
-msgstr ""
+msgstr "Izvrši naredbu"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command_execute_wizard
 msgid "Execute Command in Wizard"
-msgstr ""
+msgstr "Izvrši naredbu u Čarobnjaku"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_execute_wizard
 msgid "Execute Flight Plan in Wizard"
-msgstr ""
+msgstr "Izvrši Plan leta u Čarobnjaku"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "Execute Result"
-msgstr ""
+msgstr "Izvrši rezultat"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Execute flight plan error"
-msgstr ""
+msgstr "Greška izvršavanja plana leta"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Execute flight plan error %(err)s"
-msgstr ""
+msgstr "Greška izvršavanja plana leta: %(err)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Execute python code error: %(err)s"
-msgstr ""
+msgstr "Greška izvršavanja Python coda: %(err)s"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__path
 msgid "Execution Path"
-msgstr ""
+msgstr "Putanja izvršavanja"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_status
 msgid "Exit Code"
-msgstr ""
+msgstr "Izlazni kod"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan__on_error_action__e
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_line_action__action__e
 msgid "Exit with command exit code"
-msgstr ""
+msgstr "Izađi iz naredbe sa izlaznim kodom naredbe"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan__on_error_action__ec
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_line_action__action__ec
 msgid "Exit with custom exit code"
-msgstr ""
+msgstr "Izađi sa prilagođenim izlaznim kodom"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
 msgid "Failed"
-msgstr ""
+msgstr "Neuspješno"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Failed to connect after %(attempts)s attempts. Error: %(err)s"
-msgstr ""
+msgstr "Neuspješno povezivanje nakon %(attempts)s pokušaja. Greška: %(err)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Failed to connect. Error: %(err)s"
-msgstr ""
+msgstr "Neuspješno povezivanje. Greška: %(err)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
@@ -1106,14 +1162,14 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Failure"
-msgstr ""
+msgstr "Neuspjeh"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__file
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_id
 msgid "File"
-msgstr ""
+msgstr "Datoteka"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
@@ -1122,18 +1178,20 @@ msgid ""
 "File %(f)s is not 'tower' type. This operation is supported for 'tower' "
 "files only"
 msgstr ""
+"Datoteka %(f)s nije tipa 'tower'. Ova operacija je podržana samo za 'tower' "
+"tip datoteka"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid ""
 "File %(f)s shouldn't have the '%(src)s' source  for the '%(act)s' action"
-msgstr ""
+msgstr "Datoteka %(f)s nebi trebala imati '%(src)s' izvor   za '%(act)s' akciju"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_name
 msgid "File Name"
-msgstr ""
+msgstr "Naziv datoteke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__file_template_id
@@ -1141,7 +1199,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_template_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "File Template"
-msgstr ""
+msgstr "Predložak datoteke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__file_type
@@ -1149,96 +1207,96 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "File Type"
-msgstr ""
+msgstr "Tip datoteke"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "File already exists"
-msgstr ""
+msgstr "Datoteka već postoji"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file_template.py:0
 #, python-format
 msgid "File already exists on server."
-msgstr ""
+msgstr "Datoteka već postoji na serveru."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__code
 msgid "File content"
-msgstr ""
+msgstr "Sadržaj datoteke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__rendered_code
 msgid "File content with variables rendered"
-msgstr ""
+msgstr "Sadržaj datoteke sa vrijednostima varijabli"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "File created and uploaded successfully"
-msgstr ""
+msgstr "Datoteka uspješno kreirana i prebačena na server"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "File deleted!"
-msgstr ""
+msgstr "Datoteka obrisana!"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "File downloaded!"
-msgstr ""
+msgstr "Datoteka preuzeta!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "File from template"
-msgstr ""
+msgstr "Datoteka iz predloška"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "File name"
-msgstr ""
+msgstr "Naziv datoteke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__name
 msgid "File name WITHOUT path. Eg 'test.txt'"
-msgstr ""
+msgstr "Naziv datoteke BEZ putanje. Npr: 'test.txt'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "File source cannot be determined: '%(source)s'"
-msgstr ""
+msgstr "Izvor datoteke nije moguće odrediti: '%(source)s'"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__file_id
 msgid "File that will be executed to get the log data"
-msgstr ""
+msgstr "Datoteka koja će biti izvršena za dohvaćanje log podataka"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "File uploaded!"
-msgstr ""
+msgstr "Datoteka poslana na server!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "File will be disconnected from template. Continue?"
-msgstr ""
+msgstr "Datoteka će raskinuti vezu sa predloškom. Nastaviti?"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__keep_when_deleted
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__keep_when_deleted
 msgid "File will be kept on server when deleted in Tower"
-msgstr ""
+msgstr "Datoteka će biti ostavljena na serveru i nakon brisanja na Toweru"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_count
 msgid "File(s)"
-msgstr ""
+msgstr "Dototeka(e)"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_file_action
@@ -1248,31 +1306,31 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Files"
-msgstr ""
+msgstr "Datoteke"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Files deleted!"
-msgstr ""
+msgstr "Datoteke obrisane!"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Files downloaded!"
-msgstr ""
+msgstr "Datoteke preuzete!"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid "Files uploaded!"
-msgstr ""
+msgstr "Datoteke poslane na server!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Finish date"
-msgstr ""
+msgstr "Datum završetka"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__finish_date
@@ -1280,7 +1338,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
 msgid "Finished"
-msgstr ""
+msgstr "Završeno"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan
@@ -1294,68 +1352,68 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Flight Plan"
-msgstr ""
+msgstr "Plan leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_line_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Flight Plan Lines"
-msgstr ""
+msgstr "Stavke Plana leta"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan_log
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan_log
 msgid "Flight Plan Log"
-msgstr ""
+msgstr "Log Plana leta"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Flight Plan Logs"
-msgstr ""
+msgstr "Logovi Plana leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__plan_line_executed_id
 msgid "Flight Plan line that is being currently executed"
-msgstr ""
+msgstr "Plan leta koji se trenutno izvršava"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
-msgstr ""
+msgstr "Planovi leta"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
 msgid "Flight plan '%(plan)s' is not compatible with the server '%(server)s'."
-msgstr ""
+msgstr "Plan leta '%(plan)s' nije kompatabilan sa serverom '%(server)s'."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_follower_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_follower_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Pratitelji"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_channel_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_channel_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_channel_ids
 msgid "Followers (Channels)"
-msgstr ""
+msgstr "Pratitelji (kanali)"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_partner_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_partner_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Pratitelji (Partneri)"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__activity_type_icon
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__activity_type_icon
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "Font awesome ikona npr. fa-tasks"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__color
@@ -1365,30 +1423,30 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_tag__color
 msgid "For better visualization in views"
-msgstr ""
+msgstr "Za bolu vizualizaciju u pregledima"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__duration_current
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__duration_current
 msgid "For how long a flight plan is already running"
-msgstr ""
+msgstr "Koliko dugo je plan već pokrenut"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__applicability__this
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_execute_wizard__applicability__this
 msgid "For selected server(s)"
-msgstr ""
+msgstr "Za odabrane server(e)"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__full_server_path
 msgid "Full Server Path"
-msgstr ""
+msgstr "Puna putanja servera"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "General Settings"
-msgstr ""
+msgstr "Generalne postavke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__is_global
@@ -1396,7 +1454,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Global"
-msgstr ""
+msgstr "Globalno"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
@@ -1408,27 +1466,27 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 msgid "Group By"
-msgstr ""
+msgstr "Grupiraj po"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__has_missing_required_values
 msgid "Has Missing Required Values"
-msgstr ""
+msgstr "Nedostaju obavezne vrijednosti"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Has Template"
-msgstr ""
+msgstr "Ima predložak"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "Help"
-msgstr ""
+msgstr "Pomoć"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "Help with Python expressions"
-msgstr ""
+msgstr "Pomoć oko Python izraza"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__id
@@ -1467,27 +1525,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ip_v4_address
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ip_v4_address
 msgid "IPv4 Address"
-msgstr ""
+msgstr "IPv4 Adresa"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ip_v6_address
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ip_v6_address
 msgid "IPv6 Address"
-msgstr ""
+msgstr "IPv6 Adresa"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_exception_icon
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_exception_icon
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__activity_exception_icon
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__activity_exception_icon
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "Ikona koja indicira izuzetak aktivnosti."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_needaction
@@ -1497,14 +1555,14 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__message_needaction
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__message_unread
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Ako je označeno, nove poruke traže vašu pozornost."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_has_error
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__message_has_error
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Ako je označeno, neke poruke imaju greške pri isporuci."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
@@ -1517,6 +1575,8 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__auto_sync
 msgid "If enabled file will be synced automatically using cron"
 msgstr ""
+"Ako je omogućeno datoteka će biti sinkronitzirana automatski korištenjem "
+"crona"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
@@ -1524,77 +1584,80 @@ msgid ""
 "If enabled flightplan can be run on the same server while the same flightplan is still running.\n"
 "Returns -5 status is execution is blocked"
 msgstr ""
+"Ako je označeno Plan leta može biti pokrenut na istom serveru dok je isti "
+"plan leta već pokrenut.\n"
+"Vraća status -5 ako je izvršavanje blokirano"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #, python-format
 msgid "If exit code"
-msgstr ""
+msgstr "Ako je kod izlaza"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/tests/test_plan.py:0
 #, python-format
 msgid "If exit code == 35 then Exit with command exit code"
-msgstr ""
+msgstr "Ako je kod izlaza == 35 tada Izađi sa izlaznim kodom naredbe"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
 msgid "Indicates if this variable is mandatory for server creation"
-msgstr ""
+msgstr "Označava da je varijabla obavezna za kreiranje servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_is_follower
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_is_follower
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Je pratitelj"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__is_running
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__is_running
 msgid "Is Running"
-msgstr ""
+msgstr "Je pokrenut"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__is_skipped
 msgid "Is Skipped"
-msgstr ""
+msgstr "Je preskočen"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__keep_when_deleted
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__keep_when_deleted
 msgid "Keep When Deleted"
-msgstr ""
+msgstr "Zadrži nakon brisanja"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__ssh_auth_mode__k
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template__ssh_auth_mode__k
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template_create_wizard__ssh_auth_mode__k
 msgid "Key"
-msgstr ""
+msgstr "Ključ"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__key_type
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Key Type"
-msgstr ""
+msgstr "Tip ključa"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__reference_code
 msgid "Key reference for inline usage"
-msgstr ""
+msgstr "Referenca ključa za korištenje u kodu"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key
 msgid "Keys and Secrets"
-msgstr ""
+msgstr "Ključevi i Tajne"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Label"
-msgstr ""
+msgstr "Labela"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
@@ -1633,12 +1696,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnje modificirano"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__sync_date_last
 msgid "Last Sync Date"
-msgstr ""
+msgstr "Datum posljednje sinkronizacije"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__write_uid
@@ -1663,7 +1726,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnje ažurirao"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__write_date
@@ -1688,37 +1751,37 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnje ažuriranje"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__code_on_server
 msgid "Latest version of file content on server"
-msgstr ""
+msgstr "Zadnja verzija sadržaja datoteke na serveru"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__partner_id
 msgid "Leave blank to use for any partner"
-msgstr ""
+msgstr "Ostavite prazno za korištenje sa bilo kojim partnerom"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 msgid "Leave blank to use with any partner"
-msgstr ""
+msgstr "Ostavite prazno za korištenje sa bilo kojim partnerom"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 msgid "Leave blank to use with any server"
-msgstr ""
+msgstr "Ostavite prazno za korištenje na bilo kojem serveru"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__line_id
 msgid "Line"
-msgstr ""
+msgstr "Stavka"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Local"
-msgstr ""
+msgstr "Localno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__path
@@ -1726,50 +1789,54 @@ msgid ""
 "Location where command will be executed. Overrides command default path. You"
 " can use {{ variables }} in path"
 msgstr ""
+"Lokacija na kojoj će naredba biti izvršena. Nadjačava zadanu putanju "
+"naredbe. Možete koristiti {{ varijable }} u putanji"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__path
 msgid ""
 "Location where command will be executed. You can use {{ variables }} in path"
 msgstr ""
+"Lokacija na kojoj će naredba biti izvršena. Možete koristiti {{varijable }} "
+"u putanji"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_text
 msgid "Log Text"
-msgstr ""
+msgstr "Sadržaj loga"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_type
 msgid "Log Type"
-msgstr ""
+msgstr "Tip loga"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "Logs"
-msgstr ""
+msgstr "Logovi"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_main_attachment_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_main_attachment_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "Glavni prilog"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__parent_flight_plan_log_id
 msgid "Main Log"
-msgstr ""
+msgstr "Glavni log"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Main plan"
-msgstr ""
+msgstr "Glavni plan"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Main plans"
-msgstr ""
+msgstr "Glavni planovi"
 
 #. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_manager
@@ -1796,31 +1863,31 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__manager_ids
 msgid "Managers who can modify this record"
-msgstr ""
+msgstr "Manageri koji mogu modificirati ovaj zapis"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_has_error
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_has_error
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Greška pri isporuci poruke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Poruke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables
 msgid "Missing Required Variables"
-msgstr ""
+msgstr "Nedostaju obavezne variable"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables_message
 msgid "Missing Required Variables Message"
-msgstr ""
+msgstr "Poruka za nedostajuće obavezne varijable"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_key_mixin
@@ -1830,14 +1897,14 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Modify Code"
-msgstr ""
+msgstr "Modificiraj kod"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__my_activity_date_deadline
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__my_activity_date_deadline
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Krajnji rok moje aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__name
@@ -1862,43 +1929,43 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Name"
-msgstr ""
+msgstr "Naziv"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_date_deadline
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_date_deadline
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Krajnji rok sljedeće aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_summary
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_summary
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Sažetak sljedeće aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_type_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_type_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Tip sljedeće aktivnosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__sync_date_next
 msgid "Next Sync Date"
-msgstr ""
+msgstr "Datum sljedeće sinkronizacije"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "No Synced"
-msgstr ""
+msgstr "Nije sinkronizirano"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "No Template"
-msgstr ""
+msgstr "Nema predloška"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
@@ -1908,23 +1975,27 @@ msgid ""
 "===\n"
 "CODE: %(status)s"
 msgstr ""
+"Rezultat nije primljen. Molimo prijavite se ručno i provjerite ima li "
+"problema.\n"
+"===\n"
+"KOD: %(status)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "No runner found for command action '%(cmd_action)s'"
-msgstr ""
+msgstr "Nije pronađen pokretač za akciju komande '%(cmd_action)s'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "No server found for the provided reference."
-msgstr ""
+msgstr "Nije pronađen server za upisanu referencu."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "No sudo"
-msgstr ""
+msgstr "Bez sudo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__applicability__shared
@@ -1935,7 +2006,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Not Running"
-msgstr ""
+msgstr "Nije pokrenut"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__note
@@ -1950,42 +2021,42 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__note
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__note
 msgid "Note"
-msgstr ""
+msgstr "Bilješka"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_needaction_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_needaction_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Broj akcija"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_has_error_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_has_error_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Broj grešaka"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_needaction_counter
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__message_needaction_counter
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr ""
+msgstr "Broj poruka koje zahtijevaju neku akciju"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_has_error_counter
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__message_has_error_counter
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Broj poruka sa greškama pri isporuci"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_unread_counter
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__message_unread_counter
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__message_unread_counter
 msgid "Number of unread messages"
-msgstr ""
+msgstr "Broj nepročitanih poruka"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_os
@@ -2008,59 +2079,60 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_delete_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__plan_delete_id
 msgid "On Delete Plan"
-msgstr ""
+msgstr "Plan za brisanje"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__on_error_action
 msgid "On Error"
-msgstr ""
+msgstr "Nakon Greške"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 #, python-format
 msgid "Only one global value can be defined for variable '%(var)s'"
 msgstr ""
+"Samo jedna globalna vrijednost može biti definirana za varijablu '%(var)s'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/tests/test_variable.py:0
 #, python-format
 msgid "Only one global value can be defined for variable 'meme'"
-msgstr ""
+msgstr "Samo jedna globalna vrijednost može biti definirna za varijablu 'meme'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Open"
-msgstr ""
+msgstr "Otvori"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Open full form"
-msgstr ""
+msgstr "Otvori punu formu"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__os_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__os_id
 msgid "Operating System"
-msgstr ""
+msgstr "Operativni sustav"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__option_id
 msgid "Option"
-msgstr ""
+msgstr "Opcija"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 #, python-format
 msgid "Option '%(val)s' is not available for variable '%(var)s'"
-msgstr ""
+msgstr "Opcija '%(val)s' nije dostupna za varijablu '%(var)s'"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__option_ids
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_variable__variable_type__o
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Options"
-msgstr ""
+msgstr "Opcije"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__partner_id
@@ -2080,22 +2152,22 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__path
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__path
 msgid "Path"
-msgstr ""
+msgstr "Putanja"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__plan_domain
 msgid "Plan Domain"
-msgstr ""
+msgstr "Domena plana"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__plan_line_action_id
 msgid "Plan Line Action"
-msgstr ""
+msgstr "Akcija stavke plana"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_line_executed_id
 msgid "Plan Line Executed"
-msgstr ""
+msgstr "Stavka plana izvršena"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_plan_execute_wizard.py:0
@@ -2103,36 +2175,36 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_log_ids
 #, python-format
 msgid "Plan Log"
-msgstr ""
+msgstr "Log plana"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__is_running
 msgid "Plan is being executed right now"
-msgstr ""
+msgstr "Plan se trenutno izvršava"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
 #, python-format
 msgid "Plan line condition check failed."
-msgstr ""
+msgstr "Provjera uvijeta stavke plana nije uspjela."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Please provide IPv4 or IPv6 address for %(srv)s"
-msgstr ""
+msgstr "Molimo upišite IPv4 ili IPv6 adresu za %(srv)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Please provide SSH Key for %(srv)s"
-msgstr ""
+msgstr "Molimo unesite SSH ključ za %(srv)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Please provide SSH password for %(srv)s"
-msgstr ""
+msgstr "Molimo upišite SSH password za %(srv)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_server_template_create_wizard.py:0
@@ -2141,45 +2213,46 @@ msgid ""
 "Please provide values for the following configuration variables: "
 "%(variables)s"
 msgstr ""
+"Upišite vrijednosti za sljedeće konfiguracijske varijable: %(variables)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #, python-format
 msgid "Please resolve the following issues with configuration variables:"
-msgstr ""
+msgstr "Molimo riješite sljedeće probleme sa konfiguracijskim varijablama:"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "Please select a command to execute"
-msgstr ""
+msgstr "Molim odaberite naredbu za izvršavanje"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Post Run Actions"
-msgstr ""
+msgstr "Akcije nakon izvršavanja"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Preview"
-msgstr ""
+msgstr "Pregled"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__parent_id
 msgid "Previous Version"
-msgstr ""
+msgstr "Prethodna verzija"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Pull from Server"
-msgstr ""
+msgstr "Povuci sa servera"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Push to Server"
-msgstr ""
+msgstr "Prebaci na server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__path
@@ -2187,19 +2260,21 @@ msgid ""
 "Put custom path to run the command.\n"
 "IMPORTANT: this field does NOT support variables!"
 msgstr ""
+"Stavite prilagođenu putanju za pokretanje naredbe.\n"
+"VAŽNO: ovo polje NE PODRŽAVA varijable!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Put your notes here"
-msgstr ""
+msgstr "Upišite Vaše bilješke ovdje"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Put your notes here..."
-msgstr ""
+msgstr "Stavite vaše bilješke ovdje ..."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__action__python_code
@@ -2212,7 +2287,7 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
 #, python-format
 msgid "Recursive plan call detected in plan %(name)s."
-msgstr ""
+msgstr "Rekurzivni plan detektiran u planu %(name)s."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__reference
@@ -2233,12 +2308,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Reference"
-msgstr ""
+msgstr "Referenca"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__reference_code
 msgid "Reference Code"
-msgstr ""
+msgstr "Kod reference"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_command_reference_unique
@@ -2260,13 +2335,13 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
 msgid "Reference must be unique"
-msgstr ""
+msgstr "Referenca mora biti jedinstvena"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
 #, python-format
 msgid "Reference must be unique for the combination of partner and server"
-msgstr ""
+msgstr "Referenca mora biti jedinstvena za kombinaciju partnera i servera"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
@@ -2276,17 +2351,19 @@ msgid ""
 "Reference. Can contain English letters, digits and '_'. Leave blank to "
 "autogenerate"
 msgstr ""
+"Referenca. Može sadržavati slova engleske abecede, brojke i '_'. Ostavite "
+"prazno za automatsko generiranje"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_log_view_form
 msgid "Refresh"
-msgstr ""
+msgstr "Osvježi"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Refresh All"
-msgstr ""
+msgstr "Osvježi sve"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -2294,6 +2371,8 @@ msgid ""
 "Remember: Python code is executed on the Tower server, not on the remote\n"
 "                            one."
 msgstr ""
+"Zapamtite: Python kod se izvršava na Tower serveru, ne na  udaljenom\n"
+"                                                              serveru."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
@@ -2301,47 +2380,48 @@ msgid ""
 "Remember: Python code is executed on the Tower server, not on the remote "
 "one."
 msgstr ""
+"Zapamtite: Python kod se izvršava na Tower serveru, ne na udaljenom serveru."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__rendered_code
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__rendered_code
 msgid "Rendered Code"
-msgstr ""
+msgstr "Renderirani kod"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__rendered_name
 msgid "Rendered Name"
-msgstr ""
+msgstr "Renderirani naziv"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__rendered_server_dir
 msgid "Rendered Server Dir"
-msgstr ""
+msgstr "Renderirani direktorij na serveru"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__required
 msgid "Required"
-msgstr ""
+msgstr "Obavezno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_response
 msgid "Response"
-msgstr ""
+msgstr "Odgovor"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_user_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__activity_user_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "Odgovorni korisnik"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__result
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__value_char
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Result"
-msgstr ""
+msgstr "Rezultat"
 
 #. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_root
@@ -2352,7 +2432,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
 msgid "Run"
-msgstr ""
+msgstr "Pokreni"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
@@ -2360,6 +2440,9 @@ msgid ""
 "Run\n"
 "                                                Command"
 msgstr ""
+"Pokreni\n"
+"                                                                                                           "
+"Naredbu"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
@@ -2367,6 +2450,8 @@ msgid ""
 "Run\n"
 "                                                Flight Plan"
 msgstr ""
+"Pokreni\n"
+"                                                Plan leta"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
@@ -2374,7 +2459,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #, python-format
 msgid "Run Command"
-msgstr ""
+msgstr "Pokreni Naredbu"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
@@ -2383,22 +2468,22 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #, python-format
 msgid "Run Flight Plan"
-msgstr ""
+msgstr "Pokreni Plan Leta"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "Run New Command"
-msgstr ""
+msgstr "Pokreni novu naredbu"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
 msgid "Run Plan"
-msgstr ""
+msgstr "Pokreni Plan"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 msgid "Run a flight plan"
-msgstr ""
+msgstr "Pokreni plan leta"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
@@ -2406,16 +2491,18 @@ msgid ""
 "Run code as it appears in 'Rendered code' in wizard and return to wizard. "
 "Result will not be logged"
 msgstr ""
+"Pokreni kod kako izgleda u 'Renderiranom kodu' u čarobnjaku i vrati se u "
+"čarobnjak. Rezultat neće biti upisan u log"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "Run code using sever method and log result"
-msgstr ""
+msgstr "Pokreni kod korištenjem metode servera i zapiši rezultat u log"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Run command"
-msgstr ""
+msgstr "Pokreni naredbu"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__use_sudo
@@ -2423,74 +2510,74 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__use_sudo
 msgid "Run commands using 'sudo'"
-msgstr ""
+msgstr "Pokreni naredbu koristeći 'sudo'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "Run in wizard"
-msgstr ""
+msgstr "Pokreni u čarobnjaku"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan__on_error_action__n
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_line_action__action__n
 msgid "Run next command"
-msgstr ""
+msgstr "Pokreni sljedeću naredbu"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
 msgid "Run on"
-msgstr ""
+msgstr "Pokreni na"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Running"
-msgstr ""
+msgstr "Pokrenut"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Running Now"
-msgstr ""
+msgstr "Izvršava se sada"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ssh_auth_mode
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__ssh_auth_mode
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ssh_auth_mode
 msgid "SSH Auth Mode"
-msgstr ""
+msgstr "Način autentikacije za SSH"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "SSH Client is not defined."
-msgstr ""
+msgstr "SSH clijent nije definiran."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "SSH Command"
-msgstr ""
+msgstr "SSH naredba"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key__key_type__k
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "SSH Key"
-msgstr ""
+msgstr "SSH ključ"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_key
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "SSH Key / Secret"
-msgstr ""
+msgstr "SSH ključ/tajna"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ssh_password
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__ssh_password
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ssh_password
 msgid "SSH Password"
-msgstr ""
+msgstr "SSH password"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__secret_value
@@ -2498,33 +2585,33 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__ssh_key_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ssh_key_id
 msgid "SSH Private Key"
-msgstr ""
+msgstr "SSH privatni ključ"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ssh_username
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__ssh_username
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ssh_username
 msgid "SSH Username"
-msgstr ""
+msgstr "SSH korisničko ime"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__action__ssh_command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 msgid "SSH command"
-msgstr ""
+msgstr "SSH naredba"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "SSH connection error %(err)s"
-msgstr ""
+msgstr "Greška SSH povezivanja %(err)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "SSH execute command error %(err)s"
-msgstr ""
+msgstr "SSH greška izvršavanja naredbe %(err)s"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ssh_port
@@ -2536,69 +2623,69 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 msgid "Search Command Log"
-msgstr ""
+msgstr "Pretraži log naredbi"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Search Commands"
-msgstr ""
+msgstr "Pretraži naredbe"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 msgid "Search File Templates"
-msgstr ""
+msgstr "Pretraži predloške datoteka"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Search Files"
-msgstr ""
+msgstr "Pretraži datoteke"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Search Flight Plan Log"
-msgstr ""
+msgstr "Pretraži planove leta"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 msgid "Search Flight Plans"
-msgstr ""
+msgstr "Pretraži planove leta"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Search Keys/Secrets"
-msgstr ""
+msgstr "Pretraži Ključeve/Tajne"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_os_search_view
 msgid "Search OS"
-msgstr ""
+msgstr "Pretraži Operativne sisteme"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 msgid "Search Server Templates"
-msgstr ""
+msgstr "Pretraži predloške servera"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Search Servers"
-msgstr ""
+msgstr "Pretraži servere"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_search_view
 msgid "Search Tags"
-msgstr ""
+msgstr "Pretraži oznake"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Search Values"
-msgstr ""
+msgstr "Pretraži vrijednosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key__key_type__s
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Secret"
-msgstr ""
+msgstr "Tajna"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__secret_ids
@@ -2608,7 +2695,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__secret_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Secrets"
-msgstr ""
+msgstr "Tajne"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__applicability
@@ -2629,7 +2716,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Sekvenca"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__server_id
@@ -2650,39 +2737,39 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_ir_actions_server
 msgid "Server Action"
-msgstr ""
+msgstr "Serverska akcija"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__server_count
 msgid "Server Count"
-msgstr ""
+msgstr "Broj servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__server_log_ids
 msgid "Server Log"
-msgstr ""
+msgstr "Log servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__server_log_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Server Logs"
-msgstr ""
+msgstr "Logovi servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__name
 msgid "Server Name"
-msgstr ""
+msgstr "Naziv servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__server_response
 msgid "Server Response"
-msgstr ""
+msgstr "Odgovor servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__server_status
 msgid "Server Status"
-msgstr ""
+msgstr "Status servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__server_template_id
@@ -2690,28 +2777,28 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__server_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__server_template_id
 msgid "Server Template"
-msgstr ""
+msgstr "Predložak servera"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_server_template
 msgid "Server Templates"
-msgstr ""
+msgstr "Predlošci servera"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Server URL, eg 'https://meme.example.com'"
-msgstr ""
+msgstr "URL servera, npr. 'https://meme.example.com'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Server Version"
-msgstr ""
+msgstr "Verzija servera"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Server not found"
-msgstr ""
+msgstr "Server nije pronađen"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__server_response
@@ -2730,7 +2817,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__url
 msgid "Server web interface, eg 'https://doge.example.com'"
-msgstr ""
+msgstr "Web sučenje servera, npr. 'https://doge.example.com'"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_server
@@ -2743,7 +2830,7 @@ msgstr ""
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 msgid "Servers"
-msgstr ""
+msgstr "Serveri"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__server_ids
@@ -2751,11 +2838,13 @@ msgid ""
 "Servers on which the command will be executed.\n"
 "If empty, command canbe executed on all servers"
 msgstr ""
+"Serveri na kojima će naredba biti izvršena.\n"
+"Ako je prazno, naredba može biti izvršena na svim serverima"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Set Variable Values"
-msgstr ""
+msgstr "Postavite vrijednosti varijabli"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__server_status
@@ -2763,38 +2852,40 @@ msgid ""
 "Set the following status if command is executed successfully. Leave "
 "'Undefined' if you don't need to update the status"
 msgstr ""
+"Postavi sljedeći status ako je naredba izvršena uspješno. Ostavite "
+"'Nedefinirano' ako nema potrebe ažurirati status"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_settings
 msgid "Settings"
-msgstr ""
+msgstr "Postavke"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "Show Commands"
-msgstr ""
+msgstr "Prikaži naredbe"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
 msgid "Show Flight Plans"
-msgstr ""
+msgstr "Prikaži Planove leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__show_servers
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__show_servers
 msgid "Show Servers"
-msgstr ""
+msgstr "Prikaži servere"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Skipped"
-msgstr ""
+msgstr "Preskočeno"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "Some servers don't support this command"
-msgstr ""
+msgstr "Neki serveri ne podržavaju ovu naredbu"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
@@ -2803,25 +2894,27 @@ msgid ""
 "Some variable options are invalid:\n"
 "%(detailed_message)s"
 msgstr ""
+"Neke vrijednosti varijabli nisu valjane:\n"
+"%(detailed_message)s"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__source
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__source
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Source"
-msgstr ""
+msgstr "Izvor"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Start date"
-msgstr ""
+msgstr "Početni datum"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__start_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__start_date
 msgid "Started"
-msgstr ""
+msgstr "Pokrenuto"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_status
@@ -2840,6 +2933,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Status baziran na aktivnostima\n"
+"Prekoračen rok: Krajnji datum je već prošao\n"
+"Danas: Datum aktivnosti je danas\n"
+"Planirano: Buduće aktivnosti."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_variable__variable_type__s
@@ -2855,38 +2952,38 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 #, python-format
 msgid "Success"
-msgstr ""
+msgstr "Uspješno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__use_sudo__p
 msgid "Sudo with password"
-msgstr ""
+msgstr "Sudo sa passwordom"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__use_sudo__n
 msgid "Sudo without password"
-msgstr ""
+msgstr "Sudo bez passworda"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Sync Error"
-msgstr ""
+msgstr "Greška sinkronizacije"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Synced"
-msgstr ""
+msgstr "Sinkronizirano"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_tag
 msgid "Tag"
-msgstr ""
+msgstr "Oznaka"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 msgid "Tagged"
-msgstr ""
+msgstr "Označeno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__tag_ids
@@ -2899,31 +2996,31 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
 msgid "Tags"
-msgstr ""
+msgstr "Oznake"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__template_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Template"
-msgstr ""
+msgstr "Predložak"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__file_template_code
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Template Code"
-msgstr ""
+msgstr "Šifra predloška"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_file_template_action
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_file_template
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_template
 msgid "Templates"
-msgstr ""
+msgstr "Predlošci"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Test Connection"
-msgstr ""
+msgstr "Test povezivanja"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
@@ -2961,45 +3058,47 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_unique_variable_option
 msgid "The combination of Name,Value and Variable must be unique."
-msgstr ""
+msgstr "Kombinacija Naziv, Vrijednost i Varijabla mora biti jedinstvena."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "The file %(f_path)s not found."
-msgstr ""
+msgstr "Datoteka %(f_path)s nije pronađena."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Then"
-msgstr ""
+msgstr "Onda"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "There are two default keys in the dictionary, e.g.:"
-msgstr ""
+msgstr "Postoje dva zadana ključa u dictionary.u npr:"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__plan_delete_id
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__plan_delete_id
 msgid "This Flightplan will be executed when the server is deleted"
-msgstr ""
+msgstr "Ovaj plan leta će biti izvršen kada je server obrisan"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__on_error_action
 msgid ""
 "This action will be executed on error if no command action can be applied"
 msgstr ""
+"Ova će akcija biti izvršena prilikom greške ako niti jedna druga akcija nije "
+"primjenjiva"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "This command can be used only in Flight Plans."
-msgstr ""
+msgstr "Ova naredba se može koristiti samo u Planovima leta."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__note
 msgid "This field is used to put some notes regarding template."
-msgstr ""
+msgstr "Ovo polje koristi se za upisivanje bilješki vezanih za predložak."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__code
@@ -3010,7 +3109,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_template_mixin__code
 msgid "This field will be rendered by default"
-msgstr ""
+msgstr "Ovo polje će biti generirano prema postavkama"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__file_template_id
@@ -3018,39 +3117,45 @@ msgid ""
 "This file template will be used to create log files when server is created "
 "from a template"
 msgstr ""
+"Ovaj predložak datoteke će biti korišten za kreiranje log datoteke kad je "
+"server kreiran iz predloška"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
 msgid "This flight plan will be run upon server creation"
-msgstr ""
+msgstr "Ovaj plan leta će biti pokrenut prilikom kreiranja servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ssh_username
 msgid ""
 "This is required, however you can change this later in the server settings"
 msgstr ""
+"Ovo je obavezno, ali možete vrijednost promijeniti kasnije u postavkama "
+"servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__file_template_id
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 msgid "This template will be used to create or update the pushed file"
 msgstr ""
+"Ovaj predložak će biti korišten za kreiranje ili ažuriranje datoteke koju se "
+"prebacuje na server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__duration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__duration
 msgid "Time consumed for execution, seconds"
-msgstr ""
+msgstr "Vrije izvršavanja u sekundama"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_tools
 msgid "Tools"
-msgstr ""
+msgstr "Alati"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__file_count
 msgid "Total Files"
-msgstr ""
+msgstr "Ukupno datoteka"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__source__tower
@@ -3072,14 +3177,14 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__triggered_plan_log_id
 msgid "Triggered Plan Log"
-msgstr ""
+msgstr "Log pokrenutih planova"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_type
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__activity_exception_decoration
@@ -3114,14 +3219,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_unread
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_unread
 msgid "Unread Messages"
-msgstr ""
+msgstr "Nepročitane poruke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_unread_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_unread_counter
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_unread_counter
 msgid "Unread Messages Counter"
-msgstr ""
+msgstr "Brojač nepročitanih poruka"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.cetmix_tower_file_upload_action
@@ -3132,7 +3237,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__use_sudo
 msgid "Use Sudo"
-msgstr ""
+msgstr "Koristi sudo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__use_sudo
@@ -3140,32 +3245,33 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__use_sudo
 msgid "Use sudo"
-msgstr ""
+msgstr "Koristi sudo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__server_ssh_ids
 msgid "Used as SSH Key"
-msgstr ""
+msgstr "Korišteno kao SSH ključ"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__server_ssh_ids
 msgid "Used as SSH key in the following servers"
-msgstr ""
+msgstr "Koristi se kao SSH ključ na sljedećim serverima"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 msgid "Used for"
-msgstr ""
+msgstr "Koristi se za"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__server_id
 msgid "Used for selected server only. Leave blank to use globally"
 msgstr ""
+"Koristi se samo za odabrane server. Ostavite prazno za globalno korištenje"
 
 #. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_user
 msgid "User"
-msgstr ""
+msgstr "Korisnik"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__user_ids
@@ -3176,7 +3282,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__user_ids
 msgid "Users"
-msgstr ""
+msgstr "Korisnici"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_access_role_mixin__user_ids
@@ -3187,7 +3293,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__user_ids
 msgid "Users who can view this record"
-msgstr ""
+msgstr "Korisnici koji mogu vidjeti ovaj zapis"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__value_char
@@ -3196,18 +3302,18 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Value"
-msgstr ""
+msgstr "Vrijednost"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__value_ids_count
 msgid "Value Count"
-msgstr ""
+msgstr "Broj vrijednosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__value_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Values"
-msgstr ""
+msgstr "Vrijednosti"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_id
@@ -3215,7 +3321,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Variable"
-msgstr ""
+msgstr "Varijabla"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
@@ -3224,11 +3330,13 @@ msgid ""
 "Variable '%(var)s' can only be assigned to one of the models at a time: "
 "Server, Server Template, or Plan Line Action."
 msgstr ""
+"Varijabla '%(var)s' može biti dodijeljena samo jednom modelu istovremena: "
+"Server, Predložak servera, Akcija plana leta."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 msgid "Variable Reference"
-msgstr ""
+msgstr "Referenca varijable"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
@@ -3240,23 +3348,23 @@ msgstr ""
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable_value
 #, python-format
 msgid "Variable Values"
-msgstr ""
+msgstr "Vrijednosti varijable"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_tower_variable_value_uniq
 msgid "Variable can be declared only once for the same record!"
-msgstr ""
+msgstr "Varijabla može biti deklarirana samo jednom za isti zapis!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_name_uniq
 msgid "Variable names must be unique"
-msgstr ""
+msgstr "Nazivi varijabli moraju biti jedinstveni"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Variable not found"
-msgstr ""
+msgstr "Varijabla nije pronađena"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
@@ -3265,25 +3373,27 @@ msgid ""
 "Variable reference '%(var_ref)s' has an invalid option reference "
 "'%(opt_ref)s'."
 msgstr ""
+"Referenca varijable '%(var_ref)s' ima neispravnu referencu opcije "
+"'%(opt_ref)s'."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Variable value created"
-msgstr ""
+msgstr "Vrijednost varijable kreirana"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Variable value updated"
-msgstr ""
+msgstr "Vrijednost varijable ažurirana"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line_action__variable_value_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__variable_value_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_mixin__variable_value_ids
 msgid "Variable values for selected record"
-msgstr ""
+msgstr "Vrijednosti varijabli za odabrani zapis"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable
@@ -3296,7 +3406,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable
 msgid "Variables"
-msgstr ""
+msgstr "Varijable"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -3308,13 +3418,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__path
 msgid "Where command was executed"
-msgstr ""
+msgstr "Gdje je naredba izvršena"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__custom_exit_code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line_action__custom_exit_code
 msgid "Will be used instead of the command exit code"
-msgstr ""
+msgstr "Će biti korišten umjesto izlaznog koda naredbe"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__use_sudo
@@ -3323,49 +3433,51 @@ msgid ""
 "Will use sudo based on server settings.If no sudo is configured will run "
 "without sudo"
 msgstr ""
+"Koristi se sudo bazirano na postavkama server. Ako sudo nije postavljen "
+"izvršava se bez sudo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_log__use_sudo__p
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__use_sudo__p
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template__use_sudo__p
 msgid "With password"
-msgstr ""
+msgstr "Sa passwordom"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_log__use_sudo__n
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__use_sudo__n
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template__use_sudo__n
 msgid "Without password"
-msgstr ""
+msgstr "Bez passworda"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__wizard_id
 msgid "Wizard"
-msgstr ""
+msgstr "Čarobnjak"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "Wrong action"
-msgstr ""
+msgstr "Pogrešna akcija"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "You are not allowed to execute commands in wizard"
-msgstr ""
+msgstr "Nije vam dozvoljeno izvršavati naredbe u čarobnjaku"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "You cannot execute an empty command"
-msgstr ""
+msgstr "Nije moguće izvršiti praznu naredbu"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "You cannot run custom code on multiple servers at once."
-msgstr ""
+msgstr "Nije moguće pokrenuti prilagođeni kod na više servera odjednom."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/ir_actions_server.py:0
@@ -3374,23 +3486,25 @@ msgid ""
 "You need to have 'write' access to all servers you want to run this action "
 "on."
 msgstr ""
+"Potrebno vam je pravo pisanja na svim serverima na kojima želite pokrenuti "
+"ovu akciju."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 msgid "e.g. /home/user This field does NOT support variables"
-msgstr ""
+msgstr "npr. /home/user Ovo polje NE PODRŽAVA varijable"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "e.g. /such/much/{{ path }}, overrides command path"
-msgstr ""
+msgstr "npr. /tamo/neki/{{path}} , nadjačava putanju varijable"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/tests/common.py:0
 #: code:addons/cetmix_tower_server/tests/common.py:0
 #, python-format
 msgid "groups_ref must be string or list of strings!"
-msgstr ""
+msgstr "groups_ref mora biti znakovni izraz ili lista znakovnih izraza!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -3398,54 +3512,54 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "managers who can modify this record"
-msgstr ""
+msgstr "manageri koji mogu modificirati ovaj zapis"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "managers who can modify this server"
-msgstr ""
+msgstr "manageri koji mogu modificirati ovaj sevrer"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 msgid "managers who can modify this template"
-msgstr ""
+msgstr "manageri koji mogu modificirati ovaj predložak"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "new server name"
-msgstr ""
+msgstr "naziv novog servera"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "optional, eg /home/{{ tower.server.username }}"
-msgstr ""
+msgstr "opcionalno, npr. /home/{{ tower.server.username }}"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "sudo password was not provided!"
-msgstr ""
+msgstr "sudo password nije unešen!"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "then"
-msgstr ""
+msgstr "onda"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "this can be changed later"
-msgstr ""
+msgstr "ovo može biti izmjenjeno kasnije"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "users who can access this server"
-msgstr ""
+msgstr "korisnici koji mogu pristupiti ovom serveru"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 msgid "users who can access this template"
-msgstr ""
+msgstr "korisnici koji mogu pristupiti ovom predlošku"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -3453,10 +3567,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "users who can view this record"
-msgstr ""
+msgstr "korisnici koji mogu vidjeti ovaj zapis"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_execute_wizard_view_form
 msgid "with tags"
-msgstr ""
+msgstr "sa oznakama"
