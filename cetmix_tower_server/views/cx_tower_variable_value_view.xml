@@ -5,7 +5,7 @@
         <field name="model">cx.tower.variable.value</field>
         <field name="arch" type="xml">
             <tree editable="top" decoration-bf="is_global==True">
-                <field name="reference" optional="hidden" />
+                <field name="reference" optional="hide" />
                 <field name="variable_id" />
                 <field name="is_global" widget="boolean_toggle" />
                 <field

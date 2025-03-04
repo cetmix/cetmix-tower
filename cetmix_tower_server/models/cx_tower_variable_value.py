@@ -15,8 +15,9 @@ class TowerVariableValue(models.Model):
         "cx.tower.access.mixin",
     ]
     _rec_name = "variable_reference"
-    _order = "variable_reference"
+    _order = "sequence, variable_reference"
 
+    sequence = fields.Integer(default=10)
     access_level = fields.Selection(
         compute="_compute_access_level",
         readonly=False,
