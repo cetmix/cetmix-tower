@@ -1,5 +1,7 @@
 import base64
 
+import yaml
+
 from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
@@ -361,3 +363,101 @@ class TestTowerYamlImportWizUpload(TransactionCase):
                 new_server_template.server_log_ids,
                 "New Server Log must be created instead of updating existing one",
             )
+
+    def test_extract_secret_names(self):
+        """Test extract secret names from YAML data"""
+
+        # NB: this is not a real model, it's just for testing
+        yaml_code = """cetmix_tower_yaml_version: 1
+cetmix_tower_model: test_model
+access_level: manager
+reference: such_much_test_record
+name: Such Much Command
+action: file_using_template
+allow_parallel_run: false
+note: Just a note
+os_ids: false
+tag_ids: false
+path: false
+ssh_key_id:
+  reference: test_ssh_key
+  name: Test SSH Key
+  key_type: k
+  note: false
+record_with_the_same_ssh_key:
+  reference: such_much_test_record_2
+  name: Such Much Test Record 2
+  note: Just a note 2
+  ssh_key_id:
+    reference: test_ssh_key
+    name: Test SSH Key
+    key_type: k
+    note: false
+    secret_ids:
+    - reference: secret_2
+      name: Secret 2
+      key_type: s
+      note: false
+    - reference: secret_3
+      name: Secret 3
+      key_type: s
+      note: false
+record_with_another_ssh_key:
+  reference: such_much_test_record_3
+  name: Such Much Test Record 3
+  note: Just a note 3
+  ssh_key_id:
+    reference: another_ssh_key
+    name: Another SSH Key
+  sub_record:
+    reference: such_much_test_record_4
+    name: Such Much Test Record 4
+    note: Just a note 4
+    secret_ids:
+    - reference: secret_1
+      name: Secret 3
+      key_type: s
+      note: false
+    - reference: secret_2
+      name: Secret 4
+      key_type: s
+      note: false
+file_template_id:
+  reference: my_custom_test_template
+  name: Such much demo
+  source: tower
+  file_type: text
+  server_dir: /var/log/my/files
+  file_name: much_logs.txt
+  keep_when_deleted: false
+  tag_ids: false
+  note: Hey!
+  code: false
+  variable_ids: false
+  secret_ids: false
+flight_plan_id: false
+code: false
+variable_ids: false
+secret_ids:
+- reference: secret_1
+  name: Secret 1
+  key_type: s
+  note: false
+- reference: secret_2
+  name: Secret 2
+  key_type: s
+  note: false
+"""
+        secret_list = self.env["cx.tower.yaml.import.wiz"]._extract_secret_names(
+            yaml.safe_load(yaml_code)
+        )
+        # We expect 6 secrets in the list:
+        # 2 keys: 'Test SSH Key', 'Another SSH Key'
+        # 4 secrets: 'Secret 3', 'Secret 4', 'Secret 1', 'Secret 2'
+        self.assertEqual(len(secret_list), 6, "Secret list length is not correct")
+        self.assertIn("Test SSH Key", secret_list, "Key is not in the list")
+        self.assertIn("Another SSH Key", secret_list, "Key is not in the list")
+        self.assertIn("Secret 3", secret_list, "Key is not in the list")
+        self.assertIn("Secret 4", secret_list, "Key is not in the list")
+        self.assertIn("Secret 1", secret_list, "Key is not in the list")
+        self.assertIn("Secret 2", secret_list, "Key is not in the list")
