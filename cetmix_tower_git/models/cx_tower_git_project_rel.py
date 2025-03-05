@@ -40,6 +40,7 @@ class CxTowerGitProjectRel(models.Model):
         selection=lambda self: self._selection_project_format(),
         required=True,
         string="Format",
+        default=lambda self: self._selection_project_format()[0][0]
     )
 
     _sql_constraints = [
