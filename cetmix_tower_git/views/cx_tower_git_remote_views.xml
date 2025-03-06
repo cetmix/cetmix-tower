@@ -10,6 +10,7 @@
                 <field name="name" />
                 <field name="source_id" />
                 <field name="head_type" />
+                <field name="create_uid" optional="hide" />
             </tree>
         </field>
     </record>
@@ -58,6 +59,7 @@
                             name="head"
                             placeholder="Branch/PR/commit number or link"
                         />
+                        <field name="create_uid" />
                     </group>
                 </sheet>
             </form>

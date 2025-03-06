@@ -266,3 +266,51 @@ class TestProject(CommonTest):
         )
         self.assertTrue(project_as_manager_1.exists())
         self.assertEqual(project_as_manager_1.name, "Test Project")
+
+    def test_manager_server_based_access(self):
+        """Test manager access through server relationships"""
+        manager_project = self.GitProject.with_user(self.manager)
+
+        # Create a server where manager is a user
+        server = self.Server.create(
+            {
+                "name": "Test Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "os_id": self.os_debian_10.id,
+                "user_ids": [(4, self.manager.id)],
+            }
+        )
+
+        # Create a file and link project to server
+        file = self.File.create(
+            {
+                "name": "test_file",
+                "server_id": server.id,
+            }
+        )
+        self.GitProjectRel.create(
+            {
+                "server_id": server.id,
+                "file_id": file.id,
+                "git_project_id": self.project.id,
+                "project_format": "git_aggregator",
+            }
+        )
+
+        # Manager should be able to read project through server relationship
+        self.assertEqual(manager_project.browse(self.project.id).name, "Test Project")
+
+        # Remove manager from server users
+        server.write({"user_ids": [(3, self.manager.id)]})
+
+        # Manager should not be able to read project anymore
+        with self.assertRaises(AccessError):
+            manager_project.browse(self.project.id).read(["name"])
+
+        # Add manager to server managers
+        server.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Manager should be able to read project again
+        self.assertEqual(manager_project.browse(self.project.id).name, "Test Project")

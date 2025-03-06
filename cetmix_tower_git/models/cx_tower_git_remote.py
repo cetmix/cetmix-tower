@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from urllib.parse import urlparse
+import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -20,6 +20,11 @@ class CxTowerGitRemote(models.Model):
     ]
     _description = "Cetmix Tower Git Remote"
     _order = "sequence, name"
+
+    # Used to detect git ssh urls
+    GIT_SSH_URL_PATTERN = r"^[\w\.-]+@[\w\.-]+:.*\.git$"
+    GIT_HTTPS_URL_PATTERN = r"^https://.*\.git$"
+    GIT_GIT_URL_PATTERN = r"^git://.*\.git$"
 
     active = fields.Boolean(related="source_id.active", store=True, readonly=True)
     enabled = fields.Boolean(
@@ -68,6 +73,7 @@ class CxTowerGitRemote(models.Model):
         selection=[
             ("ssh", "SSH"),
             ("https", "HTTPS"),
+            ("git", "GIT"),
         ],
         compute="_compute_repo_provider",
         store=True,
@@ -101,7 +107,11 @@ class CxTowerGitRemote(models.Model):
                     raise ValidationError(
                         _("Not a valid URL. URL must end with '.git'")
                     )
-                if not url.startswith("https://") and not url.startswith("git@"):
+                if (
+                    not re.match(self.GIT_HTTPS_URL_PATTERN, url)
+                    and not re.match(self.GIT_SSH_URL_PATTERN, url)
+                    and not re.match(self.GIT_GIT_URL_PATTERN, url)
+                ):
                     raise ValidationError(
                         _("Not a valid URL. URL must start with 'https://' or 'git@'")
                     )
@@ -138,21 +148,26 @@ class CxTowerGitRemote(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        # Export project to related files
-        res._update_related_files()
+        # Export project to related files and templates
+        res._update_related_files_and_templates()
         return res
 
     def write(self, vals):
         res = super().write(vals)
-        # Update related files on update
-        self._update_related_files()
+        # Update related files and templates on update
+        self._update_related_files_and_templates()
         return res
 
-    def _update_related_files(self):
+    def _update_related_files_and_templates(self):
         # Update related files on update
         related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
         if related_files:
             related_files._save_to_file()
+        related_templates = self.mapped("git_project_id").mapped(
+            "git_project_file_template_rel_ids"
+        )
+        if related_templates:
+            related_templates._save_to_file_template()
 
     def _get_repo_protocol_and_provider_from_url(self, repo_url):
         """Parse repository URL and return protocol and provider.
@@ -173,37 +188,35 @@ class CxTowerGitRemote(models.Model):
         url = repo_url.lower()
 
         # Determine repo protocol
-        if url.startswith("git@"):
+        if re.match(self.GIT_SSH_URL_PATTERN, url):
             url_protocol = "ssh"
-            # To parse hostname using urlparse
-            url = url.replace(":", "/").replace("git@", "http://")
-        elif url.startswith("https://"):
+            # git@github.com:cetmix/cetmix-tower.git
+            # -> github
+            hostname = url.split(":")[0].split("@")[1].split(".")[-2]
+        elif re.match(self.GIT_HTTPS_URL_PATTERN, url):
             url_protocol = "https"
+            # https://github.com/cetmix/cetmix-tower.git
+            # -> github
+            hostname = url.replace("https://", "").split("/")[0].split(".")[-2]
+        elif re.match(self.GIT_GIT_URL_PATTERN, url):
+            url_protocol = "git"
+            # git://github.com/cetmix/cetmix-tower.git
+            # -> github
+            hostname = url.replace("git://", "").split("/")[0].split(".")[-2]
         else:
             url_protocol = None
+            hostname = None
 
-        # Determine repository provider by URL
+        # Determine repository provider by hostname
         repo_provider = "other"
-        parsed_url = urlparse(url)
-        hostname = parsed_url.hostname
-        if hostname:
-            hostname_parts = hostname.split(".")
-            if len(hostname_parts) < 2:
-                raise ValidationError(
-                    _(
-                        "Not a valid URL: %(url_msg)s\n"
-                        "URL must contain at least two parts"
-                        " separated by dot.",
-                        url_msg=url,
-                    )
-                )
-            provider_slug = hostname_parts[-2]
-            if provider_slug == "github":
-                repo_provider = "github"
-            elif provider_slug in ["gitlab", "gitlab.org"]:
-                repo_provider = "gitlab"
-            elif provider_slug in ["bitbucket", "bitbucket.org"]:
-                repo_provider = "bitbucket"
+        if hostname == "github":
+            repo_provider = "github"
+        elif hostname == "gitlab":
+            repo_provider = "gitlab"
+        elif hostname == "bitbucket":
+            repo_provider = "bitbucket"
+        else:
+            repo_provider = "other"
 
         return {
             "url_protocol": url_protocol,
