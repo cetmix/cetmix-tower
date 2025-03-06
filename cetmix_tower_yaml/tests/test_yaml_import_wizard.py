@@ -310,7 +310,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
 
     def test_action_import_yaml_create_new_record(self):
         """Test YAML import wizard action when creating a new record"""
-        self.import_wizard.update_existing_record = False
+        self.import_wizard.if_record_exists = "create"
         import_wizard_result_action = self.import_wizard.action_import_yaml()
 
         # -- 1 --

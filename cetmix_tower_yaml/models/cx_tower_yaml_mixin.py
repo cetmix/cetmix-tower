@@ -169,6 +169,7 @@ class CxTowerYamlMixin(models.AbstractModel):
             "cx.tower.variable.option",
             "cx.tower.tag",
             "cx.tower.os",
+            "cx.tower.key",
         ]
 
     def _post_process_record_values(self, values):
@@ -503,9 +504,10 @@ class CxTowerYamlMixin(models.AbstractModel):
             or not self._context.get("force_create_related_record")
         ):
             record = model.get_by_reference(reference)
-
             # If the record exists, update it with the values from the dictionary
             if record:
+                # Remove reference from values to avoid possible consequences
+                values.pop("reference", None)
                 record.write(record._post_process_yaml_dict_values(values))
 
             # If the record does not exist, create a new one
