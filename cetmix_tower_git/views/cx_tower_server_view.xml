@@ -18,6 +18,14 @@
                             <field name="git_project_id" />
                             <field name="file_id" />
                             <field name="project_format" />
+                            <field name="auto_sync" />
+                            <button
+                                type="object"
+                                string="Open"
+                                name="action_open_project"
+                                title="Open Git Project"
+                                class="btn-secondary"
+                            />
                         </tree>
                         <form>
                             <group>
@@ -25,6 +33,7 @@
                                 <field name="git_project_id" />
                                 <field name="file_id" />
                                 <field name="project_format" />
+                                <field name="auto_sync" />
                             </group>
                         </form>
                     </field>

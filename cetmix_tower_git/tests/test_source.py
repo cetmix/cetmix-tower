@@ -191,3 +191,51 @@ class TestSource(CommonTest):
             ],
             "target": "remote_1",
         }
+
+    def test_manager_server_based_access(self):
+        """Test manager access to sources through server relationships"""
+        manager_source = self.GitSource.with_user(self.manager)
+
+        # Create a server where manager is a user
+        server = self.Server.create(
+            {
+                "name": "Test Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "os_id": self.os_debian_10.id,
+                "user_ids": [(4, self.manager.id)],
+            }
+        )
+
+        # Link project to server
+        file = self.File.create(
+            {
+                "name": "test_file",
+                "server_id": server.id,
+            }
+        )
+        self.GitProjectRel.create(
+            {
+                "server_id": server.id,
+                "file_id": file.id,
+                "git_project_id": self.project.id,
+                "project_format": "git_aggregator",
+            }
+        )
+
+        # Manager should be able to read source through server relationship
+        self.assertEqual(manager_source.browse(self.source.id).name, "Test Source")
+
+        # Remove manager from server users
+        server.write({"user_ids": [(3, self.manager.id)]})
+
+        # Manager should not be able to read source anymore
+        with self.assertRaises(AccessError):
+            manager_source.browse(self.source.id).read(["name"])
+
+        # Add manager to server managers
+        server.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Manager should be able to read source again
+        self.assertEqual(manager_source.browse(self.source.id).name, "Test Source")

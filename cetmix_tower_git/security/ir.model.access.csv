@@ -7,3 +7,5 @@ access_git_remote_manager,Git Remote Manager,model_cx_tower_git_remote,cetmix_to
 access_git_remote_root,Git Remote Root,model_cx_tower_git_remote,cetmix_tower_server.group_root,1,1,1,1
 access_git_project_server_file_rel,Git Project Server File Rel Manager,model_cx_tower_git_project_rel,cetmix_tower_server.group_manager,1,1,1,1
 access_git_project_server_file_rel_root,Git Project Server File Rel Root,model_cx_tower_git_project_rel,cetmix_tower_server.group_root,1,1,1,1
+access_git_project_file_template_rel,Git Project File Template Rel Manager,model_cx_tower_git_project_file_template_rel,cetmix_tower_server.group_manager,1,1,1,1
+access_git_project_file_template_rel_root,Git Project File Template Rel Root,model_cx_tower_git_project_file_template_rel,cetmix_tower_server.group_root,1,1,1,1

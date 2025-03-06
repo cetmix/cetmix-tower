@@ -416,3 +416,54 @@ class TestRemote(CommonTest):
             "1234567890",
             "Head is not prepared correctly",
         )
+
+    def test_manager_server_based_access(self):
+        """Test manager access to remotes through server relationships"""
+        manager_remote = self.GitRemote.with_user(self.manager)
+
+        # Create a server where manager is a user
+        server = self.Server.create(
+            {
+                "name": "Test Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "os_id": self.os_debian_10.id,
+                "user_ids": [(4, self.manager.id)],
+            }
+        )
+
+        # Link project to server
+        file = self.File.create(
+            {
+                "name": "test_file",
+                "server_id": server.id,
+            }
+        )
+        self.GitProjectRel.create(
+            {
+                "server_id": server.id,
+                "file_id": file.id,
+                "git_project_id": self.project.id,
+                "project_format": "git_aggregator",
+            }
+        )
+
+        # Manager should be able to read remote through server relationship
+        remote = manager_remote.search([("id", "=", self.remote.id)])
+        self.assertTrue(remote)
+        self.assertEqual(remote.head, "main")
+
+        # Remove manager from server users
+        server.write({"user_ids": [(3, self.manager.id)]})
+
+        # Manager should not be able to read remote anymore
+        self.assertFalse(manager_remote.search([("id", "=", self.remote.id)]))
+
+        # Add manager to server managers
+        server.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Manager should be able to read remote again
+        remote = manager_remote.search([("id", "=", self.remote.id)])
+        self.assertTrue(remote)
+        self.assertEqual(remote.head, "main")
