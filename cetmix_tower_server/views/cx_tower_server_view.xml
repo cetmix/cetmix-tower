@@ -376,7 +376,6 @@
                                         type="object"
                                         string="Open"
                                         name="action_open_log"
-                                        class="oe_highlight"
                                         title="Open full form"
                                     />
                                 </tree>

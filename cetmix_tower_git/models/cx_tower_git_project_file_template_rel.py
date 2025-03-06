@@ -5,14 +5,14 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class CxTowerGitProjectRel(models.Model):
+class CxTowerGitProjectFileTemplateRel(models.Model):
     """
-    Relation between git projects and other model records.
+    Relation between git projects and file templates.
     """
 
-    _name = "cx.tower.git.project.rel"
-    _table = "cx_tower_git_project_rel"
-    _description = "Git Project relation to other model records"
+    _name = "cx.tower.git.project.file.template.rel"
+    _table = "cx_tower_git_project_file_template_rel"
+    _description = "Git Project relation to file templates"
     _log_access = False
 
     name = fields.Char(related="git_project_id.name", readonly=True)
@@ -22,17 +22,8 @@ class CxTowerGitProjectRel(models.Model):
         required=True,
         ondelete="cascade",
     )
-    server_id = fields.Many2one(
-        comodel_name="cx.tower.server",
-        index=True,
-        required=True,
-        ondelete="cascade",
-    )
-    file_id = fields.Many2one(
-        comodel_name="cx.tower.file",
-        domain="[('server_id', '=', server_id),"
-        "('source', '=', 'tower'),"
-        "('file_type', '=', 'text')]",
+    file_template_id = fields.Many2one(
+        comodel_name="cx.tower.file.template",
         required=True,
         ondelete="cascade",
     )
@@ -44,70 +35,39 @@ class CxTowerGitProjectRel(models.Model):
         required=True,
         string="Format",
     )
-    auto_sync = fields.Boolean(related="file_id.auto_sync", readonly=False)
 
     _sql_constraints = [
         (
             "project_server_file_format_uniq",
-            "unique(git_project_id, file_id, project_format)",
-            "File is already related to the same project and format",
+            "unique(git_project_id, file_template_id, project_format)",
+            "File template is already related to the same project and format",
         ),
     ]
-
-    @api.constrains("server_id", "file_id")
-    def _check_server_file_relation(self):
-        """
-        Check if server and file are related.
-        """
-        for record in self:
-            if record.server_id != record.file_id.server_id:
-                raise ValidationError(
-                    _(
-                        "File '%(file)s' doesn't belong to server '%(server)s'",
-                        file=record.file_id.name,
-                        server=record.server_id.name,
-                    )
-                )
 
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
 
         # Export project to file
-        res._save_to_file()
+        res._save_to_file_template()
         return res
 
     def write(self, vals):
         res = super().write(vals)
         # Export project to file
-        self._save_to_file()
+        self._save_to_file_template()
         return res
 
-    def action_open_project(self):
+    def action_open_file_template(self):
         """
-        Open project record in current window
-        """
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "name": self.name,
-            "res_model": "cx.tower.git.project",
-            "res_id": self.git_project_id.id,  # pylint: disable=no-member
-            "view_mode": "form",
-            "view_type": "form",
-            "target": "current",
-        }
-
-    def action_open_server(self):
-        """
-        Open server record in current window
+        Open file template record in current window
         """
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": self.server_id.name,
-            "res_model": "cx.tower.server",
-            "res_id": self.server_id.id,  # pylint: disable=no-member
+            "name": self.file_template_id.name,
+            "res_model": "cx.tower.file.template",
+            "res_id": self.file_template_id.id,  # pylint: disable=no-member
             "view_mode": "form",
             "view_type": "form",
             "target": "current",
@@ -116,11 +76,11 @@ class CxTowerGitProjectRel(models.Model):
     # ----------------------------------------------------
     # Save project to linked file based on selected format
     # ----------------------------------------------------
-    def _save_to_file(self):
+    def _save_to_file_template(self):
         """Save project to linked file using format-specific function."""
 
         # Get required function based on project format
-        # Following the pattern: _generate_code_<format> where format
+        # Following the pattern: _generate_code__<format> where format
         # is one of the values in _selection_project_format
         # Function gets a single record as an argument.
 
@@ -128,10 +88,6 @@ class CxTowerGitProjectRel(models.Model):
         code_generator_functions = {}
 
         for record in self:
-            # Disconnect file from file template if it is connected
-            if record.file_id.template_id:
-                record.file_id.action_modify_code()
-
             code_generator_function = code_generator_functions.get(
                 record.project_format
             )
@@ -153,5 +109,5 @@ class CxTowerGitProjectRel(models.Model):
 
             # Generate code for current record
             code = code_generator_function(record)
-            if record.file_id.code != code:
-                record.file_id.write({"code": code})
+            if record.file_template_id.code != code:
+                record.file_template_id.write({"code": code})
