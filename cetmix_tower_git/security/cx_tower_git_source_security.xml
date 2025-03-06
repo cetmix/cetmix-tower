@@ -17,6 +17,20 @@
         <field name="perm_unlink" eval="0" />
     </record>
 
+    <!-- Additional Manager Read Rule with Server Access -->
+    <record id="rule_git_source_manager_read_server" model="ir.rule">
+        <field name="name">Git Source: Manager Read Access via Server</field>
+        <field name="model_id" ref="model_cx_tower_git_source" />
+        <field name="domain_force">['|',
+            ('git_project_id.server_ids.user_ids', 'in', [user.id]),
+            ('git_project_id.server_ids.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
     <!-- Manager Write/Create Rule -->
     <record id="rule_git_source_manager_write" model="ir.rule">
         <field name="name">Git Source: Manager Write/Create Access</field>
@@ -56,5 +70,6 @@
         <field name="perm_create" eval="1" />
         <field name="perm_unlink" eval="1" />
     </record>
+
 
 </odoo>

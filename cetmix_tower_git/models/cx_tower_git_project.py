@@ -23,7 +23,11 @@ class CxTowerGitProject(models.Model):
 
     def _get_post_create_fields(self):
         res = super()._get_post_create_fields()
-        return res + ["source_ids", "git_project_rel_ids"]
+        return res + [
+            "source_ids",
+            "git_project_rel_ids",
+            "git_project_file_template_rel_ids",
+        ]
 
     active = fields.Boolean(default=True)
     # IMPORTANT: This field may contain duplicates because of the relation nature!
@@ -62,6 +66,24 @@ class CxTowerGitProject(models.Model):
         string="Files",
         readonly=True,
         depends=["git_project_rel_ids"],
+        copy=False,
+    )
+    git_project_file_template_rel_ids = fields.One2many(
+        comodel_name="cx.tower.git.project.file.template.rel",
+        inverse_name="git_project_id",
+        string="Git Project File Template Relations",
+        depends=["file_template_ids"],
+        copy=False,
+    )
+    # Helper field to get all file templates related to git project
+    file_template_ids = fields.Many2many(
+        comodel_name="cx.tower.file.template",
+        relation="cx_tower_git_project_file_template_rel",
+        column1="git_project_id",
+        column2="file_template_id",
+        string="File Templates",
+        readonly=True,
+        depends=["git_project_file_template_rel_ids"],
         copy=False,
     )
 
@@ -161,20 +183,22 @@ class CxTowerGitProject(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        # Update related files on create
-        res._update_related_files()
+        # Update related files and templates on create
+        res._update_related_files_and_templates()
         return res
 
     def write(self, vals):
         res = super().write(vals)
-        # Update related files on update
-        self._update_related_files()
+        # Update related files and templates on update
+        self._update_related_files_and_templates()
         return res
 
-    def _update_related_files(self):
-        # Update related files on update
+    def _update_related_files_and_templates(self):
+        # Update related files and templates
         if self.git_project_rel_ids:
             self.git_project_rel_ids._save_to_file()
+        if self.git_project_file_template_rel_ids:
+            self.git_project_file_template_rel_ids._save_to_file_template()
 
     def _extract_variables_from_text(self, text):
         """Extract environment variables from text.
@@ -197,6 +221,28 @@ class CxTowerGitProject(models.Model):
             "git_aggregator_root_dir",
         ]
         return res
+
+    # -------------------------------
+    # Export format related methods
+    # -------------------------------
+
+    def _selection_project_format(self):
+        """
+        Possible project formats.
+        Inherit and extend when adding new project formats.
+
+        Returns:
+            List of tuples: (code, name)
+        """
+        return [
+            ("git_aggregator", "Git Aggregator"),
+        ]
+
+    def _default_project_format(self):
+        """
+        Default project format.
+        """
+        return "git_aggregator"
 
     # -------------------------------
     # Git Aggregator related methods
@@ -243,3 +289,26 @@ class CxTowerGitProject(models.Model):
                 vars=(", ".join(variable_list)),
             )
         return comment_text
+
+    def _generate_code_git_aggregator(self, record):
+        """Generate code in git-aggregator format.
+
+        Args:
+            record (recordset()): Model record to generate code for.
+                must be a single record and have git_project_id field.
+
+        Returns:
+            Text: Yaml code
+        """
+        yaml_mixin = self.env["cx.tower.yaml.mixin"]
+
+        # Do not generate code if record values are empty
+        record_values = record.git_project_id._git_aggregator_prepare_record()
+        if record_values:
+            yaml_code = yaml_mixin._convert_dict_to_yaml(record_values)
+            # Prepend comment to yaml code
+            comment = record.git_project_id._git_aggregator_prepare_yaml_comment(
+                yaml_code
+            )
+            return f"{comment}\n{yaml_code}"
+        return ""

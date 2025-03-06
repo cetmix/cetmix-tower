@@ -3,13 +3,13 @@
 from odoo import api, fields, models
 
 
-class CxTowerFile(models.Model):
-    _inherit = "cx.tower.file"
+class CxTowerFileTemplate(models.Model):
+    _inherit = "cx.tower.file.template"
 
     git_project_ids = fields.Many2many(
         comodel_name="cx.tower.git.project",
-        relation="cx_tower_git_project_rel",
-        column1="file_id",
+        relation="cx_tower_git_project_file_template_rel",
+        column1="file_template_id",
         column2="git_project_id",
         string="Git Projects",
         copy=False,

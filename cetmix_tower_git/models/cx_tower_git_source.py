@@ -69,21 +69,26 @@ class CxTowerGitSource(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        # Update related files on create
-        res._update_related_files()
+        # Update related files and templates on create
+        res._update_related_files_and_templates()
         return res
 
     def write(self, vals):
         res = super().write(vals)
-        # Update related files on update
-        self._update_related_files()
+        # Update related files and templates on update
+        self._update_related_files_and_templates()
         return res
 
-    def _update_related_files(self):
-        # Update related files on update
+    def _update_related_files_and_templates(self):
+        # Update related files and templates on update
         related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
         if related_files:
             related_files._save_to_file()
+        related_templates = self.mapped("git_project_id").mapped(
+            "git_project_file_template_rel_ids"
+        )
+        if related_templates:
+            related_templates._save_to_file_template()
 
     # ------------------------------
     # Reference mixin methods
