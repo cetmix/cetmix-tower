@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
-"PO-Revision-Date: 2025-03-03 14:10+0000\n"
+"PO-Revision-Date: 2025-03-06 09:11+0000\n"
 "Last-Translator: Bole <bole@dajmi5.com>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/"
 "tower-server-14-0-dev/cetmix_tower_server/hr/>\n"
@@ -224,7 +224,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "<code>tower</code>: 'cetmix.tower' helper class shortcut"
-msgstr ""
+msgstr "<code>tower</code>: 'cetmix.tower' prečac do pomoćne klase"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -257,12 +257,12 @@ msgstr "<log je prazan>"
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv4 Address:</strong>"
-msgstr ""
+msgstr "<strong>IPv4 Adresa:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
 msgid "<strong>IPv6 Address:</strong>"
-msgstr ""
+msgstr "<strong>IPv6 Adresa:</strong>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
@@ -621,7 +621,7 @@ msgstr "Cetmix Tower Upravljanje datotekama: Automatski povuci sa servera"
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan
 msgid "Cetmix Tower Flight Plan"
-msgstr "Cetmix Tower Plan leta"
+msgstr "Cetmix Tower Plan Leta"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_line
@@ -641,7 +641,7 @@ msgstr "Cetmix Tower Log plana leta"
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_os
 msgid "Cetmix Tower Operating System"
-msgstr "Cetmix Tower Operativni sustav"
+msgstr "Cetmix Tower Operativni sistem"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.cx_tower_plan_execute_wizard_action
@@ -656,7 +656,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server_log
 msgid "Cetmix Tower Server Log"
-msgstr ""
+msgstr "Cetmix Tower Log servera"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_server_template
@@ -671,7 +671,7 @@ msgstr "Cetmix Tower Oznaka"
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable
 msgid "Cetmix Tower Variable"
-msgstr "Cetix Tower Varijabla"
+msgstr "Cetmix Tower Varijabla"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable_option
@@ -696,7 +696,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_key
 msgid "Cetmix Tower private key storage"
-msgstr "Cetmix Tower pohrana privatnih ključeva"
+msgstr "Cetmix Tower Pohrana privatnih ključeva"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_reference_mixin
@@ -949,7 +949,7 @@ msgstr "Cx Tower datoteka"
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_file_template
 msgid "Cx Tower File Template"
-msgstr "Cx Tower Predložak datoteke"
+msgstr "CxTower Predložak datoteke"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__sync_date_last
@@ -1013,7 +1013,7 @@ msgstr "Direktorij na serveru"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__display_name
 msgid "Display Name"
-msgstr "Naziv za prikaz"
+msgstr "Naziv"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.cetmix_tower_file_download_action
@@ -1570,6 +1570,9 @@ msgid ""
 "If enabled command can be run on the same server while the same command is still running.\n"
 "Returns ANOTHER_COMMAND_RUNNING if execution is blocked"
 msgstr ""
+"Ako je omogućeno, naredbe se mogu izvršavati na istom serveru dok se ista "
+"naredba već izvršava.\n"
+"Vraća ANOTHER_COMMAND_RUNNING ako je izvršavanje blokirano"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__auto_sync
@@ -1663,7 +1666,7 @@ msgstr "Labela"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Labeled"
-msgstr ""
+msgstr "Obilježeno"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower____last_update
@@ -1726,7 +1729,7 @@ msgstr "Datum posljednje sinkronizacije"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_uid
 msgid "Last Updated by"
-msgstr "Zadnje ažurirao"
+msgstr "Zadnji ažurirao"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__write_date
@@ -1751,7 +1754,7 @@ msgstr "Zadnje ažurirao"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_date
 msgid "Last Updated on"
-msgstr "Zadnje ažuriranje"
+msgstr "Zadnje ažurirano"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__code_on_server
@@ -1852,7 +1855,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__manager_ids
 msgid "Managers"
-msgstr ""
+msgstr "Manageri"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_access_role_mixin__manager_ids
@@ -1863,7 +1866,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__manager_ids
 msgid "Managers who can modify this record"
-msgstr "Manageri koji mogu modificirati ovaj zapis"
+msgstr "Manageri koji mogu urediti ovaj zapis"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_has_error
@@ -2001,7 +2004,7 @@ msgstr "Bez sudo"
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__applicability__shared
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_execute_wizard__applicability__shared
 msgid "Non server restricted"
-msgstr ""
+msgstr "Nema ograničenja za servere"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
@@ -2703,6 +2706,8 @@ msgid ""
 "Selected server(s): only Commands that are specific to the selected server(s)\n"
 "Non server restricted: all Commands that are not specific to any server"
 msgstr ""
+"Odabrani server(i): Samo naredbe koje su specifične za odabrane servere\n"
+"Bez ograničenja servera: sve naredbe koje nisu specifične za bilokoji server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_execute_wizard__applicability
@@ -2807,6 +2812,9 @@ msgid ""
 "Default value if no error happened is 'ok'.\n"
 "Otherwise there will be a server error message logged."
 msgstr ""
+"Odgovor servera primljen tijekom posljednje operacije.\n"
+"Zadana vrijednost ukoliko nije došlo do greške je 'ok'.\n"
+"Inače će greška biti upisana u log servera."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -3191,7 +3199,7 @@ msgstr "Tip"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__activity_exception_decoration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Tip aktivnosti izuzetka na zapisu."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__url
@@ -3205,6 +3213,8 @@ msgid ""
 "Unable to delete file '%(f)s'.\n"
 "Delete operation is not supported for 'server' type files."
 msgstr ""
+"Nije moguće obrisati datoteku '%(f)s'.\n"
+"Operacija brisanja nije podržana za tip datoteke 'server'."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
@@ -3213,6 +3223,8 @@ msgid ""
 "Unable to upload file '%(f)s'.\n"
 "Upload operation is not supported for 'server' type files."
 msgstr ""
+"Nije moguće slanje datoteke '%(f)s' na server.\n"
+"Operacija slanja nije podržana za datoteku tipa 'server'."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_unread
@@ -3231,7 +3243,7 @@ msgstr "Brojač nepročitanih poruka"
 #. module: cetmix_tower_server
 #: model:ir.actions.server,name:cetmix_tower_server.cetmix_tower_file_upload_action
 msgid "Upload"
-msgstr ""
+msgstr "Pošalji na server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__use_sudo
@@ -3414,6 +3426,9 @@ msgid ""
 "Various fields may use Python code or Python expressions. The\n"
 "                                    following variables can be used:"
 msgstr ""
+"Različita polja mogu koristiti python kod ili python izraze. Moguće je\n"
+"                                                                                 "
+"koristiti sljedeće varijable:"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__path
