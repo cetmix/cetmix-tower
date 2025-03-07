@@ -25,7 +25,7 @@ class TestTowerKey(TestTowerCommon):
             {
                 "name": "Test Server 1",
                 "ip_v4_address": "192.168.1.1",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
@@ -35,7 +35,7 @@ class TestTowerKey(TestTowerCommon):
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "192.168.1.2",
-                "ssh_port": "22",
+                "ssh_port": 22,
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
