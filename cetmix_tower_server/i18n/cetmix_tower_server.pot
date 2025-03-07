@@ -1007,12 +1007,6 @@ msgid "Error"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
-msgid "Error loading a private key. Unsupported key format or incorrect key."
-msgstr ""
-
-#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_execute_wizard.py:0
 #, python-format
 msgid "Execute Command"
@@ -3411,12 +3405,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid "optional, eg /home/{{ tower.server.username }}"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
-msgid "sudo password was not provided!"
 msgstr ""
 
 #. module: cetmix_tower_server
