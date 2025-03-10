@@ -852,13 +852,10 @@ class CxTowerServer(models.Model):
             )
 
         # Populate `sudo` value from the server settings if not provided explicitly
-        if sudo is None:
-            if self.sudo().ssh_username != "root" and self.sudo().use_sudo:
-                sudo = self.sudo().use_sudo
-
-        # Disable `sudo` if user is root
-        elif sudo and self.sudo().ssh_username == "root":
-            sudo = None
+        if self.sudo().ssh_username == "root":
+            sudo = False
+        elif sudo is None or sudo:
+            sudo = self.sudo().use_sudo
 
         # Check if no log record should be created
 

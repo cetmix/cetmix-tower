@@ -215,6 +215,7 @@ msgid "<log is empty>"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid ""
 "<span attrs=\"{'invisible': [('action', '!=', 'ssh_command')]}\">sudo</span>"
@@ -2024,11 +2025,6 @@ msgid "No server found for the provided reference."
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_execute_wizard_view_form
-msgid "No sudo"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__applicability__shared
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_execute_wizard__applicability__shared
 msgid "Non server restricted"
@@ -2539,7 +2535,6 @@ msgid "Run command"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__use_sudo
@@ -2989,16 +2984,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 #, python-format
 msgid "Success"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__use_sudo__p
-msgid "Sudo with password"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_execute_wizard__use_sudo__n
-msgid "Sudo without password"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3469,6 +3454,7 @@ msgid "Will be used instead of the command exit code"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_execute_wizard__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__use_sudo
 msgid ""

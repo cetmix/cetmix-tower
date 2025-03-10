@@ -688,6 +688,7 @@ COMMAND_RESULT = {
         # Check with all available "sudo" option
         for sudo in [False, "n", "p"]:
             # Add label to track command log
+            self.server_test_1.use_sudo = sudo
             command_label = f"Test Command {x}"
             custom_values = {"log": {"label": command_label}}
 
