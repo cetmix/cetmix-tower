@@ -15,30 +15,36 @@ class CxTowerCommand(models.Model):
     @api.model
     def _get_eval_context(self, server=None):
         """
-        Overrides _get_eval_context to add boto3 to the evaluation context.
+        Inherits _get_eval_context to add boto3 to the evaluation context.
         """
         eval_context = super()._get_eval_context(server=server)
         eval_context["boto3"] = boto3
         return eval_context
 
-    def _compute_code(self):
-        """
-        Compute default code, extending the original method
-        to include boto3 information.
-        """
-        super(CxTowerCommand, self)._compute_code()  # Call the original method first
+    def _get_python_libs(self):
+        res = super()._get_python_libs()
+        res += "\n#  - boto3: Python 'boto3' library. Available methods: 'client', 'Session'"
+        return res
 
-        boto3_line = (
-            "#  - boto3: Python 'boto3' library. Available methods: 'client', 'Session'"
-        )
 
-        for command in self:
-            if command.action == "python_code" and command.code:
-                lines = command.code.split("\n")
-                # Find the appropriate place to insert the boto3 line.
-                insert_index = 0
-                for i, line in enumerate(lines):
-                    if line.startswith("#  -"):
-                        insert_index = i + 1
-                lines.insert(insert_index, boto3_line)
-                command.code = "\n".join(lines)
+    # def _compute_code(self):
+    #     """
+    #     Compute default code, extending the original method
+    #     to include boto3 information.
+    #     """
+    #     super(CxTowerCommand, self)._compute_code()  # Call the original method first
+    #
+    #     boto3_line = (
+    #         "#  - boto3: Python 'boto3' library. Available methods: 'client', 'Session'"
+    #     )
+    #
+    #     for command in self:
+    #         if command.action == "python_code" and command.code:
+    #             lines = command.code.split("\n")
+    #             # Find the appropriate place to insert the boto3 line.
+    #             insert_index = 0
+    #             for i, line in enumerate(lines):
+    #                 if line.startswith("#  -"):
+    #                     insert_index = i + 1
+    #             lines.insert(insert_index, boto3_line)
+    #             command.code = "\n".join(lines)

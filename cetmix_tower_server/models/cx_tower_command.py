@@ -19,9 +19,40 @@ DEFAULT_PYTHON_CODE = """# Available variables:
 #  - time, datetime, dateutil, timezone: useful Python libraries
 #  - requests: Python 'requests' library. Available methods: 'post', 'get', 'request'
 #  - json: Python 'json' library. Available methods: 'dumps'
+#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
+#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
+#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'
+#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
+#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
+#    Module-level function: 'compare_digest'.
 #  - float_compare: Odoo function to compare floats based on specific precisions
 #  - UserError: Warning Exception to use with raise
 #
+# Each python code command returns the COMMAND_RESULT value which is a dictionary.
+# There are two default keys in the dictionary, e.g.:
+# x = 2*10
+# COMMAND_RESULT = {
+#    "exit_code": x,
+#    "message": "This will be logged as an error message because exit code !=0",
+# }
+\n\n\n"""  # noqa: E501
+DEFAULT_PYTHON_CODE_LIBS = """# Available variables:
+#  - user: Current Odoo User
+#  - env: Odoo Environment on which the action is triggered
+#  - server: server on which the command is run
+#  - tower: 'cetmix.tower' helper class
+#  - time, datetime, dateutil, timezone: useful Python libraries
+#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'
+#  - json: Python 'json' library. Available methods: 'dumps'
+#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
+#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
+#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'
+#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
+#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
+#    Module-level function: 'compare_digest'.
+#  - float_compare: Odoo function to compare floats based on specific precisions
+#  - UserError: Warning Exception to use with raise"""
+DEFAULT_PYTHON_CODE_RESULT = """
 # Each python code command returns the COMMAND_RESULT value which is a dictionary.
 # There are two default keys in the dictionary, e.g.:
 # x = 2*10
@@ -156,6 +187,13 @@ class CxTowerCommand(models.Model):
     def _compute_secret_ids(self):
         return super()._compute_secret_ids()
 
+    def _get_python_libs(self):
+        """
+        inherit in other modules to add more available libraries
+        :return: string with description of available libraries
+        """
+        return DEFAULT_PYTHON_CODE_LIBS
+
     @api.depends("action")
     def _compute_code(self):
         """
@@ -163,7 +201,7 @@ class CxTowerCommand(models.Model):
         """
         for command in self:
             if command.action == "python_code":
-                command.code = DEFAULT_PYTHON_CODE
+                command.code = "\n #".join((self._get_python_libs(), DEFAULT_PYTHON_CODE_RESULT))
             elif command.action == "ssh_command":
                 command.code = DEFAULT_SSH_CODE
             else:
