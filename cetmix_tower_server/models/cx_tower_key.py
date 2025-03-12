@@ -1,10 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import re
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
-from odoo.osv.expression import OR
+from odoo import api, fields, models
 
 
 class CxTowerKey(models.Model):
@@ -30,21 +27,23 @@ class CxTowerKey(models.Model):
         compute="_compute_reference_code",
         help="Key reference for inline usage",
     )
-    secret_value = fields.Text(string="SSH Private Key")
+    secret_value = fields.Text(
+        string="SSH Private Key",
+        compute="_compute_secret_value",
+        inverse="_inverse_secret_value",
+        store=True,
+    )
+    value_ids = fields.One2many(
+        string="Values",
+        comodel_name="cx.tower.key.value",
+        inverse_name="key_id",
+    )
     server_ssh_ids = fields.One2many(
         string="Used as SSH Key",
         comodel_name="cx.tower.server",
         inverse_name="ssh_key_id",
         readonly=True,
         help="Used as SSH key in the following servers",
-    )
-    server_id = fields.Many2one(
-        comodel_name="cx.tower.server",
-        help="Used for selected server only. Leave blank to use globally",
-        ondelete="cascade",
-    )
-    partner_id = fields.Many2one(
-        comodel_name="res.partner", help="Leave blank to use for any partner"
     )
     note = fields.Text()
 
@@ -58,50 +57,6 @@ class CxTowerKey(models.Model):
     manager_ids = fields.Many2many(
         relation="cx_tower_key_manager_rel",
     )
-
-    def init(self):
-        """
-        Remove constraint defined from the mixin
-        """
-        self._cr.execute(
-            """
-            DO $$
-            BEGIN
-                IF EXISTS (
-                    SELECT 1
-                    FROM information_schema.table_constraints
-                    WHERE table_name = 'cx_tower_key' AND
-                    constraint_name = 'cx_tower_key_reference_unique'
-                ) THEN
-                    ALTER TABLE cx_tower_key
-                    DROP CONSTRAINT cx_tower_key_reference_unique;
-                END IF;
-            END$$;
-            """
-        )
-
-    @api.constrains("reference", "partner_id", "server_id")
-    def _check_reference_unique(self):
-        """ORM constraint to ensure uniqueness"""
-
-        # Need to check archive records as well
-        for rec in self.with_context(active_test=False):
-            if (
-                self.search_count(
-                    [
-                        ("reference", "=", rec.reference),
-                        ("partner_id", "=", rec.partner_id.id),
-                        ("server_id", "=", rec.server_id.id),
-                    ]
-                )
-                > 1
-            ):
-                raise ValidationError(
-                    _(
-                        "Reference must be unique for the combination of partner"
-                        " and server"
-                    )
-                )
 
     def _compute_reference_code(self):
         """Compute key reference
@@ -117,135 +72,46 @@ class CxTowerKey(models.Model):
             else:
                 rec.reference_code = None
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        """
-        Overrides create to ensure 'reference' is auto-corrected
-        or validated for each record.
+    @api.depends(
+        "key_type",
+        "value_ids",
+        "value_ids.secret_value",
+        "value_ids.server_id",
+        "value_ids.partner_id",
+    )
+    def _compute_secret_value(self):
+        for rec in self.with_context(show_secret_value=True):
+            if rec.key_type == "s":
+                # General value
+                general_value = rec.value_ids.filtered(lambda x: not x.server_id)
+                if general_value:
+                    rec.secret_value = general_value[0].secret_value
+                else:
+                    rec.secret_value = None
 
-        Args:
-            vals_list (list[dict]): List of dictionaries with record values.
-
-        Returns:
-            Records: The created record(s).
-        """
-        for vals in vals_list:
-            # Remove leading and trailing whitespaces from name
-            vals_name = vals.get("name")
-            name = vals_name.strip() if vals_name else vals_name
-
-            # Remove leading and trailing whitespaces from reference
-            vals_reference = vals.get("reference")
-            reference = vals_reference.strip() if vals_reference else vals_reference
-
-            # Nothing can be done if no name or reference is provided
-            if not name and not reference:
-                continue
-
-            # Update the 'name' with the cleaned one
-            if name != vals_name:
-                vals.update({"name": name})
-
-            # Generate reference
-            reference = self._generate_or_fix_reference(
-                reference or name,
-                vals.get("partner_id"),
-                vals.get("server_id"),
-            )
-            vals.update({"reference": reference})
-        return super(
-            CxTowerKey, self.with_context(reference_mixin_override=True)
-        ).create(vals_list)
-
-    def write(self, vals):
-        """
-        Updates record, auto-correcting or validating 'reference'
-        based on 'name' or existing value.
-
-        Args:
-            vals (dict): Values to update, may include 'reference'.
-
-        Returns:
-            Result of the super `write` call.
-        """
-        if "reference" in vals:
-            reference = vals.get("reference", vals.get("name"))
-            server_id = vals.get("server_id")
-            partner_id = vals.get("partner_id")
-            for record in self:
-                record_vals = vals.copy()
-                record_vals.update(
-                    {
-                        "reference": self._generate_or_fix_reference(
-                            reference or record.name,
-                            partner_id or record.partner_id.id
-                            if record.partner_id
-                            else None,
-                            server_id or record.server_id.id
-                            if record.server_id
-                            else None,
-                        )
-                    }
+    def _inverse_secret_value(self):
+        key_value_obj = self.env["cx.tower.key.value"]
+        for rec in self.with_context(show_secret_value=True):
+            if rec.key_type == "s" and rec.secret_value:
+                # General value
+                general_value = rec.value_ids.filtered(
+                    lambda x: not x.server_id and not x.partner_id and x.id
                 )
-                super(
-                    CxTowerKey, record.with_context(reference_mixin_override=True)
-                ).write(record_vals)
-                return
-        return super().write(vals)
+                if general_value:
+                    general_value.secret_value = rec.secret_value
+                else:
+                    key_value_obj.create(
+                        {
+                            "key_id": rec.id,
+                            "secret_value": rec.secret_value,
+                        }
+                    )
 
     def _get_reference_pattern(self):
         """
         Override mixin method
         """
         return "[a-zA-Z0-9_]"
-
-    def _generate_or_fix_reference(
-        self, reference_source, partner_id=False, server_id=False
-    ):
-        """Generate a new reference of fix an existing one.
-
-
-        Args:
-            reference_source (Char): original reference
-            partner_id (Int, optional): partner id of the key. Defaults to False.
-            server_id (bool, optional): server id of the key. Defaults to False.
-
-        Returns:
-            str: Generated or fixed reference.
-        """
-        # Check if reference matches the pattern
-        reference_pattern = self._get_reference_pattern()
-
-        if re.fullmatch(rf"{reference_pattern}+", reference_source):
-            reference = reference_source
-
-        # Fix reference if it doesn't match
-        else:
-            # Modify the pattern to be used in `sub`
-            inner_pattern = reference_pattern[1:-1]
-            reference = re.sub(
-                rf"[^{inner_pattern}]",
-                "",
-                reference_source.strip().replace(" ", "_").lower(),
-            )
-
-        # Check if the same reference already exists and add a suffix if yes
-        counter = 1
-        final_reference = reference
-        while (
-            self.search_count(
-                [
-                    ("reference", "=", final_reference),
-                    ("partner_id", "=", partner_id),
-                    ("server_id", "=", server_id),
-                ]
-            )
-            > 0
-        ):
-            counter += 1
-            final_reference = _(f"{reference}_{counter}")
-
-        return final_reference
 
     def _compose_key_prefix(self, key_type):
         """Compose key prefix based on key type.
@@ -461,58 +327,60 @@ class CxTowerKey(models.Model):
         # Compose domain used to fetch keys
         #
         # Keys are checked in the following order:
-        # 1. Server specific
-        # 2. Partner specific
-        # 3. General (no server or partner specified)
+        # 1. Partner and Server specific
+        # 2. Server specific
+        # 3. Partner specific
+        # 4. General (no server or partner specified)
         server_id = kwargs.get("server_id")
         partner_id = kwargs.get("partner_id")
 
-        key_domain = [
-            ("reference", "=", reference),
-            ("server_id", "=", False),
-            ("partner_id", "=", False),
-        ]
-
-        if server_id:
-            key_domain = OR(
-                [
-                    key_domain,
-                    [("reference", "=", reference), ("server_id", "=", server_id)],
-                ]
-            )
-        if partner_id:
-            key_domain = OR(
-                [
-                    key_domain,
-                    [("reference", "=", reference), ("partner_id", "=", partner_id)],
-                ]
-            )
-
-        # Fetch keys
-        keys = self.sudo().search(key_domain)
-        if not keys:
+        # Fetch key
+        key = self.sudo().search([("reference", "=", reference)], limit=1)
+        if not key:
             return
 
-        # Try to get server specific key first
-        key = False
-        if server_id:
-            key = keys.filtered(lambda k: k.server_id.id == server_id)
+        # Check if key has custom values
+        key_values = key.value_ids
+        key_value = None
 
-        # Try to get partner specific key next
-        if not key and partner_id:
-            key = keys.filtered(lambda k: k.partner_id.id == partner_id)
+        # 1. Server and Partner specific key first
+        if key_values and server_id and partner_id:
+            filtered_key_values = key_values.filtered(
+                lambda k: k.server_id.id == server_id and k.partner_id.id == partner_id
+            )
+            if filtered_key_values:
+                key_value = filtered_key_values[0]
 
-        if not key:
-            # Fallback to a global key
-            key = keys
+        # 2. Server specific key first
+        if not key_value and key_values and server_id:
+            filtered_key_values = key_values.filtered(
+                lambda k: k.server_id.id == server_id and not k.partner_id
+            )
+            if filtered_key_values:
+                key_value = filtered_key_values[0]
 
-        # Read the first key secret value. Use context to show secret value
-        key_value = (
-            key.with_context(show_secret_value=True)
-            .read(["secret_value"])[0]
-            .get("secret_value")
-        )
-        return key_value
+        # 3. Partner specific key next
+        if not key_value and key_values and partner_id:
+            filtered_key_values = key_values.filtered(
+                lambda k: k.partner_id.id == partner_id and not k.server_id
+            )
+            if filtered_key_values:
+                key_value = filtered_key_values[0]
+
+        # 4. General key next
+        if not key_value and key_values:
+            filtered_key_values = key_values.filtered(
+                lambda k: not k.partner_id and not k.server_id
+            )
+            if filtered_key_values:
+                key_value = filtered_key_values[0]
+
+        if key_value:
+            return (
+                key_value.with_context(show_secret_value=True)
+                .read(["secret_value"])[0]
+                .get("secret_value")
+            )
 
     def _replace_with_spoiler(self, code, key_values):
         """Helper function that replaces clean text keys in code with spoiler.

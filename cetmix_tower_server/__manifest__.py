@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server Management",
     "summary": "Flexible Server Management directly from Odoo",
-    "version": "14.0.0.4.16",
+    "version": "14.0.0.4.17",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",
@@ -35,6 +35,7 @@
         "security/cx_tower_variable_value_security.xml",
         "security/cx_tower_variable_option_security.xml",
         "security/cx_tower_key_security.xml",
+        "security/cx_tower_key_value_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
         "wizards/cx_tower_command_execute_wizard_view.xml",

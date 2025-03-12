@@ -392,9 +392,9 @@
                                 name="secret_ids"
                                 context="{'default_key_type': 's', 'from_server': True}"
                             >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="reference" />
+                                <tree editable="bottom">
+                                    <field name="key_id" />
+                                    <field name="secret_value" />
                                 </tree>
                             </field>
                         </page>
