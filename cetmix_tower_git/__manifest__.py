@@ -17,10 +17,12 @@
         "security/cx_tower_git_source_security.xml",
         "security/cx_tower_git_remote_security.xml",
         "security/cx_tower_git_project_rel_security.xml",
+        "security/cx_tower_git_project_file_template_rel_security.xml",
         "views/cx_tower_git_project_views.xml",
         "views/cx_tower_git_source_views.xml",
         "views/cx_tower_git_remote_views.xml",
         "views/cx_tower_file_views.xml",
+        "views/cx_tower_file_template_views.xml",
         "views/cx_tower_server_view.xml",
     ],
     "demo": [

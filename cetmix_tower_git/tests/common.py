@@ -10,6 +10,9 @@ class CommonTest(TestTowerCommon):
         # Models
         self.GitProject = self.env["cx.tower.git.project"]
         self.GitProjectRel = self.env["cx.tower.git.project.rel"]
+        self.GitProjectFileTemplateRel = self.env[
+            "cx.tower.git.project.file.template.rel"
+        ]
         self.GitSource = self.env["cx.tower.git.source"]
         self.GitRemote = self.env["cx.tower.git.remote"]
 
@@ -63,7 +66,7 @@ class CommonTest(TestTowerCommon):
         )
         self.remote_other_ssh = self.GitRemote.create(
             {
-                "url": "git@other.com:cetmix/cetmix-tower.git",
+                "url": "pepefrog@memegit.com:cetmix/cetmix-tower.git",
                 "source_id": self.git_source_2.id,
                 "head": "old",
                 "sequence": 5,
@@ -76,5 +79,10 @@ class CommonTest(TestTowerCommon):
                 "name": "File 1",
                 "server_id": self.server_test_1.id,
                 "source": "tower",
+            }
+        )
+        self.file_template_1 = self.FileTemplate.create(
+            {
+                "name": "File Template 1",
             }
         )

@@ -9,7 +9,7 @@
             <field name="auto_sync" position="before">
                 <field
                     name="git_project_id"
-                    attrs="{'invisible': ['|', '|', ('file_type', '!=', 'text'), ('source', '!=', 'tower'), ('git_project_id', '=', False)]}"
+                    attrs="{'invisible': [('git_project_id', '=', False)]}"
                 />
             </field>
         </field>

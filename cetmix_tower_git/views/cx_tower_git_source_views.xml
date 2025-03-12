@@ -71,6 +71,7 @@
                                     <field name="head" optional="show" />
                                     <field name="enabled" widget="boolean_toggle" />
                                     <field name="reference" optional="hide" />
+                                    <field name="create_uid" optional="hide" />
                                 </tree>
                             </field>
                         </page>

@@ -3,61 +3,60 @@ from odoo.exceptions import AccessError
 from .common import CommonTest
 
 
-class TestFileRel(CommonTest):
-    """Test class for git file relation."""
+class TestFileTemplateRel(CommonTest):
+    """Test class for git file template relation."""
 
     def setUp(self):
         super().setUp()
-        self.file_1_rel = self.GitProjectRel.create(
+        self.file_template_1_rel = self.GitProjectFileTemplateRel.create(
             {
-                "server_id": self.server_test_1.id,
-                "file_id": self.server_1_file_1.id,
                 "git_project_id": self.git_project_1.id,
+                "file_template_id": self.file_template_1.id,
                 "project_format": "git_aggregator",
             }
         )
 
-    def test_file_rel_create(self):
-        """Test if file relation is created correctly"""
+    def test_file_template_rel_create(self):
+        """Test if file template relation is created correctly"""
 
         # -- 1 --
         # Check if file content is updated
 
         # Get code from project
         yaml_code_from_project = (
-            self.file_1_rel.git_project_id._generate_code_git_aggregator(
-                self.file_1_rel
+            self.file_template_1_rel.git_project_id._generate_code_git_aggregator(
+                self.file_template_1_rel
             )
         )
 
         self.assertEqual(
-            self.server_1_file_1.code,
+            self.file_template_1.code,
             yaml_code_from_project,
-            "File content is not updated correctly",
+            "File template content is not updated correctly",
         )
 
         # Check specific if remote is present in file
         self.assertIn(
             self.remote_other_ssh.url,
-            self.server_1_file_1.code,
-            "Remote is not present in file",
+            self.file_template_1.code,
+            "Remote is not present in file template",
         )
 
         # -- 2 --
-        # Modify remove and check if file content is updated
+        # Modify remove and check if file template content is updated
         self.remote_other_ssh.url = "https://github.com/cetmix/cetmix-memes.git"
 
         # Must be different from previous project code
         self.assertNotEqual(
-            self.server_1_file_1.code,
+            self.file_template_1.code,
             yaml_code_from_project,
-            "File content is not updated correctly",
+            "File template content is not updated correctly",
         )
         # New remote must be present in file
         self.assertIn(
             "https://github.com/cetmix/cetmix-memes.git",
-            self.server_1_file_1.code,
-            "Remote is not present in file",
+            self.file_template_1.code,
+            "Remote is not present in file template",
         )
 
         # -- 3 --
@@ -65,8 +64,8 @@ class TestFileRel(CommonTest):
         self.git_source_2.active = False
         self.assertNotIn(
             "https://github.com/cetmix/cetmix-memes.git",
-            self.server_1_file_1.code,
-            "Remote is present in file",
+            self.file_template_1.code,
+            "Remote is present in file template",
         )
 
     def test_format_git_aggregator(self):
@@ -106,8 +105,8 @@ class TestFileRel(CommonTest):
 
         # Get code from project
         yaml_code_from_project = (
-            self.file_1_rel.git_project_id._generate_code_git_aggregator(
-                self.file_1_rel
+            self.file_template_1_rel.git_project_id._generate_code_git_aggregator(
+                self.file_template_1_rel
             )
         )
         self.assertEqual(
@@ -118,120 +117,118 @@ class TestFileRel(CommonTest):
 
     def test_user_access(self):
         """Test that regular users have no access to git project relations"""
-        user_rel = self.GitProjectRel.with_user(self.user)
+        user_rel = self.GitProjectFileTemplateRel.with_user(self.user)
 
         # Try create - should fail
         with self.assertRaises(AccessError):
             user_rel.create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "file_id": self.server_1_file_1.id,
                     "git_project_id": self.git_project_1.id,
+                    "file_template_id": self.file_template_1.id,
                     "project_format": "git_aggregator",
                 }
             )
 
         # Try read - should fail
         with self.assertRaises(AccessError):
-            user_rel.browse(self.file_1_rel.id).read(["name"])
+            user_rel.browse(self.file_template_1_rel.id).read(["name"])
 
         # Try write - should fail
         with self.assertRaises(AccessError):
-            user_rel.browse(self.file_1_rel.id).write(
+            user_rel.browse(self.file_template_1_rel.id).write(
                 {"project_format": "git_aggregator"}
             )
 
         # Try unlink - should fail
         with self.assertRaises(AccessError):
-            user_rel.browse(self.file_1_rel.id).unlink()
+            user_rel.browse(self.file_template_1_rel.id).unlink()
 
     def test_manager_read_access(self):
         """Test manager read access rules"""
-        manager_rel = self.GitProjectRel.with_user(self.manager)
+        manager_rel = self.GitProjectFileTemplateRel.with_user(self.manager)
 
         # Initially manager should not have access
         with self.assertRaises(AccessError):
-            manager_rel.browse(self.file_1_rel.id).read(["name"])
+            manager_rel.browse(self.file_template_1_rel.id).read(["name"])
 
         # Add manager as project user - should have read access
         self.git_project_1.write({"user_ids": [(4, self.manager.id)]})
-        self.assertEqual(manager_rel.browse(self.file_1_rel.id).name, "Git Project 1")
+        self.assertEqual(
+            manager_rel.browse(self.file_template_1_rel.id).name, "Git Project 1"
+        )
 
-        # Remove from project, add as server user - should have read access
+        # Remove from project, add as file template user
+        # should have read access
         self.git_project_1.write({"user_ids": [(3, self.manager.id)]})
-        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
-        self.assertEqual(manager_rel.browse(self.file_1_rel.id).name, "Git Project 1")
+        self.file_template_1.write({"user_ids": [(4, self.manager.id)]})
+        self.assertEqual(
+            manager_rel.browse(self.file_template_1_rel.id).name, "Git Project 1"
+        )
 
-        # Remove from server users, add as project manager - should have read access
-        self.server_test_1.write({"user_ids": [(3, self.manager.id)]})
+        # Remove from file template users, add as project manager
+        # should have read access
+        self.file_template_1.write({"user_ids": [(3, self.manager.id)]})
         self.git_project_1.write({"manager_ids": [(4, self.manager.id)]})
-        self.assertEqual(manager_rel.browse(self.file_1_rel.id).name, "Git Project 1")
+        self.assertEqual(
+            manager_rel.browse(self.file_template_1_rel.id).name, "Git Project 1"
+        )
 
-        # Remove from project, add as server manager - should have read access
+        # Remove from project, add as file template manager
+        # should have read access
         self.git_project_1.write({"manager_ids": [(3, self.manager.id)]})
-        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
-        self.assertEqual(manager_rel.browse(self.file_1_rel.id).name, "Git Project 1")
+        self.file_template_1.write({"manager_ids": [(4, self.manager.id)]})
+        self.assertEqual(
+            manager_rel.browse(self.file_template_1_rel.id).name, "Git Project 1"
+        )
 
     def test_manager_write_access(self):
         """Test manager write/create access rules"""
-        manager_rel = self.GitProjectRel.with_user(self.manager)
+        manager_rel = self.GitProjectFileTemplateRel.with_user(self.manager)
 
-        # Create new file to avoid unique constraint violation
-        file_2 = self.File.create(
+        # Create new file template to avoid unique constraint violation
+        file_template_2 = self.FileTemplate.create(
             {
-                "name": "test_file_2",
-                "server_id": self.server_test_1.id,
-                "source": "tower",
-                "file_type": "text",
+                "name": "test_file_template_2",
             }
         )
 
-        # Try create without being project and server manager - should fail
+        # Try create without being project and file template manager - should fail
         with self.assertRaises(AccessError):
             manager_rel.create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "file_id": file_2.id,
                     "git_project_id": self.git_project_1.id,
+                    "file_template_id": file_template_2.id,
                     "project_format": "git_aggregator",
                 }
             )
 
         # Add as project manager only - should still fail
-        file_3 = self.File.create(
+        file_template_3 = self.FileTemplate.create(
             {
-                "name": "test_file_3",
-                "server_id": self.server_test_1.id,
-                "source": "tower",
-                "file_type": "text",
+                "name": "test_file_template_3",
             }
         )
         self.git_project_1.write({"manager_ids": [(4, self.manager.id)]})
         with self.assertRaises(AccessError):
             manager_rel.create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "file_id": file_3.id,
                     "git_project_id": self.git_project_1.id,
+                    "file_template_id": file_template_3.id,
                     "project_format": "git_aggregator",
                 }
             )
 
-        # Add as server manager - should succeed
-        file_4 = self.File.create(
+        # Add as file template manager - should succeed
+        file_template_4 = self.FileTemplate.create(
             {
-                "name": "test_file_4",
-                "server_id": self.server_test_1.id,
-                "source": "tower",
-                "file_type": "text",
+                "name": "test_file_template_4",
             }
         )
-        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
+        file_template_4.write({"manager_ids": [(4, self.manager.id)]})
         rel = manager_rel.create(
             {
-                "server_id": self.server_test_1.id,
-                "file_id": file_4.id,
                 "git_project_id": self.git_project_1.id,
+                "file_template_id": file_template_4.id,
                 "project_format": "git_aggregator",
             }
         )
@@ -240,54 +237,51 @@ class TestFileRel(CommonTest):
         # Test write access
         rel.write({"project_format": "git_aggregator"})
 
-        # Remove server manager access - should fail to write
-        self.server_test_1.write({"manager_ids": [(3, self.manager.id)]})
+        # Remove file template manager access - should fail to write
+        file_template_4.write({"manager_ids": [(3, self.manager.id)]})
         with self.assertRaises(AccessError):
             rel.write({"project_format": "git_aggregator"})
 
         # Remove project manager access - should fail to write
         self.git_project_1.write({"manager_ids": [(3, self.manager.id)]})
+        file_template_4.write({"manager_ids": [(4, self.manager.id)]})
         with self.assertRaises(AccessError):
             rel.write({"project_format": "git_aggregator"})
 
     def test_manager_unlink_access(self):
         """Test manager unlink access rules"""
-        manager_rel = self.GitProjectRel.with_user(self.manager)
+        manager_rel = self.GitProjectFileTemplateRel.with_user(self.manager)
 
         # Try delete without being project and server manager - should fail
         with self.assertRaises(AccessError):
-            manager_rel.browse(self.file_1_rel.id).unlink()
+            manager_rel.browse(self.file_template_1_rel.id).unlink()
 
         # Add as project manager only - should fail
         self.git_project_1.write({"manager_ids": [(4, self.manager.id)]})
         with self.assertRaises(AccessError):
-            manager_rel.browse(self.file_1_rel.id).unlink()
+            manager_rel.browse(self.file_template_1_rel.id).unlink()
 
-        # Add as server manager - should succeed
-        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
-        self.file_1_rel.unlink()
-        self.assertFalse(self.file_1_rel.exists())
+        # Add as file template manager - should succeed
+        self.file_template_1.write({"manager_ids": [(4, self.manager.id)]})
+        self.file_template_1_rel.unlink()
+        self.assertFalse(self.file_template_1_rel.exists())
 
     def test_root_access(self):
         """Test root access rules"""
-        root_rel = self.GitProjectRel.with_user(self.root)
+        root_rel = self.GitProjectFileTemplateRel.with_user(self.root)
 
         # Create new file to avoid unique constraint violation
-        file_3 = self.File.create(
+        file_template_3 = self.FileTemplate.create(
             {
-                "name": "test_file_3",
-                "server_id": self.server_test_1.id,
-                "source": "tower",
-                "file_type": "text",
+                "name": "test_file_template_3",
             }
         )
 
         # Create - should succeed
         rel = root_rel.create(
             {
-                "server_id": self.server_test_1.id,
-                "file_id": file_3.id,
                 "git_project_id": self.git_project_1.id,
+                "file_template_id": file_template_3.id,
                 "project_format": "git_aggregator",
             }
         )
