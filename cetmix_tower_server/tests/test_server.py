@@ -8,6 +8,20 @@ class TestTowerServer(TestTowerCommon):
         super().setUp(*args, **kwargs)
         self.os_ubuntu_20_04 = self.env["cx.tower.os"].create({"name": "Ubuntu 20.04"})
 
+        secret_1 = self.Key.create(
+            {
+                "name": "Secret 1",
+                "secret_value": "secret_value_1",
+                "key_type": "s",
+            },
+        )
+        secret_2 = self.Key.create(
+            {
+                "name": "Secret 2",
+                "secret_value": "secret_value_2",
+                "key_type": "s",
+            },
+        )
         self.server_test_2 = self.Server.create(
             {
                 "name": "Test Server #2",
@@ -24,18 +38,16 @@ class TestTowerServer(TestTowerCommon):
                         0,
                         0,
                         {
-                            "name": "Secret 1",
+                            "key_id": secret_1.id,
                             "secret_value": "secret_value_1",
-                            "key_type": "s",
                         },
                     ),
                     (
                         0,
                         0,
                         {
-                            "name": "Secret 2",
+                            "key_id": secret_2.id,
                             "secret_value": "secret_value_2",
-                            "key_type": "s",
                         },
                     ),
                 ],
@@ -298,7 +310,13 @@ COMMAND_RESULT = {
         """
         Test cascading deletion of server and its related records.
         """
-
+        secret_1 = self.Key.create(
+            {
+                "name": "Secret 1",
+                "secret_value": "secret_value_1",
+                "key_type": "s",
+            },
+        )
         # Create a test server
         server = self.Server.create(
             {
@@ -316,9 +334,8 @@ COMMAND_RESULT = {
                         0,
                         0,
                         {
-                            "name": "Secret 1",
+                            "key_id": secret_1.id,
                             "secret_value": "secret_value_1",
-                            "key_type": "s",
                         },
                     ),
                 ],
