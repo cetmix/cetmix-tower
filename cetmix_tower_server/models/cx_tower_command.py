@@ -183,17 +183,6 @@ class CxTowerCommand(models.Model):
         """
         return ["code", "path"]
 
-    # Depend on related servers and partners
-    @api.depends(
-        "code",
-        "server_ids",
-        "server_ids.partner_id",
-        "secret_ids.server_id",
-        "secret_ids.partner_id",
-    )
-    def _compute_secret_ids(self):
-        return super()._compute_secret_ids()
-
     @api.depends("action")
     def _compute_code(self):
         """
@@ -255,16 +244,3 @@ class CxTowerCommand(models.Model):
         )
         action["domain"] = [("command_id", "=", self.id)]
         return action
-
-    def _compose_secret_search_domain(self, key_refs):
-        # Check server anb partner specific secrets
-        return [
-            ("reference", "in", key_refs),
-            "|",
-            "|",
-            ("server_id", "in", self.server_ids.ids),
-            ("partner_id", "in", self.server_ids.partner_id.ids),
-            "&",
-            ("server_id", "=", False),
-            ("partner_id", "=", False),
-        ]

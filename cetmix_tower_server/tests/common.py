@@ -109,6 +109,7 @@ class TestTowerCommon(TransactionCase):
 
         # Key
         self.Key = self.env["cx.tower.key"]
+        self.KeyValue = self.env["cx.tower.key.value"]
 
         self.key_1 = self.Key.create(
             {"name": "Test Key 1", "key_type": "k", "secret_value": "much key"}
