@@ -12,6 +12,7 @@ try:
         DSSKey,
         ECDSAKey,
         Ed25519Key,
+        MissingHostKeyPolicy,
         RSAKey,
         SFTPClient,
         SSHClient,
@@ -22,7 +23,7 @@ except ImportError:
         "Looks like 'paramiko' is not installed, please try to "
         "install it using 'pip install paramiko'"
     )
-    AutoAddPolicy = RSAKey = SSHClient = None
+    AutoAddPolicy = MissingHostKeyPolicy = RSAKey = SSHClient = None
 
 
 class KeyLoader:
@@ -63,6 +64,7 @@ class SSHConnection:
         username: str,
         password: Optional[str] = None,
         ssh_key: Optional[str] = None,
+        host_key: Optional[str] = None,
         mode: str = "p",  # "p" for password, "k" for key
         allow_agent: bool = False,
         timeout: int = 5000,
@@ -75,6 +77,7 @@ class SSHConnection:
         self.username = username
         self.password = password
         self.ssh_key = ssh_key
+        self.host_key = host_key
         self.mode = mode
         self.allow_agent = allow_agent
         self.timeout = timeout
@@ -89,7 +92,13 @@ class SSHConnection:
 
         self._ssh_client = SSHClient()
         self._ssh_client.load_system_host_keys()
-        self._ssh_client.set_missing_host_key_policy(AutoAddPolicy())  # type: ignore
+
+        if self.host_key:
+            self._ssh_client.set_missing_host_key_policy(
+                CustomHostKeyPolicy(self.host_key)
+            )
+        else:
+            self._ssh_client.set_missing_host_key_policy(AutoAddPolicy())
 
         connect_params = {
             "hostname": self.host,
@@ -129,6 +138,44 @@ class SSHConnection:
         if self._ssh_client is None:
             self.connect()
         return self._ssh_client.get_transport()
+
+
+class CustomHostKeyPolicy(MissingHostKeyPolicy):
+    """
+    Custom SSH host key policy for validating the server's host key.
+
+    This policy compares the server's host key (in Base64 format) with the expected key.
+    If they do not match, an SSHException is raised to prevent connecting
+    to an untrusted server. If they match, the key is added to the client's host keys.
+    """
+
+    def __init__(self, expected_host_key: str):
+        """
+        Initialize the policy with the expected host key.
+
+        Args:
+            expected_host_key (str): The expected host key in Base64 format.
+        """
+        self.expected_host_key = expected_host_key
+
+    def missing_host_key(self, client, hostname, key):
+        """
+        Called when the SSH client receives a host key from the server
+        that is not in its known hosts.
+
+        Args:
+            client: The SSH client instance.
+            hostname: The hostname of the server.
+            key: The host key received from the server.
+
+        Raises:
+            SSHException: If the received host key does not match the expected host key.
+        """
+        received_key = key.get_base64()
+        if received_key != self.expected_host_key:
+            raise SSHException(f"Host key mismatch for {hostname}. ")
+        # If the key matches, add it to the client's known hosts
+        client._host_keys.add(hostname, key.get_name(), key)
 
 
 class SftpService:
@@ -240,6 +287,7 @@ class SSHManager:
             connection.allow_agent,
             connection.password or "",
             connection.ssh_key or "",
+            connection.host_key or "",
         )
         if key in cls._connection_cache:
             instance, created_at, cached_timeout = cls._connection_cache[key]
@@ -306,5 +354,6 @@ class SSHManager:
             self.connection.allow_agent,
             self.connection.password or "",
             self.connection.ssh_key or "",
+            self.connection.host_key or "",
         )
         self.delete_cache(key)
