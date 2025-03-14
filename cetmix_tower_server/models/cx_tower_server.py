@@ -9,6 +9,8 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 
+from odoo.addons.base.models.res_users import check_identity
+
 from ..ssh.ssh import SSHConnection, SSHManager
 from .constants import (
     ANOTHER_COMMAND_RUNNING,
@@ -100,6 +102,16 @@ class CxTowerServer(models.Model):
     )
     ip_v6_address = fields.Char(
         string="IPv6 Address", groups="cetmix_tower_server.group_manager"
+    )
+    skip_host_key = fields.Boolean(
+        default=False,
+        copy=False,
+        help="Enable to skip host key verification",
+    )
+    host_key = fields.Char(
+        groups="cetmix_tower_server.group_manager",
+        copy=False,
+        help="Host key to verify the server",
     )
     ssh_port = fields.Integer(
         string="SSH port",
@@ -376,6 +388,30 @@ class CxTowerServer(models.Model):
 
         return result
 
+    @check_identity
+    def action_show_host_key(self):
+        """Show host key"""
+        self.ensure_one()
+        try:
+            host_key = self._get_host_key()
+            is_error = False
+        except Exception as error:
+            is_error = (True,)
+            host_key = error
+        context = {
+            "default_host_key": host_key,
+            "default_is_error": is_error,
+            "default_server_id": self.id,
+        }
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Host Key"),
+            "res_model": "cx.tower.server.host.key.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
     def action_update_server_logs(self):
         """Update selected log from its source."""
         for server in self:
@@ -401,6 +437,87 @@ class CxTowerServer(models.Model):
         )
         action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
         return action
+
+    def _get_notification_action(
+        self, message, notification_type="info", title=None, sticky=True
+    ):
+        """Get notification action
+
+        Args:
+            message (str): Message
+            notification_type (str, optional): Notification type. Defaults to "info".
+            title (str, optional): Title. Defaults to None.
+            sticky (bool, optional): Sticky notification. Defaults to True.
+
+        Returns:
+            dict: Notification action
+        """
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": notification_type,
+                "title": title,
+                "message": message,
+                "sticky": sticky,
+            },
+        }
+
+    def _get_host_key(self, raise_on_error=True, timeout=60):
+        """Get host key
+
+        Args:
+            raise_on_error (bool, optional): If true will raise exception
+            in case or error, otherwise False will be returned
+            Defaults to True.
+            timeout (int, optional): SSH connection timeout in seconds.
+
+        Raises:
+            ValidationError: If the provided server reference is invalid or
+                the server cannot be found.
+
+        Returns:
+            Host key: Host key of the server
+        """
+        self.ensure_one()
+
+        # Check access before getting host key
+        # This is needed to avoid possible access violations
+        self.check_access_rights("read")
+        self.check_access_rule("read")
+
+        try:
+            client = self._get_ssh_client(
+                raise_on_error=raise_on_error, timeout=timeout
+            )
+            ssh_client = client.connection.connect()
+            transport = ssh_client.get_transport()
+            remote_key = transport.get_remote_server_key()
+            host_key = remote_key.get_base64()
+            return host_key
+        except Exception as e:
+            if raise_on_error:
+                raise ValidationError(
+                    _("Error retrieving host key: %(err)s", err=e)
+                ) from e
+            else:
+                return None
+
+    def _read(self, fields):
+        """Substitute fields based on api"""
+        super()._read(fields)
+        if not self.env.context.get("show_host_key") and (
+            "host_key" in fields or fields == []
+        ):
+            spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
+            # Public user used for substitution
+            for record in self:
+                try:
+                    record._cache["host_key"] = spoiler
+                except Exception:
+                    # skip SpecialValue
+                    # (e.g. for missing record or access right)
+                    pass
 
     def _get_password(self):
         """Get ssh password
@@ -464,16 +581,24 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         self = self.sudo()
         try:
+            host_key = (
+                self.with_context(show_host_key=True)
+                .read(["host_key"])[0]
+                .get("host_key")
+            )
+
             connection = SSHConnection(
                 host=self.ip_v4_address or self.ip_v6_address,
                 port=self.ssh_port,
                 username=self.ssh_username,
                 password=self._get_password(),
                 ssh_key=self._get_ssh_key(),
+                host_key=host_key if host_key and not self.skip_host_key else None,
                 mode=self.ssh_auth_mode,
                 timeout=timeout,
             )
             client = SSHManager(connection)
+
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(_("SSH connection error %(err)s", err=e)) from e
@@ -601,19 +726,15 @@ class CxTowerServer(models.Model):
         # Return notification
         if return_notification:
             response = test_result.get("response", "")
-            notification = {
-                "type": "ir.actions.client",
-                "tag": "display_notification",
-                "params": {
-                    "title": _("Success"),
-                    "message": _(
-                        "Connection test passed! \n%(res)s",
-                        res=response.rstrip(),
-                    ),
-                    "sticky": False,
-                },
-            }
-            return notification
+            return self._get_notification_action(
+                _(
+                    "Connection test passed! \n%(res)s",
+                    res=response.rstrip(),
+                ),
+                notification_type="info",
+                title=_("Success"),
+                sticky=False,
+            )
 
         return test_result
 
