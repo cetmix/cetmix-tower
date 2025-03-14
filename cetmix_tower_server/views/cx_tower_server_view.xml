@@ -170,7 +170,6 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-
                     <button
                         name="action_execute_command"
                         type="object"
@@ -249,6 +248,7 @@
                         <page name="General" string="General Settings">
                             <group name="root">
                                 <group name="main">
+                                    <field name="id" invisible="1" />
                                     <field name="partner_id" />
                                     <field name="os_id" />
                                     <field name="active" invisible='1' />
@@ -259,6 +259,42 @@
                                     />
                                     <field name="ip_v4_address" />
                                     <field name="ip_v6_address" />
+
+                                    <label
+                                        for="host_key"
+                                        groups="cetmix_tower_server.group_manager"
+                                        attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                                    />
+                                    <div groups="cetmix_tower_server.group_manager">
+                                            <field
+                                            name="host_key"
+                                            placeholder="Host key"
+                                            attrs="{'invisible': [('skip_host_key', '=', True)], 'required': [('skip_host_key', '=', False), ('id', '>', 0)]}"
+                                        />
+                                            <button
+                                            name="action_show_host_key"
+                                            type="object"
+                                            string="Get from Host"
+                                            class="btn-secondary"
+                                            attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                                        />
+                                    </div>
+                                    <label
+                                        for="skip_host_key"
+                                        string="Don't Check Key"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
+                                    <div groups="cetmix_tower_server.group_manager">
+                                        <field name="skip_host_key" />
+                                        <div
+                                            class="alert alert-warning"
+                                            role="alert"
+                                            style="margin-bottom:0px;"
+                                            attrs="{'invisible': [('skip_host_key', '=', False)]}"
+                                        >
+                                            In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks.
+                                        </div>
+                                    </div>
                                 </group>
                                 <group name="ssh">
                                     <field name="ssh_auth_mode" />
