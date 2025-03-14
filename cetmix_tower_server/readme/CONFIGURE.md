@@ -21,6 +21,7 @@ Users of this group have access to the entities with `Access Level` set to `Mana
 
 Go to the `Cetmix Tower -> Servers -> Servers` menu and click `Create`.
 Enter server name and a unique server reference. Leave the "reference" field blank to generate a reference automatically.
+Enter host key for validating the server's host key. Click to `Show key` to auto getting host key of the server.
 You can also select a color which is used to mark a server in the kanban view.
 
 Fill the values it the tabs below:
@@ -32,6 +33,7 @@ Fill the values it the tabs below:
 - **Tags**: User-defined search tags
 - **IPv4 Address**
 - **IPv6 Address**: Will be used if no IPv4 address is specified
+- **Skip Host Key**: Skip validation host key. IMPORTANT: In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks.
 - **SSH Auth Mode**: Available options are "Password" and "Key"
 - **SSH Port**
 - **SSH Username**
