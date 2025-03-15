@@ -20,7 +20,18 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
         string="Server Name",
         required=True,
     )
+    partner_id = fields.Many2one(
+        "res.partner",
+    )
     color = fields.Integer(help="For better visualization in views")
+    os_id = fields.Many2one(
+        string="Operating System",
+        comodel_name="cx.tower.os",
+    )
+    tag_ids = fields.Many2many(
+        comodel_name="cx.tower.tag",
+        string="Tags",
+    )
     ip_v4_address = fields.Char(string="IPv4 Address")
     ip_v6_address = fields.Char(string="IPv6 Address")
     ssh_port = fields.Integer(string="SSH port", default=22)
@@ -44,6 +55,11 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
         ],
         default="p",
         required=True,
+    )
+    use_sudo = fields.Selection(
+        string="Use sudo",
+        selection=[("n", "Without password"), ("p", "With password")],
+        help="Run commands using 'sudo'",
     )
     line_ids = fields.One2many(
         comodel_name="cx.tower.server.template.create.wizard.line",
@@ -103,6 +119,10 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
             "ssh_password": self.ssh_password,
             "ssh_key_id": self.ssh_key_id.id,
             "ssh_auth_mode": self.ssh_auth_mode,
+            "use_sudo": self.use_sudo,
+            "partner_id": self.partner_id.id,
+            "os_id": self.os_id.id,
+            "tag_ids": [(4, tag_id) for tag_id in self.tag_ids.ids],
         }
         if self.line_ids:
             res.update(
