@@ -12,20 +12,31 @@
                     </h1>
                     <field name="color" widget="color_picker" />
                 </div>
-                <group>
-                    <group name="main">
-                        <field name="ip_v4_address" />
-                        <field name="ip_v6_address" />
+                <group name="main">
+                    <group name="general">
+                        <field name="partner_id" />
+                        <field name="os_id" />
+                        <field name="tag_ids" widget="many2many_tags" />
                     </group>
                     <group name="ssh">
+                        <field name="ip_v4_address" />
+                        <field name="ip_v6_address" />
                         <field name="ssh_auth_mode" />
                         <field name="ssh_port" />
                         <field
                             name="ssh_username"
                             placeholder="this can be changed later"
                         />
-                        <field name="ssh_password" password="True" />
-                        <field name="ssh_key_id" />
+                        <field
+                            name="ssh_password"
+                            password="True"
+                            attrs="{'invisible': [('ssh_auth_mode', '=', 'k')]}"
+                        />
+                        <field
+                            name="ssh_key_id"
+                            attrs="{'invisible': [('ssh_auth_mode', '=', 'p')]}"
+                        />
+                        <field name="use_sudo" />
                     </group>
                     <field name="line_ids">
                         <tree editable="bottom">
