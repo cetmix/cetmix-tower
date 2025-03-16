@@ -15,5 +15,6 @@ class CxTowerVariableValue(models.Model):
             "variable_id",
             "value_char",
             "variable_ids",
+            "required",
         ]
         return res

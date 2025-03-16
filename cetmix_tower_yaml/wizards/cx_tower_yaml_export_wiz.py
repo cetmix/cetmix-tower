@@ -42,25 +42,38 @@ class CxTowerYamlExportWiz(models.TransientModel):
 
         # Get model records
         records = self._get_model_record()
+        if not records:
+            raise ValidationError(_("No valid records selected"))
+
         explode_related_record = self.explode_child_records
         remove_empty_values = self.remove_empty_values
-        # Collact YAML code into a list
-        yaml_codes = (
-            [FILE_HEADER + self._text_to_yaml_comment(self.comment)]
+
+        # Prepare YAML header
+        yaml_header = (
+            FILE_HEADER + self._text_to_yaml_comment(self.comment)
             if self.comment
-            else [FILE_HEADER]
+            else FILE_HEADER
         )
 
-        # Concatenate all YAML codes from selected records
+        # Compose list of dictionaries ready for YAML conversion
+        record_list = []
         for record in records:
-            record_yaml_code = record.with_context(
+            record_yaml_dict = record.with_context(
                 explode_related_record=explode_related_record,
                 remove_empty_values=remove_empty_values,
-            ).yaml_code
-            if record_yaml_code:
-                yaml_codes.append(record_yaml_code)
+            )._prepare_record_for_yaml()
+            if record_yaml_dict:
+                record_list.append(record_yaml_dict)
 
-        self.yaml_code = "\n".join(yaml_codes) if yaml_codes else ""
+        if record_list:
+            yaml_version = self.env["cx.tower.yaml.mixin"].CETMIX_TOWER_YAML_VERSION
+            yaml_code = records._convert_dict_to_yaml(
+                {"cetmix_tower_yaml_version": yaml_version, "records": record_list}
+            )
+        else:
+            yaml_code = ""
+
+        self.yaml_code = f"{yaml_header}\n{yaml_code}"
 
     def action_generate_yaml_file(self):
         """Save YAML file"""
