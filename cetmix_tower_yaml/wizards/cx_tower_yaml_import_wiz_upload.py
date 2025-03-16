@@ -21,23 +21,15 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
     def action_import_yaml(self):
         """Parse YAML data to the import wizard
 
-        Args:
-            decoded_file (Text): YAML code
-            model_name (Char): Name of the Odoo model, if parsed from YAML
-            record_id (_type_): ID of the record, if passed from YAML
-
         Returns:
             Action Window: Action to open the import wizard
         """
 
-        decoded_file, model_name, record_id = self._extract_yaml_data()
+        decoded_file = self._extract_yaml_data()
 
         import_wizard = self.env["cx.tower.yaml.import.wiz"].create(
             {
                 "yaml_code": decoded_file,
-                "model_name": model_name,
-                "record_id": record_id,
-                "if_record_exists": "update" if record_id else "create",
             }
         )
 
@@ -53,11 +45,10 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
         """Extract data form YAML file and validate them
 
         Returns:
-            decoded_file, model_name, record_id
-            - decoded_file (Text): YAML code
-            - model_name (Char): Name of the Odoo model, if resolved
-            - record_id (_type_): ID of the record, if resolved
-
+            decoded_file (Text): YAML code
+            Raises:
+                ValidationError: If the YAML file is invalid
+                or contains unsupported data
         """
 
         self.ensure_one()
@@ -81,45 +72,60 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
         if not yaml_data or not isinstance(yaml_data, dict):
             raise ValidationError(_("Yaml file doesn't contain valid data"))
 
-        # Get Odoo model name from YAML
-        yaml_model = yaml_data.get("cetmix_tower_model")
-        if not yaml_model:
-            raise ValidationError(
-                _("No model for import is specified in the YAML file")
-            )
-
-        model_name = f"cx.tower.{yaml_model.replace('_', '.')}"
-
-        # Check if model exists
-        try:
-            model = self.env[model_name]
-        except KeyError as e:
-            raise ValidationError(_("Invalid model specified in the YAML file")) from e
-
-        # Check if model supports YAML import
-        if not hasattr(model, "yaml_code"):
-            raise ValidationError(_("Model does not support YAML import"))
-
-        # Check if YAML version is supported
-        yaml_version = yaml_data.get("cetmix_tower_yaml_version")
+        # Check Cetmix Tower YAML version
+        yaml_version = yaml_data.pop("cetmix_tower_yaml_version", None)
+        supported_version = self.env["cx.tower.yaml.mixin"].CETMIX_TOWER_YAML_VERSION
         if (
             yaml_version
             and isinstance(yaml_version, int)
-            and yaml_version > model.CETMIX_TOWER_YAML_VERSION
+            and yaml_version > supported_version
         ):
             raise ValidationError(
                 _(
-                    "YAML file version is not supported."
-                    " You may need to update the Cetmix Tower Yaml module."
+                    "YAML version is higher than version"
+                    " supported by your Cetmix Tower instance."
+                    " %(code_version)s > %(tower_version)s",
+                    code_version=yaml_version,
+                    tower_version=supported_version,
                 )
             )
 
-        # Get record id from YAML
-        record_reference = yaml_data.get("reference")
-        if record_reference:
-            record = model.get_by_reference(record_reference)
-            record_id = record and record.id or False
-        else:
-            record_id = False
+        # Get records from YAML
+        records = yaml_data.get("records")
+        if not records:
+            raise ValidationError(_("YAML file doesn't contain any records"))
 
-        return decoded_file, model_name, record_id
+        # Collect and validate all record models
+        ir_model_obj = self.env["ir.model"]
+        unique_models = {}
+
+        # First pass: check all records have models and collect unique models
+        for record in records:
+            record_model = record.get("cetmix_tower_model")
+            if not record_model:
+                raise ValidationError(
+                    _(
+                        "Record model is missing for record %s",
+                        record.get("reference", ""),
+                    )
+                )
+            if record_model not in unique_models:
+                odoo_model = f"cx.tower.{record_model}".replace("_", ".")
+                unique_models[record_model] = odoo_model
+
+        # Second pass: validate all unique models in a single query
+        odoo_models = list(unique_models.values())
+        valid_models = {
+            model.model: model
+            for model in ir_model_obj.search([("model", "in", odoo_models)])
+        }
+
+        # Third pass: check models exist and support YAML import
+        for record_model, odoo_model in unique_models.items():
+            if odoo_model not in valid_models:
+                raise ValidationError(_("'%s' is not a valid model", record_model))
+            if not hasattr(self.env[odoo_model], "yaml_code"):
+                raise ValidationError(
+                    _("Model '%s' does not support YAML import", record_model)
+                )
+        return decoded_file

@@ -100,11 +100,6 @@ class TestTowerYamlMixin(TransactionCase):
             "Access level is not parsed correctly",
         )
         self.assertEqual(
-            result_values["cetmix_tower_yaml_version"],
-            self.YamlMixin.CETMIX_TOWER_YAML_VERSION,
-            "Cetmix Tower YAML version is not added",
-        )
-        self.assertEqual(
             result_values["name"],
             source_values["name"],
             "Other values should remain unchanged",
@@ -134,7 +129,6 @@ class TestTowerYamlMixin(TransactionCase):
         # Test regular flow
         source_values = {
             "access_level": "user",
-            "cetmix_tower_yaml_version": self.YamlMixin.CETMIX_TOWER_YAML_VERSION,
             "name": "Doge Much Like",
             "reference": "such_much_doge",
             "some_doge_field": "some_meme",
@@ -145,11 +139,6 @@ class TestTowerYamlMixin(TransactionCase):
         )
         self.assertNotIn(
             "some_doge_field", result_values, "Non listed fields must be removed"
-        )
-        self.assertNotIn(
-            "cetmix_tower_yaml_version",
-            result_values,
-            "Cetmix Tower YAML version must be removed",
         )
         self.assertEqual(
             result_values["access_level"],
@@ -167,37 +156,11 @@ class TestTowerYamlMixin(TransactionCase):
             "Other values should remain unchanged",
         )
 
-        # -- 2 --
-        # Test flow with exception due to yaml version incompatibility
-        source_values = {
-            "access_level": "user",
-            "cetmix_tower_yaml_version": self.YamlMixin.CETMIX_TOWER_YAML_VERSION + 1,
-            "name": "Doge Much Like",
-            "reference": "such_much_doge",
-            "some_doge_field": "some_meme",
-        }
-
-        with self.assertRaises(ValidationError) as e:
-            result_values = self.YamlMixin._post_process_yaml_dict_values(
-                source_values.copy()
-            )
-            self.assertEqual(
-                str(e),
-                _(
-                    "YAML version is higher than version"
-                    " supported by your Cetmix Tower instance. %(code_version)s > %(tower_version)s",  # noqa
-                    code_version=self.YamlMixin.CETMIX_TOWER_YAML_VERSION + 1,
-                    tower_version=self.YamlMixin.CETMIX_TOWER_YAML_VERSION,
-                ),
-                "Exception message doesn't match",
-            )
-
-        # -- Test 3 --
+        # -- Test 2 --
         # Submit wrong value for access level
         source_values.update(
             {
                 "access_level": "doge",
-                "cetmix_tower_yaml_version": self.YamlMixin.CETMIX_TOWER_YAML_VERSION,
             }
         )
         with self.assertRaises(ValidationError) as e:
