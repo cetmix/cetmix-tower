@@ -23,6 +23,13 @@ class TestYamlExportWizard(TransactionCase):
                 "code": "echo 'Test Command From Yaml'",
             }
         )
+        self.command_test_wizard_2 = self.TowerCommand.create(
+            {
+                "reference": "test_command_from_yaml_2",
+                "name": "Test Command From Yaml 2",
+                "code": "echo 'Test Command From Yaml 2'",
+            }
+        )
 
         # Create a flight plan
         self.FlightPlan = self.env["cx.tower.plan"]
@@ -91,18 +98,54 @@ class TestYamlExportWizard(TransactionCase):
             "Comment should be properly prepended to YAML code",
         )
 
+    def test_yaml_export_wizard_yaml_generation(self):
+        """Test code generation of YAML export wizard."""
+
+        wizard_yaml = """
+# This file is generated with Cetmix Tower.
+# Details and documentation: https://cetmix.com/tower
+# Test Comment
+cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: command
+  access_level: manager
+  reference: test_command_from_yaml
+  name: Test Command From Yaml
+  action: ssh_command
+  allow_parallel_run: false
+  note: false
+  path: false
+  code: echo 'Test Command From Yaml'
+  server_status: false
+- cetmix_tower_model: command
+  access_level: manager
+  reference: test_command_from_yaml_2
+  name: Test Command From Yaml 2
+  action: ssh_command
+  allow_parallel_run: false
+  note: false
+  path: false
+  code: echo 'Test Command From Yaml 2'
+  server_status: false
+"""
+
+        # -- 1 --
+        # Test with two commands
+        context = {
+            "default_explode_child_records": True,
+            "default_comment": "Test Comment",
+            "default_remove_empty_values": True,
+            "active_model": "cx.tower.command",
+            "active_ids": [self.command_test_wizard.id, self.command_test_wizard_2.id],
+        }
+        wizard = self.YamlExportWizard.with_context(context).create({})
+        wizard.onchange_explode_child_records()
+        self.assertEqual(wizard.yaml_code, wizard_yaml)
+
     def test_yaml_export_wizard(self):
         """Test the YAML export wizard."""
 
         # -- 1 --
-        # Test wizard creation
-        self.assertEqual(
-            self.test_wizard.yaml_code,
-            f"{self.file_header}\n{self.server_template_test_wizard.yaml_code}",
-            "YAML code should be the same",
-        )
-
-        # -- 2 --
         # Test wizard action
         result = self.test_wizard.action_generate_yaml_file()
         self.assertEqual(
@@ -115,7 +158,7 @@ class TestYamlExportWizard(TransactionCase):
         )
         self.assertTrue(result["res_id"], "Wizard should have been created")
 
-        # -- 3 --
+        # -- 2 --
         # Ensure download wizard file name is generated
         # based on the record reference
         download_wizard = self.env["cx.tower.yaml.export.wiz.download"].browse(
@@ -127,24 +170,24 @@ class TestYamlExportWizard(TransactionCase):
             "YAML file name should be generated based on record reference",
         )
 
-        # -- 4 --
+        # -- 3 --
         # Decode YAML file and check if it's valid
         yaml_file_content = base64.decodebytes(download_wizard.yaml_file).decode(
             "utf-8"
         )
         self.assertEqual(
             yaml_file_content,
-            f"{self.file_header}\n{self.server_template_test_wizard.yaml_code}",
+            self.test_wizard.yaml_code,
             "YAML file content should be the same as the original YAML code",
         )
 
-        # -- 5 --
+        # -- 4 --
         # Test if empty YAML code is handled correctly
         self.test_wizard.yaml_code = ""
         with self.assertRaises(ValidationError):
             self.test_wizard.action_generate_yaml_file()
 
-        # -- 6 --
+        # -- 5 --
         # Test non utf-8 characters encoding
         self.test_wizard.yaml_code = "Non-ascii characters: \udc80"
         with self.assertRaises(ValidationError):

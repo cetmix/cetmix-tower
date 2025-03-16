@@ -30,6 +30,18 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "'%s' is not a valid model"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#, python-format
+msgid "'invalid_model' is not a valid model"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid ""
 "<strong>Important:</strong> To maintain data consistency, the following "
@@ -161,11 +173,6 @@ msgid "Comment to be added to the beginning of exported YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "Create New Record"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__create
 msgid "Create a new record"
 msgstr ""
@@ -214,6 +221,18 @@ msgid "Display Name"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Error creating record '%(reference)s' in model '%(model)s': %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Error updating record %(reference)s: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid ""
 "Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.\n"
@@ -231,6 +250,10 @@ msgid "Export"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
@@ -298,6 +321,7 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:res.groups,name:cetmix_tower_yaml.group_import
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Import"
 msgstr ""
 
@@ -308,16 +332,15 @@ msgid "Import YAML"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
-msgid "Invalid YAML file"
+msgid "Import result: %(model)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
-msgid "Invalid model specified in the YAML file"
+msgid "Invalid YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -369,25 +392,25 @@ msgid "List of secrets present in the YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_description
-msgid "Model"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_name
-msgid "Model Name"
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "Model '%s' does not support YAML import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
-#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
-msgid "Model does not support YAML import"
+msgid "Model 'server' does not support YAML import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_name
-msgid "Model to create records in"
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_names
+msgid "Model Names"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_names
+msgid "Models to create records in"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -397,25 +420,27 @@ msgid "No YAML code is present."
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
-msgid "No model for import is specified in the YAML file"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid "No model or records selected"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "OSs"
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "No records were created or updated"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+#, python-format
+msgid "No valid records selected"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "Open Existing Record"
+msgid "OSs"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -430,13 +455,31 @@ msgid "Process"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__record_id
-msgid "Record"
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Record Import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__record_id
-msgid "Record ID to update"
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "Record model is missing for record %s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Record reference is missing"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Records of the following models were created or updated: %(models)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -457,18 +500,18 @@ msgid "Secret List"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__skip
+msgid "Skip record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Tags"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "This will create a new record. Proceed?"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "This will overwrite the existing record. Proceed?"
+msgid "This may overwrite existing records. Proceed?"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -476,11 +519,6 @@ msgstr ""
 msgid ""
 "To create new entities instead of updating existing ones, remove or modify "
 "the <code>reference</code> field in the YAML code for those entities."
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "Update Existing Record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -493,6 +531,11 @@ msgstr ""
 #: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
 #, python-format
 msgid "Values must be a dictionary"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Variable Options"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -529,16 +572,15 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
-msgid ""
-"YAML file version is not supported. You may need to update the Cetmix Tower "
-"Yaml module."
+msgid "YAML file doesn't contain any records"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
-#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid ""
 "YAML version is higher than version supported by your Cetmix Tower instance."

@@ -11,8 +11,7 @@ class TestTowerCommand(TransactionCase):
         self.Command = self.env["cx.tower.command"]
 
         # Expected YAML content of the test command
-        self.command_test_yaml = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: command
+        self.command_test_yaml = """cetmix_tower_model: command
 access_level: manager
 reference: test_yaml_in_tests
 name: Test YAML
@@ -85,11 +84,6 @@ Ensure all fields are rendered properly.""",
             "YAML value doesn't match Cetmix Tower one",
         )
         self.assertEqual(
-            self.Command.CETMIX_TOWER_YAML_VERSION,
-            self.command_test_yaml_dict["cetmix_tower_yaml_version"],
-            "YAML value doesn't match Cetmix Tower one",
-        )
-        self.assertEqual(
             command_test.code,
             self.command_test_yaml_dict["code"],
             "YAML value doesn't match Cetmix Tower one",
@@ -142,11 +136,6 @@ Ensure all fields are rendered properly.""",
                 "YAML value doesn't match Cetmix Tower one",
             )
             self.assertEqual(
-                self.Command.CETMIX_TOWER_YAML_VERSION,
-                self.command_test_yaml_dict["cetmix_tower_yaml_version"],
-                "YAML value doesn't match Cetmix Tower one",
-            )
-            self.assertEqual(
                 command.code,
                 self.command_test_yaml_dict["code"],
                 "YAML value doesn't match Cetmix Tower one",
@@ -191,7 +180,6 @@ doge: wow
 memes: much nice!
 allow_parallel_run: false
 cetmix_tower_model: command
-cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
@@ -216,7 +204,6 @@ doge: wow
 memes: much nice!
 allow_parallel_run: false
 cetmix_tower_model: command
-cetmix_tower_yaml_version: 1
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
@@ -241,8 +228,7 @@ tag_ids: false
 
     def test_command_with_action_file_template(self):
         """Test command with 'File from template' action"""
-        yaml_with_reference = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: command
+        yaml_with_reference = """cetmix_tower_model: command
 access_level: manager
 reference: such_much_test_command
 name: Such Much Command
@@ -292,8 +278,7 @@ secret_ids: false
 
         # -- 2 --
         # Explode related record and check the YAML
-        yaml_with_reference_exploded = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: command
+        yaml_with_reference_exploded = """cetmix_tower_model: command
 access_level: manager
 reference: such_much_test_command
 name: Such Much Command
