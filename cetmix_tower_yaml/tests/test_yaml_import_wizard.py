@@ -99,10 +99,17 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             }
         )
 
-        # YAML code
-        self.yaml_code = self.server_template_yaml_test.with_context(
-            explode_related_record=True
-        ).yaml_code
+        # Create an export wizard and generate YAML code
+        context = {
+            "active_model": "cx.tower.server.template",
+            "active_ids": [self.server_template_yaml_test.id],
+        }
+        self.export_wizard = (
+            self.env["cx.tower.yaml.export.wiz"].with_context(context).create({})
+        )
+        self.export_wizard.onchange_explode_child_records()
+        self.export_wizard.action_generate_yaml_file()
+        self.yaml_code = self.export_wizard.yaml_code
         self.yaml_file = base64.b64encode(self.yaml_code.encode("utf-8"))
 
         # YAML import upload wizard
@@ -116,6 +123,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         self.import_wizard = self.env[self.import_wizard_action["res_model"]].browse(
             self.import_wizard_action["res_id"]
         )
+        self.import_wizard.if_record_exists = "update"
 
     def test_extract_yaml_data(self):
         """Test extract YAML data from file"""
@@ -124,19 +132,9 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         # Test if YAML file is valid
         extracted_yaml_data = self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            extracted_yaml_data[0],
+            extracted_yaml_data,
             self.yaml_code,
             "YAML code is not extracted correctly",
-        )
-        self.assertEqual(
-            extracted_yaml_data[1],
-            "cx.tower.server.template",
-            "Model name is not extracted correctly",
-        )
-        self.assertEqual(
-            extracted_yaml_data[2],
-            self.server_template_yaml_test.id,
-            "Record ID is not extracted correctly",
         )
 
         # -- 2 --
@@ -153,7 +151,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
             e.exception.name,
-            _("Invalid model specified in the YAML file"),
+            _("'invalid_model' is not a valid model"),
             "Exception message does not match",
         )
 
@@ -171,7 +169,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
             e.exception.name,
-            _("Model does not support YAML import"),
+            _("Model 'server' does not support YAML import"),
             "Exception message does not match",
         )
 
@@ -226,10 +224,64 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         self.assertEqual(
             e.exception.name,
             _(
-                "YAML file version is not supported."
-                " You may need to update the Cetmix Tower Yaml module."
+                "YAML version is higher than version"
+                " supported by your Cetmix Tower instance."
+                " %(code_version)s > %(tower_version)s",
+                code_version=self.FlightPlan.CETMIX_TOWER_YAML_VERSION + 1,
+                tower_version=self.FlightPlan.CETMIX_TOWER_YAML_VERSION,
             ),
             "Exception message does not match",
+        )
+
+        # -- 8 --
+        # Test YAML file with no records
+        self.import_wizard.yaml_code = "cetmix_tower_yaml_version: 1"
+        with self.assertRaises(ValidationError) as e:
+            self.import_wizard.action_import_yaml()
+        self.assertEqual(
+            e.exception.name,
+            _("YAML file doesn't contain any records"),
+            "Exception message does not match",
+        )
+
+    def test_action_import_yaml_skip_if_exists(self):
+        """Test YAML import wizard action when skipping an existing record"""
+
+        self.import_wizard.if_record_exists = "skip"
+
+        # Run import wizard action
+        import_wizard_result_action = self.import_wizard.action_import_yaml()
+
+        # Test if action is composed properly
+        self.assertEqual(
+            import_wizard_result_action["type"],
+            "ir.actions.client",
+            "Import wizard action type is not correct",
+        )
+        self.assertEqual(
+            import_wizard_result_action["tag"],
+            "display_notification",
+            "Import wizard action tag is not correct",
+        )
+        self.assertEqual(
+            import_wizard_result_action["params"]["title"],
+            _("Record Import"),
+            "Import wizard action title is not correct",
+        )
+        self.assertEqual(
+            import_wizard_result_action["params"]["message"],
+            _("No records were created or updated"),
+            "Import wizard action message is not correct",
+        )
+        self.assertEqual(
+            import_wizard_result_action["params"]["sticky"],
+            True,
+            "Import wizard action sticky is not correct",
+        )
+        self.assertEqual(
+            import_wizard_result_action["params"]["type"],
+            "warning",
+            "Import wizard action type is not correct",
         )
 
     def test_action_import_yaml_update_existing_record(self):
@@ -246,12 +298,6 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             self.import_wizard_action["view_mode"],
             "form",
             "Import wizard action view mode is not correct",
-        )
-
-        self.assertEqual(
-            self.import_wizard.model_name,
-            "cx.tower.server.template",
-            "Import wizard model name is not correct",
         )
 
         # -- 2 --
@@ -280,8 +326,8 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             "Import wizard action model is not correct",
         )
         self.assertEqual(
-            import_wizard_result_action["res_id"],
-            self.server_template_yaml_test.id,
+            import_wizard_result_action["domain"],
+            [("id", "in", self.server_template_yaml_test.ids)],
             "ID must match existing record ID",
         )
         self.assertEqual(
@@ -321,15 +367,15 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             "Import wizard action model is not correct",
         )
         self.assertNotEqual(
-            import_wizard_result_action["res_id"],
-            self.server_template_yaml_test.id,
+            import_wizard_result_action["domain"],
+            f"[('id', '=', {self.server_template_yaml_test.ids})]",
             "ID must not match existing record ID",
         )
 
         # -- 2 --
         # Ensure that existing flight plan is used instead of creating a new one
-        new_server_template = self.env[import_wizard_result_action["res_model"]].browse(
-            import_wizard_result_action["res_id"]
+        new_server_template = self.env[import_wizard_result_action["res_model"]].search(
+            import_wizard_result_action["domain"]
         )
         self.assertEqual(
             new_server_template.flight_plan_id,
@@ -369,22 +415,28 @@ class TestTowerYamlImportWizUpload(TransactionCase):
 
         # NB: this is not a real model, it's just for testing
         yaml_code = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: test_model
-access_level: manager
-reference: such_much_test_record
-name: Such Much Command
-action: file_using_template
-allow_parallel_run: false
-note: Just a note
-os_ids: false
-tag_ids: false
-path: false
-ssh_key_id:
-  reference: test_ssh_key
-  name: Test SSH Key
-  key_type: k
-  note: false
-record_with_the_same_ssh_key:
+records:
+- cetmix_tower_model: test_model
+  access_level: manager
+  reference: such_much_test_record
+  name: Such Much Command
+  action: file_using_template
+  allow_parallel_run: false
+  note: Just a note
+  os_ids: false
+  tag_ids: false
+  path: false
+  file_template_id: false
+  flight_plan_id: false
+  code: false
+  variable_ids: false
+  secret_ids: false
+  ssh_key_id:
+    reference: test_ssh_key
+    name: Test SSH Key
+    key_type: k
+    note: false
+- cetmix_tower_model: another_test_model
   reference: such_much_test_record_2
   name: Such Much Test Record 2
   note: Just a note 2
@@ -402,7 +454,7 @@ record_with_the_same_ssh_key:
       name: Secret 3
       key_type: s
       note: false
-record_with_another_ssh_key:
+- cetmix_tower_model: another_test_model
   reference: such_much_test_record_3
   name: Such Much Test Record 3
   note: Just a note 3
@@ -422,31 +474,31 @@ record_with_another_ssh_key:
       name: Secret 4
       key_type: s
       note: false
-file_template_id:
-  reference: my_custom_test_template
-  name: Such much demo
-  source: tower
-  file_type: text
-  server_dir: /var/log/my/files
-  file_name: much_logs.txt
-  keep_when_deleted: false
-  tag_ids: false
-  note: Hey!
+  file_template_id:
+    reference: my_custom_test_template
+    name: Such much demo
+    source: tower
+    file_type: text
+    server_dir: /var/log/my/files
+    file_name: much_logs.txt
+    keep_when_deleted: false
+    tag_ids: false
+    note: Hey!
+    code: false
+    variable_ids: false
+    secret_ids: false
+  flight_plan_id: false
   code: false
   variable_ids: false
-  secret_ids: false
-flight_plan_id: false
-code: false
-variable_ids: false
-secret_ids:
-- reference: secret_1
-  name: Secret 1
-  key_type: s
-  note: false
-- reference: secret_2
-  name: Secret 2
-  key_type: s
-  note: false
+  secret_ids:
+  - reference: secret_1
+    name: Secret 1
+    key_type: s
+    note: false
+  - reference: secret_2
+    name: Secret 2
+    key_type: s
+    note: false
 """
         secret_list = self.env["cx.tower.yaml.import.wiz"]._extract_secret_names(
             yaml.safe_load(yaml_code)
@@ -461,3 +513,88 @@ secret_ids:
         self.assertIn("Secret 4", secret_list, "Key is not in the list")
         self.assertIn("Secret 1", secret_list, "Key is not in the list")
         self.assertIn("Secret 2", secret_list, "Key is not in the list")
+
+    def test_create_records_different_models(self):
+        """Test create records with different models"""
+
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: command
+  access_level: manager
+  reference: much_much_command
+  name: Much Much Command
+  action: file_using_template
+  allow_parallel_run: false
+  note: Just a note
+  os_ids: false
+  tag_ids: false
+  path: false
+  file_template_id: false
+  flight_plan_id: false
+  code: false
+  variable_ids: false
+  secret_ids: false
+  ssh_key_id:
+    reference: test_ssh_key
+    name: Test SSH Key
+    key_type: k
+    note: false
+- cetmix_tower_model: server_template
+  reference: wow_much_server_template
+  name: Wow Much Server Template
+  note: Just a note 2
+- cetmix_tower_model: tag
+  reference: such_much_tag
+  name: Such Much Tag
+"""
+        # Create a new command record
+        self.import_wizard.if_record_exists = "update"
+        self.import_wizard.yaml_code = yaml_code
+
+        action = self.import_wizard.action_import_yaml()
+
+        # Check if action is composed properly
+        self.assertEqual(
+            action["type"],
+            "ir.actions.client",
+            "Import wizard action type is not correct",
+        )
+        self.assertEqual(
+            action["tag"],
+            "display_notification",
+            "Import wizard action tag is not correct",
+        )
+        self.assertEqual(
+            action["params"]["title"],
+            _("Record Import"),
+            "Import wizard action title is not correct",
+        )
+        self.assertEqual(
+            action["params"]["type"],
+            "success",
+            "Import wizard action type is not correct",
+        )
+        self.assertEqual(
+            action["params"]["sticky"],
+            True,
+            "Import wizard action sticky is not correct",
+        )
+
+        # Check command
+        self.assertTrue(
+            self.Command.get_by_reference("much_much_command"),
+            "Command must be created",
+        )
+
+        # Check server template
+        self.assertTrue(
+            self.env["cx.tower.server.template"].get_by_reference(
+                "wow_much_server_template"
+            ),
+            "Server template must be created",
+        )
+
+        # Check tag
+        self.assertTrue(
+            self.Tag.get_by_reference("such_much_tag"), "Tag must be created"
+        )

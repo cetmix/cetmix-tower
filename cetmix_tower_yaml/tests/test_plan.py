@@ -10,8 +10,7 @@ class TestTowerPlan(TransactionCase):
     def test_plan_create_from_yaml(self):
         """Test plan creation from YAML."""
 
-        plan_yaml = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: plan
+        plan_yaml = """cetmix_tower_model: plan
 access_level: manager
 reference: test_plan_from_yaml
 name: 'Test Plan From Yaml'
@@ -37,8 +36,7 @@ line_ids:
     note: false
     code: Such much code
     variable_ids:
-    - cetmix_tower_yaml_version: 1
-      cetmix_tower_model: variable
+    - cetmix_tower_model: variable
       reference: test_plan_dir
       name: Test Plan Directory
   action_ids:
@@ -48,24 +46,21 @@ line_ids:
     action: n
     custom_exit_code: 0
     variable_value_ids:
-    - cetmix_tower_yaml_version: 1
-      cetmix_tower_model: variable_value
+    - cetmix_tower_model: variable_value
       variable_id:
         cetmix_tower_yaml_version: 1
         cetmix_tower_model: variable
         reference: test_plan_branch
         name: Test Plan Branch
       value_char: production
-    - cetmix_tower_yaml_version: 1
-      cetmix_tower_model: variable_value
+    - cetmix_tower_model: variable_value
       variable_id:
         cetmix_tower_yaml_version: 1
         cetmix_tower_model: variable
         reference: test_plan_some_unique_variable
         name: Test Plan Some Unique Variable
       value_char: 'Final Value'
-  - cetmix_tower_yaml_version: 1
-    cetmix_tower_model: plan_line_action
+  - cetmix_tower_model: plan_line_action
     access_level: manager
     sequence: 2
     condition: '>'
