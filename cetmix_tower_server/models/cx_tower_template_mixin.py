@@ -15,7 +15,9 @@ class CxTowerTemplateMixin(models.AbstractModel):
     _name = "cx.tower.template.mixin"
     _description = "Cetmix Tower template rendering mixin"
 
-    code = fields.Text(string="Code", help="This field will be rendered by default")
+    code = fields.Text(
+        string="Code", help="This field will be rendered using variables"
+    )
     variable_ids = fields.Many2many(
         string="Variables",
         comodel_name="cx.tower.variable",
