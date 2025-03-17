@@ -2051,6 +2051,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__os_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__os_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__os_id
 msgid "Operating System"
 msgstr ""
 
@@ -2076,6 +2077,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__partner_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__partner_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Partner"
 msgstr ""
@@ -2450,6 +2452,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__use_sudo
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__use_sudo
 msgid "Run commands using 'sudo'"
 msgstr ""
 
@@ -2926,6 +2929,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
 msgid "Tags"
 msgstr ""
@@ -3168,6 +3172,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__use_sudo
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__use_sudo
 msgid "Use sudo"
 msgstr ""
 
@@ -3373,6 +3378,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_log__use_sudo__p
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__use_sudo__p
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template__use_sudo__p
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template_create_wizard__use_sudo__p
 msgid "With password"
 msgstr ""
 
@@ -3380,6 +3386,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_log__use_sudo__n
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__use_sudo__n
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template__use_sudo__n
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template_create_wizard__use_sudo__n
 msgid "Without password"
 msgstr ""
 
