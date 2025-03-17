@@ -696,6 +696,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__command_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Command"
@@ -710,6 +711,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__code
 msgid "Command Code"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__command_ids_count
+msgid "Command Count"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -749,6 +755,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__plan_line_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_root
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Commands"
 msgstr ""
 
@@ -1098,6 +1105,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__file
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_ids
 msgid "File"
 msgstr ""
 
@@ -1117,6 +1125,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_ids_count
+msgid "File Count"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_name
 msgid "File Name"
 msgstr ""
@@ -1125,8 +1138,19 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__file_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_template_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_template_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "File Template"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_template_ids_count
+msgid "File Template Count"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "File Templates"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1233,6 +1257,7 @@ msgstr ""
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_file_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Files"
 msgstr ""
 
@@ -2074,13 +2099,30 @@ msgid "Plan Domain"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__plan_line_ids
+msgid "Plan Line"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__plan_line_action_id
 msgid "Plan Line Action"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__plan_line_ids_count
+msgid "Plan Line Count"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_line_executed_id
 msgid "Plan Line Executed"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+#, python-format
+msgid "Plan Lines"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2996,7 +3038,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__command_code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_code
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_template_mixin__code
-msgid "This field will be rendered by default"
+msgid "This field will be rendered using variables"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3150,6 +3192,11 @@ msgid "Used for selected server only. Leave blank to use globally"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "Used in Values"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_user
 msgid "User"
 msgstr ""
@@ -3218,6 +3265,17 @@ msgid "Variable Reference"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_value_ids
+msgid "Variable Value"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_value_ids_count
+msgid "Variable Value Count"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable_value
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__variable_value_ids
