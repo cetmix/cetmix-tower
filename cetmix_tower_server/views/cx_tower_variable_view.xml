@@ -13,11 +13,77 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('value_ids_count', '=', 0)]}"
                         >
                             <field
                                 name="value_ids_count"
                                 widget="statinfo"
                                 string="Values"
+                            />
+                        </button>
+                        <button
+                            name="action_open_commands"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-code"
+                            attrs="{'invisible': [('command_ids_count', '=', 0)]}"
+                        >
+                            <field
+                                name="command_ids_count"
+                                widget="statinfo"
+                                string="Commands"
+                            />
+                        </button>
+                        <button
+                            name="action_open_plan_lines"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                            attrs="{'invisible': [('plan_line_ids_count', '=', 0)]}"
+                        >
+                            <field
+                                name="plan_line_ids_count"
+                                widget="statinfo"
+                                string="Plan Lines"
+                            />
+                        </button>
+                        <button
+                            name="action_open_files"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                            attrs="{'invisible': [('file_ids_count', '=', 0)]}"
+                        >
+                            <field
+                                name="file_ids_count"
+                                widget="statinfo"
+                                string="Files"
+                            />
+                        </button>
+                        <button
+                            name="action_open_file_templates"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-list-alt"
+                            attrs="{'invisible': [('file_template_ids_count', '=', 0)]}"
+                        >
+                            <field
+                                name="file_template_ids_count"
+                                widget="statinfo"
+                                string="File Templates"
+                            />
+                        </button>
+                        <button
+                            name="action_open_variable_values"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('variable_value_ids_count', '=', 0)]}"
+                        >
+                            <field
+                                name="variable_value_ids_count"
+                                widget="statinfo"
+                                string="Used in Values"
                             />
                         </button>
                     </div>
