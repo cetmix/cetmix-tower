@@ -153,6 +153,10 @@ class TestTowerServerTemplate(TestTowerCommon):
             {
                 "name": "test",
                 "ip_v4_address": "0.0.0.0",
+                "use_sudo": "n",
+                "partner_id": self.user_bob.partner_id.id,
+                "os_id": self.os_debian_10.id,
+                "tag_ids": [(4, self.tag_test_production.id)],
             }
         )
         action = wizard.action_confirm()
@@ -161,6 +165,16 @@ class TestTowerServerTemplate(TestTowerCommon):
             [("server_template_id", "=", self.server_template_sample.id)]
         )
         self.assertEqual(action["res_id"], server.id, "Server ids must be the same")
+        self.assertEqual(
+            server.partner_id, self.user_bob.partner_id, "Partner must be the same"
+        )
+        self.assertEqual(server.os_id, self.os_debian_10, "OS must be the same")
+        self.assertEqual(
+            server.tag_ids, self.tag_test_production, "Tag must be the same"
+        )
+        self.assertEqual(server.use_sudo, "n", "Use sudo must be the same")
+        self.assertEqual(server.ip_v4_address, "0.0.0.0", "IP must be the same")
+        self.assertEqual(server.name, "test", "Name must be the same")
 
     def test_create_server_from_template_action(self):
         """
