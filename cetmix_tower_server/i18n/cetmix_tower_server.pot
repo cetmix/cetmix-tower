@@ -657,8 +657,20 @@ msgid "Cetmix Tower template rendering mixin"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+msgid ""
+"Check the key before inserting in the server settings. Do not insert the key"
+" if you have any doubts!"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Child plans"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+msgid "Close"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -842,6 +854,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__create_uid
@@ -867,6 +880,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__create_date
@@ -950,6 +964,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__display_name
@@ -962,6 +977,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Don't Check Key"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1000,6 +1020,11 @@ msgid "Eg '/home/user' or '/var/log'"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__skip_host_key
+msgid "Enable to skip host key verification"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 msgid ""
 "Enter Python code here. Help about Python expression is available in the "
@@ -1011,6 +1036,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Error"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Error retrieving host key: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1402,6 +1433,11 @@ msgid "General Settings"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Get from Host"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__is_global
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
@@ -1442,6 +1478,33 @@ msgid "Help with Python expressions"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: code:addons/cetmix_tower_server/wizards/cx_tower_server_host_key_wizard.py:0
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__host_key
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__host_key
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+#, python-format
+msgid "Host Key"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Host key"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__host_key
+msgid "Host key to verify the server"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+msgid ""
+"I confirm that the key is correct and I want to insert it in the server "
+"settings"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__id
@@ -1460,6 +1523,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__id
@@ -1550,8 +1614,26 @@ msgid "If exit code == 35 then Exit with command exit code"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid ""
+"In the Secure Shell (SSH) protocol, host keys are used to verify the "
+"identity of remote hosts. Accepting unknown host keys may leave the "
+"connection open to man-in-the-middle attacks."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
 msgid "Indicates if this variable is mandatory for server creation"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+msgid "Insert Key"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__is_error
+msgid "Is Error"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1589,6 +1671,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__key_type
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Key Type"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/wizards/cx_tower_server_host_key_wizard.py:0
+#, python-format
+msgid "Key inserted successfully!"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1632,6 +1720,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard____last_update
@@ -1665,6 +1754,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__write_uid
@@ -1690,6 +1780,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__write_date
@@ -2668,6 +2759,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__server_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__server_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__server_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__server_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__server_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__server_id
@@ -2812,9 +2904,19 @@ msgid "Show Flight Plans"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_server_host_key_wizard
+msgid "Show Host Key"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_execute_wizard__show_servers
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_execute_wizard__show_servers
 msgid "Show Servers"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__skip_host_key
+msgid "Skip Host Key"
 msgstr ""
 
 #. module: cetmix_tower_server
