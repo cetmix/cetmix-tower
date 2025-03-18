@@ -56,6 +56,7 @@
         "views/cx_tower_file_template_view.xml",
         "views/cx_tower_server_log_view.xml",
         "views/cx_tower_server_template_view.xml",
+        "wizards/cx_tower_server_host_key_wizard_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [
