@@ -61,6 +61,13 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'",
     )
+    host_key = fields.Char(
+        help="Host key to verify the server",
+    )
+    skip_host_key = fields.Boolean(
+        string="Don't Check Key",
+        help="Enable to skip host key verification",
+    )
     line_ids = fields.One2many(
         comodel_name="cx.tower.server.template.create.wizard.line",
         inverse_name="wizard_id",
@@ -123,6 +130,8 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
             "partner_id": self.partner_id.id,
             "os_id": self.os_id.id,
             "tag_ids": [(4, tag_id) for tag_id in self.tag_ids.ids],
+            "skip_host_key": self.skip_host_key,
+            "host_key": self.host_key if not self.skip_host_key else None,
         }
         if self.line_ids:
             res.update(
