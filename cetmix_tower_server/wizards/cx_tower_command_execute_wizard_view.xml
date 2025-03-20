@@ -52,10 +52,12 @@
                     <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
 
                         <field name="action" nolabel="1" />
+                        <span
+                            attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
+                        >sudo</span>
                         <field
                             name="use_sudo"
-                            attrs="{'invisible': [('action', '=', 'python_code')]}"
-                            placeholder="No sudo"
+                            attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
                         />
                         <field
                             name="command_id"

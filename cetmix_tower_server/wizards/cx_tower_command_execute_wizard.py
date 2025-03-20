@@ -44,10 +44,10 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         column2="tag_id",
         string="Tags",
     )
-    use_sudo = fields.Selection(
+    use_sudo = fields.Boolean(
         string="Use sudo",
-        selection=[("n", "Sudo without password"), ("p", "Sudo with password")],
-        help="Run commands using 'sudo'",
+        help="Will use sudo based on server settings."
+        "If no sudo is configured will run without sudo",
     )
     code = fields.Text(compute="_compute_code", readonly=False, store=True)
     applicability = fields.Selection(
@@ -177,7 +177,6 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
     def execute_command_on_server(self):
         """Render selected command rendered using server method"""
-
         # Check if command is selected
         if not self.command_id:
             raise ValidationError(_("Please select a command to execute"))
@@ -272,7 +271,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                     server._get_ssh_client(raise_on_error=True),
                     self.rendered_code,
                     self.path or None,
-                    sudo=self.use_sudo if self.use_sudo else None,
+                    sudo=self.use_sudo,
                     **kwargs,
                 )
             command_error = command_result["error"]
