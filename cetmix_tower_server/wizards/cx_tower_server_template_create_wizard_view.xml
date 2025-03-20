@@ -10,28 +10,36 @@
                     <h1 class="d-flex flex-grow justify-content-between">
                         <field name="name" placeholder="new server name" />
                     </h1>
-                    <field name="color" widget="color_picker" />
+                    <div>
+                        <field name="color" widget="color_picker" />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="Tags"
+                            options="{'color_field': 'color'}"
+                        />
+                    </div>
                 </div>
                 <group name="main">
                     <group name="general">
                         <field name="partner_id" />
                         <field name="os_id" />
-                        <field name="tag_ids" widget="many2many_tags" />
-                    </group>
-                    <group name="ssh">
                         <field name="ip_v4_address" />
                         <field name="ip_v6_address" />
+                        <field
+                            name="host_key"
+                            attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                        />
+                        <field name="skip_host_key" />
+                    </group>
+                    <group name="ssh">
                         <field name="ssh_auth_mode" />
                         <field name="ssh_port" />
                         <field
                             name="ssh_username"
                             placeholder="this can be changed later"
                         />
-                        <field
-                            name="ssh_password"
-                            password="True"
-                            attrs="{'invisible': [('ssh_auth_mode', '=', 'k')]}"
-                        />
+                        <field name="ssh_password" password="True" />
                         <field
                             name="ssh_key_id"
                             attrs="{'invisible': [('ssh_auth_mode', '=', 'p')]}"

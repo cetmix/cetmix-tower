@@ -995,6 +995,7 @@ msgid "Display Name"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__skip_host_key
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Don't Check Key"
 msgstr ""
@@ -1036,6 +1037,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__skip_host_key
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__skip_host_key
 msgid "Enable to skip host key verification"
 msgstr ""
 
@@ -1498,6 +1500,7 @@ msgstr ""
 #: code:addons/cetmix_tower_server/wizards/cx_tower_server_host_key_wizard.py:0
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__host_key
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__host_key
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__host_key
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
 #, python-format
 msgid "Host Key"
@@ -1510,6 +1513,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__host_key
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__host_key
 msgid "Host key to verify the server"
 msgstr ""
 
@@ -3066,6 +3070,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Tags"
 msgstr ""
 
