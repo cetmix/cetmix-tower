@@ -20,23 +20,46 @@
                             <field name="key_type" />
                         </group>
                         <group>
-                            <field
-                                name="partner_id"
-                                attrs="{'invisible': [('key_type', '=', 'k')]}"
-                                placeholder="Leave blank to use with any partner"
-                            />
-                            <field
-                                name="server_id"
-                                invisible="context.get('from_server',False)"
-                                attrs="{'invisible': [('key_type', '=', 'k')]}"
-                                placeholder="Leave blank to use with any server"
-                            />
                             <field name="note" />
                         </group>
                     </group>
                     <notebook>
-                        <page name="value" string="Value">
+                        <page
+                            name="value"
+                            string="Key Value"
+                            attrs="{'invisible': [('key_type', '!=', 'k')]}"
+                        >
                             <field name="secret_value" />
+                        </page>
+                        <page
+                            name="secret_values"
+                            string="Secret Values"
+                            attrs="{'invisible': [('key_type', '!=', 's')]}"
+                        >
+                            <field name="value_ids">
+                                <tree
+                                    editable="bottom"
+                                    decoration-info="is_global == True"
+                                >
+                                    <field name="is_global" />
+                                    <field name="partner_id" />
+                                    <field name="server_id" />
+                                    <field name="secret_value" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="is_global" />
+                                        <field
+                                            name="server_id"
+                                            attrs="{'invisible': [('is_global', '=', True)]}"
+                                        />
+                                        <field
+                                            name="partner_id"
+                                            attrs="{'invisible': [('is_global', '=', True)]}"
+                                        />
+                                    </group>
+                                </form>
+                            </field>
                         </page>
                         <page
                             name="servers"

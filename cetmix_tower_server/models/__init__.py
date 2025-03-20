@@ -15,6 +15,7 @@ from . import cx_tower_os
 from . import cx_tower_tag
 from . import cx_tower_command
 from . import cx_tower_key
+from . import cx_tower_key_value
 from . import cx_tower_command_log
 from . import cx_tower_plan
 from . import cx_tower_plan_line

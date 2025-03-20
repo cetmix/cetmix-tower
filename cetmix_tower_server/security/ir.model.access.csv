@@ -22,6 +22,8 @@ access_execute_plan_user,Execute Plan->User,model_cx_tower_plan_execute_wizard,g
 access_key_user,Key->User,model_cx_tower_key,group_user,0,0,0,0
 access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,1
 access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1
+access_key_value_manager,Key Value->Manager,model_cx_tower_key_value,group_manager,1,1,1,1
+access_key_value_root,Key Value->Root,model_cx_tower_key_value,group_root,1,1,1,1
 access_command_log_user,Command Log->User,model_cx_tower_command_log,group_user,1,0,0,0
 access_command_log_root,Command Log->User,model_cx_tower_command_log,group_root,1,1,1,1
 access_plan_user,Plan->User,model_cx_tower_plan,group_user,1,0,0,0
