@@ -1,15 +1,14 @@
 import logging
 
-from odoo import SUPERUSER_ID, api
-
 _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
     """
-    Convert all partner and server related keys to secret values
+    Fix migration in 14.0.0.4.17
+    Create secret values.
     """
-    _logger.info("Starting SQL migration for partner and server related keys.")
+    _logger.info("Starting SQL migration for global secret values.")
 
     # Get all keys that are related to a server or a partner
     cr.execute(
@@ -58,12 +57,31 @@ def migrate(cr, version):
     """
     )
 
-    # Recompute all computed fields
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    model = env["cx.tower.key"]
-    env.add_to_compute(
-        model._fields["secret_value"], model.search([("key_type", "=", "s")])
+    # Create global secret values
+    # Get all keys that are related to a server or a partner
+    cr.execute(
+        """
+        SELECT k.id, k.secret_value
+        FROM cx_tower_key k
+        WHERE k.key_type = 's'
+    """
     )
-    model.recompute()
+    keys = cr.fetchall()
+
+    for key_id, secret_value in keys:
+        # Create global value
+        cr.execute(
+            """
+            INSERT INTO cx_tower_key_value
+            (key_id, secret_value,
+            create_uid, create_date, write_uid, write_date)
+            VALUES (%s, %s, 1, now(), 1, now())
+            AND NOT EXISTS (
+                SELECT 1 FROM cx_tower_key_value v
+                WHERE v.key_id = %s AND v.server_id IS NULL AND v.partner_id IS NULL
+            )
+        """,
+            (key_id, secret_value, key_id),
+        )
 
     _logger.info("SQL migration completed successfully.")
