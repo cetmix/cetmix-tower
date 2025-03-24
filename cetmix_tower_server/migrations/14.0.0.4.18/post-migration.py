@@ -75,8 +75,8 @@ def migrate(cr, version):
             INSERT INTO cx_tower_key_value
             (key_id, secret_value,
             create_uid, create_date, write_uid, write_date)
-            VALUES (%s, %s, 1, now(), 1, now())
-            AND NOT EXISTS (
+            SELECT %s, %s, 1, now(), 1, now()
+            WHERE NOT EXISTS (
                 SELECT 1 FROM cx_tower_key_value v
                 WHERE v.key_id = %s AND v.server_id IS NULL AND v.partner_id IS NULL
             )
