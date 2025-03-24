@@ -15,6 +15,7 @@ from ..ssh.ssh import SSHConnection, SSHManager
 from .constants import (
     ANOTHER_COMMAND_RUNNING,
     FILE_CREATION_FAILED,
+    GENERAL_ERROR,
     NO_COMMAND_RUNNER_FOUND,
     PYTHON_COMMAND_ERROR,
     SSH_CONNECTION_ERROR,
@@ -212,7 +213,7 @@ class CxTowerServer(models.Model):
         "cx.tower.plan",
         string="On Delete Plan",
         groups="cetmix_tower_server.group_manager",
-        help="This Flightplan will be executed when the server is deleted",
+        help="This Flightplan will be run when the server is deleted",
     )
 
     # ---- Access. Add relation for mixin fields
@@ -312,7 +313,7 @@ class CxTowerServer(models.Model):
 
         for server in self:
             # If forced, no delete plan, or already in deleting state,
-            # skip plan execution
+            # skip plan running
             if (
                 self._context.get("server_force_delete")
                 or not server.plan_delete_id
@@ -322,7 +323,7 @@ class CxTowerServer(models.Model):
                 continue
 
             plan_label = generate_random_id(4)
-            server.plan_delete_id.execute(server, plan_log={"label": plan_label})
+            server.plan_delete_id._run_single(server, plan_log={"label": plan_label})
             plan_log = flight_plan_log_obj.search(
                 [
                     ("server_id", "=", server.id),
@@ -674,7 +675,7 @@ class CxTowerServer(models.Model):
         # Try command
         if try_command:
             command = self._get_connection_test_command()
-            test_result = self._execute_command_using_ssh(client, command_code=command)
+            test_result = self._run_command_using_ssh(client, command_code=command)
             status = test_result.get("status", 0)
             response = test_result.get("response", "")
             error = test_result.get("error", "")
@@ -683,7 +684,7 @@ class CxTowerServer(models.Model):
             if raise_on_error and (status != 0 or error):
                 raise ValidationError(
                     _(
-                        "Cannot execute command\n. CODE: %(status)s. "
+                        "Cannot run command\n. CODE: %(status)s. "
                         "RESULT: %(res)s. ERROR: %(err)s",
                         status=status,
                         res=response,
@@ -710,7 +711,7 @@ class CxTowerServer(models.Model):
             self.download_file("/tmp/cetmix_tower_test_connection.txt")
 
             # remove file from server
-            file_test_result = self._execute_command_using_ssh(
+            file_test_result = self._run_command_using_ssh(
                 client, command_code="rm -rf /tmp/cetmix_tower_test_connection.txt"
             )
             file_status = file_test_result.get("status", 0)
@@ -751,7 +752,7 @@ class CxTowerServer(models.Model):
 
         Args:
             command (cx.tower.command): Command to render
-            path (Char): Path where to execute the command.
+            path (Char): Path where to run the command.
                 Provide in case you need to override default command path
 
         Returns:
@@ -812,9 +813,7 @@ class CxTowerServer(models.Model):
 
         return {"rendered_code": rendered_code, "rendered_path": rendered_path}
 
-    def execute_command(
-        self, command, path=None, sudo=None, ssh_connection=None, **kwargs
-    ):
+    def run_command(self, command, path=None, sudo=None, ssh_connection=None, **kwargs):
         """This is the main function to use for running commands.
         It renders command code, creates log record and calls command runner.
 
@@ -830,20 +829,20 @@ class CxTowerServer(models.Model):
             ssh_connection (SSH client instance, optional): SSH connection.
                 Pass to reuse existing connection.
                 This is useful in case you would like to speed up
-                the ssh command execution.
+                the ssh command running.
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
         Context:
             no_log (Bool): set this context key to `True` to disable log creation.
-            Command execution results will be returned instead.
-            If any non command related error occurs in the command execution flow
+            Command running results will be returned instead.
+            If any non command related error occurs in the command running flow
             an exception will be raised.
             IMPORTANT: be aware when running commands with `no_log=True`
             because no `Allow Parallel Run` check will be done!
         Returns:
-            dict(): command execution result if `no_log` context value == True else None
+            dict(): command running result if `no_log` context value == True else None
         """
         self.ensure_one()
 
@@ -895,7 +894,7 @@ class CxTowerServer(models.Model):
                         now,
                         ANOTHER_COMMAND_RUNNING,
                         None,
-                        [_("Another instance of the command is already running")],
+                        _("Another instance of the command is already running"),
                         **log_vals,
                     )
                     return
@@ -931,6 +930,23 @@ class CxTowerServer(models.Model):
             **kwargs,
         )
 
+    def run_flight_plan(self, flight_plan, **kwargs):
+        """Run flight plan on multiple servers
+
+        Args:
+            flight_plan (cx.tower.plan()): flight plan record
+            kwargs (dict): Optional arguments
+                Following are supported but not limited to:
+                    - "plan_log": {values passed to flightplan logger}
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
+        """
+
+        self.ensure_one()
+
+        # Run flight plan
+        return flight_plan._run_single(self, **kwargs)
+
     def _command_runner_wrapper(
         self,
         command,
@@ -941,7 +957,7 @@ class CxTowerServer(models.Model):
         **kwargs,
     ):
         """Used to implement custom runner mechanisms.\
-        Use it in case you need to redefine the entire command execution engine.
+        Use it in case you need to redefine the entire command running engine.
         Eg it's used in `cetmix_tower_server_queue` OCA `queue_job` implementation.
 
         Args:
@@ -957,10 +973,10 @@ class CxTowerServer(models.Model):
                     - "key": {values passed to key parser}
 
         Context:
-            use_sudo (Bool): use sudo for command execution
+            use_sudo (Bool): use sudo for command running
 
         Returns:
-            dict(): command execution result if `log_record` is defined else None
+            dict(): command running result if `log_record` is defined else None
         """
         return self._command_runner(
             command,
@@ -995,10 +1011,10 @@ class CxTowerServer(models.Model):
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
         Context:
-            use_sudo (Bool): use sudo for command execution
+            use_sudo (Bool): use sudo for command running
 
         Returns:
-            dict(): command execution result if `log_record` is defined else None
+            dict(): command running result if `log_record` is defined else None
         """
         response = None
         need_check_server_status = True
@@ -1157,7 +1173,7 @@ class CxTowerServer(models.Model):
         ssh_connection=None,
         **kwargs,
     ):
-        """Execute SSH command.
+        """Run SSH command.
         Updates the record in the Command Log (cx.tower.command.log)
 
         Args:
@@ -1171,16 +1187,16 @@ class CxTowerServer(models.Model):
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
         Context:
-            use_sudo (Bool): use sudo for command execution
+            use_sudo (Bool): use sudo for command running
 
         Returns:
-            dict(): command execution result if `log_record` is defined else None
+            dict(): command running result if `log_record` is defined else None
         """
         if not ssh_connection:
             ssh_connection = self._get_ssh_client(raise_on_error=True)
 
-        # Execute command
-        command_result = self._execute_command_using_ssh(
+        # Run command
+        command_result = self._run_command_using_ssh(
             client=ssh_connection,
             command_code=rendered_command_code,
             command_path=rendered_command_path,
@@ -1204,18 +1220,18 @@ class CxTowerServer(models.Model):
         self, log_record, flight_plan, raise_on_error=True, **kwargs
     ):
         """
-        Execute Flight plan from command.
+        Run Flight plan from command.
         Updates the record in the Command Log (cx.tower.command.log)
         Args:
             log_record (cx.tower.command.log()): Command log record.
-            flight_plan (cx.tower.plan()): Flight Plan to be executed.
+            flight_plan (cx.tower.plan()): Flight Plan to be run.
             raise_on_error (bool, optional): raise error on error.
             kwargs (dict):  extra arguments. Use to pass external values.
                     Following keys are supported by default:
                         - "log": {values passed to logger}
                         - "key": {values passed to key parser}
         Returns:
-            dict(): python code execution result if `log_record` is
+            dict(): flight plan running result if `log_record` is
                     not defined else None
         """
         response = None
@@ -1229,21 +1245,21 @@ class CxTowerServer(models.Model):
             }
             # add executed command with action "plan" to save link to plan log
             kwargs["flight_plan_command_log"] = log_record
-            plan_status = flight_plan.with_context(from_command=True)._execute_single(
+            plan_log_record = flight_plan.with_context(from_command=True)._run_single(
                 self, **kwargs
             )
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(
-                    _("Execute flight plan error %(err)s", err=e)
+                    _("Flight plan running error %(err)s", err=e)
                 ) from e
             else:
-                status = -1
+                status = GENERAL_ERROR
                 error = e
         else:
-            if plan_status != 0:
-                status = plan_status
-                error = _("Execute flight plan error")
+            if plan_log_record.plan_status != 0:
+                status = plan_log_record.plan_status
+                error = _("Flight plan running error")
 
         result = {"status": status, "response": response, "error": error}
         if log_record:
@@ -1263,7 +1279,7 @@ class CxTowerServer(models.Model):
         **kwargs,
     ):
         """
-        Execute Python code.
+        Run Python code.
         Updates the record in the Command Log (cx.tower.command.log)
 
         Args:
@@ -1275,11 +1291,11 @@ class CxTowerServer(models.Model):
                     - "key": {values passed to key parser}
 
         Returns:
-            dict(): python code execution result if `log_record` is
+            dict(): python code running result if `log_record` is
                     not defined else None
         """
-        # Execute python code
-        result = self._execute_python_code(
+        # Run python code
+        result = self._run_python_code(
             code=rendered_code,
             raise_on_error=False,
             **kwargs,
@@ -1297,7 +1313,7 @@ class CxTowerServer(models.Model):
             return result
 
     @after_commit
-    def _execute_command_using_ssh(
+    def _run_command_using_ssh(
         self,
         client,
         command_code,
@@ -1306,14 +1322,14 @@ class CxTowerServer(models.Model):
         sudo=None,
         **kwargs,
     ):
-        """This is a low level method for SSH command execution.
+        """This is a low level method for running an SSH command.
         Use it in case you need to get direct output of an SSH command.
-        Otherwise call `execute_command()`
+        Otherwise call `run_command()`
 
         Args:
             client (Connection): valid server ssh connection object
             command_code (Text): command text
-            command_path (Char, optional): directory where command should be executed
+            command_path (Char, optional): directory where command should be run
             raise_on_error (bool, optional): raise error on error
             sudo (selection): use sudo Defaults to None.
             kwargs (dict):  extra arguments. Use to pass external values.
@@ -1323,7 +1339,7 @@ class CxTowerServer(models.Model):
 
         Raises:
             ValidationError: if client is not valid
-            ValidationError: command execution error
+            ValidationError: command run error
 
         Returns:
             dict: {
@@ -1370,29 +1386,27 @@ class CxTowerServer(models.Model):
 
             # Something weird ))
             else:
-                status = -1
+                status = GENERAL_ERROR
 
         except Exception as e:
             if raise_on_error:
-                _logger.error(f"SSH execute command error: {e}")
-                raise ValidationError(
-                    _("SSH execute command error %(err)s", err=e)
-                ) from e
+                _logger.error(f"SSH run command error: {e}")
+                raise ValidationError(_("SSH run command error %(err)s", err=e)) from e
             else:
-                status = -1
+                status = GENERAL_ERROR
                 response = []
                 error = [e]
 
         return self._parse_command_results(status, response, error, secrets, **kwargs)
 
-    def _execute_python_code(
+    def _run_python_code(
         self,
         code,
         raise_on_error=True,
         **kwargs,
     ):
         """
-        This is a low level method for python code execution.
+        This is a low level method for python code running.
 
         Args:
             code (Text): python code
@@ -1403,7 +1417,7 @@ class CxTowerServer(models.Model):
                         - "key": {values passed to key parser}
 
         Raises:
-            ValidationError: python code execution error
+            ValidationError: python code running error
 
         Returns:
             dict: {
@@ -1449,7 +1463,7 @@ class CxTowerServer(models.Model):
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(
-                    _("Execute python code error: %(err)s", err=e)
+                    _("Python code running error: %(err)s", err=e)
                 ) from e
             else:
                 status = PYTHON_COMMAND_ERROR
@@ -1459,16 +1473,16 @@ class CxTowerServer(models.Model):
     def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
         """Prepare ssh command
         IMPORTANT:
-        Commands executed with sudo will be run separately one after another
+        Commands run with sudo will be run separately one after another
         even if there is a single command separated with '&&' or ';'
         Example:
-        "pwd && ls -l" will be executed as:
+        "pwd && ls -l" will be run as:
             sudo pwd
             sudo ls -l
 
         Args:
             command_code (text): initial command
-            path (str, optional): directory where command should be executed
+            path (str, optional): directory where command should be run
             sudo (str, optional): sudo mode (n, p)
                 n - sudo without password
                 p - sudo with password
@@ -1537,11 +1551,11 @@ class CxTowerServer(models.Model):
         self, status, response, error, key_values=None, **kwargs
     ):
         """
-        Parse results of the executed command executed with sudo (either SSH or Python).
+        Parse results of a command run with sudo (either SSH or Python).
         Removes secrets and formats the response and error messages.
 
         Paramiko returns SSH response and error as list.
-        When executing command with sudo with password we return status as a list too.
+        When running a command with sudo with password we return status as a list too.
         _
 
         Args:
@@ -1608,9 +1622,9 @@ class CxTowerServer(models.Model):
 
         return {"status": status, "response": response, "error": error}
 
-    def action_execute_command(self):
+    def action_run_command(self):
         """
-        Returns wizard action to select command and execute it
+        Returns wizard action to select command and run it
         """
         context = self.env.context.copy()
         context.update(
@@ -1621,16 +1635,16 @@ class CxTowerServer(models.Model):
         return {
             "type": "ir.actions.act_window",
             "name": _("Run Command"),
-            "res_model": "cx.tower.command.execute.wizard",
+            "res_model": "cx.tower.command.run.wizard",
             "view_mode": "form",
             "view_type": "form",
             "target": "new",
             "context": context,
         }
 
-    def action_execute_plan(self):
+    def action_run_flight_plan(self):
         """
-        Returns wizard action to select flightplan and execute it
+        Returns wizard action to select flightplan and run it
         """
         context = self.env.context.copy()
         context.update(
@@ -1641,7 +1655,7 @@ class CxTowerServer(models.Model):
         return {
             "type": "ir.actions.act_window",
             "name": _("Run Flight Plan"),
-            "res_model": "cx.tower.plan.execute.wizard",
+            "res_model": "cx.tower.plan.run.wizard",
             "view_mode": "form",
             "view_type": "form",
             "target": "new",

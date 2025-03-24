@@ -4,6 +4,7 @@ from odoo.exceptions import AccessError
 from odoo.tests.common import Form
 from odoo.tools import mute_logger
 
+from ..models.constants import GENERAL_ERROR
 from .common import TestTowerCommon
 
 
@@ -92,8 +93,9 @@ if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     command = "new command"
     COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
 else:
-    COMMAND_RESULT = {"exit_code": -1, "message": "error"}
-    """,
+    COMMAND_RESULT = {"exit_code": %s, "message": "error"}
+    """
+                % GENERAL_ERROR,
             }
         )
 
@@ -797,7 +799,7 @@ result = re.sub(pattern, replacement, value)
             msg="Must be rendered as 'cd /tmp && mkdir odoo'",
         )
 
-    def test_execute_command_with_variables(self):
+    def test_run_command_with_variables(self):
         """Test code execution using command log records"""
 
         x = 1  # Used to distinguish labels
@@ -809,8 +811,8 @@ result = re.sub(pattern, replacement, value)
             command_label = f"Test Command {x}"
             custom_values = {"log": {"label": command_label}}
 
-            # Execute command for Server 1
-            self.server_test_1.execute_command(
+            # Run command for Server 1
+            self.server_test_1.run_command(
                 self.command_create_dir, sudo=sudo, **custom_values
             )
 
@@ -849,7 +851,7 @@ result = re.sub(pattern, replacement, value)
             # Increment label counter
             x += 1
 
-    def test_execute_command_with_keys(self):
+    def test_run_command_with_keys(self):
         """Test command with keys in code"""
 
         # Command
@@ -871,8 +873,8 @@ result = re.sub(pattern, replacement, value)
         command_label = "Test Command with keys"
         custom_values = {"log": {"label": command_label}}
 
-        # Execute command for Server 1
-        self.server_test_1.execute_command(command_with_keys, **custom_values)
+        # Run command for Server 1
+        self.server_test_1.run_command(command_with_keys, **custom_values)
 
         # Expected rendered command code
         rendered_code_expected = "cd /opt/tower && mkdir #!cxtower.secret.FOLDER!#"
@@ -1039,7 +1041,7 @@ result = re.sub(pattern, replacement, value)
             "odoo.addons.cetmix_tower_server.models.cx_tower_server.CxTowerServer.upload_file",
             return_value="ok",
         ):
-            self.server_test_1.execute_command(
+            self.server_test_1.run_command(
                 self.command_create_file_with_template_tower_source
             )
 
@@ -1065,7 +1067,7 @@ result = re.sub(pattern, replacement, value)
             "odoo.addons.cetmix_tower_server.models.cx_tower_server.CxTowerServer.upload_file",
             return_value="ok",
         ):
-            self.server_test_1.execute_command(
+            self.server_test_1.run_command(
                 self.command_create_file_with_template_tower_source
             )
 
@@ -1095,7 +1097,7 @@ result = re.sub(pattern, replacement, value)
         cx_tower_server_obj = self.registry["cx.tower.server"]
 
         with patch.object(cx_tower_server_obj, "download_file", download_file):
-            self.server_test_1.execute_command(
+            self.server_test_1.run_command(
                 self.command_create_file_with_template_server_source
             )
 
@@ -1126,7 +1128,7 @@ result = re.sub(pattern, replacement, value)
         )
 
         with patch.object(cx_tower_server_obj, "download_file", download_file):
-            self.server_test_1.execute_command(
+            self.server_test_1.run_command(
                 self.command_create_file_with_template_server_source
             )
 
@@ -1144,16 +1146,16 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(len(log_record_2), 1, msg="Must be a single log record")
 
-    def test_execute_command_no_log(self):
-        """Execute command without creating a log record.
+    def test_run_command_no_log(self):
+        """Run command without creating a log record.
         Such commands return execution result directly.
         """
         # Add label to track command log
         command_label = "Test Command with keys"
         custom_values = {"log": {"label": command_label}}
 
-        # Execute command for Server 1
-        command_result = self.server_test_1.with_context(no_log=True).execute_command(
+        # Run command for Server 1
+        command_result = self.server_test_1.with_context(no_log=True).run_command(
             self.command_create_dir, **custom_values
         )
         self.assertEqual(
@@ -1182,7 +1184,8 @@ result = re.sub(pattern, replacement, value)
         )
 
         # Note: this is rendered as for Server Test 1
-        rendered_code_pythonic = f"""
+        rendered_code_pythonic = (
+            f"""
 server_name = "{self.server_test_1.name}"
 if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     # We don't actually create a new command because it will raise
@@ -1191,8 +1194,10 @@ if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     command = "new command"
     COMMAND_RESULT = {{"exit_code": 0, "message": "New command was created"}}
 else:
-    COMMAND_RESULT = {{"exit_code": -1, "message": "error"}}
+    COMMAND_RESULT = {{"exit_code": %s, "message": "error"}}
     """
+            % GENERAL_ERROR
+        )
 
         self.assertEqual(
             rendered_command["rendered_code"],
@@ -1202,9 +1207,9 @@ else:
 
     def test_execute_python_command(self):
         """
-        Execute command with python action.
+        Run command with python action.
         """
-        command_result = self.server_test_1.with_context(no_log=True).execute_command(
+        command_result = self.server_test_1.with_context(no_log=True).run_command(
             self.command_create_new_command
         )
         self.assertEqual(
@@ -1218,11 +1223,13 @@ else:
 
         # Check error is raises
         self.secret_folder_key.secret_value = "not_a_secretFolder"
-        command_result = self.server_test_1.with_context(no_log=True).execute_command(
+        command_result = self.server_test_1.with_context(no_log=True).run_command(
             self.command_create_new_command
         )
         self.assertEqual(
-            command_result["status"], -1, "The command result status must be -1"
+            command_result["status"],
+            GENERAL_ERROR,
+            "The command result status must be GENERAL_ERROR",
         )
         self.assertEqual(
             command_result["error"],
@@ -1230,7 +1237,7 @@ else:
             "The error response must be contain text - error",
         )
 
-    def test_execute_python_code(self):
+    def test_run_python_code(self):
         """
         Test python execution code
         """
@@ -1238,7 +1245,7 @@ else:
             self.command_create_new_command
         )
 
-        command_result = self.server_test_1._execute_python_code(
+        command_result = self.server_test_1._run_python_code(
             rendered_command["rendered_code"]
         )
         self.assertEqual(
@@ -1254,7 +1261,7 @@ else:
             "Error in command result must be set to None",
         )
 
-    def test_execute_command_without_set_server_status(self):
+    def test_run_command_without_set_server_status(self):
         """
         Test command execution without setting server status
         """
@@ -1269,13 +1276,13 @@ else:
         # Reset access rule cache
         self.env["ir.rule"].invalidate_cache()
 
-        # Execute command
+        # Run command
         server_status = self.server_test_1.status
 
         result = (
             self.server_test_1.with_context(no_log=True)
             .with_user(self.user)
-            .execute_command(self.command_create_new_command)
+            .run_command(self.command_create_new_command)
         )
 
         # Check command result
@@ -1284,15 +1291,15 @@ else:
             self.server_test_1.status, server_status, "Server status must be 'running'"
         )
 
-    def test_execute_command_with_set_server_status(self):
+    def test_run_command_with_set_server_status(self):
         """
         Test command execution with setting server status
         """
         # Set server status to "down"
         self.command_create_new_command.write({"server_status": "stopping"})
 
-        # Execute command
-        self.server_test_1.with_context(no_log=True).execute_command(
+        # Run command
+        self.server_test_1.with_context(no_log=True).run_command(
             self.command_create_new_command
         )
 
@@ -1301,7 +1308,7 @@ else:
             self.server_test_1.status, "stopping", "Server status must be 'stopping'"
         )
 
-    def test_execute_python_code_with_secret(self):
+    def test_run_python_code_with_secret(self):
         """
         Test execution of Python code with a secret value.
         This test ensures that a command is rendered and executed correctly,
@@ -1313,8 +1320,8 @@ else:
             self.command_python_command_1
         )
 
-        # Execute the rendered Python code
-        command_result = self.server_test_1._execute_python_code(
+        # Run the rendered Python code
+        command_result = self.server_test_1._run_python_code(
             rendered_command["rendered_code"]
         )
 
@@ -1342,8 +1349,8 @@ else:
             self.command_python_command_2
         )
 
-        # Execute the rendered Python code
-        command_result = self.server_test_1._execute_python_code(
+        # Run the rendered Python code
+        command_result = self.server_test_1._run_python_code(
             rendered_command["rendered_code"]
         )
 
@@ -1371,8 +1378,8 @@ else:
             self.command_python_command_3
         )
 
-        # Execute the rendered Python code
-        command_result = self.server_test_1._execute_python_code(
+        # Run the rendered Python code
+        command_result = self.server_test_1._run_python_code(
             rendered_command["rendered_code"]
         )
 
@@ -1400,9 +1407,9 @@ else:
             self.command_python_command_4
         )
 
-        # Execute the rendered Python code
+        # Run the rendered Python code
         # SSH keys are not parsed inline, so we should raise a validation error
-        command_result = self.server_test_1._execute_python_code(
+        command_result = self.server_test_1._run_python_code(
             rendered_command["rendered_code"]
         )
 

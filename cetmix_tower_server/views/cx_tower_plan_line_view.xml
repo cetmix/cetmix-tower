@@ -31,8 +31,7 @@
                             <field name="command_id" options="{'no_create': True}" />
                         </div>
                         <field
-                            name="flight_plan_id"
-                            string="Flight Plan"
+                            name="plan_run_id"
                             attrs="{'invisible': [('action', '!=', 'plan')]}"
                         />
                         <field

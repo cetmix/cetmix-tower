@@ -5,9 +5,13 @@ from odoo import _, api, fields, models
 from ..models.tools import generate_random_id
 
 
-class CxTowerPlanExecuteWizard(models.TransientModel):
-    _name = "cx.tower.plan.execute.wizard"
-    _description = "Execute Flight Plan in Wizard"
+class CxTowerPlanRunWizard(models.TransientModel):
+    """
+    Wizard to run a flight plan on selected servers.
+    """
+
+    _name = "cx.tower.plan.run.wizard"
+    _description = "Run Flight Plan in Wizard"
 
     server_ids = fields.Many2many(
         "cx.tower.server",
@@ -24,9 +28,6 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
     )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
-        relation="cx_tower_plan_execute_tag_rel",
-        column1="wizard_id",
-        column2="tag_id",
         string="Tags",
     )
     applicability = fields.Selection(
@@ -99,15 +100,16 @@ class CxTowerPlanExecuteWizard(models.TransientModel):
         """Reset plan after change record type"""
         self.plan_id = False
 
-    def execute(self):
-        """Render selected command rendered using server method"""
+    def run_flight_plan(self):
+        """Run flight plan for selected servers"""
 
         if self.plan_id and self.server_ids:
             # Generate custom label. Will be used later to locate the command log
             plan_label = generate_random_id(4)
             # Add custom values for log
             custom_values = {"plan_log": {"label": plan_label}}
-            self.plan_id.execute(self.server_ids, **custom_values)
+            for server in self.server_ids:
+                server.run_flight_plan(self.plan_id, **custom_values)
             return {
                 "type": "ir.actions.act_window",
                 "name": _("Plan Log"),

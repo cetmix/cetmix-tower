@@ -53,7 +53,7 @@
                                             <a
                                                 role="menuitem"
                                                 type="action"
-                                                name="%(cetmix_tower_server.cx_tower_command_execute_wizard_action)d"
+                                                name="%(cetmix_tower_server.cx_tower_command_run_wizard_action)d"
                                             >Run
                                                 Command
                                             </a>
@@ -62,7 +62,7 @@
                                             <a
                                                 role="menuitem"
                                                 type="action"
-                                                name="%(cetmix_tower_server.cx_tower_plan_execute_wizard_action)d"
+                                                name="%(cetmix_tower_server.cx_tower_plan_run_wizard_action)d"
                                             >Run
                                                 Flight Plan
                                             </a>
@@ -171,14 +171,14 @@
             <form>
                 <header>
                     <button
-                        name="action_execute_command"
+                        name="action_run_command"
                         type="object"
                         class="btn-primary"
                         string="Run command"
                         icon="fa-code"
                     />
                     <button
-                        name="action_execute_plan"
+                        name="action_run_flight_plan"
                         type="object"
                         class="btn-primary"
                         string="Run Flight Plan"
@@ -394,7 +394,10 @@
                                 context="{'default_key_type': 's', 'from_server': True}"
                             >
                                 <tree editable="bottom">
-                                    <field name="key_id" />
+                                    <field
+                                        name="key_id"
+                                        domain="[('key_type', '=', 's')]"
+                                    />
                                     <field name="secret_value" />
                                 </tree>
                             </field>

@@ -47,18 +47,22 @@
                         <field name="use_sudo" />
                     </group>
                     <field name="line_ids">
-                        <tree editable="bottom">
+                        <tree
+                            editable="bottom"
+                            decoration-danger="value_char == False and required == True"
+                            decoration-info="value_char != False and required == True"
+                        >
                             <field name="variable_reference" invisible="1" />
                             <field name="variable_id" />
                             <field name="variable_type" invisible="1" />
                             <field
                                 name="value_char"
-                                attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                attrs="{'readonly': [('variable_type', '=', 'o')], 'required': [('variable_type', '=', 's'), ('required', '=', True)]}"
                             />
                             <field
                                 name="option_id"
                                 options="{'no_create': True, 'no_create_edit': True}"
-                                attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                attrs="{'readonly': [('variable_type', '=', 's')], 'required': [('variable_type', '=', 'o'), ('required', '=', True)]}"
                             />
                             <field name="required" readonly="1" />
                         </tree>
@@ -70,8 +74,8 @@
                         readonly="1"
                         nolabel="1"
                         attrs="{'invisible': [('has_missing_required_values', '=', False)]}"
-                        style="background-color: #fff3cd; border: 1px solid #ffeeba;
-                           padding: 8px; border-radius: 4px; color: #856404;"
+                        class="alert alert-warning"
+                        role="alert"
                     />
                 </group>
                 <field name="has_missing_required_values" invisible="1" />

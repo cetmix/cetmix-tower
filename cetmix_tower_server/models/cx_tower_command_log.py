@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
 
+from .constants import GENERAL_ERROR
+
 
 class CxTowerCommandLog(models.Model):
     _name = "cx.tower.command.log"
@@ -42,8 +44,18 @@ class CxTowerCommandLog(models.Model):
 
     command_action = fields.Selection(related="command_id.action", store=True)
     path = fields.Char(string="Execution Path", help="Where command was executed")
-    code = fields.Text(string="Command Code")
-    command_status = fields.Integer(string="Exit Code")
+    code = fields.Text(string="Command Code", help="Command code that was executed")
+    command_status = fields.Integer(
+        string="Exit Code",
+        help="0 if command finished successfully.\n"
+        "-100 general error,\n"
+        "-101 not found,\n"
+        "-201 another instance of this command is running,\n"
+        "-202 no runner found for the command action,\n"
+        "-203 Python code execution failed\n"
+        "-205 plan line condition check failed\n"
+        "503 if SSH connection error occurred",
+    )
     command_response = fields.Text(string="Response")
     command_error = fields.Text(string="Error")
     use_sudo = fields.Selection(
@@ -129,7 +141,7 @@ class CxTowerCommandLog(models.Model):
             vals = {
                 "is_running": False,
                 "finish_date": date_finish,
-                "command_status": -1 if status is None else status,
+                "command_status": GENERAL_ERROR if status is None else status,
                 "command_response": response,
                 "command_error": error,
             }

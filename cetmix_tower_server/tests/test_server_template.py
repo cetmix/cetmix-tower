@@ -360,32 +360,6 @@ class TestTowerServerTemplate(TestTowerCommon):
             "Command code should be the same in the copied server log",
         )
 
-    def test_required_flag_in_create_server_wizard(self):
-        """
-        Test that the 'Required' flag is correctly passed from the Server Template
-        to the New Server Wizard.
-        """
-        # Set the required flag for a variable
-        self.VariableValue.create(
-            {
-                "variable_id": self.variable_version.id,
-                "server_template_id": self.server_template_sample.id,
-                "value_char": "Test Value",
-                "required": True,
-            }
-        )
-
-        # Open the server creation wizard
-        action = self.server_template_sample.action_create_server()
-        wizard_context = action.get("context", {})
-        default_line_ids = wizard_context.get("default_line_ids", [])
-
-        # We check that required is passed to the wizard
-        self.assertTrue(
-            any(line[2].get("required") for line in default_line_ids),
-            "The 'Required' flag should be correctly passed to the wizard.",
-        )
-
     def test_required_attribute_in_wizard_field(self):
         """
         Test that the 'required' attribute

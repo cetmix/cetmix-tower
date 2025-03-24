@@ -103,7 +103,7 @@
                             <button
                                 string="Modify Code"
                                 icon="fa-pencil-square-o"
-                                name="action_modify_code"
+                                name="action_unlink_from_template"
                                 type="object"
                                 class="btn-secondary mt-3 mb-3"
                                 confirm="File will be disconnected from template. Continue?"

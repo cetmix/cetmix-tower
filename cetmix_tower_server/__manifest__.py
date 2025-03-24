@@ -1,9 +1,9 @@
 # Copyright Cetmix OU
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
-    "name": "Cetmix Tower Server Management",
-    "summary": "Flexible Server Management directly from Odoo",
-    "version": "14.0.0.4.19",
+    "name": "Cetmix Tower Server",
+    "summary": "Manage servers and applications from Odoo",
+    "version": "14.0.0.6.2",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "author": "Cetmix",
@@ -12,7 +12,6 @@
     "installable": True,
     "external_dependencies": {
         "python": ["paramiko"],
-        "bin": [],
     },
     "depends": [
         "mail",
@@ -36,10 +35,11 @@
         "security/cx_tower_variable_option_security.xml",
         "security/cx_tower_key_security.xml",
         "security/cx_tower_key_value_security.xml",
+        "security/cx_tower_tag_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
-        "wizards/cx_tower_command_execute_wizard_view.xml",
-        "wizards/cx_tower_plan_execute_wizard_view.xml",
+        "wizards/cx_tower_command_run_wizard_view.xml",
+        "wizards/cx_tower_plan_run_wizard_view.xml",
         "wizards/cx_tower_server_template_create_wizard_view.xml",
         "views/web_assets_backend.xml",
         "views/cx_tower_server_view.xml",
@@ -58,6 +58,7 @@
         "views/cx_tower_server_log_view.xml",
         "views/cx_tower_server_template_view.xml",
         "wizards/cx_tower_server_host_key_wizard_view.xml",
+        "views/res_config_settings.xml",
         "views/menuitems.xml",
     ],
     "demo": [
