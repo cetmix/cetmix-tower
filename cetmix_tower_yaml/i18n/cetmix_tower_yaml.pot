@@ -252,8 +252,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_value_export_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
