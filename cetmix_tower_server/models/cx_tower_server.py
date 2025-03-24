@@ -462,6 +462,7 @@ class CxTowerServer(models.Model):
             },
         }
 
+    @after_commit
     def _get_host_key(self, raise_on_error=True, timeout=60):
         """Get host key
 
@@ -489,6 +490,14 @@ class CxTowerServer(models.Model):
             client = self._get_ssh_client(
                 raise_on_error=raise_on_error, timeout=timeout
             )
+
+            # Disable host key verification for this connection only, to obtain the
+            # server's real host key. If a pre-configured host key is incorrect using
+            # it would cause a key mismatch error. By setting host_key to False
+            # here, we trigger AutoAddPolicy for this connection, which automatically
+            # accepts the server's actual host key.
+            client.connection.host_key = False
+
             ssh_client = client.connection.connect()
             transport = ssh_client.get_transport()
             remote_key = transport.get_remote_server_key()
