@@ -130,7 +130,7 @@ class CxTowerGitProjectRel(models.Model):
         for record in self:
             # Disconnect file from file template if it is connected
             if record.file_id.template_id:
-                record.file_id.action_modify_code()
+                record.file_id.action_unlink_from_template()
 
             code_generator_function = code_generator_functions.get(
                 record.project_format
