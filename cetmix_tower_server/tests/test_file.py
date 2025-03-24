@@ -249,7 +249,7 @@ class TestTowerFile(TestTowerCommon):
         )
 
         # Make possible to modify file code
-        self.file.action_modify_code()
+        self.file.action_unlink_from_template()
 
         # Check if template was removed from file
         self.assertFalse(
@@ -438,3 +438,31 @@ class TestTowerFile(TestTowerCommon):
         self.assertTrue(file.server_response != "ok")
         file.with_user(self.user_bob).action_push_to_server()
         self.assertEqual(file.server_response, "ok")
+
+    def test_sanitize_values(self):
+        """
+        Test case to verify that the sanitize_values method works correctly.
+        """
+        # 1. Root directory
+        values = self.File._sanitize_values({"server_dir": "/"})
+        self.assertEqual(values["server_dir"], "/")
+
+        # 2. Trailing slash
+        values = self.File._sanitize_values({"server_dir": "/var/tmp/"})
+        self.assertEqual(values["server_dir"], "/var/tmp")
+
+        # 3. Trailing whitespace
+        values = self.File._sanitize_values({"server_dir": "/var/tmp/ "})
+        self.assertEqual(values["server_dir"], "/var/tmp")
+
+        # 4. Leading whitespace
+        values = self.File._sanitize_values({"server_dir": " /var/tmp/"})
+        self.assertEqual(values["server_dir"], "/var/tmp")
+
+        # 5. Leading and trailing whitespace
+        values = self.File._sanitize_values({"server_dir": " /var/tmp/ "})
+        self.assertEqual(values["server_dir"], "/var/tmp")
+
+        # 6. Leading and trailing whitespace just one slash
+        values = self.File._sanitize_values({"server_dir": " / "})
+        self.assertEqual(values["server_dir"], "/")

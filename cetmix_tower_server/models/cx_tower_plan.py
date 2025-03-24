@@ -32,19 +32,36 @@ class CxTowerPlan(models.Model):
 
     active = fields.Boolean(default=True)
     allow_parallel_run = fields.Boolean(
-        help="If enabled flightplan can be run on the same server "
-        "while the same flightplan is still running.\n"
-        "Returns -5 status is execution is blocked"
+        help="If enabled, multiple instances of the same flight plan "
+        "can be run on the same server at the same time.\n"
+        "Otherwise, ANOTHER_PLAN_RUNNING status will be returned if another"
+        " instance of the same flight plan is already running"
     )
 
     color = fields.Integer(help="For better visualization in views")
     server_ids = fields.Many2many(string="Servers", comodel_name="cx.tower.server")
-    tag_ids = fields.Many2many(string="Tags", comodel_name="cx.tower.tag")
+    tag_ids = fields.Many2many(
+        string="Tags",
+        comodel_name="cx.tower.tag",
+        relation="cx_tower_plan_tag_rel",
+        column1="plan_id",
+        column2="tag_id",
+    )
     line_ids = fields.One2many(
-        string="Commands",
+        string="Lines",
         comodel_name="cx.tower.plan.line",
         inverse_name="plan_id",
         auto_join=True,
+    )
+    command_ids = fields.Many2many(
+        string="Commands",
+        comodel_name="cx.tower.command",
+        relation="cx_tower_command_flight_plan_used_id_rel",
+        column1="plan_id",
+        column2="command_id",
+        help="Commands used in this flight plan",
+        compute="_compute_command_ids",
+        store=True,
     )
     note = fields.Text()
     on_error_action = fields.Selection(
@@ -56,7 +73,7 @@ class CxTowerPlan(models.Model):
         ],
         required=True,
         default="e",
-        help="This action will be executed on error "
+        help="This action will be triggered on error "
         "if no command action can be applied",
     )
     custom_exit_code = fields.Integer(
@@ -76,25 +93,14 @@ class CxTowerPlan(models.Model):
         relation="cx_tower_plan_manager_rel",
     )
 
-    def execute(self, servers, **kwargs):
-        """Execute plans on multiple servers
+    @api.depends("line_ids", "line_ids.command_id")
+    def _compute_command_ids(self):
+        """Compute command ids"""
+        for plan in self:
+            plan.command_ids = [(6, 0, plan.line_ids.mapped("command_id").ids)]
 
-        Args:
-            servers (cx.tower.server()): server records
-            kwargs (dict): Optional arguments
-                Following are supported but not limited to:
-                    - "plan_log": {values passed to flightplan logger}
-                    - "log": {values passed to logger}
-                    - "key": {values passed to key parser}
-        """
-
-        # Execute each plan for each server is list
-        for server in servers:
-            for plan in self:
-                plan._execute_single(server, **kwargs)
-
-    def _execute_single(self, server, **kwargs):
-        """Execute Flight Plan
+    def _run_single(self, server, **kwargs):
+        """Run single Flight Plan on a single server
 
         Args:
             server (cx.tower.server()): Server object
@@ -105,8 +111,9 @@ class CxTowerPlan(models.Model):
                     - "key": {values passed to key parser}
 
         Returns:
-            status (Int): plan execution status
+            log_record (cx.tower.plan.log()): plan log record
         """
+
         self.ensure_one()
         # Ensure we have a single server record
         server.ensure_one()
@@ -129,7 +136,7 @@ class CxTowerPlan(models.Model):
                 )  # pylint: disable=no-member
             )
 
-        # Check plan access before execution
+        # Check plan access before running
         # This is needed to avoid possible access violations
         self.check_access_rights("read")
         self.check_access_rule("read")
@@ -137,7 +144,7 @@ class CxTowerPlan(models.Model):
         # Access log as root to bypass access restrictions
         plan_log_obj = self.env["cx.tower.plan.log"].sudo()
 
-        # Check if the same plan is being executed on this server right now
+        # Check if the same plan is being run on this server right now
         if not self.allow_parallel_run or self.env.context.get(
             "prevent_plan_recursion"
         ):
@@ -151,17 +158,15 @@ class CxTowerPlan(models.Model):
             if running_count > 0:
                 return ANOTHER_PLAN_RUNNING
 
-        # Start Flight Plan log
-        return plan_log_obj.start(
-            server, self, fields.Datetime.now(), **kwargs
-        ).plan_status
+        # Start Flight Plan and return the log record
+        return plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)
 
     def _get_next_action_values(self, command_log):
         """Get next action values based of previous command result:
 
             - Action to proceed
             - Exit code
-            - Next line of the plan if next line should be executed
+            - Next line of the plan if next line should be run
 
         Args:
             command_log (cx.tower.command.log()): Command log record
@@ -172,7 +177,7 @@ class CxTowerPlan(models.Model):
         """
         # Iterate all actions and return the first matching one.
         # If no action is found return the default plan values
-        # If the line is the last one return last command execution code
+        # If the line is the last one return last command exit code
 
         if not command_log.plan_log_id:  # Exit with custom code "Plan not found"
             return "ec", PLAN_NOT_ASSIGNED, None
@@ -255,7 +260,7 @@ class CxTowerPlan(models.Model):
         return action, exit_code, next_line
 
     def _run_next_action(self, command_log):
-        """Run next action based on command execution result
+        """Run next action based on the command result
 
         Args:
             command_log (cx.tower.command.log()): Command log record
@@ -269,11 +274,11 @@ class CxTowerPlan(models.Model):
             # save log exit code as success
             exit_code = 0
 
-        # Execute next line
+        # Run next line
         if action == "n" and plan_line_id:
             server = command_log.server_id
             if plan_line_id._is_executable_line(server):
-                plan_line_id._execute(server, plan_log)
+                plan_line_id._run(server, plan_log)
             else:
                 plan_line_id._skip(server, plan_log)
 

@@ -29,10 +29,11 @@
         <field name="name">cx.tower.os.view.tree</field>
         <field name="model">cx.tower.os</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="top">
                 <field name="name" />
                 <field name="reference" optional="show" />
                 <field name="parent_id" />
+                <field name="color" widget="color_picker" />
             </tree>
         </field>
     </record>

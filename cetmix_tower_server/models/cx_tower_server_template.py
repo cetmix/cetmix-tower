@@ -141,10 +141,7 @@ class CxTowerServerTemplate(models.Model):
                             0,
                             0,
                             {
-                                "variable_id": line.variable_id.id,
-                                "value_char": line.value_char,
-                                "option_id": line.option_id.id,
-                                "required": line.required,
+                                "variable_value_id": line.id,
                             },
                         )
                         for line in self.variable_value_ids
@@ -286,7 +283,7 @@ class CxTowerServerTemplate(models.Model):
 
         flight_plan = server.server_template_id.flight_plan_id
         if flight_plan:
-            flight_plan.execute(server)
+            server.run_flight_plan(flight_plan)
 
         return server
 

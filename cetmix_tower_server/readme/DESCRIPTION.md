@@ -9,7 +9,7 @@ It is designed for versatility across different operating systems and software e
 - **Beyond Odoo:** While optimized for Odoo, Cetmix Tower can manage virtually any instance
 - **Flexibility:** Use Cetmix Tower alongside other management methods without restriction, ensuring you're not limited to a single vendor
 - **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for full control over your server management.
-- **Broad Compatibility:** Execute any software that's manageable via shell commands or API. From Docker or Kubernetes to direct OS package installations
+- **Broad Compatibility:** Run any software that's manageable via shell commands or API. From Docker or Kubernetes to direct OS package installations
 
 # Server Management
 
@@ -23,7 +23,7 @@ It is designed for versatility across different operating systems and software e
 
 # Commands
 
-- Execute SSH commands on remote servers
+- Run SSH commands on remote servers
 - Run Python code on the Tower Odoo server
 - Run Flight Plan from command
 - Render commands using variables
@@ -31,7 +31,7 @@ It is designed for versatility across different operating systems and software e
 
 # Flight Plans
 
-- Execute multiple commands in a row
+- Run multiple commands in a row
 - Condition based flow:
   - Based on condition using [Python syntax](https://www.w3schools.com/python/python_syntax.asp)
   - Based on the previous command exit code

@@ -10,6 +10,19 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
+                            name="action_open_plans"
+                            type="object"
+                            class="oe_stat_button"
+                            attrs="{'invisible': [('flight_plan_used_ids_count', '=', 0)]}"
+                            icon="fa-plane"
+                        >
+                                <field
+                                name="flight_plan_used_ids_count"
+                                string="Used in Plans"
+                                widget="statinfo"
+                            />
+                            </button>
+                        <button
                             name="action_open_command_logs"
                             type="object"
                             string="Logs"
@@ -114,54 +127,7 @@
                             name="python_help_info"
                             attrs="{'invisible': [('action', '!=', 'python_code')]}"
                         >
-                            <div style="margin-top: 4px;">
-                                <h3>Help with Python expressions</h3>
-                                <p
-                                >Various fields may use Python code or Python expressions. The
-                                    following variables can be used:</p>
-                                <ul>
-                                    <li><code>user</code>: Current Odoo user</li>
-                                    <li><code
-                                        >env</code>: Odoo Environment on which the action is
-                                        triggered</li>
-                                    <li><code
-                                        >server</code>: Server on which the command is run</li>
-                                    <li><code
-                                        >tower</code>: 'cetmix.tower' helper class shortcut</li>
-                                    <li><code>time</code>, <code>datetime</code>, <code
-                                        >dateutil</code>
-                                        , <code
-                                        >timezone</code>: useful Python libraries</li>
-                                    <li><code
-                                        >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'</li>
-                                    <li><code
-                                        >json</code>: Python 'json' library. Available methods: 'dumps'</li>
-                                    <li><code>hashlib</code>: Python 'hashlib' library.
-                                         Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br
-                                        />
-                                          'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'</li>
-                                    <li><code
-                                        >hmac</code>: Python 'hmac' library. Use 'new' to create HMAC objects.<br
-                                        />
-                                        Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br
-                                        />
-                                        Module-level function: 'compare_digest'.</li>
-                                    <li><code
-                                        >UserError</code>: Warning Exception to use with <code
-                                        >
-                                        raise</code></li>
-                                    <li
-                                    >Each python code command returns the COMMAND_RESULT value
-                                        which is a dictionary.</li>
-                                </ul>
-                                <p
-                                >There are two default keys in the dictionary, e.g.:</p>
-                                <code style='white-space: pre-wrap'>
-                                    x = 2*10
-                                    COMMAND_RESULT = {"exit_code": x, "message": "This will be
-                                    logged as an error message because exit code !=0"}
-                                </code>
-                            </div>
+                            <field name="command_help" />
                         </page>
                         <page
                             name="access"
@@ -273,6 +239,12 @@
                     string="Run Flight Plan"
                     name="filter_flight_plan"
                     domain="[('action', '=', 'plan')]"
+                />
+                <separator />
+                <filter
+                    string="Used in Plans"
+                    name="filter_used_in_plans"
+                    domain="[('flight_plan_used_ids', '!=', False)]"
                 />
                 <separator />
                 <filter

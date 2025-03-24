@@ -85,6 +85,14 @@
         groups="group_manager"
     />
     <menuitem
+        id="menu_cetmix_tower_general_settings"
+        name="General Settings"
+        parent="menu_settings"
+        sequence="0"
+        action="action_cetmix_tower_config_settings"
+        groups="group_manager"
+    />
+    <menuitem
         id="menu_cx_tower_variable"
         name="Variables"
         action="action_cx_tower_variable"

@@ -23,7 +23,7 @@ def migrate(cr, version):
         WHERE field_id IN (
             SELECT id FROM ir_model_fields
             WHERE name = 'use_sudo'
-            AND model = 'cx.tower.command.execute.wizard'
+            AND model = 'cx.tower.command.run.wizard'
         );
     """
     )

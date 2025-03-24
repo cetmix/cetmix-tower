@@ -21,13 +21,13 @@
                         name="web_ribbon"
                         title="Failed"
                         bg_color="bg-danger"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', 'in', [0, -20])]}"
+                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', 'in', [0, -205])]}"
                     />
                     <widget
                         name="web_ribbon"
                         title="Skipped"
                         bg_color="bg-dark"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '!=', -20)]}"
+                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '!=', -205)]}"
                     />
 
                     <group>
@@ -105,9 +105,9 @@
         <field name="model">cx.tower.command.log</field>
         <field name="arch" type="xml">
             <tree
-                decoration-danger="command_status not in [0, -20]"
+                decoration-danger="command_status not in [0, -205]"
                 decoration-info="is_running == True"
-                decoration-muted="command_status == -20"
+                decoration-muted="command_status == -205"
             >
                 <field name="start_date" />
                 <field name="finish_date" optional="hide" />

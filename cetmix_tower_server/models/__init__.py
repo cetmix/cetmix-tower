@@ -26,3 +26,4 @@ from . import cx_tower_server_template
 from . import cetmix_tower
 from . import cx_tower_variable_option
 from . import ir_actions_server
+from . import res_config_settings
