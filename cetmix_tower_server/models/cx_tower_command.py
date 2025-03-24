@@ -7,6 +7,8 @@ from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
+from .constants import DEFAULT_PYTHON_CODE, DEFAULT_PYTHON_CODE_HELP, DEFAULT_SSH_CODE
+
 requests = wrap_module(__import__("requests"), ["post", "get", "delete", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
 hashlib = wrap_module(
@@ -34,37 +36,6 @@ hmac = wrap_module(
     ["new", "compare_digest"],
 )
 
-DEFAULT_PYTHON_CODE = """# Available variables:
-#  - user: Current Odoo User
-#  - env: Odoo Environment on which the action is triggered
-#  - server: server on which the command is run
-#  - tower: 'cetmix.tower' helper class
-#  - time, datetime, dateutil, timezone: useful Python libraries
-#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'
-#  - json: Python 'json' library. Available methods: 'dumps'
-#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
-#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
-#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'
-#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
-#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
-#    Module-level function: 'compare_digest'.
-#  - float_compare: Odoo function to compare floats based on specific precisions
-#  - UserError: Warning Exception to use with raise
-#
-# Each python code command returns the COMMAND_RESULT value which is a dictionary.
-# There are two default keys in the dictionary, e.g.:
-# x = 2*10
-# COMMAND_RESULT = {
-#    "exit_code": x,
-#    "message": "This will be logged as an error message because exit code !=0",
-# }
-\n\n\n"""  # noqa: E501
-
-DEFAULT_SSH_CODE = """# Run any SSH command on the target system
-# Examples: ls, cd, pwd, mkdir, rm
-# Adapt commands to your specific OS.
-\n\n\n"""
-
 
 class CxTowerCommand(models.Model):
     _name = "cx.tower.command"
@@ -78,6 +49,24 @@ class CxTowerCommand(models.Model):
     _description = "Cetmix Tower Command"
     _order = "name"
 
+    def _get_default_python_code(self):
+        """
+        Default python command code
+        """
+        return DEFAULT_PYTHON_CODE
+
+    def _get_default_ssh_code(self):
+        """
+        Default ssh command code
+        """
+        return DEFAULT_SSH_CODE
+
+    def _get_default_python_code_help(self):
+        """
+        Default python code help
+        """
+        return DEFAULT_PYTHON_CODE_HELP
+
     def _selection_action(self):
         """Actions that can be run by a command.
 
@@ -86,16 +75,17 @@ class CxTowerCommand(models.Model):
         """
         return [
             ("ssh_command", "SSH command"),
-            ("python_code", "Execute Python code"),
+            ("python_code", "Run Python code"),
             ("file_using_template", "Create file using template"),
             ("plan", "Run flight plan"),
         ]
 
     active = fields.Boolean(default=True)
     allow_parallel_run = fields.Boolean(
-        help="If enabled command can be run on the same server "
-        "while the same command is still running.\n"
-        "Returns ANOTHER_COMMAND_RUNNING if execution is blocked"
+        help="If enabled, multiple instances of the same command "
+        "can be run on the same server at the same time.\n"
+        "Otherwise, ANOTHER_COMMAND_RUNNING status will be returned if another"
+        " instance of the same command is already running"
     )
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
@@ -103,8 +93,8 @@ class CxTowerCommand(models.Model):
         column1="command_id",
         column2="server_id",
         string="Servers",
-        help="Servers on which the command will be executed.\n"
-        "If empty, command canbe executed on all servers",
+        help="Servers on which the command will be run.\n"
+        "If empty, command can be run on all servers",
     )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
@@ -129,7 +119,7 @@ class CxTowerCommand(models.Model):
     )
     path = fields.Char(
         string="Default Path",
-        help="Location where command will be executed. "
+        help="Location where command will be run. "
         "You can use {{ variables }} in path",
     )
     file_template_id = fields.Many2one(
@@ -141,13 +131,30 @@ class CxTowerCommand(models.Model):
         store=True,
         readonly=False,
     )
+    command_help = fields.Html(
+        compute="_compute_command_help",
+        compute_sudo=True,
+    )
     flight_plan_id = fields.Many2one(
         comodel_name="cx.tower.plan",
+        help="Flight plan run by the command",
+    )
+    flight_plan_used_ids = fields.Many2many(
+        comodel_name="cx.tower.plan",
+        help="Flight plan this command is used in",
+        relation="cx_tower_command_flight_plan_used_id_rel",
+        column1="command_id",
+        column2="plan_id",
+        store=True,
+    )
+    flight_plan_used_ids_count = fields.Integer(
+        compute="_compute_flight_plan_used_ids_count",
+        help="Flight plan this command is used in",
     )
     server_status = fields.Selection(
         selection=lambda self: self.env["cx.tower.server"]._selection_status(),
         string="Server Status",
-        help="Set the following status if command is executed successfully. "
+        help="Set the following status if command finishes with success. "
         "Leave 'Undefined' if you don't need to update the status",
     )
     variable_ids = fields.Many2many(
@@ -178,8 +185,8 @@ class CxTowerCommand(models.Model):
 
         Example:
             The following fields trigger recomputation of `variable_ids`:
-            - `code`: The command's script or execution logic.
-            - `path`: The default execution path for the command.
+            - `code`: The command's script or running logic.
+            - `path`: The default running path for the command.
         """
         return ["code", "path"]
 
@@ -188,36 +195,35 @@ class CxTowerCommand(models.Model):
         """
         Compute default code
         """
+        default_python_code = self._get_default_python_code()
+        default_ssh_code = self._get_default_ssh_code()
         for command in self:
             if command.action == "python_code":
-                command.code = DEFAULT_PYTHON_CODE
+                command.code = default_python_code
             elif command.action == "ssh_command":
-                command.code = DEFAULT_SSH_CODE
+                command.code = default_ssh_code
             else:
                 command.code = False
 
-    @api.model
-    def _get_eval_context(self, server=None):
+    @api.depends("action")
+    def _compute_command_help(self):
         """
-        Evaluation context to pass to safe_eval to execute python code
+        Compute command help
         """
-        return {
-            "uid": self._uid,
-            "user": self.env.user,
-            "time": tools.safe_eval.time,
-            "datetime": tools.safe_eval.datetime,
-            "dateutil": tools.safe_eval.dateutil,
-            "timezone": timezone,
-            "requests": requests,
-            "json": json,
-            "float_compare": float_compare,
-            "env": self.env,
-            "UserError": UserError,
-            "server": server or self._context.get("active_server"),
-            "tower": self.env["cetmix.tower"],
-            "hashlib": hashlib,
-            "hmac": hmac,
-        }
+        default_python_code_help = self._get_default_python_code_help()
+        for command in self:
+            if command.action == "python_code":
+                command.command_help = default_python_code_help
+            else:
+                command.command_help = False
+
+    @api.depends("flight_plan_used_ids")
+    def _compute_flight_plan_used_ids_count(self):
+        """
+        Compute flight plan ids count
+        """
+        for command in self:
+            command.flight_plan_used_ids_count = len(command.flight_plan_used_ids)
 
     def name_get(self):
         # Add 'command_show_server_names' context key
@@ -244,3 +250,36 @@ class CxTowerCommand(models.Model):
         )
         action["domain"] = [("command_id", "=", self.id)]
         return action
+
+    def action_open_plans(self):
+        """
+        Open plans this command is used in
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan"
+        )
+        action["domain"] = [("id", "in", self.flight_plan_used_ids.ids)]
+        return action
+
+    @api.model
+    def _get_eval_context(self, server=None):
+        """
+        Evaluation context to pass to safe_eval to run python code
+        """
+        return {
+            "uid": self._uid,
+            "user": self.env.user,
+            "time": tools.safe_eval.time,
+            "datetime": tools.safe_eval.datetime,
+            "dateutil": tools.safe_eval.dateutil,
+            "timezone": timezone,
+            "requests": requests,
+            "json": json,
+            "float_compare": float_compare,
+            "env": self.env,
+            "UserError": UserError,
+            "server": server or self._context.get("active_server"),
+            "tower": self.env["cetmix.tower"],
+            "hashlib": hashlib,
+            "hmac": hmac,
+        }

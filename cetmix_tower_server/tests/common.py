@@ -7,6 +7,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
 
+from ..models.constants import GENERAL_ERROR
 from ..ssh.ssh import SftpService, SSHConnection
 
 
@@ -285,7 +286,7 @@ class TestTowerCommon(TransactionCase):
 
                 if "fail" in command:
                     # Simulate failure
-                    stdout_mock.channel.recv_exit_status.return_value = -1
+                    stdout_mock.channel.recv_exit_status.return_value = GENERAL_ERROR
                     stdout_mock.readlines.return_value = []
                     stderr_mock.readlines.return_value = ["error"]
                     return stdin_mock, stdout_mock, stderr_mock

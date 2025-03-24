@@ -53,7 +53,14 @@ class CxTowerPlanLog(models.Model):
     command_log_ids = fields.One2many(
         comodel_name="cx.tower.command.log", inverse_name="plan_log_id", auto_join=True
     )
-    plan_status = fields.Integer(string="Status")
+    plan_status = fields.Integer(
+        string="Status",
+        help="0 if plan is finished successfully. \n"
+        "-301 if another instance of this flight plan is running, \n"
+        "-302 if plan is empty, \n"
+        "-303 if plan reference is missing, \n"
+        "-304 if plan line reference is missing",
+    )
     parent_flight_plan_log_id = fields.Many2one(
         "cx.tower.plan.log", string="Main Log", ondelete="cascade"
     )
@@ -127,7 +134,7 @@ class CxTowerPlanLog(models.Model):
         # Process each line until the first executable one is found
         for line, is_executable in get_executable_line(plan, server):
             if is_executable:
-                line._execute(server, plan_log, **kwargs)
+                line._run(server, plan_log, **kwargs)
                 break
             else:
                 if self._context.get("no_log"):

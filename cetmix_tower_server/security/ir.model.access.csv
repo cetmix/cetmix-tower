@@ -6,10 +6,9 @@ access_variable_value_user,Variable Value->User,model_cx_tower_variable_value,gr
 access_variable_value_manager,Variable Value->Manager,model_cx_tower_variable_value,group_manager,1,1,1,1
 access_variable_value_root,Variable Value->Root,model_cx_tower_variable_value,group_root,1,1,1,1
 access_os_user,OS->User,model_cx_tower_os,group_user,1,0,0,0
-access_os_manager,OS->Manager,model_cx_tower_os,group_manager,1,1,1,0
 access_os_root,OS->Root,model_cx_tower_os,group_root,1,1,1,1
 access_tag_user,Tag->User,model_cx_tower_tag,group_user,1,0,0,0
-access_tag_manager,Tag->Manager,model_cx_tower_tag,group_manager,1,1,1,0
+access_tag_manager,Tag->Manager,model_cx_tower_tag,group_manager,1,1,1,1
 access_tag_root,Tag->Root,model_cx_tower_tag,group_root,1,1,1,1
 access_server_user,Server->User,model_cx_tower_server,group_user,1,0,0,0
 access_server_manager,Server->Manager,model_cx_tower_server,group_manager,1,1,1,1
@@ -17,8 +16,8 @@ access_server_root,Server->Root,model_cx_tower_server,group_root,1,1,1,1
 access_command_user,Command->User,model_cx_tower_command,group_user,1,0,0,0
 access_command_manager,Command->Manager,model_cx_tower_command,group_manager,1,1,1,1
 access_command_root,Command->Root,model_cx_tower_command,group_root,1,1,1,1
-access_execute_command_user,Execute Command->User,model_cx_tower_command_execute_wizard,group_user,1,1,1,1
-access_execute_plan_user,Execute Plan->User,model_cx_tower_plan_execute_wizard,group_user,1,1,1,1
+access_run_command_user,Run Command->User,model_cx_tower_command_run_wizard,group_user,1,1,1,1
+access_execute_plan_user,Run Plan->User,model_cx_tower_plan_run_wizard,group_user,1,1,1,1
 access_key_user,Key->User,model_cx_tower_key,group_user,0,0,0,0
 access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,1
 access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1
@@ -53,3 +52,4 @@ access_cx_tower_variable_option_user,Variable Option->User,model_cx_tower_variab
 access_cx_tower_variable_option_manager,Variable Option->Manager,model_cx_tower_variable_option,group_manager,1,1,1,1
 access_cx_tower_server_host_key_wizard_manager,Show Host Key->Manager,model_cx_tower_server_host_key_wizard,group_manager,1,1,1,1
 access_cx_tower_server_host_key_wizard_root,Show Host Key->Root,model_cx_tower_server_host_key_wizard,group_root,1,1,1,1
+access_cetmix_tower_user,Cetmix Tower->User,model_cetmix_tower,group_user,1,1,0,0

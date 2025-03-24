@@ -186,7 +186,7 @@ need_update=False
 
 #### Pythonic Mode
 
-This mode is used in [commands](#configure-a-command) that run Python code (`Action: Execute Python code`).
+This mode is used in [commands](#configure-a-command) that run Python code (`Action: Run Python code`).
 In this mode all variable values except Boolean and None are enclosed in double quotes.
 The code from example will be rendered the following way:
 
@@ -338,8 +338,8 @@ To create a new command go to `Cetmix Tower -> Commands -> Commands` click `Crea
 - **OSes**: List of operating systems this command is available. Leave this field blank to make the command available for all OSes.
 - **Tags**: Make usage as search more convenient.
 - **Action**: Action executed by the command. Possible options:
-  - `SSH command`: Execute a shell command using ssh connection on remote server.
-  - `Execute Python code`: Execute a Python code on the Tower Server.
+  - `SSH command`: Run a shell command using ssh connection on remote server.
+  - `Run Python code`: Run a Python code on the Tower Server.
   - `Create file using template`: Create or update a file using selected file template and push / pull it to remote server / tower. If the file already exists on server it will be overwritten.
   - `Run flight plan`: Allow to start Flight Plan execution from command ().
 
