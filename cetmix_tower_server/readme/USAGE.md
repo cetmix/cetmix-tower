@@ -63,7 +63,7 @@ for record in records:
 ## Run a Command
 
 - Select a server in the list view or open a server form view
-- Open the `Actions` menu and click `Execute Command`
+- Open the `Actions` menu and click `Run Command`
 - A wizard is opened with the following fields:
   - **Servers**: Servers on which this command will be executed
   - **Tags**: If selected only commands with these tags will be shown
@@ -77,8 +77,8 @@ for record in records:
 
 There are two action buttons available in the wizard:
 
-- **Run**. Executes a command using server "run" method and log command result into the "Command Log".
-- **Run in wizard**. Executes a command directly in the wizard and show command log in a new wizard window.
+- **Run**. Runs a command using server "run" method and log command result into the "Command Log".
+- **Run in wizard**. Runs a command directly in the wizard and show command log in a new wizard window.
 **IMPORTANT:** Button will be show only if single server is selected. If you try to run a command for several servers from code, you will get a ValidationError.
 
 You can check command execution logs in the `Cetmix Tower/Commands/Command Logs` menu.
@@ -87,7 +87,7 @@ Important! If you want to delete a command you need to delete all its logs manua
 ## Run a Flight Plan
 
 - Select a server in the list view or open a server form view
-- Open the `Actions` menu and click `Execute Flight Plan`
+- Open the `Actions` menu and click `Run Flight Plan`
 - A wizard is opened with the following fields:
   - **Servers**: Servers on which this command will be executed
   - **Tags**: If selected only commands with these tags will be shown

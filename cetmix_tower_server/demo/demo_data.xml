@@ -7,14 +7,42 @@
     <record id="base.user_demo" model="res.users">
         <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
     </record>
-    <!-- OSs -->
+
+    <!-- ===============================================
+    OSs
+    ================================================ -->
     <record id="os_debian_10" model="cx.tower.os">
         <field name="name">Debian 10</field>
+        <field name="color">1</field>
+    </record>
+    <record id="os_debian_11" model="cx.tower.os">
+        <field name="parent_id" ref="os_debian_10" />
+        <field name="name">Debian 11</field>
+        <field name="color">1</field>
+    </record>
+    <record id="os_debian_12" model="cx.tower.os">
+        <field name="parent_id" ref="os_debian_11" />
+        <field name="name">Debian 12</field>
+        <field name="color">1</field>
     </record>
     <record id="os_ubuntu_20_04" model="cx.tower.os">
         <field name="name">Ubuntu 20.04</field>
+        <field name="color">2</field>
     </record>
-    <!-- Tags -->
+    <record id="os_ubuntu_22_04" model="cx.tower.os">
+        <field name="parent_id" ref="os_ubuntu_20_04" />
+        <field name="name">Ubuntu 22.04</field>
+        <field name="color">2</field>
+    </record>
+    <record id="os_ubuntu_24_04" model="cx.tower.os">
+        <field name="parent_id" ref="os_ubuntu_22_04" />
+        <field name="name">Ubuntu 24.04</field>
+        <field name="color">2</field>
+    </record>
+
+    <!-- ===============================================
+    Tags
+    ================================================ -->
     <record id="tag_staging" model="cx.tower.tag">
         <field name="name">Staging</field>
         <field name="color">1</field>
@@ -27,7 +55,10 @@
         <field name="name">Custom</field>
         <field name="color">3</field>
     </record>
-    <!-- Keys -->
+
+    <!-- ===============================================
+    Keys
+    ================================================ -->
     <record id="key_1" model="cx.tower.key">
         <field name="name">Key 1 SSH</field>
         <field name="key_type">k</field>
@@ -38,7 +69,10 @@
         <field name="key_type">s</field>
         <field name="secret_value">Wow! Such much secret!</field>
     </record>
-    <!-- Servers -->
+
+    <!-- ===============================================
+    Servers
+    ================================================ -->
     <record id="server_demo_1" model="cx.tower.server">
         <field name="name">Demo Server #1</field>
         <field name="color">1</field>
@@ -85,7 +119,10 @@
         <field name="res_id" ref="server_demo_2" />
         <field name="partner_id" ref="base.partner_demo" />
     </record>
-    <!--  File templates  -->
+
+    <!-- ===============================================
+    File templates
+    ================================================ -->
     <record id="cx_tower_file_template_demo_1" model="cx.tower.file.template">
         <field name="name">Demo File Template 1</field>
         <field name="file_name">tower_demo_1.txt</field>
@@ -128,7 +165,10 @@
             eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
         />
     </record>
-    <!--  Files  -->
+
+    <!-- ===============================================
+    Files
+    ================================================ -->
     <record id="cx_tower_file_tower_demo_1" model="cx.tower.file">
         <field name="source">tower</field>
         <field name="template_id" ref="cx_tower_file_template_demo_1" />
@@ -162,7 +202,10 @@
         <field name="server_id" ref="server_demo_2" />
         <field name="server_dir">{{ demo_path }}</field>
     </record>
-    <!-- Variables -->
+
+    <!-- ===============================================
+    Variables
+    ================================================ -->
     <record id="variable_demo_path" model="cx.tower.variable">
         <field name="name">Demo Path</field>
         <field name="reference">demo_path</field>
@@ -198,7 +241,10 @@
     <record id="variable_demo_branch" model="cx.tower.variable">
         <field name="name">Branch</field>
     </record>
-    <!-- Variables Options for Odoo Version -->
+
+    <!-- ===============================================
+    Variables Options for Odoo Version
+    ================================================ -->
     <record id="option_odoo_demo_version_14" model="cx.tower.variable.option">
         <field name="variable_id" ref="variable_demo_odoo_demo_version" />
         <field name="name">14.0</field>
@@ -229,7 +275,10 @@
         <field name="value_char">18.0</field>
         <field name="sequence">50</field>
     </record>
-    <!-- Variables Options for Language -->
+
+    <!-- ===============================================
+    Variables Options for Language
+    ================================================ -->
     <record id="option_language_en_us" model="cx.tower.variable.option">
         <field name="variable_id" ref="variable_demo_language" />
         <field name="name">English (US)</field>
@@ -261,7 +310,9 @@
         <field name="sequence">50</field>
     </record>
 
-    <!-- Variable values -->
+    <!-- ===============================================
+    Variable values for Server #1
+    ================================================ -->
     <record id="server_1_value_path" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_path" />
         <field name="server_id" ref="server_demo_1" />
@@ -280,6 +331,9 @@
         <field name="option_id" ref="option_odoo_demo_version_16" />
     </record>
 
+    <!-- ===============================================
+    Variable values for Server #2
+    ================================================ -->
     <record id="server_2_value_path" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_path" />
         <field name="server_id" ref="server_demo_2" />
@@ -306,6 +360,9 @@
         <field name="option_id" ref="option_language_de" />
     </record>
 
+    <!-- ===============================================
+    Global Variable values
+    ================================================ -->
     <record id="global_value_branch" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_branch" />
         <field name="value_char">prod</field>
@@ -314,7 +371,11 @@
         <field name="variable_id" ref="variable_demo_org" />
         <field name="value_char">Cetmix</field>
     </record>
-    <!-- Flight Plans -->
+
+    <!-- ===============================================
+    Flight Plans
+    ================================================ -->
+    <!-- Flight Plan #1 -->
     <record id="plan_demo_1" model="cx.tower.plan">
         <field name="name">Demo Flight Plan #1</field>
         <field name="note">Create directory and list its content</field>
@@ -323,10 +384,14 @@
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
     </record>
+
+    <!-- Flight Plan #2 -->
     <record id="plan_demo_2" model="cx.tower.plan">
         <field name="name">Demo Flight Plan #2</field>
         <field name="note">Run another flight plan</field>
     </record>
+
+    <!-- Flight Plan 3 -->
     <record id="plan_demo_3" model="cx.tower.plan">
         <field name="name">Demo Flight Plan for User</field>
         <field name="note">Demo of a user-accessible flight plan</field>
@@ -336,6 +401,8 @@
         />
         <field name="access_level">1</field>
     </record>
+
+    <!-- Flight Plan #4 -->
     <record id="plan_demo_4" model="cx.tower.plan">
         <field name="name">Demo Flight Plan #4</field>
         <field name="note">Update and upgrade packages</field>
@@ -344,6 +411,8 @@
             eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
         />
     </record>
+
+    <!-- Flight Plan #5 -->
     <record id="plan_demo_5" model="cx.tower.plan">
         <field name="name">Demo Flight Plan #5</field>
         <field name="note">Check branch and download log file</field>
@@ -352,7 +421,11 @@
             eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
         />
     </record>
-    <!-- Commands -->
+
+    <!-- ===============================================
+    Commands
+    ================================================ -->
+    <!-- Command #1 -->
     <record id="command_update_upgrade" model="cx.tower.command">
         <field name="name">Update packages</field>
         <field name="action">ssh_command</field>
@@ -361,7 +434,14 @@
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging'),ref('cetmix_tower_server.tag_production')])]"
         />
+        <field
+            name="os_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.os_debian_11'), ref('cetmix_tower_server.os_ubuntu_22_04'),ref('cetmix_tower_server.os_ubuntu_24_04')])]"
+        />
+        <field name="note">Update and upgrade packages on the host system</field>
     </record>
+
+    <!-- Command #2 -->
     <record id="command_create_dir" model="cx.tower.command">
         <field name="name">Create directory</field>
         <field name="action">ssh_command</field>
@@ -371,7 +451,10 @@
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
         />
+        <field name="note">Create a directory on the host system</field>
     </record>
+
+    <!-- Command #3 -->
     <record id="command_list_dir" model="cx.tower.command">
         <field name="name">List files in directory</field>
         <field name="action">ssh_command</field>
@@ -379,10 +462,17 @@
         <field name="code">ls -l</field>
         <field name="access_level">1</field>
         <field
+            name="os_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.os_debian_12'), ref('cetmix_tower_server.os_ubuntu_24_04')])]"
+        />
+        <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
         />
+        <field name="note">List files in the directory</field>
     </record>
+
+    <!-- Command #4 -->
     <record id="command_upload_file" model="cx.tower.command">
         <field name="name">Upload file by template</field>
         <field name="action">file_using_template</field>
@@ -392,22 +482,28 @@
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
+        <field name="note">Upload a file to the host system</field>
     </record>
+
+    <!-- Command #5 -->
     <record id="command_check_branch" model="cx.tower.command">
-        <field name="name">Execute Python Code: Check Branch</field>
+        <field name="name">Run Python Code: Check Branch</field>
         <field name="action">python_code</field>
         <field name="code">
 if {{ branch }}:
     COMMAND_RESULT={"exit_code": 0, "message": "Branch is defined!"}
 else:
-    COMMAND_RESULT={"exit_code": -1, "message": "Branch is not defined!"}
+    COMMAND_RESULT={"exit_code": -100, "message": "Branch is not defined!"}
         </field>
         <field name="access_level">1</field>
         <field
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
         />
+        <field name="note">Run Python Code: Check Branch</field>
     </record>
+
+    <!-- Command #6 -->
     <record id="command_download_file" model="cx.tower.command">
         <field name="name">Download log file by template</field>
         <field name="action">file_using_template</field>
@@ -417,7 +513,10 @@ else:
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
+        <field name="note">Download log file by template</field>
     </record>
+
+    <!-- Command #7 -->
     <record id="command_execute_flight_plan" model="cx.tower.command">
         <field name="name">Run Demo #1 Flight Plan</field>
         <field name="action">plan</field>
@@ -427,14 +526,20 @@ else:
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line 1
+    ================================================ -->
     <record id="plan_demo_1_line_1" model="cx.tower.plan.line">
         <field name="sequence">5</field>
         <field name="plan_id" ref="plan_demo_1" />
         <field name="command_id" ref="command_create_dir" />
         <field name="path">/such/much/{{ demo_path }}</field>
     </record>
-    <!-- Actions -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line Actions
+    ================================================ -->
     <record id="plan_demo_1_line_1_action_1" model="cx.tower.plan.line.action">
         <field name="line_id" ref="plan_demo_1_line_1" />
         <field name="sequence">1</field>
@@ -449,7 +554,10 @@ else:
         <field name="action">ec</field>
         <field name="custom_exit_code">255</field>
     </record>
-    <!-- Action Variable Value -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line 1 Action Variable Value
+    ================================================ -->
     <record id="action_1_value_branch" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_branch" />
         <field name="plan_line_action_id" ref="plan_demo_1_line_1_action_1" />
@@ -460,7 +568,10 @@ else:
         <field name="plan_line_action_id" ref="plan_demo_1_line_1_action_1" />
         <field name="option_id" ref="option_language_en_us" />
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line 2
+    ================================================ -->
     <record id="plan_demo_1_line_2" model="cx.tower.plan.line">
         <field name="sequence">20</field>
         <field name="plan_id" ref="plan_demo_1" />
@@ -469,7 +580,10 @@ else:
             name="condition"
         >{{ tower.server.status }} == 'running' and {{ odoo_demo_version }} == "17.0"</field>
     </record>
-    <!-- Actions -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line 2 Actions
+    ================================================ -->
     <record id="plan_demo_1_line_2_action_1" model="cx.tower.plan.line.action">
         <field name="line_id" ref="plan_demo_1_line_2" />
         <field name="sequence">1</field>
@@ -485,51 +599,75 @@ else:
         <field name="value_char">3</field>
         <field name="action">n</field>
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line 3
+    ================================================ -->
     <record id="plan_demo_1_line_3" model="cx.tower.plan.line">
         <field name="sequence">30</field>
         <field name="plan_id" ref="plan_demo_1" />
         <field name="command_id" ref="command_upload_file" />
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 2 Line 1
+    ================================================ -->
     <record id="plan_demo_2_line_1" model="cx.tower.plan.line">
         <field name="sequence">5</field>
         <field name="plan_id" ref="plan_demo_2" />
         <field name="command_id" ref="command_execute_flight_plan" />
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 3 Line 1
+    ================================================ -->
     <record id="plan_demo_3_line_1" model="cx.tower.plan.line">
         <field name="sequence">1</field>
         <field name="plan_id" ref="plan_demo_3" />
         <field name="command_id" ref="command_list_dir" />
         <field name="path">/such/much/{{ demo_path }}</field>
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 3 Line 2
+    ================================================ -->
     <record id="plan_demo_3_line_2" model="cx.tower.plan.line">
         <field name="sequence">2</field>
         <field name="plan_id" ref="plan_demo_3" />
         <field name="command_id" ref="command_create_dir" />
         <field name="path">/such/much/{{ demo_path }}</field>
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 4 Line 1
+    ================================================ -->
     <record id="plan_demo_4_line_1" model="cx.tower.plan.line">
         <field name="sequence">10</field>
         <field name="plan_id" ref="plan_demo_4" />
         <field name="command_id" ref="command_update_upgrade" />
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 5 Line 1
+    ================================================ -->
     <record id="plan_demo_5_line_1" model="cx.tower.plan.line">
         <field name="sequence">10</field>
         <field name="plan_id" ref="plan_demo_5" />
         <field name="command_id" ref="command_check_branch" />
     </record>
-    <!-- Line -->
+
+    <!-- ===============================================
+    Flight Plan 5 Line 2
+    ================================================ -->
     <record id="plan_demo_5_line_2" model="cx.tower.plan.line">
         <field name="sequence">20</field>
         <field name="plan_id" ref="plan_demo_5" />
         <field name="command_id" ref="command_download_file" />
     </record>
-    <!-- Files -->
+
+    <!-- ===============================================
+    Files
+    ================================================ -->
     <record id="cx_tower_file_server_demo_logs_1" model="cx.tower.file">
         <field name="source">server</field>
         <field name="template_id" ref="cx_tower_file_template_demo_4" />
@@ -540,7 +678,10 @@ else:
         <field name="template_id" ref="cx_tower_file_template_demo_4" />
         <field name="server_id" ref="server_demo_2" />
     </record>
-    <!-- Server Log -->
+
+    <!-- ===============================================
+    Server Log
+    ================================================ -->
     <record id="server_log_1" model="cx.tower.server.log">
         <field name="name">Log from file</field>
         <field name="server_id" ref="server_demo_1" />
@@ -553,7 +694,10 @@ else:
         <field name="log_type">file</field>
         <field name="file_id" ref="cx_tower_file_server_demo_logs_2" />
     </record>
-    <!-- Server Template -->
+
+    <!-- ===============================================
+    Server Template
+    ================================================ -->
     <record id="demo_server_template_1" model="cx.tower.server.template">
         <field name="name">Demo Server Template #1</field>
         <field name="color">1</field>
@@ -573,7 +717,10 @@ else:
         <field name="log_type">file</field>
         <field name="file_template_id" ref="cx_tower_file_template_demo_4" />
     </record>
-    <!-- Variable values -->
+
+    <!-- ===============================================
+    Variable values for Server Template
+    ================================================ -->
     <record id="demo_server_template_1_value_path" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_path" />
         <field name="server_template_id" ref="demo_server_template_1" />
@@ -589,7 +736,7 @@ else:
     <record id="demo_server_template_1_value_language" model="cx.tower.variable.value">
         <field name="variable_id" ref="variable_demo_language" />
         <field name="server_template_id" ref="demo_server_template_1" />
-        <field name="option_id" ref="option_language_it" />
+        <field name="required">1</field>
     </record>
     <record
         id="demo_server_template_1_value_odoo_demo_version"
@@ -598,9 +745,12 @@ else:
         <field name="variable_id" ref="variable_demo_odoo_demo_version" />
         <field name="server_template_id" ref="demo_server_template_1" />
         <field name="option_id" ref="option_odoo_demo_version_17" />
+        <field name="required">1</field>
     </record>
 
-    <!-- Server Log of type "command" -->
+    <!-- ===============================================
+    Server Log of type "command"
+    ================================================ -->
     <record id="server_log_command_1" model="cx.tower.server.log">
         <field name="name">Command Log for Server #1</field>
         <field name="server_id" ref="server_demo_1" />
@@ -619,7 +769,10 @@ else:
         <field name="log_type">command</field>
         <field name="command_id" ref="command_create_dir" />
     </record>
-    <!-- New Variables for Flight Plan Execution -->
+
+    <!-- ===============================================
+    New Variables for Flight Plan Execution
+    ================================================ -->
     <record id="variable_flight_plan_status_unique" model="cx.tower.variable">
         <field name="name">Flight Plan Execution Status</field>
         <field name="reference">flight_plan_status_unique</field>
@@ -645,7 +798,10 @@ else:
         <field name="variable_id" ref="variable_flight_plan_end_time_unique" />
         <field name="value_char">final_value</field>
     </record>
-    <!-- Action Variable Values -->
+
+    <!-- ===============================================
+    Flight Plan 1 Line 1 Action Variable Values
+    ================================================ -->
     <record
         id="action_1_value_flight_plan_status_unique"
         model="cx.tower.variable.value"
@@ -670,7 +826,10 @@ else:
         <field name="plan_line_action_id" ref="plan_demo_1_line_1_action_1" />
         <field name="value_char">final_value</field>
     </record>
-    <!-- Action Variable Values for Other Actions -->
+
+    <!-- ===============================================
+    Action Variable Values for Other Actions
+    ================================================ -->
     <record
         id="action_2_value_flight_plan_status_unique"
         model="cx.tower.variable.value"

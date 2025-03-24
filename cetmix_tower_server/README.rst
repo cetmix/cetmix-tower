@@ -1,6 +1,6 @@
-==============================
-Cetmix Tower Server Management
-==============================
+===================
+Cetmix Tower Server
+===================
 
 .. 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -17,7 +17,7 @@ Cetmix Tower Server Management
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -46,8 +46,8 @@ Why Cetmix Tower?
   without restriction, ensuring you're not limited to a single vendor
 - **Self-Hosting:** Deploy Cetmix Tower on your own infrastructure for
   full control over your server management.
-- **Broad Compatibility:** Execute any software that's manageable via
-  shell commands or API. From Docker or Kubernetes to direct OS package
+- **Broad Compatibility:** Run any software that's manageable via shell
+  commands or API. From Docker or Kubernetes to direct OS package
   installations
 
 Server Management
@@ -66,7 +66,7 @@ Connectivity
 Commands
 ========
 
-- Execute SSH commands on remote servers
+- Run SSH commands on remote servers
 - Run Python code on the Tower Odoo server
 - Run Flight Plan from command
 - Render commands using variables
@@ -75,7 +75,7 @@ Commands
 Flight Plans
 ============
 
-- Execute multiple commands in a row
+- Run multiple commands in a row
 - Condition based flow:
 
   - Based on condition using `Python
@@ -364,7 +364,7 @@ Pythonic Mode
 ^^^^^^^^^^^^^
 
 This mode is used in `commands <#configure-a-command>`__ that run Python
-code (``Action: Execute Python code``). In this mode all variable values
+code (``Action: Run Python code``). In this mode all variable values
 except Boolean and None are enclosed in double quotes. The code from
 example will be rendered the following way:
 
@@ -605,9 +605,9 @@ a new command go to ``Cetmix Tower -> Commands -> Commands`` click
 
 - **Action**: Action executed by the command. Possible options:
 
-  - ``SSH command``: Execute a shell command using ssh connection on
-    remote server.
-  - ``Execute Python code``: Execute a Python code on the Tower Server.
+  - ``SSH command``: Run a shell command using ssh connection on remote
+    server.
+  - ``Run Python code``: Run a Python code on the Tower Server.
   - ``Create file using template``: Create or update a file using
     selected file template and push / pull it to remote server / tower.
     If the file already exists on server it will be overwritten.
@@ -836,8 +836,8 @@ command or ``Path`` field in flight plan line.
 
    cat my_doge_memes.txt
 
-.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/user_profile.png
-.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_tab.png
+.. |User profile| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/user_profile.png
+.. |Server logs tab| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_tab.png
 
 Usage
 =====
@@ -915,7 +915,7 @@ Run a Command
 -------------
 
 - Select a server in the list view or open a server form view
-- Open the ``Actions`` menu and click ``Execute Command``
+- Open the ``Actions`` menu and click ``Run Command``
 - A wizard is opened with the following fields:
 
   - **Servers**: Servers on which this command will be executed
@@ -936,9 +936,9 @@ Run a Command
 
 There are two action buttons available in the wizard:
 
-- **Run**. Executes a command using server "run" method and log command
+- **Run**. Runs a command using server "run" method and log command
   result into the "Command Log".
-- **Run in wizard**. Executes a command directly in the wizard and show
+- **Run in wizard**. Runs a command directly in the wizard and show
   command log in a new wizard window. **IMPORTANT:** Button will be show
   only if single server is selected. If you try to run a command for
   several servers from code, you will get a ValidationError.
@@ -953,7 +953,7 @@ Run a Flight Plan
 
 - Select a server in the list view or open a server form view
 
-- Open the ``Actions`` menu and click ``Execute Flight Plan``
+- Open the ``Actions`` menu and click ``Run Flight Plan``
 
 - A wizard is opened with the following fields:
 
@@ -1002,9 +1002,9 @@ are located in a special abstract model "cetmix.tower". You can check
 those functions in the source code in the following file:
 ``models/cetmix_tower.py``
 
-.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
-.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_1.png
-.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0-dev/cetmix_tower_server/static/description/images/server_log_usage_2.png
+.. |Automatic action| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_from_template_auto_action.png
+.. |Open server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_1.png
+.. |Update server log| image:: https://raw.githubusercontent.com/cetmix/cetmix-tower/14.0/cetmix_tower_server/static/description/images/server_log_usage_2.png
 
 Bug Tracker
 ===========
@@ -1012,7 +1012,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -1027,6 +1027,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server>`_ project on GitHub.
 
 You are welcome to contribute.

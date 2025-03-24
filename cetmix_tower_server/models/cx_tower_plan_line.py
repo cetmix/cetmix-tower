@@ -31,11 +31,6 @@ class CxTowerPlanLine(models.Model):
         string="Flight Plan Lines",
         readonly=True,
     )
-    flight_plan_id = fields.Many2one(
-        comodel_name="cx.tower.plan",
-        related="command_id.flight_plan_id",
-        readonly=True,
-    )
     action = fields.Selection(
         selection=lambda self: self.command_id._selection_action(),
         compute="_compute_action",
@@ -89,6 +84,13 @@ class CxTowerPlanLine(models.Model):
         string="Variables",
         compute="_compute_variable_ids",
         store=True,
+    )
+    # -- Command related entities
+    plan_run_id = fields.Many2one(
+        comodel_name="cx.tower.plan",
+        related="command_id.flight_plan_id",
+        readonly=True,
+        string="Run Flight Plan",
     )
     file_template_id = fields.Many2one(
         comodel_name="cx.tower.file.template",
@@ -159,8 +161,8 @@ class CxTowerPlanLine(models.Model):
             for line in command.flight_plan_id.line_ids:
                 self._check_recursive_plan(line.command_id, visited_plans)
 
-    def _execute(self, server, plan_log_record, **kwargs):
-        """Execute command from the Flight Plan line
+    def _run(self, server, plan_log_record, **kwargs):
+        """Run command from the Flight Plan line
 
         Args:
             server (cx.tower.server()): Server object
@@ -196,7 +198,7 @@ class CxTowerPlanLine(models.Model):
 
         # Set path
         path = self.path or command_as_root.path
-        server.execute_command(command_as_root, path, sudo=use_sudo, **kwargs)
+        server.run_command(command_as_root, path, sudo=use_sudo, **kwargs)
 
     def _is_executable_line(self, server):
         """

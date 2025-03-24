@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <record id="cx_tower_command_execute_wizard_view_form" model="ir.ui.view">
-        <field name="name">cx.tower.command.execute.wizard.view.form</field>
-        <field name="model">cx.tower.command.execute.wizard</field>
+    <record id="cx_tower_command_run_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.run.wizard.view.form</field>
+        <field name="model">cx.tower.command.run.wizard</field>
         <field name="arch" type="xml">
             <form string="Run Command">
                 <div
@@ -16,6 +16,14 @@
                         Remember: Python code is executed on the Tower server, not on the remote one.
                     </p>
                 </div>
+                <field
+                    name="os_compatibility_warning"
+                    readonly="1"
+                    nolabel="1"
+                    attrs="{'invisible': [('os_compatibility_warning', '=', False)]}"
+                    class="alert alert-warning"
+                    role="alert"
+                />
                 <group>
                     <field name="show_servers" invisible="1" />
                     <field
@@ -79,7 +87,7 @@
                         attrs="{'invisible': [('note', '=', False)]}"
                     />
                 </group>
-                    <field
+                <field
                     name="result"
                     readonly="1"
                     attrs="{'invisible': [('result', '=', False)]}"
@@ -111,7 +119,7 @@
                 </notebook>
                 <footer>
                     <button
-                        name="execute_command_on_server"
+                        name="run_command_on_server"
                         type="object"
                         string="Run"
                         help="Run code using sever method and log result"
@@ -119,7 +127,7 @@
                         attrs="{'invisible': ['|',('result', '!=', False),('command_id', '=', False)]}"
                     />
                     <button
-                        name="execute_command_in_wizard"
+                        name="run_command_in_wizard"
                         type="object"
                         string="Run in wizard"
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
@@ -129,7 +137,7 @@
                     />
                     <button string="Cancel" special="cancel" />
                     <button
-                        name="action_execute_command"
+                        name="action_run_command"
                         type="object"
                         string="Run New Command"
                         class="oe_highlight"
@@ -140,12 +148,12 @@
         </field>
     </record>
 
-    <record id="cx_tower_command_execute_wizard_action" model="ir.actions.act_window">
-        <field name="name">Cetmix Tower Execute Command</field>
-        <field name="res_model">cx.tower.command.execute.wizard</field>
+    <record id="cx_tower_command_run_wizard_action" model="ir.actions.act_window">
+        <field name="name">Cetmix Tower Run Command</field>
+        <field name="res_model">cx.tower.command.run.wizard</field>
         <field name="type">ir.actions.act_window</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="cx_tower_command_execute_wizard_view_form" />
+        <field name="view_id" ref="cx_tower_command_run_wizard_view_form" />
         <field name="context">{'default_server_ids': [active_id]}</field>
         <field name="target">new</field>
     </record>

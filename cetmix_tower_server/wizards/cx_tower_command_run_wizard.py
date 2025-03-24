@@ -6,10 +6,14 @@ from odoo.exceptions import AccessError, ValidationError
 from ..models.tools import generate_random_id
 
 
-class CxTowerCommandExecuteWizard(models.TransientModel):
-    _name = "cx.tower.command.execute.wizard"
+class CxTowerCommandRunWizard(models.TransientModel):
+    """
+    Wizard to run a command on selected servers.
+    """
+
+    _name = "cx.tower.command.run.wizard"
     _inherit = "cx.tower.template.mixin"
-    _description = "Execute Command in Wizard"
+    _description = "Run Command in Wizard"
 
     server_ids = fields.Many2many(
         "cx.tower.server",
@@ -39,9 +43,6 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     )
     tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
-        relation="cx_tower_command_execute_tag_rel",
-        column1="wizard_id",
-        column2="tag_id",
         string="Tags",
     )
     use_sudo = fields.Boolean(
@@ -73,6 +74,11 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
         compute_sudo=True,
+    )
+    os_compatibility_warning = fields.Text(
+        compute="_compute_os_compatibility_warning",
+        compute_sudo=True,
+        help="Warning about OS compatibility of the command",
     )
 
     @api.depends("server_ids")
@@ -155,7 +161,34 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
                 domain.append(("tag_ids", "in", record.tag_ids.ids))
             record.command_domain = domain
 
-    def action_execute_command(self):
+    @api.depends("command_id", "server_ids")
+    def _compute_os_compatibility_warning(self):
+        for wizard in self:
+            # Skip if command is not SSH command or no OS compatibility is defined
+            if (
+                not wizard.command_id
+                or not wizard.server_ids
+                or wizard.command_id.action != "ssh_command"
+                or not wizard.command_id.os_ids
+            ):
+                wizard.os_compatibility_warning = False
+                continue
+            warning_list = []
+            for server in wizard.server_ids:
+                if server.os_id not in wizard.command_id.os_ids:
+                    warning_list.append(
+                        _(
+                            "OS %(os)s used by the server '%(srv)s' is not present"
+                            " in the command's OS compatibility list",
+                            os=server.os_id.name,
+                            srv=server.name,
+                        )
+                    )
+            wizard.os_compatibility_warning = (
+                "\n".join(warning_list) if warning_list else False
+            )
+
+    def action_run_command(self):
         """
         Return wizard action to select command and execute it
         """
@@ -167,15 +200,15 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         )
         return {
             "type": "ir.actions.act_window",
-            "name": _("Execute Command"),
-            "res_model": "cx.tower.command.execute.wizard",
+            "name": _("Run Command"),
+            "res_model": "cx.tower.command.run.wizard",
             "view_mode": "form",
             "view_type": "form",
             "target": "new",
             "context": context,
         }
 
-    def execute_command_on_server(self):
+    def run_command_on_server(self):
         """Render selected command rendered using server method"""
         # Check if command is selected
         if not self.command_id:
@@ -188,7 +221,7 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
         # Add custom values for log
         custom_values = {"log": {"label": log_label}}
         for server in self.server_ids:
-            server.execute_command(
+            server.run_command(
                 self.command_id,
                 sudo=self.use_sudo,
                 path=path_value,
@@ -203,9 +236,9 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             "context": {"search_default_label": log_label},
         }
 
-    def execute_command_in_wizard(self):
+    def run_command_in_wizard(self):
         """
-        Executes a given code as is in wizard
+        Runs a given code as is in wizard
         """
         # Check if multiple servers are selected
         if len(self.server_ids) > 1:
@@ -263,11 +296,11 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
 
             kwargs = {"key": key_vals}
             if self.action == "python_code":
-                command_result = server._execute_python_code(
+                command_result = server._run_python_code(
                     code=self.rendered_code, **kwargs
                 )
             else:
-                command_result = server._execute_command_using_ssh(
+                command_result = server._run_command_using_ssh(
                     server._get_ssh_client(raise_on_error=True),
                     self.rendered_code,
                     self.path or None,
@@ -287,8 +320,8 @@ class CxTowerCommandExecuteWizard(models.TransientModel):
             self.result = result
             return {
                 "type": "ir.actions.act_window",
-                "name": _("Execute Result"),
-                "res_model": "cx.tower.command.execute.wizard",
+                "name": _("Run Result"),
+                "res_model": "cx.tower.command.run.wizard",
                 "res_id": self.id,  # pylint: disable=no-member
                 "view_mode": "form",
                 "view_type": "form",
