@@ -194,7 +194,6 @@ class CxTowerYamlMixin(models.AbstractModel):
         if not self._context.get("no_yaml_service_fields"):
             model_name = self._name.replace("cx.tower.", "").replace(".", "_")
             model_values = {
-                "cetmix_tower_yaml_version": self.CETMIX_TOWER_YAML_VERSION,
                 "cetmix_tower_model": model_name,
             }
         else:
@@ -245,22 +244,6 @@ class CxTowerYamlMixin(models.AbstractModel):
         Returns:
             dict(): Post-processed values
         """
-
-        # Check Cetmix Tower YAML version
-        yaml_version = values.pop("cetmix_tower_yaml_version", None)
-        if (
-            yaml_version
-            and isinstance(yaml_version, int)
-            and yaml_version > self.CETMIX_TOWER_YAML_VERSION
-        ):
-            raise ValidationError(
-                _(
-                    "YAML version is higher than version"
-                    " supported by your Cetmix Tower instance. %(code_version)s > %(tower_version)s",  # noqa
-                    code_version=yaml_version,
-                    tower_version=self.CETMIX_TOWER_YAML_VERSION,
-                )
-            )
 
         # Remove model data because it is not a field
         if "cetmix_tower_model" in values:

@@ -1,6 +1,11 @@
+import logging
+
 import yaml
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerYamlImportWiz(models.TransientModel):
@@ -11,17 +16,14 @@ class CxTowerYamlImportWiz(models.TransientModel):
     """
 
     yaml_code = fields.Text(readonly=True)
-    model_name = fields.Char(readonly=True, help="Model to create records in")
-    model_description = fields.Char(
-        string="Model", readonly=True, compute="_compute_model_description"
-    )
-    record_id = fields.Integer(readonly=True, help="Record ID to update")
+    model_names = fields.Char(readonly=True, help="Models to create records in")
     if_record_exists = fields.Selection(
         selection=[
+            ("skip", "Skip record"),
             ("update", "Update existing record"),
             ("create", "Create a new record"),
         ],
-        default="update",
+        default="skip",
         required=True,
         help="What to do if record with the same reference already exists",
     )
@@ -31,12 +33,6 @@ class CxTowerYamlImportWiz(models.TransientModel):
         compute="_compute_secret_list",
     )
     preview_code = fields.Boolean()
-
-    @api.depends("model_name")
-    def _compute_model_description(self):
-        """Compute model description"""
-        for record in self:
-            record.model_description = self.env[record.model_name]._description
 
     @api.depends("yaml_code")
     def _compute_secret_list(self):
@@ -59,48 +55,138 @@ class CxTowerYamlImportWiz(models.TransientModel):
 
         # Parse YAML code
         yaml_data = yaml.safe_load(self.yaml_code)
+        records = yaml_data.get("records")
+        if not records:
+            raise ValidationError(_("YAML file doesn't contain any records"))
 
-        # Update existing record
-        if (
-            self.record_id
-            and yaml_data.get("reference")
-            and self.if_record_exists == "update"
-        ):
-            record = self.env[self.model_name].browse(self.record_id)
-            record.update({"yaml_code": self.yaml_code})
-        else:
-            model = self.env[self.model_name]
+        # Cache models
+        models = {}
+        odoo_record_ids = []
+
+        # Process each record
+        for record in records:
+            record_reference = record.get("reference")
+            if not record_reference:
+                raise ValidationError(_("Record reference is missing"))
+            model_name = record.get("cetmix_tower_model")
+            if not model_name:
+                raise ValidationError(
+                    _("Record model is missing for record %s", record_reference)
+                )
+
+            # Get model from cache or create new one
+            model = models.get(model_name)
+            if not model:
+                model = self.env[f"cx.tower.{model_name.replace('_', '.')}"]
+                models[model_name] = model
+
+            # Get existing record by reference
+            # NOTE: we don't validate models here because they are
+            # already validated in the file upload wizard.
+            odoo_record = model.get_by_reference(record_reference)
+
+            # Skip
+            if self.if_record_exists == "skip" and odoo_record:
+                _logger.info(
+                    f"Skipping record '{record_reference}' in model '{model_name}'"
+                    " because it already exists"
+                )
+                continue
+
+            # Update existing record
+            if self.if_record_exists == "update" and odoo_record:
+                try:
+                    record_values = model.with_context(
+                        force_create_related_record=False
+                    )._post_process_yaml_dict_values(record)
+                    odoo_record.write(record_values)
+                    odoo_record_ids.append(odoo_record.id)
+                except Exception as e:
+                    raise ValidationError(
+                        _(
+                            "Error updating record %(reference)s: %(error)s",
+                            reference=record_reference,
+                            error=e,
+                        )
+                    ) from e
+                _logger.info(
+                    f"Updated record '{record_reference}' in model '{model_name}'"
+                )
+                continue
+
+            # Or create a new record
             record_values = model.with_context(
                 force_create_related_record=(self.if_record_exists == "create")
-            )._post_process_yaml_dict_values(yaml_data)
-            record = model.create(record_values)
+            )._post_process_yaml_dict_values(record)
+            try:
+                odoo_record = model.create(record_values)
+                odoo_record_ids.append(odoo_record.id)
+            except Exception as e:
+                raise ValidationError(
+                    _(
+                        "Error creating record '%(reference)s' in model"
+                        " '%(model)s': %(error)s",
+                        reference=record_reference,
+                        model=model_name,
+                        error=e,
+                    )
+                ) from e
+            _logger.info(f"Created record '{record_reference}' in model '{model_name}'")
 
-        # Open created record
-        return {
-            "name": record.display_name,
-            "type": "ir.actions.act_window",
-            "res_model": self.model_name,
-            "res_id": record.id,
-            "view_mode": "form",
-            "view_type": "form",
-            "target": "current",
-        }
-
-    def action_open_existing_record(self):
-        """Open existing record"""
-
-        if self.model_name and self.record_id:
-            record = self.env[self.model_name].browse(self.record_id)
-
-            return {
-                "name": record.display_name,
-                "type": "ir.actions.act_window",
-                "res_model": self.model_name,
-                "res_id": record.id,
-                "view_mode": "form",
-                "view_type": "form",
-                "target": "current",
+        # No records were created or updated
+        if not odoo_record_ids:
+            action = {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Record Import"),
+                    "message": _("No records were created or updated"),
+                    "sticky": True,
+                    "type": "warning",
+                    "next": {"type": "ir.actions.act_window_close"},
+                },
             }
+
+        # All records from the same model
+        elif len(models) == 1:
+            model = list(models.values())[0]
+            action = {
+                "name": _("Import result: %(model)s", model=model._description),
+                "type": "ir.actions.act_window",
+                "res_model": model._name,
+                "target": "current",
+                "domain": [("id", "in", odoo_record_ids)],
+            }
+            if len(odoo_record_ids) == 1:
+                # Open single record in form view
+                action["res_id"] = odoo_record_ids[0]
+                action["view_mode"] = "form"
+            else:
+                # Open list view of all records
+                action["view_mode"] = "list"
+
+        # Records from different models
+        else:
+            model_names = ", ".join(
+                f"'{model._description}'" for model in models.values()
+            )
+            action = {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("Record Import"),
+                    "message": _(
+                        "Records of the following models were created "
+                        "or updated: %(models)s",
+                        models=model_names,
+                    ),
+                    "sticky": True,
+                    "type": "success",
+                    "next": {"type": "ir.actions.act_window_close"},
+                },
+            }
+
+        return action
 
     def _extract_secret_names(self, data: dict) -> list:
         """Extract names of secrets from YAML data.

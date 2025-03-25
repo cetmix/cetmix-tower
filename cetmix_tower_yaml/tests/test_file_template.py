@@ -10,8 +10,7 @@ class TestTowerFileTemplate(TransactionCase):
         self.FileTemplate = self.env["cx.tower.file.template"]
 
         # Expected YAML content of the test file template
-        self.file_template_test_yaml = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: file_template
+        self.file_template_test_yaml = """cetmix_tower_model: file_template
 reference: dockerfile_unit_test
 name: Dockerfile Test
 source: tower
@@ -35,8 +34,7 @@ secret_ids: false
 
         # Expected YAML content of the test file template
         # without empty x2mvalues
-        self.file_template_test_yaml_no_empty_values = """cetmix_tower_yaml_version: 1
-cetmix_tower_model: file_template
+        self.file_template_test_yaml_no_empty_values = """cetmix_tower_model: file_template
 reference: dockerfile_unit_test
 name: Dockerfile Test
 source: tower
@@ -107,11 +105,6 @@ Depends on Odoo core image.""",
         self.assertEqual(
             file_template_test.file_name,
             self.file_template_test_yaml_dict["file_name"],
-            "YAML value doesn't match Cetmix Tower one",
-        )
-        self.assertEqual(
-            self.FileTemplate.CETMIX_TOWER_YAML_VERSION,
-            self.file_template_test_yaml_dict["cetmix_tower_yaml_version"],
             "YAML value doesn't match Cetmix Tower one",
         )
         self.assertEqual(
@@ -201,13 +194,6 @@ Depends on Odoo core image.""",
             "YAML value doesn't match Cetmix Tower one",
         )
         self.assertEqual(
-            self.FileTemplate.CETMIX_TOWER_YAML_VERSION,
-            self.file_template_test_yaml_dict_no_empty_values[
-                "cetmix_tower_yaml_version"
-            ],
-            "YAML value doesn't match Cetmix Tower one",
-        )
-        self.assertEqual(
             file_template_test.code,
             self.file_template_test_yaml_dict_no_empty_values["code"],
             "YAML value doesn't match Cetmix Tower one",
@@ -263,11 +249,6 @@ Depends on Odoo core image.""",
                 "YAML value doesn't match Cetmix Tower one",
             )
             self.assertEqual(
-                self.FileTemplate.CETMIX_TOWER_YAML_VERSION,
-                self.file_template_test_yaml_dict["cetmix_tower_yaml_version"],
-                "YAML value doesn't match Cetmix Tower one",
-            )
-            self.assertEqual(
                 file_template.code,
                 self.file_template_test_yaml_dict["code"],
                 "YAML value doesn't match Cetmix Tower one",
@@ -315,7 +296,6 @@ Depends on Odoo core image.""",
         # -- 2 --
         #  Insert some non supported keys and ensure nothing bad happens
         yaml_with_non_supported_keys = """cetmix_tower_model: file_template
-cetmix_tower_yaml_version: 1
 code: |-
   FROM odoo:{{ odoo_test_version }}
   # Install git-aggregator and tools for requirements generation
