@@ -727,6 +727,52 @@ result = re.sub(pattern, replacement, value)
             "Rendered path doesn't match",
         )
 
+        # -- 3 --
+        # Test with variable in variable value
+        complex_variable = self.Variable.create(
+            {
+                "name": "Complex Variable",
+                "applied_expression": "result = value.replace('opt', 'meme')",
+            }
+        )
+        # Create a complex variable value
+        self.VariableValue.create(
+            {
+                "variable_id": complex_variable.id,
+                "value_char": "{{ test_path_ }}/{{ test_dir }}",
+            }
+        )
+        command_with_complex_variable = self.Command.create(
+            {
+                "name": "Command with complex variable",
+                "code": "cd {{ complex_variable }}",
+                "action": "ssh_command",
+            }
+        )
+        rendered_command = self.server_test_1._render_command(
+            command_with_complex_variable
+        )
+        rendered_code_expected = "cd /meme/tower/test-sap-1"
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+
+        # -- 4 --
+        # Remove modifier from variable "Path" and check again
+        self.variable_dir.applied_expression = None
+        rendered_command = self.server_test_1._render_command(
+            command_with_complex_variable
+        )
+        rendered_code_expected = "cd /meme/tower/test-odoo-1"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+
     def test_render_code_generic(self):
         """Test generic (aka ssh) code template direct rendering"""
 

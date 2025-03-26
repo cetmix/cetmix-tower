@@ -25,11 +25,12 @@ class TowerVariableMixin(models.AbstractModel):
         help="Variable values for selected record",
     )
 
-    def get_variable_values(self, variable_references):
+    def get_variable_values(self, variable_references, apply_modifiers=True):
         """Get variable values for selected records
 
         Args:
             variable_references (list of Char): variable names
+            apply_modifiers (bool): apply Python modifiers to the values
 
         Returns:
             dict {record_id: {variable_reference: value}}
@@ -59,20 +60,18 @@ class TowerVariableMixin(models.AbstractModel):
                             == variable_reference
                         )
                         if value:
-                            res_vars.update(
-                                {
-                                    variable_reference: self._apply_applied_expression(
-                                        value
-                                    )
-                                }
-                            )
+                            res_vars.update({variable_reference: value.value_char})
 
                 res.update({rec.id: res_vars})
 
+            # Final render
             # Render templates in values
-            for variables in res.values():
-                self._render_variable_values(variables)
+            for variable_values in res.values():
+                self._render_variable_values(variable_values)
 
+        # Apply modifiers
+        if apply_modifiers:
+            self._apply_modifiers(res)
         return res
 
     def get_global_variable_values(self, variable_references):
@@ -104,11 +103,7 @@ class TowerVariableMixin(models.AbstractModel):
                         == variable_reference
                     )
                     res_vars.update(
-                        {
-                            variable_reference: self._apply_applied_expression(value)
-                            if value
-                            else None
-                        }
+                        {variable_reference: value.value_char if value else None}
                     )
                 res.update({rec.id: res_vars})
         return res
@@ -212,7 +207,7 @@ class TowerVariableMixin(models.AbstractModel):
         ]
         return domain
 
-    def _render_variable_values(self, variables):
+    def _render_variable_values(self, variable_values):
         """Renders variable values using other variable values.
         For example we have the following values:
             "server_root": "/opt/server"
@@ -222,52 +217,67 @@ class TowerVariableMixin(models.AbstractModel):
             "server_assets": "/opt/server/assets"
 
         Args:
-            variables (dict): values to complete
+            variable_values (dict): values to complete
         """
         self.ensure_one()
         TemplateMixin = self.env["cx.tower.template.mixin"]
-        for key in variables:
-            var_value = variables[key]
+        for key, var_value in variable_values.items():
             # Render only if template is found
             if var_value and "{{ " in var_value:
                 # Get variables used in value
                 value_vars = TemplateMixin.get_variables_from_code(var_value)
 
                 # Render variables used in value
-                res = self.get_variable_values(value_vars)
+                res = self.get_variable_values(value_vars, apply_modifiers=True)
 
                 # Render value using variables
-                variables[key] = TemplateMixin.render_code_custom(
+                variable_values[key] = TemplateMixin.render_code_custom(
                     var_value, **res[self.id]
                 )
 
-    def _apply_applied_expression(self, value):
-        """Apply pre-defined Python expression to the variable value.
+    def _apply_modifiers(self, variable_values):
+        """Apply pre-defined Python expression to the dictionary
+            of variable values.
 
         Args:
-            value (str): variable value
-
-        Returns:
-            str: evaluated value
+            variable_values (dict): variable values
+            {record_id: {variable_reference: value}}
         """
-        if value.variable_id.applied_expression:
-            eval_context = self.env["cx.tower.variable"]._get_eval_context(
-                value.value_char
-            )
-            try:
-                safe_eval(
-                    value.variable_id.applied_expression,
-                    eval_context,
-                    mode="exec",
-                    nocopy=True,
-                )
-                return eval_context.get("result")
-            except Exception as e:
-                _logger.error(
-                    "Error evaluating applied expression for "
-                    "variable %s value %s: %s",
-                    value.variable_id.name,
-                    value.value_char,
-                    str(e),
-                )
-        return value.value_char
+        variable_obj = self.env["cx.tower.variable"]
+
+        for record_id, values in variable_values.items():
+            for variable_reference, value in values.items():
+                if not value:
+                    continue
+
+                # ORM should cache resolved variables
+                variable = variable_obj.get_by_reference(variable_reference)
+
+                # Should never happen.. anyway
+                if not variable:
+                    continue
+
+                # Skip if no expression to apply
+                if not variable.applied_expression:
+                    continue
+
+                # Evaluate expression
+                eval_context = variable_obj._get_eval_context(value)
+                try:
+                    safe_eval(
+                        variable.applied_expression,
+                        eval_context,
+                        mode="exec",
+                        nocopy=True,
+                    )
+                    variable_values[record_id][variable_reference] = eval_context.get(
+                        "result"
+                    )
+                except Exception as e:
+                    _logger.error(
+                        "Error evaluating applied expression for "
+                        "variable %s value %s: %s",
+                        variable.name,
+                        value,
+                        str(e),
+                    )
