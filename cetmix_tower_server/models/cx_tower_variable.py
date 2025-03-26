@@ -1,6 +1,25 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, api, fields, models
+from odoo.tools.safe_eval import wrap_module
+
+re = wrap_module(
+    __import__("re"),
+    [
+        "match",
+        "fullmatch",
+        "search",
+        "sub",
+        "subn",
+        "split",
+        "findall",
+        "finditer",
+        "compile",
+        "template",
+        "escape",
+        "error",
+    ],
+)
 
 
 class TowerVariable(models.Model):
@@ -29,6 +48,14 @@ class TowerVariable(models.Model):
         default="s",
         required=True,
         string="Type",
+    )
+    applied_expression = fields.Text(
+        help="Python expression to apply to the variable value. \n"
+        "You can use general python sting functions and 're' module "
+        "for regex operations. "
+        "Use 'value' variable to refer to the variable value, use 'result'"
+        " to assign the final result that will be used as a variable value.\n"
+        "Eg 'result = value.lower().replace(' ', '_')'",
     )
     note = fields.Text()
 
@@ -204,4 +231,21 @@ class TowerVariable(models.Model):
             "views": [[False, "tree"]],
             "target": "current",
             "domain": [("variable_ids", "in", self.ids)],
+        }
+
+    @api.model
+    def _get_eval_context(self, value_char=None):
+        """
+        Evaluation context to pass to safe_eval to evaluate
+        the Python expression used in the `applied_expression` field
+
+        Args:
+            value_char (Char): variable value
+
+        Returns:
+            dict: evaluation context
+        """
+        return {
+            "re": re,
+            "value": value_char,
         }

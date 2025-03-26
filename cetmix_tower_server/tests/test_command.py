@@ -2,11 +2,21 @@ from unittest.mock import patch
 
 from odoo.exceptions import AccessError
 from odoo.tests.common import Form
+from odoo.tools import mute_logger
 
 from .common import TestTowerCommon
 
 
 class TestTowerCommand(TestTowerCommon):
+    """
+    Test the command model.
+
+    Important!
+    As this model inherits from the `cx.tower.template.mixin`
+    we will tests template rendering methods in this class too.
+
+    """
+
     def setUp(self, *args, **kwargs):
         super().setUp(*args, **kwargs)
 
@@ -654,6 +664,67 @@ COMMAND_RESULT = {
         )
         self.assertFalse(
             rendered_command["rendered_path"], "Rendered path doesn't match"
+        )
+
+    def test_server_render_command_variable_with_value_modifier(self):
+        """Test rendering command using `_render_command` method
+        of cx.tower.server.
+        Use variable with value modifier for testing.
+        """
+
+        # -- 1 --
+        # Set modifiers for variables
+        modifier_for_path = """
+if 'opt' in value:
+    result = value.replace('opt', 'home')
+else:
+    result = value
+"""
+        self.variable_path.applied_expression = modifier_for_path
+
+        modifier_for_dir = """
+pattern = r'(?i)odoo'
+replacement = 'sap'
+result = re.sub(pattern, replacement, value)
+"""
+        self.variable_dir.applied_expression = modifier_for_dir
+
+        # -- 1 --
+        # Test with default path
+        rendered_command = self.server_test_1._render_command(self.command_create_dir)
+        rendered_code_expected = "cd /home/tower && mkdir test-sap-1"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # -- 2 --
+        # Set invalid expression modifier
+        self.variable_path.applied_expression = "invalid"
+        with mute_logger("odoo.addons.cetmix_tower_server"):
+            rendered_command = self.server_test_1._render_command(
+                self.command_create_dir
+            )
+        rendered_code_expected = "cd /opt/tower && mkdir test-sap-1"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
         )
 
     def test_render_code_generic(self):

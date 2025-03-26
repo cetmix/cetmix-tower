@@ -8,6 +8,10 @@ from odoo.osv.expression import OR
 
 
 class TowerVariableValue(models.Model):
+    """
+    This model is used to store variable values.
+    """
+
     _name = "cx.tower.variable.value"
     _description = "Cetmix Tower Variable Values"
     _inherit = [
