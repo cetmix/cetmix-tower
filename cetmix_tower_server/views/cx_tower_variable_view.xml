@@ -153,6 +153,34 @@
                                 </form>
                             </field>
                         </page>
+                        <page name="value_modifier" string="Value Modifier">
+                            <div class="alert alert-info" role="alert">
+                            <p>
+                                Python code that is used to modify the variable values.
+                                <br />
+                                Available variables and functions:
+                                <ul>
+                                    <li>value: variable value</li>
+                                    <li
+                                        >result: final result that will be used as a variable value</li>
+                                    <li
+                                        >general python functions (eg. lower(), replace(), etc.)</li>
+                                    <li
+                                        >re: regex operations (eg. re.sub, re.match, etc.)</li>
+                                </ul>
+                                Example:
+                                <br />
+                                <code>
+                                    result = value.lower().replace(' ', '_') if value.startswith('http') else 'https://' + re.sub(r'\s+', '', value)
+                                </code>
+                            </p>
+                            </div>
+                            <field
+                                name="applied_expression"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                            />
+                        </page>
                     </notebook>
                 </sheet>
             </form>
