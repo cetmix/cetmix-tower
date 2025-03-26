@@ -1,9 +1,13 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
 import re
 import uuid
 
 from odoo import fields, models
+from odoo.tools.safe_eval import safe_eval
+
+_logger = logging.getLogger(__name__)
 
 
 class TowerVariableMixin(models.AbstractModel):
@@ -55,7 +59,13 @@ class TowerVariableMixin(models.AbstractModel):
                             == variable_reference
                         )
                         if value:
-                            res_vars.update({variable_reference: value.value_char})
+                            res_vars.update(
+                                {
+                                    variable_reference: self._apply_applied_expression(
+                                        value
+                                    )
+                                }
+                            )
 
                 res.update({rec.id: res_vars})
 
@@ -93,7 +103,13 @@ class TowerVariableMixin(models.AbstractModel):
                         variable_reference=variable_reference: v.variable_reference
                         == variable_reference
                     )
-                    res_vars.update({variable_reference: value.value_char or None})
+                    res_vars.update(
+                        {
+                            variable_reference: self._apply_applied_expression(value)
+                            if value
+                            else None
+                        }
+                    )
                 res.update({rec.id: res_vars})
         return res
 
@@ -224,3 +240,34 @@ class TowerVariableMixin(models.AbstractModel):
                 variables[key] = TemplateMixin.render_code_custom(
                     var_value, **res[self.id]
                 )
+
+    def _apply_applied_expression(self, value):
+        """Apply pre-defined Python expression to the variable value.
+
+        Args:
+            value (str): variable value
+
+        Returns:
+            str: evaluated value
+        """
+        if value.variable_id.applied_expression:
+            eval_context = self.env["cx.tower.variable"]._get_eval_context(
+                value.value_char
+            )
+            try:
+                safe_eval(
+                    value.variable_id.applied_expression,
+                    eval_context,
+                    mode="exec",
+                    nocopy=True,
+                )
+                return eval_context.get("result")
+            except Exception as e:
+                _logger.error(
+                    "Error evaluating applied expression for "
+                    "variable %s value %s: %s",
+                    value.variable_id.name,
+                    value.value_char,
+                    str(e),
+                )
+        return value.value_char

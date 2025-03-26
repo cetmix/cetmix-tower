@@ -420,6 +420,11 @@ msgid "Applicability"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__applied_expression
+msgid "Applied Expression"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
@@ -1059,6 +1064,16 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Error retrieving host key: %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid ""
+"Example:\n"
+"                                <br/>\n"
+"                                <code>\n"
+"                                    result = value.lower().replace(' ', '_') if value.startswith('http') else 'https://' + re.sub(r'\\s+', '', value)\n"
+"                                </code>"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2369,6 +2384,22 @@ msgid "Python code"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid ""
+"Python code that is used to modify the variable values.\n"
+"                                <br/>\n"
+"                                Available variables and functions:"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__applied_expression
+msgid ""
+"Python expression to apply to the variable value. \n"
+"You can use general python sting functions and 're' module for regex operations. Use 'value' variable to refer to the variable value, use 'result' to assign the final result that will be used as a variable value.\n"
+"Eg 'result = value.lower().replace(' ', '_')'"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
 #, python-format
 msgid "Recursive plan call detected in plan %(name)s."
@@ -3384,6 +3415,11 @@ msgid "Value Count"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "Value Modifier"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__value_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__value_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
@@ -3581,6 +3617,11 @@ msgid "e.g. /such/much/{{ path }}, overrides command path"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "general python functions (eg. lower(), replace(), etc.)"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/tests/common.py:0
 #: code:addons/cetmix_tower_server/tests/common.py:0
 #, python-format
@@ -3616,6 +3657,16 @@ msgid "optional, eg /home/{{ tower.server.username }}"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "re: regex operations (eg. re.sub, re.match, etc.)"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "result: final result that will be used as a variable value"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "then"
@@ -3642,6 +3693,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "users who can view this record"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "value: variable value"
 msgstr ""
 
 #. module: cetmix_tower_server
