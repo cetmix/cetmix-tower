@@ -30,6 +30,7 @@ class TestTowerServer(TestTowerCommon):
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "k",
+                "host_key": "test_key",
                 "use_sudo": "p",
                 "ssh_key_id": self.key_1.id,
                 "os_id": self.os_ubuntu_20_04.id,
@@ -328,6 +329,7 @@ COMMAND_RESULT = {
                 "ssh_auth_mode": "k",
                 "use_sudo": "p",
                 "ssh_key_id": self.key_1.id,
+                "host_key": "test_key",
                 "os_id": self.os_ubuntu_20_04.id,
                 "secret_ids": [
                     (
@@ -778,3 +780,29 @@ COMMAND_RESULT = {
             self.fail(
                 f"Unrestricted command should execute on any server but failed: {e}"
             )
+
+    def test_server_host_key_validation(self):
+        """Test server host key validation"""
+        server = self.Server.create(
+            {
+                "name": "Test Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "host_key": "test_key",
+                "skip_host_key": False,
+            }
+        )
+        # Test with host key
+        server.test_ssh_connection()
+
+        # Test without host key
+        server.host_key = None
+        with self.assertRaises(ValidationError):
+            server.test_ssh_connection()
+
+        # Test with skip_host_key
+        server.skip_host_key = True
+        server.test_ssh_connection()

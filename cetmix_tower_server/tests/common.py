@@ -77,6 +77,7 @@ class TestTowerCommon(TransactionCase):
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
+                "host_key": "test_key",
                 "os_id": self.os_debian_10.id,
             }
         )
