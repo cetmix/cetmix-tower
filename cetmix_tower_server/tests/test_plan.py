@@ -1537,6 +1537,7 @@ class TestTowerPlan(TestTowerCommon):
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
+                "host_key": "test_key",
             }
         )
 
