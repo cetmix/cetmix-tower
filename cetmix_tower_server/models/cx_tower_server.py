@@ -522,7 +522,9 @@ class CxTowerServer(models.Model):
             # Public user used for substitution
             for record in self:
                 try:
-                    record._cache["host_key"] = spoiler
+                    record._cache["host_key"] = (
+                        spoiler if record._cache["host_key"] else None
+                    )
                 except Exception:
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
@@ -595,6 +597,10 @@ class CxTowerServer(models.Model):
                 .read(["host_key"])[0]
                 .get("host_key")
             )
+            if not host_key and not self.skip_host_key:
+                raise ValidationError(
+                    _("Host key not found for server %(server)s", server=self.name)
+                )
 
             connection = SSHConnection(
                 host=self.ip_v4_address or self.ip_v6_address,
