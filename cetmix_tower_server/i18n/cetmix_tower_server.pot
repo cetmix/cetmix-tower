@@ -1072,7 +1072,7 @@ msgid ""
 "Example:\n"
 "                                <br/>\n"
 "                                <code>\n"
-"                                    result = value.lower().replace(' ', '_') if value.startswith('http') else 'https://' + re.sub(r'\\s+', '', value)\n"
+"                                result = value.lower().strip().replace('_', '-').replace(\" \",\"\") if value.startswith('http') else 'https://' + re.sub(r'\\s+', '', value)\n"
 "                                </code>"
 msgstr ""
 
