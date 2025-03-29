@@ -5,6 +5,7 @@
         <field name="model">cx.tower.variable.value</field>
         <field name="arch" type="xml">
             <tree editable="top" decoration-bf="is_global==True">
+                <field name="variable_type" invisible="1" />
                 <field name="reference" optional="hide" />
                 <field name="variable_id" />
                 <field name="is_global" widget="boolean_toggle" />
@@ -20,8 +21,15 @@
                     name="plan_line_action_id"
                     attrs="{'readonly': ['|',('server_id', '!=', False), ('server_template_id', '!=', False)]}"
                 />
-                <field name="value_char" />
-                <field name="option_id" optional="show" />
+                <field
+                    name="value_char"
+                    attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                />
+                <field
+                    name="option_id"
+                    optional="show"
+                    attrs="{'readonly': [('variable_type', '=', 's')]}"
+                />
                 <field name="access_level" optional="show" />
                 <field name="variable_ids" optional="hide" widget="many2many_tags" />
             </tree>

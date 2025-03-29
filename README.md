@@ -35,7 +35,7 @@ It is designed for versatility across different operating systems and software e
 
 # Commands
 
-- Execute SSH commands on remote servers
+- Run SSH commands on remote servers
 - Run Python code on the Tower Odoo server
 - Run Flight Plan from command
 - Render commands using variables
@@ -43,7 +43,7 @@ It is designed for versatility across different operating systems and software e
 
 # Flight Plans
 
-- Execute multiple commands in a row
+- Run multiple commands in a row
 - Condition based flow:
   - Based on condition using [Python syntax](https://www.w3schools.com/python/python_syntax.asp)
   - Based on the previous command exit code

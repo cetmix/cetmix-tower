@@ -12,7 +12,7 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Create new wizard
         test_wizard = (
-            self.env["cx.tower.command.execute.wizard"]
+            self.env["cx.tower.command.run.wizard"]
             .with_user(self.user_bob)
             .create(
                 {
@@ -36,26 +36,26 @@ class TestTowerCommandWizard(TestTowerCommon):
         )
         # Ensure that regular user cannot execute command in wizard
         with self.assertRaises(AccessError):
-            test_wizard.execute_command_in_wizard()
+            test_wizard.run_command_in_wizard()
 
         # Add bob back to `user` group and try again
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
         with self.assertRaises(AccessError):
-            test_wizard.execute_command_in_wizard()
+            test_wizard.run_command_in_wizard()
 
         # Now promote bob to `manager` group and try again
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        test_wizard.execute_command_in_wizard()
+        test_wizard.run_command_in_wizard()
 
     def test_execute_code_without_a_command(self):
-        """Execute command code without a command selected"""
+        """Run command code without a command selected"""
 
         # Add Bob to `root` group in order to create a wizard
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
 
         # Create new wizard
         test_wizard = (
-            self.env["cx.tower.command.execute.wizard"]
+            self.env["cx.tower.command.run.wizard"]
             .with_user(self.user_bob)
             .create(
                 {
@@ -66,9 +66,9 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Should not allow to run command on server if no command is selected
         with self.assertRaises(ValidationError):
-            test_wizard.execute_command_on_server()
+            test_wizard.run_command_on_server()
 
-    def test_execute_command_on_server_access_rights(self):
+    def test_run_command_on_server_access_rights(self):
         """Test access rights for executing command on server"""
 
         # Add Bob to `root` group
@@ -76,7 +76,7 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Create new wizard with Bob as a root user
         test_wizard = (
-            self.env["cx.tower.command.execute.wizard"]
+            self.env["cx.tower.command.run.wizard"]
             .with_user(self.user_bob)
             .create(
                 {
@@ -87,7 +87,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         ).with_user(self.user_bob)
 
         # Ensure command can be executed by root
-        test_wizard.execute_command_on_server()
+        test_wizard.run_command_on_server()
 
         # Remove Bob from all tower server groups
         self.remove_from_group(
@@ -101,11 +101,11 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Ensure that regular user cannot execute command on server
         with self.assertRaises(AccessError):
-            test_wizard.execute_command_on_server()
+            test_wizard.run_command_on_server()
 
         #  Add Bob to `user` group and ensure he can execute commands
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
-        test_wizard.execute_command_on_server()
+        test_wizard.run_command_on_server()
         # Ensure that Bob has access to path field but can't read its value
         allowed_path = (
             self.user_bob.has_group("cetmix_tower_server.group_manager")
@@ -126,11 +126,11 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Add Bob to `manager` group and ensure access to execute commands
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        test_wizard.execute_command_on_server()
+        test_wizard.run_command_on_server()
         # Check that path access is valid for the manager
         test_wizard.read(["path"])
 
-    def test_execute_command_with_sensitive_vars_on_server_access_rights(self):
+    def test_run_command_with_sensitive_vars_on_server_access_rights(self):
         """Test access rights for executing command on server"""
         # create new command
         command = self.Command.create(
@@ -180,7 +180,7 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Create new wizard with Bob
         test_wizard = (
-            self.env["cx.tower.command.execute.wizard"]
+            self.env["cx.tower.command.run.wizard"]
             .with_user(self.user_bob)
             .create(
                 {
@@ -194,9 +194,9 @@ class TestTowerCommandWizard(TestTowerCommon):
         command.write({"user_ids": [(4, self.user_bob.id)]})
 
         # Ensure command can be executed by user
-        test_wizard.execute_command_on_server()
+        test_wizard.run_command_on_server()
 
-    def test_execute_command_in_wizard_multiple_servers(self):
+    def test_run_command_in_wizard_multiple_servers(self):
         """
         Test that raises an error when multiple servers are selected
         """
@@ -218,7 +218,7 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Create new wizard with multiple servers selected
         test_wizard = (
-            self.env["cx.tower.command.execute.wizard"]
+            self.env["cx.tower.command.run.wizard"]
             .with_user(self.user_bob)
             .create(
                 {
@@ -237,13 +237,13 @@ class TestTowerCommandWizard(TestTowerCommon):
             ValidationError,
             msg="You cannot run custom code on multiple servers at once.",
         ):
-            test_wizard.execute_command_in_wizard()
+            test_wizard.run_command_in_wizard()
 
         # Now, test with a single server selected
         test_wizard.server_ids = [self.server_test_1.id]
 
         # Ensure that executing command works with a single server selected
-        test_wizard.execute_command_in_wizard()
+        test_wizard.run_command_in_wizard()
         self.assertTrue(
             test_wizard.result,
             msg="Command execution should succeed with a single server selected",

@@ -5,7 +5,7 @@ import time
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
-from .constants import SSH_CONNECTION_ERROR
+from .constants import NOT_FOUND, SSH_CONNECTION_ERROR
 
 
 class CetmixTower(models.AbstractModel):
@@ -20,7 +20,7 @@ class CetmixTower(models.AbstractModel):
     """
 
     _name = "cetmix.tower"
-    _description = "Tower automation helper model"
+    _description = "Cetmix Tower Odoo Automation"
 
     @api.model
     def server_create_from_template(self, template_reference, server_name, **kwargs):
@@ -31,6 +31,70 @@ class CetmixTower(models.AbstractModel):
         return self.env["cx.tower.server.template"].create_server_from_template(
             template_reference=template_reference, server_name=server_name, **kwargs
         )
+
+    @api.model
+    def server_run_command(
+        self, server_reference, command_reference, get_result=True, **kwargs
+    ):
+        """Run command on selected server.
+
+        Args:
+            server_reference (Char): Server reference
+            command_reference (Char): Command reference
+            get_result (bool, optional): Get the result of the command.
+                If False, the result will be saved to the log.
+                Defaults to True.
+
+        Returns:
+            Dict: with who keys if `get_result` is True:
+            - exit_code (Int): Exit code of the command
+            - message (Char): Message of the command
+        """
+
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
+            return {"exit_code": NOT_FOUND, "message": _("Server not found")}
+        command = self.env["cx.tower.command"].get_by_reference(command_reference)
+        if not command:
+            return {"exit_code": NOT_FOUND, "message": _("Command not found")}
+
+        # Will return command result if get_result is True
+        # Otherwise will save to log and return None
+        command_result = server.with_context(no_log=get_result).run_command(
+            command, **kwargs
+        )
+
+        # Return command result if get_result is True
+        if command_result:
+            status = command_result.get("status")
+            response = command_result.get("response", "")
+            error = command_result.get("error", "")
+            return {
+                "exit_code": status,
+                "message": response or error,
+            }
+
+    def server_run_flight_plan(self, server_reference, flight_plan_reference, **kwargs):
+        """Run flight plan on selected server.
+
+        Args:
+            server_reference (Char): Server reference
+            flight_plan_reference (Char): Flight plan reference
+
+        Returns:
+            cx.tower.plan.log(): flight plan log record or False if error
+        """
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
+            # This is not the best way to handle this, but it's the only way to
+            # avoid complex response handling
+            return False
+        flight_plan = self.env["cx.tower.plan"].get_by_reference(flight_plan_reference)
+        if not flight_plan:
+            # This is not the best way to handle this, but it's the only way to
+            # avoid complex response handling
+            return False
+        return server.run_flight_plan(flight_plan, **kwargs)
 
     @api.model
     def server_set_variable_value(self, server_reference, variable_reference, value):
@@ -50,10 +114,10 @@ class CetmixTower(models.AbstractModel):
 
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
-            return {"exit_code": -1, "message": _("Server not found")}
+            return {"exit_code": NOT_FOUND, "message": _("Server not found")}
         variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
         if not variable:
-            return {"exit_code": -1, "message": _("Variable not found")}
+            return {"exit_code": NOT_FOUND, "message": _("Variable not found")}
 
         # Check if variable is already defined for the server
         variable_value_record = variable.value_ids.filtered(

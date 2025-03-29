@@ -319,7 +319,10 @@ class CxTowerFile(models.Model):
         if tower_files_to_sync:
             tower_files_to_sync.action_push_to_server()
 
-    def action_modify_code(self):
+    def action_unlink_from_template(self):
+        """
+        Unlink file from template to make it editable
+        """
         self.ensure_one()
         self.template_id = False
 
@@ -464,11 +467,11 @@ class CxTowerFile(models.Model):
         """
         if "server_dir" in values:
             server_dir = values["server_dir"].strip()
+            if server_dir.endswith("/") and server_dir != "/":
+                server_dir = server_dir[:-1]
             values.update(
                 {
-                    "server_dir": server_dir.endswith("/")
-                    and server_dir[:-1]
-                    or server_dir,
+                    "server_dir": server_dir,
                 }
             )
         return values

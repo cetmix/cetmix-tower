@@ -37,7 +37,8 @@ class CxTowerServerLog(models.Model):
     )
     command_id = fields.Many2one(
         "cx.tower.command",
-        domain="['|', ('server_ids', 'in', [server_id]), ('server_ids', '=', False)]",  # noqa
+        domain="[('action', 'in', ['ssh_command', 'python_code']), "
+        "'|', ('server_ids', 'in', [server_id]), ('server_ids', '=', False)]",
         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
         help="Command that will be executed to get the log data.\n"
         "Be careful with commands that don't support parallel execution!",
@@ -136,7 +137,7 @@ class CxTowerServerLog(models.Model):
         self.ensure_one()
 
         use_sudo = self.use_sudo and self.server_id.use_sudo
-        command_result = self.server_id.with_context(no_log=True).execute_command(
+        command_result = self.server_id.with_context(no_log=True).run_command(
             self.command_id, sudo=use_sudo
         )
         log_text = self.NO_LOG_FETCHED_MESSAGE

@@ -178,7 +178,15 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
     _description = "Create new server from template variables"
 
     wizard_id = fields.Many2one("cx.tower.server.template.create.wizard")
-    variable_id = fields.Many2one(comodel_name="cx.tower.variable", required=True)
+    variable_value_id = fields.Many2one(
+        comodel_name="cx.tower.variable.value",
+    )
+    variable_id = fields.Many2one(
+        comodel_name="cx.tower.variable",
+        compute="_compute_variable_id",
+        readonly=False,
+        store=True,
+    )
     variable_reference = fields.Char(related="variable_id.reference", readonly=True)
     value_char = fields.Char(
         string="Value",
@@ -187,7 +195,10 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
         store=True,
     )
     required = fields.Boolean(
+        related="variable_value_id.required",
         help="Indicates if this variable is mandatory for server creation",
+        readonly=True,
+        store=True,
     )
     variable_type = fields.Selection(
         related="variable_id.variable_type",
@@ -196,7 +207,23 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
     option_id = fields.Many2one(
         comodel_name="cx.tower.variable.option",
         domain="[('variable_id', '=', variable_id)]",
+        readonly=False,
+        compute="_compute_variable_id",
+        store=True,
     )
+
+    @api.depends("variable_value_id")
+    def _compute_variable_id(self):
+        for rec in self:
+            variable_value = rec.variable_value_id
+            if variable_value:
+                rec.update(
+                    {
+                        "variable_id": variable_value.variable_id.id,
+                        "option_id": variable_value.option_id.id,
+                        "value_char": variable_value.value_char,
+                    }
+                )
 
     @api.depends("option_id", "variable_id", "variable_type")
     def _compute_value_char(self):

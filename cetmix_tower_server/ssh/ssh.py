@@ -251,7 +251,7 @@ class CommandExecutor:
         self, command: str, sudo: Optional[str] = None
     ) -> Tuple[int, List[str], List[str]]:
         """
-        Execute a command on the remote server.
+        Run a command on the remote server.
         """
         ssh_client = self.connection.connect()
         use_sudo_with_password = sudo == "p" and self.connection.username != "root"

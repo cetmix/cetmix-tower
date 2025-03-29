@@ -5,6 +5,11 @@ from unittest.mock import patch
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
 
+from ..models.constants import (
+    GENERAL_ERROR,
+    PLAN_IS_EMPTY,
+    PLAN_LINE_CONDITION_CHECK_FAILED,
+)
 from .common import TestTowerCommon
 
 
@@ -455,7 +460,7 @@ class TestTowerPlan(TestTowerCommon):
         action, exit_code, next_line_id = self.plan_1._get_next_action_values(
             command_log
         )
-        self.assertEqual(action, "n", msg="Action must be 'Execute next action'")
+        self.assertEqual(action, "n", msg="Action must be 'Run next action'")
         self.assertEqual(exit_code, 0, msg="Exit code must be equal to 0")
         self.assertEqual(
             next_line_id,
@@ -500,7 +505,7 @@ class TestTowerPlan(TestTowerCommon):
         action, exit_code, next_line_id = self.plan_1._get_next_action_values(
             command_log
         )
-        self.assertEqual(action, "n", msg="Action must be 'Execute next action'")
+        self.assertEqual(action, "n", msg="Action must be 'Run next action'")
         self.assertEqual(exit_code, -12, msg="Exit code must be equal to -12")
         self.assertEqual(
             next_line_id,
@@ -540,7 +545,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(exit_code, 1, msg="Exit code must be equal to 1")
         self.assertIsNone(next_line_id, msg="Next line must be None")
 
-    def test_plan_execute_single(self):
+    def test_plan_run_single(self):
         """Test plan execution results"""
 
         # Add user as user to Server1
@@ -549,7 +554,7 @@ class TestTowerPlan(TestTowerCommon):
         # Ensure that access error is raised
         # Because user_bob is not in any Tower group
         with self.assertRaises(AccessError):
-            self.plan_1.with_user(self.user_bob)._execute_single(self.server_test_1)
+            self.plan_1.with_user(self.user_bob)._run_single(self.server_test_1)
 
         # Add user to the "User" group
         self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
@@ -557,7 +562,7 @@ class TestTowerPlan(TestTowerCommon):
         # Ensure that access error is raised
         # Because plan access level is "Manager" and user_bob is in "User" group
         with self.assertRaises(AccessError):
-            self.plan_1.with_user(self.user_bob)._execute_single(self.server_test_1)
+            self.plan_1.with_user(self.user_bob)._run_single(self.server_test_1)
 
         # Set access level to 1 and link to server1
         # so Bob can execute the plan
@@ -567,8 +572,8 @@ class TestTowerPlan(TestTowerCommon):
         )
 
         self.env["ir.rule"].invalidate_cache()
-        # Execute plan
-        self.plan_1.with_user(self.user_bob)._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1.with_user(self.user_bob)._run_single(self.server_test_1)
 
         # Check plan log
         plan_log_rec = self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
@@ -599,8 +604,8 @@ class TestTowerPlan(TestTowerCommon):
         action_to_tweak = self.plan_line_1_action_1
         action_to_tweak.write({"custom_exit_code": 29, "action": "ec"})
 
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
 
         # Check plan log
         plan_log_records = self.PlanLog.search(
@@ -725,8 +730,8 @@ class TestTowerPlan(TestTowerCommon):
         """
         # Add condition for the first plan line
         self.plan_line_1.condition = "{{ odoo_version }} == '14.0'"
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
         # Check plan log
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -751,8 +756,8 @@ class TestTowerPlan(TestTowerCommon):
         """
         # Add condition for second plan line
         self.plan_line_2.condition = "{{ odoo_version }} == '14.0'"
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
         # Check plan log
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -785,8 +790,8 @@ class TestTowerPlan(TestTowerCommon):
         self.plan_line_2.condition = (
             "{{ " + self.variable_version.name + " }} == '14.0'"
         )
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
         # Check commands
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -851,8 +856,8 @@ class TestTowerPlan(TestTowerCommon):
         self.assertFalse(
             exist_server_values, "The server should not have this variable"
         )
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
         # Check that exists server values was updated
         exist_server_values = self.server_test_1.variable_value_ids.filtered(
             lambda rec: rec.variable_id == self.variable_version
@@ -907,8 +912,8 @@ class TestTowerPlan(TestTowerCommon):
         self.plan_line_2.condition = (
             "{{ " + self.variable_version.name + " }} == '14.0'"
         )
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
         # Check commands
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -924,8 +929,8 @@ class TestTowerPlan(TestTowerCommon):
         self.plan_line_2.condition = (
             "{{ " + self.variable_version.name + " }} == '16.0'"
         )
-        # Execute plan
-        self.plan_1._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_1._run_single(self.server_test_1)
         # Check commands
         new_plan_log_records = (
             self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
@@ -1081,8 +1086,8 @@ class TestTowerPlan(TestTowerCommon):
             [("server_id", "=", self.server_test_1.id)]
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -1129,8 +1134,8 @@ class TestTowerPlan(TestTowerCommon):
 
         # Delete plan lines from first plan
         self.plan_1.line_ids = False
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
         plan_log_records = (
             self.PlanLog.search([("server_id", "=", self.server_test_1.id)])
             - plan_log_records
@@ -1141,7 +1146,7 @@ class TestTowerPlan(TestTowerCommon):
         )
         self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
         self.assertEqual(
-            parent_plan_log.plan_status, -1, "Plan log should failed status"
+            parent_plan_log.plan_status, PLAN_IS_EMPTY, "Plan log should failed status"
         )
 
         child_plan_log = plan_log_records - parent_plan_log
@@ -1173,8 +1178,8 @@ class TestTowerPlan(TestTowerCommon):
             [("server_id", "=", self.server_test_1.id)]
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -1210,8 +1215,8 @@ class TestTowerPlan(TestTowerCommon):
             [("server_id", "=", self.server_test_1.id)]
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Execute plan
-        plan_3._execute_single(self.server_test_1)
+        # Run plan
+        plan_3._run_single(self.server_test_1)
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -1301,8 +1306,8 @@ class TestTowerPlan(TestTowerCommon):
         # associated with Plan 1 to apply the desired side effect.
         self.plan_1.line_ids.command_id[0].code = "fail"
 
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
 
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
@@ -1316,7 +1321,7 @@ class TestTowerPlan(TestTowerCommon):
         )
         self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
         self.assertEqual(
-            parent_plan_log.plan_status, -1, "Plan log should failed status"
+            parent_plan_log.plan_status, GENERAL_ERROR, "Plan log should failed status"
         )
 
         child_plan_log = plan_log_records - parent_plan_log
@@ -1346,9 +1351,9 @@ class TestTowerPlan(TestTowerCommon):
         )
 
         cx_tower_plan_obj = self.registry["cx.tower.plan"]
-        _execute_single_super = cx_tower_plan_obj._execute_single
+        _run_single_super = cx_tower_plan_obj._run_single
 
-        def _execute_single(this, *args, **kwargs):
+        def _run_single(this, *args, **kwargs):
             if (
                 this == self.plan_1
                 and this.env["cx.tower.plan.log"]
@@ -1359,11 +1364,11 @@ class TestTowerPlan(TestTowerCommon):
                 # Simulate a failed Plan 1. To achieve this, we need to update
                 # the command associated with Plan 1 to apply the desired side effect.
                 self.plan_1.line_ids.command_id[0].code = "fail"
-            return _execute_single_super(this, *args, **kwargs)
+            return _run_single_super(this, *args, **kwargs)
 
-        with patch.object(cx_tower_plan_obj, "_execute_single", _execute_single):
-            # Execute plan
-            self.plan_2._execute_single(self.server_test_1)
+        with patch.object(cx_tower_plan_obj, "_run_single", _run_single):
+            # Run plan
+            self.plan_2._run_single(self.server_test_1)
 
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
@@ -1377,7 +1382,7 @@ class TestTowerPlan(TestTowerCommon):
         )
         self.assertTrue(parent_plan_log, "The log for Plan 2 must exist!")
         self.assertEqual(
-            parent_plan_log.plan_status, -1, "Plan log should failed status"
+            parent_plan_log.plan_status, GENERAL_ERROR, "Plan log should failed status"
         )
 
         child_plan_log = plan_log_records - parent_plan_log
@@ -1392,14 +1397,14 @@ class TestTowerPlan(TestTowerCommon):
             "Must be 2 child plan logs",
         )
         self.assertIn(
-            -1,
+            GENERAL_ERROR,
             child_plan_log.mapped("plan_status"),
-            "One of plan status of child plan must be -1",
+            "One of plan status of child plan must be GENERAL_ERROR",
         )
         self.assertIn(
             0,
             child_plan_log.mapped("plan_status"),
-            "One of plan status of child plan must be -1",
+            "One of plan status of child plan must be GENERAL_ERROR",
         )
 
     def test_plan_with_another_plan_with_condition(self):
@@ -1414,8 +1419,8 @@ class TestTowerPlan(TestTowerCommon):
             [("server_id", "=", self.server_test_1.id)]
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
             [("server_id", "=", self.server_test_1.id)]
@@ -1455,8 +1460,8 @@ class TestTowerPlan(TestTowerCommon):
             [("server_id", "=", self.server_test_1.id)]
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
 
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
@@ -1466,7 +1471,7 @@ class TestTowerPlan(TestTowerCommon):
         self.assertEqual(len(plan_log_records), 2, msg="Should be 2 plan logs")
 
         self.assertIn(
-            -20,
+            PLAN_LINE_CONDITION_CHECK_FAILED,
             plan_log_records.command_log_ids.mapped("command_status"),
             "One of commands should be skipped",
         )
@@ -1487,8 +1492,8 @@ class TestTowerPlan(TestTowerCommon):
             [("server_id", "=", self.server_test_1.id)]
         )
         self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Execute plan
-        self.plan_2._execute_single(self.server_test_1)
+        # Run plan
+        self.plan_2._run_single(self.server_test_1)
 
         # Check plan logs after execute command with plan action
         plan_log_records = self.PlanLog.search(
@@ -1497,7 +1502,7 @@ class TestTowerPlan(TestTowerCommon):
 
         self.assertEqual(len(plan_log_records), 1, msg="Should be 1 plan logs")
         self.assertEqual(
-            -20,
+            PLAN_LINE_CONDITION_CHECK_FAILED,
             plan_log_records.command_log_ids.command_status,
             "Command status should be skipped",
         )
@@ -1552,10 +1557,10 @@ class TestTowerPlan(TestTowerCommon):
             f"Flight plan '{plan.name}' is not compatible "
             f"with the server '{self.server_test_1.name}'.",
         ):
-            plan._execute_single(self.server_test_1)
+            plan._run_single(self.server_test_1)
 
         # Should work on allowed server
-        plan._execute_single(test_server)
+        plan._run_single(test_server)
         plan_log = self.PlanLog.search(
             [("plan_id", "=", plan.id), ("server_id", "=", test_server.id)], limit=1
         )

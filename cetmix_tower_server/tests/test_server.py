@@ -752,7 +752,7 @@ COMMAND_RESULT = {
 
         # Should work on allowed server
         try:
-            self.server_test_1.execute_command(command)
+            self.server_test_1.run_command(command)
         except Exception as e:
             self.fail(f"Command should execute on allowed server but failed: {e}")
 
@@ -760,7 +760,7 @@ COMMAND_RESULT = {
         with self.assertRaises(
             ValidationError, msg="Command should not execute on non-allowed server"
         ):
-            self.server_test_2.execute_command(command)
+            self.server_test_2.run_command(command)
 
         # Command without server restrictions should work on any server
         unrestricted_command = self.Command.create(
@@ -772,8 +772,8 @@ COMMAND_RESULT = {
         )
 
         try:
-            self.server_test_1.execute_command(unrestricted_command)
-            self.server_test_2.execute_command(unrestricted_command)
+            self.server_test_1.run_command(unrestricted_command)
+            self.server_test_2.run_command(unrestricted_command)
         except Exception as e:
             self.fail(
                 f"Unrestricted command should execute on any server but failed: {e}"
