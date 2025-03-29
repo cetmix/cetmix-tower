@@ -70,6 +70,15 @@ class CxTowerServerTemplate(models.Model):
         comodel_name="cx.tower.server.log", inverse_name="server_template_id"
     )
 
+    # --- Shortcuts
+    shortcut_ids = fields.Many2many(
+        comodel_name="cx.tower.shortcut",
+        relation="cx_tower_server_template_shortcut_rel",
+        column1="server_template_id",
+        column2="shortcut_id",
+        string="Shortcuts",
+    )
+
     # --- Flight Plan
     flight_plan_id = fields.Many2one(
         "cx.tower.plan",
@@ -303,6 +312,7 @@ class CxTowerServerTemplate(models.Model):
             "tag_ids",
             "variable_value_ids",
             "server_log_ids",
+            "shortcut_ids",
         ]
 
     def _prepare_server_values(self, pick_all_template_variables=True, **kwargs):

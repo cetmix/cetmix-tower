@@ -53,3 +53,6 @@ access_cx_tower_variable_option_manager,Variable Option->Manager,model_cx_tower_
 access_cx_tower_server_host_key_wizard_manager,Show Host Key->Manager,model_cx_tower_server_host_key_wizard,group_manager,1,1,1,1
 access_cx_tower_server_host_key_wizard_root,Show Host Key->Root,model_cx_tower_server_host_key_wizard,group_root,1,1,1,1
 access_cetmix_tower_user,Cetmix Tower->User,model_cetmix_tower,group_user,1,1,0,0
+access_shortcut_user,Shortcut->User,model_cx_tower_shortcut,group_user,1,0,0,0
+access_shortcut_manager,Shortcut->Manager,model_cx_tower_shortcut,group_manager,1,0,0,0
+access_shortcut_root,Shortcut->Root,model_cx_tower_shortcut,group_root,1,1,1,1
