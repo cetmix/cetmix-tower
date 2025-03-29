@@ -114,6 +114,13 @@
         sequence="8"
     />
     <menuitem
+        id="menu_cx_tower_shortcut"
+        name="Shortcuts"
+        action="action_cx_tower_shortcut"
+        parent="menu_settings"
+        sequence="10"
+    />
+    <menuitem
         id="menu_cx_tower_os"
         name="OSs"
         action="action_cx_tower_os"

@@ -855,4 +855,37 @@ else:
         <field name="value_char">final_value</field>
     </record>
 
+    <!-- ===============================================
+    Shortcuts
+    ================================================ -->
+    <record id="shortcut_for_command" model="cx.tower.shortcut">
+        <field name="name">Command Shortcut</field>
+        <field name="action">command</field>
+        <field name="command_id" ref="command_list_dir" />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('server_demo_1'),ref('server_demo_2')])]"
+        />
+        <field name="access_level">1</field>
+    </record>
+    <record id="shortcut_for_flight_plan" model="cx.tower.shortcut">
+        <field name="name">Flight Plan Shortcut</field>
+        <field name="action">plan</field>
+        <field name="plan_id" ref="plan_demo_1" />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('server_demo_1'),ref('server_demo_2')])]"
+        />
+        <field name="access_level">2</field>
+    </record>
+    <record id="shortcut_for_server_template" model="cx.tower.shortcut">
+        <field name="name">Flight Plan Shortcut for Server Template</field>
+        <field name="action">plan</field>
+        <field name="plan_id" ref="plan_demo_1" />
+        <field
+            name="server_template_ids"
+            eval="[(6, 0, [ref('demo_server_template_1')])]"
+        />
+        <field name="access_level">2</field>
+    </record>
 </odoo>

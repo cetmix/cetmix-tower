@@ -225,6 +225,15 @@ class CxTowerServer(models.Model):
         relation="cx_tower_server_manager_rel",
     )
 
+    # ---- Shortcuts
+    shortcut_ids = fields.Many2many(
+        comodel_name="cx.tower.shortcut",
+        relation="cx_tower_server_shortcut_rel",
+        column1="server_id",
+        column2="shortcut_id",
+        string="Shortcuts",
+    )
+
     def _selection_status(self):
         """
         Status selection options
@@ -821,10 +830,7 @@ class CxTowerServer(models.Model):
             command (cx.tower.command()): Command record
             path (Char): directory where command is run.
                 Provide in case you need to override default command value
-            sudo (selection): use sudo
-                None - do not use sudo
-                'n' - no password
-                'p' - with password
+            sudo (Boolean): use sudo
                 Defaults to None
             ssh_connection (SSH client instance, optional): SSH connection.
                 Pass to reuse existing connection.
