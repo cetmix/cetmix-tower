@@ -240,6 +240,10 @@
     </record>
     <record id="variable_demo_branch" model="cx.tower.variable">
         <field name="name">Branch</field>
+        <field name="validation_pattern">^[a-z0-9]+$</field>
+        <field
+            name="validation_message"
+        >Must be lowercase and contain only letters and numbers!</field>
     </record>
 
     <!-- ===============================================

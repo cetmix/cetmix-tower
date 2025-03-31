@@ -23,11 +23,15 @@ re = wrap_module(
 
 
 class TowerVariable(models.Model):
+    """Cetmix Tower Variable"""
+
     _name = "cx.tower.variable"
     _description = "Cetmix Tower Variable"
     _inherit = ["cx.tower.reference.mixin", "cx.tower.access.mixin"]
 
     _order = "name"
+
+    DEFAULT_VALIDATION_MESSAGE = _("Invalid value!")
 
     value_ids = fields.One2many(
         string="Values",
@@ -57,7 +61,23 @@ class TowerVariable(models.Model):
         " to assign the final result that will be used as a variable value.\n"
         "Eg 'result = value.lower().replace(' ', '_')'",
     )
-    note = fields.Text()
+    validation_pattern = fields.Char(
+        help="Regex pattern to validate the variable values using the "
+        "'re.match' function. Eg. ^[a-z0-9]+$ \n"
+        "If empty, the variable values will not be validated.",
+    )
+    validation_message = fields.Char(
+        translate=True,
+        help="Message to display when the variable value is invalid. \n"
+        "First line will be added automatically: "
+        "`Variable:<variable_name>, Value: <value>`\n"
+        "Eg: `Variable: Customer Name, Value: Test\nInvalid value!`\n"
+        "If empty, the default message will be used.",
+    )
+    note = fields.Text(
+        help="Additional notes about the variable. \n"
+        "This field will be displayed in the variable form.",
+    )
 
     # --- Link to records where the variable is used
     command_ids = fields.Many2many(
@@ -249,3 +269,31 @@ class TowerVariable(models.Model):
             "re": re,
             "value": value_char,
         }
+
+    def _validate_value(self, value_char=None):
+        """
+        Validate the variable value
+
+        Args:
+            value_char (Char): variable value
+
+        Returns:
+            (Boolean, Char): (is_valid, validation_message)
+        """
+        self.ensure_one()
+        if (
+            not self.validation_pattern
+            or not value_char
+            or re.match(self.validation_pattern, value_char)
+        ):
+            return True, None
+        message = self.validation_message or self.DEFAULT_VALIDATION_MESSAGE
+        return (
+            False,
+            _(
+                "Variable: %(var)s, Value: %(val)s\n%(msg)s",
+                msg=message,
+                var=self.name,
+                val=value_char,
+            ),
+        )
