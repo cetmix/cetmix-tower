@@ -239,3 +239,13 @@ class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
         Reset option_id when variable changes.
         """
         self.update({"option_id": None})
+
+    @api.onchange("value_char")
+    def _onchange_value_char(self):
+        """
+        Check value before saving
+        """
+        if self.variable_id:
+            valid, message = self.variable_id._validate_value(self.value_char)
+            if not valid:
+                return {"warning": {"title": _("Value is invalid"), "message": message}}
