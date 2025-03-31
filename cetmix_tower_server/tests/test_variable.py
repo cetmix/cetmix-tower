@@ -874,3 +874,66 @@ class TestTowerVariable(TestTowerCommon):
             variable_level_3.with_user(self.root).write({"name": "Updated by Root"})
         except AccessError:
             self.fail("Root should be able to modify any variable")
+
+    def test_validate_value(self):
+        """Test variable value validation"""
+        # Create variable with validation pattern
+        variable_with_pattern = self.Variable.create(
+            {
+                "name": "Test Pattern",
+                "validation_pattern": "^[a-z0-9]+$",
+                "validation_message": "Only lowercase letters and numbers allowed",
+            }
+        )
+
+        # Test valid values
+        valid_value = "abc123"
+        is_valid, message = variable_with_pattern._validate_value(valid_value)
+        self.assertTrue(is_valid, "Value should be valid")
+        self.assertIsNone(message, "No message should be returned for valid value")
+
+        # Test invalid values
+        invalid_value = "ABC123!"
+        is_valid, message = variable_with_pattern._validate_value(invalid_value)
+        self.assertFalse(is_valid, "Value should be invalid")
+        self.assertEqual(
+            message,
+            f"Variable: {variable_with_pattern.name}, Value: {invalid_value}\n"
+            "Only lowercase letters and numbers allowed",
+            "Invalid value message doesn't match",
+        )
+
+        # Test empty value
+        is_valid, message = variable_with_pattern._validate_value(None)
+        self.assertTrue(is_valid, "Empty value should be valid")
+        self.assertIsNone(message, "No message should be returned for empty value")
+
+        # Test variable without pattern
+        variable_no_pattern = self.Variable.create(
+            {
+                "name": "No Pattern",
+            }
+        )
+        test_value = "Any Value!"
+        is_valid, message = variable_no_pattern._validate_value(test_value)
+        self.assertTrue(is_valid, "Value should be valid when no pattern is set")
+        self.assertIsNone(
+            message, "No message should be returned when no pattern is set"
+        )
+
+        # Test default validation message
+        variable_default_message = self.Variable.create(
+            {
+                "name": "Default Message",
+                "validation_pattern": "^[a-z]+$",
+            }
+        )
+        invalid_value = "123"
+        is_valid, message = variable_default_message._validate_value(invalid_value)
+        self.assertFalse(is_valid, "Value should be invalid")
+        self.assertEqual(
+            message,
+            f"Variable: {variable_default_message.name}, Value: {invalid_value}\n"
+            f"{variable_default_message.DEFAULT_VALIDATION_MESSAGE}",
+            "Default validation message doesn't match",
+        )
