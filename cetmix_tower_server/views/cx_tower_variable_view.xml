@@ -88,13 +88,21 @@
                         </button>
                     </div>
                     <group>
-                        <group>
+                        <group name="variable_info">
                             <field name="name" />
                             <field name="reference" />
                             <field name="access_level" />
                             <field name="variable_type" />
                         </group>
-                        <group>
+                        <group name="variable_validation">
+                            <field
+                                name="validation_pattern"
+                                placeholder="Regex expression, eg. ^[a-z0-9]+$"
+                            />
+                            <field
+                                name="validation_message"
+                                placeholder="Custom message to display when pattern check fails"
+                            />
                             <field name="note" />
                         </group>
                     </group>

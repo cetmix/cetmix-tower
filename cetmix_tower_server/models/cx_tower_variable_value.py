@@ -121,6 +121,18 @@ class TowerVariableValue(models.Model):
         ),
     ]
 
+    @api.constrains("value_char")
+    def _check_value_char(self):
+        """
+        Check if the value_char is valid for the variable.
+        """
+        for rec in self:
+            if not rec.variable_id:
+                continue
+            valid, message = rec.variable_id._validate_value(rec.value_char)
+            if not valid:
+                raise ValidationError(message)
+
     @api.constrains("access_level", "variable_id")
     def _check_access_level_consistency(self):
         """
@@ -224,6 +236,16 @@ class TowerVariableValue(models.Model):
             record.variable_ids = template_mixin_obj._prepare_variable_commands(
                 ["value_char"], force_record=record
             )
+
+    @api.onchange("value_char")
+    def _onchange_value_char(self):
+        """
+        Check value before saving
+        """
+        try:
+            self._check_value_char()
+        except ValidationError as e:
+            return {"warning": {"title": _("Value is invalid"), "message": str(e)}}
 
     def _inverse_value_char(self):
         """Set option_id based on value_char"""
