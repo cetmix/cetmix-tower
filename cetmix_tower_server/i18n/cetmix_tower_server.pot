@@ -446,6 +446,14 @@ msgid "Add a new file template"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__note
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__note
+msgid ""
+"Additional notes about the variable. \n"
+"This field will be displayed in the variable form."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -1039,6 +1047,11 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Custom label. Can be used for search/tracking"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "Custom message to display when pattern check fails"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1795,6 +1808,12 @@ msgid "Insert Key"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
+#, python-format
+msgid "Invalid value!"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__is_error
 msgid "Is Error"
 msgstr ""
@@ -2074,6 +2093,16 @@ msgid "Message Delivery error"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__validation_message
+msgid ""
+"Message to display when the variable value is invalid. \n"
+"First line will be added automatically: `Variable:<variable_name>, Value: <value>`\n"
+"Eg: `Variable: Customer Name, Value: Test\n"
+"Invalid value!`\n"
+"If empty, the default message will be used."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__message_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__message_ids
@@ -2098,6 +2127,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Modify Code"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:cx.tower.variable,validation_message:cetmix_tower_server.variable_demo_branch
+msgid "Must be lowercase and contain only letters and numbers!"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2645,6 +2679,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Refresh All"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
+msgid "Regex expression, eg. ^[a-z0-9]+$"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__validation_pattern
+msgid ""
+"Regex pattern to validate the variable values using the 're.match' function. Eg. ^[a-z0-9]+$ \n"
+"If empty, the variable values will not be validated."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3632,6 +3678,16 @@ msgid "Users who can view this record"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__validation_message
+msgid "Validation Message"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__validation_pattern
+msgid "Validation Pattern"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__value_char
@@ -3647,6 +3703,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Value Modifier"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
+#: code:addons/cetmix_tower_server/wizards/cx_tower_server_template_create_wizard.py:0
+#, python-format
+msgid "Value is invalid"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3742,6 +3805,14 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__variable_value_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_mixin__variable_value_ids
 msgid "Variable values for selected record"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
+#, python-format
+msgid ""
+"Variable: %(var)s, Value: %(val)s\n"
+"%(msg)s"
 msgstr ""
 
 #. module: cetmix_tower_server
