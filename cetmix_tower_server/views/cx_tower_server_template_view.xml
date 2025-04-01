@@ -285,6 +285,21 @@
                                 </form>
                             </field>
                         </page>
+                        <page name="shortcuts" string="Shortcuts">
+                        <field name="shortcut_ids">
+                            <tree create="0" edit="0">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field name="action" optional="hide" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="name" />
+                                    <field name="action" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
