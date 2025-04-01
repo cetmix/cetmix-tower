@@ -12,3 +12,4 @@ from . import cx_tower_os
 from . import cx_tower_server_template
 from . import cx_tower_key
 from . import cx_tower_server_log
+from . import cx_tower_shortcut
