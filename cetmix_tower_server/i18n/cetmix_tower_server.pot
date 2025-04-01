@@ -152,6 +152,12 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
+#, python-format
+msgid "%(shr)s triggered"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
@@ -327,6 +333,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__access_level
@@ -357,8 +364,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__action
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__action
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
 msgid "Action"
 msgstr ""
 
@@ -393,6 +402,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__active
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__active
 msgid "Active"
 msgstr ""
@@ -476,11 +486,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
 msgid "Archived"
 msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Are you sure?"
 msgstr ""
 
@@ -520,6 +533,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_shortcut__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_option__reference
@@ -674,6 +688,11 @@ msgid "Cetmix Tower Server Template"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_shortcut
+msgid "Cetmix Tower Shortcut"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_tag
 msgid "Cetmix Tower Tag"
 msgstr ""
@@ -721,6 +740,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_template_mixin
 msgid "Cetmix Tower template rendering mixin"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
+#, python-format
+msgid "Check %(t)s log for result"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -775,9 +800,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__command_ids
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_shortcut__action__command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
 msgid "Command"
 msgstr ""
 
@@ -959,6 +987,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_uid
@@ -986,6 +1015,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_date
@@ -1083,6 +1113,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__display_name
@@ -1421,6 +1452,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__plan_id
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_shortcut__action__plan
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Flight Plan"
 msgstr ""
@@ -1460,6 +1493,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+msgid "Flight plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1578,6 +1616,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
 msgid "Group By"
 msgstr ""
 
@@ -1650,6 +1689,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__id
@@ -1855,6 +1895,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable____last_update
@@ -1891,6 +1932,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_uid
@@ -1918,6 +1960,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_date
@@ -2079,6 +2122,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__name
@@ -2546,6 +2590,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__reference
@@ -2574,6 +2619,7 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_log_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_template_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_shortcut_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_tag_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
@@ -2749,6 +2795,11 @@ msgid "Run command"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_shortcut__use_sudo
+msgid "Run command using 'sudo'"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__use_sudo
@@ -2915,6 +2966,11 @@ msgid "Search Servers"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+msgid "Search Shortcuts"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_search_view
 msgid "Search Tags"
 msgstr ""
@@ -2968,6 +3024,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__sequence
 msgid "Sequence"
@@ -3037,7 +3094,9 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_server_template
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__server_template_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__server_template_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
 msgid "Server Templates"
 msgstr ""
 
@@ -3088,10 +3147,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__server_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__server_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
 msgid "Servers"
 msgstr ""
 
@@ -3117,6 +3178,21 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_settings
 msgid "Settings"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+msgid "Shortcut"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_shortcut
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__shortcut_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__shortcut_ids
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_shortcut
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Shortcuts"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3423,6 +3499,11 @@ msgid "Tower Variables mixin"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Trigger shortcut"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__triggered_plan_log_id
 msgid "Triggered Plan Log"
 msgstr ""
@@ -3484,6 +3565,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__use_sudo
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__use_sudo
 msgid "Use Sudo"
 msgstr ""
 
