@@ -519,7 +519,13 @@ class CxTowerServer(models.Model):
                 .read(["host_key"])[0]
                 .get("host_key")
             )
-            if not host_key and not self.skip_host_key:
+
+            # Check host only if IP address is present
+            if (
+                not host_key
+                and not self.skip_host_key
+                and (self.ip_v4_address or self.ip_v6_address)
+            ):
                 raise ValidationError(
                     _("Host key not found for server %(server)s", server=self.name)
                 )
