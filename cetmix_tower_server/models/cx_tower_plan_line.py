@@ -9,6 +9,8 @@ from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
 
 
 class CxTowerPlanLine(models.Model):
+    """Flight Plan Line"""
+
     _name = "cx.tower.plan.line"
     _inherit = [
         "cx.tower.reference.mixin",
@@ -103,16 +105,6 @@ class CxTowerPlanLine(models.Model):
         readonly=True,
     )
 
-    @api.constrains("command_id")
-    def _check_command_id(self):
-        """
-        Check recursive plan line execution.
-        """
-        for line in self:
-            # Check recursive plan line execution
-            visited_plans = set()
-            self._check_recursive_plan(line.command_id, visited_plans)
-
     @api.depends("condition")
     def _compute_variable_ids(self):
         """
@@ -128,6 +120,8 @@ class CxTowerPlanLine(models.Model):
         """
         Compute action based on command.
         """
+
+        # We set action only once, so there is no 'depends' in this function
         for record in self:
             if record.action:
                 continue
@@ -135,6 +129,16 @@ class CxTowerPlanLine(models.Model):
                 record.action = record.command_id.action
             else:
                 record.action = False
+
+    @api.constrains("command_id")
+    def _check_command_id(self):
+        """
+        Check recursive plan line execution.
+        """
+        for line in self:
+            # Check recursive plan line execution
+            visited_plans = set()
+            self._check_recursive_plan(line.command_id, visited_plans)
 
     @api.onchange("action")
     def _inverse_action(self):

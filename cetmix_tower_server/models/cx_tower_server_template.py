@@ -16,10 +16,7 @@ class CxTowerServerTemplate(models.Model):
         "cx.tower.access.role.mixin",
     ]
     _description = "Cetmix Tower Server Template"
-
-    def _get_post_create_fields(self):
-        res = super()._get_post_create_fields()
-        return res + ["variable_value_ids", "server_log_ids"]
+    _order = "name"
 
     active = fields.Boolean(default=True)
 
@@ -117,12 +114,32 @@ class CxTowerServerTemplate(models.Model):
         relation="cx_tower_server_template_manager_rel",
     )
 
+    @api.depends("server_ids")
     def _compute_server_count(self):
         """
         Compute total server counts created from the templates
         """
         for template in self:
             template.server_count = len(template.server_ids)
+
+    def copy(self, default=None):
+        """Duplicate the server template along with variable values and server logs."""
+        default = dict(default or {})
+
+        # Duplicate the server template itself
+        new_template = super().copy(default)
+
+        # Duplicate variable values
+        for variable_value in self.variable_value_ids:
+            variable_value.with_context(reference_mixin_skip_self=True).copy(
+                {"server_template_id": new_template.id}
+            )
+
+        # Duplicate server logs
+        for server_log in self.server_log_ids:
+            server_log.copy({"server_template_id": new_template.id})
+
+        return new_template
 
     def action_create_server(self):
         """
@@ -162,7 +179,6 @@ class CxTowerServerTemplate(models.Model):
             "name": _("Create Server"),
             "res_model": "cx.tower.server.template.create.wizard",
             "view_mode": "form",
-            "view_type": "form",
             "target": "new",
             "context": context,
         }
@@ -295,6 +311,13 @@ class CxTowerServerTemplate(models.Model):
             server.run_flight_plan(flight_plan)
 
         return server
+
+    def _get_post_create_fields(self):
+        """
+        Add fields that should be populated after server template creation
+        """
+        res = super()._get_post_create_fields()
+        return res + ["variable_value_ids", "server_log_ids"]
 
     def _get_fields_tower_server(self):
         """
@@ -613,22 +636,3 @@ class CxTowerServerTemplate(models.Model):
             )
 
         raise ValidationError("\n".join(error_parts))
-
-    def copy(self, default=None):
-        """Duplicate the server template along with variable values and server logs."""
-        default = dict(default or {})
-
-        # Duplicate the server template itself
-        new_template = super().copy(default)
-
-        # Duplicate variable values
-        for variable_value in self.variable_value_ids:
-            variable_value.with_context(reference_mixin_skip_self=True).copy(
-                {"server_template_id": new_template.id}
-            )
-
-        # Duplicate server logs
-        for server_log in self.server_log_ids:
-            server_log.copy({"server_template_id": new_template.id})
-
-        return new_template

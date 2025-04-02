@@ -2,8 +2,10 @@ from odoo import api, fields, models
 
 
 class CxTowerKeyMixin(models.AbstractModel):
+    """Mixin for managing secrets and SSH keys"""
+
     _name = "cx.tower.key.mixin"
-    _description = "Mixin for managing secrets"
+    _description = "Cetmix Tower Key/Secret Mixin"
 
     secret_ids = fields.Many2many(
         comodel_name="cx.tower.key",

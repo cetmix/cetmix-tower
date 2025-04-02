@@ -321,7 +321,7 @@
                                     <field name="ssh_auth_mode" />
                                     <field name="ssh_port" />
                                     <field name="ssh_username" />
-                                    <field name="use_sudo" />
+                                    <field name="use_sudo" placeholder="No" />
                                     <field
                                         name="ssh_password"
                                         attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"

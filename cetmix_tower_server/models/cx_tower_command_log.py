@@ -6,12 +6,14 @@ from .constants import GENERAL_ERROR
 
 
 class CxTowerCommandLog(models.Model):
+    """Command execution log"""
+
     _name = "cx.tower.command.log"
     _description = "Cetmix Tower Command Log"
     _order = "start_date desc, id desc"
 
     active = fields.Boolean(default=True)
-    name = fields.Char(compute="_compute_name", compute_sudo=True, store=True)
+    name = fields.Char(compute="_compute_name", store=True)
     label = fields.Char(help="Custom label. Can be used for search/tracking")
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"
@@ -28,6 +30,7 @@ class CxTowerCommandLog(models.Model):
     duration_current = fields.Float(
         string="Duration, sec",
         compute="_compute_duration_current",
+        compute_sudo=True,
         help="For how long a flight plan is already running",
     )
     # -- Command
@@ -87,6 +90,7 @@ class CxTowerCommandLog(models.Model):
                     command_log.finish_date - command_log.start_date
                 ).total_seconds()
 
+    @api.depends("is_running")
     def _compute_duration_current(self):
         """Shows relative time between now() and start time for running commands,
         and computed duration for finished ones.

@@ -108,23 +108,6 @@ class TowerVariableMixin(models.AbstractModel):
                 res.update({rec.id: res_vars})
         return res
 
-    def _get_current_server(self):
-        """Get current server record.
-            This is needed to render system variables properly.
-
-        Returns:
-            cx.tower.server(): server record
-        """
-        self.ensure_one()
-
-        if self._name == "cx.tower.server":
-            server = self
-        elif self._name == "cx.tower.variable.value" and self.server_id:
-            server = self.server_id
-        else:
-            server = None
-        return server
-
     def _get_system_variable_value(self, variable_reference):
         """Get the value of a system variable. Eg `tower.server.partner_name`
 
@@ -281,3 +264,20 @@ class TowerVariableMixin(models.AbstractModel):
                         value,
                         str(e),
                     )
+
+    def _get_current_server(self):
+        """Get current server record.
+            This is needed to render system variables properly.
+
+        Returns:
+            cx.tower.server(): server record
+        """
+        self.ensure_one()
+
+        if self._name == "cx.tower.server":
+            server = self
+        elif self._name == "cx.tower.variable.value" and self.server_id:
+            server = self.server_id
+        else:
+            server = None
+        return server

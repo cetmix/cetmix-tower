@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 
 
 class CxTowerServerTemplateCreateWizard(models.TransientModel):
@@ -112,6 +111,24 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
             else:
                 wizard.missing_required_variables_message = False
 
+    def action_confirm(self):
+        """
+        Create and open new created server from template
+        """
+        self.ensure_one()
+
+        kwargs = self._prepare_server_parameters()
+        server = self.server_template_id._create_new_server(
+            self.name, pick_all_template_variables=False, **kwargs
+        )
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_server"
+        )
+        action.update(
+            {"view_mode": "form", "res_id": server.id, "views": [(False, "form")]}
+        )
+        return action
+
     def _prepare_server_parameters(self):
         """Prepare new server parameters
 
@@ -148,27 +165,6 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
                 }
             )
         return res
-
-    def action_confirm(self):
-        """
-        Create and open new created server from template
-        """
-        self.ensure_one()
-
-        if self.has_missing_required_values:
-            raise ValidationError(self.missing_required_variables_message)
-
-        kwargs = self._prepare_server_parameters()
-        server = self.server_template_id._create_new_server(
-            self.name, pick_all_template_variables=False, **kwargs
-        )
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "cetmix_tower_server.action_cx_tower_server"
-        )
-        action.update(
-            {"view_mode": "form", "res_id": server.id, "views": [(False, "form")]}
-        )
-        return action
 
 
 class CxTowerServerTemplateCreateWizardVariableLine(models.TransientModel):
