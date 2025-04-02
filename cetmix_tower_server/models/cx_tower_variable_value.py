@@ -147,11 +147,14 @@ class TowerVariableValue(models.Model):
         of the selected option for the variable.
         """
         for rec in self:
-            if rec.variable_id.option_ids and rec.option_id:
+            if not rec.variable_id.option_ids:
+                rec.value_char = rec.value_char or False
+                rec.option_id = False
+                continue
+            if rec.option_id:
                 rec.value_char = rec.option_id.value_char
-            elif not rec.variable_id.option_ids:
-                rec.value_char = rec.value_char or ""
-                rec.option_id = None
+            else:
+                rec.value_char = False
 
     @api.depends("value_char")
     def _compute_variable_ids(self):
@@ -226,8 +229,8 @@ class TowerVariableValue(models.Model):
                         )
                     )
 
-    @api.constrains("value_char")
-    def _check_value_char(self):
+    @api.constrains("value_char", "option_id")
+    def _check_value_char_and_option_id(self):
         """
         Check if the value_char is valid for the variable.
         """
@@ -237,6 +240,15 @@ class TowerVariableValue(models.Model):
             valid, message = rec.variable_id._validate_value(rec.value_char)
             if not valid:
                 raise ValidationError(message)
+            if rec.option_id:
+                if rec.option_id.variable_id != rec.variable_id:
+                    raise ValidationError(
+                        _(
+                            "Option '%(val)s' is not available for variable '%(var)s'",
+                            val=rec.value_char,
+                            var=rec.variable_id.name,
+                        )
+                    )
 
     @api.constrains("server_id", "server_template_id", "plan_line_action_id")
     def _check_single_assignment(self):
@@ -267,17 +279,17 @@ class TowerVariableValue(models.Model):
         doesn't have options
         """
         for rec in self:
-            rec.option_id = False
-            if rec.variable_id.option_ids:
-                rec.value_char = False
+            rec.update({"option_id": False, "value_char": False})
 
     @api.onchange("value_char")
     def _onchange_value_char(self):
         """
         Check value before saving
         """
+        if not (self.variable_id and self.value_char):
+            return
         try:
-            self._check_value_char()
+            self.variable_id._validate_value(self.value_char)
         except ValidationError as e:
             return {"warning": {"title": _("Value is invalid"), "message": str(e)}}
 
@@ -321,16 +333,7 @@ class TowerVariableValue(models.Model):
                 option = rec.variable_id.option_ids.filtered(
                     lambda x, v=rec.value_char: x.value_char == v
                 )
-                if option:
-                    rec.option_id = option.id
-                else:
-                    raise ValidationError(
-                        _(
-                            "Option '%(val)s' is not available for variable '%(var)s'",
-                            val=rec.value_char,
-                            var=rec.variable_id.name,
-                        )
-                    )
+                rec.option_id = option and option.id
 
     # -- Create/write/unlink --
 
