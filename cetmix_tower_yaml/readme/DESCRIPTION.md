@@ -1,9 +1,3 @@
-This module implements YAML format data import/export for [Cetmix Tower.](https://cetmix.com/tower)
+This module implements YAML format data import/export for [Cetmix Tower](https://cetmix.com/tower).
 
-Following data models are supported:
-
-- Commands
-- Flight Plans
-- Variables
-- File Templates
-- Server Templates
+Please refer to the [official documentation](https://cetmix.com/tower) for detailed information.

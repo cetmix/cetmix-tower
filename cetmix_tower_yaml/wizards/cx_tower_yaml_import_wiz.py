@@ -9,11 +9,12 @@ _logger = logging.getLogger(__name__)
 
 
 class CxTowerYamlImportWiz(models.TransientModel):
-    _name = "cx.tower.yaml.import.wiz"
-    _description = "Cetmix Tower YAML Import Wizard"
     """
     Process YAML data and create records in Odoo.
     """
+
+    _name = "cx.tower.yaml.import.wiz"
+    _description = "Cetmix Tower YAML Import Wizard"
 
     yaml_code = fields.Text(readonly=True)
     model_names = fields.Char(readonly=True, help="Models to create records in")
@@ -163,7 +164,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 action["view_mode"] = "form"
             else:
                 # Open list view of all records
-                action["view_mode"] = "list"
+                action["view_mode"] = "list,form"
 
         # Records from different models
         else:

@@ -69,6 +69,11 @@ msgid "Cetmix Tower Command"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file_template
+msgid "Cetmix Tower File Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan
 msgid "Cetmix Tower Flight Plan"
 msgstr ""
@@ -81,6 +86,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line_action
 msgid "Cetmix Tower Flight Plan Line Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key
+msgid "Cetmix Tower Key/Secret Storage"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -154,11 +164,6 @@ msgid "Cetmix Tower YAML rendering mixin"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key
-msgid "Cetmix Tower private key storage"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_download_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
@@ -196,11 +201,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__create_date
 msgid "Created on"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file_template
-msgid "Cx Tower File Template"
 msgstr ""
 
 #. module: cetmix_tower_yaml
