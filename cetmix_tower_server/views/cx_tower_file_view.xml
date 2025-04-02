@@ -25,26 +25,13 @@
                     />
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name" class="oe_edit_only" />
-                        <h1>
-                            <div class="o_row">
-                                <field
-                                    name="name"
-                                    class="oe_edit_only"
-                                    placeholder="File name"
-                                    required="1"
-                                />
-                                <field name="rendered_name" />
-                            </div>
-                        </h1>
-                    </div>
+                    <group>
                         <group>
-                            <group>
-                                <field name="source" required="1" />
-                                <field name="file_type" />
-                                <field name="id" invisible="1" />
-                                <field
+                            <field name="name" />
+                            <field name="source" required="1" />
+                            <field name="file_type" />
+                            <field name="id" invisible="1" />
+                            <field
                                 name="file"
                                 filename="name"
                                 attrs="{
@@ -58,18 +45,14 @@
                                 domain="[('source', '=', source)]"
                             />
                                 <field name="server_id" />
-                                <label for="server_dir" />
-                                <div class="o_row">
-                                    <field name="server_dir" class="oe_edit_only" />
-                                    <field name="rendered_server_dir" />
-                                </div>
+                                <field name="server_dir" />
                                 <field name="full_server_path" />
+                            </group>
+                            <group>
                                 <field
                                 name="keep_when_deleted"
                                 attrs="{'invisible': [('source', '!=', 'tower')]}"
                             />
-                            </group>
-                            <group>
                                 <field name="auto_sync" />
                                 <field
                                 name="auto_sync_interval"
@@ -105,7 +88,7 @@
                                 icon="fa-pencil-square-o"
                                 name="action_unlink_from_template"
                                 type="object"
-                                class="btn-secondary mt-3 mb-3"
+                                class="btn-secondary"
                                 confirm="File will be disconnected from template. Continue?"
                                 attrs="{'invisible': [('template_id', '=', False)]}"
                             />

@@ -51,7 +51,7 @@ class CxTowerFile(models.Model):
         index=True,
     )
     server_dir = fields.Char(
-        string="Directory on server",
+        string="Directory on Server",
         required=True,
         default="",
         help="Eg '/home/user' or '/var/log'",
@@ -61,6 +61,7 @@ class CxTowerFile(models.Model):
         compute_sudo=True,
     )
     full_server_path = fields.Char(
+        string="Full Path",
         compute="_compute_full_server_path",
     )
     source = fields.Selection(
