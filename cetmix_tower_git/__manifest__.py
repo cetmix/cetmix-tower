@@ -9,7 +9,6 @@
     "author": "Cetmix",
     "license": "AGPL-3",
     "application": False,
-    "installable": True,
     "depends": ["cetmix_tower_yaml"],
     "data": [
         "security/ir.model.access.csv",
