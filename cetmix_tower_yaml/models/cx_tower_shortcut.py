@@ -9,5 +9,5 @@ class CxTowerShortcut(models.Model):
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
-        res += ["name", "action", "command_id", "plan_id"]
+        res += ["name", "action", "command_id", "plan_id", "note"]
         return res
