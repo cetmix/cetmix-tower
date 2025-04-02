@@ -52,6 +52,7 @@
                                 attrs="{'invisible': [('action', '!=', 'plan')]}"
                             />
                         </group>
+                        <field name="note" placeholder="Put your notes here" />
                     </group>
                     <notebook>
                         <page name="servers" string="Servers">

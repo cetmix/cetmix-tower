@@ -871,6 +871,9 @@ else:
             eval="[(6, 0, [ref('server_demo_1'),ref('server_demo_2')])]"
         />
         <field name="access_level">1</field>
+        <field
+            name="note"
+        >Runs a command. Use as an example to create your own shortcuts.</field>
     </record>
     <record id="shortcut_for_flight_plan" model="cx.tower.shortcut">
         <field name="name">Flight Plan Shortcut</field>
@@ -881,6 +884,9 @@ else:
             eval="[(6, 0, [ref('server_demo_1'),ref('server_demo_2')])]"
         />
         <field name="access_level">2</field>
+        <field
+            name="note"
+        >Runs a flight plan. Use as an example to create your own shortcuts.</field>
     </record>
     <record id="shortcut_for_server_template" model="cx.tower.shortcut">
         <field name="name">Flight Plan Shortcut for Server Template</field>
@@ -891,5 +897,8 @@ else:
             eval="[(6, 0, [ref('demo_server_template_1')])]"
         />
         <field name="access_level">2</field>
+        <field
+            name="note"
+        >Runs a flight plan for a server template. Use as an example to create your own shortcuts.</field>
     </record>
 </odoo>

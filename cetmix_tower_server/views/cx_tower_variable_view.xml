@@ -140,22 +140,37 @@
                             <field name="value_ids">
                                 <tree editable="top" decoration-bf="is_global==True">
                                     <field name="variable_id" invisible="1" />
+                                    <field name="variable_type" invisible="1" />
                                     <field name="is_global" widget="boolean_toggle" />
                                     <field name="server_id" />
                                     <field name="server_template_id" />
                                     <field name="plan_line_action_id" />
-                                    <field name="value_char" />
-                                    <field name="option_id" />
+                                    <field
+                                        name="value_char"
+                                        placeholder="undefined"
+                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        optional="show"
+                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                    />
                                 </tree>
                                 <form>
                                     <group>
                                         <field name="server_id" invisible="1" />
+                                        <field name="variable_id" invisible="1" />
+                                        <field name="variable_type" invisible="1" />
                                         <field name="is_global" />
                                         <field name="server_template_id" />
                                         <field
                                             name="value_char"
-                                            widget="CopyClipboardChar"
-                                            options="{'string': 'Copy value'}"
+                                            attrs="{'invisible': [('variable_type', '=', 'o')]}"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            optional="show"
+                                            attrs="{'invisible': [('variable_type', '=', 's')]}"
                                         />
                                     </group>
                                 </form>
