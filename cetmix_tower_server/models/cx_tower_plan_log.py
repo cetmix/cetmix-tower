@@ -6,6 +6,8 @@ from .constants import PLAN_IS_EMPTY
 
 
 class CxTowerPlanLog(models.Model):
+    """Flight Plan Log"""
+
     _name = "cx.tower.plan.log"
     _description = "Cetmix Tower Flight Plan Log"
     _order = "start_date desc, id desc"
@@ -78,6 +80,7 @@ class CxTowerPlanLog(models.Model):
                     plan_log.finish_date - plan_log.start_date
                 ).total_seconds()
 
+    @api.depends("is_running")
     def _compute_duration_current(self):
         """Shows relative time between now() and start time for running plans,
         and computed duration for finished ones.

@@ -5,6 +5,8 @@ from odoo import _, api, fields, models
 
 
 class CxTowerPlanLineAction(models.Model):
+    """Flight Plan Line Action"""
+
     _inherit = ["cx.tower.variable.mixin", "cx.tower.reference.mixin"]
     _name = "cx.tower.plan.line.action"
     _description = "Cetmix Tower Flight Plan Line Action"
