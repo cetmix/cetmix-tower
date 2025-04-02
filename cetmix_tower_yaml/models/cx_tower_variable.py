@@ -9,5 +9,14 @@ class CxTowerVariable(models.Model):
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
-        res += ["name", "access_level", "variable_type", "option_ids", "note"]
+        res += [
+            "name",
+            "access_level",
+            "variable_type",
+            "option_ids",
+            "applied_expression",
+            "validation_pattern",
+            "validation_message",
+            "note",
+        ]
         return res
