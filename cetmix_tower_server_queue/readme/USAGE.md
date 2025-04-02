@@ -1,1 +1,1 @@
-Command and flight plan statuses will be updated automatically based on the related job status.
+Please refer to the [official documentation](https://cetmix.com/tower) for detailed usage instructions.
