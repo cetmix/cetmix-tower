@@ -95,8 +95,26 @@ class TestTowerVariableOption(TestTowerCommon):
 
         # -- 2 --
         # Set value_char to a non-existing option
+        variable_meme_level = self.Variable.create(
+            {
+                "name": "meme_level",
+                "variable_type": "o",
+            }
+        )
+        option_meme_level_high = self.VariableOption.create(
+            {
+                "name": "high",
+                "value_char": "high",
+                "variable_id": variable_meme_level.id,
+            }
+        )
         with self.assertRaises(ValidationError):
-            variable_value.value_char = "29.0"
+            variable_value.option_id = option_meme_level_high
+
+        # -- 3 --
+        # Set value_char to a non-existing option
+        variable_value.value_char = "29.0"
+        self.assertFalse(variable_value.option_id)
 
     def test_access_level_consistency(self):
         """Test that variable option access level cannot be lower
