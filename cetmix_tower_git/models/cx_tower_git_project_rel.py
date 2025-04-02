@@ -12,7 +12,7 @@ class CxTowerGitProjectRel(models.Model):
 
     _name = "cx.tower.git.project.rel"
     _table = "cx_tower_git_project_rel"
-    _description = "Git Project relation to other model records"
+    _description = "Cetmix Tower Git Project relation to Files and Servers"
     _log_access = False
 
     name = fields.Char(related="git_project_id.name", readonly=True)
