@@ -17,14 +17,19 @@ Cetmix Tower Server Queue
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server_queue
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server_queue
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
 
-This module allow to execute commands and flight plans asynchronously
-using the `OCA <http://odoo-community.org>`__
-`queue_job <https://github.com/OCA/queue/tree/16.0/queue_job>`__ module.
+This module implements asynchronous task execution for `Cetmix
+Tower <https://cetmix.com/tower>`__.
+
+It requires the `queue_job <https://github.com/OCA/queue/queue_job>`__
+module to be installed and configured in the Odoo instance.
+
+Please refer to the `official
+documentation <https://cetmix.com/tower>`__ for detailed information.
 
 **Table of contents**
 
@@ -34,16 +39,16 @@ using the `OCA <http://odoo-community.org>`__
 Configuration
 =============
 
-Get the latest version of the ``queue_job`` module for your Odoo version
-from Github: https://github.com/OCA/queue Configure the ``queue_job``
-module according to the module manual:
-https://github.com/OCA/queue/blob/16.0/queue_job/README.rst
+Please refer to the `official
+documentation <https://cetmix.com/tower>`__ for detailed configuration
+instructions.
 
 Usage
 =====
 
-Command and flight plan statuses will be updated automatically based on
-the related job status.
+Please refer to the `official
+documentation <https://cetmix.com/tower>`__ for detailed usage
+instructions.
 
 Bug Tracker
 ===========
@@ -51,7 +56,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server_queue%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server_queue%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -66,6 +71,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_server_queue>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_server_queue>`_ project on GitHub.
 
 You are welcome to contribute.
