@@ -1,3 +1,5 @@
-This module implements backend notifications for Cetmix Tower.
+This module implements notifications in the backend UI for [Cetmix Tower](https://cetmix.com/tower).
 
-Please check the official documentation for more information: https://cetmix.com/tower
+It requires the [web_notify](https://github.com/OCA/web/web_notify) module to be installed and configured in the Odoo instance.
+
+Please refer to the [official documentation](https://cetmix.com/tower) for detailed information.
