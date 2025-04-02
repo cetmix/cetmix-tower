@@ -88,7 +88,7 @@ class CxTowerTemplateMixin(models.AbstractModel):
                                   Default is False.
             **kwargs (dict): {variable: value, ...}
         Returns:
-            dict {record_id: rendered_code, ...}}
+            dict {record_id: rendered_code, ...}
         """
         return {
             rec.id: self.render_code_custom(rec.code, pythonic_mode, **kwargs)
