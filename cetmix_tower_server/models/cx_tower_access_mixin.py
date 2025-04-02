@@ -9,6 +9,13 @@ class CxTowerAccessMixin(models.AbstractModel):
     _name = "cx.tower.access.mixin"
     _description = "Cetmix Tower access mixin"
 
+    access_level = fields.Selection(
+        lambda self: self._selection_access_level(),
+        default=lambda self: self._default_access_level(),
+        required=True,
+        index=True,
+    )
+
     def _selection_access_level(self):
         """Available access levels
 
@@ -28,11 +35,3 @@ class CxTowerAccessMixin(models.AbstractModel):
             Char: `access_level` field selection value
         """
         return "2"
-
-    access_level = fields.Selection(
-        lambda self: self._selection_access_level(),
-        string="Access Level",
-        default=lambda self: self._default_access_level(),
-        required=True,
-        index=True,
-    )

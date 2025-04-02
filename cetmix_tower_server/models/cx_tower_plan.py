@@ -15,7 +15,7 @@ from .constants import (
 
 
 class CxTowerPlan(models.Model):
-    """A sequence of commands running based on the pre-defined flow"""
+    """Cetmix Tower flight plan"""
 
     _name = "cx.tower.plan"
     _description = "Cetmix Tower Flight Plan"
@@ -25,10 +25,6 @@ class CxTowerPlan(models.Model):
         "cx.tower.access.role.mixin",
     ]
     _order = "name asc"
-
-    def _get_post_create_fields(self):
-        res = super()._get_post_create_fields()
-        return res + ["line_ids"]
 
     active = fields.Boolean(default=True)
     allow_parallel_run = fields.Boolean(
@@ -93,11 +89,38 @@ class CxTowerPlan(models.Model):
         relation="cx_tower_plan_manager_rel",
     )
 
+    @api.depends("line_ids.command_id.access_level", "access_level")
+    def _compute_command_access_level(self):
+        """Check if the access level of a command in the plan
+        is higher than the plan's access level"""
+        for record in self:
+            commands = record.mapped("line_ids").mapped("command_id")
+            # Retrieve all commands associated with the flight plan
+            commands_with_higher_access = commands.filtered(
+                lambda c, access_level=record.access_level: c.access_level
+                > access_level
+            )
+            if commands_with_higher_access:
+                command_names = ", ".join(commands_with_higher_access.mapped("name"))
+                record.access_level_warn_msg = _(
+                    "The access level of command(s) '%(command_names)s' included in the"
+                    " current Flight plan is higher than the access level of the"
+                    " Flight plan itself. Please ensure that you want to allow"
+                    " those commands to be run anyway.",
+                    command_names=command_names,
+                )
+            else:
+                record.access_level_warn_msg = False
+
     @api.depends("line_ids", "line_ids.command_id")
     def _compute_command_ids(self):
         """Compute command ids"""
         for plan in self:
             plan.command_ids = [(6, 0, plan.line_ids.mapped("command_id").ids)]
+
+    def _get_post_create_fields(self):
+        res = super()._get_post_create_fields()
+        return res + ["line_ids"]
 
     def _run_single(self, server, **kwargs):
         """Run single Flight Plan on a single server
@@ -288,29 +311,6 @@ class CxTowerPlan(models.Model):
 
         # NB: we are not putting any fallback here in case
         # someone needs to inherit and extend this function
-
-    @api.depends("line_ids.command_id.access_level", "access_level")
-    def _compute_command_access_level(self):
-        """Check if the access level of a command in the plan
-        is higher than the plan's access level"""
-        for record in self:
-            commands = record.mapped("line_ids").mapped("command_id")
-            # Retrieve all commands associated with the flight plan
-            commands_with_higher_access = commands.filtered(
-                lambda c, access_level=record.access_level: c.access_level
-                > access_level
-            )
-            if commands_with_higher_access:
-                command_names = ", ".join(commands_with_higher_access.mapped("name"))
-                record.access_level_warn_msg = _(
-                    "The access level of command(s) '%(command_names)s' included in the"
-                    " current Flight plan is higher than the access level of the"
-                    " Flight plan itself. Please ensure that you want to allow"
-                    " those commands to be run anyway.",
-                    command_names=command_names,
-                )
-            else:
-                record.access_level_warn_msg = False
 
     def action_open_plan_logs(self):
         """

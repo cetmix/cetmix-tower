@@ -6,10 +6,10 @@ from odoo.exceptions import ValidationError
 
 
 class CxTowerKeyValue(models.Model):
-    """Key value storage"""
+    """Secret value storage"""
 
     _name = "cx.tower.key.value"
-    _description = "Cetmix Tower key-value storage"
+    _description = "Cetmix Tower Secret Value Storage"
 
     key_id = fields.Many2one(
         comodel_name="cx.tower.key",
@@ -33,6 +33,11 @@ class CxTowerKeyValue(models.Model):
         help="This value is applicable to all servers and partners",
     )
     secret_value = fields.Text(string="Secret Value")
+
+    @api.depends("server_id", "partner_id")
+    def _compute_is_global(self):
+        for record in self:
+            record.is_global = not record.server_id and not record.partner_id
 
     @api.constrains("key_id", "server_id", "partner_id")
     def _check_key_id(self):
@@ -83,13 +88,6 @@ class CxTowerKeyValue(models.Model):
                 raise ValidationError(
                     _("Only one secret value can be defined for a partner")
                 )
-
-    @api.depends("server_id", "partner_id")
-    def _compute_is_global(self):
-        for secret_value in self:
-            secret_value.is_global = (
-                not secret_value.server_id and not secret_value.partner_id
-            )
 
     def _read(self, fields):
         """Substitute fields based on api"""

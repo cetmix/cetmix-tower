@@ -44,7 +44,7 @@
                             name="ssh_key_id"
                             attrs="{'invisible': [('ssh_auth_mode', '=', 'p')]}"
                         />
-                        <field name="use_sudo" />
+                        <field name="use_sudo" placeholder="No/Undefined" />
                     </group>
                     <field name="line_ids">
                         <tree

@@ -23,7 +23,7 @@ re = wrap_module(
 
 
 class TowerVariable(models.Model):
-    """Cetmix Tower Variable"""
+    """Variables"""
 
     _name = "cx.tower.variable"
     _description = "Cetmix Tower Variable"

@@ -16,17 +16,6 @@ class CxTowerServerLog(models.Model):
 
     NO_LOG_FETCHED_MESSAGE = _("<log is empty>")
 
-    def _selection_log_type(self):
-        """Actions that can be run by a command.
-
-        Returns:
-            List of tuples: available options.
-        """
-        return [
-            ("command", "Command"),
-            ("file", "File"),
-        ]
-
     active = fields.Boolean(default=True)
     server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
     log_type = fields.Selection(
@@ -66,10 +55,49 @@ class CxTowerServerLog(models.Model):
         " when server is created from a template",
     )
 
+    def _selection_log_type(self):
+        """Actions that can be run by a command.
+
+        Returns:
+            List of tuples: available options.
+        """
+        return [
+            ("command", "Command"),
+            ("file", "File"),
+        ]
+
     def copy(self, default=None):
         return super(
             CxTowerServerLog, self.with_context(reference_mixin_skip_self=True)
         ).copy(default)
+
+    def action_open_log(self):
+        """
+        Open log record in current window
+        """
+        self.ensure_one()
+        self.action_get_log_text()
+        return {
+            "type": "ir.actions.act_window",
+            "name": self.name,
+            "res_model": "cx.tower.server.log",
+            "res_id": self.id,  # pylint: disable=no-member
+            "view_mode": "form",
+            "target": "current",
+        }
+
+    def action_get_log_text(self):
+        """Update log text from source"""
+
+        # We are using `sudo` to override command/file access limitations
+        for rec in self.sudo():
+            if rec.log_type == "file" and rec.file_id:
+                log_text = rec._get_log_from_file()
+            elif rec.log_type == "command" and rec.command_id:
+                log_text = rec._get_log_from_command()
+            else:
+                log_text = self.NO_LOG_FETCHED_MESSAGE
+            rec.log_text = self._format_log_text(log_text)
 
     def _get_copied_name(self, force_name=None):
         # Original name is preserved when log is duplicated
@@ -86,35 +114,6 @@ class CxTowerServerLog(models.Model):
             Html: formatted log text
         """
         return plaintext2html(log_text)
-
-    def action_open_log(self):
-        """
-        Open log record in current window
-        """
-        self.ensure_one()
-        self.action_get_log_text()
-        return {
-            "type": "ir.actions.act_window",
-            "name": self.name,
-            "res_model": "cx.tower.server.log",
-            "res_id": self.id,  # pylint: disable=no-member
-            "view_mode": "form",
-            "view_type": "form",
-            "target": "current",
-        }
-
-    def action_get_log_text(self):
-        """Update log text from source"""
-
-        # We are using `sudo` to override command/file access limitations
-        for rec in self.sudo():
-            if rec.log_type == "file" and rec.file_id:
-                log_text = rec._get_log_from_file()
-            elif rec.log_type == "command" and rec.command_id:
-                log_text = rec._get_log_from_command()
-            else:
-                log_text = self.NO_LOG_FETCHED_MESSAGE
-            rec.log_text = self._format_log_text(log_text)
 
     def _get_log_from_file(self):
         """Get log from a file.

@@ -1,13 +1,15 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 from .cx_tower_file import TEMPLATE_FILE_FIELD_MAPPING
 
 
 class CxTowerFileTemplate(models.Model):
+    """File template to manage multiple files at once"""
+
     _name = "cx.tower.file.template"
     _inherit = [
         "cx.tower.reference.mixin",
@@ -15,14 +17,7 @@ class CxTowerFileTemplate(models.Model):
         "cx.tower.template.mixin",
         "cx.tower.access.role.mixin",
     ]
-    _description = "Cx Tower File Template"
-
-    def _compute_file_count(self):
-        """
-        Compute total template files
-        """
-        for template in self:
-            template.file_count = len(template.file_ids)
+    _description = "Cetmix Tower File Template"
 
     active = fields.Boolean(default=True)
     file_name = fields.Char(
@@ -77,6 +72,7 @@ class CxTowerFileTemplate(models.Model):
         relation="cx_tower_file_template_manager_rel",
     )
 
+    @classmethod
     def _get_depends_fields(cls):
         """
         Define dependent fields for computing
@@ -99,6 +95,16 @@ class CxTowerFileTemplate(models.Model):
         """
         return ["code", "server_dir", "file_name"]
 
+    # -- Computes
+    @api.depends("file_ids")
+    def _compute_file_count(self):
+        """
+        Compute total template files
+        """
+        for template in self:
+            template.file_count = len(template.file_ids)
+
+    # -- Create/Write/Unlink
     def write(self, vals):
         """
         Override to update files related with the templates
@@ -109,6 +115,7 @@ class CxTowerFileTemplate(models.Model):
                 file.write(file._get_file_values_from_related_template())
         return result
 
+    # -- Actions
     def action_open_files(self):
         """
         Open current template files
@@ -119,6 +126,7 @@ class CxTowerFileTemplate(models.Model):
         action["domain"] = [("id", "in", self.file_ids.ids)]
         return action
 
+    # -- Business logic
     def create_file(self, server, server_dir="", raise_if_exists=False):
         """
         Create a new file using the current template for the selected server.

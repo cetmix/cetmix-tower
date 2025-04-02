@@ -12,17 +12,6 @@ class TowerVariableOption(models.Model):
     The model allows defining options
     that are linked to tower variables and can be used to
      manage configurations or settings for those variables.
-
-    Attributes:
-        name (str): The value of the option (e.g., "17.0").
-        variable_id (Many2one): A reference to the 'cx.tower.variable'
-        model that associates this option with a particular tower variable.
-        sequence (int): A sequence number to control the ordering
-        of the options.
-
-    SQL Constraints:
-        - Ensures that the combination of `name` and `variable_id`
-        is unique across the system.
     """
 
     _name = "cx.tower.variable.option"
@@ -50,10 +39,24 @@ class TowerVariableOption(models.Model):
     _sql_constraints = [
         (
             "unique_variable_option",
-            "unique (name, value_char, variable_id)",
-            "The combination of Name,Value and Variable must be unique.",
-        )
+            "unique (value_char, variable_id)",
+            "The combination of Value and Variable must be unique.",
+        ),
+        (
+            "unique_variable_option_name",
+            "unique (name, variable_id)",
+            "The combination of Name and Variable must be unique.",
+        ),
     ]
+
+    @api.depends("variable_id", "variable_id.access_level")
+    def _compute_access_level(self):
+        """
+        Automatically set the access_level based on Variable access level
+        """
+        for rec in self:
+            if rec.variable_id:
+                rec.access_level = rec.variable_id.access_level
 
     @api.constrains("access_level", "variable_id")
     def _check_access_level_consistency(self):
@@ -88,15 +91,6 @@ class TowerVariableOption(models.Model):
                         val_level=access_level_dict[rec.access_level],
                     )
                 )
-
-    @api.depends("variable_id", "variable_id.access_level")
-    def _compute_access_level(self):
-        """
-        Automatically set the access_level based on Variable access level
-        """
-        for rec in self:
-            if rec.variable_id:
-                rec.access_level = rec.variable_id.access_level
 
     # Workaround for the default value not being set
     @api.model_create_multi

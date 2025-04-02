@@ -9,26 +9,6 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
     _name = "cx.tower.access.role.mixin"
     _description = "Cetmix Tower access role mixin"
 
-    def _default_user_ids(self):
-        """
-        Default Users for new Records.
-        """
-        # If user is in group_user, add them to the list
-        if self.env.user.has_group("cetmix_tower_server.group_user"):
-            return [self.env.user.id]
-        # Otherwise, return an empty list. Eg if created using sudo()
-        return []
-
-    def _default_manager_ids(self):
-        """
-        Default Managers for new Records.
-        """
-        # If user is manager, add them to the list
-        if self.env.user.has_group("cetmix_tower_server.group_manager"):
-            return [self.env.user.id]
-        # Otherwise, return an empty list. Eg if created using sudo()
-        return []
-
     # IMPORTANT: inherit these fields in your model
     #  add 'relation' key explicitly to the field.
     # Use 'cx.tower.server' as model as a reference.
@@ -58,6 +38,26 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         help="Managers who can modify this record",
         copy=False,
     )
+
+    def _default_user_ids(self):
+        """
+        Default Users for new Records.
+        """
+        # If user is in group_user, add them to the list
+        if self.env.user.has_group("cetmix_tower_server.group_user"):
+            return [self.env.user.id]
+        # Otherwise, return an empty list. Eg if created using sudo()
+        return []
+
+    def _default_manager_ids(self):
+        """
+        Default Managers for new Records.
+        """
+        # If user is manager, add them to the list
+        if self.env.user.has_group("cetmix_tower_server.group_manager"):
+            return [self.env.user.id]
+        # Otherwise, return an empty list. Eg if created using sudo()
+        return []
 
     @api.model_create_multi
     def create(self, vals_list):
