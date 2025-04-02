@@ -17,147 +17,35 @@ Cetmix Tower YAML
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_yaml
+    :target: https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_yaml
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
 
-This module implements YAML format data import/export for `Cetmix
-Tower. <https://cetmix.com/tower>`__
+This module implements YAML format data import/export for `Cetmix
+Tower <https://cetmix.com/tower>`__.
 
-Following data models are supported:
-
-- Commands
-- Flight Plans
-- Variables
-- File Templates
-- Server Templates
+Please refer to the `official
+documentation <https://cetmix.com/tower>`__ for detailed information.
 
 **Table of contents**
 
 .. contents::
    :local:
 
-Use Cases / Context
-===================
-
-Being an Odoo module Cetmix Tower benefits from Odoo flexibility and
-extendability. However default Odoo data import/export format using
-``csv`` and ``xlsx`` is not very convenient for Cetmix Tower entities
-such as commands and flight plans. There are more suitable formats for
-such data such as ``YAML``.
-
 Configuration
 =============
 
-To allow access to YAML features:
-
-- Go to "Settings -> Users" and select a user.
-- Scroll to the "YAML export/import" section.
-- Activate "Allow YAML export" and/or "Allow YAML" import options.
+Please refer to the `official
+documentation <https://cetmix.com/tower>`__ for detailed configuration
+instructions.
 
 Usage
 =====
 
-Export into a YAML file
------------------------
-
-To export data into YAML format:
-
-- Open the record you would like to export.
-- On the "YAML" tab click the "Export YAML" button.
-- YAML export wizard will open:
-
-  - Activate "Explode Child Records" switch if you want to export data
-    in `exploded mode <#exploded-mode>`__.
-  - Click "Generate YAML File" button to save YAML file.
-
-- File download wizard will open:
-
-  - Click on the file name to save YAML file.
-  - Click the "Close" button to close the file download wizard.
-
-Import from a YAML file
------------------------
-
-To import data from YAML:
-
-- Go to "Cetmix Tower -> Tools -> Import YAML" menu.
-- Upload a YAML file and click the "Process" button.
-- YAML import wizard will open.
-
-  - If a record that is specified in the YAML file exists, there will be
-    an "Update Existing Record" checkbox available.
-  - Uncheck the "Update Existing Record" checkbox if you want to create
-    a new record instead of updating the existing one.
-
-- Click one of the available action buttons:
-
-  - "Update Existing Record" to update the existing record.
-  - "Open Existing Record" to open the record that is specified in the
-    YAML file.
-  - "Create New Record" to create a new record.
-
-Important things to remember during import:
-
-- If a record that is specified in the YAML file does not exist in Odoo,
-  new record will be created.
-- If a record that is specified in the YAML file exists in Odoo and the
-  "Update Existing Record" checkbox is checked, it will be updated with
-  new values from YAML.
-- If a record that is specified in the YAML file exists in Odoo and the
-  "Update Existing Record" checkbox is not checked, new record will be
-  created.
-- Following model records will be always tried to be resolved and
-  updated even if "Create New Record" action is used:
-
-  - Variables
-  - Operating Systems
-  - Tags
-
-Data Export/Import Modes
-------------------------
-
-Data stored in related fields such as One2many, Many2one and Many2many
-can be handled using two different modes.
-
-Reference mode
-~~~~~~~~~~~~~~
-
-In this mode related record is represented with its reference:
-
-.. code:: yaml
-
-   file_template_id: my_custom_template
-
-In case related record cannot be resolved using provided reference while
-importing data from YAML, ``Null`` value will be assigned instead.
-
-Exploded mode
-~~~~~~~~~~~~~
-
-In this mode related record is represented as a child YAML structure:
-
-.. code:: yaml
-
-   file_template_id:
-     cetmix_tower_model: file_template
-     cetmix_tower_yaml_version: 1
-     code: false
-     file_name: much_logs.txt
-     file_type: text
-     keep_when_deleted: false
-     name: Very my custom
-     note: Hey!
-     reference: my_custom_template
-     server_dir: /var/log/my/files
-     source: server
-
-This mode allows to export/import child records together with the parent
-one. In case any of the child fields are modified in YAML related record
-in Odoo will be modified using those values. In case related record
-cannot be resolved using child reference while importing data from YAML,
-new child record will be created in Odoo using YAML values.
+Please refer to the `official
+documentation <https://cetmix.com/tower>`__ for detailed usage
+instructions.
 
 Bug Tracker
 ===========
@@ -165,7 +53,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_yaml%0Aversion:%2014.0-dev%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_yaml%0Aversion:%2014.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -180,6 +68,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0-dev/cetmix_tower_yaml>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_yaml>`_ project on GitHub.
 
 You are welcome to contribute.

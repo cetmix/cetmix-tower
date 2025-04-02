@@ -25,7 +25,7 @@ from .tools import generate_random_id
 _logger = logging.getLogger(__name__)
 
 
-def after_commit(func):
+def ensure_ssh_disconnect(func):
     """
     Decorator that ensures the SSH connection is disconnected after the transaction
     completes, whether by commit or rollback.
@@ -693,7 +693,7 @@ class CxTowerServer(models.Model):
             Char: password ready to be used for connection parameters
         """
         self.ensure_one()
-        password = self.ssh_password
+        password = self.sudo().ssh_password
         return password
 
     def _get_ssh_key(self):
@@ -718,7 +718,7 @@ class CxTowerServer(models.Model):
             ssh_key = None
         return ssh_key
 
-    @after_commit
+    @ensure_ssh_disconnect
     def _get_host_key(self, raise_on_error=True, timeout=60):
         """Get host key
 
@@ -1334,7 +1334,7 @@ class CxTowerServer(models.Model):
         else:
             return result
 
-    @after_commit
+    @ensure_ssh_disconnect
     def _run_command_using_ssh(
         self,
         client,
@@ -1646,7 +1646,7 @@ class CxTowerServer(models.Model):
     # ---- File management
     # ------------------------------
 
-    @after_commit
+    @ensure_ssh_disconnect
     def delete_file(self, remote_path):
         """
         Delete file from remote server
@@ -1659,7 +1659,7 @@ class CxTowerServer(models.Model):
         client = self._get_ssh_client(raise_on_error=True)
         client.sftp_service.delete_file(remote_path)
 
-    @after_commit
+    @ensure_ssh_disconnect
     def upload_file(self, data, remote_path, from_path=False):
         """
         Upload file to remote server.
@@ -1691,7 +1691,7 @@ class CxTowerServer(models.Model):
 
         return result
 
-    @after_commit
+    @ensure_ssh_disconnect
     def download_file(self, remote_path):
         """
         Download file from remote server
