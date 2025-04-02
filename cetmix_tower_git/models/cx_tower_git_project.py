@@ -13,7 +13,7 @@ class CxTowerGitProject(models.Model):
     """
 
     _name = "cx.tower.git.project"
-    _description = "Cetmix Tower Git Configuration"
+    _description = "Cetmix Tower Git Project"
 
     _inherit = [
         "cx.tower.reference.mixin",
@@ -86,6 +86,7 @@ class CxTowerGitProject(models.Model):
         depends=["git_project_file_template_rel_ids"],
         copy=False,
     )
+    note = fields.Text()
 
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
@@ -117,6 +118,24 @@ class CxTowerGitProject(models.Model):
         " Eg '/tmp/git-aggregator'"
         " Will use '.' if not set",
     )
+
+    def _selection_project_format(self):
+        """
+        Possible project formats.
+        Inherit and extend when adding new project formats.
+
+        Returns:
+            List of tuples: (code, name)
+        """
+        return [
+            ("git_aggregator", "Git Aggregator"),
+        ]
+
+    def _default_project_format(self):
+        """
+        Default project format.
+        """
+        return "git_aggregator"
 
     @api.depends("server_ids", "server_ids.user_ids", "server_ids.manager_ids")
     def _compute_user_ids(self):
@@ -217,32 +236,11 @@ class CxTowerGitProject(models.Model):
         res = super()._get_fields_for_yaml()
         res += [
             "name",
+            "note",
             "source_ids",
             "git_aggregator_root_dir",
         ]
         return res
-
-    # -------------------------------
-    # Export format related methods
-    # -------------------------------
-
-    def _selection_project_format(self):
-        """
-        Possible project formats.
-        Inherit and extend when adding new project formats.
-
-        Returns:
-            List of tuples: (code, name)
-        """
-        return [
-            ("git_aggregator", "Git Aggregator"),
-        ]
-
-    def _default_project_format(self):
-        """
-        Default project format.
-        """
-        return "git_aggregator"
 
     # -------------------------------
     # Git Aggregator related methods

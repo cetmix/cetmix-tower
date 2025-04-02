@@ -93,29 +93,6 @@ class CxTowerGitRemote(models.Model):
         " Please select manually if auto-detection fails.",
     )
 
-    @api.constrains("url")
-    def _check_url(self):
-        """Check if the URL is valid.
-
-        Raises:
-            ValidationError: if the URL is not valid.
-        """
-        for remote in self:
-            if remote.url:
-                url = remote.url.lower()
-                if not url.endswith(".git"):
-                    raise ValidationError(
-                        _("Not a valid URL. URL must end with '.git'")
-                    )
-                if (
-                    not re.match(self.GIT_HTTPS_URL_PATTERN, url)
-                    and not re.match(self.GIT_SSH_URL_PATTERN, url)
-                    and not re.match(self.GIT_GIT_URL_PATTERN, url)
-                ):
-                    raise ValidationError(
-                        _("Not a valid URL. URL must start with 'https://' or 'git@'")
-                    )
-
     @api.depends("source_id", "sequence")
     def _compute_name(self):
         """
@@ -140,6 +117,32 @@ class CxTowerGitRemote(models.Model):
         for remote in self:
             if remote.head:
                 remote.head_type = self._get_head_type_from_head(remote.head)
+
+    @api.constrains("url")
+    def _check_url(self):
+        """Check if the URL is valid.
+
+        Raises:
+            ValidationError: if the URL is not valid.
+        """
+        for remote in self:
+            if remote.url:
+                url = remote.url.lower()
+                if not url.endswith(".git"):
+                    raise ValidationError(
+                        _("Not a valid URL. URL must end with '.git'")
+                    )
+                if (
+                    not re.match(self.GIT_HTTPS_URL_PATTERN, url)
+                    and not re.match(self.GIT_SSH_URL_PATTERN, url)
+                    and not re.match(self.GIT_GIT_URL_PATTERN, url)
+                ):
+                    raise ValidationError(
+                        _(
+                            "Not a valid URL. URL must start with"
+                            " 'https://', 'git@', or 'git://'"
+                        )
+                    )
 
     @api.onchange("url")
     def _onchange_url(self):

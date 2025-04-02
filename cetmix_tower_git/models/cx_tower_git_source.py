@@ -36,7 +36,6 @@ class CxTowerGitSource(models.Model):
     remote_ids = fields.One2many(
         comodel_name="cx.tower.git.remote",
         inverse_name="source_id",
-        string="Remotes",
         auto_join=True,
         copy=True,
     )

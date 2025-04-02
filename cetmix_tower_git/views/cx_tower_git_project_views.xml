@@ -51,6 +51,7 @@
                                 placeholder="Git aggregator root directory where sources will be cloned. Leave blank to use '.'"
                             />
                         </group>
+                        <field name="note" placeholder="Put your notes here..." />
                     </group>
                     <notebook>
                         <page name="sources" string="Sources">
