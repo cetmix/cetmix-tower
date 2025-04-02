@@ -15,6 +15,7 @@ class TestTowerShortcut(TestTowerCommon):
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
+                "skip_host_key": True,
             }
         )
 

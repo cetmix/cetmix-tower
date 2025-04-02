@@ -33,6 +33,7 @@ class CxTowerShortcut(models.Model):
         help="Run command using 'sudo'",
     )
     plan_id = fields.Many2one(string="Flight Plan", comodel_name="cx.tower.plan")
+    note = fields.Text()
 
     def run(self, server=None):
         """Runs related shortcut action

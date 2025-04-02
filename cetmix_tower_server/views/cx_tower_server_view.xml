@@ -267,10 +267,7 @@
                                     />
                             </tree>
                             <form>
-                                <group>
-                                    <field name="name" />
-                                    <field name="action" />
-                                </group>
+                                <field name="note" readonly="1" />
                             </form>
                         </field>
                     </page>
