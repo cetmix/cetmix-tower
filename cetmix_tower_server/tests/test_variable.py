@@ -39,7 +39,7 @@ class TestTowerVariable(TestTowerCommon):
             self.assertEqual(
                 len(variable_line), 1, msg="Must be a single variable line"
             )
-            expected_value = val[1] or ""
+            expected_value = val[1] or False
             self.assertEqual(
                 variable_line.value_char,
                 expected_value,
