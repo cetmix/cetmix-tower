@@ -5,6 +5,11 @@ from odoo.exceptions import ValidationError
 
 
 class CxTowerTag(models.Model):
+    """
+    Cetmix Tower Tag.
+    Tags are used to group servers, commands, flight plans, etc.
+    """
+
     _name = "cx.tower.tag"
     _inherit = [
         "cx.tower.reference.mixin",

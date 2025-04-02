@@ -29,6 +29,8 @@ INTERVAL_TYPES = {
 
 
 class CxTowerFile(models.Model):
+    """Files"""
+
     _name = "cx.tower.file"
     _inherit = [
         "cx.tower.template.mixin",
@@ -36,7 +38,7 @@ class CxTowerFile(models.Model):
         "mail.activity.mixin",
         "cx.tower.key.mixin",
     ]
-    _description = "Cx Tower File"
+    _description = "Cetmix Tower File"
     _order = "name"
 
     active = fields.Boolean(default=True)
@@ -62,7 +64,8 @@ class CxTowerFile(models.Model):
     )
     full_server_path = fields.Char(
         string="Full Path",
-        compute="_compute_full_server_path",
+        compute="_compute_render",
+        compute_sudo=True,
     )
     source = fields.Selection(
         [
@@ -81,18 +84,7 @@ class CxTowerFile(models.Model):
     # selection format: interval_number(integer)-interval_type(name of interval)
     # it will be parsed as 'relativedelta' object
     auto_sync_interval = fields.Selection(
-        [
-            ("10-minutes", "10 min"),
-            ("30-minutes", "30 min"),
-            ("1-hours", "1 hour"),
-            ("2-hours", "2 hour"),
-            ("6-hours", "6 hour"),
-            ("12-hours", "12 hour"),
-            ("1-days", "1 day"),
-            ("1-weeks", "1 week"),
-            ("1-months", "1 month"),
-            ("1-years", "1 year"),
-        ],
+        selection=lambda self: self._selection_auto_sync_interval(),
     )
     sync_date_next = fields.Datetime(
         string="Next Sync Date",
@@ -160,6 +152,7 @@ class CxTowerFile(models.Model):
         """
         return ["code", "server_dir", "name"]
 
+    # -- Selection
     def _selection_file_type(self):
         """Available file types
 
@@ -171,6 +164,24 @@ class CxTowerFile(models.Model):
             ("binary", "Binary"),
         ]
 
+    def _selection_auto_sync_interval(self):
+        """
+        Selection of auto sync interval
+        """
+        return [
+            ("10-minutes", "10 min"),
+            ("30-minutes", "30 min"),
+            ("1-hours", "1 hour"),
+            ("2-hours", "2 hour"),
+            ("6-hours", "6 hour"),
+            ("12-hours", "12 hour"),
+            ("1-days", "1 day"),
+            ("1-weeks", "1 week"),
+            ("1-months", "1 month"),
+            ("1-years", "1 year"),
+        ]
+
+    # -- Defaults
     def _default_file_type(self):
         """Default file type
 
@@ -179,16 +190,7 @@ class CxTowerFile(models.Model):
         """
         return "text"
 
-    @api.depends("server_dir", "name")
-    def _compute_full_server_path(self):
-        """
-        Compute server file path by file type and server directory
-        """
-        for file in self:
-            file.full_server_path = "{}/{}".format(
-                file.rendered_server_dir, file.rendered_name
-            )
-
+    # -- Computes
     @api.depends("server_id", "template_id", "name", "server_dir", "code")
     def _compute_render(self):
         """
@@ -215,28 +217,30 @@ class CxTowerFile(models.Model):
                     and render_code_custom(file.code, **var_vals)
                     or file.code
                 )
+            rendered_name = (
+                var_vals
+                and file.name
+                and render_code_custom(file.name, **var_vals)
+                or file.name
+            )
+            rendered_server_dir = (
+                var_vals
+                and file.server_dir
+                and render_code_custom(file.server_dir, **var_vals)
+                or file.server_dir
+            )
             file.update(
                 {
-                    "rendered_name": var_vals
-                    and file.name
-                    and render_code_custom(file.name, **var_vals)
-                    or file.name,
-                    "rendered_server_dir": var_vals
-                    and file.server_dir
-                    and render_code_custom(file.server_dir, **var_vals)
-                    or file.server_dir,
+                    "rendered_name": rendered_name,
+                    "rendered_server_dir": rendered_server_dir,
                     "rendered_code": rendered_code,
+                    "full_server_path": "{}/{}".format(
+                        rendered_server_dir, rendered_name
+                    ),
                 }
             )
 
-    def _inverse_template_id(self):
-        """
-        Replace file fields values by template values
-        """
-        for file in self:
-            if file.template_id:
-                file.write(file._get_file_values_from_related_template())
-
+    # -- Onchange
     @api.onchange("template_id")
     def _onchange_template_id(self):
         """
@@ -253,6 +257,15 @@ class CxTowerFile(models.Model):
         """
         self.update({"template_id": False})
 
+    def _inverse_template_id(self):
+        """
+        Replace file fields values by template values
+        """
+        for file in self:
+            if file.template_id:
+                file.write(file._get_file_values_from_related_template())
+
+    # -- Create/Write/Unlink
     @api.model_create_multi
     def create(self, vals_list):
         """
@@ -295,31 +308,7 @@ class CxTowerFile(models.Model):
         ).delete()
         return super().unlink()
 
-    def _post_create_write(self, op_type="write"):
-        """Helper function that is called after file creation or update.
-        Use this function to implement custom hooks.
-
-        Args:
-            op_type (str, optional): Operation type. Defaults to "write".
-                Possible options:
-                    - "create"
-                    - "write"
-        """
-
-        # Pull all `auto_sync` server files
-        server_files_to_sync = self.filtered(
-            lambda file: file.auto_sync and file.source == "server"
-        )
-        if server_files_to_sync:
-            server_files_to_sync.action_pull_from_server()
-
-        # Push all `auto_sync` tower files
-        tower_files_to_sync = self.filtered(
-            lambda file: file.auto_sync and file.source == "tower"
-        )
-        if tower_files_to_sync:
-            tower_files_to_sync.action_push_to_server()
-
+    # -- Actions
     def action_unlink_from_template(self):
         """
         Unlink file from template to make it editable
@@ -438,6 +427,32 @@ class CxTowerFile(models.Model):
             if isinstance(res, dict):
                 return res
             file.code_on_server = res
+
+    # -- Business logic
+    def _post_create_write(self, op_type="write"):
+        """Helper function that is called after file creation or update.
+        Use this function to implement custom hooks.
+
+        Args:
+            op_type (str, optional): Operation type. Defaults to "write".
+                Possible options:
+                    - "create"
+                    - "write"
+        """
+
+        # Pull all `auto_sync` server files
+        server_files_to_sync = self.filtered(
+            lambda file: file.auto_sync and file.source == "server"
+        )
+        if server_files_to_sync:
+            server_files_to_sync.action_pull_from_server()
+
+        # Push all `auto_sync` tower files
+        tower_files_to_sync = self.filtered(
+            lambda file: file.auto_sync and file.source == "tower"
+        )
+        if tower_files_to_sync:
+            tower_files_to_sync.action_push_to_server()
 
     def _get_file_values_from_related_template(self):
         """
