@@ -7,9 +7,10 @@
     "category": "Productivity",
     "website": "https://cetmix.com",
     "live_test_url": "https://cetmix.com/tower",
+    "images": ["static/description/banner.png"],
     "author": "Cetmix",
     "license": "AGPL-3",
-    "application": True,
+    "application": False,
     "installable": True,
     "external_dependencies": {
         "python": ["paramiko"],
