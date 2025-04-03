@@ -77,7 +77,7 @@ class TestTowerServer(TestTowerCommon):
                 "action": "python_code",
                 "code": """
 partner = env["res.partner"].create({"name": "Partner 1", "ref": "delete_server"})
-COMMAND_RESULT = {
+result = {
     "exit_code": 0,
     "message": partner.name,
 }
@@ -446,7 +446,7 @@ COMMAND_RESULT = {
 
         # Modify the command to fail
         self.command_delete_server.code = """
-COMMAND_RESULT = {
+result = {
     "exit_code": 4,
     "message": 'Such much error',
 }
