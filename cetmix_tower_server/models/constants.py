@@ -67,6 +67,10 @@ DEFAULT_SSH_CODE = _(
 DEFAULT_PYTHON_CODE = _(
     """# Please refer to the 'Help' tab and documentation for more information.
 #
+# You can return command result in the 'result' variable which is a dictionary:
+#   result = {"exit_code": 0, "message": "Some message"}
+#   default value is {"exit_code": 0, "message": None}
+#
 # Available variables:
 #  - user: Current Odoo User
 #  - env: Odoo Environment on which the action is triggered
@@ -92,7 +96,7 @@ DEFAULT_PYTHON_CODE_HELP = _(
 <h3>Help with Python expressions</h3>
 <div style="margin-bottom: 10px;">
     <p>
-        Each Python code command returns the COMMAND_RESULT value which is a dictionary.
+        Each Python code command returns the <code>result</code> value which is a dictionary.
         <br>There are two keys in the dictionary:
         <ul>
     <li><code>exit_code</code>: Integer. Exit code of the command. "0" means success, any other value means failure. Default value is "0".</li>
@@ -101,7 +105,7 @@ DEFAULT_PYTHON_CODE_HELP = _(
 Here is an example of a python code command:
 <code style='white-space: pre-wrap'>
     server_name = server.name
-    COMMAND_RESULT = {"exit_code": 0, "message": "Server name is " + server_name}
+    result = {"exit_code": 0, "message": "Server name is " + server_name}
 </code>
 </p>
 <br>

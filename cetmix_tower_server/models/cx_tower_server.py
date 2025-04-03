@@ -1480,7 +1480,7 @@ class CxTowerServer(models.Model):
                 mode="exec",
                 nocopy=True,
             )
-            result = eval_context.get("COMMAND_RESULT")
+            result = eval_context.get("result")
             if result:
                 status = result.get("exit_code", 0)
                 if status == 0:

@@ -495,9 +495,9 @@
         <field name="action">python_code</field>
         <field name="code">
 if {{ branch }}:
-    COMMAND_RESULT={"exit_code": 0, "message": "Branch is defined!"}
+    result={"exit_code": 0, "message": "Branch is defined!"}
 else:
-    COMMAND_RESULT={"exit_code": -100, "message": "Branch is not defined!"}
+    result={"exit_code": -100, "message": "Branch is not defined!"}
         </field>
         <field name="access_level">1</field>
         <field

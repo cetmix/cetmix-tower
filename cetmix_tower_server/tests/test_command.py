@@ -91,9 +91,9 @@ if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     # access error if user doesn't have access to 'create' operation.
     # Instead we just return a dummy command result.
     command = "new command"
-    COMMAND_RESULT = {"exit_code": 0, "message": "New command was created"}
+    result = {"exit_code": 0, "message": "New command was created"}
 else:
-    COMMAND_RESULT = {"exit_code": %s, "message": "error"}
+    result = {"exit_code": %s, "message": "error"}
     """
                 % GENERAL_ERROR,
             }
@@ -104,7 +104,7 @@ else:
                 "name": "Python command with secret #1",
                 "action": "python_code",
                 "code": """
-COMMAND_RESULT = {
+result = {
     "exit_code": 0,
     "message": #!cxtower.secret.PYTHON!#,
 }
@@ -117,7 +117,7 @@ COMMAND_RESULT = {
                 "name": "Python command with secret #2",
                 "action": "python_code",
                 "code": """
-COMMAND_RESULT = {
+result = {
     "exit_code": 0,
     "message": 'We use #!cxtower.secret.PYTHON!#' ,
 }
@@ -130,7 +130,7 @@ COMMAND_RESULT = {
                 "name": "Python command with secret #3",
                 "action": "python_code",
                 "code": """
-COMMAND_RESULT = {
+result = {
     "exit_code": 0,
     "message": ""#!cxtower.secret.test_rsa!#"" ,
 }
@@ -144,7 +144,7 @@ COMMAND_RESULT = {
                 "action": "python_code",
                 "code": """
 top_secret = #!cxtower.secret.test_python_ssh_key!#
-COMMAND_RESULT = {
+result = {
     "exit_code": 0,
     "message": top_secret ,
 }
@@ -1192,9 +1192,9 @@ if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     # access error if user doesn't have access to 'create' operation.
     # Instead we just return a dummy command result.
     command = "new command"
-    COMMAND_RESULT = {{"exit_code": 0, "message": "New command was created"}}
+    result = {{"exit_code": 0, "message": "New command was created"}}
 else:
-    COMMAND_RESULT = {{"exit_code": %s, "message": "error"}}
+    result = {{"exit_code": %s, "message": "error"}}
     """
             % GENERAL_ERROR
         )
