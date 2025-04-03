@@ -146,7 +146,7 @@ class TestTowerCommandWizard(TestTowerCommon):
             "IPv6 Address": {{ tower.server.ipv6 }},
             "Partner Name": {{ tower.server.partner_name }}
         }
-        COMMAND_RESULT = {"exit_code": 0, "message": properties}
+        result = {"exit_code": 0, "message": properties}
                         """,
                 "access_level": "1",
             }
