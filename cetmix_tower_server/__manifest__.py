@@ -41,6 +41,7 @@
         "security/cx_tower_shortcut_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
+        "data/ir_config_parameter.xml",
         "wizards/cx_tower_command_run_wizard_view.xml",
         "wizards/cx_tower_plan_run_wizard_view.xml",
         "wizards/cx_tower_server_template_create_wizard_view.xml",

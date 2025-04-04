@@ -3,6 +3,7 @@
 import ast
 import io
 import logging
+from datetime import timedelta
 from functools import wraps
 
 from odoo import _, api, fields, models
@@ -14,6 +15,8 @@ from odoo.addons.base.models.res_users import check_identity
 from ..ssh.ssh import SSHConnection, SSHManager
 from .constants import (
     ANOTHER_COMMAND_RUNNING,
+    COMMAND_TIMED_OUT,
+    COMMAND_TIMED_OUT_MESSAGE,
     FILE_CREATION_FAILED,
     GENERAL_ERROR,
     NO_COMMAND_RUNNER_FOUND,
@@ -1647,6 +1650,32 @@ class CxTowerServer(models.Model):
             error = None
 
         return {"status": status, "response": response, "error": error}
+
+    def _check_zombie_commands(self):
+        """
+        Check commands that are running longer than the timeout
+        and mark them as finished
+        """
+        timeout = int(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("cetmix_tower_server.command_timeout", 0)
+        )
+        if not timeout:
+            return
+
+        # SSH or Python command is running longer than the timeout
+        # We are not terminating Flight Plans and File Upload commands
+        domain = [
+            ("is_running", "=", True),
+            ("start_date", "<", fields.Datetime.now() - timedelta(seconds=timeout)),
+            ("command_action", "in", ["ssh_command", "python_code"]),
+        ]
+        zombie_command_logs = self.env["cx.tower.command.log"].search(domain)
+        if zombie_command_logs:
+            zombie_command_logs.finish(
+                status=COMMAND_TIMED_OUT, error=COMMAND_TIMED_OUT_MESSAGE
+            )
 
     # ------------------------------
     # ---- File management
