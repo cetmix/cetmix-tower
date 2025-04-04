@@ -3,6 +3,7 @@
 import ast
 import io
 import logging
+from datetime import timedelta
 from functools import wraps
 
 from odoo import _, api, fields, models
@@ -14,6 +15,8 @@ from odoo.addons.base.models.res_users import check_identity
 from ..ssh.ssh import SSHConnection, SSHManager
 from .constants import (
     ANOTHER_COMMAND_RUNNING,
+    COMMAND_TIMED_OUT,
+    COMMAND_TIMED_OUT_MESSAGE,
     FILE_CREATION_FAILED,
     GENERAL_ERROR,
     NO_COMMAND_RUNNER_FOUND,
@@ -25,7 +28,7 @@ from .tools import generate_random_id
 _logger = logging.getLogger(__name__)
 
 
-def after_commit(func):
+def ensure_ssh_disconnect(func):
     """
     Decorator that ensures the SSH connection is disconnected after the transaction
     completes, whether by commit or rollback.
@@ -82,10 +85,6 @@ class CxTowerServer(models.Model):
     ]
     _description = "Cetmix Tower Server"
     _order = "name asc"
-
-    def _get_post_create_fields(self):
-        res = super()._get_post_create_fields()
-        return res + ["variable_value_ids", "server_log_ids", "secret_ids"]
 
     # ---- Main
     active = fields.Boolean(default=True)
@@ -145,7 +144,7 @@ class CxTowerServer(models.Model):
     use_sudo = fields.Selection(
         string="Use sudo",
         selection=[("n", "Without password"), ("p", "With password")],
-        help="Run commands using 'sudo'",
+        help="Run commands using 'sudo'. Leave empty if 'sudo' is not needed.",
         groups="cetmix_tower_server.group_manager",
     )
     url = fields.Char(
@@ -251,32 +250,6 @@ class CxTowerServer(models.Model):
             ("delete_error", "Deletion Error"),
         ]
 
-    def server_toggle_active(self, self_active):
-        """
-        Change active status of related records
-
-        Args:
-            self_active (bool): active status of the record
-        """
-        self.file_ids.filtered(lambda f: f.active == self_active).toggle_active()
-        self.command_log_ids.filtered(lambda c: c.active == self_active).toggle_active()
-        self.plan_log_ids.filtered(lambda p: p.active == self_active).toggle_active()
-        self.variable_value_ids.filtered(
-            lambda vv: vv.active == self_active
-        ).toggle_active()
-
-    def toggle_active(self):
-        """Archiving related server"""
-        super().toggle_active()
-        server_active = self.with_context(active_test=False).filtered(
-            lambda x: x.active
-        )
-        server_not_active = self - server_active
-        if server_active:
-            server_active.server_toggle_active(False)
-        if server_not_active:
-            server_not_active.server_toggle_active(True)
-
     def _compute_file_count(self):
         """Compute total server files"""
         for server in self:
@@ -353,14 +326,23 @@ class CxTowerServer(models.Model):
 
         return super(CxTowerServer, servers_to_delete).unlink()
 
-    def _is_being_deleted(self):
-        """Check if the server is being deleted.
-
-        Returns:
-            bool: True if the server is being deleted, False otherwise
-        """
-        self.ensure_one()
-        return self.status and self.status == "deleting"
+    def _read(self, fields):
+        """Substitute fields based on api"""
+        super()._read(fields)
+        if not self.env.context.get("show_host_key") and (
+            "host_key" in fields or fields == []
+        ):
+            spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
+            # Public user used for substitution
+            for record in self:
+                try:
+                    record._cache["host_key"] = (
+                        spoiler if record._cache["host_key"] else None
+                    )
+                except Exception:
+                    # skip SpecialValue
+                    # (e.g. for missing record or access right)
+                    pass
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
@@ -396,6 +378,10 @@ class CxTowerServer(models.Model):
             server_log.copy({"server_id": result.id})
 
         return result
+
+    # ------------------------------
+    # ---- Actions
+    # ------------------------------
 
     @check_identity
     def action_show_host_key(self):
@@ -447,140 +433,70 @@ class CxTowerServer(models.Model):
         action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
         return action
 
-    def _get_notification_action(
-        self, message, notification_type="info", title=None, sticky=True
-    ):
-        """Get notification action
-
-        Args:
-            message (str): Message
-            notification_type (str, optional): Notification type. Defaults to "info".
-            title (str, optional): Title. Defaults to None.
-            sticky (bool, optional): Sticky notification. Defaults to True.
-
-        Returns:
-            dict: Notification action
+    def action_run_command(self):
         """
+        Returns wizard action to select command and run it
+        """
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_server_ids": self.ids,
+            }
+        )
         return {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "type": notification_type,
-                "title": title,
-                "message": message,
-                "sticky": sticky,
-            },
+            "type": "ir.actions.act_window",
+            "name": _("Run Command"),
+            "res_model": "cx.tower.command.run.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
         }
 
-    @after_commit
-    def _get_host_key(self, raise_on_error=True, timeout=60):
-        """Get host key
-
-        Args:
-            raise_on_error (bool, optional): If true will raise exception
-            in case or error, otherwise False will be returned
-            Defaults to True.
-            timeout (int, optional): SSH connection timeout in seconds.
-
-        Raises:
-            ValidationError: If the provided server reference is invalid or
-                the server cannot be found.
-
-        Returns:
-            Host key: Host key of the server
+    def action_run_flight_plan(self):
         """
-        self.ensure_one()
-
-        # Check access before getting host key
-        # This is needed to avoid possible access violations
-        self.check_access_rights("read")
-        self.check_access_rule("read")
-
-        try:
-            client = self._get_ssh_client(
-                raise_on_error=raise_on_error, timeout=timeout
-            )
-
-            # Disable host key verification for this connection only, to obtain the
-            # server's real host key. If a pre-configured host key is incorrect using
-            # it would cause a key mismatch error. By setting host_key to False
-            # here, we trigger AutoAddPolicy for this connection, which automatically
-            # accepts the server's actual host key.
-            client.connection.host_key = False
-
-            ssh_client = client.connection.connect()
-            transport = ssh_client.get_transport()
-            remote_key = transport.get_remote_server_key()
-            host_key = remote_key.get_base64()
-            return host_key
-        except Exception as e:
-            if raise_on_error:
-                raise ValidationError(
-                    _("Error retrieving host key: %(err)s", err=e)
-                ) from e
-            else:
-                return None
-
-    def _read(self, fields):
-        """Substitute fields based on api"""
-        super()._read(fields)
-        if not self.env.context.get("show_host_key") and (
-            "host_key" in fields or fields == []
-        ):
-            spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
-            # Public user used for substitution
-            for record in self:
-                try:
-                    record._cache["host_key"] = (
-                        spoiler if record._cache["host_key"] else None
-                    )
-                except Exception:
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
-
-    def _get_password(self):
-        """Get ssh password
-        This function prepares and returns ssh password for the ssh connection
-        Override this function to implement own password algorithms
-
-        Returns:
-            Char: password ready to be used for connection parameters
+        Returns wizard action to select flightplan and run it
         """
-        self.ensure_one()
-        password = self.ssh_password
-        return password
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_server_ids": self.ids,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Run Flight Plan"),
+            "res_model": "cx.tower.plan.run.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
 
-    def _get_ssh_key(self):
-        """Get SSH key
-        Get private key for an SSH connection
-
-        Returns:
-            Char: SSH private key
+    def action_open_files(self):
         """
-        self.ensure_one()
-        # To ensure that key will be read
-        # regardless of access rights
-        self = self.sudo()
-        if self.ssh_key_id:
-            # Use context key to read secret value
-            ssh_key = (
-                self.ssh_key_id.sudo()
-                .with_context(show_secret_value=True)
-                .read(["secret_value"])[0]["secret_value"]
-            )
+        Open files of the current server
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_file_action"
+        )
+        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
+
+        context = self._context.copy()
+        if "context" in action and isinstance((action["context"]), str):
+            context.update(ast.literal_eval(action["context"]))
         else:
-            ssh_key = None
-        return ssh_key
+            context.update(action.get("context", {}))
 
-    def _get_connection_test_command(self):
-        """Get command used to test SSH connection
+        context.update(
+            {
+                "default_server_id": self.id,  # pylint: disable=no-member
+            }
+        )
+        action["context"] = context
+        return action
 
-        Returns:
-            Char: SSH command
-        """
-        command = "uname -a"
-        return command
+    # ------------------------------
+    # ---- Connectivity
+    # ------------------------------
 
     def _get_ssh_client(self, raise_on_error=True, timeout=5000):
         """Create a new SSH client instance
@@ -606,7 +522,13 @@ class CxTowerServer(models.Model):
                 .read(["host_key"])[0]
                 .get("host_key")
             )
-            if not host_key and not self.skip_host_key:
+
+            # Check host only if IP address is present
+            if (
+                not host_key
+                and not self.skip_host_key
+                and (self.ip_v4_address or self.ip_v6_address)
+            ):
                 raise ValidationError(
                     _("Host key not found for server %(server)s", server=self.name)
                 )
@@ -615,7 +537,7 @@ class CxTowerServer(models.Model):
                 host=self.ip_v4_address or self.ip_v6_address,
                 port=self.ssh_port,
                 username=self.ssh_username,
-                password=self._get_password(),
+                password=self._get_ssh_password(),
                 ssh_key=self._get_ssh_key(),
                 host_key=host_key if host_key and not self.skip_host_key else None,
                 mode=self.ssh_auth_mode,
@@ -762,71 +684,101 @@ class CxTowerServer(models.Model):
 
         return test_result
 
-    def _render_command(self, command, path=None):
-        """Renders command code for selected command for current server
-
-        Args:
-            command (cx.tower.command): Command to render
-            path (Char): Path where to run the command.
-                Provide in case you need to override default command path
+    def _get_connection_test_command(self):
+        """Get command used to test SSH connection
 
         Returns:
-            dict: rendered values
-                {
-                    "rendered_code": rendered command code,
-                    "rendered_path": rendered command path
-                }
+            Char: SSH command
+        """
+        command = "uname -a"
+        return command
+
+    def _get_ssh_password(self):
+        """Get ssh password
+        This function prepares and returns ssh password for the ssh connection
+        Override this function to implement own password algorithms
+
+        Returns:
+            Char: password ready to be used for connection parameters
+        """
+        self.ensure_one()
+        password = self.sudo().ssh_password
+        return password
+
+    def _get_ssh_key(self):
+        """Get SSH key
+        Get private key for an SSH connection
+
+        Returns:
+            Char: SSH private key
+        """
+        self.ensure_one()
+        # To ensure that key will be read
+        # regardless of access rights
+        self = self.sudo()
+        if self.ssh_key_id:
+            # Use context key to read secret value
+            ssh_key = (
+                self.ssh_key_id.sudo()
+                .with_context(show_secret_value=True)
+                .read(["secret_value"])[0]["secret_value"]
+            )
+        else:
+            ssh_key = None
+        return ssh_key
+
+    @ensure_ssh_disconnect
+    def _get_host_key(self, raise_on_error=True, timeout=60):
+        """Get host key
+
+        Args:
+            raise_on_error (bool, optional): If true will raise exception
+            in case or error, otherwise False will be returned
+            Defaults to True.
+            timeout (int, optional): SSH connection timeout in seconds.
+
+        Raises:
+            ValidationError: If the provided server reference is invalid or
+                the server cannot be found.
+
+        Returns:
+            Host key: Host key of the server
         """
         self.ensure_one()
 
-        variables = []
+        # Check access before getting host key
+        # This is needed to avoid possible access violations
+        self.check_access_rights("read")
+        self.check_access_rule("read")
 
-        # Get variables from code
-        if command.code:
-            variables_extracted = command.get_variables_from_code(command.code)
-            for ve in variables_extracted:
-                if ve not in variables:
-                    variables.append(ve)
-
-        # Get variables from path
-        path = path if path else command.path
-        if path:
-            variables_extracted = command.get_variables_from_code(path)
-            for ve in variables_extracted:
-                if ve not in variables:
-                    variables.append(ve)
-
-        # Get variable values for current server
-        variable_values_dict = (
-            self.sudo().get_variable_values(variables)  # pylint: disable=no-member
-            if variables
-            else False
-        )
-
-        # Extract variable values for current server
-        variable_values = (
-            variable_values_dict.get(self.id) if variable_values_dict else False
-        )  # pylint: disable=no-member
-
-        # Render command code using variables
-        if variable_values:
-            if command.action == "python_code":
-                variable_values["pythonic_mode"] = True
-
-            rendered_code = (
-                command.render_code_custom(command.code, **variable_values)
-                if command.code
-                else False
-            )
-            rendered_path = (
-                command.render_code_custom(path, **variable_values) if path else False
+        try:
+            client = self._get_ssh_client(
+                raise_on_error=raise_on_error, timeout=timeout
             )
 
-        else:
-            rendered_code = command.code
-            rendered_path = path
+            # Disable host key verification for this connection only, to obtain the
+            # server's real host key. If a pre-configured host key is incorrect using
+            # it would cause a key mismatch error. By setting host_key to False
+            # here, we trigger AutoAddPolicy for this connection, which automatically
+            # accepts the server's actual host key.
+            client.connection.host_key = False
 
-        return {"rendered_code": rendered_code, "rendered_path": rendered_path}
+            ssh_client = client.connection.connect()
+            transport = ssh_client.get_transport()
+            remote_key = transport.get_remote_server_key()
+            host_key = remote_key.get_base64()
+            return host_key
+        except Exception as e:
+            if raise_on_error:
+                raise ValidationError(
+                    _("Error retrieving host key: %(err)s", err=e)
+                ) from e
+            else:
+                return None
+
+    # ------------------------------
+    # ---- Command execution
+    # ------------------------------
 
     def run_command(self, command, path=None, sudo=None, ssh_connection=None, **kwargs):
         """This is the main function to use for running commands.
@@ -942,8 +894,75 @@ class CxTowerServer(models.Model):
             **kwargs,
         )
 
+    def _render_command(self, command, path=None):
+        """Renders command code for selected command for current server
+
+        Args:
+            command (cx.tower.command): Command to render
+            path (Char): Path where to run the command.
+                Provide in case you need to override default command path
+
+        Returns:
+            dict: rendered values
+                {
+                    "rendered_code": rendered command code,
+                    "rendered_path": rendered command path
+                }
+        """
+        self.ensure_one()
+
+        variables = []
+
+        # Get variables from code
+        if command.code:
+            variables_extracted = command.get_variables_from_code(command.code)
+            for ve in variables_extracted:
+                if ve not in variables:
+                    variables.append(ve)
+
+        # Get variables from path
+        path = path if path else command.path
+        if path:
+            variables_extracted = command.get_variables_from_code(path)
+            for ve in variables_extracted:
+                if ve not in variables:
+                    variables.append(ve)
+
+        # Get variable values for current server
+        variable_values_dict = (
+            self.sudo().get_variable_values(variables)  # pylint: disable=no-member
+            if variables
+            else False
+        )
+
+        # Extract variable values for current server
+        variable_values = (
+            variable_values_dict.get(self.id) if variable_values_dict else False
+        )  # pylint: disable=no-member
+
+        # Render command code using variables
+        if variable_values:
+            if command.action == "python_code":
+                variable_values["pythonic_mode"] = True
+
+            rendered_code = (
+                command.render_code_custom(command.code, **variable_values)
+                if command.code
+                else False
+            )
+            rendered_path = (
+                command.render_code_custom(path, **variable_values) if path else False
+            )
+
+        else:
+            rendered_code = command.code
+            rendered_path = path
+
+        return {"rendered_code": rendered_code, "rendered_path": rendered_path}
+
     def run_flight_plan(self, flight_plan, **kwargs):
-        """Run flight plan on multiple servers
+        """
+        Runs flight plan on the current server.
 
         Args:
             flight_plan (cx.tower.plan()): flight plan record
@@ -968,7 +987,7 @@ class CxTowerServer(models.Model):
         ssh_connection=None,
         **kwargs,
     ):
-        """Used to implement custom runner mechanisms.\
+        """Used to implement custom runner mechanisms.
         Use it in case you need to redefine the entire command running engine.
         Eg it's used in `cetmix_tower_server_queue` OCA `queue_job` implementation.
 
@@ -1324,7 +1343,7 @@ class CxTowerServer(models.Model):
         else:
             return result
 
-    @after_commit
+    @ensure_ssh_disconnect
     def _run_command_using_ssh(
         self,
         client,
@@ -1418,7 +1437,7 @@ class CxTowerServer(models.Model):
         **kwargs,
     ):
         """
-        This is a low level method for python code running.
+        This is a low level method for Python code running.
 
         Args:
             code (Text): python code
@@ -1464,7 +1483,7 @@ class CxTowerServer(models.Model):
                 mode="exec",
                 nocopy=True,
             )
-            result = eval_context.get("COMMAND_RESULT")
+            result = eval_context.get("result")
             if result:
                 status = result.get("exit_code", 0)
                 if status == 0:
@@ -1519,7 +1538,6 @@ class CxTowerServer(models.Model):
                 # If command consists of several commands:
                 # Replace alternative separator to avoid possible issues.
                 # We need to stop always if some command issues error.
-                # Check TODO above
                 command_code.replace(";", "&&")
                 separator = "&&"
                 command_code.replace("\\", "").replace("\n", "").split(separator)
@@ -1547,7 +1565,6 @@ class CxTowerServer(models.Model):
             # Command without sudo is always run as is
             result = command_code
         # Add path change command
-        # TODO: we can put this command to the config level later if needed
         if path:
             # Add sudo prefix if needed
             cd_command = f"cd {path}"
@@ -1634,47 +1651,37 @@ class CxTowerServer(models.Model):
 
         return {"status": status, "response": response, "error": error}
 
-    def action_run_command(self):
+    def _check_zombie_commands(self):
         """
-        Returns wizard action to select command and run it
+        Check commands that are running longer than the timeout
+        and mark them as finished
         """
-        context = self.env.context.copy()
-        context.update(
-            {
-                "default_server_ids": self.ids,
-            }
+        timeout = int(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param("cetmix_tower_server.command_timeout", 0)
         )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Run Command"),
-            "res_model": "cx.tower.command.run.wizard",
-            "view_mode": "form",
-            "view_type": "form",
-            "target": "new",
-            "context": context,
-        }
+        if not timeout:
+            return
 
-    def action_run_flight_plan(self):
-        """
-        Returns wizard action to select flightplan and run it
-        """
-        context = self.env.context.copy()
-        context.update(
-            {
-                "default_server_ids": self.ids,
-            }
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Run Flight Plan"),
-            "res_model": "cx.tower.plan.run.wizard",
-            "view_mode": "form",
-            "view_type": "form",
-            "target": "new",
-            "context": context,
-        }
+        # SSH or Python command is running longer than the timeout
+        # We are not terminating Flight Plans and File Upload commands
+        domain = [
+            ("is_running", "=", True),
+            ("start_date", "<", fields.Datetime.now() - timedelta(seconds=timeout)),
+            ("command_action", "in", ["ssh_command", "python_code"]),
+        ]
+        zombie_command_logs = self.env["cx.tower.command.log"].search(domain)
+        if zombie_command_logs:
+            zombie_command_logs.finish(
+                status=COMMAND_TIMED_OUT, error=COMMAND_TIMED_OUT_MESSAGE
+            )
 
-    @after_commit
+    # ------------------------------
+    # ---- File management
+    # ------------------------------
+
+    @ensure_ssh_disconnect
     def delete_file(self, remote_path):
         """
         Delete file from remote server
@@ -1687,7 +1694,7 @@ class CxTowerServer(models.Model):
         client = self._get_ssh_client(raise_on_error=True)
         client.sftp_service.delete_file(remote_path)
 
-    @after_commit
+    @ensure_ssh_disconnect
     def upload_file(self, data, remote_path, from_path=False):
         """
         Upload file to remote server.
@@ -1719,7 +1726,7 @@ class CxTowerServer(models.Model):
 
         return result
 
-    @after_commit
+    @ensure_ssh_disconnect
     def download_file(self, remote_path):
         """
         Download file from remote server
@@ -1745,25 +1752,73 @@ class CxTowerServer(models.Model):
             ) from fe
         return result
 
-    def action_open_files(self):
-        """
-        Open current server files
-        """
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "cetmix_tower_server.cx_tower_file_action"
-        )
-        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
+    # ------------------------------
+    # ---- Auxiliary functions
+    # ------------------------------
 
-        context = self._context.copy()
-        if "context" in action and isinstance((action["context"]), str):
-            context.update(ast.literal_eval(action["context"]))
-        else:
-            context.update(action.get("context", {}))
+    def server_toggle_active(self, self_active):
+        """
+        Change active status of related records
 
-        context.update(
-            {
-                "default_server_id": self.id,  # pylint: disable=no-member
-            }
+        Args:
+            self_active (bool): active status of the record
+        """
+        self.file_ids.filtered(lambda f: f.active == self_active).toggle_active()
+        self.command_log_ids.filtered(lambda c: c.active == self_active).toggle_active()
+        self.plan_log_ids.filtered(lambda p: p.active == self_active).toggle_active()
+        self.variable_value_ids.filtered(
+            lambda vv: vv.active == self_active
+        ).toggle_active()
+
+    def toggle_active(self):
+        """Archiving related server"""
+        super().toggle_active()
+        server_active = self.with_context(active_test=False).filtered(
+            lambda x: x.active
         )
-        action["context"] = context
-        return action
+        server_not_active = self - server_active
+        if server_active:
+            server_active.server_toggle_active(False)
+        if server_not_active:
+            server_not_active.server_toggle_active(True)
+
+    def _is_being_deleted(self):
+        """Check if the server is being deleted.
+
+        Returns:
+            bool: True if the server is being deleted, False otherwise
+        """
+        self.ensure_one()
+        return self.status and self.status == "deleting"
+
+    def _get_post_create_fields(self):
+        """
+        Add fields that should be populated after server creation
+        """
+        res = super()._get_post_create_fields()
+        return res + ["variable_value_ids", "server_log_ids", "secret_ids"]
+
+    def _get_notification_action(
+        self, message, notification_type="info", title=None, sticky=True
+    ):
+        """Get notification action
+
+        Args:
+            message (str): Message
+            notification_type (str, optional): Notification type. Defaults to "info".
+            title (str, optional): Title. Defaults to None.
+            sticky (bool, optional): Sticky notification. Defaults to True.
+
+        Returns:
+            dict: Notification action
+        """
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": notification_type,
+                "title": title,
+                "message": message,
+                "sticky": sticky,
+            },
+        }

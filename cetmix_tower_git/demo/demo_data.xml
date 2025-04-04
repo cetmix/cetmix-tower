@@ -5,6 +5,7 @@
     <record id="git_project_demo" model="cx.tower.git.project">
         <field name="name">Demo Git Project</field>
         <field name="reference">demo_git_project</field>
+        <field name="note">This is a demo git project.</field>
     </record>
     <!-- Sources -->
     <!-- Cetmix Tower -->

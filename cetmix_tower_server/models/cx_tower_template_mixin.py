@@ -1,7 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from jinja2 import Environment, Template, meta
-from jinja2 import exceptions as jn_exceptions
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
@@ -80,6 +79,50 @@ class CxTowerTemplateMixin(models.AbstractModel):
             else:
                 record.variable_ids = [(5, 0, 0)]
 
+    def render_code(self, pythonic_mode=False, **kwargs):
+        """Render record 'code' field using variables from kwargs
+        Call to render recordset of the inheriting models
+        Args:
+            pythonic_mode (Bool): If True, all variables in kwargs are converted to
+                                  strings and wrapped in double quotes.
+                                  Default is False.
+            **kwargs (dict): {variable: value, ...}
+        Returns:
+            dict {record_id: rendered_code, ...}
+        """
+        return {
+            rec.id: self.render_code_custom(rec.code, pythonic_mode, **kwargs)
+            for rec in self
+        }
+
+    def render_code_custom(self, code, pythonic_mode=False, **kwargs):
+        """
+        Render custom code using variables from kwargs
+
+        This method renders a template string (code) using the variables provided
+        in kwargs. If pythonic_mode is enabled, all variables are automatically
+        converted to strings and enclosed in double quotes before rendering.
+
+        Args:
+            code (Text): code to render (eg 'some {{ custom }} text')
+            pythonic_mode (Bool): If True, all variables in kwargs are converted to
+                                  strings and wrapped in double quotes.
+                                  Default is False.
+            **kwargs (dict): {variable: value, ...}
+        Returns:
+            rendered_code (text): The resulting string after rendering the template with
+                                  the provided variables.
+        """
+        try:
+            if pythonic_mode:
+                kwargs = {
+                    key: self._make_value_pythonic(value)
+                    for key, value in kwargs.items()
+                }
+            return Template(code, trim_blocks=True).render(kwargs)
+        except Exception as e:
+            raise UserError(str(e)) from e
+
     def get_variables(self):
         """Get the list of variables for templates
         Call to get variables for recordset of the inheriting models
@@ -137,53 +180,6 @@ class CxTowerTemplateMixin(models.AbstractModel):
             command = [(5, 0, 0)]
 
         return command
-
-    def render_code(self, pythonic_mode=False, **kwargs):
-        """Render record 'code' field using variables from kwargs
-        Call to render recordset of the inheriting models
-
-        Args:
-            pythonic_mode (Bool): If True, all variables in kwargs are converted to
-                                  strings and wrapped in double quotes.
-                                  Default is False.
-            **kwargs (dict): {variable: value, ...}
-        Returns:
-            dict {record_id: rendered_code, ...}}
-        """
-        res = {}
-        for rec in self:
-            rendered_code = self.render_code_custom(rec.code, pythonic_mode, **kwargs)
-            res.update({rec.id: rendered_code})
-
-        return res
-
-    def render_code_custom(self, code, pythonic_mode=False, **kwargs):
-        """
-        Render custom code using variables from kwargs
-
-        This method renders a template string (code) using the variables provided
-        in kwargs. If pythonic_mode is enabled, all variables are automatically
-        converted to strings and enclosed in double quotes before rendering.
-
-        Args:
-            code (Text): code to render (eg 'some {{ custom }} text')
-            pythonic_mode (Bool): If True, all variables in kwargs are converted to
-                                  strings and wrapped in double quotes.
-                                  Default is False.
-            **kwargs (dict): {variable: value, ...}
-        Returns:
-            rendered_code (text): The resulting string after rendering the template with
-                                  the provided variables.
-        """
-        try:
-            if pythonic_mode:
-                kwargs = {
-                    key: self._make_value_pythonic(value)
-                    for key, value in kwargs.items()
-                }
-            return Template(code, trim_blocks=True).render(kwargs)
-        except jn_exceptions.UndefinedError as e:
-            raise UserError(e) from e
 
     def _make_value_pythonic(self, value):
         """Prepares value for use in 'pythonic' mode

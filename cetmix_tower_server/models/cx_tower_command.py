@@ -38,6 +38,8 @@ hmac = wrap_module(
 
 
 class CxTowerCommand(models.Model):
+    """Command to run on a server"""
+
     _name = "cx.tower.command"
     _inherit = [
         "cx.tower.template.mixin",
@@ -48,37 +50,6 @@ class CxTowerCommand(models.Model):
     ]
     _description = "Cetmix Tower Command"
     _order = "name"
-
-    def _get_default_python_code(self):
-        """
-        Default python command code
-        """
-        return DEFAULT_PYTHON_CODE
-
-    def _get_default_ssh_code(self):
-        """
-        Default ssh command code
-        """
-        return DEFAULT_SSH_CODE
-
-    def _get_default_python_code_help(self):
-        """
-        Default python code help
-        """
-        return DEFAULT_PYTHON_CODE_HELP
-
-    def _selection_action(self):
-        """Actions that can be run by a command.
-
-        Returns:
-            List of tuples: available options.
-        """
-        return [
-            ("ssh_command", "SSH command"),
-            ("python_code", "Run Python code"),
-            ("file_using_template", "Create file using template"),
-            ("plan", "Run flight plan"),
-        ]
 
     active = fields.Boolean(default=True)
     allow_parallel_run = fields.Boolean(
@@ -190,6 +161,40 @@ class CxTowerCommand(models.Model):
         """
         return ["code", "path"]
 
+    # -- Selection
+    def _selection_action(self):
+        """Actions that can be run by a command.
+
+        Returns:
+            List of tuples: available options.
+        """
+        return [
+            ("ssh_command", "SSH command"),
+            ("python_code", "Run Python code"),
+            ("file_using_template", "Create file using template"),
+            ("plan", "Run flight plan"),
+        ]
+
+    # -- Defaults
+    def _get_default_python_code(self):
+        """
+        Default python command code
+        """
+        return DEFAULT_PYTHON_CODE
+
+    def _get_default_ssh_code(self):
+        """
+        Default ssh command code
+        """
+        return DEFAULT_SSH_CODE
+
+    def _get_default_python_code_help(self):
+        """
+        Default python code help
+        """
+        return DEFAULT_PYTHON_CODE_HELP
+
+    # -- Computes
     @api.depends("action")
     def _compute_code(self):
         """
@@ -225,22 +230,6 @@ class CxTowerCommand(models.Model):
         for command in self:
             command.flight_plan_used_ids_count = len(command.flight_plan_used_ids)
 
-    def name_get(self):
-        # Add 'command_show_server_names' context key
-        # to append server names to command
-        if not self._context.get("command_show_server_names"):
-            return super().name_get()
-        res = []
-        for rec in self:
-            if rec.server_ids:
-                name = "{} ({})".format(
-                    rec.name, ",".join(rec.server_ids.mapped("name"))
-                )
-            else:
-                name = rec.name
-            res.append((rec.id, name))
-        return res
-
     def action_open_command_logs(self):
         """
         Open current current command log records
@@ -261,6 +250,7 @@ class CxTowerCommand(models.Model):
         action["domain"] = [("id", "in", self.flight_plan_used_ids.ids)]
         return action
 
+    # -- Business logic
     @api.model
     def _get_eval_context(self, server=None):
         """

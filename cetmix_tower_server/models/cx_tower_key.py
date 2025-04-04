@@ -8,8 +8,9 @@ class CxTowerKey(models.Model):
     """SSH Private key and secret storage"""
 
     _name = "cx.tower.key"
-    _description = "Cetmix Tower private key storage"
+    _description = "Cetmix Tower Key/Secret Storage"
     _inherit = ["cx.tower.reference.mixin", "cx.tower.access.role.mixin"]
+    _order = "name"
 
     KEY_PREFIX = "#!cxtower"
     KEY_TERMINATOR = "!#"
@@ -58,6 +59,7 @@ class CxTowerKey(models.Model):
         relation="cx_tower_key_manager_rel",
     )
 
+    @api.depends("reference", "key_type")
     def _compute_reference_code(self):
         """Compute key reference
         Eg '#!cxtower.secret.KEY!#'

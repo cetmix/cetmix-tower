@@ -5,10 +5,10 @@ from odoo import _
 # ***
 
 # Returned when a general error occurs
-GENERAL_ERROR = -100  # was -1
+GENERAL_ERROR = -100
 
 # Returned when a resource is not found
-NOT_FOUND = -101  # was -2
+NOT_FOUND = -101
 
 # -- SSH
 
@@ -19,39 +19,43 @@ SSH_CONNECTION_ERROR = 503
 
 # Returned when trying to execute another instance of a command on the same server
 # and this command doesn't allow parallel run
-ANOTHER_COMMAND_RUNNING = -201  # was -5
+ANOTHER_COMMAND_RUNNING = -201
 
 # Returned when no runner is found for command action
-NO_COMMAND_RUNNER_FOUND = -202  # was -6
+NO_COMMAND_RUNNER_FOUND = -202
 
 # Returned when the command failed to execute due to a python code execution error
-PYTHON_COMMAND_ERROR = -203  # was -24
+PYTHON_COMMAND_ERROR = -203
 
 # Returned when the command failed to execute because the condition was not met
-PLAN_LINE_CONDITION_CHECK_FAILED = -205  # was -20
+PLAN_LINE_CONDITION_CHECK_FAILED = -205
+
+# Returned when the command timed out
+COMMAND_TIMED_OUT = -206
+COMMAND_TIMED_OUT_MESSAGE = _("Command timed out and was terminated")
 
 # -- Plan: -300 > -399
 
 # Returned when trying to execute another instance of a flightplan on the same server
 # and this flightplan doesn't allow parallel run
-ANOTHER_PLAN_RUNNING = -301  # was -7
+ANOTHER_PLAN_RUNNING = -301
 
 # Returned when trying to start plan without lines
-PLAN_IS_EMPTY = -302  # was -1
+PLAN_IS_EMPTY = -302
 
 # Returned when a plan tries to parse a command log record which doesn't have
 # a valid plan reference in it
-PLAN_NOT_ASSIGNED = -303  # was -10
+PLAN_NOT_ASSIGNED = -303
 
 # Returned when a plan tries to parse a command log record which doesn't have
 # a valid plan line reference in it
-PLAN_LINE_NOT_ASSIGNED = -304  # was -11
+PLAN_LINE_NOT_ASSIGNED = -304
 
 
 # -- File: -400 > -499
 
 # Returned when the file could not be created on the server
-FILE_CREATION_FAILED = -400  # was -12
+FILE_CREATION_FAILED = -400
 
 # -- Default values
 
@@ -66,6 +70,10 @@ DEFAULT_SSH_CODE = _(
 # Default Python code used in Python code command
 DEFAULT_PYTHON_CODE = _(
     """# Please refer to the 'Help' tab and documentation for more information.
+#
+# You can return command result in the 'result' variable which is a dictionary:
+#   result = {"exit_code": 0, "message": "Some message"}
+#   default value is {"exit_code": 0, "message": None}
 #
 # Available variables:
 #  - user: Current Odoo User
@@ -92,7 +100,7 @@ DEFAULT_PYTHON_CODE_HELP = _(
 <h3>Help with Python expressions</h3>
 <div style="margin-bottom: 10px;">
     <p>
-        Each Python code command returns the COMMAND_RESULT value which is a dictionary.
+        Each Python code command returns the <code>result</code> value which is a dictionary.
         <br>There are two keys in the dictionary:
         <ul>
     <li><code>exit_code</code>: Integer. Exit code of the command. "0" means success, any other value means failure. Default value is "0".</li>
@@ -101,7 +109,7 @@ DEFAULT_PYTHON_CODE_HELP = _(
 Here is an example of a python code command:
 <code style='white-space: pre-wrap'>
     server_name = server.name
-    COMMAND_RESULT = {"exit_code": 0, "message": "Server name is " + server_name}
+    result = {"exit_code": 0, "message": "Server name is " + server_name}
 </code>
 </p>
 <br>

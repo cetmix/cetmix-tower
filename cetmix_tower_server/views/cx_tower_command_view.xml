@@ -113,7 +113,6 @@
                             string="Code"
                             attrs="{'invisible': ['|',  ('action', '=', 'file_using_template'), ('action', '=', 'plan')]}"
                         >
-                            <!-- TODO: use 'ace' widget with ace mode dependent on the command language -->
                             <field
                                 name="code"
                                 attrs="{'required': [('action', '=', 'python_code')]}"

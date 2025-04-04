@@ -96,13 +96,6 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 }
             )
 
-    @api.onchange("action", "applicability")
-    def _onchange_action(self):
-        """
-        Reset command after change action
-        """
-        self.command_id = False
-
     @api.depends("command_id", "server_ids", "action")
     def _compute_code(self):
         """
@@ -125,7 +118,8 @@ class CxTowerCommandRunWizard(models.TransientModel):
     def _compute_rendered_code(self):
         for record in self:
             if record.server_ids and len(record.server_ids) == 1:
-                server_id = record.server_ids[0]  # TODO testing only!!!
+                # Render code preview for the first server only.
+                server_id = record.server_ids[0]
 
                 # Get variable list
                 variables = record.get_variables()
@@ -188,6 +182,13 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 "\n".join(warning_list) if warning_list else False
             )
 
+    @api.onchange("action", "applicability")
+    def _onchange_action(self):
+        """
+        Reset command after change action
+        """
+        self.command_id = False
+
     def action_run_command(self):
         """
         Return wizard action to select command and execute it
@@ -203,7 +204,6 @@ class CxTowerCommandRunWizard(models.TransientModel):
             "name": _("Run Command"),
             "res_model": "cx.tower.command.run.wizard",
             "view_mode": "form",
-            "view_type": "form",
             "target": "new",
             "context": context,
         }
@@ -324,6 +324,5 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 "res_model": "cx.tower.command.run.wizard",
                 "res_id": self.id,  # pylint: disable=no-member
                 "view_mode": "form",
-                "view_type": "form",
                 "target": "new",
             }

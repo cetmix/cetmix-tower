@@ -9,8 +9,8 @@
     "website": "https://cetmix.com",
     "author": "Cetmix",
     "license": "AGPL-3",
-    "application": False,
     "installable": True,
+    "auto_install": True,
     "depends": [
         "cetmix_tower_server",
         "web_notify",

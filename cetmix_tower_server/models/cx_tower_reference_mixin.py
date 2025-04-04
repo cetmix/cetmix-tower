@@ -5,6 +5,7 @@ from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.osv import expression
+from odoo.tools import ormcache
 
 
 class CxTowerReferenceMixin(models.AbstractModel):
@@ -16,8 +17,8 @@ class CxTowerReferenceMixin(models.AbstractModel):
     _description = "Cetmix Tower reference mixin"
 
     # Used to check the reference before it's being fixed.
-    # THis is needed to ensure that there is at least one
-    # valid symbol that can be used later as a new reference basis.
+    # Ensures there's at least one valid symbol
+    # that can be used later as a new reference basis.
     REFERENCE_PRELIMINARY_PATTERN = r"[\da-zA-Z]"
 
     name = fields.Char(required=True)
@@ -29,82 +30,6 @@ class CxTowerReferenceMixin(models.AbstractModel):
     _sql_constraints = [
         ("reference_unique", "UNIQUE(reference)", "Reference must be unique")
     ]
-
-    def _get_reference_pattern(self):
-        """
-        Returns the regex pattern used for validating and correcting references.
-        This allows for easy modification of the pattern in one place.
-
-        Important: pattern must be enclosed in square brackets!
-
-        Returns:
-            str: A regex pattern
-        """
-        return "[a-z0-9_]"
-
-    def _get_pre_populated_model_data(self):
-        """Returns List of models that should try to generate
-        references based on the related model reference.
-
-        Eg flight plan lines references are generated based on the flight plan one.
-
-        Returns:
-            dict: Model values dictionary:
-            {model_name: [parent_model, relation_field]}
-        """
-        return {}
-
-    def _generate_or_fix_reference(self, reference_source):
-        """
-        Generate a new reference of fix an existing one.
-
-        Args:
-            reference_source (str): Original string.
-
-        Returns:
-            str: Generated or fixed reference.
-        """
-
-        # Check if reference matches the pattern
-        reference_pattern = self._get_reference_pattern()
-
-        if re.fullmatch(rf"{reference_pattern}+", reference_source):
-            reference = reference_source
-
-        # Fix reference if it doesn't match
-        else:
-            # Modify the pattern to be used in `sub`
-            inner_pattern = reference_pattern[1:-1]
-            reference = (
-                re.sub(
-                    rf"[^{inner_pattern}]",
-                    "",
-                    reference_source.strip().replace(" ", "_").lower(),
-                )
-                or self._get_model_generic_reference()
-            )
-
-        # Check if the same reference already exists and add a suffix if yes
-        counter = 1
-        final_reference = reference
-
-        # If exclude same records from search results
-        if self and not self.env.context.get("reference_mixin_skip_self"):
-            domain = [("id", "not in", self.ids)]
-        else:
-            domain = []
-        final_domain = expression.AND([domain, [("reference", "=", final_reference)]])
-
-        # Search all records without restrictions including archived
-        self_with_sudo_and_context = self.sudo().with_context(active_test=False)
-        while self_with_sudo_and_context.search_count(final_domain) > 0:
-            counter += 1
-            final_reference = _(f"{reference}_{counter}")
-            final_domain = expression.AND(
-                [domain, [("reference", "=", final_reference)]]
-            )
-
-        return final_reference
 
     @api.model
     def _name_search(
@@ -186,7 +111,10 @@ class CxTowerReferenceMixin(models.AbstractModel):
                 vals.update(
                     {"reference": self._generate_or_fix_reference(reference or name)}
                 )
-        return super().create(vals_list)
+
+        res = super().create(vals_list)
+        self.clear_caches()
+        return res
 
     def write(self, vals):
         """
@@ -221,7 +149,119 @@ class CxTowerReferenceMixin(models.AbstractModel):
             else:
                 reference = self._generate_or_fix_reference(reference)
             vals.update({"reference": reference})
+
+        # Clear cache for this method
+        if "reference" in vals:
+            self.clear_caches()
+
         return super().write(vals)
+
+    def unlink(self):
+        """
+        Overrides unlink to clear cache for this method
+        """
+        res = super().unlink()
+        self.clear_caches()
+        return res
+
+    def copy(self, default=None):
+        """
+        Overrides the copy method to ensure unique reference values
+        for duplicated records.
+
+        Args:
+            default (dict, optional): Default values for the new record.
+
+        Returns:
+            Record: The newly copied record with adjusted defaults.
+        """
+        self.ensure_one()
+        if default is None:
+            default = {}
+
+        # skip copying 'name' because this function can be used in models
+        # where 'name' field is not stored
+        if not self.env.context.get("reference_mixin_skip_copy"):
+            default["name"] = self._get_copied_name(force_name=default.get("name"))
+        if "reference" not in default:
+            default["reference"] = self._generate_or_fix_reference(default["name"])
+        return super().copy(default=default)
+
+    def _get_reference_pattern(self):
+        """
+        Returns the regex pattern used for validating and correcting references.
+        This allows for easy modification of the pattern in one place.
+
+        Important: pattern must be enclosed in square brackets!
+
+        Returns:
+            str: A regex pattern
+        """
+        return "[a-z0-9_]"
+
+    def _get_pre_populated_model_data(self):
+        """Returns List of models that should try to generate
+        references based on the related model reference.
+
+        Eg flight plan lines references are generated based on the flight plan one.
+
+        Returns:
+            dict: Model values dictionary:
+            {model_name: [parent_model, relation_field]}
+        """
+        return {}
+
+    def _generate_or_fix_reference(self, reference_source):
+        """
+        Generate a new reference of fix an existing one.
+
+        Args:
+            reference_source (str): Original string.
+
+        Returns:
+            str: Generated or fixed reference.
+        """
+
+        # Check if reference matches the pattern
+        reference_pattern = self._get_reference_pattern()
+
+        if re.fullmatch(rf"{reference_pattern}+", reference_source):
+            reference = reference_source
+
+        # Fix reference if it doesn't match
+        else:
+            # Modify the pattern to be used in `sub`
+            inner_pattern = reference_pattern[1:-1]
+            reference = (
+                re.sub(
+                    rf"[^{inner_pattern}]",
+                    "",
+                    reference_source.strip().replace(" ", "_").lower(),
+                )
+                or self._get_model_generic_reference()
+            )
+
+        # Check if the same reference already exists and add a suffix if yes
+        counter = 1
+        final_reference = reference
+
+        # If exclude same records from search results
+        if self and not self.env.context.get("reference_mixin_skip_self"):
+            domain = [("id", "not in", self.ids)]
+        else:
+            domain = []
+        final_domain = expression.AND([domain, [("reference", "=", final_reference)]])
+
+        # Search all records without restrictions including archived
+        self_with_sudo_and_context = self.sudo().with_context(active_test=False)
+        while self_with_sudo_and_context.search_count(final_domain) > 0:
+            counter += 1
+            final_reference = _(f"{reference}_{counter}")
+            final_domain = expression.AND(
+                [domain, [("reference", "=", final_reference)]]
+            )
+
+        return final_reference
 
     def _get_copied_name(self, force_name=None):
         """
@@ -252,29 +292,6 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
         return copy_name
 
-    def copy(self, default=None):
-        """
-        Overrides the copy method to ensure unique reference values
-        for duplicated records.
-
-        Args:
-            default (dict, optional): Default values for the new record.
-
-        Returns:
-            Record: The newly copied record with adjusted defaults.
-        """
-        self.ensure_one()
-        if default is None:
-            default = {}
-
-        # skip copy name because this function use in models
-        # where it field name non store
-        if not self.env.context.get("reference_mixin_skip_copy"):
-            default["name"] = self._get_copied_name(force_name=default.get("name"))
-        if "reference" not in default:
-            default["reference"] = self._generate_or_fix_reference(default["name"])
-        return super().copy(default=default)
-
     def _get_model_generic_reference(self):
         """Get generic reference for current model.
         Generic references are used as a fallback in the automatic
@@ -304,7 +321,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         """
         return self.browse(self._get_id_by_reference(reference))
 
-    # TODO: implement caching for this method
+    @ormcache("reference")
     def _get_id_by_reference(self, reference):
         """Get record id based on its reference.
 

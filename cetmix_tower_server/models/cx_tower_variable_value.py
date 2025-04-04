@@ -121,17 +121,53 @@ class TowerVariableValue(models.Model):
         ),
     ]
 
-    @api.constrains("value_char")
-    def _check_value_char(self):
+    # -- Compute fields --
+
+    @api.depends("variable_id", "variable_id.access_level")
+    def _compute_access_level(self):
         """
-        Check if the value_char is valid for the variable.
+        Automatically set the access_level based on Variable access level
         """
         for rec in self:
-            if not rec.variable_id:
+            if rec.variable_id:
+                rec.access_level = rec.variable_id.access_level
+
+    @api.depends("server_id", "server_template_id", "plan_line_action_id")
+    def _compute_is_global(self):
+        """
+        If variable considered `global` when it's not linked to any record.
+        """
+        for rec in self:
+            rec.is_global = rec._check_is_global()
+
+    @api.depends("option_id", "variable_id.option_ids")
+    def _compute_value_char(self):
+        """
+        Compute the 'value_char' field, which holds the string representation
+        of the selected option for the variable.
+        """
+        for rec in self:
+            if not rec.variable_id.option_ids:
+                rec.value_char = rec.value_char or False
+                rec.option_id = False
                 continue
-            valid, message = rec.variable_id._validate_value(rec.value_char)
-            if not valid:
-                raise ValidationError(message)
+            if rec.option_id:
+                rec.value_char = rec.option_id.value_char
+            else:
+                rec.value_char = False
+
+    @api.depends("value_char")
+    def _compute_variable_ids(self):
+        """
+        Compute variable_ids based on value_char field.
+        """
+        template_mixin_obj = self.env["cx.tower.template.mixin"]
+        for record in self:
+            record.variable_ids = template_mixin_obj._prepare_variable_commands(
+                ["value_char"], force_record=record
+            )
+
+    # -- Constraints --
 
     @api.constrains("access_level", "variable_id")
     def _check_access_level_consistency(self):
@@ -168,39 +204,6 @@ class TowerVariableValue(models.Model):
                     )
                 )
 
-    @api.depends("variable_id", "variable_id.access_level")
-    def _compute_access_level(self):
-        """
-        Automatically set the access_level based on Variable access level
-        """
-        for rec in self:
-            if rec.variable_id:
-                rec.access_level = rec.variable_id.access_level
-
-    @api.depends("option_id", "variable_id.option_ids")
-    def _compute_value_char(self):
-        """
-        Compute the 'value_char' field, which holds the string representation
-        of the selected option for the variable.
-        """
-        for rec in self:
-            if rec.variable_id.option_ids and rec.option_id:
-                rec.value_char = rec.option_id.value_char
-            elif not rec.variable_id.option_ids:
-                rec.value_char = rec.value_char or ""
-                rec.option_id = None
-
-    @api.onchange("variable_id")
-    def _onchange_variable_id(self):
-        """
-        Reset option_id when variable changes or
-        doesn't have options
-        """
-        for rec in self:
-            rec.option_id = False
-            if rec.variable_id.option_ids:
-                rec.value_char = False
-
     @api.constrains("is_global", "value_char")
     def _constraint_global_unique(self):
         """Ensure that there is only one global value exist for the same variable
@@ -226,39 +229,19 @@ class TowerVariableValue(models.Model):
                         )
                     )
 
-    @api.depends("value_char")
-    def _compute_variable_ids(self):
+    @api.constrains("value_char", "option_id")
+    def _check_value_char_and_option_id(self):
         """
-        Compute variable_ids based on value_char field.
+        Check if the value_char is valid for the variable.
         """
-        template_mixin_obj = self.env["cx.tower.template.mixin"]
-        for record in self:
-            record.variable_ids = template_mixin_obj._prepare_variable_commands(
-                ["value_char"], force_record=record
-            )
-
-    @api.onchange("value_char")
-    def _onchange_value_char(self):
-        """
-        Check value before saving
-        """
-        try:
-            self._check_value_char()
-        except ValidationError as e:
-            return {"warning": {"title": _("Value is invalid"), "message": str(e)}}
-
-    def _inverse_value_char(self):
-        """Set option_id based on value_char"""
         for rec in self:
-            if rec.variable_type == "o" and (
-                not rec.option_id or rec.option_id.value_char != rec.value_char
-            ):
-                option = rec.variable_id.option_ids.filtered(
-                    lambda x, v=rec.value_char: x.value_char == v
-                )
-                if option:
-                    rec.option_id = option.id
-                else:
+            if not rec.variable_id:
+                continue
+            valid, message = rec.variable_id._validate_value(rec.value_char)
+            if not valid:
+                raise ValidationError(message)
+            if rec.option_id:
+                if rec.option_id.variable_id != rec.variable_id:
                     raise ValidationError(
                         _(
                             "Option '%(val)s' is not available for variable '%(var)s'",
@@ -267,66 +250,50 @@ class TowerVariableValue(models.Model):
                         )
                     )
 
-    # Workaround for the default value not being set
-    @api.model_create_multi
-    def create(self, vals_list):
-        variable_obj = self.env["cx.tower.variable"]
-        for vals in vals_list:
-            # Set access level from the variable
-            # if not provided explicitly
-            access_level = vals.get("access_level")
-            if access_level:
-                continue
-            variable_id = vals.get("variable_id")
-            if variable_id:
-                variable = variable_obj.browse(variable_id)
-                vals["access_level"] = variable.access_level
-        return super().create(vals_list)
+    @api.constrains("server_id", "server_template_id", "plan_line_action_id")
+    def _check_single_assignment(self):
+        """Ensure that a variable is only assigned to one model at a time."""
+        for record in self:
+            # Check how many of the fields are set
+            count_assigned = (
+                bool(record.server_id)
+                + bool(record.server_template_id)
+                + bool(record.plan_line_action_id)
+            )
+            if count_assigned > 1:
+                raise ValidationError(
+                    _(
+                        "Variable '%(var)s' can only be assigned to one of the models "
+                        "at a time: "
+                        "Server, Server Template, or Plan Line Action.",
+                        var=record.variable_id.name,
+                    )
+                )
 
-    def _used_in_models(self):
-        """Returns information about models which use this mixin.
+    # -- Onchange --
 
-        Returns:
-            dict(): of the following format:
-                {"model.name": ("m2o_field_name", "model_description")}
-            Eg:
-                {"my.custom.model": ("much_model_id", "Much Model")}
+    @api.onchange("variable_id")
+    def _onchange_variable_id(self):
         """
-        return {
-            "cx.tower.server": ("server_id", "Server"),
-            "cx.tower.plan.line.action": ("plan_line_action_id", "Action"),
-            "cx.tower.server.template": ("server_template_id", "Server Template"),
-        }
-
-    def _check_is_global(self):
-        """
-        This is a helper function used to define
-         which variables are considered 'Global'
-        Override it to implement your custom logic.
-
-        Returns:
-            bool:  True if global else False
-        """
-
-        self.ensure_one()
-        is_global = True
-
-        # Get m2o field values for all models that use variables.
-        # If none of them is set such value is considered 'global'.
-        for related_model_info in self._used_in_models().values():
-            m2o_field = related_model_info[0]
-            if self[m2o_field]:
-                is_global = False
-                break
-        return is_global
-
-    @api.depends("server_id", "server_template_id", "plan_line_action_id")
-    def _compute_is_global(self):
-        """
-        If variable considered `global` when it's not linked to any record.
+        Reset option_id when variable changes or
+        doesn't have options
         """
         for rec in self:
-            rec.is_global = rec._check_is_global()
+            rec.update({"option_id": False, "value_char": False})
+
+    @api.onchange("value_char")
+    def _onchange_value_char(self):
+        """
+        Check value before saving
+        """
+        if not (self.variable_id and self.value_char):
+            return
+        try:
+            self.variable_id._validate_value(self.value_char)
+        except ValidationError as e:
+            return {"warning": {"title": _("Value is invalid"), "message": str(e)}}
+
+    # -- Inverse --
 
     def _inverse_is_global(self):
         """Triggered when `is_global` is updated"""
@@ -356,6 +323,39 @@ class TowerVariableValue(models.Model):
                         val=record.value_char,
                     )
                 )
+
+    def _inverse_value_char(self):
+        """Set option_id based on value_char"""
+        for rec in self:
+            if rec.variable_type == "o" and (
+                not rec.option_id or rec.option_id.value_char != rec.value_char
+            ):
+                option = rec.variable_id.option_ids.filtered(
+                    lambda x, v=rec.value_char: x.value_char == v
+                )
+                rec.option_id = option and option.id
+
+    # -- Create/write/unlink --
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Workaround for the default value not being set
+        """
+        variable_obj = self.env["cx.tower.variable"]
+        for vals in vals_list:
+            # Set access level from the variable
+            # if not provided explicitly
+            access_level = vals.get("access_level")
+            if access_level:
+                continue
+            variable_id = vals.get("variable_id")
+            if variable_id:
+                variable = variable_obj.browse(variable_id)
+                vals["access_level"] = variable.access_level
+        return super().create(vals_list)
+
+    # -- Business logic --
 
     def get_by_variable_reference(
         self,
@@ -422,25 +422,42 @@ class TowerVariableValue(models.Model):
 
         return result
 
-    @api.constrains("server_id", "server_template_id", "plan_line_action_id")
-    def _check_single_assignment(self):
-        """Ensure that a variable is only assigned to one model at a time."""
-        for record in self:
-            # Check how many of the fields are set
-            count_assigned = (
-                bool(record.server_id)
-                + bool(record.server_template_id)
-                + bool(record.plan_line_action_id)
-            )
-            if count_assigned > 1:
-                raise ValidationError(
-                    _(
-                        "Variable '%(var)s' can only be assigned to one of the models "
-                        "at a time: "
-                        "Server, Server Template, or Plan Line Action.",
-                        var=record.variable_id.name,
-                    )
-                )
+    def _used_in_models(self):
+        """Returns information about models which use this mixin.
+
+        Returns:
+            dict(): of the following format:
+                {"model.name": ("m2o_field_name", "model_description")}
+            Eg:
+                {"my.custom.model": ("much_model_id", "Much Model")}
+        """
+        return {
+            "cx.tower.server": ("server_id", "Server"),
+            "cx.tower.plan.line.action": ("plan_line_action_id", "Action"),
+            "cx.tower.server.template": ("server_template_id", "Server Template"),
+        }
+
+    def _check_is_global(self):
+        """
+        This is a helper function used to define
+         which variables are considered 'Global'
+        Override it to implement your custom logic.
+
+        Returns:
+            bool:  True if global else False
+        """
+
+        self.ensure_one()
+        is_global = True
+
+        # Get m2o field values for all models that use variables.
+        # If none of them is set such value is considered 'global'.
+        for related_model_info in self._used_in_models().values():
+            m2o_field = related_model_info[0]
+            if self[m2o_field]:
+                is_global = False
+                break
+        return is_global
 
     # Check cx.tower.reference.mixin for the function documentation
     def _get_pre_populated_model_data(self):

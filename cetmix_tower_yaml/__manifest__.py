@@ -1,4 +1,4 @@
-# Copyright Cetmix OU
+# Copyright Cetmix OÜ 2024
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "Cetmix Tower YAML",
@@ -8,7 +8,6 @@
     "website": "https://cetmix.com",
     "author": "Cetmix",
     "license": "AGPL-3",
-    "application": False,
     "installable": True,
     "depends": ["cetmix_tower_server"],
     "external_dependencies": {"python": ["pyyaml"]},

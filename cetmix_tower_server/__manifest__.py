@@ -1,14 +1,16 @@
-# Copyright Cetmix OU
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright Cetmix OÜ 2022
+#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "Cetmix Tower Server",
     "summary": "Manage servers and applications from Odoo",
-    "version": "14.0.0.6.4",
+    "version": "14.0.0.7.0",
     "category": "Productivity",
     "website": "https://cetmix.com",
+    "live_test_url": "https://cetmix.com/tower",
+    "images": ["static/description/banner.png"],
     "author": "Cetmix",
     "license": "AGPL-3",
-    "application": True,
+    "application": False,
     "installable": True,
     "external_dependencies": {
         "python": ["paramiko"],
@@ -39,6 +41,7 @@
         "security/cx_tower_shortcut_security.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
+        "data/ir_config_parameter.xml",
         "wizards/cx_tower_command_run_wizard_view.xml",
         "wizards/cx_tower_plan_run_wizard_view.xml",
         "wizards/cx_tower_server_template_create_wizard_view.xml",

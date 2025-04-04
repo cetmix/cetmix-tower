@@ -4,6 +4,11 @@ from odoo import _, fields, models
 
 
 class CxTowerShortcut(models.Model):
+    """
+    Cetmix Tower Shortcut.
+    Used to run commands or flight plans with a single click.
+    """
+
     _name = "cx.tower.shortcut"
     _inherit = ["cx.tower.access.mixin", "cx.tower.reference.mixin"]
     _description = "Cetmix Tower Shortcut"
@@ -33,6 +38,7 @@ class CxTowerShortcut(models.Model):
         help="Run command using 'sudo'",
     )
     plan_id = fields.Many2one(string="Flight Plan", comodel_name="cx.tower.plan")
+    note = fields.Text()
 
     def run(self, server=None):
         """Runs related shortcut action

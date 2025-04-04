@@ -177,7 +177,7 @@
                                     <field name="ssh_auth_mode" />
                                     <field name="ssh_port" />
                                     <field name="ssh_username" />
-                                    <field name="use_sudo" />
+                                    <field name="use_sudo" placeholder="No/Undefined" />
                                     <field name="ssh_password" password="True" />
                                     <field name="ssh_key_id" />
                                 </group>
