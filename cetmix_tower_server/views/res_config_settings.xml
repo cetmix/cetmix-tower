@@ -20,6 +20,27 @@
                         id="cetmix_tower_settings"
                     >
                         <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="cetmix_tower_command_timeout">
+                                <label for="cetmix_tower_command_timeout" />
+                                <div class="text-muted">
+                                    Command timeout in seconds after which the command will be terminated. Set to 0 to disable timeout.
+                                    <br />
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="cetmix_tower_command_timeout" />
+                                    </div>
+                                    <button
+                                        name="action_configure_zombie_commands_cron"
+                                        string="Cron Job"
+                                        type="object"
+                                        class="oe_link"
+                                        icon="fa-arrow-right"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
                             <div class="pull_files_from_server">
                                 <div>Pull files from server</div>
                                 <div class="text-muted">
@@ -28,8 +49,8 @@
                                     <br />
                                 </div>
                                 <button
-                                    name="action_configure_cron"
-                                    string="Configure Cron Job"
+                                    name="action_configure_cron_pull_files_from_server"
+                                    string="Cron Job"
                                     type="object"
                                     class="oe_link"
                                     icon="fa-arrow-right"

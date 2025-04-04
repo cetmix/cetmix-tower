@@ -34,7 +34,11 @@ class CxTowerCommandLog(models.Model):
         help="For how long a flight plan is already running",
     )
     # -- Command
-    is_running = fields.Boolean(help="Command is being executed right now")
+    is_running = fields.Boolean(
+        help="Command is being executed right now",
+        compute="_compute_duration",
+        store=True,
+    )
     command_id = fields.Many2one(
         comodel_name="cx.tower.command", required=True, index=True, ondelete="restrict"
     )
@@ -82,13 +86,24 @@ class CxTowerCommandLog(models.Model):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.command_id.name))  # type: ignore
 
-    @api.depends("finish_date")
+    @api.depends("start_date", "finish_date")
     def _compute_duration(self):
         for command_log in self:
-            if command_log.finish_date and command_log.start_date:
-                command_log.duration = (
-                    command_log.finish_date - command_log.start_date
-                ).total_seconds()
+            if not command_log.start_date:
+                command_log.is_running = False
+                continue
+            if not command_log.finish_date:
+                command_log.is_running = True
+                continue
+            duration = (
+                command_log.finish_date - command_log.start_date
+            ).total_seconds()
+            command_log.update(
+                {
+                    "duration": duration,
+                    "is_running": False,
+                }
+            )
 
     @api.depends("is_running")
     def _compute_duration_current(self):
@@ -118,7 +133,6 @@ class CxTowerCommandLog(models.Model):
         vals = {
             "server_id": server_id,
             "command_id": command_id,
-            "is_running": True,
             "start_date": start_date if start_date else fields.Datetime.now(),
         }
         # Apply kwargs
@@ -136,25 +150,24 @@ class CxTowerCommandLog(models.Model):
             finish_date (Datetime): command finish date time.
             **kwargs (dict): optional values
         """
+        self_with_sudo = self.sudo()
+
+        # Duration
         now = fields.Datetime.now()
+        date_finish = finish_date if finish_date else now
 
-        for rec in self.sudo():
-            # Duration
-            date_finish = finish_date if finish_date else now
+        vals = {
+            "finish_date": date_finish,
+            "command_status": GENERAL_ERROR if status is None else status,
+            "command_response": response,
+            "command_error": error,
+        }
+        # Apply kwargs and write
+        vals.update(kwargs)
+        self_with_sudo.write(vals)
 
-            vals = {
-                "is_running": False,
-                "finish_date": date_finish,
-                "command_status": GENERAL_ERROR if status is None else status,
-                "command_response": response,
-                "command_error": error,
-            }
-            # Apply kwargs and write
-            vals.update(kwargs)
-            rec.write(vals)
-
-            # Trigger post finish hook
-            rec._command_finished()
+        # Trigger post finish hook
+        self_with_sudo._command_finished()
 
     def record(
         self,
