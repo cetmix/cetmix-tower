@@ -102,8 +102,28 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_file
+msgid "Cetmix Tower File"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_file_template
+msgid "Cetmix Tower File Template"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project
-msgid "Cetmix Tower Git Configuration"
+msgid "Cetmix Tower Git Project"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project_file_template_rel
+msgid "Cetmix Tower Git Project relation to File Templates"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project_rel
+msgid "Cetmix Tower Git Project relation to Files and Servers"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -145,16 +165,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__create_date
 msgid "Created on"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model,name:cetmix_tower_git.model_cx_tower_file
-msgid "Cx Tower File"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model,name:cetmix_tower_git.model_cx_tower_file_template
-msgid "Cx Tower File Template"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -303,16 +313,6 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__git_project_rel_ids
 msgid "Git Project Server File Relations"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project_file_template_rel
-msgid "Git Project relation to file templates"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project_rel
-msgid "Git Project relation to other model records"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -476,7 +476,12 @@ msgstr ""
 #. module: cetmix_tower_git
 #: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
 #, python-format
-msgid "Not a valid URL. URL must start with 'https://' or 'git@'"
+msgid "Not a valid URL. URL must start with 'https://', 'git@', or 'git://'"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__note
+msgid "Note"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -530,6 +535,11 @@ msgid "Pull/Merge Request"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "Put your notes here..."
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__reference
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__reference
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__reference
@@ -545,8 +555,12 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_count
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_ids
+msgid "Remote"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_count
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
 msgid "Remotes"
 msgstr ""
