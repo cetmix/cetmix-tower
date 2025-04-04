@@ -1,10 +1,16 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from odoo.exceptions import AccessError
+from odoo.fields import Datetime
 from odoo.tests.common import Form
 from odoo.tools import mute_logger
 
-from ..models.constants import GENERAL_ERROR
+from ..models.constants import (
+    COMMAND_TIMED_OUT,
+    COMMAND_TIMED_OUT_MESSAGE,
+    GENERAL_ERROR,
+)
 from .common import TestTowerCommon
 
 
@@ -1526,4 +1532,125 @@ else:
             len(command_with_keys.secret_ids),
             1,
             msg="Must be one secret",
+        )
+
+    def test_check_zombie_commands(self):
+        """Test checking and marking zombie commands"""
+        # Create test commands
+        ssh_command = self.Command.create(
+            {
+                "name": "Test SSH Command",
+                "code": "ls -la",
+                "action": "ssh_command",
+            }
+        )
+        python_command = self.Command.create(
+            {
+                "name": "Test Python Command",
+                "code": "print('test')",
+                "action": "python_code",
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Test Plan Command",
+                "code": "test plan",
+                "action": "plan",
+            }
+        )
+
+        # Set command timeout to 10 seconds
+        self.env["ir.config_parameter"].sudo().set_param(
+            "cetmix_tower_server.command_timeout", "10"
+        )
+
+        # Create command logs with different start times
+        now = Datetime.now()
+        old_time = now - timedelta(seconds=20)  # Older than timeout
+        recent_time = now - timedelta(seconds=5)  # Within timeout
+
+        # Create zombie SSH command log
+        zombie_ssh_log = self.CommandLog.create(
+            {
+                "command_id": ssh_command.id,
+                "server_id": self.server_test_1.id,
+                "start_date": old_time,
+            }
+        )
+
+        # Create zombie Python command log
+        zombie_python_log = self.CommandLog.create(
+            {
+                "command_id": python_command.id,
+                "server_id": self.server_test_1.id,
+                "start_date": old_time,
+            }
+        )
+
+        # Create non-zombie command logs
+        active_ssh_log = self.CommandLog.create(
+            {
+                "command_id": ssh_command.id,
+                "server_id": self.server_test_1.id,
+                "start_date": recent_time,
+            }
+        )
+
+        plan_log = self.CommandLog.create(
+            {
+                "command_id": plan_command.id,
+                "server_id": self.server_test_1.id,
+                "start_date": old_time,
+            }
+        )
+
+        # Test with timeout set
+        self.server_test_1._check_zombie_commands()
+
+        # Check zombie commands are marked as finished
+        self.assertFalse(
+            zombie_ssh_log.is_running, "Zombie SSH command should be marked as finished"
+        )
+        self.assertFalse(
+            zombie_python_log.is_running,
+            "Zombie Python command should be marked as finished",
+        )
+        self.assertEqual(
+            zombie_ssh_log.command_status,
+            COMMAND_TIMED_OUT,
+            "Zombie SSH command should have timed out status",
+        )
+        self.assertEqual(
+            zombie_python_log.command_error,
+            COMMAND_TIMED_OUT_MESSAGE,
+            "Zombie Python command should have timeout error message",
+        )
+
+        # Check non-zombie commands are still running
+        self.assertTrue(
+            active_ssh_log.is_running, "Recent command should still be running"
+        )
+        self.assertTrue(
+            plan_log.is_running, "Plan command should not be affected by timeout"
+        )
+
+        # Test with timeout disabled
+        self.env["ir.config_parameter"].sudo().set_param(
+            "cetmix_tower_server.command_timeout", "0"
+        )
+
+        # Create new zombie command log
+        new_zombie_log = self.CommandLog.create(
+            {
+                "command_id": ssh_command.id,
+                "server_id": self.server_test_1.id,
+                "start_date": old_time,
+            }
+        )
+
+        self.server_test_1._check_zombie_commands()
+        self.assertNotEqual(
+            new_zombie_log.command_status,
+            COMMAND_TIMED_OUT,
+            "Commands should not be marked as timed out when timeout is disabled",
         )
