@@ -80,6 +80,7 @@ addon | version | maintainers | summary
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 14.0.1.0.4 |  | Cetmix Tower asynchronous task execution using 'queue_job'
 [cetmix_tower_yaml](cetmix_tower_yaml/) | 14.0.1.0.2 |  | Cetmix Tower YAML export/import
 
+
 [//]: # (end addons)
 
 <!-- prettier-ignore-end -->
