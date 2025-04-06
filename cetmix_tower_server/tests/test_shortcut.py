@@ -4,11 +4,12 @@ from .common import TestTowerCommon
 class TestTowerShortcut(TestTowerCommon):
     """Test Tower Shortcut"""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Server
-        self.server_test_1_pro = self.Server.create(
+        cls.server_test_1_pro = cls.Server.create(
             {
                 "name": "Test 1 Pro",
                 "ip_v4_address": "localhost",
@@ -20,10 +21,10 @@ class TestTowerShortcut(TestTowerCommon):
         )
 
         # Variable
-        self.variable_path_pro = self.Variable.create({"name": "test_path_pro"})
+        cls.variable_path_pro = cls.Variable.create({"name": "test_path_pro"})
 
         # Command
-        self.command_list_dir_pro = self.Command.create(
+        cls.command_list_dir_pro = cls.Command.create(
             {
                 "name": "Test create directory",
                 "code": "ls -l {{ test_path_ }}",
@@ -31,38 +32,36 @@ class TestTowerShortcut(TestTowerCommon):
         )
 
         # Flight plan
-        self.plan_1_pro = self.Plan.create(
+        cls.plan_1_pro = cls.Plan.create(
             {
                 "name": "Test plan 1 Pro",
                 "note": "List directory contents",
             }
         )
-        self.plan_line_1_pro = self.plan_line.create(
+        cls.plan_line_1_pro = cls.plan_line.create(
             {
                 "sequence": 5,
-                "plan_id": self.plan_1_pro.id,
-                "command_id": self.command_list_dir_pro.id,
+                "plan_id": cls.plan_1_pro.id,
+                "command_id": cls.command_list_dir_pro.id,
             }
         )
 
         # Shortcuts
-        self.Shortcut = self.env["cx.tower.shortcut"]
-
-        self.shortcut_for_command = self.Shortcut.create(
+        cls.shortcut_for_command = cls.Shortcut.create(
             {
                 "name": "Shortcut for Command",
                 "action": "command",
-                "command_id": self.command_list_dir_pro.id,
-                "server_ids": [(4, self.server_test_1_pro.id)],
+                "command_id": cls.command_list_dir_pro.id,
+                "server_ids": [(4, cls.server_test_1_pro.id)],
             }
         )
 
-        self.shortcut_for_flight_plan = self.Shortcut.create(
+        cls.shortcut_for_flight_plan = cls.Shortcut.create(
             {
                 "name": "Shortcut for Flight Plan",
                 "action": "plan",
-                "plan_id": self.plan_1_pro.id,
-                "server_ids": [(4, self.server_test_1_pro.id)],
+                "plan_id": cls.plan_1_pro.id,
+                "server_ids": [(4, cls.server_test_1_pro.id)],
             }
         )
 

@@ -15,50 +15,23 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
     _name = "cx.tower.reference.mixin"
     _description = "Cetmix Tower reference mixin"
+    _rec_names_search = ["name", "reference"]
 
     # Used to check the reference before it's being fixed.
     # Ensures there's at least one valid symbol
     # that can be used later as a new reference basis.
     REFERENCE_PRELIMINARY_PATTERN = r"[\da-zA-Z]"
 
-    name = fields.Char(required=True)
+    name = fields.Char(required=True, index="trigram")
     reference = fields.Char(
         index=True,
+        unaccent=False,
         help="Can contain English letters, digits and '_'. Leave blank to autogenerate",
     )
 
     _sql_constraints = [
         ("reference_unique", "UNIQUE(reference)", "Reference must be unique")
     ]
-
-    @api.model
-    def _name_search(
-        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
-    ):
-        """
-        Search for records by matching either the 'reference' or 'name' fields
-        using the given search operator.
-
-        This method constructs a domain to search for records where either the
-        'reference' or 'name' field contains the search term provided in 'name'.
-        The domain also allows for additional search arguments to be passed via 'args'.
-
-        :param name: The search term to match against the 'reference' or 'name' field.
-        :param args: A list of additional domain conditions for the search.
-        :param operator: The comparison operator to use for the search.
-        :param limit: The maximum number of records to return (default: 100).
-        :param name_get_uid: The user ID used for access rights validation.
-        :return: A list of record IDs that match the search criteria.
-        """
-        if args is None:
-            args = []
-
-        search_domain = expression.OR(
-            [[("reference", operator, name)], [("name", operator, name)]]
-        )
-
-        domain = expression.AND([args, search_domain])
-        return self._search(domain, limit=limit, access_rights_uid=name_get_uid)
 
     @api.model_create_multi
     def create(self, vals_list):

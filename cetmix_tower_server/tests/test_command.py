@@ -24,21 +24,22 @@ class TestTowerCommand(TestTowerCommon):
 
     """
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Save variable values for Server 1
-        with Form(self.server_test_1) as f:
+        with Form(cls.server_test_1) as f:
             with f.variable_value_ids.new() as line:
-                line.variable_id = self.variable_dir
+                line.variable_id = cls.variable_dir
                 line.value_char = "test-odoo-1"
             with f.variable_value_ids.new() as line:
-                line.variable_id = self.variable_path
+                line.variable_id = cls.variable_path
                 line.value_char = "/opt/tower"
             f.save()
 
         # Secret key
-        self.secret_folder_key = self.Key.create(
+        cls.secret_folder_key = cls.Key.create(
             {
                 "name": "Folder",
                 "reference": "FOLDER",
@@ -46,7 +47,7 @@ class TestTowerCommand(TestTowerCommon):
                 "key_type": "s",
             }
         )
-        self.secret_python_key = self.Key.create(
+        cls.secret_python_key = cls.Key.create(
             {
                 "name": "python",
                 "reference": "PYTHON",
@@ -56,7 +57,7 @@ class TestTowerCommand(TestTowerCommon):
         )
 
         # secret value as multi line string
-        self.python_ssh_key = self.Key.create(
+        cls.python_ssh_key = cls.Key.create(
             {
                 "name": "Test Python SSH Key",
                 "reference": "test_python_ssh_key",
@@ -69,7 +70,7 @@ class TestTowerCommand(TestTowerCommon):
             }
         )
 
-        self.secret_test_rsa_key = self.Key.create(
+        cls.secret_test_rsa_key = cls.Key.create(
             {
                 "name": "test rsa",
                 "reference": "test_rsa",
@@ -86,7 +87,7 @@ v/Ow5T0q5gIJAiEAyS4RaI9YG8EWx/2w0T67ZUVAw8eOMB6BIUg0Xcu+3okCIBOs
             }
         )
         # Command
-        self.command_create_new_command = self.Command.create(
+        cls.command_create_new_command = cls.Command.create(
             {
                 "name": "Create new command",
                 "action": "python_code",
@@ -105,7 +106,7 @@ else:
             }
         )
 
-        self.command_python_command_1 = self.Command.create(
+        cls.command_python_command_1 = cls.Command.create(
             {
                 "name": "Python command with secret #1",
                 "action": "python_code",
@@ -118,7 +119,7 @@ result = {
             }
         )
 
-        self.command_python_command_2 = self.Command.create(
+        cls.command_python_command_2 = cls.Command.create(
             {
                 "name": "Python command with secret #2",
                 "action": "python_code",
@@ -131,7 +132,7 @@ result = {
             }
         )
 
-        self.command_python_command_3 = self.Command.create(
+        cls.command_python_command_3 = cls.Command.create(
             {
                 "name": "Python command with secret #3",
                 "action": "python_code",
@@ -144,7 +145,7 @@ result = {
             }
         )
 
-        self.command_python_command_4 = self.Command.create(
+        cls.command_python_command_4 = cls.Command.create(
             {
                 "name": "Python command with secret #4",
                 "action": "python_code",
@@ -157,11 +158,11 @@ result = {
     """,
             }
         )
-        self.server = self.Server.create(
+        cls.server = cls.Server.create(
             {
                 "name": "Test Server",
-                "user_ids": [(6, 0, [self.user.id])],
-                "manager_ids": [(6, 0, [self.manager.id])],
+                "user_ids": [(6, 0, [cls.user.id])],
+                "manager_ids": [(6, 0, [cls.manager.id])],
                 "ssh_username": "test",
                 "ssh_password": "test",
                 "ip_v4_address": "127.0.0.1",
@@ -717,7 +718,9 @@ result = re.sub(pattern, replacement, value)
         # -- 2 --
         # Set invalid expression modifier
         self.variable_path.applied_expression = "invalid"
-        with mute_logger("odoo.addons.cetmix_tower_server"):
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
+        ):
             rendered_command = self.server_test_1._render_command(
                 self.command_create_dir
             )
@@ -757,9 +760,12 @@ result = re.sub(pattern, replacement, value)
                 "action": "ssh_command",
             }
         )
-        rendered_command = self.server_test_1._render_command(
-            command_with_complex_variable
-        )
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
+        ):
+            rendered_command = self.server_test_1._render_command(
+                command_with_complex_variable
+            )
         rendered_code_expected = "cd /meme/tower/test-sap-1"
         self.assertEqual(
             rendered_command["rendered_code"],
@@ -770,9 +776,12 @@ result = re.sub(pattern, replacement, value)
         # -- 4 --
         # Remove modifier from variable "Path" and check again
         self.variable_dir.applied_expression = None
-        rendered_command = self.server_test_1._render_command(
-            command_with_complex_variable
-        )
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
+        ):
+            rendered_command = self.server_test_1._render_command(
+                command_with_complex_variable
+            )
         rendered_code_expected = "cd /meme/tower/test-odoo-1"
 
         self.assertEqual(
@@ -1152,7 +1161,7 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(len(log_record_2), 1, msg="Must be a single log record")
 
-    def test_run_command_no_log(self):
+    def test_run_command_no_command_log(self):
         """Run command without creating a log record.
         Such commands return execution result directly.
         """
@@ -1161,9 +1170,9 @@ result = re.sub(pattern, replacement, value)
         custom_values = {"log": {"label": command_label}}
 
         # Run command for Server 1
-        command_result = self.server_test_1.with_context(no_log=True).run_command(
-            self.command_create_dir, **custom_values
-        )
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_dir, **custom_values)
         self.assertEqual(
             command_result["status"], 0, "Command status doesn't match expected one"
         )
@@ -1215,9 +1224,9 @@ else:
         """
         Run command with python action.
         """
-        command_result = self.server_test_1.with_context(no_log=True).run_command(
-            self.command_create_new_command
-        )
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_new_command)
         self.assertEqual(
             command_result["status"], 0, "The command result status must be 0"
         )
@@ -1229,9 +1238,9 @@ else:
 
         # Check error is raises
         self.secret_folder_key.secret_value = "not_a_secretFolder"
-        command_result = self.server_test_1.with_context(no_log=True).run_command(
-            self.command_create_new_command
-        )
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_new_command)
         self.assertEqual(
             command_result["status"],
             GENERAL_ERROR,
@@ -1280,13 +1289,13 @@ else:
         )
 
         # Reset access rule cache
-        self.env["ir.rule"].invalidate_cache()
+        self.env["ir.rule"].invalidate_recordset()
 
         # Run command
         server_status = self.server_test_1.status
 
         result = (
-            self.server_test_1.with_context(no_log=True)
+            self.server_test_1.with_context(no_command_log=True)
             .with_user(self.user)
             .run_command(self.command_create_new_command)
         )
@@ -1305,7 +1314,7 @@ else:
         self.command_create_new_command.write({"server_status": "stopping"})
 
         # Run command
-        self.server_test_1.with_context(no_log=True).run_command(
+        self.server_test_1.with_context(no_command_log=True).run_command(
             self.command_create_new_command
         )
 

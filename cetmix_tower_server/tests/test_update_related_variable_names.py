@@ -4,21 +4,16 @@ from .common import TestTowerCommon
 class TestUpdateRelatedVariableNames(TestTowerCommon):
     """Test Update Related Variable Names"""
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Create test variables
-        self.var1 = self.env["cx.tower.variable"].create(
-            {"name": "var1", "reference": "var1"}
-        )
-        self.var2 = self.env["cx.tower.variable"].create(
-            {"name": "var2", "reference": "var2"}
-        )
-        self.var3 = self.env["cx.tower.variable"].create(
-            {"name": "var3", "reference": "var3"}
-        )
+        cls.var1 = cls.Variable.create({"name": "var1", "reference": "var1"})
+        cls.var2 = cls.Variable.create({"name": "var2", "reference": "var2"})
+        cls.var3 = cls.Variable.create({"name": "var3", "reference": "var3"})
 
-        self.test_command = self.Command.create(
+        cls.test_command = cls.Command.create(
             {
                 "name": "Test Command",
                 "code": "{{ var1 }} and {{ var2 }}",
@@ -26,7 +21,7 @@ class TestUpdateRelatedVariableNames(TestTowerCommon):
             }
         )
 
-        self.server = self.Server.create(
+        cls.server = cls.Server.create(
             {
                 "name": "Test Server",
                 "color": 2,
@@ -34,33 +29,33 @@ class TestUpdateRelatedVariableNames(TestTowerCommon):
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "k",
-                "ssh_key_id": self.key_1.id,
+                "ssh_key_id": cls.key_1.id,
             }
         )
-        self.test_file = self.File.create(
+        cls.test_file = cls.File.create(
             {
-                "server_id": self.server.id,
+                "server_id": cls.server.id,
                 "code": "{{ var1 }} is used",
                 "server_dir": "path/to/{{ var2 }}",
                 "name": "{{ var3 }}.txt",
             }
         )
 
-        self.test_plan_line = self.plan_line.create(
+        cls.test_plan_line = cls.plan_line.create(
             {
-                "command_id": self.test_command.id,
+                "command_id": cls.test_command.id,
                 "condition": "Condition with {{ var1 }} and {{ var2 }}",
             }
         )
 
-        self.test_variable_value = self.VariableValue.create(
+        cls.test_variable_value = cls.VariableValue.create(
             {
-                "variable_id": self.variable_os.id,
+                "variable_id": cls.variable_os.id,
                 "value_char": "{{ var1 }} is here and {{ var2 }} too",
             }
         )
 
-        self.test_file_template = self.FileTemplate.create(
+        cls.test_file_template = cls.FileTemplate.create(
             {
                 "name": "Test File Template",
                 "code": "{{ var1 }} in code",

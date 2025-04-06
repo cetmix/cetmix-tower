@@ -89,9 +89,9 @@ class CxTowerKeyValue(models.Model):
                     _("Only one secret value can be defined for a partner")
                 )
 
-    def _read(self, fields):
+    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
         """Substitute fields based on api"""
-        res = super()._read(fields)
+        super()._read(fields)
         if not self.env.context.get("show_secret_value") and (
             "secret_value" in fields or fields == []
         ):
@@ -104,4 +104,32 @@ class CxTowerKeyValue(models.Model):
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
                     pass
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "secret_value" in vals:
+            self.invalidate_recordset(["secret_value"])
         return res
+
+    def _get_secret_value(self):
+        """Get secret value.
+        Override this method in case you need to implement custom key storages.
+
+        Returns:
+            str: secret value or None if no secret value is found
+        """
+
+        # Return None in case of empty recordset
+        if not self:
+            return
+        self.env.cr.execute(
+            """
+            SELECT secret_value
+            FROM cx_tower_key_value
+            WHERE id = %s
+            """,
+            [self.id],
+        )
+        result = self.env.cr.fetchone()
+        if result:
+            return result[0]

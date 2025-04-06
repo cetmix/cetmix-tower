@@ -6,37 +6,38 @@ from . import common
 class TestTowerVariableValue(common.TestTowerCommon):
     """Testing variable values."""
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Create additional test users
-        self.user2 = self.Users.create(
+        cls.user2 = cls.Users.create(
             {
                 "name": "Test User 2",
                 "login": "test_user2",
                 "email": "test_user2@example.com",
-                "groups_id": [(6, 0, [self.group_user.id])],
+                "groups_id": [(6, 0, [cls.group_user.id])],
             }
         )
 
-        self.manager2 = self.Users.create(
+        cls.manager2 = cls.Users.create(
             {
                 "name": "Test Manager 2",
                 "login": "test_manager2",
                 "email": "test_manager2@example.com",
-                "groups_id": [(6, 0, [self.group_manager.id])],
+                "groups_id": [(6, 0, [cls.group_manager.id])],
             }
         )
 
         # Create variables with different access levels
-        self.variable_level_1 = self.Variable.create(
+        cls.variable_level_1 = cls.Variable.create(
             {
                 "name": "Level 1 Variable",
                 "access_level": "1",
             }
         )
 
-        self.variable_level_2 = self.Variable.create(
+        cls.variable_level_2 = cls.Variable.create(
             {
                 "name": "Level 2 Variable",
                 "access_level": "2",
@@ -44,32 +45,32 @@ class TestTowerVariableValue(common.TestTowerCommon):
         )
 
         # Create servers
-        self.server_1 = self.Server.create(
+        cls.server_1 = cls.Server.create(
             {
                 "name": "Test Server 1",
                 "ip_v4_address": "localhost",
                 "ssh_username": "admin",
                 "ssh_password": "password",
-                "os_id": self.os_debian_10.id,
-                "user_ids": [(4, self.user.id)],
-                "manager_ids": [(4, self.manager.id)],
+                "os_id": cls.os_debian_10.id,
+                "user_ids": [(4, cls.user.id)],
+                "manager_ids": [(4, cls.manager.id)],
             }
         )
 
-        self.server_2 = self.Server.create(
+        cls.server_2 = cls.Server.create(
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "localhost",
                 "ssh_username": "admin",
                 "ssh_password": "password",
-                "os_id": self.os_debian_10.id,
-                "user_ids": [(4, self.user2.id)],
-                "manager_ids": [(4, self.manager2.id)],
+                "os_id": cls.os_debian_10.id,
+                "user_ids": [(4, cls.user2.id)],
+                "manager_ids": [(4, cls.manager2.id)],
             }
         )
 
         # Create test command
-        self.test_command = self.Command.create(
+        cls.test_command = cls.Command.create(
             {
                 "name": "Test Command",
                 "code": "echo 'test'",
@@ -77,26 +78,26 @@ class TestTowerVariableValue(common.TestTowerCommon):
         )
 
         # Create flight plan and its components
-        self.test_plan = self.Plan.create(
+        cls.test_plan = cls.Plan.create(
             {
                 "name": "Test Plan",
-                "user_ids": [(4, self.user.id)],
-                "manager_ids": [(4, self.manager.id)],
+                "user_ids": [(4, cls.user.id)],
+                "manager_ids": [(4, cls.manager.id)],
             }
         )
 
-        self.test_plan_line = self.plan_line.create(
+        cls.test_plan_line = cls.plan_line.create(
             {
                 "name": "Test Line",
-                "plan_id": self.test_plan.id,
-                "command_id": self.test_command.id,
+                "plan_id": cls.test_plan.id,
+                "command_id": cls.test_command.id,
             }
         )
 
-        self.test_plan_line_action = self.plan_line_action.create(
+        cls.test_plan_line_action = cls.plan_line_action.create(
             {
                 "name": "Test Action",
-                "line_id": self.test_plan_line.id,
+                "line_id": cls.test_plan_line.id,
                 "condition": "==",
                 "value_char": "0",
                 "action": "n",
@@ -104,84 +105,84 @@ class TestTowerVariableValue(common.TestTowerCommon):
         )
 
         # Create variable values
-        self.global_value_1 = self.VariableValue.create(
+        cls.global_value_1 = cls.VariableValue.create(
             {
-                "variable_id": self.variable_level_1.id,
+                "variable_id": cls.variable_level_1.id,
                 "value_char": "global_value_1",
             }
         )
 
-        self.global_value_2 = self.VariableValue.create(
+        cls.global_value_2 = cls.VariableValue.create(
             {
-                "variable_id": self.variable_level_2.id,
+                "variable_id": cls.variable_level_2.id,
                 "value_char": "global_value_2",
             }
         )
 
-        self.server_value_1 = self.VariableValue.create(
+        cls.server_value_1 = cls.VariableValue.create(
             {
-                "variable_id": self.variable_level_1.id,
+                "variable_id": cls.variable_level_1.id,
                 "value_char": "server_value_1",
-                "server_id": self.server_1.id,
+                "server_id": cls.server_1.id,
             }
         )
 
-        self.server_value_2 = self.VariableValue.with_user(self.manager).create(
+        cls.server_value_2 = cls.VariableValue.with_user(cls.manager).create(
             {
-                "variable_id": self.variable_level_2.id,
+                "variable_id": cls.variable_level_2.id,
                 "value_char": "server_value_2",
-                "server_id": self.server_1.id,
+                "server_id": cls.server_1.id,
             }
         )
 
-        self.plan_value_1 = self.VariableValue.create(
+        cls.plan_value_1 = cls.VariableValue.create(
             {
-                "variable_id": self.variable_level_1.id,
+                "variable_id": cls.variable_level_1.id,
                 "value_char": "plan_value_1",
-                "plan_line_action_id": self.test_plan_line_action.id,
+                "plan_line_action_id": cls.test_plan_line_action.id,
             }
         )
 
-        self.plan_value_2 = self.VariableValue.create(
+        cls.plan_value_2 = cls.VariableValue.create(
             {
-                "variable_id": self.variable_level_2.id,
+                "variable_id": cls.variable_level_2.id,
                 "value_char": "plan_value_2",
-                "plan_line_action_id": self.test_plan_line_action.id,
+                "plan_line_action_id": cls.test_plan_line_action.id,
             }
         )
 
         # Add server template setup
-        self.server_template = self.ServerTemplate.create(
+        cls.server_template = cls.ServerTemplate.create(
             {
                 "name": "Test Template",
                 "ssh_username": "admin",
                 "ssh_password": "password",
-                "os_id": self.os_debian_10.id,
+                "os_id": cls.os_debian_10.id,
                 "manager_ids": [
-                    (4, self.manager.id)
+                    (4, cls.manager.id)
                 ],  # Only managers should have access
             }
         )
 
         # Add template variable values
-        self.template_value_1 = self.VariableValue.create(
+        cls.template_value_1 = cls.VariableValue.create(
             {
-                "variable_id": self.variable_level_1.id,
+                "variable_id": cls.variable_level_1.id,
                 "value_char": "template_value_1",
-                "server_template_id": self.server_template.id,
+                "server_template_id": cls.server_template.id,
             }
         )
 
-        self.template_value_2 = self.VariableValue.with_user(self.manager).create(
+        cls.template_value_2 = cls.VariableValue.with_user(cls.manager).create(
             {
-                "variable_id": self.variable_level_2.id,
+                "variable_id": cls.variable_level_2.id,
                 "value_char": "template_value_2",
-                "server_template_id": self.server_template.id,
+                "server_template_id": cls.server_template.id,
             }
         )
 
         # Add server to plan
-        self.test_plan.write({"server_ids": [(4, self.server_1.id)]})
+        cls.test_plan.write({"server_ids": [(4, cls.server_1.id)]})
 
     def test_variable_value_access_rights(self):
         """

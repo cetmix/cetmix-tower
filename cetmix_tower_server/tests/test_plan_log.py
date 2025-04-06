@@ -9,25 +9,26 @@ from .common import TestTowerCommon
 class TestTowerPlanLog(TestTowerCommon):
     """Test the cx.tower.plan.log model access rights."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Create plans with different access levels
-        self.plan_level_1 = self.Plan.create(
+        cls.plan_level_1 = cls.Plan.create(
             {
                 "name": "Test Plan L1",
                 "access_level": "1",
             }
         )
 
-        self.plan_level_2 = self.Plan.create(
+        cls.plan_level_2 = cls.Plan.create(
             {
                 "name": "Test Plan L2",
                 "access_level": "2",
             }
         )
 
-        self.plan_level_3 = self.Plan.create(
+        cls.plan_level_3 = cls.Plan.create(
             {
                 "name": "Test Plan L3",
                 "access_level": "3",
@@ -35,32 +36,32 @@ class TestTowerPlanLog(TestTowerCommon):
         )
 
         # Create test plan logs with specific users
-        self.plan_log_1 = (
-            self.PlanLog.with_user(self.user)
+        cls.plan_log_1 = (
+            cls.PlanLog.with_user(cls.user)
             .sudo()
             .create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "plan_id": self.plan_level_1.id,
+                    "server_id": cls.server_test_1.id,
+                    "plan_id": cls.plan_level_1.id,
                     "start_date": fields.Datetime.now(),
                 }
             )
         )
 
-        self.plan_log_2 = (
-            self.PlanLog.with_user(self.manager)
+        cls.plan_log_2 = (
+            cls.PlanLog.with_user(cls.manager)
             .sudo()
             .create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "plan_id": self.plan_level_1.id,
+                    "server_id": cls.server_test_1.id,
+                    "plan_id": cls.plan_level_1.id,
                     "start_date": fields.Datetime.now(),
                 }
             )
         )
 
         # Create additional server for testing
-        self.server_2 = self.Server.create(
+        cls.server_2 = cls.Server.create(
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "localhost",

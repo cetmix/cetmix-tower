@@ -9,30 +9,31 @@ from .common import TestTowerCommon
 class TestTowerServerLog(TestTowerCommon):
     """Test the cx.tower.server.log model access rights."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Create test server logs with specific users
-        self.server_log_1 = (
-            self.ServerLog.with_user(self.user)
+        cls.server_log_1 = (
+            cls.ServerLog.with_user(cls.user)
             .sudo()
             .create(
                 {
                     "name": "Test Log 1",
-                    "server_id": self.server_test_1.id,
+                    "server_id": cls.server_test_1.id,
                     "log_type": "file",
                     "access_level": "1",
                 }
             )
         )
 
-        self.server_log_2 = (
-            self.ServerLog.with_user(self.manager)
+        cls.server_log_2 = (
+            cls.ServerLog.with_user(cls.manager)
             .sudo()
             .create(
                 {
                     "name": "Test Log 2",
-                    "server_id": self.server_test_1.id,
+                    "server_id": cls.server_test_1.id,
                     "log_type": "file",
                     "access_level": "1",
                 }
@@ -40,7 +41,7 @@ class TestTowerServerLog(TestTowerCommon):
         )
 
         # Create additional server for testing
-        self.server_2 = self.Server.create(
+        cls.server_2 = cls.Server.create(
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "localhost",

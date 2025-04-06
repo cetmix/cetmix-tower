@@ -288,18 +288,16 @@ class CxTowerServerTemplate(models.Model):
 
         # Create server
         server = (
-            self.env["cx.tower.server"]
+            self.env["cx.tower.server"]  # pylint: disable=context-overridden # new need a new clean context
             .sudo()
-            .with_context(**context)
+            .with_context(context)
             .create(server_values)
             .sudo()
         )
 
         # Add variable values
         if variable_values:
-            server.with_context(**context).write(
-                {"variable_value_ids": variable_values}
-            )
+            server.with_context(context).write({"variable_value_ids": variable_values})  # pylint: disable=context-overridden # new need a new clean context
 
         # Create server logs
         logs = server.server_log_ids.filtered(lambda rec: rec.log_type == "file")

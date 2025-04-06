@@ -109,6 +109,12 @@ class CxTowerKey(models.Model):
                         }
                     )
 
+    def write(self, vals):
+        res = super().write(vals)
+        if "secret_value" in vals:
+            self.invalidate_recordset(["secret_value"])
+        return res
+
     def _get_reference_pattern(self):
         """
         Override mixin method
@@ -135,9 +141,9 @@ class CxTowerKey(models.Model):
             key_prefix = None
         return key_prefix
 
-    def _read(self, fields):
+    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
         """Substitute fields based on api"""
-        res = super()._read(fields)
+        super()._read(fields)
         if not self.env.context.get("show_secret_value") and (
             "secret_value" in fields or fields == []
         ):
@@ -149,7 +155,6 @@ class CxTowerKey(models.Model):
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
                     pass
-        return res
 
     def _parse_code_and_return_key_values(self, code, pythonic_mode=False, **kwargs):
         """Replaces key placeholders in code with the corresponding values,
@@ -379,11 +384,7 @@ class CxTowerKey(models.Model):
                 key_value = filtered_key_values[0]
 
         if key_value:
-            return (
-                key_value.with_context(show_secret_value=True)
-                .read(["secret_value"])[0]
-                .get("secret_value")
-            )
+            return key_value._get_secret_value()
 
     def _replace_with_spoiler(self, code, key_values):
         """Helper function that replaces clean text keys in code with spoiler.
@@ -415,3 +416,27 @@ class CxTowerKey(models.Model):
             code = code.replace(key_value, self.SECRET_VALUE_SPOILER)
 
         return code
+
+    def _get_secret_value(self):
+        """Get secret value.
+        Override this method in case you need
+        to implement custom key storages.
+
+        Returns:
+            str: secret value or None if no secret value is found
+        """
+
+        # Return None in case of empty recordset
+        if not self:
+            return
+        self.env.cr.execute(
+            """
+            SELECT secret_value
+            FROM cx_tower_key
+            WHERE id = %s
+            """,
+            [self.id],
+        )
+        result = self.env.cr.fetchone()
+        if result:
+            return result[0]
