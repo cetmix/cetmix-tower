@@ -124,7 +124,6 @@ class CxTowerCommand(models.Model):
     )
     server_status = fields.Selection(
         selection=lambda self: self.env["cx.tower.server"]._selection_status(),
-        string="Server Status",
         help="Set the following status if command finishes with success. "
         "Leave 'Undefined' if you don't need to update the status",
     )

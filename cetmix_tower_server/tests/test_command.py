@@ -903,7 +903,7 @@ result = re.sub(pattern, replacement, value)
         self.assertEqual(
             log_record.code,
             rendered_code_expected,
-            msg="Rendered code must be '{}'".format(rendered_code_expected),
+            msg=f"Rendered code must be '{rendered_code_expected}'",
         )
         self.assertEqual(
             log_record.command_status, 0, msg="Command status must be equal to 0"

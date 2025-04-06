@@ -32,7 +32,7 @@ class CxTowerKeyValue(models.Model):
         compute="_compute_is_global",
         help="This value is applicable to all servers and partners",
     )
-    secret_value = fields.Text(string="Secret Value")
+    secret_value = fields.Text()
 
     @api.depends("server_id", "partner_id")
     def _compute_is_global(self):
@@ -91,7 +91,7 @@ class CxTowerKeyValue(models.Model):
 
     def _read(self, fields):
         """Substitute fields based on api"""
-        super()._read(fields)
+        res = super()._read(fields)
         if not self.env.context.get("show_secret_value") and (
             "secret_value" in fields or fields == []
         ):
@@ -100,7 +100,8 @@ class CxTowerKeyValue(models.Model):
             for record in self:
                 try:
                     record._cache["secret_value"] = placeholder
-                except Exception:
+                except Exception:  # pylint: disable=except-pass
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
                     pass
+        return res

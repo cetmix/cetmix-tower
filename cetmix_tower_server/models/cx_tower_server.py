@@ -328,7 +328,7 @@ class CxTowerServer(models.Model):
 
     def _read(self, fields):
         """Substitute fields based on api"""
-        super()._read(fields)
+        res = super()._read(fields)
         if not self.env.context.get("show_host_key") and (
             "host_key" in fields or fields == []
         ):
@@ -339,10 +339,11 @@ class CxTowerServer(models.Model):
                     record._cache["host_key"] = (
                         spoiler if record._cache["host_key"] else None
                     )
-                except Exception:
+                except Exception:  # pylint: disable=except-pass
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
                     pass
+        return res
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
@@ -359,7 +360,7 @@ class CxTowerServer(models.Model):
             )
         default["file_ids"] = file_ids.ids
 
-        result = super(CxTowerServer, self).copy(default=default)
+        result = super().copy(default=default)
 
         for secret in self.secret_ids:
             secret.sudo().copy({"server_id": result.id})
@@ -1772,7 +1773,7 @@ class CxTowerServer(models.Model):
 
     def toggle_active(self):
         """Archiving related server"""
-        super().toggle_active()
+        res = super().toggle_active()
         server_active = self.with_context(active_test=False).filtered(
             lambda x: x.active
         )
@@ -1781,6 +1782,7 @@ class CxTowerServer(models.Model):
             server_active.server_toggle_active(False)
         if server_not_active:
             server_not_active.server_toggle_active(True)
+        return res
 
     def _is_being_deleted(self):
         """Check if the server is being deleted.
