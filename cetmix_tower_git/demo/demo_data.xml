@@ -19,7 +19,7 @@
         <field name="source_id" ref="source_demo_cetmix_tower" />
         <field name="url">https://github.com/cetmix/cetmix-tower.git</field>
         <field name="head_type">branch</field>
-        <field name="head">14.0-dev</field>
+        <field name="head">14.0</field>
     </record>
     <record id="remote_demo_cetmix_tower_pr_176" model="cx.tower.git.remote">
         <field name="source_id" ref="source_demo_cetmix_tower" />
