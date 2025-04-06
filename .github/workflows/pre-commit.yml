@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - "14.0"
-      - "14.0-dev"
 
 jobs:
   pre-commit:
