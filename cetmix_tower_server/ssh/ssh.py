@@ -1,7 +1,7 @@
 import io
 import logging
 import time
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Union
 
 _logger = logging.getLogger(__name__)
 
@@ -249,7 +249,7 @@ class CommandExecutor:
 
     def exec_command(
         self, command: str, sudo: Optional[str] = None
-    ) -> Tuple[int, List[str], List[str]]:
+    ) -> tuple[int, list[str], list[str]]:
         """
         Run a command on the remote server.
         """
