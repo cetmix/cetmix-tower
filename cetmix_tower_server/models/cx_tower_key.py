@@ -137,7 +137,7 @@ class CxTowerKey(models.Model):
 
     def _read(self, fields):
         """Substitute fields based on api"""
-        super()._read(fields)
+        res = super()._read(fields)
         if not self.env.context.get("show_secret_value") and (
             "secret_value" in fields or fields == []
         ):
@@ -145,10 +145,11 @@ class CxTowerKey(models.Model):
             for record in self:
                 try:
                     record._cache["secret_value"] = self.SECRET_VALUE_PLACEHOLDER
-                except Exception:
+                except Exception:  # pylint: disable=except-pass
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
                     pass
+        return res
 
     def _parse_code_and_return_key_values(self, code, pythonic_mode=False, **kwargs):
         """Replaces key placeholders in code with the corresponding values,

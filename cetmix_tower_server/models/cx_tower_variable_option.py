@@ -25,7 +25,7 @@ class TowerVariableOption(models.Model):
         store=True,
         default=None,
     )
-    name = fields.Char(string="Name", required=True)
+    name = fields.Char(required=True)
     value_char = fields.Char(string="Value", required=True)
     variable_id = fields.Many2one(
         comodel_name="cx.tower.variable",

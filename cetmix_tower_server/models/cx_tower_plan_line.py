@@ -74,7 +74,6 @@ class CxTowerPlanLine(models.Model):
         store=True,
     )
     condition = fields.Char(
-        string="Condition",
         help="Conditions under which this Flight Plan Line "
         "will be launched. e.g.: {{ odoo_version}} == '14.0'",
     )
