@@ -77,7 +77,7 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         res = super().create(vals_list)
         if post_create_vals_list:
             # Create related records with post-create field
-            for post_create_vals, record in zip(post_create_vals_list, res):
+            for post_create_vals, record in zip(post_create_vals_list, res):  # noqa: B905 we need to run on Python 3.10
                 if post_create_vals:
                     record.write(post_create_vals)
 

@@ -289,7 +289,15 @@ class CxTowerServer(models.Model):
                 validation_error = "\n".join(validation_errors)
                 raise ValidationError(validation_error)
 
+    def write(self, vals):
+        """Invalidate host_key cache"""
+        res = super().write(vals)
+        if "host_key" in vals:
+            self.invalidate_recordset(["host_key"])
+        return res
+
     def unlink(self):
+        """Run post-delete flight plan"""
         servers_to_delete = self.env["cx.tower.server"]
         flight_plan_log_obj = self.env["cx.tower.plan.log"]
 
@@ -326,14 +334,12 @@ class CxTowerServer(models.Model):
 
         return super(CxTowerServer, servers_to_delete).unlink()
 
-    def _read(self, fields):
-        """Substitute fields based on api"""
-        res = super()._read(fields)
-        if not self.env.context.get("show_host_key") and (
-            "host_key" in fields or fields == []
-        ):
-            spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
-            # Public user used for substitution
+    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
+        """Replace host_key with secret value spoiler"""
+        super()._read(fields)
+        spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
+        # Public user used for substitution
+        if "host_key" in fields or fields == []:
             for record in self:
                 try:
                     record._cache["host_key"] = (
@@ -343,7 +349,6 @@ class CxTowerServer(models.Model):
                     # skip SpecialValue
                     # (e.g. for missing record or access right)
                     pass
-        return res
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
@@ -389,7 +394,7 @@ class CxTowerServer(models.Model):
         """Show host key"""
         self.ensure_one()
         try:
-            host_key = self._get_host_key()
+            host_key = self._get_host_key_from_host()
             is_error = False
         except Exception as error:
             is_error = (True,)
@@ -518,11 +523,7 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         self = self.sudo()
         try:
-            host_key = (
-                self.with_context(show_host_key=True)
-                .read(["host_key"])[0]
-                .get("host_key")
-            )
+            host_key = self._get_host_key_value()
 
             # Check host only if IP address is present
             if (
@@ -716,20 +717,36 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         # To ensure that key will be read
         # regardless of access rights
-        self = self.sudo()
-        if self.ssh_key_id:
+        if self.sudo().ssh_key_id:
             # Use context key to read secret value
-            ssh_key = (
-                self.ssh_key_id.sudo()
-                .with_context(show_secret_value=True)
-                .read(["secret_value"])[0]["secret_value"]
-            )
+            ssh_key = self.ssh_key_id._get_secret_value()
         else:
             ssh_key = None
         return ssh_key
 
+    def _get_host_key_value(self):
+        """Get host key value
+
+        Returns:
+            Char: Host key value
+        """
+        # Return None in case of empty recordset
+        if not self:
+            return
+        self.env.cr.execute(
+            """
+            SELECT host_key
+            FROM cx_tower_server
+            WHERE id = %s
+            """,
+            [self.id],
+        )
+        result = self.env.cr.fetchone()
+        if result:
+            return result[0]
+
     @ensure_ssh_disconnect
-    def _get_host_key(self, raise_on_error=True, timeout=60):
+    def _get_host_key_from_host(self, raise_on_error=True, timeout=60):
         """Get host key
 
         Args:
@@ -800,14 +817,16 @@ class CxTowerServer(models.Model):
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
         Context:
-            no_log (Bool): set this context key to `True` to disable log creation.
+            no_command_log (Bool): set this context key to `True`
+                to disable log creation.
             Command running results will be returned instead.
             If any non command related error occurs in the command running flow
             an exception will be raised.
-            IMPORTANT: be aware when running commands with `no_log=True`
+            IMPORTANT: be aware when running commands with `no_command_log=True`
             because no `Allow Parallel Run` check will be done!
         Returns:
-            dict(): command running result if `no_log` context value == True else None
+            dict(): command running result if `no_command_log`
+                context value == True else None
         """
         self.ensure_one()
 
@@ -831,10 +850,10 @@ class CxTowerServer(models.Model):
 
         # Check if no log record should be created
 
-        no_log = self._context.get("no_log")
+        no_command_log = self._context.get("no_command_log")
 
         # Get log vals from kwargs and update them
-        if not no_log:
+        if not no_command_log:
             log_obj = self.env["cx.tower.command.log"]
             log_vals = kwargs.get("log", {})
             log_vals.update({"use_sudo": sudo})
@@ -877,7 +896,7 @@ class CxTowerServer(models.Model):
         kwargs.update({"key": key_vals})
 
         # Save rendered code to log
-        if no_log:
+        if no_command_log:
             log_record = None
         else:
             log_vals.update(

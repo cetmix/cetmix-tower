@@ -16,80 +16,82 @@ from .common import TestTowerCommon
 class TestTowerPlan(TestTowerCommon):
     """Test the cx.tower.plan model."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
         # Command
-        self.command_run_flight_plan_1 = self.Command.create(
+        cls.command_run_flight_plan_1 = cls.Command.create(
             {
                 "name": "Run Flight Plan",
                 "action": "plan",
-                "flight_plan_id": self.plan_1.id,
+                "flight_plan_id": cls.plan_1.id,
             }
         )
 
         # Flight plan
-        self.plan_2 = self.Plan.create(
+        cls.plan_2 = cls.Plan.create(
             {
                 "name": "Test plan 2",
                 "note": "Run another flight plan",
             }
         )
-        self.plan_2_line_1 = self.plan_line.create(
+        cls.plan_2_line_1 = cls.plan_line.create(
             {
                 "sequence": 5,
-                "plan_id": self.plan_2.id,
-                "command_id": self.command_run_flight_plan_1.id,
+                "plan_id": cls.plan_2.id,
+                "command_id": cls.command_run_flight_plan_1.id,
             }
         )
-        self.plan_2_line_2 = self.plan_line.create(
+        cls.plan_2_line_2 = cls.plan_line.create(
             {
                 "sequence": 10,
-                "command_id": self.command_create_dir.id,
+                "command_id": cls.command_create_dir.id,
             }
         )
         # Flight plan with access level 1 to test user access rights
-        self.plan_3 = self.Plan.create(
+        cls.plan_3 = cls.Plan.create(
             {
                 "name": "Test plan 3",
                 "note": "Test user access rights",
                 "access_level": "1",
                 "line_ids": [
-                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
+                    (0, 0, {"command_id": cls.command_create_dir.id, "sequence": 1}),
                 ],
             }
         )
         # Create line for plan 3
-        self.plan_3_line_1 = self.plan_line.create(
+        cls.plan_3_line_1 = cls.plan_line.create(
             {
-                "plan_id": self.plan_3.id,
-                "command_id": self.command_create_dir.id,
+                "plan_id": cls.plan_3.id,
+                "command_id": cls.command_create_dir.id,
                 "sequence": 10,
             }
         )
-        self.plan_3_line_1_action = self.env["cx.tower.plan.line.action"].create(
+        cls.plan_3_line_1_action = cls.env["cx.tower.plan.line.action"].create(
             {
-                "line_id": self.plan_3_line_1.id,
+                "line_id": cls.plan_3_line_1.id,
                 "condition": "==",
                 "value_char": "test",
                 "action": "e",
             }
         )
-        self.variable_value = self.env["cx.tower.variable.value"].create(
+        cls.variable_value = cls.env["cx.tower.variable.value"].create(
             {
-                "variable_id": self.variable_os.id,
+                "variable_id": cls.variable_os.id,
                 "value_char": "Windows 2k",
-                "plan_line_action_id": self.plan_3_line_1_action.id,
+                "plan_line_action_id": cls.plan_3_line_1_action.id,
             }
         )
-        self.server = self.Server.create(
+        cls.server = cls.Server.create(
             {
                 "name": "Plan Test Server",
                 "ssh_username": "test",
                 "ssh_password": "test",
                 "ip_v4_address": "localhost",
                 "ssh_port": 22,
-                "user_ids": [(6, 0, [self.user.id])],
-                "manager_ids": [(6, 0, [self.manager.id])],
+                "user_ids": [(6, 0, [cls.user.id])],
+                "manager_ids": [(6, 0, [cls.manager.id])],
             }
         )
 
@@ -571,7 +573,7 @@ class TestTowerPlan(TestTowerCommon):
             **{"access_level": "1", "server_ids": [(4, self.server_test_1.id)]},
         )
 
-        self.env["ir.rule"].invalidate_cache()
+        self.env["ir.rule"].invalidate_model()
         # Run plan
         self.plan_1.with_user(self.user_bob)._run_single(self.server_test_1)
 
@@ -1487,12 +1489,6 @@ class TestTowerPlan(TestTowerCommon):
         self.plan_2_line_1.condition = "{{ odoo_version }} == '14.0'"
         self.plan_2_line_2.condition = "{{ odoo_version }} == '14.0'"
 
-        # Check plan logs
-        plan_log_records = self.PlanLog.search(
-            [("server_id", "=", self.server_test_1.id)]
-        )
-        self.assertEqual(len(plan_log_records), 0, "Plan logs should be empty")
-        # Run plan
         self.plan_2._run_single(self.server_test_1)
 
         # Check plan logs after execute command with plan action

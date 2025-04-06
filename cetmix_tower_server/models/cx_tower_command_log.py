@@ -14,7 +14,11 @@ class CxTowerCommandLog(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char(compute="_compute_name", store=True)
-    label = fields.Char(help="Custom label. Can be used for search/tracking")
+    label = fields.Char(
+        help="Custom label. Can be used for search/tracking",
+        index="trigram",
+        unaccent=False,
+    )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"
     )

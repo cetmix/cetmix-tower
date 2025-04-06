@@ -9,24 +9,25 @@ class TestTowerServerTemplate(TestTowerCommon):
     Test the server template model
     """
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Create two "Manager" group users
-        self.manager1 = self.Users.create(
+        cls.manager1 = cls.Users.create(
             {
                 "name": "Manager 1",
                 "login": "manager1",
                 "email": "manager1@example.com",
-                "groups_id": [(6, 0, [self.group_manager.id])],
+                "groups_id": [(6, 0, [cls.group_manager.id])],
             }
         )
-        self.manager2 = self.Users.create(
+        cls.manager2 = cls.Users.create(
             {
                 "name": "Manager 2",
                 "login": "manager2",
                 "email": "manager2@example.com",
-                "groups_id": [(6, 0, [self.group_manager.id])],
+                "groups_id": [(6, 0, [cls.group_manager.id])],
             }
         )
 
@@ -132,8 +133,8 @@ class TestTowerServerTemplate(TestTowerCommon):
         """
         action = self.server_template_sample.action_create_server()
         wizard = (
-            self.env["cx.tower.server.template.create.wizard"]
-            .with_context(**action["context"])
+            self.env["cx.tower.server.template.create.wizard"]  # pylint: disable=context-overridden we need a new clean context
+            .with_context(action["context"])
             .new({})
         )
         self.assertEqual(
@@ -790,11 +791,17 @@ class TestTowerServerTemplate(TestTowerCommon):
         variables from wizard and option
         """
         # create new variable option
+        test_variable = self.Variable.create(
+            {
+                "name": "Test Variable",
+                "variable_type": "s",
+            }
+        )
         option = self.VariableOption.create(
             {
                 "name": "test",
                 "value_char": "test",
-                "variable_id": self.variable_dir.id,
+                "variable_id": test_variable.id,
             }
         )
 
@@ -815,7 +822,7 @@ class TestTowerServerTemplate(TestTowerCommon):
                         0,
                         0,
                         {
-                            "variable_id": self.variable_dir.id,
+                            "variable_id": test_variable.id,
                             "option_id": option.id,
                             "required": False,
                         },
@@ -828,8 +835,8 @@ class TestTowerServerTemplate(TestTowerCommon):
 
         # Open the wizard and fill in the data
         wizard = (
-            self.env["cx.tower.server.template.create.wizard"]
-            .with_context(**action["context"])
+            self.env["cx.tower.server.template.create.wizard"]  # pylint: disable=context-overridden we new need a new clean context
+            .with_context(action["context"])
             .create(
                 {
                     "name": "Server from Template",

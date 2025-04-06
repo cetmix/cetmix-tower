@@ -4,7 +4,7 @@
     "name": "Cetmix Tower Server",
     "summary": "Manage servers and applications from Odoo",
     "version": "16.0.1.0.0",
-    "development_status": "Production/Stable",
+    "development_status": "Beta",
     "category": "Productivity",
     "website": "https://cetmix.com",
     "live_test_url": "https://cetmix.com/tower",
@@ -47,7 +47,6 @@
         "wizards/cx_tower_plan_run_wizard_view.xml",
         "wizards/cx_tower_server_template_create_wizard_view.xml",
         "wizards/cx_tower_server_host_key_wizard_view.xml",
-        "views/web_assets_backend.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
@@ -70,4 +69,10 @@
     "demo": [
         "demo/demo_data.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "cetmix_tower_server/static/src/**/*.js",
+            "cetmix_tower_server/static/src/**/*.scss",
+        ],
+    },
 }

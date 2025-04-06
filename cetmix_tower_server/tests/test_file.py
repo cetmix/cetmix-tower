@@ -5,9 +5,11 @@ from .common import TestTowerCommon
 
 
 class TestTowerFile(TestTowerCommon):
-    def setUp(self):
-        super().setUp()
-        self.file_template = self.FileTemplate.create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.file_template = cls.FileTemplate.create(
             {
                 "name": "Test",
                 "file_name": "test.txt",
@@ -15,32 +17,33 @@ class TestTowerFile(TestTowerCommon):
                 "code": "Hello, world!",
             }
         )
-        self.file = self.File.create(
+        cls.file = cls.File.create(
             {
                 "source": "tower",
-                "template_id": self.file_template.id,
-                "server_id": self.server_test_1.id,
+                "template_id": cls.file_template.id,
+                "server_id": cls.server_test_1.id,
             }
         )
-        self.file_2 = self.File.create(
+        cls.file_2 = cls.File.create(
             {
                 "name": "test.txt",
                 "source": "server",
-                "server_id": self.server_test_1.id,
+                "server_id": cls.server_test_1.id,
                 "server_dir": "/var/tmp",
             }
         )
 
         # Create a dummy Server record that will be referenced by file records.
-        self.server = self.Server.create(
+        cls.server = cls.Server.create(
             {
                 "name": "Test Server",
-                "manager_ids": [(6, 0, [self.manager.id])],
-                "user_ids": [(6, 0, [self.user.id])],
+                "manager_ids": [(6, 0, [cls.manager.id])],
+                "user_ids": [(6, 0, [cls.user.id])],
                 "ssh_username": "admin",
                 "ssh_password": "password",
                 "ssh_auth_mode": "p",
-                "os_id": self.os_debian_10.id,
+                "skip_host_key": True,
+                "os_id": cls.os_debian_10.id,
                 "ip_v4_address": "localhost",
             }
         )

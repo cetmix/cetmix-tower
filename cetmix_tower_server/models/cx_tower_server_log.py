@@ -14,7 +14,7 @@ class CxTowerServerLog(models.Model):
     _inherit = ["cx.tower.access.mixin", "cx.tower.reference.mixin"]
     _description = "Cetmix Tower Server Log"
 
-    NO_LOG_FETCHED_MESSAGE = _("<log is empty>")
+    no_command_log_FETCHED_MESSAGE = _("<log is empty>")
 
     active = fields.Boolean(default=True)
     server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
@@ -96,7 +96,7 @@ class CxTowerServerLog(models.Model):
             elif rec.log_type == "command" and rec.command_id:
                 log_text = rec._get_log_from_command()
             else:
-                log_text = self.NO_LOG_FETCHED_MESSAGE
+                log_text = self.no_command_log_FETCHED_MESSAGE
             rec.log_text = self._format_log_text(log_text)
 
     def _get_copied_name(self, force_name=None):
@@ -124,9 +124,9 @@ class CxTowerServerLog(models.Model):
         """
         self.ensure_one()
         if self.file_id.source == "server":
-            return self.file_id.code or self.NO_LOG_FETCHED_MESSAGE
+            return self.file_id.code or self.no_command_log_FETCHED_MESSAGE
         if self.file_id.source == "tower":
-            return self.file_id.code_on_server or self.NO_LOG_FETCHED_MESSAGE
+            return self.file_id.code_on_server or self.no_command_log_FETCHED_MESSAGE
 
     def _get_log_from_command(self):
         """Get log from a command.
@@ -136,10 +136,10 @@ class CxTowerServerLog(models.Model):
         self.ensure_one()
 
         use_sudo = self.use_sudo and self.server_id.use_sudo
-        command_result = self.server_id.with_context(no_log=True).run_command(
+        command_result = self.server_id.with_context(no_command_log=True).run_command(
             self.command_id, sudo=use_sudo
         )
-        log_text = self.NO_LOG_FETCHED_MESSAGE
+        log_text = self.no_command_log_FETCHED_MESSAGE
         if command_result:
             response = command_result["response"]
             error = command_result["error"]

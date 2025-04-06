@@ -9,29 +9,31 @@ from .common import TestTowerCommon
 class TestTowerPlanLine(TestTowerCommon):
     """Test the cx.tower.plan.line model access rights."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
         # Create a test plan with access level 1 for user tests
-        self.test_plan = self.Plan.create(
+        cls.test_plan = cls.Plan.create(
             {
                 "name": "Test Access Plan",
                 "access_level": "1",
-                "user_ids": [(6, 0, [self.user.id])],
-                "manager_ids": [(6, 0, [self.manager.id])],
+                "user_ids": [(6, 0, [cls.user.id])],
+                "manager_ids": [(6, 0, [cls.manager.id])],
             }
         )
 
         # Create a test plan line
-        self.test_line = self.plan_line.create(
+        cls.test_line = cls.plan_line.create(
             {
-                "plan_id": self.test_plan.id,
-                "command_id": self.command_create_dir.id,
+                "plan_id": cls.test_plan.id,
+                "command_id": cls.command_create_dir.id,
                 "sequence": 10,
             }
         )
 
         # Create additional servers for testing server-based access
-        self.server_2 = self.Server.create(
+        cls.server_2 = cls.Server.create(
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "localhost",
@@ -43,7 +45,7 @@ class TestTowerPlanLine(TestTowerCommon):
             }
         )
 
-        self.server_3 = self.Server.create(
+        cls.server_3 = cls.Server.create(
             {
                 "name": "Test Server 3",
                 "ip_v4_address": "localhost",
