@@ -60,7 +60,7 @@ class CetmixTower(models.AbstractModel):
 
         # Will return command result if get_result is True
         # Otherwise will save to log and return None
-        command_result = server.with_context(no_log=get_result).run_command(
+        command_result = server.with_context(no_command_log=get_result).run_command(
             command, **kwargs
         )
 

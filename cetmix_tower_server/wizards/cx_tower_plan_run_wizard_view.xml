@@ -43,14 +43,13 @@
                         readonly="1"
                         attrs="{'invisible': [('note', '=', False)]}"
                     />
-                    <field name="plan_line_ids">
+                    <field
+                        name="plan_line_ids"
+                        attrs="{'invisible': [('plan_id', '=', False)]}"
+                    >
                         <tree decoration-bf="action=='plan'">
                             <field name="name" />
-                            <field
-                                name="action"
-                                optional="show"
-                                groups="cetmix_tower_server.group_manager"
-                            />
+                            <field name="action" optional="show" />
                             <field
                                 name="tag_ids"
                                 optional="show"

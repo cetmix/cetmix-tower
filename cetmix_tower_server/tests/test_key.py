@@ -6,22 +6,22 @@ from .common import TestTowerCommon
 class TestTowerKey(TestTowerCommon):
     """Test class for tower key."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
         # Create another manager for testing
-        self.manager_2 = self.Users.create(
+        cls.manager_2 = cls.Users.create(
             {
                 "name": "Second Manager",
                 "login": "manager2",
                 "email": "manager2@test.com",
-                "groups_id": [
-                    (4, self.env.ref("cetmix_tower_server.group_manager").id)
-                ],
+                "groups_id": [(4, cls.env.ref("cetmix_tower_server.group_manager").id)],
             }
         )
 
         # Create test servers
-        self.server_1 = self.Server.create(
+        cls.server_1 = cls.Server.create(
             {
                 "name": "Test Server 1",
                 "ip_v4_address": "192.168.1.1",
@@ -31,7 +31,7 @@ class TestTowerKey(TestTowerCommon):
                 "ssh_auth_mode": "p",
             }
         )
-        self.server_2 = self.Server.create(
+        cls.server_2 = cls.Server.create(
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "192.168.1.2",
@@ -41,7 +41,7 @@ class TestTowerKey(TestTowerCommon):
                 "ssh_auth_mode": "p",
             }
         )
-        self.test_key = self.Key.create(
+        cls.test_key = cls.Key.create(
             {"name": "Test Key", "key_type": "s", "secret_value": "test value"}
         )
 
@@ -734,14 +734,14 @@ class TestTowerKey(TestTowerCommon):
         manager_key_value.browse(global_value.id).write(
             {"secret_value": "updated global"}
         )
-        self.assertEqual(global_value.secret_value, "updated global")
+        self.assertEqual(global_value._get_secret_value(), "updated global")
 
         # Add as server manager - should write to server value
         self.server_1.write({"manager_ids": [(4, self.manager.id)]})
         manager_key_value.browse(server_value.id).write(
             {"secret_value": "updated server"}
         )
-        self.assertEqual(server_value.secret_value, "updated server")
+        self.assertEqual(server_value._get_secret_value(), "updated server")
 
         # Test create access
         for_bob = manager_key_value.create(
@@ -828,7 +828,7 @@ class TestTowerKey(TestTowerCommon):
 
         # Write
         root_key_value.browse(value.id).write({"secret_value": "updated value"})
-        self.assertEqual(value.secret_value, "updated value")
+        self.assertEqual(value._get_secret_value(), "updated value")
 
         # Delete
         value.unlink()

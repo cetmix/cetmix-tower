@@ -9,44 +9,46 @@ from .common import TestTowerCommon
 class TestTowerPlanLineAction(TestTowerCommon):
     """Test the cx.tower.plan.line.action model access rights."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
         # Create a test server
-        self.server = self.Server.create(
+        cls.server = cls.Server.create(
             {
                 "name": "Test Server",
                 "ip_v4_address": "localhost",
                 "ssh_username": "test",
                 "ssh_password": "test",
                 "ssh_port": 22,
-                "user_ids": [(6, 0, [self.user.id])],
-                "manager_ids": [(6, 0, [self.manager.id])],
+                "user_ids": [(6, 0, [cls.user.id])],
+                "manager_ids": [(6, 0, [cls.manager.id])],
             }
         )
 
         # Create a test plan with access level 1 for user tests
-        self.test_plan = self.Plan.create(
+        cls.test_plan = cls.Plan.create(
             {
                 "name": "Test Access Plan",
                 "access_level": "1",
-                "user_ids": [(6, 0, [self.user.id])],
-                "manager_ids": [(6, 0, [self.manager.id])],
+                "user_ids": [(6, 0, [cls.user.id])],
+                "manager_ids": [(6, 0, [cls.manager.id])],
             }
         )
 
         # Create a test plan line
-        self.test_plan_line = self.plan_line.create(
+        cls.test_plan_line = cls.plan_line.create(
             {
-                "plan_id": self.test_plan.id,
-                "command_id": self.command_create_dir.id,
+                "plan_id": cls.test_plan.id,
+                "command_id": cls.command_create_dir.id,
                 "sequence": 10,
             }
         )
 
         # Create a test action
-        self.test_action = self.plan_line_action.create(
+        cls.test_action = cls.plan_line_action.create(
             {
-                "line_id": self.test_plan_line.id,
+                "line_id": cls.test_plan_line.id,
                 "condition": "==",
                 "value_char": "0",
                 "action": "n",

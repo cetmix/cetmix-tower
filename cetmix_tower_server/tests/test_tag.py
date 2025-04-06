@@ -43,6 +43,14 @@ class TestTowerTag(TestTowerCommon):
         # Link tag to server
         test_tag.write({"server_ids": [(4, self.server_test_1.id)]})
 
+        # Access error because user doesn't have access to server
+        with self.assertRaises(AccessError):
+            test_tag.with_user(self.user).unlink()
+
+        # Add 'manager' to server
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+
+        # Validation error
         with self.assertRaises(ValidationError):
             test_tag.with_user(self.manager).unlink()
 

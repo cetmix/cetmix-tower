@@ -8,18 +8,19 @@ class TestTowerReference(TestTowerCommon):
     We are using ServerTemplate for that.
     """
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
-        self.plan_test_mixin = self.Plan.create(
+        cls.plan_test_mixin = cls.Plan.create(
             {"name": "Test Plan reference mixin", "note": "Test Note reference mixin"}
         )
 
-        self.plan_line_reference_mixin = self.plan_line.create(
+        cls.plan_line_reference_mixin = cls.plan_line.create(
             {
-                "plan_id": self.plan_test_mixin.id,
+                "plan_id": cls.plan_test_mixin.id,
                 "sequence": 1,
-                "command_id": self.command_list_dir.id,
+                "command_id": cls.command_list_dir.id,
             }
         )
 
@@ -37,38 +38,30 @@ class TestTowerReference(TestTowerCommon):
         # --- 2 ---
         # Create a new server template with custom reference
         # and ensure that it's fixed according to the pattern
-
         new_template = self.ServerTemplate.create(
             {"name": "Such Much Template", "reference": " Some reference x*((*)) "}
         )
-
         self.assertEqual(new_template.reference, "some_reference_x")
 
         # --- 3 ---
         # Try to create another server template with the same reference and ensure
         # that its reference is corrected automatically
-
         yet_another_template = self.ServerTemplate.create(
             {"name": "Yet another template", "reference": "some_reference_x"}
         )
-
         self.assertEqual(yet_another_template.reference, "some_reference_x_2")
 
         # -- 4 ---
         # Duplicate the server template and ensure that its name and reference
         # are generated properly
-
         yet_another_template_copy = yet_another_template.copy()
-
         self.assertEqual(yet_another_template_copy.name, "Yet another template (copy)")
-
         self.assertEqual(
             yet_another_template_copy.reference, "yet_another_template_copy"
         )
 
         # -- 5 ---
         # Update reference and ensure that updated value is correct
-
         yet_another_template_copy.write({"reference": " Some reference x*((*)) "})
         self.assertEqual(yet_another_template_copy.reference, "some_reference_x_3")
 

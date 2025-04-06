@@ -8,50 +8,51 @@ class TestTowerVariableOption(TestTowerCommon):
     'cx.tower.variable.option' model.
     """
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
-        self.variable_odoo_versions = self.Variable.create(
+        cls.variable_odoo_versions = cls.Variable.create(
             {
                 "name": "odoo_versions",
                 "variable_type": "o",
             }
         )
 
-        self.variable_option_17_0 = self.VariableOption.create(
+        cls.variable_option_17_0 = cls.VariableOption.create(
             {
                 "name": "17.0",
                 "value_char": "17.0",
-                "variable_id": self.variable_odoo_versions.id,
+                "variable_id": cls.variable_odoo_versions.id,
             }
         )
 
-        self.variable_option_18_0 = self.VariableOption.create(
+        cls.variable_option_18_0 = cls.VariableOption.create(
             {
                 "name": "18.0",
                 "value_char": "18.0",
-                "variable_id": self.variable_odoo_versions.id,
+                "variable_id": cls.variable_odoo_versions.id,
             }
         )
 
         # Create additional test users
-        self.manager2 = self.Users.create(
+        cls.manager2 = cls.Users.create(
             {
                 "name": "Manager 2",
                 "login": "manager2@example.com",
-                "groups_id": [(4, self.group_manager.id)],
+                "groups_id": [(4, cls.group_manager.id)],
             }
         )
 
         # Create variables with different access levels
-        self.variable_level_1 = self.Variable.create(
+        cls.variable_level_1 = cls.Variable.create(
             {
                 "name": "Level 1 Variable",
                 "access_level": "1",
             }
         )
 
-        self.variable_level_2 = self.Variable.create(
+        cls.variable_level_2 = cls.Variable.create(
             {
                 "name": "Level 2 Variable",
                 "access_level": "2",
@@ -59,19 +60,19 @@ class TestTowerVariableOption(TestTowerCommon):
         )
 
         # Create options with different access levels (inherited from variables)
-        self.option_level_1 = self.VariableOption.create(
+        cls.option_level_1 = cls.VariableOption.create(
             {
                 "name": "Option Level 1",
                 "value_char": "value1",
-                "variable_id": self.variable_level_1.id,
+                "variable_id": cls.variable_level_1.id,
             }
         )
 
-        self.option_level_2 = self.VariableOption.create(
+        cls.option_level_2 = cls.VariableOption.create(
             {
                 "name": "Option Level 2",
                 "value_char": "value2",
-                "variable_id": self.variable_level_2.id,
+                "variable_id": cls.variable_level_2.id,
             }
         )
 

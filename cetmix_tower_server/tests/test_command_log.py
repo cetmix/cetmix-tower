@@ -9,11 +9,12 @@ from .common import TestTowerCommon
 class TestTowerCommandLog(TestTowerCommon):
     """Test the cx.tower.command.log model access rights."""
 
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Create commands with different access levels
-        self.command_level_1 = self.Command.create(
+        cls.command_level_1 = cls.Command.create(
             {
                 "name": "Test Command L1",
                 "action": "ssh_command",
@@ -21,7 +22,7 @@ class TestTowerCommandLog(TestTowerCommon):
             }
         )
 
-        self.command_level_2 = self.Command.create(
+        cls.command_level_2 = cls.Command.create(
             {
                 "name": "Test Command L2",
                 "action": "ssh_command",
@@ -29,7 +30,7 @@ class TestTowerCommandLog(TestTowerCommon):
             }
         )
 
-        self.command_level_3 = self.Command.create(
+        cls.command_level_3 = cls.Command.create(
             {
                 "name": "Test Command L3",
                 "action": "ssh_command",
@@ -38,32 +39,32 @@ class TestTowerCommandLog(TestTowerCommon):
         )
 
         # Create test command logs with specific users
-        self.command_log_1 = (
-            self.CommandLog.with_user(self.user)
+        cls.command_log_1 = (
+            cls.CommandLog.with_user(cls.user)
             .sudo()
             .create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "command_id": self.command_level_1.id,
+                    "server_id": cls.server_test_1.id,
+                    "command_id": cls.command_level_1.id,
                     "start_date": fields.Datetime.now(),
                 }
             )
         )
 
-        self.command_log_2 = (
-            self.CommandLog.with_user(self.manager)
+        cls.command_log_2 = (
+            cls.CommandLog.with_user(cls.manager)
             .sudo()
             .create(
                 {
-                    "server_id": self.server_test_1.id,
-                    "command_id": self.command_level_1.id,
+                    "server_id": cls.server_test_1.id,
+                    "command_id": cls.command_level_1.id,
                     "start_date": fields.Datetime.now(),
                 }
             )
         )
 
         # Create additional server for testing
-        self.server_2 = self.Server.create(
+        cls.server_2 = cls.Server.create(
             {
                 "name": "Test Server 2",
                 "ip_v4_address": "localhost",

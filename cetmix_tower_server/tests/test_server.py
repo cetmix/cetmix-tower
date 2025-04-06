@@ -4,25 +4,31 @@ from .common import TestTowerCommon
 
 
 class TestTowerServer(TestTowerCommon):
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
-        self.os_ubuntu_20_04 = self.env["cx.tower.os"].create({"name": "Ubuntu 20.04"})
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
-        secret_1 = self.Key.create(
+        cls.os_ubuntu_20_04 = cls.env["cx.tower.os"].create({"name": "Ubuntu 20.04"})
+
+        # Define model variables to avoid unsubscriptable errors
+        Key = cls.env["cx.tower.key"]
+        Server = cls.env["cx.tower.server"]
+
+        secret_1 = Key.create(
             {
                 "name": "Secret 1",
                 "secret_value": "secret_value_1",
                 "key_type": "s",
             },
         )
-        secret_2 = self.Key.create(
+        secret_2 = Key.create(
             {
                 "name": "Secret 2",
                 "secret_value": "secret_value_2",
                 "key_type": "s",
             },
         )
-        self.server_test_2 = self.Server.create(
+        cls.server_test_2 = Server.create(
             {
                 "name": "Test Server #2",
                 "color": 2,
@@ -32,8 +38,8 @@ class TestTowerServer(TestTowerCommon):
                 "ssh_auth_mode": "k",
                 "host_key": "test_key",
                 "use_sudo": "p",
-                "ssh_key_id": self.key_1.id,
-                "os_id": self.os_ubuntu_20_04.id,
+                "ssh_key_id": cls.key_1.id,
+                "os_id": cls.os_ubuntu_20_04.id,
                 "secret_ids": [
                     (
                         0,
@@ -52,26 +58,28 @@ class TestTowerServer(TestTowerCommon):
                         },
                     ),
                 ],
-                "tag_ids": [(6, 0, [self.tag_test_production.id])],
+                "tag_ids": [(6, 0, [cls.tag_test_production.id])],
             }
         )
+
         # Files
-        self.server_test_2_file = self.File.create(
+        File = cls.env["cx.tower.file"]
+        cls.server_test_2_file = File.create(
             {
                 "name": "tower_demo_without_template_{{ branch }}.txt",
                 "source": "tower",
-                "server_id": self.server_test_2.id,
+                "server_id": cls.server_test_2.id,
                 "server_dir": "{{ test_path }}",
                 "code": "Please, check url: {{ url }}",
             }
         )
 
-        # ---
         # Flight plan to delete the server
+        Command = cls.env["cx.tower.command"]
+        Plan = cls.env["cx.tower.plan"]
 
         # Add a command to delete the server
-        # This command will create a new partner with pre-defined ref
-        self.command_delete_server = self.Command.create(
+        cls.command_delete_server = Command.create(
             {
                 "name": "Python command for deleting server",
                 "action": "python_code",
@@ -85,51 +93,47 @@ result = {
             }
         )
 
-        self.plan_delete_server = self.Plan.create(
+        cls.plan_delete_server = Plan.create(
             {
                 "name": "Delete server",
                 "line_ids": [
-                    (
-                        0,
-                        0,
-                        {"command_id": self.command_delete_server.id},
-                    )
+                    (0, 0, {"command_id": cls.command_delete_server.id, "sequence": 1}),
                 ],
             }
         )
 
         # Create two test users that belong only to the "User" group.
-        self.user1 = self.Users.create(
+        cls.user1 = cls.Users.create(
             {
                 "name": "Test User 1",
                 "login": "test_user1",
                 "email": "test_user1@example.com",
-                "groups_id": [(6, 0, [self.group_user.id])],
+                "groups_id": [(6, 0, [cls.group_user.id])],
             }
         )
-        self.user2 = self.Users.create(
+        cls.user2 = cls.Users.create(
             {
                 "name": "Test User 2",
                 "login": "test_user2",
                 "email": "test_user2@example.com",
-                "groups_id": [(6, 0, [self.group_user.id])],
+                "groups_id": [(6, 0, [cls.group_user.id])],
             }
         )
         # Create two "Manager" group users.
-        self.manager1 = self.Users.create(
+        cls.manager1 = cls.Users.create(
             {
                 "name": "Manager 1",
                 "login": "manager1",
                 "email": "manager1@example.com",
-                "groups_id": [(6, 0, [self.group_manager.id])],
+                "groups_id": [(6, 0, [cls.group_manager.id])],
             }
         )
-        self.manager2 = self.Users.create(
+        cls.manager2 = cls.Users.create(
             {
                 "name": "Manager 2",
                 "login": "manager2",
                 "email": "manager2@example.com",
-                "groups_id": [(6, 0, [self.group_manager.id])],
+                "groups_id": [(6, 0, [cls.group_manager.id])],
             }
         )
 
@@ -246,7 +250,7 @@ result = {
             all(
                 [
                     key_copy.secret_value == key_src.secret_value
-                    for key_src, key_copy in zip(
+                    for key_src, key_copy in zip(  # noqa: B905 we need to run on Python 3.10
                         self.server_test_2.secret_ids.sudo(),
                         server_test_2_copy.secret_ids.sudo(),
                     )
@@ -265,7 +269,7 @@ result = {
                 [
                     var_copy.variable_reference == var_src.variable_reference
                     and var_copy.value_char == var_src.value_char
-                    for var_src, var_copy in zip(
+                    for var_src, var_copy in zip(  # noqa: B905 we need to run on Python 3.10
                         self.server_test_2.variable_value_ids,
                         server_test_2_copy.variable_value_ids,
                     )
@@ -287,7 +291,7 @@ result = {
                     var_copy.variable_reference == var_src.variable_reference
                     and var_copy.value_char == var_src.value_char
                     and var_copy.reference == f"{var_src.reference}_copy"
-                    for var_src, var_copy in zip(
+                    for var_src, var_copy in zip(  # noqa: B905 we need to run on Python 3.10
                         server_test_2_copy.variable_value_ids,
                         server_test_2_new_copy.variable_value_ids,
                     )
@@ -385,7 +389,6 @@ result = {
 
         # Collect IDs for verification post-deletion
         file_id = file.id
-        secret_id = secret.id
         variable_value_id = variable_value.id
         plan_log_id = plan_log.id
 
@@ -408,7 +411,7 @@ result = {
             msg="Unrelated plan should not be deleted when server is deleted",
         )
         self.assertFalse(
-            self.Key.search([("id", "=", secret_id)]),
+            self.KeyValue.search([("id", "=", secret.id)]),
             msg="Secret should be deleted when server is deleted",
         )
         self.assertFalse(
