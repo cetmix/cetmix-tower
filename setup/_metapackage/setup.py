@@ -8,7 +8,12 @@ setuptools.setup(
     description="Meta package for cetmix-cetmix-tower Odoo addons",
     version=version,
     install_requires=[
-        'odoo14-addon-cx_tower_server',
+        'odoo14-addon-cetmix_tower',
+        'odoo14-addon-cetmix_tower_git',
+        'odoo14-addon-cetmix_tower_server',
+        'odoo14-addon-cetmix_tower_server_notify_backend',
+        'odoo14-addon-cetmix_tower_server_queue',
+        'odoo14-addon-cetmix_tower_yaml',
     ],
     classifiers=[
         'Programming Language :: Python',

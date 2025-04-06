@@ -1,0 +1,15 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+{
+    "name": "Cetmix Tower Server Queue",
+    "summary": "Cetmix Tower asynchronous task execution using 'queue_job'",
+    "version": "14.0.1.0.4",
+    "development_status": "Production/Stable",
+    "category": "Productivity",
+    "website": "https://cetmix.com",
+    "author": "Cetmix",
+    "license": "AGPL-3",
+    "installable": True,
+    "auto_install": True,
+    "depends": ["cetmix_tower_server", "queue_job"],
+}

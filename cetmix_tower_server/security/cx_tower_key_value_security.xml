@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Rules -->
+    <record id="rule_key_value_manager_read_key" model="ir.rule">
+        <field name="name">Key Value: Manager Read Access - Key Users/Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field
+            name="domain_force"
+        >['|', ('key_id.user_ids', 'in', [user.id]), ('key_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_key_value_manager_read_server" model="ir.rule">
+        <field
+            name="name"
+        >Key Value: Manager Read Access - Server Users/Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field name="domain_force">[('key_id.key_type', '=', 's'),
+            '|', '|', ('server_id', '=', False),
+            ('server_id.user_ids', 'in', [user.id]),
+            ('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create Rules -->
+    <record id="rule_key_value_manager_write_key" model="ir.rule">
+        <field name="name">Key Value: Manager Write/Create Access - Key Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field name="domain_force">[('key_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_key_value_manager_write_server" model="ir.rule">
+        <field
+            name="name"
+        >Key Value: Manager Write/Create Access - Server Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field name="domain_force">[('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Delete Rules -->
+    <record id="rule_key_value_manager_unlink_key" model="ir.rule">
+        <field name="name">Key Value: Manager Delete Access - Key Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field
+            name="domain_force"
+        >[('key_id.key_type', '=', 's'),('key_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="rule_key_value_manager_unlink_server" model="ir.rule">
+        <field name="name">Key Value: Manager Delete Access - Server Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field
+            name="domain_force"
+        >[('key_id.key_type', '=', 's'),('server_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Access Rule -->
+    <record id="rule_key_value_root" model="ir.rule">
+        <field name="name">Key Value: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+    </record>
+</odoo>

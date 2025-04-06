@@ -1,0 +1,657 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_yaml
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,comment:cetmix_tower_yaml.group_export
+msgid ""
+"\n"
+"        Export data to YAML.\n"
+"    "
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,comment:cetmix_tower_yaml.group_import
+msgid ""
+"\n"
+"        Import data from YAML.\n"
+"    "
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "'%s' is not a valid model"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#, python-format
+msgid "'invalid_model' is not a valid model"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"<strong>Important:</strong> To maintain data consistency, the following "
+"model records will always be updated if they exist in Odoo:"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
+msgid ""
+"Add entire child record definitions to the exported YAML file. Otherwise "
+"only references to child records will be added."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid ""
+"After import, please check and provide secret values if needed for the "
+"following secrets: %(secrets)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file_template
+msgid "Cetmix Tower File Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan
+msgid "Cetmix Tower Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line
+msgid "Cetmix Tower Flight Plan Line"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line_action
+msgid "Cetmix Tower Flight Plan Line Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key
+msgid "Cetmix Tower Key/Secret Storage"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_os
+msgid "Cetmix Tower Operating System"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server_log
+msgid "Cetmix Tower Server Log"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server_template
+msgid "Cetmix Tower Server Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_shortcut
+msgid "Cetmix Tower Shortcut"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_tag
+msgid "Cetmix Tower Tag"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable
+msgid "Cetmix Tower Variable"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_option
+msgid "Cetmix Tower Variable Options"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_value
+msgid "Cetmix Tower Variable Values"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml
+msgid "Cetmix Tower YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_export_wiz_download
+msgid "Cetmix Tower YAML Export File Download"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_export_wiz
+msgid "Cetmix Tower YAML Export Wizard"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz
+msgid "Cetmix Tower YAML Import Wizard"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_import_wiz_upload
+msgid "Cetmix Tower YAML Import Wizard Upload"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_yaml_mixin
+msgid "Cetmix Tower YAML rendering mixin"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_download_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Close"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__comment
+msgid "Comment"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__comment
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Comment to be added to the beginning of exported YAML file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__create
+msgid "Create a new record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Error creating record '%(reference)s' in model '%(model)s': %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Error updating record %(reference)s: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.\n"
+"                        If any of those related records doesn't exist, it will be created automatically."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
+msgid "Explode Child Records"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,name:cetmix_tower_yaml.group_export
+msgid "Export"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_shortcut_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_tag_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_value_export_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
+msgid "Export YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#, python-format
+msgid "Failed to convert dictionary to YAML: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+#, python-format
+msgid ""
+"Failed to encode YAML content. Please ensure all characters are UTF-8 "
+"compatible."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__file_name
+msgid "File Name"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "File contains non-unicode characters or is empty"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
+msgid "Generate YAML file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__id
+msgid "ID"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
+msgid "If Record Exists"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:res.groups,name:cetmix_tower_yaml.group_import
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Import"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_yaml_import_wiz_upload
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_cetmix_tower_yaml_import
+msgid "Import YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Import result: %(model)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "Invalid YAML file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Key/Secrets"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
+msgid "List of secrets present in the YAML file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "Model '%s' does not support YAML import"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#, python-format
+msgid "Model 'server' does not support YAML import"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_names
+msgid "Model Names"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__model_names
+msgid "Models to create records in"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+#, python-format
+msgid "No YAML code is present."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+#, python-format
+msgid "No model or records selected"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "No records were created or updated"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
+#, python-format
+msgid "No valid records selected"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "OSs"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__preview_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
+msgid "Preview Code"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
+msgid "Process"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Record Import"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "Record model is missing for record %s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Record reference is missing"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Records of the following models were created or updated: %(models)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid "Remove Empty x2m Field Values"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
+msgid ""
+"Remove empty Many2one, Many2many and One2many field values from the exported"
+" YAML file."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
+msgid "Secret List"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__skip
+msgid "Skip record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Tags"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "This may overwrite existing records. Proceed?"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"To create new entities instead of updating existing ones, remove or modify "
+"the <code>reference</code> field in the YAML code for those entities."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__update
+msgid "Update existing record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+#, python-format
+msgid "Values must be a dictionary"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Variable Options"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Variables"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
+msgid "What to do if record with the same reference already exists"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
+#, python-format
+msgid "Wrong value for 'access_level' key: %(acv)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
+msgid "YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "YAML file cannot be decoded properly"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "YAML file doesn't contain any records"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid ""
+"YAML version is higher than version supported by your Cetmix Tower instance."
+" %(code_version)s > %(tower_version)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__yaml_code
+msgid "Yaml Code"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__yaml_file
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__yaml_file
+msgid "Yaml File"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__yaml_file_name
+msgid "Yaml File Name"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "Yaml file doesn't contain valid data"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+#, python-format
+msgid "You are not allowed to create records from YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
+msgstr ""

@@ -1,0 +1,10 @@
+<odoo>
+    <menuitem
+        id="menu_cetmix_tower_yaml_import"
+        name="Import YAML"
+        parent="cetmix_tower_server.menu_tools"
+        sequence="10"
+        groups="group_import"
+        action="action_cx_tower_yaml_import_wiz_upload"
+    />
+</odoo>
