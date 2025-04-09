@@ -94,7 +94,7 @@ class CxTowerYamlExportWiz(models.TransientModel):
             yaml_file_name = (
                 f"{model_prefix}_{records.reference if len(records) == 1 else 'selected'}.yaml"  # noqa: E501
             )
-        except UnicodeEncodeError as exc:
+        except Exception as exc:
             raise ValidationError(
                 _(
                     "Failed to encode YAML content. Please ensure all characters are UTF-8 compatible."  # noqa: E501

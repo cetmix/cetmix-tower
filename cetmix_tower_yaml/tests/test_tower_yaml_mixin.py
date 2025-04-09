@@ -4,13 +4,14 @@ from odoo.tests import TransactionCase
 
 
 class TestTowerYamlMixin(TransactionCase):
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
-        self.Users = self.env["res.users"].with_context(no_reset_password=True)
-        self.YamlMixin = self.env["cx.tower.yaml.mixin"]
-        TowerTag = self.env["cx.tower.tag"]
-        self.tag_doge = TowerTag.create({"name": "Doge", "reference": "doge"})
-        self.tag_pepe = TowerTag.create({"name": "Pepe", "reference": "pepe"})
+    @classmethod
+    def setUpClass(cls, *args, **kwargs):
+        super().setUpClass(*args, **kwargs)
+        cls.Users = cls.env["res.users"].with_context(no_reset_password=True)
+        cls.YamlMixin = cls.env["cx.tower.yaml.mixin"]
+        TowerTag = cls.env["cx.tower.tag"]
+        cls.tag_doge = TowerTag.create({"name": "Doge", "reference": "doge"})
+        cls.tag_pepe = TowerTag.create({"name": "Pepe", "reference": "pepe"})
 
     def test_convert_dict_to_yaml(self):
         # -- 1 --

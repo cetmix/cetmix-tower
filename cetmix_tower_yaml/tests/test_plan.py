@@ -2,10 +2,11 @@ from odoo.tests import TransactionCase
 
 
 class TestTowerPlan(TransactionCase):
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls, *args, **kwargs):
+        super().setUpClass(*args, **kwargs)
 
-        self.Plan = self.env["cx.tower.plan"]
+        cls.Plan = cls.env["cx.tower.plan"]
 
     def test_plan_create_from_yaml(self):
         """Test plan creation from YAML."""
