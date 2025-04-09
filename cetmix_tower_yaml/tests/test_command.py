@@ -5,13 +5,14 @@ from odoo.tests import TransactionCase
 
 
 class TestTowerCommand(TransactionCase):
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls, *args, **kwargs):
+        super().setUpClass(*args, **kwargs)
 
-        self.Command = self.env["cx.tower.command"]
+        cls.Command = cls.env["cx.tower.command"]
 
         # Expected YAML content of the test command
-        self.command_test_yaml = """cetmix_tower_model: command
+        cls.command_test_yaml = """cetmix_tower_model: command
 access_level: manager
 reference: test_yaml_in_tests
 name: Test YAML
@@ -34,7 +35,7 @@ secret_ids: false
 """
 
         # YAML content translated into Python dict
-        self.command_test_yaml_dict = yaml.safe_load(self.command_test_yaml)
+        cls.command_test_yaml_dict = yaml.safe_load(cls.command_test_yaml)
 
     def test_yaml_from_command(self):
         """Test if YAML is generated properly from a command"""
@@ -307,7 +308,7 @@ server_status: false
 variable_ids: false
 secret_ids: false
 """
-        command_with_template.invalidate_cache(["yaml_code"])
+        command_with_template.invalidate_recordset(["yaml_code"])
         self.assertEqual(
             command_with_template.with_context(explode_related_record=True).yaml_code,
             yaml_with_reference_exploded,

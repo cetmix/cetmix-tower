@@ -10,36 +10,37 @@ from odoo.tests import TransactionCase
 class TestTowerYamlImportWizUpload(TransactionCase):
     """Test Tower YAML Import Wizard Upload"""
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
 
         # Variables
-        self.Variable = self.env["cx.tower.variable"]
-        self.variable_yaml_test = self.Variable.create(
+        cls.Variable = cls.env["cx.tower.variable"]
+        cls.variable_yaml_test = cls.Variable.create(
             {"name": "YAML Test", "reference": "yaml_test"}
         )
-        self.variable_yaml_url = self.Variable.create(
+        cls.variable_yaml_url = cls.Variable.create(
             {"name": "YAML URL", "reference": "yaml_url"}
         )
 
         # Tags
-        self.Tag = self.env["cx.tower.tag"]
-        self.tag_yaml_test = self.Tag.create(
+        cls.Tag = cls.env["cx.tower.tag"]
+        cls.tag_yaml_test = cls.Tag.create(
             {"name": "YAML Test", "reference": "yaml_test"}
         )
-        self.tag_another_yaml_test = self.Tag.create(
+        cls.tag_another_yaml_test = cls.Tag.create(
             {"name": "Another YAML Test", "reference": "another_yaml_test"}
         )
 
         # Commands
-        self.Command = self.env["cx.tower.command"]
-        self.command_yaml_test = self.Command.create(
+        cls.Command = cls.env["cx.tower.command"]
+        cls.command_yaml_test = cls.Command.create(
             {"name": "Test Yaml Command", "reference": "test_yaml_command"}
         )
 
         # Flight Plan
-        self.FlightPlan = self.env["cx.tower.plan"]
-        self.flight_plan_yaml_test = self.FlightPlan.create(
+        cls.FlightPlan = cls.env["cx.tower.plan"]
+        cls.flight_plan_yaml_test = cls.FlightPlan.create(
             {
                 "name": "Test Yaml Flight Plan",
                 "reference": "test_yaml_flight_plan",
@@ -50,7 +51,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
                         {
                             "condition": False,
                             "use_sudo": False,
-                            "command_id": self.command_yaml_test.id,
+                            "command_id": cls.command_yaml_test.id,
                         },
                     ),
                 ],
@@ -58,19 +59,19 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         )
 
         # Create Server Template used for testing
-        self.server_template_yaml_test = self.env["cx.tower.server.template"].create(
+        cls.server_template_yaml_test = cls.env["cx.tower.server.template"].create(
             {
                 "name": "Test Server Template",
                 "tag_ids": [
-                    (4, self.tag_yaml_test.id),
-                    (4, self.tag_another_yaml_test.id),
+                    (4, cls.tag_yaml_test.id),
+                    (4, cls.tag_another_yaml_test.id),
                 ],
                 "variable_value_ids": [
                     (
                         0,
                         0,
                         {
-                            "variable_id": self.variable_yaml_test.id,
+                            "variable_id": cls.variable_yaml_test.id,
                             "value_char": "Some Test Value",
                         },
                     ),
@@ -78,52 +79,52 @@ class TestTowerYamlImportWizUpload(TransactionCase):
                         0,
                         0,
                         {
-                            "variable_id": self.variable_yaml_url.id,
+                            "variable_id": cls.variable_yaml_url.id,
                             "value_char": "https://cetmix.com",
                         },
                     ),
                 ],
-                "flight_plan_id": self.flight_plan_yaml_test.id,
+                "flight_plan_id": cls.flight_plan_yaml_test.id,
             }
         )
 
         # Server Logs
-        self.ServerLog = self.env["cx.tower.server.log"]
-        self.server_log_yaml_test = self.ServerLog.create(
+        cls.ServerLog = cls.env["cx.tower.server.log"]
+        cls.server_log_yaml_test = cls.ServerLog.create(
             {
                 "name": "Test Server Log",
                 "reference": "test_server_log",
-                "command_id": self.command_yaml_test.id,
+                "command_id": cls.command_yaml_test.id,
                 "log_type": "command",
-                "server_template_id": self.server_template_yaml_test.id,
+                "server_template_id": cls.server_template_yaml_test.id,
             }
         )
 
         # Create an export wizard and generate YAML code
         context = {
             "active_model": "cx.tower.server.template",
-            "active_ids": [self.server_template_yaml_test.id],
+            "active_ids": [cls.server_template_yaml_test.id],
         }
-        self.export_wizard = (
-            self.env["cx.tower.yaml.export.wiz"].with_context(context).create({})
+        cls.export_wizard = (
+            cls.env["cx.tower.yaml.export.wiz"].with_context(context).create({})  # pylint: disable=context-overridden # new need a new clean context
         )
-        self.export_wizard.onchange_explode_child_records()
-        self.export_wizard.action_generate_yaml_file()
-        self.yaml_code = self.export_wizard.yaml_code
-        self.yaml_file = base64.b64encode(self.yaml_code.encode("utf-8"))
+        cls.export_wizard.onchange_explode_child_records()
+        cls.export_wizard.action_generate_yaml_file()
+        cls.yaml_code = cls.export_wizard.yaml_code
+        cls.yaml_file = base64.b64encode(cls.yaml_code.encode("utf-8"))
 
         # YAML import upload wizard
-        self.YamlImportWizUpload = self.env["cx.tower.yaml.import.wiz.upload"]
-        self.yaml_upload_wizard = self.YamlImportWizUpload.create(
-            {"yaml_file": self.yaml_file, "file_name": "test_yaml_file.yaml"}
+        cls.YamlImportWizUpload = cls.env["cx.tower.yaml.import.wiz.upload"]
+        cls.yaml_upload_wizard = cls.YamlImportWizUpload.create(
+            {"yaml_file": cls.yaml_file, "file_name": "test_yaml_file.yaml"}
         )
 
         # YAML import wizard
-        self.import_wizard_action = self.yaml_upload_wizard.action_import_yaml()
-        self.import_wizard = self.env[self.import_wizard_action["res_model"]].browse(
-            self.import_wizard_action["res_id"]
+        cls.import_wizard_action = cls.yaml_upload_wizard.action_import_yaml()
+        cls.import_wizard = cls.env[cls.import_wizard_action["res_model"]].browse(
+            cls.import_wizard_action["res_id"]
         )
-        self.import_wizard.if_record_exists = "update"
+        cls.import_wizard.if_record_exists = "update"
 
     def test_extract_yaml_data(self):
         """Test extract YAML data from file"""
@@ -150,11 +151,10 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _("'invalid_model' is not a valid model"),
             "Exception message does not match",
         )
-
         # -- 3 --
         # Test if non YAML supported model is handled properly
         # Replace model name with non YAML supported model
@@ -168,7 +168,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _("Model 'server' does not support YAML import"),
             "Exception message does not match",
         )
@@ -180,7 +180,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _("Yaml file doesn't contain valid data"),
             "Exception message does not match",
         )
@@ -192,7 +192,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _("YAML file cannot be decoded properly"),
             "Exception message does not match",
         )
@@ -204,7 +204,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _("File contains non-unicode characters or is empty"),
             "Exception message does not match",
         )
@@ -222,7 +222,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _(
                 "YAML version is higher than version"
                 " supported by your Cetmix Tower instance."
@@ -239,7 +239,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         with self.assertRaises(ValidationError) as e:
             self.import_wizard.action_import_yaml()
         self.assertEqual(
-            e.exception.name,
+            str(e.exception),
             _("YAML file doesn't contain any records"),
             "Exception message does not match",
         )
