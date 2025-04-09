@@ -4,13 +4,14 @@ from odoo.tests import TransactionCase
 
 
 class TestTowerFileTemplate(TransactionCase):
-    def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+    @classmethod
+    def setUpClass(cls, *args, **kwargs):
+        super().setUpClass(*args, **kwargs)
 
-        self.FileTemplate = self.env["cx.tower.file.template"]
+        cls.FileTemplate = cls.env["cx.tower.file.template"]
 
         # Expected YAML content of the test file template
-        self.file_template_test_yaml = """cetmix_tower_model: file_template
+        cls.file_template_test_yaml = """cetmix_tower_model: file_template
 reference: dockerfile_unit_test
 name: Dockerfile Test
 source: tower
@@ -34,7 +35,7 @@ secret_ids: false
 
         # Expected YAML content of the test file template
         # without empty x2mvalues
-        self.file_template_test_yaml_no_empty_values = """cetmix_tower_model: file_template
+        cls.file_template_test_yaml_no_empty_values = """cetmix_tower_model: file_template
 reference: dockerfile_unit_test
 name: Dockerfile Test
 source: tower
@@ -54,9 +55,9 @@ code: |-
 """  # noqa
 
         # YAML content translated into Python dict
-        self.file_template_test_yaml_dict = yaml.safe_load(self.file_template_test_yaml)
-        self.file_template_test_yaml_dict_no_empty_values = yaml.safe_load(
-            self.file_template_test_yaml_no_empty_values
+        cls.file_template_test_yaml_dict = yaml.safe_load(cls.file_template_test_yaml)
+        cls.file_template_test_yaml_dict_no_empty_values = yaml.safe_load(
+            cls.file_template_test_yaml_no_empty_values
         )
 
     def test_yaml_from_file_template(self):

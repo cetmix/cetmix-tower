@@ -1,6 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from builtins import UnicodeEncodeError
+
 import yaml
 
 from odoo import _, api, fields, models
@@ -123,7 +125,7 @@ class CxTowerYamlMixin(models.AbstractModel):
                 sort_keys=False,
             )
             return yaml_code
-        except yaml.YAMLError as e:
+        except (yaml.YAMLError, UnicodeEncodeError) as e:
             raise ValidationError(
                 _(
                     "Failed to convert dictionary" " to YAML: %(error)s",
