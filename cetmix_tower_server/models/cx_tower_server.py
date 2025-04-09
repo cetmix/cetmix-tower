@@ -359,7 +359,7 @@ class CxTowerServer(models.Model):
             )
         default["file_ids"] = file_ids.ids
 
-        result = super(CxTowerServer, self).copy(default=default)
+        result = super().copy(default=default)
 
         for secret in self.secret_ids:
             secret.sudo().copy({"server_id": result.id})
@@ -715,12 +715,11 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         # To ensure that key will be read
         # regardless of access rights
-        self = self.sudo()
-        if self.ssh_key_id:
+        if self.sudo().ssh_key_id:
             # Use context key to read secret value
             ssh_key = (
-                self.ssh_key_id.sudo()
-                .with_context(show_secret_value=True)
+                self.sudo()
+                .ssh_key_id.with_context(show_secret_value=True)
                 .read(["secret_value"])[0]["secret_value"]
             )
         else:
@@ -799,14 +798,16 @@ class CxTowerServer(models.Model):
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
         Context:
-            no_log (Bool): set this context key to `True` to disable log creation.
+            no_command_log (Bool): set this context key to `True`
+                to disable the command log creation.
             Command running results will be returned instead.
             If any non command related error occurs in the command running flow
             an exception will be raised.
-            IMPORTANT: be aware when running commands with `no_log=True`
+            IMPORTANT: be aware when running commands with `no_command_log=True`
             because no `Allow Parallel Run` check will be done!
         Returns:
-            dict(): command running result if `no_log` context value == True else None
+            dict(): command running result if `no_command_log`
+                context value == True else None
         """
         self.ensure_one()
 
@@ -830,10 +831,10 @@ class CxTowerServer(models.Model):
 
         # Check if no log record should be created
 
-        no_log = self._context.get("no_log")
+        no_command_log = self._context.get("no_command_log")
 
         # Get log vals from kwargs and update them
-        if not no_log:
+        if not no_command_log:
             log_obj = self.env["cx.tower.command.log"]
             log_vals = kwargs.get("log", {})
             log_vals.update({"use_sudo": sudo})
@@ -876,7 +877,7 @@ class CxTowerServer(models.Model):
         kwargs.update({"key": key_vals})
 
         # Save rendered code to log
-        if no_log:
+        if no_command_log:
             log_record = None
         else:
             log_vals.update(

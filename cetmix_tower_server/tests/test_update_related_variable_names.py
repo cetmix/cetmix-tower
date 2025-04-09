@@ -8,15 +8,9 @@ class TestUpdateRelatedVariableNames(TestTowerCommon):
         super().setUp()
 
         # Create test variables
-        self.var1 = self.env["cx.tower.variable"].create(
-            {"name": "var1", "reference": "var1"}
-        )
-        self.var2 = self.env["cx.tower.variable"].create(
-            {"name": "var2", "reference": "var2"}
-        )
-        self.var3 = self.env["cx.tower.variable"].create(
-            {"name": "var3", "reference": "var3"}
-        )
+        self.var1 = self.Variable.create({"name": "var1", "reference": "var1"})
+        self.var2 = self.Variable.create({"name": "var2", "reference": "var2"})
+        self.var3 = self.Variable.create({"name": "var3", "reference": "var3"})
 
         self.test_command = self.Command.create(
             {

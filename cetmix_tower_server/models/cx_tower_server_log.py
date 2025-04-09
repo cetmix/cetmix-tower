@@ -136,7 +136,7 @@ class CxTowerServerLog(models.Model):
         self.ensure_one()
 
         use_sudo = self.use_sudo and self.server_id.use_sudo
-        command_result = self.server_id.with_context(no_log=True).run_command(
+        command_result = self.server_id.with_context(no_command_log=True).run_command(
             self.command_id, sudo=use_sudo
         )
         log_text = self.NO_LOG_FETCHED_MESSAGE

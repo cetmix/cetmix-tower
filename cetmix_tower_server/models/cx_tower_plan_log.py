@@ -107,7 +107,7 @@ class CxTowerPlanLog(models.Model):
                 - "plan_log": {values passed to flightplan logger}
                 - "log": {values passed to logger}
                 - "key": {values passed to key parser}
-                - "no_log" (bool): If True, no logs will be recorded for
+                - "no_command_log" (bool): If True, no logs will be recorded for
                                    non-executable lines.
         Returns:
             cx.tower.plan.log(): New flightplan log record.
@@ -140,7 +140,7 @@ class CxTowerPlanLog(models.Model):
                 line._run(server, plan_log, **kwargs)
                 break
             else:
-                if self._context.get("no_log"):
+                if self._context.get("no_command_log"):
                     continue
                 line._skip(server, plan_log)
                 break

@@ -75,7 +75,7 @@ class CxTowerPlanLineAction(models.Model):
 
                 # Add custom exit code if action presumes it
                 if rec.action == "ec":
-                    action_string = "{} {}".format(action_string, rec.custom_exit_code)
+                    action_string = f"{action_string} {rec.custom_exit_code}"
                 rec.name = " ".join(
                     (
                         _("If exit code"),
