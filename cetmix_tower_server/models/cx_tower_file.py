@@ -234,9 +234,7 @@ class CxTowerFile(models.Model):
                     "rendered_name": rendered_name,
                     "rendered_server_dir": rendered_server_dir,
                     "rendered_code": rendered_code,
-                    "full_server_path": "{}/{}".format(
-                        rendered_server_dir, rendered_name
-                    ),
+                    "full_server_path": f"{rendered_server_dir}/{rendered_name}",
                 }
             )
 

@@ -903,7 +903,7 @@ result = re.sub(pattern, replacement, value)
         self.assertEqual(
             log_record.code,
             rendered_code_expected,
-            msg="Rendered code must be '{}'".format(rendered_code_expected),
+            msg=f"Rendered code must be '{rendered_code_expected}'",
         )
         self.assertEqual(
             log_record.command_status, 0, msg="Command status must be equal to 0"
@@ -1152,7 +1152,7 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(len(log_record_2), 1, msg="Must be a single log record")
 
-    def test_run_command_no_log(self):
+    def test_run_command_no_command_log(self):
         """Run command without creating a log record.
         Such commands return execution result directly.
         """
@@ -1161,9 +1161,9 @@ result = re.sub(pattern, replacement, value)
         custom_values = {"log": {"label": command_label}}
 
         # Run command for Server 1
-        command_result = self.server_test_1.with_context(no_log=True).run_command(
-            self.command_create_dir, **custom_values
-        )
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_dir, **custom_values)
         self.assertEqual(
             command_result["status"], 0, "Command status doesn't match expected one"
         )
@@ -1215,9 +1215,9 @@ else:
         """
         Run command with python action.
         """
-        command_result = self.server_test_1.with_context(no_log=True).run_command(
-            self.command_create_new_command
-        )
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_new_command)
         self.assertEqual(
             command_result["status"], 0, "The command result status must be 0"
         )
@@ -1229,9 +1229,9 @@ else:
 
         # Check error is raises
         self.secret_folder_key.secret_value = "not_a_secretFolder"
-        command_result = self.server_test_1.with_context(no_log=True).run_command(
-            self.command_create_new_command
-        )
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_new_command)
         self.assertEqual(
             command_result["status"],
             GENERAL_ERROR,
@@ -1286,7 +1286,7 @@ else:
         server_status = self.server_test_1.status
 
         result = (
-            self.server_test_1.with_context(no_log=True)
+            self.server_test_1.with_context(no_command_log=True)
             .with_user(self.user)
             .run_command(self.command_create_new_command)
         )
@@ -1305,7 +1305,7 @@ else:
         self.command_create_new_command.write({"server_status": "stopping"})
 
         # Run command
-        self.server_test_1.with_context(no_log=True).run_command(
+        self.server_test_1.with_context(no_command_log=True).run_command(
             self.command_create_new_command
         )
 
