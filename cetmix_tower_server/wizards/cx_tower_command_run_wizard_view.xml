@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_command_run_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.run.wizard.view.form</field>
+        <field name="model">cx.tower.command.run.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Run Command">
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    attrs="{'invisible': [('action', '!=', 'python_code')]}"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        Remember: Python code is executed on the Tower server, not on the remote one.
+                    </p>
+                </div>
+                <field
+                    name="os_compatibility_warning"
+                    readonly="1"
+                    nolabel="1"
+                    attrs="{'invisible': [('os_compatibility_warning', '=', False)]}"
+                    class="alert alert-warning"
+                    role="alert"
+                />
+                <group>
+                    <field name="show_servers" invisible="1" />
+                    <field
+                        name="server_ids"
+                        widget="many2many_tags"
+                        required="1"
+                        string="Run on"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <label
+                        for="applicability"
+                        string="Show Commands"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+                        <field
+                            name="applicability"
+                            widget="radio"
+                            options="{'horizontal': True}"
+                            attrs="{'readonly': [('show_servers', '=', True)], 'invisible': [('result', '!=', False)]}"
+                        />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            attrs="{'invisible': [('result', '!=', False)]}"
+                            placeholder="with tags"
+                            options="{'no_create': True}"
+                        />
+                    </div>
+                    <label
+                        for="command_id"
+                        attrs="{'invisible': [('result', '!=', False)]}"
+                    />
+                    <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+
+                        <field name="action" nolabel="1" />
+                        <span
+                            attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
+                        >sudo</span>
+                        <field
+                            name="use_sudo"
+                            attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
+                        />
+                        <field
+                            name="command_id"
+                            domain="command_domain"
+                            default_focus="1"
+                            options="{'no_create': True}"
+                        />
+                        <field name="command_domain" invisible="1" />
+                    </div>
+                    <field
+                        name="path"
+                        groups="cetmix_tower_server.group_manager"
+                        attrs="{'invisible': ['|', ('action', '=', 'python_code'), ('result', '!=', False)]}"
+                        placeholder="e.g. /home/user This field does NOT support variables"
+                    />
+                    <field
+                        name="note"
+                        readonly="1"
+                        attrs="{'invisible': [('note', '=', False)]}"
+                    />
+                </group>
+                <field
+                    name="result"
+                    readonly="1"
+                    attrs="{'invisible': [('result', '=', False)]}"
+                />
+                <notebook
+                    attrs="{'invisible': [('result', '!=', False)]}"
+                    groups="cetmix_tower_server.group_manager"
+                >
+                    <page name="code" string="Code">
+                        <field
+                            name="code"
+                            widget="ace"
+                            options="{'mode': 'python'}"
+                            groups="cetmix_tower_server.group_manager"
+                        />
+                    </page>
+                    <page
+                        name="preview"
+                        string="Preview"
+                        attrs="{'invisible': [('show_servers', '=', True)]}"
+                    >
+                        <field
+                            name="rendered_code"
+                            widget="ace"
+                            options="{'mode': 'python'}"
+                            groups="cetmix_tower_server.group_manager"
+                        />
+                    </page>
+                </notebook>
+                <footer>
+                    <button
+                        name="run_command_on_server"
+                        type="object"
+                        string="Run"
+                        help="Run code using sever method and log result"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|',('result', '!=', False),('command_id', '=', False)]}"
+                    />
+                    <button
+                        name="run_command_in_wizard"
+                        type="object"
+                        string="Run in wizard"
+                        help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
+                        class="oe_highlight"
+                        groups="cetmix_tower_server.group_manager"
+                        attrs="{'invisible': ['|', '|', ('result', '!=', False), ('code', '=', False), ('show_servers', '=', True)]}"
+                    />
+                    <button string="Cancel" special="cancel" />
+                    <button
+                        name="action_run_command"
+                        type="object"
+                        string="Run New Command"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('result', '=', False)]}"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_run_wizard_action" model="ir.actions.act_window">
+        <field name="name">Cetmix Tower Run Command</field>
+        <field name="res_model">cx.tower.command.run.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cx_tower_command_run_wizard_view_form" />
+        <field name="context">{'default_server_ids': [active_id]}</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
