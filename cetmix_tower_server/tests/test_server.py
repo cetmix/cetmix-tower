@@ -408,7 +408,7 @@ result = {
             msg="Unrelated plan should not be deleted when server is deleted",
         )
         self.assertFalse(
-            self.Key.search([("id", "=", secret_id)]),
+            self.KeyValue.search([("id", "=", secret_id)]),
             msg="Secret should be deleted when server is deleted",
         )
         self.assertFalse(

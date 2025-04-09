@@ -789,12 +789,21 @@ class TestTowerServerTemplate(TestTowerCommon):
         Test that server creation only with specified
         variables from wizard and option
         """
+
+        # Create new variable
+        new_variable = self.Variable.create(
+            {
+                "name": "new_variable",
+                "variable_type": "o",
+            }
+        )
+
         # create new variable option
         option = self.VariableOption.create(
             {
                 "name": "test",
                 "value_char": "test",
-                "variable_id": self.variable_dir.id,
+                "variable_id": new_variable.id,
             }
         )
 
@@ -815,7 +824,7 @@ class TestTowerServerTemplate(TestTowerCommon):
                         0,
                         0,
                         {
-                            "variable_id": self.variable_dir.id,
+                            "variable_id": new_variable.id,
                             "option_id": option.id,
                             "required": False,
                         },
