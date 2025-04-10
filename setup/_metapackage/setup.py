@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo-addon-cetmix_tower_server>=16.0dev,<16.1dev',
+        'odoo-addon-cetmix_tower_yaml>=16.0dev,<16.1dev',
     ],
     classifiers=[
         'Programming Language :: Python',
