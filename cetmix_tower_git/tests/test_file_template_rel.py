@@ -6,12 +6,13 @@ from .common import CommonTest
 class TestFileTemplateRel(CommonTest):
     """Test class for git file template relation."""
 
-    def setUp(self):
-        super().setUp()
-        self.file_template_1_rel = self.GitProjectFileTemplateRel.create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.file_template_1_rel = cls.GitProjectFileTemplateRel.create(
             {
-                "git_project_id": self.git_project_1.id,
-                "file_template_id": self.file_template_1.id,
+                "git_project_id": cls.git_project_1.id,
+                "file_template_id": cls.file_template_1.id,
                 "project_format": "git_aggregator",
             }
         )

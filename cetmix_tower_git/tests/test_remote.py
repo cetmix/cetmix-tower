@@ -6,36 +6,35 @@ from .common import CommonTest
 class TestRemote(CommonTest):
     """Test class for git remote."""
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # Create another manager for testing
-        self.manager_2 = self.Users.create(
+        cls.manager_2 = cls.Users.create(
             {
                 "name": "Second Manager",
                 "login": "manager2",
                 "email": "manager2@test.com",
-                "groups_id": [
-                    (4, self.env.ref("cetmix_tower_server.group_manager").id)
-                ],
+                "groups_id": [(4, cls.env.ref("cetmix_tower_server.group_manager").id)],
             }
         )
 
         # Create test project and source as root
-        self.project = self.GitProject.create(
+        cls.project = cls.GitProject.create(
             {
                 "name": "Test Project",
             }
         )
-        self.source = self.GitSource.create(
+        cls.source = cls.GitSource.create(
             {
                 "name": "Test Source",
-                "git_project_id": self.project.id,
+                "git_project_id": cls.project.id,
             }
         )
-        self.remote = self.GitRemote.create(
+        cls.remote = cls.GitRemote.create(
             {
                 "url": "https://github.com/cetmix/cetmix-tower.git",
-                "source_id": self.source.id,
+                "source_id": cls.source.id,
                 "head": "main",
             }
         )
