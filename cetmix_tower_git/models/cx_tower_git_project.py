@@ -14,6 +14,7 @@ class CxTowerGitProject(models.Model):
 
     _name = "cx.tower.git.project"
     _description = "Cetmix Tower Git Project"
+    _order = "name"
 
     _inherit = [
         "cx.tower.reference.mixin",
