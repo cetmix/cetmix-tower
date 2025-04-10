@@ -54,7 +54,6 @@ class CxTowerGitProject(models.Model):
         comodel_name="cx.tower.git.project.rel",
         inverse_name="git_project_id",
         string="Git Project Server File Relations",
-        depends=["file_ids"],
         copy=False,
     )
     # Helper field to get all files related to git project
@@ -72,7 +71,6 @@ class CxTowerGitProject(models.Model):
         comodel_name="cx.tower.git.project.file.template.rel",
         inverse_name="git_project_id",
         string="Git Project File Template Relations",
-        depends=["file_template_ids"],
         copy=False,
     )
     # Helper field to get all file templates related to git project
@@ -94,12 +92,14 @@ class CxTowerGitProject(models.Model):
         compute="_compute_user_ids",
         readonly=False,
         store=True,
+        precompute=True,
     )
     manager_ids = fields.Many2many(
         relation="cx_tower_git_project_manager_rel",
         compute="_compute_user_ids",
         readonly=False,
         store=True,
+        precompute=True,
     )
 
     # -- UI/UX fields
@@ -137,7 +137,11 @@ class CxTowerGitProject(models.Model):
         """
         return "git_aggregator"
 
-    @api.depends("server_ids", "server_ids.user_ids", "server_ids.manager_ids")
+    @api.depends(
+        "git_project_rel_ids.server_id",
+        "git_project_rel_ids.server_id.user_ids",
+        "git_project_rel_ids.server_id.manager_ids",
+    )
     def _compute_user_ids(self):
         """
         Users. All users who have "Manager" group and are either set in "Users"
@@ -150,12 +154,13 @@ class CxTowerGitProject(models.Model):
         """
         for project in self:
             # Do not compute if no servers are related
-            if not project.server_ids:
+            server_ids = project.git_project_rel_ids.server_id
+            if not server_ids:
                 continue
 
             # Get all user and manager ids from related servers
-            all_user_ids = project.server_ids.user_ids.ids
-            all_manager_ids = project.server_ids.manager_ids.ids
+            all_user_ids = server_ids.user_ids.ids
+            all_manager_ids = server_ids.manager_ids.ids
 
             # Create a final list of user and manager ids
             user_ids = []
@@ -164,15 +169,12 @@ class CxTowerGitProject(models.Model):
             for user_id in all_user_ids:
                 if all(
                     user_id in server.user_ids.ids or user_id in server.manager_ids.ids
-                    for server in project.server_ids
+                    for server in server_ids
                 ):
                     user_ids.append(user_id)
             # Check if manager is present in all servers
             for manager_id in all_manager_ids:
-                if all(
-                    manager_id in server.manager_ids.ids
-                    for server in project.server_ids
-                ):
+                if all(manager_id in server.manager_ids.ids for server in server_ids):
                     manager_ids.append(manager_id)
 
             # Set the final lists

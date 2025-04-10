@@ -6,11 +6,12 @@ from .common import CommonTest
 class TestProject(CommonTest):
     """Test class for git project."""
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # Remove user bob from all groups
-        self.remove_from_group(
-            self.user_bob,
+        cls.remove_from_group(
+            cls.user_bob,
             [
                 "cetmix_tower_server.group_user",
                 "cetmix_tower_server.group_manager",
@@ -19,19 +20,17 @@ class TestProject(CommonTest):
         )
 
         # Create another manager for testing
-        self.manager_2 = self.Users.create(
+        cls.manager_2 = cls.Users.create(
             {
                 "name": "Second Manager",
                 "login": "manager2",
                 "email": "manager2@test.com",
-                "groups_id": [
-                    (4, self.env.ref("cetmix_tower_server.group_manager").id)
-                ],
+                "groups_id": [(4, cls.env.ref("cetmix_tower_server.group_manager").id)],
             }
         )
 
         # Create test project as root
-        self.project = self.GitProject.create(
+        cls.project = cls.GitProject.create(
             {
                 "name": "Test Project",
             }
@@ -205,7 +204,7 @@ class TestProject(CommonTest):
             )
 
         # Invalidate cache to ensure computed fields are updated
-        project.invalidate_cache(["server_ids", "user_ids", "manager_ids"])
+        project.invalidate_recordset(["server_ids", "user_ids", "manager_ids"])
 
         # -- 3 --
         # Test computed values with linked servers
@@ -247,7 +246,7 @@ class TestProject(CommonTest):
         )
 
         # Invalidate cache to ensure computed fields are updated
-        project.invalidate_cache(["server_ids", "user_ids", "manager_ids"])
+        project.invalidate_recordset(["server_ids", "user_ids", "manager_ids"])
 
         # Test that computed values are updated correctly
         # Only users/managers present in all servers should remain
