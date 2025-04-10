@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -30,12 +30,14 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "'%s' is not a valid model"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #, python-format
 msgid "'invalid_model' is not a valid model"
@@ -56,6 +58,7 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid ""
@@ -204,35 +207,22 @@ msgid "Created on"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid "Error creating record '%(reference)s' in model '%(model)s': %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid "Error updating record %(reference)s: %(error)s"
@@ -274,12 +264,14 @@ msgid "Export YAML"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 #, python-format
 msgid "Failed to convert dictionary to YAML: %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid ""
@@ -293,6 +285,7 @@ msgid "File Name"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
@@ -305,25 +298,10 @@ msgid "Generate YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__id
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__id
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin__id
 msgid "ID"
 msgstr ""
 
@@ -345,12 +323,14 @@ msgid "Import YAML"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid "Import result: %(model)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "Invalid YAML file"
@@ -362,25 +342,10 @@ msgid "Key/Secrets"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_mixin____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -406,12 +371,14 @@ msgid "List of secrets present in the YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "Model '%s' does not support YAML import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #, python-format
 msgid "Model 'server' does not support YAML import"
@@ -428,18 +395,21 @@ msgid "Models to create records in"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid "No YAML code is present."
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid "No model or records selected"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
@@ -447,6 +417,7 @@ msgid "No records were created or updated"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
 #, python-format
 msgid "No valid records selected"
@@ -469,6 +440,7 @@ msgid "Process"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
@@ -478,6 +450,7 @@ msgid "Record Import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
@@ -485,12 +458,14 @@ msgid "Record model is missing for record %s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid "Record reference is missing"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid "Records of the following models were created or updated: %(models)s"
@@ -541,6 +516,7 @@ msgid "Update existing record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 #: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
 #, python-format
@@ -563,6 +539,7 @@ msgid "What to do if record with the same reference already exists"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 #: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
 #, python-format
@@ -579,6 +556,7 @@ msgid "YAML"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
@@ -586,6 +564,7 @@ msgid "YAML file cannot be decoded properly"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
@@ -594,6 +573,7 @@ msgid "YAML file doesn't contain any records"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
@@ -635,6 +615,7 @@ msgid "Yaml File Name"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
@@ -642,6 +623,7 @@ msgid "Yaml file doesn't contain valid data"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 #, python-format
 msgid "You are not allowed to create records from YAML"
