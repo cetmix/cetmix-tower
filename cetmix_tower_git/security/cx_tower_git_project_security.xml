@@ -7,7 +7,7 @@
         <field name="model_id" ref="model_cx_tower_git_project" />
         <field
             name="domain_force"
-        >['|', ('user_ids', 'in', [user.id]), ('manager_ids', 'in', user.id)]</field>
+        >['|', ('user_ids', 'in', [user.id]), ('manager_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
