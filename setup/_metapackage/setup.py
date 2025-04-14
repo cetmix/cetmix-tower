@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo-addon-cetmix_tower_git>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_server>=16.0dev,<16.1dev',
+        'odoo-addon-cetmix_tower_server_notify_backend>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_yaml>=16.0dev,<16.1dev',
     ],
     classifiers=[
