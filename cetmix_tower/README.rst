@@ -34,6 +34,14 @@ Tower <https://cetmix.com/tower>`__ modules at once.
 .. contents::
    :local:
 
+Changelog
+=========
+
+14.0.1.0.0
+----------
+
+Release for Odoo 14.0
+
 Bug Tracker
 ===========
 

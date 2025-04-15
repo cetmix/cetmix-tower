@@ -674,6 +674,64 @@ result = {
             rendered_command["rendered_path"], "Rendered path doesn't match"
         )
 
+    def test_server_render_command_with_custom_variable_values(self):
+        """Test rendering command using `_render_command` method
+        of cx.tower.server with custom variable values
+        """
+        self.write_and_invalidate(
+            self.server_test_1,
+            **{"user_ids": [(4, self.user.id)], "manager_ids": [(4, self.manager.id)]},
+        )
+        # -- 1 --
+        # Set custom variable values
+        custom_variable_values = {
+            "test_path_": "/pepe/memes",
+            "other_path": "/etc/chad",
+        }
+
+        # Modify command path
+        self.write_and_invalidate(
+            self.command_create_dir,
+            **{"path": "{{ other_path }}/{{ tower.server.username }}"},
+        )
+
+        # Render command
+        rendered_command = self.server_test_1.with_user(self.manager)._render_command(
+            self.command_create_dir, custom_variable_values=custom_variable_values
+        )
+        rendered_code_expected = "cd /pepe/memes && mkdir test-odoo-1"
+        rendered_path_expected = f"/etc/chad/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # -- 2 --
+        # Test with user who doesn't have access to the server
+        rendered_command = self.server_test_1.with_user(self.user)._render_command(
+            self.command_create_dir, custom_variable_values=custom_variable_values
+        )
+        rendered_code_expected = "cd /opt/tower && mkdir test-odoo-1"
+        rendered_path_expected = f"None/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
     def test_server_render_command_variable_with_value_modifier(self):
         """Test rendering command using `_render_command` method
         of cx.tower.server.
