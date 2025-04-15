@@ -4,7 +4,7 @@
  * List of colors according to the selection value
  */
 export const STATUS_COLORS = {
-    undefined: "info",
+    false: "info",
     stopped: "danger",
     starting: "warning",
     running: "success",
