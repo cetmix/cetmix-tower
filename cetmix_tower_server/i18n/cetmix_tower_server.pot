@@ -923,7 +923,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__condition
 msgid ""
 "Conditions under which this Flight Plan Line will be launched. e.g.: {{ "
-"odoo_version}} == '14.0'"
+"odoo_version}} == '16.0'"
 msgstr ""
 
 #. module: cetmix_tower_server

@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2025-02-28 14:15+0000\n"
@@ -807,10 +807,10 @@ msgstr "Condizione"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__condition
 msgid ""
 "Conditions under which this Flight Plan Line will be launched. e.g.: "
-"{{ odoo_version}} == '14.0'"
+"{{ odoo_version}} == '16.0'"
 msgstr ""
 "Condizioni in base alle quali verrà lanciata questa linea del piano di volo. "
-"Ad esempio: {{ odoo_version}} == '14.0'"
+"Ad esempio: {{ odoo_version}} == '16.0'"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
