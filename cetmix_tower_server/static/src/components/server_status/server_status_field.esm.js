@@ -18,6 +18,13 @@ export class ServerStatusField extends StateSelectionField {
     /**
      * @override
      */
+    get options() {
+        return [[false, "Undefined"], ...super.options];
+    }
+
+    /**
+     * @override
+     */
     get showLabel() {
         return !this.props.hideLabel;
     }
