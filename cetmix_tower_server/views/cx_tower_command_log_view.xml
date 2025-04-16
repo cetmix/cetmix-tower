@@ -10,24 +10,24 @@
                         name="web_ribbon"
                         title="Running"
                         bg_color="bg-info"
-                        attrs="{'invisible': [('is_running', '=', False)]}"
+                        invisible="not is_running"
                     />
                     <widget
                         name="web_ribbon"
                         title="Finished"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '!=', 0)]}"
+                        invisible="is_running or not is_running and command_status != 0"
                     />
                     <widget
                         name="web_ribbon"
                         title="Failed"
                         bg_color="bg-danger"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', 'in', [0, -205])]}"
+                        invisible="is_running or not is_running and command_status in [0, -205]"
                     />
                     <widget
                         name="web_ribbon"
                         title="Skipped"
                         bg_color="bg-dark"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('command_status', '!=', -205)]}"
+                        invisible="is_running or not is_running and command_status != -205"
                     />
 
                     <group>
@@ -39,57 +39,36 @@
                             <field name="command_action" invisible="1" />
                             <field
                                 name="condition"
-                                attrs="{'invisible': [('condition', '=', False)]}"
+                                invisible="not condition"
                                 widget="ace"
                                 options="{'mode': 'python'}"
                             />
-                            <field
-                                name="path"
-                                attrs="{'invisible': [('path', '=', False)]}"
-                            />
-                            <field
-                                name="is_running"
-                                attrs="{'invisible': [('is_running', '=', False)]}"
-                            />
-                            <field
-                                name="use_sudo"
-                                attrs="{'invisible': [('use_sudo', '=', False)]}"
-                            />
-                            <field
-                                name="command_status"
-                                attrs="{'invisible': [('is_running', '=', True)]}"
-                            />
+                            <field name="path" invisible="not path" />
+                            <field name="is_running" invisible="not is_running" />
+                            <field name="use_sudo" invisible="not use_sudo" />
+                            <field name="command_status" invisible="is_running" />
                             <field
                                 name="triggered_plan_log_id"
-                                attrs="{'invisible': [('triggered_plan_log_id', '=', False)]}"
+                                invisible="not triggered_plan_log_id"
                             />
                         </group>
                         <group>
-                            <field
-                                name="label"
-                                attrs="{'invisible': [('label', '=', False)]}"
-                            />
+                            <field name="label" invisible="not label" />
                             <field name="start_date" />
                             <field name="finish_date" />
                             <field name="duration_current" />
                         </group>
                     </group>
                     <group>
-                        <field
-                            name="plan_log_id"
-                            attrs="{'invisible': [('plan_log_id', '=', False)]}"
-                        />
+                        <field name="plan_log_id" invisible="not plan_log_id" />
                     </group>
-                    <notebook attrs="{'invisible': [('command_action', '=', 'plan')]}">
+                    <notebook invisible="command_action == 'plan'">
                         <page name="result" string="Result">
                             <field
                                 name="command_response"
-                                attrs="{'invisible': [('command_response', '=', False)]}"
+                                invisible="not command_response"
                             />
-                            <field
-                                name="command_error"
-                                attrs="{'invisible': [('command_error', '=', False)]}"
-                            />
+                            <field name="command_error" invisible="not command_error" />
                         </page>
                         <page name="code" string="Command">
                             <field name="code" />

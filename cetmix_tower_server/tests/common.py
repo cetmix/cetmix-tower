@@ -51,7 +51,9 @@ class TestTowerCommon(BaseCommon):
                 "name": "Test User",
                 "login": "test_user",
                 "email": "test_user@example.com",
-                "groups_id": [(6, 0, [cls.group_user.id])],
+                "groups_id": [
+                    (6, 0, [cls.group_user.id, cls.env.ref("base.group_user").id])
+                ],
             }
         )
         cls.manager = cls.Users.create(
@@ -59,7 +61,9 @@ class TestTowerCommon(BaseCommon):
                 "name": "Test Manager",
                 "login": "test_manager",
                 "email": "test_manager@example.com",
-                "groups_id": [(6, 0, [cls.group_manager.id])],
+                "groups_id": [
+                    (6, 0, [cls.group_manager.id, cls.env.ref("base.group_user").id])
+                ],
             }
         )
         cls.root = cls.Users.create(
@@ -67,7 +71,9 @@ class TestTowerCommon(BaseCommon):
                 "name": "Test Root",
                 "login": "test_root",
                 "email": "test_root@example.com",
-                "groups_id": [(6, 0, [cls.group_root.id])],
+                "groups_id": [
+                    (6, 0, [cls.group_root.id, cls.env.ref("base.group_user").id])
+                ],
             }
         )
 

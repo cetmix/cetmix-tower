@@ -55,7 +55,7 @@ class CxTowerPlanRunWizard(models.TransientModel):
     )
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
-        compute_sudo=True,
+        store=True,
     )
 
     @api.depends("server_ids")

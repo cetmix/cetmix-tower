@@ -20,13 +20,13 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div
                         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager"
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('access_level_warn_msg', '=', False)]}"
+                        invisible="not access_level_warn_msg"
                         style="margin-bottom:0px;"
                     >
                         <p>
@@ -51,7 +51,8 @@
                                 <field name="on_error_action" />
                                 <field
                                     name="custom_exit_code"
-                                    attrs="{'invisible': [('on_error_action', '!=', 'ec')], 'required': [('on_error_action', '=', 'ec')]}"
+                                    invisible="on_error_action != 'ec'"
+                                    required="on_error_action == 'ec'"
                                 />
                             </div>
                             <field name="note" />

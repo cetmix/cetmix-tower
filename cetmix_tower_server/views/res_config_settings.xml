@@ -5,61 +5,59 @@
             res.config.settings.view.form.inherit.cetmix.tower.settings
         </field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div
-                    class="app_settings_block"
-                    data-string="cetmix_tower_server"
+            <form position="inside">
+                <app
+                    data-string="Cetmix Tower"
                     string="Cetmix Tower"
-                    data-key="cetmix_tower_server"
+                    name="cetmix_tower_server"
+                    groups="cetmix_tower_server.group_root"
                 >
-                    <h2>Cetmix Tower Server</h2>
-                    <div
-                        class="row mt16 o_settings_container"
-                        id="cetmix_tower_settings"
+                    <block
+                        name="cetmix_tower_server_settings"
+                        title="Cetmix Tower Server"
                     >
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="cetmix_tower_command_timeout">
-                                <label for="cetmix_tower_command_timeout" />
-                                <div class="text-muted">
-                                    Command timeout in seconds after which the command will be terminated. Set to 0 to disable timeout.
-                                    <br />
-                                </div>
-                                <div class="content-group">
-                                    <div class="mt16">
-                                        <field name="cetmix_tower_command_timeout" />
-                                    </div>
-                                    <button
-                                        name="action_configure_zombie_commands_cron"
-                                        string="Cron Job"
-                                        type="object"
-                                        class="oe_link"
-                                        icon="fa-arrow-right"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6 o_setting_box">
-                            <div class="pull_files_from_server">
-                                <div>Pull files from server</div>
-                                <div class="text-muted">
-                                    Files will be pulled from server to Tower
-                                    automatically using cron job.
-                                    <br />
-                                </div>
+                        <setting
+                            id="cetmix_tower_command_timeout"
+                            help="Command timeout in seconds after which the command will be terminated. Set to 0 to disable timeout."
+                        >
+                            <field name="cetmix_tower_command_timeout" />
+                            <div class="mt8">
                                 <button
-                                    name="action_configure_cron_pull_files_from_server"
+                                    name="action_configure_zombie_commands_cron"
                                     string="Cron Job"
                                     type="object"
-                                    class="oe_link"
+                                    class="btn-link"
                                     icon="fa-arrow-right"
                                 />
                             </div>
+                        </setting>
+                        <setting
+                            id="cetmix_tower_pull_files_from_server"
+                            title="Pull files from server"
+                            help="Files will be pulled from server to Tower automatically using cron job."
+                        >
+                            <div class="o_form_label">
+                                <span>Pull files from server</span>
+                            </div>
+                            <div class="text-muted">
+                                <span
+                                >Files will be pulled from server to Tower automatically using cron job.</span>
+                            </div>
+                            <div class="mt8">
+                            <button
+                                    name="action_configure_cron_pull_files_from_server"
+                                    string="Cron Job"
+                                    type="object"
+                                    class="btn-link"
+                                    icon="fa-arrow-right"
+                                />
                         </div>
-                    </div>
-                </div>
-            </xpath>
+                        </setting>
+                    </block>
+                </app>
+            </form>
         </field>
     </record>
 
@@ -71,6 +69,8 @@
         <field name="view_id" ref="res_config_settings_view_form" />
         <field name="view_mode">form</field>
         <field name="target">inline</field>
-        <field name="context">{'module' : 'cetmix_tower_server'}</field>
+        <field
+            name="context"
+        >{'module' : 'cetmix_tower_server', 'bin_size': False}</field>
     </record>
 </odoo>

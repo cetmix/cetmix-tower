@@ -264,7 +264,8 @@ class CxTowerServerTemplate(models.Model):
         configuration_variables = kwargs.get("configuration_variables", {})
 
         # We validate mandatory variables
-        self._validate_required_variables(configuration_variables)
+        if not kwargs.get("pick_all_template_variables"):
+            self._validate_required_variables(configuration_variables)
 
         # We are using sudo to ensure all values are copied
         server_values = self.sudo()._prepare_server_values(
@@ -361,8 +362,8 @@ class CxTowerServerTemplate(models.Model):
         field_o2m_type = fields.One2many
 
         # define the magic fields that should not be copied
-        # (including ID and concurrency fields)
-        MAGIC_FIELDS = models.MAGIC_COLUMNS + [self.CONCURRENCY_CHECK_FIELD]
+        # (including ID)
+        MAGIC_FIELDS = models.MAGIC_COLUMNS
 
         # read all values required to create a new server from the template
         values = self.read(self._get_fields_tower_server(), load=False)[0]

@@ -1,5 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from itertools import repeat
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -89,21 +90,18 @@ class CxTowerKeyValue(models.Model):
                     _("Only one secret value can be defined for a partner")
                 )
 
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
+    def _fetch_query(self, query, fields):
         """Substitute fields based on api"""
-        super()._read(fields)
-        if not self.env.context.get("show_secret_value") and (
-            "secret_value" in fields or fields == []
-        ):
+        records = super()._fetch_query(query, fields)
+        if self._fields["secret_value"] in fields and not self.env.user._is_superuser():
             placeholder = self.env["cx.tower.key"].SECRET_VALUE_PLACEHOLDER
             # Public user used for substitution
-            for record in self:
-                try:
-                    record._cache["secret_value"] = placeholder
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
+            self.env.cache.update(
+                records,
+                self._fields["secret_value"],
+                repeat(placeholder),
+            )
+        return records
 
     def write(self, vals):
         res = super().write(vals)
@@ -122,6 +120,10 @@ class CxTowerKeyValue(models.Model):
         # Return None in case of empty recordset
         if not self:
             return
+
+        # One record per time
+        self.ensure_one()
+
         self.env.cr.execute(
             """
             SELECT secret_value

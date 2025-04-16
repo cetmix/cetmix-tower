@@ -13,7 +13,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
-                            attrs="{'invisible': [('value_ids_count', '=', 0)]}"
+                            invisible="value_ids_count == 0"
                         >
                             <field
                                 name="value_ids_count"
@@ -26,7 +26,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-code"
-                            attrs="{'invisible': [('command_ids_count', '=', 0)]}"
+                            invisible="command_ids_count == 0"
                         >
                             <field
                                 name="command_ids_count"
@@ -39,7 +39,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-plane"
-                            attrs="{'invisible': [('plan_line_ids_count', '=', 0)]}"
+                            invisible="plan_line_ids_count == 0"
                         >
                             <field
                                 name="plan_line_ids_count"
@@ -52,7 +52,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-bars"
-                            attrs="{'invisible': [('file_ids_count', '=', 0)]}"
+                            invisible="file_ids_count == 0"
                         >
                             <field
                                 name="file_ids_count"
@@ -65,7 +65,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-list-alt"
-                            attrs="{'invisible': [('file_template_ids_count', '=', 0)]}"
+                            invisible="file_template_ids_count == 0"
                         >
                             <field
                                 name="file_template_ids_count"
@@ -78,7 +78,7 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-pencil-square-o"
-                            attrs="{'invisible': [('variable_value_ids_count', '=', 0)]}"
+                            invisible="variable_value_ids_count == 0"
                         >
                             <field
                                 name="variable_value_ids_count"
@@ -107,10 +107,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page
-                            string="Options"
-                            attrs="{'invisible': [('variable_type', '=', 's')]}"
-                        >
+                        <page string="Options" invisible="variable_type == 's'">
                             <field name="option_ids" widget="one2many">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
@@ -139,8 +136,8 @@
                         <page string="Values">
                             <field name="value_ids">
                                 <tree editable="top" decoration-bf="is_global==True">
-                                    <field name="variable_id" invisible="1" />
-                                    <field name="variable_type" invisible="1" />
+                                    <field name="variable_id" column_invisible="1" />
+                                    <field name="variable_type" column_invisible="1" />
                                     <field name="is_global" widget="boolean_toggle" />
                                     <field name="server_id" />
                                     <field name="server_template_id" />
@@ -148,29 +145,29 @@
                                     <field
                                         name="value_char"
                                         placeholder="undefined"
-                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                        readonly="variable_type == 'o'"
                                     />
                                     <field
                                         name="option_id"
                                         optional="show"
-                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                        readonly="variable_type == 's'"
                                     />
                                 </tree>
                                 <form>
                                     <group>
-                                        <field name="server_id" invisible="1" />
+                                        <field name="server_id" column_invisible="1" />
                                         <field name="variable_id" invisible="1" />
                                         <field name="variable_type" invisible="1" />
                                         <field name="is_global" />
                                         <field name="server_template_id" />
                                         <field
                                             name="value_char"
-                                            attrs="{'invisible': [('variable_type', '=', 'o')]}"
+                                            invisible="variable_type == 'o'"
                                         />
                                         <field
                                             name="option_id"
                                             optional="show"
-                                            attrs="{'invisible': [('variable_type', '=', 's')]}"
+                                            invisible="variable_type == 's'"
                                         />
                                     </group>
                                 </form>

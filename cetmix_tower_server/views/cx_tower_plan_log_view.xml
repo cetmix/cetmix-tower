@@ -10,18 +10,18 @@
                         name="web_ribbon"
                         title="Running"
                         bg_color="bg-info"
-                        attrs="{'invisible': [('is_running', '=', False)]}"
+                        invisible="not is_running"
                     />
                     <widget
                         name="web_ribbon"
                         title="Finished"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '!=', 0)]}"
+                        invisible="is_running or not is_running and plan_status != 0"
                     />
                     <widget
                         name="web_ribbon"
                         title="Failed"
                         bg_color="bg-danger"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '=', 0)]}"
+                        invisible="is_running or not is_running and plan_status == 0"
                     />
                     <group>
                         <group>
@@ -30,26 +30,17 @@
                             <field name="plan_id" />
                             <field
                                 name="parent_flight_plan_log_id"
-                                attrs="{'invisible': [('parent_flight_plan_log_id', '=', False)]}"
+                                invisible="not parent_flight_plan_log_id"
                             />
-                            <field
-                                name="is_running"
-                                attrs="{'invisible': [('is_running', '=', False)]}"
-                            />
+                            <field name="is_running" invisible="not is_running" />
                             <field
                                 name="plan_line_executed_id"
-                                attrs="{'invisible': [('is_running', '=', False)]}"
+                                invisible="not is_running"
                             />
-                            <field
-                                name="plan_status"
-                                attrs="{'invisible': [('is_running', '=', True)]}"
-                            />
+                            <field name="plan_status" invisible="is_running" />
                         </group>
                         <group>
-                            <field
-                                name="label"
-                                attrs="{'invisible': [('label', '=', False)]}"
-                            />
+                            <field name="label" invisible="not label" />
                             <field name="start_date" />
                             <field name="finish_date" />
                             <field name="duration_current" />
@@ -61,7 +52,7 @@
                                 decoration-muted="command_status == -205"
                                 default_order="id asc"
                             >
-                            <field name="id" invisible="1" />
+                            <field name="id" column_invisible="1" />
                             <field name="command_id" optional="show" />
                             <field name="command_action" optional="show" />
                             <field name="start_date" optional="hide" />

@@ -19,7 +19,7 @@
                             name="applicability"
                             widget="radio"
                             options="{'horizontal': True}"
-                            attrs="{'readonly': [('show_servers', '=', True)]}"
+                            readonly="show_servers"
                         />
                         <field
                             name="tag_ids"
@@ -38,15 +38,8 @@
                         />
                         <field name="plan_domain" invisible="1" />
                     </div>
-                    <field
-                        name="note"
-                        readonly="1"
-                        attrs="{'invisible': [('note', '=', False)]}"
-                    />
-                    <field
-                        name="plan_line_ids"
-                        attrs="{'invisible': [('plan_id', '=', False)]}"
-                    >
+                    <field name="note" readonly="1" invisible="not note" />
+                    <field name="plan_line_ids" invisible="not plan_id">
                         <tree decoration-bf="action=='plan'">
                             <field name="name" />
                             <field name="action" optional="show" />
@@ -78,7 +71,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="cx_tower_plan_run_wizard_view_form" />
-        <field name="context">{'default_server_ids': [active_id]}</field>
+        <field name="context">{'default_server_ids': [id]}</field>
         <field name="target">new</field>
     </record>
 </odoo>

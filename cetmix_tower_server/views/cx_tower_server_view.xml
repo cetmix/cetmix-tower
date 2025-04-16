@@ -5,7 +5,7 @@
         <field name="name">cx.tower.server.view.kanban</field>
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
-            <kanban class="oe_background_grey o_kanban_dashboard" records_draggable="0">
+            <kanban class="o_kanban_dashboard" records_draggable="0" sample="1">
                 <field name="name" />
                 <field name="url" />
                 <field name="partner_id" />
@@ -15,6 +15,43 @@
                 <field name="ip_v6_address" />
                 <field name="color" />
                 <templates>
+                    <t t-name="kanban-menu">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-8 o_kanban_card_manage_section">
+                                    <div role="menuitem">
+                                        <a
+                                            role="menuitem"
+                                            type="action"
+                                            name="%(cetmix_tower_server.cx_tower_command_run_wizard_action)d"
+                                        >Run Command
+                                        </a>
+                                        </div>
+                                        <div role="menuitem">
+                                            <a
+                                            role="menuitem"
+                                            type="action"
+                                            name="%(cetmix_tower_server.cx_tower_plan_run_wizard_action)d"
+                                        >Run Flight Plan
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_card_manage_settings row">
+                                    <div
+                                    role="menuitem"
+                                    aria-haspopup="true"
+                                    class="col-6"
+                                >
+                                        <ul
+                                        class="oe_kanban_colorpicker"
+                                        data-field="color"
+                                        role="popup"
+                                    />
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
                     <t t-name="kanban-box">
                         <div
                             t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
@@ -26,55 +63,15 @@
                                     <div class="o_primary">
                                         <field name="name" />
                                     </div>
-                                    <field name="status" widget="server_status" />
+                                    <field
+                                        name="status"
+                                        widget="server_status"
+                                        options="{'hide_label': False}"
+                                    />
                                 </div>
                                     <div t-if="record.url.raw_value">
                                         <field name="url" widget="url" />
                                     </div>
-                                <div class="o_kanban_manage_button_section">
-                                    <a class="o_kanban_manage_toggle_button" href="#">
-                                        <i
-                                            class="fa fa-ellipsis-v"
-                                            aria-label="Selection"
-                                            role="img"
-                                            title="Selection"
-                                        />
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div
-                                class="container o_kanban_card_manage_pane dropdown-menu"
-                                role="menu"
-                            >
-                                <div class="row">
-                                    <div class="col-8">
-                                        <div>
-                                            <a
-                                                role="menuitem"
-                                                type="action"
-                                                name="%(cetmix_tower_server.cx_tower_command_run_wizard_action)d"
-                                            >Run
-                                                Command
-                                            </a>
-                                        </div>
-                                        <div>
-                                            <a
-                                                role="menuitem"
-                                                type="action"
-                                                name="%(cetmix_tower_server.cx_tower_plan_run_wizard_action)d"
-                                            >Run
-                                                Flight Plan
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_card_manage_settings row">
-                                    <ul
-                                        class="oe_kanban_colorpicker"
-                                        data-field="color"
-                                    />
-                                </div>
                             </div>
                             <div class="oe_kanban_content">
                                 <div class="oe_kanban_global_click">
@@ -110,12 +107,12 @@
                                     <div class="oe_kanban_bottom_left">
                                     </div>
                                     <div class="oe_kanban_bottom_right">
-                                        <div
-                                            attrs="{'invisible': [('tag_ids', '=', False)]}"
-                                        >
+                                        <div invisible="not tag_ids">
+                                            <field name="color" invisible="1" />
                                             <field
                                                 name="tag_ids"
                                                 widget="many2many_tags"
+                                                options="{'color_field': 'color'}"
                                             />
                                         </div>
                                     </div>
@@ -211,7 +208,7 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div class="oe_title">
                         <field name="color" widget="color_picker" />
@@ -220,6 +217,7 @@
                             <field
                                 name="status"
                                 widget="server_status"
+                                options="{'hide_label': False}"
                                 class="ml-auto"
                             />
                         </h1>
@@ -274,17 +272,17 @@
                                     <label
                                         for="host_key"
                                         groups="cetmix_tower_server.group_manager"
-                                        attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                                        invisible="skip_host_key"
                                     />
                                     <div
                                         groups="cetmix_tower_server.group_manager"
                                         class="o_row"
-                                        attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                                        invisible="skip_host_key"
                                     >
                                         <field
                                             name="host_key"
                                             placeholder="Host key"
-                                            attrs="{'required': [('skip_host_key', '=', False), ('id', '>', 0)]}"
+                                            required="not skip_host_key and id &gt; 0"
                                         />
                                         <button
                                             name="action_show_host_key"
@@ -305,7 +303,7 @@
                                         role="alert"
                                         style="margin-bottom:0px;"
                                         groups="cetmix_tower_server.group_manager"
-                                        attrs="{'invisible': [('skip_host_key', '=', False)]}"
+                                        invisible="not skip_host_key"
                                     >
                                         In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks.
                                     </div>
@@ -317,19 +315,19 @@
                                     <field name="use_sudo" placeholder="No" />
                                     <field
                                         name="ssh_password"
-                                        attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
+                                        required="ssh_auth_mode == 'p'"
                                         password="True"
                                     />
                                     <field
                                         name="ssh_key_id"
-                                        attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
+                                        required="ssh_auth_mode == 'k'"
                                         context="{'default_key_type': 'k'}"
                                     />
                                 </group>
                                 <group name="extra">
                                     <field
                                         name="server_template_id"
-                                        attrs="{'invisible': [('server_template_id', '=', False)]}"
+                                        invisible="not server_template_id"
                                         groups="cetmix_tower_server.group_manager"
                                     />
                                     <field name="plan_delete_id" />
@@ -341,17 +339,20 @@
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
-                                    <field name="variable_reference" invisible="1" />
+                                    <field
+                                        name="variable_reference"
+                                        column_invisible="1"
+                                    />
                                     <field name="variable_id" />
-                                    <field name="variable_type" invisible="1" />
+                                    <field name="variable_type" column_invisible="1" />
                                     <field
                                         name="value_char"
-                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                        readonly="variable_type == 'o'"
                                     />
                                     <field
                                         name="option_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
-                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                        readonly="variable_type == 's'"
                                     />
                                     <field name="access_level" optional="show" />
                                 </tree>

@@ -7,22 +7,14 @@
         <field name="arch" type="xml">
             <form string="Host Key">
                 <field name="is_error" invisible="1" />
-                <div
-                    class="alert alert-warning"
-                    role="status"
-                    attrs="{'invisible': [('is_error', '=', True)]}"
-                >
+                <div class="alert alert-warning" role="status" invisible="is_error">
                     Check the key before inserting in the server settings. Do not insert the key if you have any doubts!
                 </div>
-                    <field
-                    name="host_key"
-                    readonly="1"
-                    attrs="{'invisible': [('is_error', '=', True)]}"
-                />
+                    <field name="host_key" readonly="1" invisible="is_error" />
                 <field
                     name="host_key"
                     readonly="1"
-                    attrs="{'invisible': [('is_error', '=', False)]}"
+                    invisible="not is_error"
                     class="alert alert-danger"
                     role="status"
                 />
@@ -32,7 +24,7 @@
                         type="object"
                         string="Insert Key"
                         class="btn-primary"
-                        attrs="{'invisible': [('is_error', '=', True)]}"
+                        invisible="is_error"
                         confirm="I confirm that the key is correct and I want to insert it in the server settings"
                     />
                     <button special="cancel" string="Close" class="btn-secondary" />

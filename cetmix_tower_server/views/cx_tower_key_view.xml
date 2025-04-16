@@ -15,7 +15,7 @@
                                 name="reference_code"
                                 widget="CopyClipboardChar"
                                 options="{'string': 'Copy'}"
-                                attrs="{'invisible':[('key_type','=','k')]}"
+                                invisible="key_type == 'k'"
                             />
                             <field name="key_type" />
                         </group>
@@ -27,14 +27,14 @@
                         <page
                             name="value"
                             string="Key Value"
-                            attrs="{'invisible': [('key_type', '!=', 'k')]}"
+                            invisible="key_type != 'k'"
                         >
                             <field name="secret_value" />
                         </page>
                         <page
                             name="secret_values"
                             string="Secret Values"
-                            attrs="{'invisible': [('key_type', '!=', 's')]}"
+                            invisible="key_type != 's'"
                         >
                             <field name="value_ids">
                                 <tree
@@ -49,13 +49,10 @@
                                 <form>
                                     <group>
                                         <field name="is_global" />
-                                        <field
-                                            name="server_id"
-                                            attrs="{'invisible': [('is_global', '=', True)]}"
-                                        />
+                                        <field name="server_id" invisible="is_global" />
                                         <field
                                             name="partner_id"
-                                            attrs="{'invisible': [('is_global', '=', True)]}"
+                                            invisible="is_global"
                                         />
                                     </group>
                                 </form>
@@ -64,7 +61,7 @@
                         <page
                             name="servers"
                             string="Used for"
-                            attrs="{'invisible': [('key_type', '!=', 'k')]}"
+                            invisible="key_type != 'k'"
                         >
                             <field name="server_ssh_ids">
                                 <tree>

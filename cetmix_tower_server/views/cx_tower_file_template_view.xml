@@ -42,21 +42,21 @@
                             />
                             <field
                                 name="keep_when_deleted"
-                                attrs="{'invisible': [('source', '=', 'server')]}"
+                                invisible="source == 'server'"
                             />
                             <field name="file_type" />
                             <field name="note" />
                             <field
                                 name="variable_ids"
                                 widget="many2many_tags"
-                                readonly="1"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                                readonly="1"
+                                invisible="not variable_ids"
                             />
                             <field
                                 name="secret_ids"
                                 widget="many2many_tags"
-                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                                invisible="not secret_ids"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                             />
                         </group>
@@ -65,7 +65,7 @@
                         <page
                             name="code"
                             string="Code"
-                            attrs="{'invisible': ['|', ('file_type', '=', 'binary'), ('source', '=', 'server')]}"
+                            invisible="file_type == 'binary' or source == 'server'"
                         >
                             <field name="code" nolabel="1" />
                         </page>

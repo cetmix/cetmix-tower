@@ -1,7 +1,9 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from itertools import repeat
+
+from odoo import SUPERUSER_ID, api, fields, models
 
 
 class CxTowerKey(models.Model):
@@ -82,25 +84,29 @@ class CxTowerKey(models.Model):
         "value_ids.partner_id",
     )
     def _compute_secret_value(self):
-        for rec in self.with_context(show_secret_value=True):
+        for rec in self:
             if rec.key_type == "s":
                 # General value
                 general_value = rec.value_ids.filtered(lambda x: not x.server_id)
                 if general_value:
-                    rec.secret_value = general_value[0].secret_value
+                    rec.secret_value = (
+                        general_value[0].with_user(SUPERUSER_ID).secret_value
+                    )
                 else:
                     rec.secret_value = None
 
     def _inverse_secret_value(self):
         key_value_obj = self.env["cx.tower.key.value"]
-        for rec in self.with_context(show_secret_value=True):
+        for rec in self:
             if rec.key_type == "s" and rec.secret_value:
                 # General value
                 general_value = rec.value_ids.filtered(
                     lambda x: not x.server_id and not x.partner_id and x.id
                 )
                 if general_value:
-                    general_value.secret_value = rec.secret_value
+                    general_value.secret_value = rec.with_user(
+                        SUPERUSER_ID
+                    ).secret_value
                 else:
                     key_value_obj.create(
                         {
@@ -141,20 +147,17 @@ class CxTowerKey(models.Model):
             key_prefix = None
         return key_prefix
 
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
-        """Substitute fields based on api"""
-        super()._read(fields)
-        if not self.env.context.get("show_secret_value") and (
-            "secret_value" in fields or fields == []
-        ):
+    def _fetch_query(self, query, fields):
+        """Substitute secret value with placeholder"""
+        records = super()._fetch_query(query, fields)
+        if self._fields["secret_value"] in fields and not self.env.user._is_superuser():
             # Public user used for substitution
-            for record in self:
-                try:
-                    record._cache["secret_value"] = self.SECRET_VALUE_PLACEHOLDER
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
+            self.env.cache.update(
+                records,
+                self._fields["secret_value"],
+                repeat(self.SECRET_VALUE_PLACEHOLDER),
+            )
+        return records
 
     def _parse_code_and_return_key_values(self, code, pythonic_mode=False, **kwargs):
         """Replaces key placeholders in code with the corresponding values,
@@ -226,37 +229,37 @@ class CxTowerKey(models.Model):
 
     def _extract_key_strings(self, code):
         """Extract all keys from code
-
         Args:
-            code (Text): _description_
+            code (Text): description
             **kwargs (dict): optional arguments
-
         Returns:
-            [str]: list of key stings
+            [str]: list of key strings
         """
         key_strings = []
         key_terminator_len = len(self.KEY_TERMINATOR)
         index_from = 0  # initial position
-        while index_from > -1:
-            index_from = code.find(self.KEY_PREFIX, index_from)
 
-            if index_from > 0:
+        while index_from >= 0:
+            index_from = code.find(self.KEY_PREFIX, index_from)
+            if index_from >= 0:
                 # Key end
                 index_to = code.find(self.KEY_TERMINATOR, index_from)
-
                 # Extract key value only if key terminator is found
                 if index_to > 0:
                     # Extract key string including key terminator
                     extract_to = index_to + key_terminator_len
                     key_string = code[index_from:extract_to]
-
                     # Add only if not added before
                     if key_string not in key_strings:
                         key_strings.append(key_string)
                     # Update index from
                     index_from = extract_to
                 else:
-                    break
+                    # No terminator found, move past this occurrence of prefix
+                    index_from += len(self.KEY_PREFIX)
+            else:
+                # No more prefixes found
+                break
 
         return key_strings
 
@@ -429,6 +432,10 @@ class CxTowerKey(models.Model):
         # Return None in case of empty recordset
         if not self:
             return
+
+        # One record per time
+        self.ensure_one()
+
         self.env.cr.execute(
             """
             SELECT secret_value

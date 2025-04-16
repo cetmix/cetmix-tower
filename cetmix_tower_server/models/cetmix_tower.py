@@ -158,7 +158,9 @@ class CetmixTower(models.AbstractModel):
         if not server:
             return None
         result = self.env["cx.tower.variable.value"].get_by_variable_reference(
-            variable_reference, server.id, check_global
+            variable_reference=variable_reference,
+            server_id=server.id,
+            check_global=check_global,
         )
 
         # Get server defined value first
@@ -198,7 +200,7 @@ class CetmixTower(models.AbstractModel):
                 the server cannot be found.
         Returns:
             dict: {
-                "code": int,
+                "exit_code": int,
                     0 for success,
                     error code for failure
                 "message": str  # Description of the result

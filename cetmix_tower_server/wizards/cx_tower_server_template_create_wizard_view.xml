@@ -26,10 +26,7 @@
                         <field name="os_id" />
                         <field name="ip_v4_address" />
                         <field name="ip_v6_address" />
-                        <field
-                            name="host_key"
-                            attrs="{'invisible': [('skip_host_key', '=', True)]}"
-                        />
+                        <field name="host_key" invisible="skip_host_key" />
                         <field name="skip_host_key" />
                     </group>
                     <group name="ssh">
@@ -40,10 +37,7 @@
                             placeholder="this can be changed later"
                         />
                         <field name="ssh_password" password="True" />
-                        <field
-                            name="ssh_key_id"
-                            attrs="{'invisible': [('ssh_auth_mode', '=', 'p')]}"
-                        />
+                        <field name="ssh_key_id" invisible="ssh_auth_mode == 'p'" />
                         <field name="use_sudo" placeholder="No/Undefined" />
                     </group>
                     <field name="line_ids">
@@ -52,32 +46,32 @@
                             decoration-danger="value_char == False and required == True"
                             decoration-info="value_char != False and required == True"
                         >
-                            <field name="variable_reference" invisible="1" />
+                            <field name="variable_reference" column_invisible="1" />
                             <field name="variable_id" />
-                            <field name="variable_type" invisible="1" />
+                            <field name="variable_type" column_invisible="1" />
                             <field
                                 name="value_char"
-                                attrs="{'readonly': [('variable_type', '=', 'o')], 'required': [('variable_type', '=', 's'), ('required', '=', True)]}"
+                                readonly="variable_type == 'o'"
+                                required="variable_type == 's' and required"
                             />
                             <field
                                 name="option_id"
                                 options="{'no_create': True, 'no_create_edit': True}"
-                                attrs="{'readonly': [('variable_type', '=', 's')], 'required': [('variable_type', '=', 'o'), ('required', '=', True)]}"
+                                readonly="variable_type == 's'"
+                                required="variable_type == 'o' and required"
                             />
                             <field name="required" readonly="1" />
                         </tree>
                     </field>
                 </group>
-                <group>
-                    <field
-                        name="missing_required_variables_message"
-                        readonly="1"
-                        nolabel="1"
-                        attrs="{'invisible': [('has_missing_required_values', '=', False)]}"
-                        class="alert alert-warning"
-                        role="alert"
-                    />
-                </group>
+                <field
+                    name="missing_required_variables_message"
+                    nolabel="1"
+                    readonly="1"
+                    invisible="not has_missing_required_values"
+                    class="alert alert-warning"
+                    role="alert"
+                />
                 <field name="has_missing_required_values" invisible="1" />
                 <field name="missing_required_variables" invisible="1" />
                 <footer>
@@ -87,7 +81,7 @@
                         string="Confirm"
                         confirm="Are you sure?"
                         class="oe_highlight"
-                        attrs="{'invisible': [('has_missing_required_values', '=', True)]}"
+                        invisible="has_missing_required_values"
                     />
                     <button string="Cancel" special="cancel" />
                 </footer>
