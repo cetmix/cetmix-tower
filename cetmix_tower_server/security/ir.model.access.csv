@@ -17,6 +17,7 @@ access_command_user,Command->User,model_cx_tower_command,group_user,1,0,0,0
 access_command_manager,Command->Manager,model_cx_tower_command,group_manager,1,1,1,1
 access_command_root,Command->Root,model_cx_tower_command,group_root,1,1,1,1
 access_run_command_user,Run Command->User,model_cx_tower_command_run_wizard,group_user,1,1,1,1
+access_run_command_variable_value_user,Run Command Variable Value->User,model_cx_tower_command_run_wizard_variable_value,group_user,1,1,1,1
 access_execute_plan_user,Run Plan->User,model_cx_tower_plan_run_wizard,group_user,1,1,1,1
 access_key_user,Key->User,model_cx_tower_key,group_user,0,0,0,0
 access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,1

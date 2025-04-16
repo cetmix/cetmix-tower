@@ -27,7 +27,7 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <group name="main">
                         <group name="info">
@@ -39,18 +39,9 @@
                         </group>
                         <group name="action">
                             <field name="action" />
-                            <field
-                                name="command_id"
-                                attrs="{'invisible': [('action', '!=', 'command')]}"
-                            />
-                            <field
-                                name="use_sudo"
-                                attrs="{'invisible': [('action', '!=', 'command')]}"
-                            />
-                            <field
-                                name="plan_id"
-                                attrs="{'invisible': [('action', '!=', 'plan')]}"
-                            />
+                            <field name="command_id" invisible="action != 'command'" />
+                            <field name="use_sudo" invisible="action != 'command'" />
+                            <field name="plan_id" invisible="action != 'plan'" />
                         </group>
                         <field name="note" placeholder="Put your notes here" />
                     </group>

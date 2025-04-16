@@ -29,8 +29,7 @@ def generate_random_id(sections=1, population=4, separator="-"):
 
     # Multiple sections
     result = []
-    for i in range(1, sections):
-        result.append("".join(choices(CHARS, k=population)))
-        i += 1
+    for _ in range(sections):
+        result.append(get_section())
 
     return separator.join(result)

@@ -19,3 +19,4 @@ from . import test_key
 from . import test_cetmix_tower
 from . import test_tag
 from . import test_shortcut
+from . import test_tools

@@ -13,9 +13,34 @@
                 <field name="color" />
                 <field name="server_count" />
                 <templates>
-                    <t t-name="kanban-box">
+                <t t-name="kanban-menu">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-8 o_kanban_card_manage_section">
+                                <div role="menuitem">
+                                    <a
+                                            role="menuitem"
+                                            type="object"
+                                            name="action_create_server"
+                                        >Create Server
+                                        </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="o_kanban_card_manage_settings row">
+                            <div role="menuitem" aria-haspopup="true" class="col-6">
+                                <ul
+                                        class="oe_kanban_colorpicker"
+                                        data-field="color"
+                                        role="popup"
+                                    />
+                                </div>
+                        </div>
+                    </div>
+                </t>
+                <t t-name="kanban-box">
                     <div
-                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
+                            t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click"
                         >
                         <div t-attf-class="o_kanban_card_header">
                             <div
@@ -25,40 +50,14 @@
                                     <field name="name" />
                                 </div>
                             </div>
-                            <div class="o_kanban_manage_button_section">
-                                <a class="o_kanban_manage_toggle_button" href="#"><i
-                                            class="fa fa-ellipsis-v"
-                                            aria-label="Selection"
-                                            role="img"
-                                            title="Selection"
-                                        /></a>
-                            </div>
                         </div>
-                        <div
-                                class="container o_kanban_card_manage_pane dropdown-menu"
-                                role="menu"
-                            >
-                            <div class="row">
-                                <div class="col-8">
-                                    <div>
-                                        <a
-                                                role="menuitem"
-                                                type="object"
-                                                name="action_create_server"
-                                            >Create Server</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="o_kanban_card_manage_settings row">
-                                <ul class="oe_kanban_colorpicker" data-field="color" />
-                            </div>
-                        </div>
+
                         <div class="oe_kanban_content">
                             <div class="oe_kanban_global_click">
                                 <div class="col-12 pt8 o_kanban_primary_right">
                                     <t t-if="record.server_count.value &gt; 0">
                                         <div>
-                                            <strong>Servers:</strong>
+                                            <strong>Servers: </strong>
                                             <span>
                                                 <t t-esc="record.server_count.value" />
                                             </span>
@@ -66,28 +65,28 @@
                                     </t>
                                     <t t-if="record.os_id.raw_value">
                                         <div>
-                                            <strong>Operating System:</strong>
+                                            <strong>Operating System: </strong>
                                             <field name="os_id" />
                                         </div>
                                     </t>
                                 </div>
                             </div>
-                            <div class="o_kanban_record_bottom">
-                                <div class="oe_kanban_bottom_left">
-                                </div>
-                                <div class="oe_kanban_bottom_right">
-                                    <t t-if="record.tag_ids.raw_value">
-                                        <div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <div invisible="not tag_ids">
+                                            <field name="color" invisible="1" />
                                             <field
-                                                    name="tag_ids"
-                                                    widget="many2many_tags"
-                                                />
+                                                name="tag_ids"
+                                                widget="many2many_tags"
+                                                options="{'color_field': 'color'}"
+                                            />
                                         </div>
-                                    </t>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     </t>
                 </templates>
             </kanban>
@@ -144,7 +143,7 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div class="oe_title">
                         <field name="color" widget="color_picker" />
@@ -188,17 +187,20 @@
                             <field name="variable_value_ids" order="variable_reference">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
-                                    <field name="variable_reference" invisible="1" />
+                                    <field
+                                        name="variable_reference"
+                                        column_invisible="1"
+                                    />
                                     <field name="variable_id" />
-                                    <field name="variable_type" invisible="1" />
+                                    <field name="variable_type" column_invisible="1" />
                                     <field
                                         name="value_char"
-                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                        readonly="variable_type == 'o'"
                                     />
                                     <field
                                         name="option_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
-                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                        readonly="variable_type == 's'"
                                     />
                                     <field name="access_level" optional="show" />
                                     <field name="required" />
@@ -270,15 +272,17 @@
                                             <field
                                                 name="command_id"
                                                 domain="[('server_ids', '=', False)]"
-                                                attrs="{'required':[('log_type', '=', 'command')], 'invisible':[('log_type', '!=', 'command')]}"
+                                                invisible="log_type != 'command'"
+                                                required="log_type == 'command'"
                                             />
                                             <field
                                                 name="use_sudo"
-                                                attrs="{'invisible':[('log_type', '!=', 'command')]}"
+                                                invisible="log_type != 'command'"
                                             />
                                             <field
                                                 name="file_template_id"
-                                                attrs="{'required':[('log_type', '=', 'file')], 'invisible':[('log_type', '!=', 'file')]}"
+                                                invisible="log_type != 'file'"
+                                                required="log_type == 'file'"
                                             />
                                         </group>
                                     </sheet>

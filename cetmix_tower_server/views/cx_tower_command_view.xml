@@ -13,7 +13,7 @@
                             name="action_open_plans"
                             type="object"
                             class="oe_stat_button"
-                            attrs="{'invisible': [('flight_plan_used_ids_count', '=', 0)]}"
+                            invisible="flight_plan_used_ids_count == 0"
                             icon="fa-plane"
                         >
                                 <field
@@ -34,20 +34,18 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('action', 'not in', ['file_using_template', 'python_code', 'plan'])]}"
+                        invisible="action not in ['file_using_template', 'python_code', 'plan']"
                         style="margin-bottom:0px;"
                     >
-                        <p
-                            attrs="{'invisible': [('action', 'not in', ['file_using_template', 'plan'])]}"
-                        >
+                        <p invisible="action not in ['file_using_template', 'plan']">
                             This command can be used only in Flight Plans.
                         </p>
-                        <p attrs="{'invisible': [('action', '!=', 'python_code')]}">
+                        <p invisible="action != 'python_code'">
                             Remember: Python code is executed on the Tower server, not on the remote
                             one.
                         </p>
@@ -60,15 +58,17 @@
                             <field name="action" />
                             <field
                                 name="file_template_id"
-                                attrs="{'invisible': [('action', '!=', 'file_using_template')], 'required': [('action', '=', 'file_using_template')]}"
+                                invisible="action != 'file_using_template'"
+                                required="action == 'file_using_template'"
                             />
                             <field
                                 name="flight_plan_id"
-                                attrs="{'invisible': [('action', '!=', 'plan')], 'required': [('action', '=', 'plan')]}"
+                                invisible="action != 'plan'"
+                                required="action == 'plan'"
                             />
                             <field
                                 name="path"
-                                attrs="{'invisible': [('action', '=', 'python_code')]}"
+                                invisible="action == 'python_code'"
                                 placeholder="optional, eg /home/{{ tower.server.username }}"
                             />
                             <field name="allow_parallel_run" />
@@ -95,15 +95,15 @@
                             <field
                                 name="variable_ids"
                                 widget="many2many_tags"
-                                readonly="1"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                                readonly="1"
+                                invisible="not variable_ids"
                             />
                             <field
                                 name="secret_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                                invisible="not secret_ids"
                             />
                         </group>
                     </group>
@@ -111,11 +111,11 @@
                         <page
                             name="code"
                             string="Code"
-                            attrs="{'invisible': ['|',  ('action', '=', 'file_using_template'), ('action', '=', 'plan')]}"
+                            invisible="action == 'file_using_template' or action == 'plan'"
                         >
                             <field
                                 name="code"
-                                attrs="{'required': [('action', '=', 'python_code')]}"
+                                required="action == 'python_code'"
                                 widget="ace"
                                 options="{'mode': 'python'}"
                                 placeholder="Enter Python code here. Help about Python expression is available in the help tab of this document."
@@ -124,7 +124,7 @@
                         <page
                             string="Help"
                             name="python_help_info"
-                            attrs="{'invisible': [('action', '!=', 'python_code')]}"
+                            invisible="action != 'python_code'"
                         >
                             <field name="command_help" />
                         </page>

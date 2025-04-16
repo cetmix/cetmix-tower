@@ -5,6 +5,7 @@ import io
 import logging
 from datetime import timedelta
 from functools import wraps
+from itertools import repeat
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -334,21 +335,13 @@ class CxTowerServer(models.Model):
 
         return super(CxTowerServer, servers_to_delete).unlink()
 
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
+    def _fetch_query(self, query, fields):
         """Replace host_key with secret value spoiler"""
-        super()._read(fields)
-        spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
-        # Public user used for substitution
-        if "host_key" in fields or fields == []:
-            for record in self:
-                try:
-                    record._cache["host_key"] = (
-                        spoiler if record._cache["host_key"] else None
-                    )
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
+        records = super()._fetch_query(query, fields)
+        if self._fields["host_key"] in fields:
+            spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
+            self.env.cache.update(records, self._fields["host_key"], repeat(spoiler))
+        return records
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
@@ -397,7 +390,7 @@ class CxTowerServer(models.Model):
             host_key = self._get_host_key_from_host()
             is_error = False
         except Exception as error:
-            is_error = (True,)
+            is_error = True
             host_key = error
         context = {
             "default_host_key": host_key,
@@ -733,6 +726,10 @@ class CxTowerServer(models.Model):
         # Return None in case of empty recordset
         if not self:
             return
+
+        # One record per time
+        self.ensure_one()
+
         self.env.cr.execute(
             """
             SELECT host_key
@@ -814,8 +811,12 @@ class CxTowerServer(models.Model):
                 the ssh command running.
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
-                    - "log": {values passed to logger}
-                    - "key": {values passed to key parser}
+                    - "log", dict(): values passed to logger
+                    - "key", dict(): values passed to key parser
+                    - "variable_values", dict(): custom variable values
+                        in the format of `{variable_reference: variable_value}`
+                        eg `{'odoo_version': '16.0'}`
+                        Will be applied only if user has write access to the server.
         Context:
             no_command_log (Bool): set this context key to `True`
                 to disable log creation.
@@ -883,8 +884,8 @@ class CxTowerServer(models.Model):
                     )
                     return
 
-        # Render command
-        rendered_command = self._render_command(command, path)
+        custom_variable_values = kwargs.get("variable_values", {})
+        rendered_command = self._render_command(command, path, custom_variable_values)
         rendered_command_code = rendered_command["rendered_code"]
         rendered_command_path = rendered_command["rendered_path"]
 
@@ -914,7 +915,7 @@ class CxTowerServer(models.Model):
             **kwargs,
         )
 
-    def _render_command(self, command, path=None):
+    def _render_command(self, command, path=None, custom_variable_values=None):
         """Renders command code for selected command for current server
 
         Args:
@@ -957,10 +958,15 @@ class CxTowerServer(models.Model):
 
         # Extract variable values for current server
         variable_values = (
-            variable_values_dict.get(self.id) if variable_values_dict else False
+            variable_values_dict.get(self.id) if variable_values_dict else {}
         )  # pylint: disable=no-member
 
-        # Render command code using variables
+        # Apply custom variable values only if user has write access to the server
+        has_write_access = self._have_access_to_server("write")
+        if custom_variable_values and has_write_access:
+            variable_values.update(custom_variable_values)
+
+        # Render command code and path using variables
         if variable_values:
             if command.action == "python_code":
                 variable_values["pythonic_mode"] = True
@@ -979,6 +985,28 @@ class CxTowerServer(models.Model):
             rendered_path = path
 
         return {"rendered_code": rendered_code, "rendered_path": rendered_path}
+
+    def _have_access_to_server(self, operation):
+        """Check access to the server.
+        This is a wrapper function over the Odoo built-in ones.
+        It's used in order we need to implement custom access checks.
+
+        Args:
+            operation (Char): Operation to check access
+                same format as `check_access_rights`
+        Returns:
+            Bool: True if access is granted, False otherwise
+        """
+        # Check access rights first
+        has_write_access = self.check_access_rights(operation, raise_exception=False)
+
+        # Check access rule
+        if has_write_access:
+            try:
+                self.check_access_rule(operation)
+            except UserError:
+                has_write_access = False
+        return has_write_access
 
     def run_flight_plan(self, flight_plan, **kwargs):
         """
@@ -1525,7 +1553,7 @@ class CxTowerServer(models.Model):
         """Prepare ssh command
         IMPORTANT:
         Commands run with sudo will be run separately one after another
-        even if there is a single command separated with '&&' or ';'
+        even if there is a single command separated with '&&'
         Example:
         "pwd && ls -l" will be run as:
             sudo pwd
@@ -1554,17 +1582,10 @@ class CxTowerServer(models.Model):
             sudo_prefix = "sudo -S -p ''"
 
             # Detect command separator
-            if "&&" in command_code or ";" in command_code:
-                # If command consists of several commands:
-                # Replace alternative separator to avoid possible issues.
-                # We need to stop always if some command issues error.
-                command_code.replace(";", "&&")
-                separator = "&&"
-                command_code.replace("\\", "").replace("\n", "").split(separator)
+            separator = "&&"
+            if separator in command_code:
                 result = (
                     command_code.replace("\\", "").replace("\n", "").split(separator)
-                    if separator
-                    else [command_code]
                 )
 
                 # Sudo with password expects a list of commands

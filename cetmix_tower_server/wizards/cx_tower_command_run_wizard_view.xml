@@ -9,7 +9,7 @@
                 <div
                     class="alert alert-warning"
                     role="alert"
-                    attrs="{'invisible': [('action', '!=', 'python_code')]}"
+                    invisible="action != 'python_code'"
                     style="margin-bottom:0px;"
                 >
                     <p>
@@ -18,9 +18,9 @@
                 </div>
                 <field
                     name="os_compatibility_warning"
-                    readonly="1"
                     nolabel="1"
-                    attrs="{'invisible': [('os_compatibility_warning', '=', False)]}"
+                    readonly="1"
+                    invisible="not os_compatibility_warning"
                     class="alert alert-warning"
                     role="alert"
                 />
@@ -29,44 +29,37 @@
                     <field
                         name="server_ids"
                         widget="many2many_tags"
-                        required="1"
                         string="Run on"
-                        attrs="{'invisible': [('result', '!=', False)]}"
+                        required="1"
+                        invisible="result"
                     />
                     <label
                         for="applicability"
                         string="Show Commands"
-                        attrs="{'invisible': [('result', '!=', False)]}"
+                        invisible="result"
                     />
-                    <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+                    <div class="o_row" invisible="result">
                         <field
                             name="applicability"
                             widget="radio"
                             options="{'horizontal': True}"
-                            attrs="{'readonly': [('show_servers', '=', True)], 'invisible': [('result', '!=', False)]}"
+                            invisible="result"
+                            readonly="show_servers"
                         />
                         <field
                             name="tag_ids"
                             widget="many2many_tags"
-                            attrs="{'invisible': [('result', '!=', False)]}"
+                            invisible="result"
                             placeholder="with tags"
                             options="{'no_create': True}"
                         />
                     </div>
-                    <label
-                        for="command_id"
-                        attrs="{'invisible': [('result', '!=', False)]}"
-                    />
-                    <div class="o_row" attrs="{'invisible': [('result', '!=', False)]}">
+                    <label for="command_id" invisible="result" />
+                    <div class="o_row" invisible="result">
 
                         <field name="action" nolabel="1" />
-                        <span
-                            attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
-                        >sudo</span>
-                        <field
-                            name="use_sudo"
-                            attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
-                        />
+                        <span invisible="action != 'ssh_command'">sudo</span>
+                        <field name="use_sudo" invisible="action != 'ssh_command'" />
                         <field
                             name="command_id"
                             domain="command_domain"
@@ -78,24 +71,13 @@
                     <field
                         name="path"
                         groups="cetmix_tower_server.group_manager"
-                        attrs="{'invisible': ['|', ('action', '=', 'python_code'), ('result', '!=', False)]}"
+                        invisible="action == 'python_code' or result"
                         placeholder="e.g. /home/user This field does NOT support variables"
                     />
-                    <field
-                        name="note"
-                        readonly="1"
-                        attrs="{'invisible': [('note', '=', False)]}"
-                    />
+                    <field name="note" readonly="1" invisible="not note" />
                 </group>
-                <field
-                    name="result"
-                    readonly="1"
-                    attrs="{'invisible': [('result', '=', False)]}"
-                />
-                <notebook
-                    attrs="{'invisible': [('result', '!=', False)]}"
-                    groups="cetmix_tower_server.group_manager"
-                >
+                <field name="result" readonly="1" invisible="not result" />
+                <notebook invisible="result" groups="cetmix_tower_server.group_manager">
                     <page name="code" string="Code">
                         <field
                             name="code"
@@ -105,10 +87,50 @@
                         />
                     </page>
                     <page
-                        name="preview"
-                        string="Preview"
-                        attrs="{'invisible': [('show_servers', '=', True)]}"
+                        name="configuration_values"
+                        string="Configuration Values"
+                        invisible="not custom_variable_values"
                     >
+                        <field name="command_variable_ids" invisible="1" />
+                        <field name="have_access_to_server" invisible="1" />
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            invisible="have_access_to_server"
+                            style="margin-bottom:5px;"
+                        >
+                            You need 'Manager' access to the server to override the default configuration values.
+                            Without this access, the server's configured values will be used.
+                        </div>
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            style="margin-bottom:5px;"
+                        >
+                            Only values that the current user has access to are shown.
+                        </div>
+                        <field
+                            name="custom_variable_values"
+                            force_save="1"
+                            options="{'no_create': True, 'no_open': True}"
+                            readonly="not have_access_to_server"
+                        >
+                            <tree create="0" delete="0" editable="bottom">
+                                <field name="variable_id" force_save="1" />
+                                <field name="variable_type" column_invisible="True" />
+                                <field
+                                    name="value_char"
+                                    readonly="variable_type != 's'"
+                                />
+                                <field
+                                    name="option_id"
+                                    readonly="variable_type != 'o'"
+                                    options="{'no_create': True}"
+                                />
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="preview" string="Preview" invisible="show_servers">
                         <field
                             name="rendered_code"
                             widget="ace"
@@ -124,7 +146,7 @@
                         string="Run"
                         help="Run code using sever method and log result"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('result', '!=', False),('command_id', '=', False)]}"
+                        invisible="result or not command_id"
                     />
                     <button
                         name="run_command_in_wizard"
@@ -133,7 +155,7 @@
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
                         groups="cetmix_tower_server.group_manager"
-                        attrs="{'invisible': ['|', '|', ('result', '!=', False), ('code', '=', False), ('show_servers', '=', True)]}"
+                        invisible="result or not code or show_servers"
                     />
                     <button string="Cancel" special="cancel" />
                     <button
@@ -141,7 +163,7 @@
                         type="object"
                         string="Run New Command"
                         class="oe_highlight"
-                        attrs="{'invisible': [('result', '=', False)]}"
+                        invisible="not result"
                     />
                 </footer>
             </form>
@@ -154,7 +176,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="cx_tower_command_run_wizard_view_form" />
-        <field name="context">{'default_server_ids': [active_id]}</field>
+        <field name="context">{'default_server_ids': [id]}</field>
         <field name="target">new</field>
     </record>
 

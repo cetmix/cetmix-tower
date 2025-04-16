@@ -86,7 +86,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
                 )
 
         res = super().create(vals_list)
-        self.clear_caches()
+        self.env.registry.clear_cache()
         return res
 
     def write(self, vals):
@@ -116,7 +116,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
                             {"reference": self._generate_or_fix_reference(record.name)}
                         )
                         super(CxTowerReferenceMixin, record).write(record_vals)
-                    return
+                    return True
                 # Name is present in vals
                 reference = self._generate_or_fix_reference(updated_name)
             else:
@@ -125,7 +125,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
         # Clear cache for this method
         if "reference" in vals:
-            self.clear_caches()
+            self.env.registry.clear_cache()
 
         return super().write(vals)
 
@@ -134,7 +134,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Overrides unlink to clear cache for this method
         """
         res = super().unlink()
-        self.clear_caches()
+        self.env.registry.clear_cache()
         return res
 
     def copy(self, default=None):
@@ -229,7 +229,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         self_with_sudo_and_context = self.sudo().with_context(active_test=False)
         while self_with_sudo_and_context.search_count(final_domain) > 0:
             counter += 1
-            final_reference = _(f"{reference}_{counter}")
+            final_reference = f"{reference}_{counter}"
             final_domain = expression.AND(
                 [domain, [("reference", "=", final_reference)]]
             )

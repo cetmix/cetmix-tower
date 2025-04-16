@@ -12,7 +12,7 @@
                         type="object"
                         class="oe_highlight"
                         string="Refresh"
-                        attrs="{'invisible':[('server_id', '=', False)]}"
+                        invisible="not server_id"
                     />
                 </header>
                 <sheet>
@@ -41,17 +41,19 @@
                         />
                         <field
                             name="command_id"
-                            attrs="{'required':[('log_type', '=', 'command')], 'invisible':[('log_type', '!=', 'command')]}"
+                            invisible="log_type != 'command'"
+                            required="log_type == 'command'"
                             groups="cetmix_tower_server.group_manager"
                         />
                         <field
                             name="use_sudo"
-                            attrs="{'invisible':[('log_type', '!=', 'command')]}"
+                            invisible="log_type != 'command'"
                             groups="cetmix_tower_server.group_manager"
                         />
                         <field
                             name="file_id"
-                            attrs="{'required':[('log_type', '=', 'file')], 'invisible':[('log_type', '!=', 'file')]}"
+                            invisible="log_type != 'file'"
+                            required="log_type == 'file'"
                             groups="cetmix_tower_server.group_manager"
                         />
                     </group>
