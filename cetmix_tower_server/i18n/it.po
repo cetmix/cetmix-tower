@@ -5,18 +5,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-04-10 13:21+0200\n"
+"PO-Revision-Date: 2025-04-15 09:01+0000\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/tower-"
-"server-14-0-dev/cetmix_tower_server/it/>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14/"
+"cetmix_tower_server/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__source
@@ -801,7 +801,7 @@ msgstr "Mixin Key/Secret Cetmix Tower"
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_key
 msgid "Cetmix Tower Key/Secret Storage"
-msgstr "Deposito Key/Secret Cetmix Tower"
+msgstr "Deposito chiave/segreto Cetmix Tower"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cetmix_tower
@@ -1963,7 +1963,7 @@ msgstr "Se selezionata, alcuni messaggi hanno errori di consegna."
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__auto_sync
 msgid "If enabled file will be synced automatically using cron"
-msgstr "Se abilitata, il file verrà sincronizzato automaticamente tramite cron"
+msgstr "Se abilitata il file verrà sincronizzato automaticamente usando cron"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
@@ -1976,7 +1976,7 @@ msgstr ""
 "Se abilitato, più istanze dello stesso comando possono essere eseguite "
 "contemporaneamente sullo stesso server.\n"
 "In caso contrario, verrà restituito lo stato ANOTHER_COMMAND_RUNNING se "
-"un'altra istanza dello stesso comando è già in esecuzione."
+"un'altra istanza dello stesso comando è già in esecuzione"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
@@ -1989,7 +1989,7 @@ msgstr ""
 "Se abilitato, più istanze dello stesso piano di volo possono essere eseguite "
 "contemporaneamente sullo stesso server.\n"
 "In caso contrario, verrà restituito lo stato ANOTHER_PLAN_RUNNING se "
-"un'altra istanza dello stesso piano di volo è già in esecuzione."
+"un'altra istanza dello stesso piano di volo è già in esecuzione"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
@@ -2812,7 +2812,7 @@ msgstr "Inserire qui le proprie note"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Put your notes here..."
-msgstr "Inserire qui le proprie note..."
+msgstr "Inserire qui le note..."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_run_wizard__action__python_code
