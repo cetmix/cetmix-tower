@@ -2,6 +2,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from odoo.fields import Datetime
+from odoo.tools import mute_logger
 
 from odoo.addons.cetmix_tower_server.tests.common import TestTowerCommon
 
@@ -15,16 +16,17 @@ class TestTowerCommand(TestTowerCommon):
     associated queue jobs are cancelled.
     """
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
         # Set command timeout to 10 seconds
-        self.env["ir.config_parameter"].sudo().set_param(
+        cls.env["ir.config_parameter"].sudo().set_param(
             "cetmix_tower_server.command_timeout", "10"
         )
         # Set old time to 20 seconds ago (older than timeout)
         # to simulate running command in past
         now = Datetime.now()
-        self.old_time = now - timedelta(seconds=20)
+        cls.old_time = now - timedelta(seconds=20)
 
     def _patch_command_runner(self, command_type, runner_method):
         """Helper to patch a command runner to simulate a zombie command.
@@ -111,6 +113,7 @@ class TestTowerCommand(TestTowerCommon):
         # check zombie command logs
         self._verify_zombie_command_job_cancellation("ssh_command")
 
+    @mute_logger("py.warnings")
     def test_check_zombie_python_command_queue(self):
         """
         Test that zombie python command is killed and job is cancelled
