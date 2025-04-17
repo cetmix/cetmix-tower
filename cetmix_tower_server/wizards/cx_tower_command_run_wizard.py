@@ -80,6 +80,18 @@ class CxTowerCommandRunWizard(models.TransientModel):
         compute_sudo=True,
         help="Warning about OS compatibility of the command",
     )
+    command_variable_ids = fields.Many2many(
+        "cx.tower.variable",
+        related="command_id.variable_ids",
+        readonly=True,
+    )
+    custom_variable_values = fields.One2many(
+        "cx.tower.command.run.wizard.variable.value",
+        "wizard_id",
+    )
+    have_access_to_server = fields.Boolean(
+        compute="_compute_have_access_to_server",
+    )
 
     @api.depends("server_ids")
     def _compute_show_servers(self):
@@ -103,6 +115,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         """
         for record in self:
             if record.command_id and record.server_ids:
+                # Render code preview for the first server only.
                 record.update(
                     {
                         "code": record.command_id.code,
@@ -114,7 +127,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             else:
                 record.update({"code": False, "path": False})
 
-    @api.depends("code", "server_ids", "action")
+    @api.depends("code", "server_ids", "action", "custom_variable_values.value_char")
     def _compute_rendered_code(self):
         for record in self:
             if record.server_ids and len(record.server_ids) == 1:
@@ -128,6 +141,13 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 variable_values = server_id.get_variable_values(
                     variables.get(str(record.id))
                 )
+                if variable_values and record.custom_variable_values:
+                    custom_vals = {
+                        custom_value.variable_id.reference: custom_value.value_char
+                        for custom_value in record.custom_variable_values
+                        if custom_value.variable_id
+                    }
+                    variable_values[server_id.id].update(custom_vals)
 
                 # Render template
                 if variable_values:
@@ -182,12 +202,75 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 "\n".join(warning_list) if warning_list else False
             )
 
+    @api.depends("server_ids")
+    def _compute_have_access_to_server(self):
+        """
+        Compute have_access_to_server field
+        """
+        for record in self:
+            if not record.server_ids:
+                record.have_access_to_server = False
+                continue
+            record.have_access_to_server = all(
+                server._have_access_to_server("write") for server in record.server_ids
+            )
+
     @api.onchange("action", "applicability")
     def _onchange_action(self):
         """
         Reset command after change action
         """
         self.command_id = False
+
+    @api.onchange("command_variable_ids", "server_ids")
+    def _onchange_command_variable_ids(self):
+        """
+        Reset custom variable values after change code
+        """
+        # Remove existing custom variable values
+        self.custom_variable_values = False
+
+        if (
+            not self.command_variable_ids
+            or not self.server_ids
+            or len(self.server_ids) > 1
+        ):
+            return
+
+        # Add new custom variable values
+        # Render values for the first server only.
+        server_id = self.server_ids
+
+        # Get variable list
+        variables = self.get_variables()
+
+        # Get variable values
+        variable_values = server_id.get_variable_values(variables.get(str(self.id)))[
+            server_id.id
+        ]
+
+        # Filter variables current user has access to
+        command_variables = self.command_variable_ids.search(
+            [("id", "in", self.command_variable_ids.ids)]
+        )
+
+        self.custom_variable_values = [
+            (
+                0,
+                0,
+                {
+                    "variable_id": variable.id,
+                    "value_char": variable_values.get(variable.reference),
+                    "option_id": variable.option_ids.filtered(
+                        lambda o, v=variable: o.value_char
+                        == variable_values.get(v.reference)
+                    ).id
+                    if variable.variable_type == "o"
+                    else None,
+                },
+            )
+            for variable in command_variables
+        ]
 
     def action_run_command(self):
         """
@@ -209,7 +292,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         }
 
     def run_command_on_server(self):
-        """Render selected command rendered using server method"""
+        """Run command on selected servers"""
         # Check if command is selected
         if not self.command_id:
             raise ValidationError(_("Please select a command to execute"))
@@ -219,13 +302,19 @@ class CxTowerCommandRunWizard(models.TransientModel):
             self.env.user.has_group("cetmix_tower_server.group_manager") and self.path
         )
         # Add custom values for log
-        custom_values = {"log": {"label": log_label}}
+        kwargs = {
+            "log": {"label": log_label},
+            "variable_values": {
+                value.variable_id.reference: value.value_char
+                for value in self.custom_variable_values
+            },
+        }
         for server in self.server_ids:
             server.run_command(
                 self.command_id,
                 sudo=self.use_sudo,
                 path=path_value,
-                **custom_values,
+                **kwargs,
             )
         return {
             "type": "ir.actions.act_window",
@@ -294,7 +383,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 "partner_id": server.partner_id.id if server.partner_id else None,
             }
 
-            kwargs = {"key": key_vals}
+            kwargs = {
+                "key": key_vals,
+            }
             if self.action == "python_code":
                 command_result = server._run_python_code(
                     code=self.rendered_code, **kwargs
@@ -326,3 +417,46 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 "view_mode": "form",
                 "target": "new",
             }
+
+
+class CxTowerCommandRunWizardVariableValue(models.TransientModel):
+    """
+    Custom variable values for command run wizard
+    """
+
+    _name = "cx.tower.command.run.wizard.variable.value"
+    _description = "Custom variable values for command run wizard"
+
+    wizard_id = fields.Many2one(
+        "cx.tower.command.run.wizard",
+        string="Wizard",
+    )
+    variable_id = fields.Many2one(
+        "cx.tower.variable",
+        readonly=True,
+    )
+    variable_type = fields.Selection(related="variable_id.variable_type", readonly=True)
+    value_char = fields.Char(
+        string="Value",
+        compute="_compute_value_char",
+        readonly=False,
+        store=True,
+    )
+    option_id = fields.Many2one(
+        "cx.tower.variable.option", domain="[('variable_id', '=', variable_id)]"
+    )
+
+    @api.depends("option_id", "variable_id", "variable_type")
+    def _compute_value_char(self):
+        for rec in self:
+            if rec.variable_id and rec.variable_type == "o" and rec.option_id:
+                rec.value_char = rec.option_id.value_char
+            else:
+                rec.value_char = ""
+
+    @api.onchange("variable_id")
+    def _onchange_variable_id(self):
+        """
+        Reset option_id when variable changes.
+        """
+        self.update({"option_id": None})

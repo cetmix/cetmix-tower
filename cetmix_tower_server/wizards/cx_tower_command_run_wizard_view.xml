@@ -105,6 +105,50 @@
                         />
                     </page>
                     <page
+                        name="configuration_values"
+                        string="Configuration Values"
+                        attrs="{'invisible': [('custom_variable_values', '=', [])]}"
+                    >
+                        <field name="command_variable_ids" invisible="1" />
+                        <field name="have_access_to_server" invisible="1" />
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            attrs="{'invisible': [('have_access_to_server', '=', True)]}"
+                            style="margin-bottom:5px;"
+                        >
+                            You need 'Manager' access to the server to override the default configuration values.
+                            Without this access, the server's configured values will be used.
+                        </div>
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            style="margin-bottom:5px;"
+                        >
+                            Only values that the current user has access to are shown.
+                        </div>
+                        <field
+                            name="custom_variable_values"
+                            force_save="1"
+                            options="{'no_create': True, 'no_open': True}"
+                            attrs="{'readonly': [('have_access_to_server', '!=', True)]}"
+                        >
+                            <tree create="0" delete="0" editable="bottom">
+                                <field name="variable_id" force_save="1" />
+                                <field name="variable_type" invisible="1" />
+                                <field
+                                    name="value_char"
+                                    attrs="{'readonly': [('variable_type', '!=', 's')]}"
+                                />
+                                <field
+                                    name="option_id"
+                                    attrs="{'readonly': [('variable_type', '!=', 'o')]}"
+                                    options="{'no_create': True}"
+                                />
+                            </tree>
+                        </field>
+                    </page>
+                    <page
                         name="preview"
                         string="Preview"
                         attrs="{'invisible': [('show_servers', '=', True)]}"
