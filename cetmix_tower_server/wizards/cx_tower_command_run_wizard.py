@@ -94,20 +94,17 @@ class CxTowerCommandRunWizard(models.TransientModel):
         compute="_compute_have_access_to_server",
     )
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        if not self._is_privileged_user():
+            res["applicability"] = "this"
+        return res
+
     @api.depends("server_ids")
     def _compute_show_servers(self):
-        """
-        Show "Servers" field only if the number of servers is greater than 1.
-        """
-        for record in self:
-            show_servers = record.server_ids and len(record.server_ids) > 1
-            applicability = "shared" if show_servers else "this"
-            record.update(
-                {
-                    "show_servers": show_servers,
-                    "applicability": applicability,
-                }
-            )
+        for rec in self:
+            rec.show_servers = bool(rec.server_ids and len(rec.server_ids) > 1)
 
     @api.depends("command_id", "server_ids", "action")
     def _compute_code(self):
@@ -418,6 +415,12 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 "view_mode": "form",
                 "target": "new",
             }
+
+    def _is_privileged_user(self):
+        """Return True if current user is in Manager or Root group."""
+        return self.env.user.has_group(
+            "cetmix_tower_server.group_manager"
+        ) or self.env.user.has_group("cetmix_tower_server.group_root")
 
 
 class CxTowerCommandRunWizardVariableValue(models.TransientModel):

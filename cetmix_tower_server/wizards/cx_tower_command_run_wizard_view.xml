@@ -32,6 +32,7 @@
                         required="1"
                         string="Run on"
                         attrs="{'invisible': [('result', '!=', False)]}"
+                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     />
                     <label
                         for="applicability"
@@ -44,6 +45,7 @@
                             widget="radio"
                             options="{'horizontal': True}"
                             attrs="{'readonly': [('show_servers', '=', True)], 'invisible': [('result', '!=', False)]}"
+                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                         />
                         <field
                             name="tag_ids"
