@@ -66,6 +66,7 @@
         "views/cx_tower_shortcut_view.xml",
         "views/res_config_settings.xml",
         "views/menuitems.xml",
+        "views/cx_tower_partner_view.xml",
     ],
     "demo": [
         "demo/demo_data.xml",
