@@ -21,7 +21,7 @@ class CxTowerServer(models.Model):
         # preserve the order of execution of commands with action “Run flight plan”.
         # Use runner only if command log record is provided.
         if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
-            self.with_delay()._command_runner(
+            job = self.with_delay()._command_runner(
                 command,
                 log_record,
                 rendered_command_code,
@@ -29,6 +29,7 @@ class CxTowerServer(models.Model):
                 ssh_connection,
                 **kwargs,
             )
+            log_record.sudo().queue_job_id = job.db_record().id
 
         # Otherwise fallback to `super` to return the command output
         else:
