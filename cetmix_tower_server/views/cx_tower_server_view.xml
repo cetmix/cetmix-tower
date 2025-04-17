@@ -403,14 +403,11 @@
                             string="Secrets"
                             groups="cetmix_tower_server.group_manager"
                         >
-                            <field
-                                name="secret_ids"
-                                context="{'default_key_type': 's', 'from_server': True}"
-                            >
+                            <field name="secret_ids">
                                 <tree editable="bottom">
                                     <field
                                         name="key_id"
-                                        domain="[('key_type', '=', 's')]"
+                                        context="{'default_key_type': 's', 'secrets_only': True}"
                                     />
                                     <field name="secret_value" />
                                 </tree>
@@ -453,9 +450,13 @@
             <search string="Search Servers">
                 <field name="name" />
                 <field name="reference" />
-                <field name="status" />
-                <field name="os_id" />
+                <field name="url" />
+                <field name="partner_id" />
                 <field name="tag_ids" />
+                <field name="ip_v4_address" />
+                <field name="ip_v6_address" />
+                <field name="os_id" />
+                <field name="status" />
                 <filter
                     string="Archived"
                     name="archived"

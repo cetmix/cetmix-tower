@@ -17,6 +17,7 @@ class CxTowerKeyValue(models.Model):
         string="Key",
         required=True,
         ondelete="cascade",
+        domain="[('key_type', '=', 's')]",
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
