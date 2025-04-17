@@ -45,6 +45,7 @@
                             options="{'horizontal': True}"
                             invisible="result"
                             readonly="show_servers"
+                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                         />
                         <field
                             name="tag_ids"

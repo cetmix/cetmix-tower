@@ -28,3 +28,4 @@ from . import cetmix_tower
 from . import cx_tower_variable_option
 from . import ir_actions_server
 from . import res_config_settings
+from . import res_partner

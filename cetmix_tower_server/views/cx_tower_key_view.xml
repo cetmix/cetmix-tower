@@ -17,7 +17,10 @@
                                 options="{'string': 'Copy'}"
                                 invisible="key_type == 'k'"
                             />
-                            <field name="key_type" />
+                            <field
+                                name="key_type"
+                                invisible="context.get('secrets_only')"
+                            />
                         </group>
                         <group>
                             <field name="note" />

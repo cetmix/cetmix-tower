@@ -63,6 +63,7 @@
         "views/cx_tower_server_log_view.xml",
         "views/cx_tower_server_template_view.xml",
         "views/cx_tower_shortcut_view.xml",
+        "views/res_partner_view.xml",
         "views/res_config_settings.xml",
         "views/menuitems.xml",
     ],
