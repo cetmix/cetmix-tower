@@ -24,24 +24,6 @@ msgid "Cetmix Tower Server"
 msgstr ""
 
 #. module: cetmix_tower_server_queue
-#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_server__display_name
-msgid "Display Name"
-msgstr ""
-
-#. module: cetmix_tower_server_queue
-#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__id
-#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_server__id
-msgid "ID"
-msgstr ""
-
-#. module: cetmix_tower_server_queue
-#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_server____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: cetmix_tower_server_queue
 #: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__queue_job_id
 msgid "Queue Job"
 msgstr ""
