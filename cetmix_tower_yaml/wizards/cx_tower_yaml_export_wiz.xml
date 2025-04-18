@@ -19,9 +19,9 @@
                     name="yaml_code"
                     widget="ace"
                     options="{'mode': 'yaml'}"
-                    readonly="1"
                     force_save="1"
-                    attrs="{'invisible': [('preview_code', '=', False)]}"
+                    readonly="1"
+                    invisible="not preview_code"
                 />
                 <footer>
                     <button

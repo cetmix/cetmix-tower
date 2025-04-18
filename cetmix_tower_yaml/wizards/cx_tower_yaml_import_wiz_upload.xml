@@ -20,7 +20,7 @@
                         type="object"
                         name="action_import_yaml"
                         class="oe_highlight"
-                        attrs="{'invisible': [('yaml_file', '=', False)]}"
+                        invisible="not yaml_file"
                     />
                     <button string="Close" special="cancel" />
                 </footer>
