@@ -12,7 +12,7 @@
                 <div
                     class="alert alert-warning"
                     role="alert"
-                    attrs="{'invisible': [('if_record_exists', '!=', 'create')]}"
+                    invisible="if_record_exists != 'create'"
                     style="margin-bottom:0px;"
                 >
                 <p>
@@ -32,7 +32,7 @@
                 <div
                     class="alert alert-warning"
                     role="alert"
-                    attrs="{'invisible': [('if_record_exists', '!=', 'update')]}"
+                    invisible="if_record_exists != 'update'"
                     style="margin-bottom:0px;"
                 >
                     <p>
@@ -40,15 +40,8 @@
                         If any of those related records doesn't exist, it will be created automatically.
                     </p>
                 </div>
-                <div
-                    class="alert alert-info"
-                    role="alert"
-                    attrs="{'invisible': [('secret_list', '=', False)]}"
-                >
-                    <field
-                        name="secret_list"
-                        attrs="{'invisible': [('secret_list', '=', False)]}"
-                    />
+                <div class="alert alert-info" role="alert" invisible="not secret_list">
+                    <field name="secret_list" invisible="not secret_list" />
                 </div>
                 <group>
                     <field name="preview_code" />
@@ -58,7 +51,7 @@
                     widget="ace"
                     options="{'mode': 'yaml'}"
                     force_save="1"
-                    attrs="{'invisible': [('preview_code', '=', False)]}"
+                    invisible="not preview_code"
                 />
                 <footer>
                     <button
@@ -66,7 +59,7 @@
                         type="object"
                         name="action_import_yaml"
                         class="oe_highlight"
-                        attrs="{'invisible': [('if_record_exists', '!=', 'update')]}"
+                        invisible="if_record_exists != 'update'"
                         confirm="This may overwrite existing records. Proceed?"
                     />
                     <button
@@ -74,7 +67,7 @@
                         type="object"
                         name="action_import_yaml"
                         class="oe_highlight"
-                        attrs="{'invisible': [('if_record_exists', '=', 'update')]}"
+                        invisible="if_record_exists == 'update'"
                     />
                     <button string="Close" special="cancel" />
                 </footer>

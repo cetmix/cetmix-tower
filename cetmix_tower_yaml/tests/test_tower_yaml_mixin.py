@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from odoo import _
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import TransactionCase
@@ -26,11 +28,11 @@ class TestTowerYamlMixin(TransactionCase):
         # Test flow with exception due to wrong values
         with self.assertRaises(ValidationError) as e:
             self.YamlMixin._convert_dict_to_yaml("not_a_dict")
-            self.assertEqual(
-                str(e),
-                _("Values must be a dictionary"),
-                "Exception message doesn't match",
-            )
+        self.assertEqual(
+            str(e.exception),
+            _("Values must be a dictionary"),
+            "Exception message doesn't match",
+        )
 
     def test_yaml_field_access(self):
         # Create Root user with no access to the 'yaml_code field
@@ -83,36 +85,37 @@ class TestTowerYamlMixin(TransactionCase):
         def _get_fields_for_yaml(self):
             return ["access_level", "name", "reference"]
 
-        self.YamlMixin._patch_method("_get_fields_for_yaml", _get_fields_for_yaml)
+        with patch(
+            "odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin.CxTowerYamlMixin._get_fields_for_yaml",
+            _get_fields_for_yaml,
+        ):
+            source_values = {
+                "access_level": "3",
+                "id": 22332,
+                "name": "Doge Much Like",
+                "reference": "such_much_doge",
+            }
 
-        source_values = {
-            "access_level": "3",
-            "id": 22332,
-            "name": "Doge Much Like",
-            "reference": "such_much_doge",
-        }
+            result_values = self.YamlMixin._post_process_record_values(
+                source_values.copy()
+            )
 
-        result_values = self.YamlMixin._post_process_record_values(source_values.copy())
-
-        self.assertNotIn("id", result_values, "ID must be removed")
-        self.assertEqual(
-            result_values["access_level"],
-            self.YamlMixin.TO_YAML_ACCESS_LEVEL[source_values["access_level"]],
-            "Access level is not parsed correctly",
-        )
-        self.assertEqual(
-            result_values["name"],
-            source_values["name"],
-            "Other values should remain unchanged",
-        )
-        self.assertEqual(
-            result_values["reference"],
-            source_values["reference"],
-            "Other values should remain unchanged",
-        )
-
-        # Restore original method
-        self.YamlMixin._revert_method("_get_fields_for_yaml")
+            self.assertNotIn("id", result_values, "ID must be removed")
+            self.assertEqual(
+                result_values["access_level"],
+                self.YamlMixin.TO_YAML_ACCESS_LEVEL[source_values["access_level"]],
+                "Access level is not parsed correctly",
+            )
+            self.assertEqual(
+                result_values["name"],
+                source_values["name"],
+                "Other values should remain unchanged",
+            )
+            self.assertEqual(
+                result_values["reference"],
+                source_values["reference"],
+                "Other values should remain unchanged",
+            )
 
     def test_post_process_yaml_dict_values(self):
         """Test YAML dict value post processing.
@@ -124,61 +127,60 @@ class TestTowerYamlMixin(TransactionCase):
         def _get_fields_for_yaml(self):
             return ["access_level", "name", "reference"]
 
-        self.YamlMixin._patch_method("_get_fields_for_yaml", _get_fields_for_yaml)
-
-        # -- 1 --
-        # Test regular flow
-        source_values = {
-            "access_level": "user",
-            "name": "Doge Much Like",
-            "reference": "such_much_doge",
-            "some_doge_field": "some_meme",
-        }
-
-        result_values = self.YamlMixin._post_process_yaml_dict_values(
-            source_values.copy()
-        )
-        self.assertNotIn(
-            "some_doge_field", result_values, "Non listed fields must be removed"
-        )
-        self.assertEqual(
-            result_values["access_level"],
-            self.YamlMixin.TO_TOWER_ACCESS_LEVEL[source_values["access_level"]],
-            "Access level is not parsed correctly",
-        )
-        self.assertEqual(
-            result_values["name"],
-            source_values["name"],
-            "Other values should remain unchanged",
-        )
-        self.assertEqual(
-            result_values["reference"],
-            source_values["reference"],
-            "Other values should remain unchanged",
-        )
-
-        # -- Test 2 --
-        # Submit wrong value for access level
-        source_values.update(
-            {
-                "access_level": "doge",
+        with patch(
+            "odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin.CxTowerYamlMixin._get_fields_for_yaml",
+            _get_fields_for_yaml,
+        ):
+            # -- 1 --
+            # Test regular flow
+            source_values = {
+                "access_level": "user",
+                "name": "Doge Much Like",
+                "reference": "such_much_doge",
+                "some_doge_field": "some_meme",
             }
-        )
-        with self.assertRaises(ValidationError) as e:
+
             result_values = self.YamlMixin._post_process_yaml_dict_values(
                 source_values.copy()
             )
+            self.assertNotIn(
+                "some_doge_field", result_values, "Non listed fields must be removed"
+            )
             self.assertEqual(
-                str(e),
+                result_values["access_level"],
+                self.YamlMixin.TO_TOWER_ACCESS_LEVEL[source_values["access_level"]],
+                "Access level is not parsed correctly",
+            )
+            self.assertEqual(
+                result_values["name"],
+                source_values["name"],
+                "Other values should remain unchanged",
+            )
+            self.assertEqual(
+                result_values["reference"],
+                source_values["reference"],
+                "Other values should remain unchanged",
+            )
+
+            # -- Test 2 --
+            # Submit wrong value for access level
+            source_values.update(
+                {
+                    "access_level": "doge",
+                }
+            )
+            with self.assertRaises(ValidationError) as e:
+                result_values = self.YamlMixin._post_process_yaml_dict_values(
+                    source_values.copy()
+                )
+            self.assertEqual(
+                str(e.exception),
                 _(
                     "Wrong value for 'access_level' key: %(acv)s",
                     acv="doge",
                 ),
                 "Exception message doesn't match",
             )
-
-        # Restore original method
-        self.YamlMixin._revert_method("_get_fields_for_yaml")
 
     def test_process_relation_field_value_no_explode(self):
         """Test non exploded related field values.
