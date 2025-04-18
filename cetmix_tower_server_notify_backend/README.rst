@@ -50,6 +50,14 @@ Please refer to the `official
 documentation <https://cetmix.com/tower>`__ for detailed usage
 instructions.
 
+Changelog
+=========
+
+16.0.1.0.0
+----------
+
+Release for Odoo 16.0
+
 Bug Tracker
 ===========
 
