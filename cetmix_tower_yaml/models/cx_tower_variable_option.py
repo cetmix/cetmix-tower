@@ -11,6 +11,7 @@ class CxTowerVariableOption(models.Model):
         res = super()._get_fields_for_yaml()
         res += [
             "sequence",
+            "access_level",
             "name",
             "value_char",
         ]

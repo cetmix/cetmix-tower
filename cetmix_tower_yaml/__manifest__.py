@@ -24,6 +24,7 @@
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
         "views/cx_tower_shortcut_view.xml",
+        "views/cx_tower_key_view.xml",
         "wizards/cx_tower_yaml_export_wiz.xml",
         "wizards/cx_tower_yaml_export_wiz_download.xml",
         "wizards/cx_tower_yaml_import_wiz_upload.xml",
