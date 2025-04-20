@@ -6,7 +6,7 @@ import logging
 from datetime import timedelta
 from functools import wraps
 
-from odoo import _, api, fields, models
+from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 
@@ -329,9 +329,7 @@ class CxTowerServer(models.Model):
     def _read(self, fields):
         """Substitute fields based on api"""
         super()._read(fields)
-        if not self.env.context.get("show_host_key") and (
-            "host_key" in fields or fields == []
-        ):
+        if not self.env.user._is_superuser() and ("host_key" in fields or fields == []):
             spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
             # Public user used for substitution
             for record in self:
@@ -518,9 +516,7 @@ class CxTowerServer(models.Model):
         self = self.sudo()
         try:
             host_key = (
-                self.with_context(show_host_key=True)
-                .read(["host_key"])[0]
-                .get("host_key")
+                self.with_user(SUPERUSER_ID).read(["host_key"])[0].get("host_key")
             )
 
             # Check host only if IP address is present
@@ -717,11 +713,9 @@ class CxTowerServer(models.Model):
         # regardless of access rights
         if self.sudo().ssh_key_id:
             # Use context key to read secret value
-            ssh_key = (
-                self.sudo()
-                .ssh_key_id.with_context(show_secret_value=True)
-                .read(["secret_value"])[0]["secret_value"]
-            )
+            ssh_key = self.with_user(SUPERUSER_ID).ssh_key_id.read(["secret_value"])[0][
+                "secret_value"
+            ]
         else:
             ssh_key = None
         return ssh_key
@@ -1415,8 +1409,10 @@ class CxTowerServer(models.Model):
             raise ValidationError(_("SSH Client is not defined."))
 
         # Parse inline secrets
-        code_and_secrets = self.env["cx.tower.key"]._parse_code_and_return_key_values(
-            command_code, **kwargs.get("key", {})
+        code_and_secrets = (
+            self.env["cx.tower.key"]
+            .sudo()
+            ._parse_code_and_return_key_values(command_code, **kwargs.get("key", {}))
         )
         command_code = code_and_secrets["code"]
         secrets = code_and_secrets["key_values"]
@@ -1496,15 +1492,14 @@ class CxTowerServer(models.Model):
 
         try:
             # Parse inline secrets
-            code_and_secrets = self.env[
-                "cx.tower.key"
-            ]._parse_code_and_return_key_values(
+            key_obj = self.env["cx.tower.key"]
+            code_and_secrets = key_obj._parse_code_and_return_key_values(
                 code, pythonic_mode=True, **kwargs.get("key", {})
             )
             secrets = code_and_secrets.get("key_values")
             command_code = code_and_secrets["code"]
 
-            code = self.env["cx.tower.key"]._parse_code(
+            code = key_obj._parse_code(
                 command_code, pythonic_mode=True, **kwargs.get("key", {})
             )
 
