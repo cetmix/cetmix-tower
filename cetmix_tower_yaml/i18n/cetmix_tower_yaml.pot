@@ -258,6 +258,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
