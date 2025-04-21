@@ -10,7 +10,7 @@
 
 ![Banner](https://github.com/cetmix/cetmix-tower/blob/5ff7c0aafe22db6686d0919cc560f7f8a0fe7cd7/cetmix_tower_server/static/description/banner.png)
 
-[Cetmix Tower](http://cetmix.com/tower) offers a streamlined solution for managing remote servers via SSH or API calls directly from [Odoo](https:/odoo.com).
+[Cetmix Tower](http://cetmix.com/tower) offers a streamlined solution for managing remote servers via SSH or API calls directly from [Odoo](https://odoo.com).
 It is designed for versatility across different operating systems and software environments, providing a practical option for those looking to manage servers without getting tied down by vendor or technology constraints.
 
 # Why Cetmix Tower?
