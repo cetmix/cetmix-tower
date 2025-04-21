@@ -1,7 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import SUPERUSER_ID, api, fields, models
 
 
 class CxTowerKey(models.Model):
@@ -82,18 +82,20 @@ class CxTowerKey(models.Model):
         "value_ids.partner_id",
     )
     def _compute_secret_value(self):
-        for rec in self.with_context(show_secret_value=True):
+        for rec in self:
             if rec.key_type == "s":
                 # General value
                 general_value = rec.value_ids.filtered(lambda x: not x.server_id)
                 if general_value:
-                    rec.secret_value = general_value[0].secret_value
+                    rec.secret_value = (
+                        general_value[0].with_user(SUPERUSER_ID).secret_value
+                    )
                 else:
                     rec.secret_value = None
 
     def _inverse_secret_value(self):
         key_value_obj = self.env["cx.tower.key.value"]
-        for rec in self.with_context(show_secret_value=True):
+        for rec in self:
             if rec.key_type == "s" and rec.secret_value:
                 # General value
                 general_value = rec.value_ids.filtered(
@@ -138,7 +140,7 @@ class CxTowerKey(models.Model):
     def _read(self, fields):
         """Substitute fields based on api"""
         super()._read(fields)
-        if not self.env.context.get("show_secret_value") and (
+        if not self.env.user._is_superuser() and (
             "secret_value" in fields or fields == []
         ):
             # Public user used for substitution
@@ -379,7 +381,7 @@ class CxTowerKey(models.Model):
 
         if key_value:
             return (
-                key_value.with_context(show_secret_value=True)
+                key_value.with_user(SUPERUSER_ID)
                 .read(["secret_value"])[0]
                 .get("secret_value")
             )
