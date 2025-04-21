@@ -203,3 +203,40 @@ class TestCetmixTower(TestTowerCommon):
             # Verify result
             self.assertEqual(result, plan_log, "Should return plan log record")
             mock_run.assert_called_once_with(flight_plan)
+
+    def test_server_run_command_with_variable_values(self):
+        """Test running command with variable values"""
+        # Create test command
+        command = self.Command.create(
+            {
+                "name": "Test Command",
+                "reference": "test_command",
+                "code": "result = {'exit_code': 0, 'message': {{ test_version }}}",
+                "action": "python_code",
+            }
+        )
+        # Set variable value for the server
+        self.CetmixTower.server_set_variable_value(
+            server_reference=self.server_test_1.reference,
+            variable_reference=self.variable_version.reference,
+            value="prod",
+        )
+
+        # -- 1 --
+        # Run command without modifying variable values
+        result = self.CetmixTower.server_run_command(
+            server_reference=self.server_test_1.reference,
+            command_reference=command.reference,
+        )
+        self.assertEqual(result["exit_code"], 0)
+        self.assertEqual(result["message"], "prod")
+
+        # -- 2 --
+        # Run command with modified variable values
+        result = self.CetmixTower.server_run_command(
+            server_reference=self.server_test_1.reference,
+            command_reference=command.reference,
+            **{"test_version": "dev"},
+        )
+        self.assertEqual(result["exit_code"], 0)
+        self.assertEqual(result["message"], "dev")
