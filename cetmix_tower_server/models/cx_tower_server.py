@@ -1532,7 +1532,7 @@ class CxTowerServer(models.Model):
         """Prepare ssh command
         IMPORTANT:
         Commands run with sudo will be run separately one after another
-        even if there is a single command separated with '&&' or ';'
+        even if there is a single command separated with '&&'
         Example:
         "pwd && ls -l" will be run as:
             sudo pwd
@@ -1561,17 +1561,10 @@ class CxTowerServer(models.Model):
             sudo_prefix = "sudo -S -p ''"
 
             # Detect command separator
-            if "&&" in command_code or ";" in command_code:
-                # If command consists of several commands:
-                # Replace alternative separator to avoid possible issues.
-                # We need to stop always if some command issues error.
-                command_code.replace(";", "&&")
-                separator = "&&"
-                command_code.replace("\\", "").replace("\n", "").split(separator)
+            separator = "&&"
+            if separator in command_code:
                 result = (
                     command_code.replace("\\", "").replace("\n", "").split(separator)
-                    if separator
-                    else [command_code]
                 )
 
                 # Sudo with password expects a list of commands
