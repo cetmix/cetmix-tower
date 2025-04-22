@@ -4,6 +4,8 @@ from .common import TestTowerCommon
 
 
 class TestTowerCommandWizard(TestTowerCommon):
+    """Test Tower Command Run Wizard"""
+
     def test_user_access_rules(self):
         """Test user access rules"""
 
@@ -248,3 +250,184 @@ class TestTowerCommandWizard(TestTowerCommon):
             test_wizard.result,
             msg="Command execution should succeed with a single server selected",
         )
+
+    def test_custom_variable_values_creation(self):
+        """
+        Test that custom variable values are created properly
+        when command has variables
+        """
+        # Add manager as server user
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+
+        # Create variables that will be used in command
+        variable = self.Variable.create(
+            {
+                "name": "Test Variable",
+                "reference": "test_var",
+                "variable_type": "s",  # string type
+            }
+        )
+        option_variable = self.Variable.create(
+            {
+                "name": "Option Variable",
+                "reference": "opt_var",
+                "variable_type": "o",  # option type
+            }
+        )
+        option = self.VariableOption.create(
+            {
+                "name": "Test Option",
+                "value_char": "option_value",
+                "variable_id": option_variable.id,
+            }
+        )
+
+        # Add variable values to server
+        self.VariableValue.create(
+            [
+                {
+                    "variable_id": variable.id,
+                    "server_id": self.server_test_1.id,
+                    "value_char": "server value",
+                },
+                {
+                    "variable_id": option_variable.id,
+                    "server_id": self.server_test_1.id,
+                    "value_char": "option_value",
+                },
+            ]
+        )
+
+        # Create command that uses these variables in its code
+        command = self.Command.create(
+            {
+                "name": "Test Command with Variables",
+                "action": "ssh_command",
+                "code": "echo {{ test_var }} && echo {{ opt_var }}",
+            }
+        )
+
+        # Create wizard
+        wizard = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.manager)
+            .create(
+                {
+                    "server_ids": [self.server_test_1.id],
+                    "command_id": command.id,
+                    "action": "ssh_command",
+                }
+            )
+        )
+
+        # Trigger onchange to generate custom_variable_values
+        wizard._onchange_command_variable_ids()
+
+        # Check that custom variable values were created
+        self.assertEqual(len(wizard.custom_variable_values), 2)
+
+        # Check char variable value
+        char_value = wizard.custom_variable_values.filtered(
+            lambda v: v.variable_id == variable
+        )
+        self.assertTrue(char_value)
+        self.assertEqual(char_value.value_char, "server value")
+
+        # Check option variable value
+        option_value = wizard.custom_variable_values.filtered(
+            lambda v: v.variable_id == option_variable
+        )
+        self.assertTrue(option_value)
+        self.assertEqual(option_value.value_char, "option_value")
+        self.assertEqual(option_value.option_id, option)
+
+        # Try to change variable value when user doesn't have write access
+        char_value.value_char = "custom value"
+
+        # Run command
+        wizard.run_command_on_server()
+
+        # Get latest command log
+        command_log = self.env["cx.tower.command.log"].search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                ("command_id", "=", command.id),
+            ],
+            order="create_date desc",
+            limit=1,
+        )
+
+        # Verify that original server values were used
+        self.assertEqual(command_log.code, "echo server value && echo option_value")
+
+    def test_custom_variable_values_with_manager_access(self):
+        """
+        Test that custom variable values are applied
+        when manager has write access
+        """
+        # Add manager as server manager
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Create variables that will be used in command
+        variable = self.Variable.create(
+            {
+                "name": "Test Variable",
+                "reference": "test_var",
+                "variable_type": "s",  # string type
+            }
+        )
+
+        # Add variable value to server
+        self.VariableValue.create(
+            {
+                "variable_id": variable.id,
+                "server_id": self.server_test_1.id,
+                "value_char": "server value",
+            }
+        )
+
+        # Create command that uses the variable
+        command = self.Command.create(
+            {
+                "name": "Test Command with Variables",
+                "action": "ssh_command",
+                "code": "echo {{ test_var }}",
+            }
+        )
+
+        # Create wizard
+        wizard = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.manager)
+            .create(
+                {
+                    "server_ids": [self.server_test_1.id],
+                    "command_id": command.id,
+                    "action": "ssh_command",
+                }
+            )
+        )
+
+        # Trigger onchange to generate custom_variable_values
+        wizard._onchange_command_variable_ids()
+
+        # Modify variable value
+        wizard.custom_variable_values.filtered(
+            lambda v: v.variable_id == variable
+        ).value_char = "manager value"
+
+        # Run command
+        wizard.run_command_on_server()
+
+        # Get latest command log
+        command_log = self.env["cx.tower.command.log"].search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                ("command_id", "=", command.id),
+            ],
+            order="create_date desc",
+            limit=1,
+        )
+
+        # Verify that custom value was used
+        self.assertEqual(command_log.code, "echo manager value")

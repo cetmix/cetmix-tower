@@ -34,7 +34,7 @@ class CetmixTower(models.AbstractModel):
 
     @api.model
     def server_run_command(
-        self, server_reference, command_reference, get_result=True, **kwargs
+        self, server_reference, command_reference, get_result=True, **variable_values
     ):
         """Run command on selected server.
 
@@ -44,6 +44,11 @@ class CetmixTower(models.AbstractModel):
             get_result (bool, optional): Get the result of the command.
                 If False, the result will be saved to the log.
                 Defaults to True.
+
+        **variable_values:
+            Dict: with variable values.
+            The keys are the variable references and the values are the variable values.
+            eg `{'odoo_version': '16.0'}`
 
         Returns:
             Dict: with who keys if `get_result` is True:
@@ -61,7 +66,7 @@ class CetmixTower(models.AbstractModel):
         # Will return command result if get_result is True
         # Otherwise will save to log and return None
         command_result = server.with_context(no_command_log=get_result).run_command(
-            command, **kwargs
+            command, **{"variable_values": variable_values} if variable_values else {}
         )
 
         # Return command result if get_result is True
@@ -74,7 +79,7 @@ class CetmixTower(models.AbstractModel):
                 "message": response or error,
             }
 
-    def server_run_flight_plan(self, server_reference, flight_plan_reference, **kwargs):
+    def server_run_flight_plan(self, server_reference, flight_plan_reference):
         """Run flight plan on selected server.
 
         Args:
@@ -94,7 +99,7 @@ class CetmixTower(models.AbstractModel):
             # This is not the best way to handle this, but it's the only way to
             # avoid complex response handling
             return False
-        return server.run_flight_plan(flight_plan, **kwargs)
+        return server.run_flight_plan(flight_plan)
 
     @api.model
     def server_set_variable_value(self, server_reference, variable_reference, value):

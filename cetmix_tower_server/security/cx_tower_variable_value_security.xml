@@ -125,7 +125,7 @@
 
     <!-- Manager Write/Create Rules -->
     <record id="rule_cx_tower_variable_value_manager_write_server" model="ir.rule">
-        <field name="name">Variable Value: Manager Write Server Access</field>
+        <field name="name">Variable Value: Manager Write/Create Server Access</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field
             name="domain_force"
@@ -141,7 +141,9 @@
         id="rule_cx_tower_variable_value_manager_write_server_template"
         model="ir.rule"
     >
-        <field name="name">Variable Value: Manager Write Server Template Access</field>
+        <field
+            name="name"
+        >Variable Value: Manager Write/Create Server Template Access</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field
             name="domain_force"
@@ -154,7 +156,7 @@
     </record>
 
     <record id="rule_cx_tower_variable_value_manager_write_plan" model="ir.rule">
-        <field name="name">Variable Value: Manager Write Plan Access</field>
+        <field name="name">Variable Value: Manager Write/Create Plan Access</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field
             name="domain_force"
@@ -167,7 +169,9 @@
     </record>
 
     <record id="rule_cx_tower_variable_value_manager_write_plan_action" model="ir.rule">
-        <field name="name">Variable Value: Manager Write Plan Server Access</field>
+        <field
+            name="name"
+        >Variable Value: Manager Write/Create Plan Server Access</field>
         <field name="model_id" ref="model_cx_tower_variable_value" />
         <field
             name="domain_force"
