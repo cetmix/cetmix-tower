@@ -84,6 +84,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         "cx.tower.variable",
         related="command_id.variable_ids",
         readonly=True,
+        string="Command Variables",
     )
     custom_variable_values = fields.One2many(
         "cx.tower.command.run.wizard.variable.value",

@@ -26,7 +26,7 @@
 
     <!-- Manager Write/Create Rules -->
     <record id="rule_cx_tower_variable_option_manager_write" model="ir.rule">
-        <field name="name">Variable Option: Manager Write Access</field>
+        <field name="name">Variable Option: Manager Write/Create/Unlink Access</field>
         <field name="model_id" ref="model_cx_tower_variable_option" />
         <field
             name="domain_force"

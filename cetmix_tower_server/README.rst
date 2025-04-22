@@ -13,7 +13,7 @@ Cetmix Tower Server
 .. |badge1| image:: https://img.shields.io/badge/maturity-Production%2FStable-green.png
     :target: https://odoo-community.org/page/development-status
     :alt: Production/Stable
-.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
@@ -24,7 +24,7 @@ Cetmix Tower Server
 
 `Cetmix Tower <https://cetmix.com/tower>`__ offers a streamlined
 solution for managing remote servers and applications via SSH or API
-calls directly from `Odoo <https:/odoo.com>`__. It is designed for
+calls directly from `Odoo <https://odoo.com>`__. It is designed for
 versatility across different operating systems and software
 environments, providing a practical option for those looking to manage
 servers without getting tied down by vendor or technology constraints.
