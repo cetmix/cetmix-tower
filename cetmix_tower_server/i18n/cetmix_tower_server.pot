@@ -840,6 +840,11 @@ msgid "Command Timeout"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__command_variable_ids
+msgid "Command Variables"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__code
 msgid "Command code that was executed"
 msgstr ""
@@ -3864,7 +3869,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__variable_ids
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__command_variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__variable_ids
