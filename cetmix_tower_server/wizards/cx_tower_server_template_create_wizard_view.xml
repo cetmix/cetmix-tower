@@ -68,16 +68,14 @@
                         </tree>
                     </field>
                 </group>
-                <group>
-                    <field
-                        name="missing_required_variables_message"
-                        readonly="1"
-                        nolabel="1"
-                        attrs="{'invisible': [('has_missing_required_values', '=', False)]}"
-                        class="alert alert-warning"
-                        role="alert"
-                    />
-                </group>
+                <field
+                    name="missing_required_variables_message"
+                    readonly="1"
+                    nolabel="1"
+                    attrs="{'invisible': [('has_missing_required_values', '=', False)]}"
+                    class="alert alert-warning"
+                    role="alert"
+                />
                 <field name="has_missing_required_values" invisible="1" />
                 <field name="missing_required_variables" invisible="1" />
                 <footer>

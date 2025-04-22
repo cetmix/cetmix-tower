@@ -92,7 +92,7 @@ class CxTowerKeyValue(models.Model):
     def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
         """Substitute fields based on api"""
         super()._read(fields)
-        if not self.env.context.get("show_secret_value") and (
+        if not self.env.user._is_superuser() and (
             "secret_value" in fields or fields == []
         ):
             placeholder = self.env["cx.tower.key"].SECRET_VALUE_PLACEHOLDER
