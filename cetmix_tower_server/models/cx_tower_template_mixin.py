@@ -1,9 +1,10 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from jinja2 import Environment, Template, meta
+from jinja2.exceptions import TemplateSyntaxError
 
-from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class CxTowerTemplateMixin(models.AbstractModel):
@@ -131,10 +132,9 @@ class CxTowerTemplateMixin(models.AbstractModel):
             dict {'record_id': {variables}...}
                 NB: 'record_id' is String
         """
-        Environment()
         res = {}
         for rec in self:
-            res.update({str(rec.id): self.get_variables_from_code(rec.code)})
+            res[str(rec.id)] = self.get_variables_from_code(rec.code)
         return res
 
     def get_variables_from_code(self, code):
@@ -147,9 +147,12 @@ class CxTowerTemplateMixin(models.AbstractModel):
             variables (List) variables (eg ['var','var2',..])
         """
         env = Environment()
-        ast = env.parse(code)
-        undeclared_variables = meta.find_undeclared_variables(ast)
-        return list(undeclared_variables) if undeclared_variables else []
+        try:
+            ast = env.parse(code)
+            undeclared_variables = meta.find_undeclared_variables(ast)
+            return list(undeclared_variables) if undeclared_variables else []
+        except TemplateSyntaxError as e:
+            raise ValidationError(_("Variable syntax error: %s", e)) from e
 
     def _prepare_variable_commands(self, field_names, force_record=None):
         """

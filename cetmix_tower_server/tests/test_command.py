@@ -1,7 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Datetime
 from odoo.tests.common import Form
 from odoo.tools import mute_logger
@@ -1712,3 +1712,17 @@ else:
             COMMAND_TIMED_OUT,
             "Commands should not be marked as timed out when timeout is disabled",
         )
+
+    def test_command_with_malformed_code(self):
+        """Test rendering command using `_render_command` method
+        of cx.tower.server with malformed code
+        """
+
+        with self.assertRaises(ValidationError):
+            self.Command.create(
+                {
+                    "name": "Test Malformed Command",
+                    "code": "cd {{ !@238203 }} && mkdir #!cxtower.secret.FOLDER!#",
+                    "action": "ssh_command",
+                }
+            )

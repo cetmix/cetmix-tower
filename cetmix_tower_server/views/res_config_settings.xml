@@ -13,6 +13,7 @@
                     data-string="cetmix_tower_server"
                     string="Cetmix Tower"
                     data-key="cetmix_tower_server"
+                    groups="cetmix_tower_server.group_root"
                 >
                     <h2>Cetmix Tower Server</h2>
                     <div
