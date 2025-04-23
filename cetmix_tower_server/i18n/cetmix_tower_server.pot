@@ -3840,6 +3840,12 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_template_mixin.py:0
+#, python-format
+msgid "Variable syntax error: %s"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "Variable value created"
