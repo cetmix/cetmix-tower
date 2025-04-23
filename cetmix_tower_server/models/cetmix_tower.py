@@ -163,7 +163,9 @@ class CetmixTower(models.AbstractModel):
         if not server:
             return None
         result = self.env["cx.tower.variable.value"].get_by_variable_reference(
-            variable_reference, server.id, check_global
+            variable_reference=variable_reference,
+            server_id=server.id,
+            check_global=check_global,
         )
 
         # Get server defined value first
