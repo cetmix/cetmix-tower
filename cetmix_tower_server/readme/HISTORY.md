@@ -1,3 +1,11 @@
+## 14.0.1.0.5 (2025-04-23)
+
+- Features: Limit access to Tower general settings to the `root` group only. (4574)
+
+- Bugfixes: Use named variables in command code. (4574)
+- Bugfixes: Error when rendering command with malformed code. (4617)
+
+
 ## 14.0.1.0.4 (2025-04-22)
 
 - Features: Cetmix Tower Odoo Automation model: pass custom variable values to the `server_run_command` method. (4547)

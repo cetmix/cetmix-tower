@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower",
     "summary": "Odoo SAAS Server Application Management",
-    "version": "14.0.1.0.5",
+    "version": "14.0.1.0.6",
     "development_status": "Production/Stable",
     "category": "Productivity",
     "website": "https://cetmix.com",
