@@ -1,3 +1,8 @@
+## 14.0.1.0.7 (2025-04-24)
+
+- Features: Helper method to get host key value from the server. Backport from 16.0 (4264)
+
+
 ## 14.0.1.0.6 (2025-04-23)
 
 - Features: Limit access to Tower general settings to the `root` group only. (4574)
