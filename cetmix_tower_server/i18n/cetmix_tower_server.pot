@@ -573,6 +573,7 @@ msgstr ""
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Cetmix Tower"
 msgstr ""
 
@@ -957,6 +958,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
@@ -1150,6 +1156,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -1733,6 +1740,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_config_settings__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__id
 msgid "ID"
 msgstr ""
 
@@ -1946,6 +1954,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_config_settings____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -2447,6 +2456,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_value__partner_id
 msgid "Partner to which the key belongs"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_cetmix_tower_partner
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_partner
+msgid "Partners"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3086,7 +3101,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_mixin__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__secret_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Secrets"
 msgstr ""
 
@@ -3137,6 +3155,8 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__server_count
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__server_count
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__server_count
 msgid "Server Count"
 msgstr ""
 
@@ -3232,10 +3252,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__server_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__server_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__server_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Servers"
 msgstr ""
 
