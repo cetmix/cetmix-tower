@@ -720,6 +720,27 @@ class CxTowerServer(models.Model):
             ssh_key = None
         return ssh_key
 
+    def _get_host_key_value(self):
+        """Get host key value
+
+        Returns:
+            Char: Host key value
+        """
+        # Return None in case of empty recordset
+        if not self:
+            return
+        self.env.cr.execute(
+            """
+            SELECT host_key
+            FROM cx_tower_server
+            WHERE id = %s
+            """,
+            [self.id],
+        )
+        result = self.env.cr.fetchone()
+        if result:
+            return result[0]
+
     @ensure_ssh_disconnect
     def _get_host_key(self, raise_on_error=True, timeout=60):
         """Get host key
