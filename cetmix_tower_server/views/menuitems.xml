@@ -31,6 +31,15 @@
         groups="group_manager"
         sequence="10"
     />
+    <menuitem
+        id="menu_cx_tower_partner"
+        name="Partners"
+        action="action_cx_cetmix_tower_partner"
+        parent="menu_cx_tower_server_root"
+        groups="cetmix_tower_server.group_user"
+        sequence="15"
+    />
+
     <!-- Commands -->
     <menuitem
         id="menu_cx_tower_command_root"

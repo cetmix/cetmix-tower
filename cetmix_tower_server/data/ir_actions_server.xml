@@ -23,4 +23,11 @@
         <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
     </record>
 
+    <record id="action_cx_cetmix_tower_partner" model="ir.actions.act_window">
+      <field name="name">Partners</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
 </odoo>
