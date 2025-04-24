@@ -4,7 +4,7 @@
 {
     "name": "Cetmix Tower Server Notify Backend",
     "summary": "Backend notifications for Cetmix Tower",
-    "version": "16.0.1.0.0",
+    "version": "17.0.1.0.0",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://cetmix.com",
