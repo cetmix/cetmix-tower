@@ -162,6 +162,7 @@
                 <field name="name" />
                 <field name="reference" optional="hide" />
                 <field name="action" />
+                <field name="access_level" optional="hide" />
                 <field
                     name="server_ids"
                     widget="many2many_tags"
@@ -263,6 +264,12 @@
                         name="group_action"
                         domain="[]"
                         context="{'group_by': 'action'}"
+                    />
+                    <filter
+                        string="Access Level"
+                        name="group_access_level"
+                        domain="[]"
+                        context="{'group_by': 'access_level'}"
                     />
                 </group>
             </search>

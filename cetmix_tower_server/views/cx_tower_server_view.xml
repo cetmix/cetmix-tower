@@ -459,9 +459,13 @@
             <search string="Search Servers">
                 <field name="name" />
                 <field name="reference" />
-                <field name="status" />
-                <field name="os_id" />
+                <field name="url" />
+                <field name="partner_id" />
                 <field name="tag_ids" />
+                <field name="ip_v4_address" />
+                <field name="ip_v6_address" />
+                <field name="os_id" />
+                <field name="status" />
                 <filter
                     string="Archived"
                     name="archived"
