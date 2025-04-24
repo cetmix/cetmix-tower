@@ -9,10 +9,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='command_id']" position="after">
-                <field
-                    name="queue_job_id"
-                    attrs="{'invisible': [('queue_job_id', '=', False)]}"
-                />
+                <field name="queue_job_id" invisible="not queue_job_id" />
             </xpath>
         </field>
     </record>
