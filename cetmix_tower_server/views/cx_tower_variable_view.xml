@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_variable_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.form</field>
+        <field name="model">cx.tower.variable</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_values"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="value_ids_count == 0"
+                        >
+                            <field
+                                name="value_ids_count"
+                                widget="statinfo"
+                                string="Values"
+                            />
+                        </button>
+                        <button
+                            name="action_open_commands"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-code"
+                            invisible="command_ids_count == 0"
+                        >
+                            <field
+                                name="command_ids_count"
+                                widget="statinfo"
+                                string="Commands"
+                            />
+                        </button>
+                        <button
+                            name="action_open_plan_lines"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                            invisible="plan_line_ids_count == 0"
+                        >
+                            <field
+                                name="plan_line_ids_count"
+                                widget="statinfo"
+                                string="Plan Lines"
+                            />
+                        </button>
+                        <button
+                            name="action_open_files"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                            invisible="file_ids_count == 0"
+                        >
+                            <field
+                                name="file_ids_count"
+                                widget="statinfo"
+                                string="Files"
+                            />
+                        </button>
+                        <button
+                            name="action_open_file_templates"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-list-alt"
+                            invisible="file_template_ids_count == 0"
+                        >
+                            <field
+                                name="file_template_ids_count"
+                                widget="statinfo"
+                                string="File Templates"
+                            />
+                        </button>
+                        <button
+                            name="action_open_variable_values"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            invisible="variable_value_ids_count == 0"
+                        >
+                            <field
+                                name="variable_value_ids_count"
+                                widget="statinfo"
+                                string="Used in Values"
+                            />
+                        </button>
+                    </div>
+                    <group>
+                        <group name="variable_info">
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="access_level" />
+                            <field name="variable_type" />
+                        </group>
+                        <group name="variable_validation">
+                            <field
+                                name="validation_pattern"
+                                placeholder="Regex expression, eg. ^[a-z0-9]+$"
+                            />
+                            <field
+                                name="validation_message"
+                                placeholder="Custom message to display when pattern check fails"
+                            />
+                            <field name="note" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Options" invisible="variable_type == 's'">
+                            <field name="option_ids" widget="one2many">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="name" />
+                                    <field name="value_char" />
+                                    <field name="access_level" optional="show" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name" />
+                                        <field
+                                            name="reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Values">
+                            <field name="value_ids">
+                                <tree editable="top" decoration-bf="is_global==True">
+                                    <field name="variable_id" column_invisible="1" />
+                                    <field name="variable_type" column_invisible="1" />
+                                    <field name="is_global" widget="boolean_toggle" />
+                                    <field name="server_id" />
+                                    <field name="server_template_id" />
+                                    <field name="plan_line_action_id" />
+                                    <field
+                                        name="value_char"
+                                        placeholder="undefined"
+                                        readonly="variable_type == 'o'"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        optional="show"
+                                        readonly="variable_type == 's'"
+                                    />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="server_id" column_invisible="1" />
+                                        <field name="variable_id" invisible="1" />
+                                        <field name="variable_type" invisible="1" />
+                                        <field name="is_global" />
+                                        <field name="server_template_id" />
+                                        <field
+                                            name="value_char"
+                                            invisible="variable_type == 'o'"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            optional="show"
+                                            invisible="variable_type == 's'"
+                                        />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page name="value_modifier" string="Value Modifier">
+                            <div class="alert alert-info" role="alert">
+                            <p>
+                                Python code that is used to modify the variable values.
+                                <br />
+                                Available variables and functions:
+                                <ul>
+                                    <li>value: variable value</li>
+                                    <li
+                                        >result: final result that will be used as a variable value</li>
+                                    <li
+                                        >general python functions (eg. lower(), replace(), etc.)</li>
+                                    <li
+                                        >re: regex operations (eg. re.sub, re.match, etc.)</li>
+                                </ul>
+                                Example:
+                                <br />
+                                <code>
+                                result = value.lower().strip().replace('_', '-').replace(" ","") if value.startswith('http') else 'https://' + re.sub(r'\s+', '', value)
+                                </code>
+                            </p>
+                            </div>
+                            <field
+                                name="applied_expression"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="cx_tower_variable_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.tree</field>
+        <field name="model">cx.tower.variable</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="reference" optional="show" />
+                <field name="access_level" optional="show" />
+                <field name="value_ids_count" optional="show" />
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_variable_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.search</field>
+        <field name="model">cx.tower.variable</field>
+        <field name="arch" type="xml">
+            <search string="Search Values">
+                <field name="name" />
+                <field name="reference" />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_variable" model="ir.actions.act_window">
+        <field name="name">Variables</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.variable</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

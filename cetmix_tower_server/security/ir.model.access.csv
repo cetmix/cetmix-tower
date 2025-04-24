@@ -1,0 +1,59 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_variable_user,Variable->User,model_cx_tower_variable,group_user,1,0,0,0
+access_variable_manager,Variable->Manager,model_cx_tower_variable,group_manager,1,1,1,0
+access_variable_root,Variable->Root,model_cx_tower_variable,group_root,1,1,1,1
+access_variable_value_user,Variable Value->User,model_cx_tower_variable_value,group_user,1,0,0,0
+access_variable_value_manager,Variable Value->Manager,model_cx_tower_variable_value,group_manager,1,1,1,1
+access_variable_value_root,Variable Value->Root,model_cx_tower_variable_value,group_root,1,1,1,1
+access_os_user,OS->User,model_cx_tower_os,group_user,1,0,0,0
+access_os_root,OS->Root,model_cx_tower_os,group_root,1,1,1,1
+access_tag_user,Tag->User,model_cx_tower_tag,group_user,1,0,0,0
+access_tag_manager,Tag->Manager,model_cx_tower_tag,group_manager,1,1,1,1
+access_tag_root,Tag->Root,model_cx_tower_tag,group_root,1,1,1,1
+access_server_user,Server->User,model_cx_tower_server,group_user,1,0,0,0
+access_server_manager,Server->Manager,model_cx_tower_server,group_manager,1,1,1,1
+access_server_root,Server->Root,model_cx_tower_server,group_root,1,1,1,1
+access_command_user,Command->User,model_cx_tower_command,group_user,1,0,0,0
+access_command_manager,Command->Manager,model_cx_tower_command,group_manager,1,1,1,1
+access_command_root,Command->Root,model_cx_tower_command,group_root,1,1,1,1
+access_run_command_user,Run Command->User,model_cx_tower_command_run_wizard,group_user,1,1,1,1
+access_run_command_variable_value_user,Run Command Variable Value->User,model_cx_tower_command_run_wizard_variable_value,group_user,1,1,1,1
+access_execute_plan_user,Run Plan->User,model_cx_tower_plan_run_wizard,group_user,1,1,1,1
+access_key_user,Key->User,model_cx_tower_key,group_user,0,0,0,0
+access_key_manager,Key->Manager,model_cx_tower_key,group_manager,1,1,1,1
+access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1
+access_key_value_manager,Key Value->Manager,model_cx_tower_key_value,group_manager,1,1,1,1
+access_key_value_root,Key Value->Root,model_cx_tower_key_value,group_root,1,1,1,1
+access_command_log_user,Command Log->User,model_cx_tower_command_log,group_user,1,0,0,0
+access_command_log_root,Command Log->User,model_cx_tower_command_log,group_root,1,1,1,1
+access_plan_user,Plan->User,model_cx_tower_plan,group_user,1,0,0,0
+access_plan_manager,Plan->Manager,model_cx_tower_plan,group_manager,1,1,1,1
+access_plan_root,Plan->Root,model_cx_tower_plan,group_root,1,1,1,1
+access_plan_line_user,Plan Line->User,model_cx_tower_plan_line,group_user,1,0,0,0
+access_plan_line_manager,Plan Line->Manager,model_cx_tower_plan_line,group_manager,1,1,1,1
+access_plan_line_root,Plan Line->Root,model_cx_tower_plan_line,group_root,1,1,1,1
+access_plan_line_action_user,Plan Line Action->User,model_cx_tower_plan_line_action,group_user,1,0,0,0
+access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_line_action,group_manager,1,1,1,1
+access_plan_line_action_root,Plan Line Action->Root,model_cx_tower_plan_line_action,group_root,1,1,1,1
+access_plan_log_user,Plan Log->User,model_cx_tower_plan_log,group_user,1,0,0,0
+access_plan_log_root,Plan Log->User,model_cx_tower_plan_log,group_root,1,1,1,1
+access_file_user,File->User,model_cx_tower_file,group_user,1,0,0,0
+access_file_manager,File->Manager,model_cx_tower_file,group_manager,1,1,1,1
+access_file_root,File->Root,model_cx_tower_file,group_root,1,1,1,1
+access_file_template_manager,File Template->Manager,model_cx_tower_file_template,group_manager,1,1,1,1
+access_file_template_root,File Template->Root,model_cx_tower_file_template,group_root,1,1,1,1
+access_server_log_user,Server Log->User,model_cx_tower_server_log,group_user,1,0,0,0
+access_server_log_manager,Server Log->Manager,model_cx_tower_server_log,group_manager,1,1,1,1
+access_server_log_root,Server Log->Root,model_cx_tower_server_log,group_root,1,1,1,1
+access_server_template_manager,Server Template->Manager,model_cx_tower_server_template,group_manager,1,1,1,1
+access_server_template_root,Server Template->Root,model_cx_tower_server_template,group_root,1,1,1,1
+access_create_server_from_template_manager,Create Server From Template->Manager,model_cx_tower_server_template_create_wizard,group_manager,1,1,1,1
+access_create_server_from_template_line_manager,Create Server From Template Line->Manager,model_cx_tower_server_template_create_wizard_line,group_manager,1,1,1,1
+access_cx_tower_variable_option_user,Variable Option->User,model_cx_tower_variable_option,group_user,1,0,0,0
+access_cx_tower_variable_option_manager,Variable Option->Manager,model_cx_tower_variable_option,group_manager,1,1,1,1
+access_cx_tower_server_host_key_wizard_manager,Show Host Key->Manager,model_cx_tower_server_host_key_wizard,group_manager,1,1,1,1
+access_cx_tower_server_host_key_wizard_root,Show Host Key->Root,model_cx_tower_server_host_key_wizard,group_root,1,1,1,1
+access_cetmix_tower_user,Cetmix Tower->User,model_cetmix_tower,group_user,1,1,0,0
+access_shortcut_user,Shortcut->User,model_cx_tower_shortcut,group_user,1,0,0,0
+access_shortcut_manager,Shortcut->Manager,model_cx_tower_shortcut,group_manager,1,0,0,0
+access_shortcut_root,Shortcut->Root,model_cx_tower_shortcut,group_root,1,1,1,1

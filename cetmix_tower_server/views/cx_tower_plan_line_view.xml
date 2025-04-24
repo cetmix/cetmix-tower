@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_plan_line_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.line.view.form</field>
+        <field name="model">cx.tower.plan.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="sequence" />
+                        <field
+                            name="reference"
+                            placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                        />
+                        <field
+                            name="path"
+                            placeholder="e.g. /such/much/{{ path }}, overrides command path"
+                            invisible="action != 'ssh_command'"
+                        />
+                        <label for="command_id" />
+                        <div class="o_row">
+                            <field name="action" nolabel="1" />
+                            <span invisible="action != 'ssh_command'">sudo</span>
+                            <field
+                                name="use_sudo"
+                                invisible="action != 'ssh_command'"
+                            />
+                            <field name="command_id" options="{'no_create': True}" />
+                        </div>
+                        <field name="plan_run_id" invisible="action != 'plan'" />
+                        <field
+                            name="file_template_id"
+                            string="File Template"
+                            invisible="action != 'file_using_template'"
+                        />
+                        <field name="note" readonly="1" invisible="not note" />
+                    </group>
+                    <group>
+                    <field name="condition" widget="ace" options="{'mode': 'python'}" />
+            </group>
+                    <notebook>
+                        <page name="preview" string="Preview">
+                            <field
+                                name="command_code"
+                                invisible="action not in ['ssh_command', 'python_code']"
+                            />
+                            <field
+                                name="file_template_code"
+                                string="Template Code"
+                                invisible="action != 'file_using_template'"
+                            />
+                            <field
+                                name="plan_line_ids"
+                                string="Flight Plan Lines"
+                                invisible="action != 'plan'"
+                            >
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field
+                                        name="action"
+                                        optional="show"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
+                                    <field
+                                        name="tag_ids"
+                                        optional="show"
+                                        widget="many2many_tags"
+                                        groups="cetmix_tower_server.group_manager"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                    <field name="use_sudo" optional="show" />
+                                    <field name="path" optional="show" />
+                                    <field
+                                        name="condition"
+                                        widget="ace"
+                                        options="{'mode': 'python'}"
+                                        optional="show"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="actions" string="Post Run Actions">
+                            <field name="action_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="sequence" />
+                                        <label for="condition" string="If exit code" />
+                                        <div class="o_row">
+                                            <field name="condition" />
+                                            <field name="value_char" />
+                                        </div>
+                                        <label for="action" string="Then" />
+                                        <div class="o_row">
+                                            <field name="action" />
+                                            <field
+                                                name="custom_exit_code"
+                                                invisible="action != 'ec'"
+                                                required="action == 'ec'"
+                                            />
+                                        </div>
+                                    </group>
+                                    <p><b>AND</b></p>
+                                    <group>
+                                        <field
+                                            name="variable_value_ids"
+                                            order="variable_reference"
+                                            string="Set Variable Values"
+                                        >
+                                            <tree editable="bottom">
+                                                <field
+                                                    name="sequence"
+                                                    widget="handle"
+                                                />
+                                                <field
+                                                    name="reference"
+                                                    optional="hide"
+                                                />
+                                                <field
+                                                    name="variable_reference"
+                                                    optional="hide"
+                                                />
+                                                <field name="variable_id" />
+                                                <field
+                                                    name="variable_type"
+                                                    column_invisible="1"
+                                                />
+                                                <field
+                                                    name="value_char"
+                                                    readonly="variable_type == 'o'"
+                                                />
+                                                <field
+                                                    name="option_id"
+                                                    options="{'no_create': True, 'no_create_edit': True}"
+                                                    readonly="variable_type == 's'"
+                                                />
+                                                <field
+                                                    name="access_level"
+                                                    optional="show"
+                                                />
+                                            </tree>
+                                            <form>
+                                                <group>
+                                                    <field name="variable_id" />
+                                                    <field name="value_char" />
+                                                    <field name="access_level" />
+                                                </group>
+                                                <field
+                                                    name="note"
+                                                    placeholder="Put your notes here..."
+                                                />
+                                            </form>
+                                        </field>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

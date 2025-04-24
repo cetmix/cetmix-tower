@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_key_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.key.view.form</field>
+        <field name="model">cx.tower.key</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="reference" widget="CopyClipboardChar" />
+                            <field
+                                name="reference_code"
+                                widget="CopyClipboardChar"
+                                options="{'string': 'Copy'}"
+                                invisible="key_type == 'k'"
+                            />
+                            <field name="key_type" />
+                        </group>
+                        <group>
+                            <field name="note" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="value"
+                            string="Key Value"
+                            invisible="key_type != 'k'"
+                        >
+                            <field name="secret_value" />
+                        </page>
+                        <page
+                            name="secret_values"
+                            string="Secret Values"
+                            invisible="key_type != 's'"
+                        >
+                            <field name="value_ids">
+                                <tree
+                                    editable="bottom"
+                                    decoration-info="is_global == True"
+                                >
+                                    <field name="is_global" />
+                                    <field name="partner_id" />
+                                    <field name="server_id" />
+                                    <field name="secret_value" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="is_global" />
+                                        <field name="server_id" invisible="is_global" />
+                                        <field
+                                            name="partner_id"
+                                            invisible="is_global"
+                                        />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page
+                            name="servers"
+                            string="Used for"
+                            invisible="key_type != 'k'"
+                        >
+                            <field name="server_ssh_ids">
+                                <tree>
+                                    <field name="name" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="name" />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_key_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.key.view.search</field>
+        <field name="model">cx.tower.key</field>
+        <field name="arch" type="xml">
+            <search string="Search Keys/Secrets">
+                <field name="name" string="SSH Key / Secret" />
+                <field name="reference" string="Reference" />
+                <filter
+                    string="SSH Key"
+                    name="filter_ssh"
+                    domain="[('key_type', '=', 'k')]"
+                />
+                <filter
+                    string="Secret"
+                    name="filter_secret"
+                    domain="[('key_type', '=', 's')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Key Type"
+                        name="group_by_key_type"
+                        domain="[]"
+                        context="{'group_by': 'key_type'}"
+                    />
+                </group>
+             </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_key_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.key.view.tree</field>
+        <field name="model">cx.tower.key</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="key_type" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_key" model="ir.actions.act_window">
+        <field name="name">SSH Key / Secret</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.key</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

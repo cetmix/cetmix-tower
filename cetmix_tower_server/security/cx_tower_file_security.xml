@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User: Read access rule: Allow reading file records when the current user is in the related Server's user_ids -->
+    <record id="rule_cx_tower_file_group_user_read" model="ir.rule">
+        <field name="name">File: User read via related server (user_ids)</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">[('server_id.user_ids', 'in', [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: Write and Create access rule: Allow update and creation when current user is in related Server's manager_ids -->
+    <record id="rule_cx_tower_file_group_manager_read_write" model="ir.rule">
+        <field
+            name="name"
+        >File: Manager write &amp; create via related server (manager_ids)</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">[('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: Unlink access rule: Allow deletion only when the current user is in the related Server's manager_ids and is the record creator -->
+    <record id="rule_cx_tower_file_group_manager_unlink" model="ir.rule">
+        <field
+            name="name"
+        >File: Manager unlink via related server (manager_ids) and record creator</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [ ('server_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id) ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root: Unrestricted access rule: Allow access to all files -->
+    <record id="rule_cx_tower_file_group_root_full" model="ir.rule">
+        <field name="name">File: Root Unrestricted Access</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

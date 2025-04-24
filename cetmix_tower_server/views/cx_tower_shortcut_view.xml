@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_shortcut_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.shortcut.view.tree</field>
+        <field name="model">cx.tower.shortcut</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="action" />
+                <field name="access_level" optional="show" />
+                <field name="command_id" optional="hide" />
+                <field name="plan_id" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_shortcut_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.shortcut.view.form</field>
+        <field name="model">cx.tower.shortcut</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                     <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <group name="main">
+                        <group name="info">
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="access_level" />
+                            <field name="active" />
+                            <field name="sequence" />
+                        </group>
+                        <group name="action">
+                            <field name="action" />
+                            <field name="command_id" invisible="action != 'command'" />
+                            <field name="use_sudo" invisible="action != 'command'" />
+                            <field name="plan_id" invisible="action != 'plan'" />
+                        </group>
+                        <field name="note" placeholder="Put your notes here" />
+                    </group>
+                    <notebook>
+                        <page name="servers" string="Servers">
+                            <field name="server_ids">
+                                <tree>
+                                    <field name="name" />
+                                <field name="reference" />
+                                </tree>
+                            </field>
+                        </page>
+                    <page name="server_templates" string="Server Templates">
+                        <field name="server_template_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="reference" />
+                            </tree>
+                        </field>
+                    </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_shortcut_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.shortcut.view.search</field>
+        <field name="model">cx.tower.shortcut</field>
+        <field name="arch" type="xml">
+            <search string="Search Shortcuts">
+                <field name="name" string="Shortcut" />
+                <field name="command_id" />
+                <field name="plan_id" />
+                <field name="server_ids" />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Command"
+                    name="command"
+                    domain="[('action', '=', 'command')]"
+                />
+                <filter
+                    string="Flight plan"
+                    name="plan"
+                    domain="[('action', '=', 'plan')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Action"
+                        name="group_by_action"
+                        domain="[]"
+                        context="{'group_by': 'action'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_cx_tower_shortcut" model="ir.actions.act_window">
+        <field name="name">Shortcuts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.shortcut</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_shortcut_search_view" />
+    </record>
+
+</odoo>

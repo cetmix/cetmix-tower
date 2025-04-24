@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_plan_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.log.view.form</field>
+        <field name="model">cx.tower.plan.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Running"
+                        bg_color="bg-info"
+                        invisible="not is_running"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Finished"
+                        invisible="is_running or not is_running and plan_status != 0"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Failed"
+                        bg_color="bg-danger"
+                        invisible="is_running or not is_running and plan_status == 0"
+                    />
+                    <group>
+                        <group>
+                            <field name="create_uid" />
+                            <field name="server_id" />
+                            <field name="plan_id" />
+                            <field
+                                name="parent_flight_plan_log_id"
+                                invisible="not parent_flight_plan_log_id"
+                            />
+                            <field name="is_running" invisible="not is_running" />
+                            <field
+                                name="plan_line_executed_id"
+                                invisible="not is_running"
+                            />
+                            <field name="plan_status" invisible="is_running" />
+                        </group>
+                        <group>
+                            <field name="label" invisible="not label" />
+                            <field name="start_date" />
+                            <field name="finish_date" />
+                            <field name="duration_current" />
+                        </group>
+                        <field name="command_log_ids">
+                            <tree
+                                decoration-danger="command_status not in [0, -205]"
+                                decoration-info="is_running == True"
+                                decoration-muted="command_status == -205"
+                                default_order="id asc"
+                            >
+                            <field name="id" column_invisible="1" />
+                            <field name="command_id" optional="show" />
+                            <field name="command_action" optional="show" />
+                            <field name="start_date" optional="hide" />
+                            <field name="finish_date" optional="hide" />
+                            <field name="duration_current" optional="show" />
+                            <field name="command_status" optional="show" />
+                            <field name="is_running" optional="hide" />
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_plan_log_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.plan.log.view.tree</field>
+        <field name="model">cx.tower.plan.log</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-danger="plan_status != 0"
+                decoration-info="is_running == True"
+            >
+                <field name="start_date" />
+                <field name="finish_date" optional="hide" />
+                <field name="duration_current" optional="show" />
+                <field name="server_id" optional="show" />
+                <field name="plan_id" optional="show" />
+                <field name="parent_flight_plan_log_id" optional="hide" />
+                <field name="plan_status" optional="show" />
+                <field name="is_running" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="cx_tower_plan_log_search_view" model="ir.ui.view">
+    <field name="name">cx.tower.plan.log.view.search</field>
+    <field name="model">cx.tower.plan.log</field>
+    <field name="arch" type="xml">
+        <search string="Search Flight Plan Log">
+            <field name="label" />
+            <field name="server_id" />
+            <field name="plan_id" />
+            <filter
+                    string="Success"
+                    name="filter_success"
+                    domain="[('plan_status', '=', 0)]"
+                />
+            <filter
+                    string="Error"
+                    name="filter_error"
+                    domain="[('plan_status', '!=', 0)]"
+                />
+            <filter
+                    string="Running Now"
+                    name="filter_is_running"
+                    domain="[('is_running', '=', True)]"
+                />
+            <separator />
+            <filter
+                    string="Labeled"
+                    name="filter_labeled"
+                    domain="[('label', '!=', False)]"
+                />
+            <filter
+                    string="Main plans"
+                    name="filter_main_plans"
+                    domain="[('parent_flight_plan_log_id', '=', False)]"
+                />
+            <filter
+                    string="Child plans"
+                    name="filter_child_plans"
+                    domain="[('parent_flight_plan_log_id', '!=', False)]"
+                />
+            <separator />
+            <group expand="0" string="Group By">
+                <filter
+                        string="Server"
+                        name="group_server"
+                        domain="[]"
+                        context="{'group_by': 'server_id'}"
+                    />
+                <filter
+                        string="Flight Plan"
+                        name="group_plan"
+                        domain="[]"
+                        context="{'group_by': 'plan_id'}"
+                    />
+                <filter
+                        string="Start date"
+                        name="group_start"
+                        domain="[]"
+                        context="{'group_by': 'start_date:day'}"
+                    />
+                <filter
+                        string="Finish date"
+                        name="group_finish"
+                        domain="[]"
+                        context="{'group_by': 'finish_date:day'}"
+                    />
+                <filter
+                        string="Main plan"
+                        name="group_main_plan"
+                        domain="[]"
+                        context="{'group_by': 'parent_flight_plan_log_id'}"
+                    />
+            </group>
+        </search>
+    </field>
+</record>
+
+
+    <record id="action_cx_tower_plan_log" model="ir.actions.act_window">
+        <field name="name">Flight Plan Log</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.plan.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_filter_main_plans': 1}</field>
+    </record>
+
+</odoo>
