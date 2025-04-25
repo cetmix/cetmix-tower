@@ -24,7 +24,7 @@
                         name="web_ribbon"
                         title="Disabled"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('enabled', '=', True)]}"
+                        invisible="enabled"
                     />
                     <div class="oe_title">
                         <h1>
@@ -34,7 +34,7 @@
                             <field
                                 name="reference"
                                 placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
-                                attrs="{'invisible': [('reference', '=', False)]}"
+                                invisible="not reference"
                             />
                         </h3>
                     </div>
@@ -49,7 +49,7 @@
                                 class="alert alert-warning"
                                 role="alert"
                                 style="margin-bottom:0px;"
-                                attrs="{'invisible': [('remote_count', '&lt;', 2)]}"
+                                invisible="remote_count &lt; 2"
                             >
                         <p>
                             The top one remote will be used as a merge target.

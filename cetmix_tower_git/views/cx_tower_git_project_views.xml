@@ -25,7 +25,7 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div class="oe_title">
                         <h1>
@@ -75,17 +75,14 @@
                             </field>
                             <field name="has_private_remotes" invisible="1" />
                             <field name="has_partially_private_remotes" invisible="1" />
-                            <div
-                                class="text-info"
-                                attrs="{'invisible': [('has_private_remotes', '=', False)]}"
-                            >
+                            <div class="text-info" invisible="not has_private_remotes">
                                 <p>
                                     * Sources where all remotes are private
                                 </p>
                             </div>
                             <div
                                 class="text-warning"
-                                attrs="{'invisible': [('has_partially_private_remotes', '=', False)]}"
+                                invisible="not has_partially_private_remotes"
                             >
                                 <p>
                                     * Sources where some remotes are private

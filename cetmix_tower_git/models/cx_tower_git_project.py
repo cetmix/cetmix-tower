@@ -160,7 +160,9 @@ class CxTowerGitProject(models.Model):
                 continue
 
             # Get all user and manager ids from related servers
-            all_user_ids = server_ids.user_ids.ids
+            all_user_ids = server_ids.user_ids.filtered(
+                lambda u: u.has_group("cetmix_tower_server.group_manager")
+            ).ids
             all_manager_ids = server_ids.manager_ids.ids
 
             # Create a final list of user and manager ids
@@ -258,9 +260,12 @@ class CxTowerGitProject(models.Model):
         values = {}
         for source in self.source_ids:
             if source.enabled and source.remote_count:
+                root_dir = self.git_aggregator_root_dir or "."
                 values.update(
                     {
-                        f"{self.git_aggregator_root_dir or '.'}/{source.reference}": source._git_aggregator_prepare_record()  # noqa: E501
+                        f"/{source.reference}"
+                        if root_dir == "/"
+                        else f"{root_dir}/{source.reference}": source._git_aggregator_prepare_record()  # noqa: E501
                     }
                 )
         return values
