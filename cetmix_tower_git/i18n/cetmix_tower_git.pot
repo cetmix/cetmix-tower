@@ -421,15 +421,6 @@ msgid "Is Private"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_uid
