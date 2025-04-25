@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -418,15 +418,6 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__is_private
 msgid "Is Private"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: cetmix_tower_git
