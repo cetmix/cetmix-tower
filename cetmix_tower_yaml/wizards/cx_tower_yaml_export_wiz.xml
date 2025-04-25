@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_yaml_export_wiz_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.yaml.export.wiz.view.form</field>
+        <field name="model">cx.tower.yaml.export.wiz</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="explode_child_records" />
+                    <field name="remove_empty_values" />
+                    <field name="preview_code" />
+                </group>
+                <field
+                    name="comment"
+                    placeholder="Comment to be added to the beginning of exported YAML file"
+                />
+                <field
+                    name="yaml_code"
+                    widget="ace"
+                    options="{'mode': 'yaml'}"
+                    force_save="1"
+                    readonly="1"
+                    invisible="not preview_code"
+                />
+                <footer>
+                    <button
+                        string="Generate YAML file"
+                        type="object"
+                        name="action_generate_yaml_file"
+                        class="oe_highlight"
+                    />
+                    <button string="Close" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
