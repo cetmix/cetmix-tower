@@ -26,7 +26,7 @@
                         name="web_ribbon"
                         title="Disabled"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('enabled', '=', True)]}"
+                        invisible="enabled"
                     />
                     <group>
                         <field name="sequence" />
@@ -37,13 +37,13 @@
                             name="url_protocol"
                             widget="radio"
                             options="{'horizontal': true}"
-                            attrs="{'invisible': [('url', '=', False)]}"
+                            invisible="not url"
                         />
                         <field
                             name="repo_provider"
                             widget="radio"
                             options="{'horizontal': true}"
-                            attrs="{'invisible': [('url', '=', False)]}"
+                            invisible="not url"
                         />
                         <field
                             name="url"
@@ -53,7 +53,7 @@
                             name="head_type"
                             widget="radio"
                             options="{'horizontal': true}"
-                            attrs="{'invisible': [('head', '=', False)]}"
+                            invisible="not head"
                         />
                         <field
                             name="head"

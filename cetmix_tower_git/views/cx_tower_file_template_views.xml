@@ -10,10 +10,7 @@
         />
         <field name="arch" type="xml">
             <field name="source" position="after">
-                <field
-                    name="git_project_id"
-                    attrs="{'invisible': [('git_project_id', '=', False)]}"
-                />
+                <field name="git_project_id" invisible="not git_project_id" />
             </field>
         </field>
     </record>
