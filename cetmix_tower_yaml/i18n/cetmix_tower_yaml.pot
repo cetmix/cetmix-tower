@@ -248,6 +248,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
@@ -287,6 +288,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "File contains non-unicode characters or is empty"
@@ -339,14 +341,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Key/Secrets"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload____last_update
-msgid "Last Modified on"
 msgstr ""
 
 #. module: cetmix_tower_yaml
