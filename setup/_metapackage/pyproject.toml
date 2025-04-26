@@ -1,9 +1,10 @@
 [project]
 name = "odoo-addons-cetmix-cetmix-tower"
-version = "17.0.20250425.2"
+version = "17.0.20250426.0"
 dependencies = [
     "odoo-addon-cetmix_tower_git>=17.0dev,<17.1dev",
     "odoo-addon-cetmix_tower_server>=17.0dev,<17.1dev",
+    "odoo-addon-cetmix_tower_server_notify_backend>=17.0dev,<17.1dev",
     "odoo-addon-cetmix_tower_server_queue>=17.0dev,<17.1dev",
     "odoo-addon-cetmix_tower_yaml>=17.0dev,<17.1dev",
 ]
