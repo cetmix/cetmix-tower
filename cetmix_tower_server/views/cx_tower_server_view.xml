@@ -22,16 +22,16 @@
                                     <div role="menuitem">
                                         <a
                                             role="menuitem"
-                                            type="action"
-                                            name="%(cetmix_tower_server.cx_tower_command_run_wizard_action)d"
+                                            type="object"
+                                            name="action_run_command"
                                         >Run Command
                                         </a>
                                         </div>
                                         <div role="menuitem">
                                             <a
                                             role="menuitem"
-                                            type="action"
-                                            name="%(cetmix_tower_server.cx_tower_plan_run_wizard_action)d"
+                                            type="object"
+                                            name="action_run_flight_plan"
                                         >Run Flight Plan
                                             </a>
                                         </div>
