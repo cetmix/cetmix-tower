@@ -129,6 +129,7 @@
             <tree>
                 <field name="name" />
                 <field name="reference" optional="hide" />
+                <field name="access_level" optional="hide" />
                 <field
                     name="server_ids"
                     widget="many2many_tags"
@@ -176,6 +177,14 @@
                     name="archived"
                     domain="[('active', '=', False)]"
                 />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Access Level"
+                        name="group_access_level"
+                        domain="[]"
+                        context="{'group_by': 'access_level'}"
+                    />
+                </group>
             </search>
         </field>
     </record>
