@@ -1,3 +1,5 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import yaml
 
 from odoo.exceptions import ValidationError
@@ -32,6 +34,7 @@ code: |-
 server_status: false
 variable_ids: false
 secret_ids: false
+no_split_for_sudo: false
 """
 
         # YAML content translated into Python dict
@@ -245,6 +248,7 @@ code: false
 server_status: false
 variable_ids: false
 secret_ids: false
+no_split_for_sudo: false
 """
         # Add file template
         file_template = self.env["cx.tower.file.template"].create(
@@ -307,6 +311,7 @@ code: false
 server_status: false
 variable_ids: false
 secret_ids: false
+no_split_for_sudo: false
 """
         command_with_template.invalidate_recordset(["yaml_code"])
         self.assertEqual(
