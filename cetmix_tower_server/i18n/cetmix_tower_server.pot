@@ -292,6 +292,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__access_level
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 msgid "Access Level"
 msgstr ""
 
@@ -1644,6 +1646,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
