@@ -24,5 +24,6 @@ class CxTowerCommand(models.Model):
             "server_status",
             "variable_ids",
             "secret_ids",
+            "no_split_for_sudo",
         ]
         return res
