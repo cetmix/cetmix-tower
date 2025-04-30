@@ -40,7 +40,7 @@
                         <field
                             name="ssh_key_id"
                             invisible="ssh_auth_mode == 'p'"
-                            context="{'default_key_type': 'k'}"
+                            context="{'default_key_type': 'k', 'secrets_only': True}"
                         />
                         <field name="use_sudo" placeholder="No/Undefined" />
                     </group>
