@@ -67,6 +67,12 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:res.groups,name:cetmix_tower_yaml.group_export
+#: model:res.groups,name:cetmix_tower_yaml.group_import
+msgid "Allow"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_command
 msgid "Cetmix Tower Command"
 msgstr ""
@@ -134,11 +140,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_variable_value
 msgid "Cetmix Tower Variable Values"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml
-msgid "Cetmix Tower YAML"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -241,11 +242,6 @@ msgid "Explode Child Records"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:res.groups,name:cetmix_tower_yaml.group_export
-msgid "Export"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
@@ -312,7 +308,6 @@ msgid "If Record Exists"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:res.groups,name:cetmix_tower_yaml.group_import
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Import"
 msgstr ""
@@ -554,6 +549,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
 msgid "YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml_export
+msgid "YAML Export"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml_import
+msgid "YAML Import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
