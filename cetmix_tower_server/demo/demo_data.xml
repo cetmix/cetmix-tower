@@ -402,6 +402,11 @@
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
+        <field name="access_level">1</field>
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
     </record>
 
     <!-- Flight Plan #2 -->
@@ -448,6 +453,10 @@
     <record id="command_update_upgrade" model="cx.tower.command">
         <field name="name">Update packages</field>
         <field name="action">ssh_command</field>
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
         <field name="code">apt-get update &amp;&amp; apt-get upgrade -y</field>
         <field
             name="tag_ids"
@@ -458,12 +467,17 @@
             eval="[(6, 0, [ref('cetmix_tower_server.os_debian_11'), ref('cetmix_tower_server.os_ubuntu_22_04'),ref('cetmix_tower_server.os_ubuntu_24_04')])]"
         />
         <field name="note">Update and upgrade packages on the host system</field>
+        <field name="access_level">1</field>
     </record>
 
     <!-- Command #2 -->
     <record id="command_create_dir" model="cx.tower.command">
         <field name="name">Create directory</field>
         <field name="action">ssh_command</field>
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1')])]"
+        />
         <field name="path">/home/{{ tower.server.username }}</field>
         <field name="code">mkdir -p {{ demo_dir }}</field>
         <field
@@ -471,6 +485,7 @@
             eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
         />
         <field name="note">Create a directory on the host system</field>
+        <field name="access_level">1</field>
     </record>
 
     <!-- Command #3 -->
