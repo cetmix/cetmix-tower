@@ -1,3 +1,8 @@
+## 16.0.1.0.4 (2025-04-30)
+
+- Features: UI/UX improvements. (4642)
+
+
 ## 16.0.1.0.3 (2025-04-22)
 
 - Features: Allow to pass custom variable values to commands (4524)
