@@ -389,7 +389,7 @@ class CxTowerServer(models.Model):
             host_key = self._get_host_key()
             is_error = False
         except Exception as error:
-            is_error = (True,)
+            is_error = True
             host_key = error
         context = {
             "default_host_key": host_key,
@@ -742,7 +742,7 @@ class CxTowerServer(models.Model):
             return result[0]
 
     @ensure_ssh_disconnect
-    def _get_host_key(self, raise_on_error=True, timeout=60):
+    def _get_host_key_from_host(self, raise_on_error=True, timeout=60):
         """Get host key
 
         Args:

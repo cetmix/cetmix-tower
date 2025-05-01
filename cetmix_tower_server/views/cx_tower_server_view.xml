@@ -330,7 +330,7 @@
                                     <field
                                         name="ssh_key_id"
                                         attrs="{'required': [('ssh_auth_mode', '=', 'k')]}"
-                                        context="{'default_key_type': 'k'}"
+                                        context="{'default_key_type': 'k', 'secrets_only': True}"
                                     />
                                 </group>
                                 <group name="extra">
@@ -411,7 +411,7 @@
                         >
                             <field
                                 name="secret_ids"
-                                context="{'default_key_type': 's', 'from_server': True}"
+                                context="{'default_key_type': 's', 'secrets_only': True}"
                             >
                                 <tree editable="bottom">
                                     <field

@@ -51,7 +51,7 @@ class CetmixTower(models.AbstractModel):
             eg `{'odoo_version': '16.0'}`
 
         Returns:
-            Dict: with who keys if `get_result` is True:
+            Dict: with two keys if `get_result` is True:
             - exit_code (Int): Exit code of the command
             - message (Char): Message of the command
         """
@@ -205,7 +205,7 @@ class CetmixTower(models.AbstractModel):
                 the server cannot be found.
         Returns:
             dict: {
-                "code": int,
+                "exit_code": int,
                     0 for success,
                     error code for failure
                 "message": str  # Description of the result
