@@ -20,6 +20,6 @@ class CxTowerCommandLog(models.Model):
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
         res = super().finish(finish_date, status, response, error, **kwargs)
-        if status == COMMAND_TIMED_OUT:
+        if status == COMMAND_TIMED_OUT and self.queue_job_id:
             self.queue_job_id.sudo()._change_job_state(CANCELLED, result=error)
         return res

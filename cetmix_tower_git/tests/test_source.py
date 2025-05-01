@@ -177,20 +177,6 @@ class TestSource(CommonTest):
             prepared_result, expected_result, "Prepared result is not correct"
         )
 
-        # -- 2 --
-        # Source 2
-        expected_result = {
-            "remotes": {
-                "remote_1": "https://bitbucket.org/cetmix/cetmix-tower.git",
-                "remote_2": "git@other.com:cetmix/cetmix-tower.git",
-            },
-            "merges": [
-                {"remote": "remote_1", "ref": "dev"},
-                {"remote": "remote_2", "ref": "old"},
-            ],
-            "target": "remote_1",
-        }
-
     def test_manager_server_based_access(self):
         """Test manager access to sources through server relationships"""
         manager_source = self.GitSource.with_user(self.manager)
