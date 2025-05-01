@@ -1,3 +1,4 @@
+import binascii
 from base64 import b64decode
 
 import yaml
@@ -55,13 +56,20 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
 
         # Decode base64 file
         try:
-            decoded_file = b64decode(self.yaml_file).decode("utf-8")
-        except UnicodeDecodeError as e:
-            raise ValidationError(_("YAML file cannot be decoded properly")) from e
-        except TypeError as e:
+            raw_bytes = b64decode(self.yaml_file or b"")
+        except (TypeError, binascii.Error) as e:
+            # Not a valid base-64 payload
             raise ValidationError(
                 _("File contains non-unicode characters or is empty")
             ) from e
+
+        if not raw_bytes:
+            raise ValidationError(_("File contains non-unicode characters or is empty"))
+
+        try:
+            decoded_file = raw_bytes.decode("utf-8")
+        except UnicodeDecodeError as e:
+            raise ValidationError(_("YAML file cannot be decoded properly")) from e
 
         # Parse YAML file
         try:
