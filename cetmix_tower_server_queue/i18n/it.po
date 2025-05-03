@@ -18,21 +18,34 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 
 #. module: cetmix_tower_server_queue
+#: model:ir.model,name:cetmix_tower_server_queue.model_cx_tower_command_log
+msgid "Cetmix Tower Command Log"
+msgstr "Server Cetmix Tower"
+
+#. module: cetmix_tower_server_queue
 #: model:ir.model,name:cetmix_tower_server_queue.model_cx_tower_server
 msgid "Cetmix Tower Server"
 msgstr "Server Cetmix Tower"
 
 #. module: cetmix_tower_server_queue
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_server__display_name
 msgid "Display Name"
 msgstr "Nome visualizzato"
 
 #. module: cetmix_tower_server_queue
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_server__id
 msgid "ID"
 msgstr "ID"
 
 #. module: cetmix_tower_server_queue
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_server____last_update
 msgid "Last Modified on"
 msgstr "Ultima modifica il"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__queue_job_id
+msgid "Queue Job"
+msgstr "Accoda lavoro"
