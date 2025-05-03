@@ -18,12 +18,14 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 
 #. module: cetmix_tower_server_notify_backend
+#. odoo-python
 #: code:addons/cetmix_tower_server_notify_backend/models/cx_tower_command_log.py:0
 #, python-format
 msgid "%(timestamp)s<br/>Command '%(name)s' finished successfully"
 msgstr "%(timestamp)s<br/>Command '%(name)s' completato con successo"
 
 #. module: cetmix_tower_server_notify_backend
+#. odoo-python
 #: code:addons/cetmix_tower_server_notify_backend/models/cx_tower_command_log.py:0
 #, python-format
 msgid ""
@@ -34,12 +36,14 @@ msgstr ""
 "registro comando per i dettagli."
 
 #. module: cetmix_tower_server_notify_backend
+#. odoo-python
 #: code:addons/cetmix_tower_server_notify_backend/models/cx_tower_plan_log.py:0
 #, python-format
 msgid "%(timestamp)s<br/>Flight Plan '%(name)s' finished successfully"
 msgstr "%(timestamp)s<br/>Flight Plan '%(name)s' completato con successo"
 
 #. module: cetmix_tower_server_notify_backend
+#. odoo-python
 #: code:addons/cetmix_tower_server_notify_backend/models/cx_tower_plan_log.py:0
 #, python-format
 msgid ""
@@ -59,20 +63,11 @@ msgstr "Registro comando Cetmix Tower"
 msgid "Cetmix Tower Flight Plan Log"
 msgstr "Registro piano di volo Cetmix Tower"
 
-#. module: cetmix_tower_server_notify_backend
-#: model:ir.model.fields,field_description:cetmix_tower_server_notify_backend.field_cx_tower_command_log__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_server_notify_backend.field_cx_tower_plan_log__display_name
-msgid "Display Name"
-msgstr "Nome visualizzato"
+#~ msgid "Display Name"
+#~ msgstr "Nome visualizzato"
 
-#. module: cetmix_tower_server_notify_backend
-#: model:ir.model.fields,field_description:cetmix_tower_server_notify_backend.field_cx_tower_command_log__id
-#: model:ir.model.fields,field_description:cetmix_tower_server_notify_backend.field_cx_tower_plan_log__id
-msgid "ID"
-msgstr "ID"
+#~ msgid "ID"
+#~ msgstr "ID"
 
-#. module: cetmix_tower_server_notify_backend
-#: model:ir.model.fields,field_description:cetmix_tower_server_notify_backend.field_cx_tower_command_log____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_server_notify_backend.field_cx_tower_plan_log____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
