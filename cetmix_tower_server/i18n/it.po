@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
-"Report-Msgid-Bugs-To: weblatereports@cetmix.com\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-04-15 09:01+0000\n"
+"PO-Revision-Date: 2025-05-03 15:52+0200\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14/"
 "cetmix_tower_server/it/>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Poedit 2.3\n"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__source
@@ -451,6 +451,8 @@ msgstr "Accesso"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__access_level
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__access_level
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 msgid "Access Level"
 msgstr "Livello accesso"
 
@@ -750,6 +752,7 @@ msgstr ""
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Cetmix Tower"
 msgstr "Cetmix Tower"
 
@@ -1019,6 +1022,11 @@ msgid "Command Timeout"
 msgstr "Timeout comando"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__command_variable_ids
+msgid "Command Variables"
+msgstr "Variabili comando"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__code
 msgid "Command code that was executed"
 msgstr "Codice comando che è stato eseguito"
@@ -1103,6 +1111,11 @@ msgid "Configuration"
 msgstr "Configurazione"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
+msgid "Configuration Values"
+msgstr "Variabili configurazione"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__line_ids
 msgid "Configuration Variables"
 msgstr "Variabili configurazione"
@@ -1136,6 +1149,11 @@ msgstr ""
 "%(res)s"
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_res_partner
+msgid "Contact"
+msgstr "Contatto"
+
+#. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
@@ -1157,6 +1175,7 @@ msgstr "Crea nuovo server da variabili modello"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__create_uid
@@ -1185,6 +1204,7 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__create_date
@@ -1229,6 +1249,11 @@ msgid "Custom Exit Code"
 msgstr "Codice uscita personalizzato"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_values
+msgid "Custom Variable Values"
+msgstr "Valori variabile predefiiti"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Custom label. Can be used for search/tracking"
@@ -1249,6 +1274,11 @@ msgid "Custom secret values can be defined only for key type 'secret'"
 msgstr ""
 "I valori segreti personalizzati possono essere definiti solo per il tipo di "
 "chiave 'segreto'"
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_command_run_wizard_variable_value
+msgid "Custom variable values for command run wizard"
+msgstr "Valori variabile predefiniti per comando esecuzione procedura guidata"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__sync_date_last
@@ -1292,6 +1322,7 @@ msgstr "Cartella nel server"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__display_name
@@ -1319,6 +1350,7 @@ msgstr "Cartella nel server"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__display_name
 msgid "Display Name"
 msgstr "Nome visualizzato"
 
@@ -1822,6 +1854,7 @@ msgstr "Globale"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
@@ -1837,6 +1870,11 @@ msgstr "Ha valori richiesti mancanti"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Has Template"
 msgstr "Ha modello"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__have_access_to_server
+msgid "Have Access To Server"
+msgstr "Ha accesso al server"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -1887,6 +1925,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__id
@@ -1914,6 +1953,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_config_settings__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__id
 msgid "ID"
 msgstr "ID"
 
@@ -2115,6 +2155,7 @@ msgstr "Etichettato"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key____last_update
@@ -2142,6 +2183,7 @@ msgstr "Etichettato"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_ir_actions_server____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_config_settings____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner____last_update
 msgid "Last Modified on"
 msgstr "Ultima modifica il"
 
@@ -2154,6 +2196,7 @@ msgstr "Ultima data sincronia"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__write_uid
@@ -2182,6 +2225,7 @@ msgstr "Ultimo aggiornamento di"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__write_date
@@ -2599,6 +2643,11 @@ msgid "Only one secret value can be defined for a server and partner"
 msgstr "È possibile definire un solo valore segreto per un server e un partner"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
+msgid "Only values that the current user has access to are shown."
+msgstr "Vengono visualizzati solo i valori a cui l'utente corrente ha accesso."
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Open"
 msgstr "Apri"
@@ -2616,6 +2665,7 @@ msgid "Operating System"
 msgstr "Sistema operativo"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__option_id
 msgid "Option"
@@ -2651,6 +2701,12 @@ msgstr "Partner"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_value__partner_id
 msgid "Partner to which the key belongs"
 msgstr "Partner a cui appartiene la chiave"
+
+#. module: cetmix_tower_server
+#: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_cetmix_tower_partner
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_partner
+msgid "Partners"
+msgstr "Partner"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__ssh_auth_mode__p
@@ -3319,7 +3375,10 @@ msgstr "Valori segreti"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_mixin__secret_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__secret_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Secrets"
 msgstr "Segreti"
 
@@ -3378,6 +3437,8 @@ msgstr "Azione server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__server_count
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__server_count
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__server_count
 msgid "Server Count"
 msgstr "Conteggio server"
 
@@ -3475,10 +3536,13 @@ msgstr "Interfaccia server web, es. 'https://doge.example.com'"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__server_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__server_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__server_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Servers"
 msgstr "Server"
 
@@ -3876,6 +3940,7 @@ msgid "Triggered Plan Log"
 msgstr "Registro piano attivato"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_type
@@ -4013,6 +4078,7 @@ msgid "Validation Pattern"
 msgstr "Schema validazione"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__value_char
@@ -4045,6 +4111,7 @@ msgid "Values"
 msgstr "Valori"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_id
@@ -4116,6 +4183,12 @@ msgid ""
 msgstr ""
 "Il riferimento variabile '%(var_ref)s' ha un riferimento opzione non valido "
 "'%(opt_ref)s'."
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_template_mixin.py:0
+#, python-format
+msgid "Variable syntax error: %s"
+msgstr "Errore sintassi variabile: %s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
@@ -4203,6 +4276,7 @@ msgid "Without password"
 msgstr "Senza password"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__wizard_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__wizard_id
 msgid "Wizard"
 msgstr "Procedura guidata"
@@ -4232,6 +4306,19 @@ msgid "You cannot run custom code on multiple servers at once."
 msgstr ""
 "Non è possibile eseguire codice personalizzato su server multipli "
 "contemporaneamente."
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
+msgid ""
+"You need 'Manager' access to the server to override the default "
+"configuration values.\n"
+"                            Without this access, the server's configured "
+"values will be used."
+msgstr ""
+"Per sovrascrivere i valori di configurazione predefiniti, è necessario "
+"l'accesso \"Responsabile\" al server.\n"
+"                            Senza questo accesso, verranno utilizzati i "
+"valori configurati del server."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/ir_actions_server.py:0
