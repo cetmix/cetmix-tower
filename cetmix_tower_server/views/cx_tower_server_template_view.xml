@@ -178,8 +178,10 @@
                                     <field name="ssh_username" />
                                     <field name="use_sudo" placeholder="No/Undefined" />
                                     <field name="ssh_password" password="True" />
-                                    <field name="ssh_key_id" />
-                                </group>
+                                    <field
+                                        name="ssh_key_id"
+                                        context="{'default_key_type': 'k', 'secrets_only': True}"
+                                    />                                </group>
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>

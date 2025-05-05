@@ -37,7 +37,11 @@
                             placeholder="this can be changed later"
                         />
                         <field name="ssh_password" password="True" />
-                        <field name="ssh_key_id" invisible="ssh_auth_mode == 'p'" />
+                        <field
+                            name="ssh_key_id"
+                            invisible="ssh_auth_mode == 'p'"
+                            context="{'default_key_type': 'k', 'secrets_only': True}"
+                        />
                         <field name="use_sudo" placeholder="No/Undefined" />
                     </group>
                     <field name="line_ids">

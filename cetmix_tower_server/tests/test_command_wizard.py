@@ -431,3 +431,72 @@ class TestTowerCommandWizard(TestTowerCommon):
 
         # Verify that custom value was used
         self.assertEqual(command_log.code, "echo manager value")
+
+    def test_default_applicability_for_regular_and_manager(self):
+        """sets applicability='this' for regular users, keeps default for managers."""
+        # Regular user (no special groups)
+        default_usr = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.user_bob)
+            .default_get(["applicability"])
+        )
+        self.assertEqual(default_usr.get("applicability"), "this")
+
+        # Manager user should receive the original default ("shared")
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        default_mgr = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.user_bob)
+            .default_get(["applicability"])
+        )
+        self.assertEqual(default_mgr.get("applicability"), "shared")
+
+    def test_compute_show_servers_behavior(self):
+        """Should enforce 'this' for regular users but preserve manager choice."""
+        # Grant Bob the basic 'user' group so he can read servers and create the wizard
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+
+        # Ensure Bob has read access to the first server
+        self.server_test_1.write({"user_ids": [(4, self.user_bob.id)]})
+        # Create a second server and grant Bob read access to it
+        srv2 = self.Server.create(
+            {
+                "name": "Server 2",
+                "ip_v4_address": "127.0.0.2",
+                "ssh_username": "root",
+                "ssh_password": "pwd",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+        srv2.write({"user_ids": [(4, self.user_bob.id)]})
+
+        # --- Regular user scenario ---
+        wiz_usr = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.user_bob)
+            .create({"server_ids": [self.server_test_1.id, srv2.id]})
+        )
+        # Compute show_servers under Bob; he should see both servers
+        wiz_usr._compute_show_servers()
+        self.assertTrue(wiz_usr.show_servers)
+        # Enforcement should set applicability to 'this'
+        self.assertEqual(wiz_usr.applicability, "this")
+
+        # --- Manager user scenario ---
+        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        # Grant Bob manager access to both servers
+        self.server_test_1.write({"manager_ids": [(4, self.user_bob.id)]})
+        srv2.write({"manager_ids": [(4, self.user_bob.id)]})
+
+        wiz_mgr = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.user_bob)
+            .create({"server_ids": [self.server_test_1.id, srv2.id]})
+        )
+        # Compute show_servers under Bob as manager
+        wiz_mgr._compute_show_servers()
+        # Manager should also see both servers
+        self.assertTrue(wiz_mgr.show_servers)
+        # Enforcement should not override manager's choice of 'shared'
+        self.assertEqual(wiz_mgr.applicability, "shared")
