@@ -292,6 +292,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "File contains non-unicode characters or is empty"
 msgstr ""
