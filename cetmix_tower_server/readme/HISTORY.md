@@ -1,3 +1,8 @@
+## 14.0.1.0.7 (2025-05-05)
+
+- Bugfixes: Non-critical issues and performance improvements. (4611)
+
+
 ## 14.0.1.0.6 (2025-04-24)
 
 - Features: Helper method to get host key value from the server. Backport from 16.0 (4264)
