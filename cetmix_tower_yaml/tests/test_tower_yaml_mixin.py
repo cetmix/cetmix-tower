@@ -25,11 +25,11 @@ class TestTowerYamlMixin(TransactionCase):
         # Test flow with exception due to wrong values
         with self.assertRaises(ValidationError) as e:
             self.YamlMixin._convert_dict_to_yaml("not_a_dict")
-            self.assertEqual(
-                str(e),
-                _("Values must be a dictionary"),
-                "Exception message doesn't match",
-            )
+        self.assertEqual(
+            str(e.exception),
+            _("Values must be a dictionary"),
+            "Exception message doesn't match",
+        )
 
     def test_yaml_field_access(self):
         # Create Root user with no access to the 'yaml_code field
@@ -167,14 +167,14 @@ class TestTowerYamlMixin(TransactionCase):
             result_values = self.YamlMixin._post_process_yaml_dict_values(
                 source_values.copy()
             )
-            self.assertEqual(
-                str(e),
-                _(
-                    "Wrong value for 'access_level' key: %(acv)s",
-                    acv="doge",
-                ),
-                "Exception message doesn't match",
-            )
+        self.assertEqual(
+            str(e.exception),
+            _(
+                "Wrong value for 'access_level' key: %(acv)s",
+                acv="doge",
+            ),
+            "Exception message doesn't match",
+        )
 
         # Restore original method
         self.YamlMixin._revert_method("_get_fields_for_yaml")

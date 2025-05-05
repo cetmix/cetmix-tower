@@ -264,7 +264,8 @@ class CxTowerServerTemplate(models.Model):
         configuration_variables = kwargs.get("configuration_variables", {})
 
         # We validate mandatory variables
-        self._validate_required_variables(configuration_variables)
+        if not kwargs.get("pick_all_template_variables"):
+            self._validate_required_variables(configuration_variables)
 
         # We are using sudo to ensure all values are copied
         server_values = self.sudo()._prepare_server_values(

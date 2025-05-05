@@ -222,37 +222,37 @@ class CxTowerKey(models.Model):
 
     def _extract_key_strings(self, code):
         """Extract all keys from code
-
         Args:
-            code (Text): _description_
+            code (Text): description
             **kwargs (dict): optional arguments
-
         Returns:
-            [str]: list of key stings
+            [str]: list of key strings
         """
         key_strings = []
         key_terminator_len = len(self.KEY_TERMINATOR)
         index_from = 0  # initial position
-        while index_from > -1:
-            index_from = code.find(self.KEY_PREFIX, index_from)
 
-            if index_from > 0:
+        while index_from >= 0:
+            index_from = code.find(self.KEY_PREFIX, index_from)
+            if index_from >= 0:
                 # Key end
                 index_to = code.find(self.KEY_TERMINATOR, index_from)
-
                 # Extract key value only if key terminator is found
                 if index_to > 0:
                     # Extract key string including key terminator
                     extract_to = index_to + key_terminator_len
                     key_string = code[index_from:extract_to]
-
                     # Add only if not added before
                     if key_string not in key_strings:
                         key_strings.append(key_string)
                     # Update index from
                     index_from = extract_to
                 else:
-                    break
+                    # No terminator found, move past this occurrence of prefix
+                    index_from += len(self.KEY_PREFIX)
+            else:
+                # No more prefixes found
+                break
 
         return key_strings
 

@@ -29,6 +29,7 @@
                         <field
                             name="host_key"
                             attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                            context="{'default_key_type': 'k', 'secrets_only': True}"
                         />
                         <field name="skip_host_key" />
                     </group>
