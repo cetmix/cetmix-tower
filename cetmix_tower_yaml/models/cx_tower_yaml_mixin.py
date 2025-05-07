@@ -491,12 +491,16 @@ class CxTowerYamlMixin(models.AbstractModel):
             if record:
                 # Remove reference from values to avoid possible consequences
                 values.pop("reference", None)
-                record.write(record._post_process_yaml_dict_values(values))
+                record.with_context(from_yaml=True).write(
+                    record._post_process_yaml_dict_values(values)
+                )
 
             # If the record does not exist, create a new one
             else:
                 if create_immediately:
-                    record = model.create(model._post_process_yaml_dict_values(values))
+                    record = model.with_context(from_yaml=True).create(
+                        model._post_process_yaml_dict_values(values)
+                    )
                 else:
                     # Use "Create" service command tuple
                     record = (0, 0, model._post_process_yaml_dict_values(values))
@@ -504,7 +508,9 @@ class CxTowerYamlMixin(models.AbstractModel):
         # If there's no reference but value is a dict, create a new record
         else:
             if create_immediately:
-                record = model.create(model._post_process_yaml_dict_values(values))
+                record = model.with_context(from_yaml=True).create(
+                    model._post_process_yaml_dict_values(values)
+                )
             else:
                 # Use "Create" service command tuple
                 record = (0, 0, model._post_process_yaml_dict_values(values))
