@@ -19,6 +19,7 @@ class TestTowerFile(TestTowerCommon):
         )
         cls.file = cls.File.create(
             {
+                "name": "tower_demo_1.txt",
                 "source": "tower",
                 "template_id": cls.file_template.id,
                 "server_id": cls.server_test_1.id,
