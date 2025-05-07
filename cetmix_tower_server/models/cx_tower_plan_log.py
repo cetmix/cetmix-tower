@@ -64,7 +64,15 @@ class CxTowerPlanLog(models.Model):
         "-304 if plan line reference is missing",
     )
     parent_flight_plan_log_id = fields.Many2one(
-        "cx.tower.plan.log", string="Main Log", ondelete="cascade"
+        "cx.tower.plan.log",
+        string="Main Log",
+        related="parent_command_log_id.plan_log_id",
+    )
+    parent_command_log_id = fields.Many2one(
+        "cx.tower.command.log",
+        readonly=True,
+        ondelete="cascade",
+        help="Command that triggered this flight plan",
     )
 
     @api.depends("server_id.name", "name")
@@ -162,6 +170,10 @@ class CxTowerPlanLog(models.Model):
             plan_status (Integer) plan execution code
             **kwargs (dict): optional values
         """
+
+        if not self.is_running:
+            return
+
         values = {
             "is_running": False,
             "plan_status": plan_status,
@@ -187,6 +199,9 @@ class CxTowerPlanLog(models.Model):
             else:
                 # Set deletion error if flightplan failed
                 self.server_id.status = "delete_error"
+
+        if self.parent_command_log_id:
+            self.parent_command_log_id.finish(status=plan_status)
 
     def _plan_finished(self):
         """Triggered when flightplan in finished

@@ -132,7 +132,7 @@ class TestTowerCommon(TransactionCase):
         )
         self.command_list_dir = self.Command.create(
             {
-                "name": "Test create directory",
+                "name": "Test list directory",
                 "path": "/home/{{ tower.server.username }}",
                 "code": "cd {{ test_path_ }} && ls -l",
             }
