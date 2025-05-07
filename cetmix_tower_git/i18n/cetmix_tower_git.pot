@@ -97,6 +97,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__reference
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project_rel__reference
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__reference
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_source__reference
 msgid ""
@@ -531,6 +532,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__reference
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__reference
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__reference
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__reference
 msgid "Reference"
@@ -657,6 +659,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__yaml_code
 msgid "Yaml Code"

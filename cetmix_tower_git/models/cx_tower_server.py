@@ -26,3 +26,13 @@ class CxTowerServer(models.Model):
         depends=["git_project_rel_ids"],
         groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root",
     )
+
+    # ------------------------------
+    # YAML mixin methods
+    # ------------------------------
+    def _get_fields_for_yaml(self):
+        res = super()._get_fields_for_yaml()
+        res += [
+            "git_project_rel_ids",
+        ]
+        return res
