@@ -159,7 +159,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         # Test if non YAML supported model is handled properly
         # Replace model name with non YAML supported model
         self.non_yaml_supported_yaml_code = self.yaml_code.replace(
-            "server_template", "server"
+            "server_template", "command_run_wizard"
         )
         self.non_yaml_supported_yaml_file = base64.b64encode(
             self.non_yaml_supported_yaml_code.encode("utf-8")
@@ -169,7 +169,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
             str(e.exception),
-            _("Model 'server' does not support YAML import"),
+            _("Model 'command_run_wizard' does not support YAML import"),
             "Exception message does not match",
         )
 
