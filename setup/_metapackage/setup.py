@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo14-addon-cetmix_tower',
+        'odoo14-addon-cetmix_tower_aws',
         'odoo14-addon-cetmix_tower_git',
         'odoo14-addon-cetmix_tower_server',
         'odoo14-addon-cetmix_tower_server_notify_backend',
