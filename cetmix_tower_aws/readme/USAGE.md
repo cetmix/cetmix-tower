@@ -1,13 +1,12 @@
-
 > **Disclaimer**: The following example demonstrates one of many possible commands you can create and run with this module. The boto3 library provides access to the full range of AWS services and methods - this is just a starting point to help you get familiar with the integration.
 
 **Example of Cetmix Tower Python Command to List EC2 Instances**
 
-1. **Navigate to Command Creation**
+* **Navigate to Command Creation**
    - Go to `Cetmix Tower > Commands > Commands`
    - Click the `Create` button
 
-2. **Configure Command Settings**
+* **Configure Command Settings**
    - Set a descriptive `Name` (e.g., "List AWS EC2 Instances")
    - Leave `Reference` blank to generate automatically (or set a custom reference)
    - Select `Action`: "Execute Python code"
@@ -15,62 +14,62 @@
    - Optional: Set `Default Path` if needed
    - Optional: Add `Tags` (e.g., "aws", "ec2") for better organization
 
-3. **Add Required Variables**
+* **Add Required Variables**
    - In the `Variables` tab, add the previously configured variable:
      - `aws_region_name`
    
-4. **Add Required Secrets**
+* **Add Required Secrets**
    - In the `Secrets` field, add the previously configured secrets:
      - `aws_access_key`
      - `aws_secret_access_key`
 
-5. **Write Python Code**
+* **Write Python Code**
    - Go to the `Code` tab
    - Enter the following Python code:
 
-```python
-# List EC2 instances using boto3
-result = {"exit_code": 0, "message": None}
+    ```python
+    # List EC2 instances using boto3
+    result = {"exit_code": 0, "message": None}
 
-session = boto3.Session(
-    aws_access_key_id=#!cxtower.secret.aws_access_key!#,
-    aws_secret_access_key=#!cxtower.secret.aws_secret_access_key!#,
-    region_name={{ aws_region_name }}
-)
-ec2 = session.client('ec2')
-instances = ec2.describe_instances()
+    session = boto3.Session(
+        aws_access_key_id=#!cxtower.secret.aws_access_key!#,
+        aws_secret_access_key=#!cxtower.secret.aws_secret_access_key!#,
+        region_name={{ aws_region_name }}
+    )
+    ec2 = session.client('ec2')
+    instances = ec2.describe_instances()
 
-instance_details = []
-for reservation in instances['Reservations']:
-    for instance in reservation['Instances']:
-        instance_detail = "Instance ID: " + instance['InstanceId']
-        instance_detail += ", Type: " + instance.get('InstanceType', 'Unknown')
-        instance_detail += ", State: " + instance.get('State', {}).get('Name', 'Unknown')
-        instance_details.append(instance_detail)
+    instance_details = []
+    for reservation in instances['Reservations']:
+        for instance in reservation['Instances']:
+            instance_detail = "Instance ID: " + instance['InstanceId']
+            instance_detail += ", Type: " + instance.get('InstanceType', 'Unknown')
+            instance_detail += ", State: " + instance.get('State', {}).get('Name', 'Unknown')
+            instance_details.append(instance_detail)
 
-if instance_details:
-    result["message"] = "Found " + str(len(instance_details)) + " EC2 instances:\n" + "\n".join(instance_details)
-else:
-    result["message"] = "No EC2 instances found"
-```
+    if instance_details:
+        result["message"] = "Found " + str(len(instance_details)) + " EC2 instances:\n" + "\n".join(instance_details)
+    else:
+        result["message"] = "No EC2 instances found"
+    ```
 
-6. **Save the Command**
+* **Save the Command**
    - Click the `Save` button to create the command
 
 **Running the AWS EC2 Command**
 
-1. **Navigate to Server**
+* **Navigate to Server**
    - Go to `Cetmix Tower > Servers > Servers`
    - Open the server where you want to run the command
 
-2. **Execute Command from Server**
+* **Execute Command from Server**
    - Click the `Run Command` button at the top of the server form
    - In the popup dialog:
      - Select your AWS EC2 command from the dropdown
      - Verify the variable values (if any need adjustment)
      - Click `Run` to execute
 
-3. **View Command Results**
+* **View Command Results**
    - After execution, the command log will display showing:
      - The command executed
      - Execution status
