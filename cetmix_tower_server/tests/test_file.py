@@ -17,6 +17,7 @@ class TestTowerFile(TestTowerCommon):
         )
         self.file = self.File.create(
             {
+                "name": "tower_demo_1.txt",
                 "source": "tower",
                 "template_id": self.file_template.id,
                 "server_id": self.server_test_1.id,
