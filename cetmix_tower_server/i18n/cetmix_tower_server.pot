@@ -162,6 +162,20 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
+#, python-format
+msgid "%(name)s (copy %(number)s)"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
+#, python-format
+msgid "%(name)s (copy)"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
 #, python-format
 msgid "%(shr)s triggered"
@@ -1090,8 +1104,8 @@ msgid "Custom Exit Code"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_values
-msgid "Custom Variable Values"
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_value_ids
+msgid "Custom Variable Value"
 msgstr ""
 
 #. module: cetmix_tower_server
