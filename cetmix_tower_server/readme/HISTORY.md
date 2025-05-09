@@ -1,3 +1,8 @@
+## 16.0.1.0.5 (2025-05-09)
+
+- Bugfixes: Non-critical issues and performance improvements. (4663)
+
+
 ## 16.0.1.0.4 (2025-04-30)
 
 - Features: UI/UX improvements. (4642)

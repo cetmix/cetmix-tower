@@ -1,3 +1,8 @@
+## 16.0.1.0.3 (2025-05-09)
+
+- Bugfixes: Non-critical issues and performance improvements. (4663)
+
+
 ## 16.0.1.0.2 (2025-04-30)
 
 - Features: User groups are visible without developer mode. (4642)
