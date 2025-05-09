@@ -397,7 +397,7 @@ class CxTowerServer(models.Model):
             host_key = self._get_host_key_from_host()
             is_error = False
         except Exception as error:
-            is_error = (True,)
+            is_error = True
             host_key = error
         context = {
             "default_host_key": host_key,
