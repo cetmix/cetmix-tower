@@ -100,9 +100,10 @@ class CxTowerFile(models.Model):
         help="Date and time of the latest successful synchronisation",
     )
     server_response = fields.Text(
+        copy=False,
         help="Server response received during the last operation.\n"
         "Default value if no error happened is 'ok'.\n"
-        "Otherwise there will be a server error message logged."
+        "Otherwise there will be a server error message logged.",
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=False, ondelete="cascade"
