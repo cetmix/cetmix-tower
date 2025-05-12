@@ -34,6 +34,7 @@ class CxTowerFile(models.Model):
     _name = "cx.tower.file"
     _inherit = [
         "cx.tower.template.mixin",
+        "cx.tower.reference.mixin",
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.key.mixin",
@@ -104,7 +105,7 @@ class CxTowerFile(models.Model):
         "Otherwise there will be a server error message logged."
     )
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=True, ondelete="cascade"
+        comodel_name="cx.tower.server", required=False, ondelete="cascade"
     )
     code_on_server = fields.Text(
         readonly=True,
@@ -197,6 +198,8 @@ class CxTowerFile(models.Model):
         Compute file name, directory and code
         """
         for file in self:
+            if not file.server_id:
+                continue
             variables = list(
                 set(
                     file.get_variables_from_code(file.name)

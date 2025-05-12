@@ -172,21 +172,25 @@
     Files
     ================================================ -->
     <record id="cx_tower_file_tower_demo_1" model="cx.tower.file">
+        <field name="name">tower_demo_1.txt</field>
         <field name="source">tower</field>
         <field name="template_id" ref="cx_tower_file_template_demo_1" />
         <field name="server_id" ref="server_demo_2" />
     </record>
     <record id="cx_tower_file_tower_demo_2" model="cx.tower.file">
+        <field name="name">tower_demo_2.txt</field>
         <field name="source">tower</field>
         <field name="template_id" ref="cx_tower_file_template_demo_2" />
         <field name="server_id" ref="server_demo_2" />
     </record>
     <record id="cx_tower_file_tower_demo_3" model="cx.tower.file">
+        <field name="name">tower_demo_3.txt</field>
         <field name="source">tower</field>
         <field name="template_id" ref="cx_tower_file_template_demo_3" />
         <field name="server_id" ref="server_demo_2" />
     </record>
-    <record id="cx_tower_file_server_demo_logs" model="cx.tower.file">
+        <record id="cx_tower_file_server_demo_logs" model="cx.tower.file">
+        <field name="name">server_demo_logs.txt</field>
         <field name="source">server</field>
         <field name="template_id" ref="cx_tower_file_template_demo_4" />
         <field name="server_id" ref="server_demo_2" />
@@ -688,11 +692,13 @@ else:
     Files
     ================================================ -->
     <record id="cx_tower_file_server_demo_logs_1" model="cx.tower.file">
+        <field name="name">tower_demo_1.txt</field>
         <field name="source">server</field>
         <field name="template_id" ref="cx_tower_file_template_demo_4" />
         <field name="server_id" ref="server_demo_1" />
     </record>
     <record id="cx_tower_file_server_demo_logs_2" model="cx.tower.file">
+        <field name="name">tower_demo_2.txt</field>
         <field name="source">server</field>
         <field name="template_id" ref="cx_tower_file_template_demo_4" />
         <field name="server_id" ref="server_demo_2" />
