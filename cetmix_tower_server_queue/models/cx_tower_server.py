@@ -11,6 +11,7 @@ class CxTowerServer(models.Model):
         command,
         log_record,
         rendered_command_code,
+        sudo=None,
         rendered_command_path=None,
         ssh_connection=None,
         **kwargs,
@@ -22,11 +23,12 @@ class CxTowerServer(models.Model):
         # Use runner only if command log record is provided.
         if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
             job = self.with_delay()._command_runner(
-                command,
-                log_record,
-                rendered_command_code,
-                rendered_command_path,
-                ssh_connection,
+                command=command,
+                log_record=log_record,
+                rendered_command_code=rendered_command_code,
+                sudo=sudo,
+                rendered_command_path=rendered_command_path,
+                ssh_connection=ssh_connection,
                 **kwargs,
             )
             log_record.sudo().queue_job_id = job.db_record().id
@@ -34,10 +36,11 @@ class CxTowerServer(models.Model):
         # Otherwise fallback to `super` to return the command output
         else:
             return super()._command_runner_wrapper(
-                command,
-                log_record,
-                rendered_command_code,
-                rendered_command_path,
-                ssh_connection,
+                command=command,
+                log_record=log_record,
+                rendered_command_code=rendered_command_code,
+                sudo=sudo,
+                rendered_command_path=rendered_command_path,
+                ssh_connection=ssh_connection,
                 **kwargs,
             )
