@@ -908,12 +908,13 @@ class CxTowerServer(models.Model):
         # If on command we have the flag
         if command.no_split_for_sudo:
             kwargs["no_split_for_sudo"] = True
-        return self.with_context(use_sudo=sudo)._command_runner_wrapper(
-            command,
-            log_record,
-            rendered_command_code,
-            rendered_command_path,
-            ssh_connection,
+        return self._command_runner_wrapper(
+            command=command,
+            log_record=log_record,
+            rendered_command_code=rendered_command_code,
+            sudo=sudo,
+            rendered_command_path=rendered_command_path,
+            ssh_connection=ssh_connection,
             **kwargs,
         )
 
@@ -1033,6 +1034,7 @@ class CxTowerServer(models.Model):
         command,
         log_record,
         rendered_command_code,
+        sudo=None,
         rendered_command_path=None,
         ssh_connection=None,
         **kwargs,
@@ -1046,6 +1048,7 @@ class CxTowerServer(models.Model):
             log_record (cx.tower.command.log()): Command log record
             rendered_command_code (Text): Rendered command code.
                 We are passing in case it differs from command code in the log record.
+            sudo (Selection): Command sudo mode. Defaults to None.
             rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
         kwargs (dict):  extra arguments. Use to pass external values.
@@ -1060,11 +1063,12 @@ class CxTowerServer(models.Model):
             dict(): command running result if `log_record` is defined else None
         """
         return self._command_runner(
-            command,
-            log_record,
-            rendered_command_code,
-            rendered_command_path,
-            ssh_connection,
+            command=command,
+            log_record=log_record,
+            rendered_command_code=rendered_command_code,
+            sudo=sudo,
+            rendered_command_path=rendered_command_path,
+            ssh_connection=ssh_connection,
             **kwargs,
         )
 
@@ -1073,6 +1077,7 @@ class CxTowerServer(models.Model):
         command,
         log_record,
         rendered_command_code,
+        sudo=None,
         rendered_command_path=None,
         ssh_connection=None,
         **kwargs,
@@ -1085,15 +1090,13 @@ class CxTowerServer(models.Model):
             log_record (cx.tower.command.log()): Command log record
             rendered_command_code (Text): Rendered command code.
                 We are passing in case it differs from command code in the log record.
+            sudo (Selection): Command sudo mode. Defaults to None.
             rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
-        Context:
-            use_sudo (Bool): use sudo for command running
-
         Returns:
             dict(): command running result if `log_record` is defined else None
         """
@@ -1101,10 +1104,11 @@ class CxTowerServer(models.Model):
         need_check_server_status = True
         if command.action == "ssh_command":
             response = self._command_runner_ssh(
-                log_record,
-                rendered_command_code,
-                rendered_command_path,
-                ssh_connection,
+                log_record=log_record,
+                rendered_command_code=rendered_command_code,
+                sudo=sudo,
+                rendered_command_path=rendered_command_path,
+                ssh_connection=ssh_connection,
                 **kwargs,
             )
         elif command.action == "file_using_template":
@@ -1250,6 +1254,7 @@ class CxTowerServer(models.Model):
         self,
         log_record,
         rendered_command_code,
+        sudo=None,
         rendered_command_path=None,
         ssh_connection=None,
         **kwargs,
@@ -1261,14 +1266,13 @@ class CxTowerServer(models.Model):
             log_record (cx.tower.command.log()): Command log record
             rendered_command_code (Text): Rendered command code.
                 We are passing in case it differs from command code in the log record.
+            sudo (Selection): Command sudo mode. Defaults to None.
             rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
         kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
-        Context:
-            use_sudo (Bool): use sudo for command running
 
         Returns:
             dict(): command running result if `log_record` is defined else None
@@ -1282,7 +1286,7 @@ class CxTowerServer(models.Model):
             command_code=rendered_command_code,
             command_path=rendered_command_path,
             raise_on_error=False,
-            sudo=self._context.get("use_sudo"),
+            sudo=sudo,
             **kwargs,
         )
 
@@ -1412,7 +1416,7 @@ class CxTowerServer(models.Model):
             command_code (Text): command text
             command_path (Char, optional): directory where command should be run
             raise_on_error (bool, optional): raise error on error
-            sudo (selection): use sudo Defaults to None.
+            sudo (Selection): Command sudo mode. Defaults to None. Defaults to None.
             kwargs (dict):  extra arguments. Use to pass external values.
                     Following keys are supported by default:
                         - "log": {values passed to logger}
