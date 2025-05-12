@@ -1809,6 +1809,13 @@ msgid "If enabled file will be synced automatically using cron"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
+msgid ""
+"If enabled, do not split command on '&&' when using sudo.Prepend sudo once "
+"to the whole command."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 msgid ""
 "If enabled, multiple instances of the same command can be run on the same server at the same time.\n"
@@ -2241,6 +2248,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "No"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
+msgid "No Split for sudo"
 msgstr ""
 
 #. module: cetmix_tower_server
