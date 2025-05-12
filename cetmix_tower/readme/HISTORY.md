@@ -1,3 +1,8 @@
+## 14.0.1.0.9 (2025-05-12)
+
+- Features: Record references for files. Export/import files to/from YAML. (4670)
+
+
 ## 14.0.1.0.8 (2025-05-05)
 
 - Bugfixes: Non-critical issues and performance improvements. (4611)
