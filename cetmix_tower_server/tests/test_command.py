@@ -1,3 +1,5 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -596,6 +598,35 @@ result = {
                 "Multiple commands without sudo should be "
                 "original command with 'change directory' command prepended"
             ),
+        )
+
+    def test_ssh_command_no_split_for_sudo_without_path(self):
+        """If no_split_for_sudo=True, even '&&' shouldn’t split into a list."""
+        server = self.server_test_1
+        cmd_line = "echo a && echo b"
+        sudo_mode = "p"
+        result = server._prepare_ssh_command(
+            cmd_line, sudo=sudo_mode, no_split_for_sudo=True
+        )
+        expected = [f"{self.sudo_prefix} {cmd_line}"]
+        self.assertEqual(
+            result, expected, "With no_split_for_sudo, '&&' must not produce a list"
+        )
+
+    def test_ssh_command_no_split_for_sudo_with_path(self):
+        """Same, but with a custom cwd prefix."""
+        server = self.server_test_1
+        cmd_line = "echo a && echo b"
+        path = "/tmp"
+        sudo_mode = "p"
+        result = server._prepare_ssh_command(
+            cmd_line, path=path, sudo=sudo_mode, no_split_for_sudo=True
+        )
+        expected = [f"cd {path}", f"{self.sudo_prefix} {cmd_line}"]
+        self.assertEqual(
+            result,
+            expected,
+            "With no_split_for_sudo and path, the entire '&&' string remains un-split",
         )
 
     def test_server_render_command(self):

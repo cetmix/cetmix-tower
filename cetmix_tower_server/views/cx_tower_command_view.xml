@@ -72,6 +72,7 @@
                                 placeholder="optional, eg /home/{{ tower.server.username }}"
                             />
                             <field name="allow_parallel_run" />
+                            <field name="no_split_for_sudo" />
                             <field name="note" />
                         </group>
                         <group>

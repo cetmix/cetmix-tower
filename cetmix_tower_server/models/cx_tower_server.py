@@ -904,7 +904,9 @@ class CxTowerServer(models.Model):
             )
             # Create log record
             log_record = log_obj.start(self.id, command.id, **log_vals)  # pylint: disable=no-member
-
+        # If on command we have the flag
+        if command.no_split_for_sudo:
+            kwargs["no_split_for_sudo"] = True
         return self.with_context(use_sudo=sudo)._command_runner_wrapper(
             command,
             log_record,
@@ -1443,6 +1445,7 @@ class CxTowerServer(models.Model):
             command_code,
             command_path,
             sudo,
+            **kwargs,
         )
 
         try:
@@ -1554,36 +1557,41 @@ class CxTowerServer(models.Model):
         IMPORTANT:
         Commands run with sudo will be run separately one after another
         even if there is a single command separated with '&&'
-        Example:
-        "pwd && ls -l" will be run as:
-            sudo pwd
-            sudo ls -l
+        Examples:
+            # Default (sudo with splitting):
+            "pwd && ls -l" becomes:
+                sudo pwd
+                sudo ls -l
+
+            # With no_split_for_sudo=True:
+                sudo pwd && ls -l
 
         Args:
-            command_code (text): initial command
+            command_code (str): initial command
             path (str, optional): directory where command should be run
-            sudo (str, optional): sudo mode (n, p)
-                n - sudo without password
-                p - sudo with password
-            kwargs (dict):  extra arguments. Use to pass external values.
-                    Following keys are supported by default:
-                        - "log": {values passed to logger}
-                        - "key": {values passed to key parser}
+            sudo (str, optional): sudo mode ('n' or 'p')
+                'n' — sudo without password
+                'p' — sudo with password
+            kwargs (dict): extra arguments. Supported keys:
+                - "log": values passed to logger
+                - "key": values passed to key parser
+                - "no_split_for_sudo" (bool): if True, do not split on '&&'
 
         Returns:
-            command (list|str): command splitted into separate commands
-                (for sudo with password mode ('p')) or composed command
-                from its parts for sudo without password mode ('n'))
-
+            list or str: if sudo='p' (with password), returns a list of commands;
+                if sudo='n', returns a single string (possibly joined by '&&');
+                without sudo, returns the raw command_code.
         """
         # Prepare command for sudo if needed
         if sudo:
             # Add location
             sudo_prefix = "sudo -S -p ''"
 
-            # Detect command separator
+            no_split = kwargs.get("no_split_for_sudo", False)
+
             separator = "&&"
-            if separator in command_code:
+            # split only when '&&' is present AND splitting is not disabled
+            if separator in command_code and not no_split:
                 result = (
                     command_code.replace("\\", "").replace("\n", "").split(separator)
                 )
@@ -1595,13 +1603,11 @@ class CxTowerServer(models.Model):
                 if sudo == "n":
                     result = f" {separator} ".join(result)
             else:
-                # Single command only
+                # single command or no_split requested
                 result = f"{sudo_prefix} {command_code}"
-
+                # Sudo with password expects a list of commands
                 if sudo == "p":
-                    # Sudo with password expects a list of commands
                     result = [result]
-
         else:
             # Command without sudo is always run as is
             result = command_code

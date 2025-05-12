@@ -128,6 +128,11 @@ class CxTowerCommand(models.Model):
         help="Set the following status if command finishes with success. "
         "Leave 'Undefined' if you don't need to update the status",
     )
+    no_split_for_sudo = fields.Boolean(
+        string="No Split for sudo",
+        help="If enabled, do not split command on '&&' when using sudo."
+        "Prepend sudo once to the whole command.",
+    )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_command_variable_rel",
