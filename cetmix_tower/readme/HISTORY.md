@@ -1,3 +1,8 @@
+## 14.0.1.0.10 (2025-05-12)
+
+- Features: Option to preserve command splitting when using sudo. (4641)
+
+
 ## 14.0.1.0.9 (2025-05-12)
 
 - Features: Record references for files. Export/import files to/from YAML. (4670)
