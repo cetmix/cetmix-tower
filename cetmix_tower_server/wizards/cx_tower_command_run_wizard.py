@@ -373,6 +373,12 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         result = ""
 
+        # Set the "no_split_for_sudo" property
+        if self.command_id and self.command_id.no_split_for_sudo:
+            no_split_for_sudo = True
+        else:
+            no_split_for_sudo = False
+
         for server in self.server_ids:
             server_name = server.name
             # Prepare key renderer values
@@ -383,7 +389,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
             kwargs = {
                 "key": key_vals,
+                "no_split_for_sudo": no_split_for_sudo,
             }
+
             if self.action == "python_code":
                 command_result = server._run_python_code(
                     code=self.rendered_code, **kwargs
@@ -393,7 +401,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     server._get_ssh_client(raise_on_error=True),
                     self.rendered_code,
                     self.path or None,
-                    sudo=self.use_sudo,
+                    sudo=self.use_sudo and server.use_sudo,
                     **kwargs,
                 )
             command_error = command_result["error"]
