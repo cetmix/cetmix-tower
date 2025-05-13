@@ -9,7 +9,8 @@
     "license": "AGPL-3",
     "author": "Cetmix",
     "website": "https://cetmix.com",
-    "application": False,
+    "live_test_url": "https://cetmix.com/tower",
+    "images": ["static/description/banner.png"],
     "installable": True,
     "external_dependencies": {
         "python": ["boto3"],

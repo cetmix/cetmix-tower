@@ -50,8 +50,8 @@ Configuration
    To use the AWS integration with Cetmix Tower, you need to create AWS
    access keys:
 
-   - Follow the `official AWS
-     documentation <https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html>`__
+   - Follow the official AWS documentation
+     https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html
      for creating IAM access keys
    - It's recommended to create a dedicated IAM user with appropriate
      permissions for Cetmix Tower
@@ -100,6 +100,11 @@ Configuration
 
 Usage
 =====
+
+Please check the official Boto3 Documentation
+https://boto3.amazonaws.com/v1/documentation/api/latest/index.html for
+the detailed information about the services and methods provided by the
+Boto3 library.
 
    **Disclaimer**: The following example demonstrates one of many
    possible commands you can create and run with this module. The boto3
