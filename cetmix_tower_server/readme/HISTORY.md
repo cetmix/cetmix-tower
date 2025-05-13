@@ -1,3 +1,10 @@
+## 14.0.1.0.10 (2025-05-13)
+
+- Features: Use `sudo` parameter to pass sudo mode to command runner instead of using context. (4678)
+
+- Bugfixes: Incorrect sudo usage in commands run in wizard. Pass 'No split for sudo' property to commands run in wizard. (4679)
+
+
 ## 14.0.1.0.9 (2025-05-12)
 
 - Features: Option to preserve command splitting when using sudo​. (4641)
