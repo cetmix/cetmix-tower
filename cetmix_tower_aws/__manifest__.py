@@ -4,12 +4,13 @@
 {
     "name": "Cetmix Tower AWS",
     "summary": """Cetmix Tower AWS EC2 API integration""",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.0.1",
     "category": "Productivity",
     "license": "AGPL-3",
     "author": "Cetmix",
     "website": "https://cetmix.com",
-    "application": False,
+    "live_test_url": "https://cetmix.com/tower",
+    "images": ["static/description/banner.png"],
     "installable": True,
     "external_dependencies": {
         "python": ["boto3"],

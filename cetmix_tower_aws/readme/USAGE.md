@@ -1,4 +1,7 @@
+Please check the official Boto3 Documentation https://boto3.amazonaws.com/v1/documentation/api/latest/index.html for the detailed information about the services and methods provided by the Boto3 library.
+
 > **Disclaimer**: The following example demonstrates one of many possible commands you can create and run with this module. The boto3 library provides access to the full range of AWS services and methods - this is just a starting point to help you get familiar with the integration.
+
 
 **Example of Cetmix Tower Python Command to List EC2 Instances**
 
