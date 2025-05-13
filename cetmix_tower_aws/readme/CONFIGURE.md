@@ -5,7 +5,7 @@
 
    To use the AWS integration with Cetmix Tower, you need to create AWS access keys:
    
-   - Follow the [official AWS documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html) for creating IAM access keys
+   - Follow the official AWS documentation https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html for creating IAM access keys
    - It's recommended to create a dedicated IAM user with appropriate permissions for Cetmix Tower
    - Store your access key ID and secret access key securely - you'll need them in the next step
 

@@ -35,9 +35,9 @@ class CxTowerCommand(models.Model):
 
         for rec in self:
             if rec.action == "python_code" and rec.code:
-                formatted_code = rec.code.rstrip() + "\n"
+                formatted_code = rec.code.rstrip()
                 # Append the boto3 help text
-                rec.code = formatted_code + constants.BOTO3_HELP_TEXT
+                rec.code = f"{formatted_code}\n{constants.BOTO3_HELP_TEXT}"
 
     def _compute_command_help(self):
         """Compute command help with boto3 information.
@@ -50,19 +50,5 @@ class CxTowerCommand(models.Model):
 
         for rec in self:
             if rec.action == "python_code" and rec.command_help:
-                # This ensures our boto3 help is added as a list item within
-                # the existing list of available variables, regardless of future
-                # changes to the upstream template structure
-                if "</ul>" in rec.command_help:
-                    # Insert boto3 help as a list item before the closing </ul> tag
-                    help_text = rec.command_help.replace(
-                        "</ul>", constants.BOTO3_HELP_TEXT_HTML + "</ul>"
-                    )
-                else:
-                    # Fallback: if structure changes and </ul> isn't found,
-                    # append to the end with proper HTML formatting
-                    help_text = (
-                        f"{rec.command_help}<br/>{constants.BOTO3_HELP_TEXT_HTML}"
-                    )
-
+                help_text = f"{rec.command_help}{constants.BOTO3_HELP_TEXT_HTML}"
                 rec.command_help = help_text
