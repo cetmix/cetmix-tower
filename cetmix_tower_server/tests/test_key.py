@@ -824,7 +824,9 @@ class TestTowerKey(TestTowerCommon):
         self.assertTrue(value.exists())
 
         # Read
-        self.assertEqual(root_key_value.browse(value.id).secret_value, "root value")
+        self.assertEqual(
+            root_key_value.browse(value.id)._get_secret_value(), "root value"
+        )
 
         # Write
         root_key_value.browse(value.id).write({"secret_value": "updated value"})
