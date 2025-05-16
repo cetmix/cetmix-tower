@@ -251,7 +251,7 @@ class TestTowerCommandWizard(TestTowerCommon):
             msg="Command execution should succeed with a single server selected",
         )
 
-    def test_custom_variable_values_creation(self):
+    def test_custom_variable_value_ids_creation(self):
         """
         Test that custom variable values are created properly
         when command has variables
@@ -320,21 +320,21 @@ class TestTowerCommandWizard(TestTowerCommon):
             )
         )
 
-        # Trigger onchange to generate custom_variable_values
+        # Trigger onchange to generate custom_variable_value_ids
         wizard._onchange_command_variable_ids()
 
         # Check that custom variable values were created
-        self.assertEqual(len(wizard.custom_variable_values), 2)
+        self.assertEqual(len(wizard.custom_variable_value_ids), 2)
 
         # Check char variable value
-        char_value = wizard.custom_variable_values.filtered(
+        char_value = wizard.custom_variable_value_ids.filtered(
             lambda v: v.variable_id == variable
         )
         self.assertTrue(char_value)
         self.assertEqual(char_value.value_char, "server value")
 
         # Check option variable value
-        option_value = wizard.custom_variable_values.filtered(
+        option_value = wizard.custom_variable_value_ids.filtered(
             lambda v: v.variable_id == option_variable
         )
         self.assertTrue(option_value)
@@ -360,7 +360,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         # Verify that original server values were used
         self.assertEqual(command_log.code, "echo server value && echo option_value")
 
-    def test_custom_variable_values_with_manager_access(self):
+    def test_custom_variable_value_ids_with_manager_access(self):
         """
         Test that custom variable values are applied
         when manager has write access
@@ -408,11 +408,11 @@ class TestTowerCommandWizard(TestTowerCommon):
             )
         )
 
-        # Trigger onchange to generate custom_variable_values
+        # Trigger onchange to generate custom_variable_value_ids
         wizard._onchange_command_variable_ids()
 
         # Modify variable value
-        wizard.custom_variable_values.filtered(
+        wizard.custom_variable_value_ids.filtered(
             lambda v: v.variable_id == variable
         ).value_char = "manager value"
 

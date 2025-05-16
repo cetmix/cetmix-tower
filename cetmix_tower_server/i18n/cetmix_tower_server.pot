@@ -519,6 +519,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__reference
@@ -1109,8 +1110,8 @@ msgid "Custom Exit Code"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_values
-msgid "Custom Variable Values"
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_value_ids
+msgid "Custom Variable Value"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1850,6 +1851,13 @@ msgid "If enabled file will be synced automatically using cron"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
+msgid ""
+"If enabled, do not split command on '&&' when using sudo.Prepend sudo once "
+"to the whole command."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 msgid ""
 "If enabled, multiple instances of the same command can be run on the same server at the same time.\n"
@@ -2240,6 +2248,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "No"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
+msgid "No Split for sudo"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2691,6 +2704,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__reference
@@ -2718,8 +2732,10 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_command_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_template_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_rel_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
