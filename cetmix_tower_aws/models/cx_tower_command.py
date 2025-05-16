@@ -31,13 +31,15 @@ class CxTowerCommand(models.Model):
         to Python code commands.
         """
         # First let core populate code
-        super()._compute_code()
+        result = super()._compute_code()
 
         for rec in self:
             if rec.action == "python_code" and rec.code:
                 formatted_code = rec.code.rstrip()
                 # Append the boto3 help text
                 rec.code = f"{formatted_code}\n{constants.BOTO3_HELP_TEXT}"
+
+        return result
 
     def _compute_command_help(self):
         """Compute command help with boto3 information.
@@ -46,9 +48,11 @@ class CxTowerCommand(models.Model):
         to Python code command help.
         """
         # First let core populate command help
-        super()._compute_command_help()
+        result = super()._compute_command_help()
 
         for rec in self:
             if rec.action == "python_code" and rec.command_help:
                 help_text = f"{rec.command_help}{constants.BOTO3_HELP_TEXT_HTML}"
                 rec.command_help = help_text
+
+        return result
