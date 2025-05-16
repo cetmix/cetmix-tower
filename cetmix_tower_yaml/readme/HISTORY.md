@@ -1,3 +1,8 @@
+## 16.0.1.0.4 (2025-05-16)
+
+- Features: Export/import servers and files to/from YAML. (4670)
+
+
 ## 16.0.1.0.3 (2025-05-09)
 
 - Bugfixes: Non-critical issues and performance improvements. (4663)

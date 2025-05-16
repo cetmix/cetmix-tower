@@ -1,3 +1,12 @@
+## 16.0.1.0.7 (2025-05-16)
+
+- Features: Option to preserve command splitting when using sudo. (4641)
+- Features: Record references for files. Export/import files to/from YAML. (4670)
+- Features: Use `sudo` parameter to pass sudo mode to command runner instead of using context. (4678)
+
+- Bugfixes: Incorrect sudo usage in commands run in wizard. Pass 'No split for sudo' property to commands run in wizard. (4679)
+
+
 ## 16.0.1.0.6 (2025-05-16)
 
 - Features: Improve the key storage functionality. (4686)
