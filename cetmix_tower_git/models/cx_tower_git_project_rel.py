@@ -11,6 +11,10 @@ class CxTowerGitProjectRel(models.Model):
     """
 
     _name = "cx.tower.git.project.rel"
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.yaml.mixin",
+    ]
     _table = "cx_tower_git_project_rel"
     _description = "Cetmix Tower Git Project relation to Files and Servers"
     _log_access = False
@@ -60,7 +64,10 @@ class CxTowerGitProjectRel(models.Model):
         Check if server and file are related.
         """
         for record in self:
-            if record.server_id != record.file_id.server_id:
+            if (
+                record.file_id.server_id
+                and record.server_id != record.file_id.server_id
+            ):
                 raise ValidationError(
                     _(
                         "File '%(file)s' doesn't belong to server '%(server)s'",
@@ -155,3 +162,16 @@ class CxTowerGitProjectRel(models.Model):
             code = code_generator_function(record)
             if record.file_id.code != code:
                 record.file_id.write({"code": code})
+
+    # ------------------------------
+    # YAML mixin methods
+    # ------------------------------
+    def _get_fields_for_yaml(self):
+        res = super()._get_fields_for_yaml()
+        res += [
+            "file_id",
+            "git_project_id",
+            "project_format",
+            "auto_sync",
+        ]
+        return res
