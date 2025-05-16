@@ -78,6 +78,11 @@ msgid "Cetmix Tower Command"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file
+msgid "Cetmix Tower File"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_file_template
 msgid "Cetmix Tower File Template"
 msgstr ""
@@ -105,6 +110,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_os
 msgid "Cetmix Tower Operating System"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server
+msgid "Cetmix Tower Server"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -247,6 +257,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_shortcut_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_tag_export_yaml
@@ -256,6 +267,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
 msgid "Export YAML"
 msgstr ""
@@ -378,7 +390,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #, python-format
-msgid "Model 'server' does not support YAML import"
+msgid "Model 'command_run_wizard' does not support YAML import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -548,6 +560,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
 msgid "YAML"
 msgstr ""
@@ -591,12 +604,14 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__yaml_code
@@ -641,6 +656,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
 msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
 msgstr ""
