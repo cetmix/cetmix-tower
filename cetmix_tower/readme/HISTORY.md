@@ -1,3 +1,8 @@
+## 16.0.1.0.6 (2025-05-16)
+
+- Features: Improve the key storage functionality. (4686)
+
+
 ## 16.0.1.0.5 (2025-05-09)
 
 - Bugfixes: Non-critical issues and performance improvements. (4663)
