@@ -18,4 +18,7 @@
     "depends": [
         "cetmix_tower_server",
     ],
+    "demo": [
+        "demo/demo_data.xml",
+    ],
 }

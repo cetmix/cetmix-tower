@@ -1,3 +1,6 @@
+**Prerequisites**
+
+The module has `boto3` defined in its external dependencies, which means, you should install the Python `boto3` package manually if you don't have automatic package installation configured in your Odoo environment. Run `pip install boto3` to install it.  
 
 **Setting up AWS Access**
 
