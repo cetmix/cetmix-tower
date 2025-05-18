@@ -10,8 +10,10 @@ class CxTowerKeyValue(models.Model):
     """Secret value storage"""
 
     _name = "cx.tower.key.value"
+    _inherit = "cx.tower.reference.mixin"
     _description = "Cetmix Tower Secret Value Storage"
 
+    name = fields.Char(related="key_id.name", readonly=False)
     key_id = fields.Many2one(
         comodel_name="cx.tower.key",
         string="Key",
