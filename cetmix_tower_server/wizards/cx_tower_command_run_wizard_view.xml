@@ -109,7 +109,7 @@
                     <page
                         name="configuration_values"
                         string="Configuration Values"
-                        attrs="{'invisible': [('custom_variable_values', '=', [])]}"
+                        attrs="{'invisible': [('custom_variable_value_ids', '=', [])]}"
                     >
                         <field name="command_variable_ids" invisible="1" />
                         <field name="have_access_to_server" invisible="1" />
@@ -130,7 +130,7 @@
                             Only values that the current user has access to are shown.
                         </div>
                         <field
-                            name="custom_variable_values"
+                            name="custom_variable_value_ids"
                             force_save="1"
                             options="{'no_create': True, 'no_open': True}"
                             attrs="{'readonly': [('have_access_to_server', '!=', True)]}"
