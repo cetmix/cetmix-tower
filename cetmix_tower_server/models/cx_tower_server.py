@@ -386,7 +386,7 @@ class CxTowerServer(models.Model):
         """Show host key"""
         self.ensure_one()
         try:
-            host_key = self._get_host_key()
+            host_key = self._get_host_key_from_host()
             is_error = False
         except Exception as error:
             is_error = True
