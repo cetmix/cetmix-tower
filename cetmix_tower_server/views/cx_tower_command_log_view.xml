@@ -43,10 +43,22 @@
                                 widget="ace"
                                 options="{'mode': 'python'}"
                             />
-                            <field name="path" invisible="not path" />
-                            <field name="is_running" invisible="not is_running" />
-                            <field name="use_sudo" invisible="not use_sudo" />
-                            <field name="command_status" invisible="is_running" />
+                            <field
+                                name="path"
+                                attrs="{'invisible': [('path', '=', False)]}"
+                            />
+                            <field
+                                name="is_running"
+                                attrs="{'invisible': [('is_running', '=', False)]}"
+                            />
+                            <field
+                                name="use_sudo"
+                                attrs="{'invisible': [('use_sudo', '=', False)]}"
+                            />
+                            <field
+                                name="plan_log_id"
+                                invisible="context.get('opened_from_plan', False)"
+                            />
                             <field
                                 name="triggered_plan_log_id"
                                 invisible="not triggered_plan_log_id"
@@ -61,21 +73,38 @@
                             <field name="start_date" />
                             <field name="finish_date" />
                             <field name="duration_current" />
+                             <field
+                                name="command_status"
+                                attrs="{'invisible': [('is_running', '=', True)]}"
+                            />
                         </group>
                     </group>
-                    <group>
-                        <field name="plan_log_id" invisible="not plan_log_id" />
-                    </group>
-                    <notebook invisible="command_action == 'plan'">
-                        <page name="result" string="Result">
+                    <notebook>
+                        <page
+                            name="result"
+                            string="Result"
+                            attrs="{'invisible': [('command_action', '=', 'plan')]}"
+                        >
                             <field
                                 name="command_response"
                                 invisible="not command_response"
                             />
                             <field name="command_error" invisible="not command_error" />
                         </page>
-                        <page name="code" string="Command">
+                        <page
+                            name="code"
+                            string="Command"
+                            attrs="{'invisible': [('command_action', '=', 'plan')]}"
+                        >
                             <field name="code" />
+                        </page>
+                          <page
+                            string="Triggered Commands"
+                            attrs="{'invisible': [('command_action','!=','plan')]}"
+                        >
+                                <field name="triggered_plan_command_log_ids">
+                                    <tree default_order="id asc" />
+                                </field>
                         </page>
                     </notebook>
                 </sheet>
