@@ -85,6 +85,14 @@ class CxTowerCommandLog(models.Model):
     plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log", ondelete="cascade")
     triggered_plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log")
 
+    triggered_plan_command_log_ids = fields.One2many(
+        comodel_name="cx.tower.command.log",
+        inverse_name="plan_log_id",
+        related="triggered_plan_log_id.command_log_ids",
+        readonly=True,
+        string="Triggered Flight Plan Commands",
+    )
+
     @api.depends("name", "command_id.name")
     def _compute_name(self):
         for rec in self:

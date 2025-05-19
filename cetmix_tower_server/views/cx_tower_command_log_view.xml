@@ -56,8 +56,8 @@
                                 attrs="{'invisible': [('use_sudo', '=', False)]}"
                             />
                             <field
-                                name="command_status"
-                                attrs="{'invisible': [('is_running', '=', True)]}"
+                                name="plan_log_id"
+                                invisible="context.get('opened_from_plan', False)"
                             />
                             <field
                                 name="triggered_plan_log_id"
@@ -72,16 +72,18 @@
                             <field name="start_date" />
                             <field name="finish_date" />
                             <field name="duration_current" />
+                             <field
+                                name="command_status"
+                                attrs="{'invisible': [('is_running', '=', True)]}"
+                            />
                         </group>
                     </group>
-                    <group>
-                        <field
-                            name="plan_log_id"
-                            attrs="{'invisible': [('plan_log_id', '=', False)]}"
-                        />
-                    </group>
-                    <notebook attrs="{'invisible': [('command_action', '=', 'plan')]}">
-                        <page name="result" string="Result">
+                    <notebook>
+                        <page
+                            name="result"
+                            string="Result"
+                            attrs="{'invisible': [('command_action', '=', 'plan')]}"
+                        >
                             <field
                                 name="command_response"
                                 attrs="{'invisible': [('command_response', '=', False)]}"
@@ -91,8 +93,18 @@
                                 attrs="{'invisible': [('command_error', '=', False)]}"
                             />
                         </page>
-                        <page name="code" string="Command">
+                        <page
+                            name="code"
+                            string="Command"
+                            attrs="{'invisible': [('command_action', '=', 'plan')]}"
+                        >
                             <field name="code" />
+                        </page>
+                          <page
+                            string="Triggered Commands"
+                            attrs="{'invisible': [('command_action','!=','plan')]}"
+                        >
+                            <field name="triggered_plan_command_log_ids" />
                         </page>
                     </notebook>
                 </sheet>
