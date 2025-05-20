@@ -100,7 +100,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
                     record_values = model.with_context(
                         force_create_related_record=False
                     )._post_process_yaml_dict_values(record)
-                    odoo_record.write(record_values)
+                    odoo_record.with_context(from_yaml=True).write(record_values)
                     odoo_record_ids.append(odoo_record.id)
                 except Exception as e:
                     raise ValidationError(
@@ -120,7 +120,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 force_create_related_record=(self.if_record_exists == "create")
             )._post_process_yaml_dict_values(record)
             try:
-                odoo_record = model.create(record_values)
+                odoo_record = model.with_context(from_yaml=True).create(record_values)
                 odoo_record_ids.append(odoo_record.id)
             except Exception as e:
                 raise ValidationError(

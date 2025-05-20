@@ -3,7 +3,7 @@
 
 from itertools import repeat
 
-from odoo import SUPERUSER_ID, api, fields, models
+from odoo import api, fields, models
 
 
 class CxTowerKey(models.Model):
@@ -32,9 +32,6 @@ class CxTowerKey(models.Model):
     )
     secret_value = fields.Text(
         string="SSH Private Key",
-        compute="_compute_secret_value",
-        inverse="_inverse_secret_value",
-        store=True,
     )
     value_ids = fields.One2many(
         string="Values",
@@ -76,49 +73,38 @@ class CxTowerKey(models.Model):
             else:
                 rec.reference_code = None
 
-    @api.depends(
-        "key_type",
-        "value_ids",
-        "value_ids.secret_value",
-        "value_ids.server_id",
-        "value_ids.partner_id",
-    )
-    def _compute_secret_value(self):
-        for rec in self:
-            if rec.key_type == "s":
-                # General value
-                general_value = rec.value_ids.filtered(lambda x: not x.server_id)
-                if general_value:
-                    rec.secret_value = (
-                        general_value[0].with_user(SUPERUSER_ID).secret_value
-                    )
-                else:
-                    rec.secret_value = None
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create a new key and set secret value if key type is secret"""
 
-    def _inverse_secret_value(self):
-        key_value_obj = self.env["cx.tower.key.value"]
-        for rec in self:
-            if rec.key_type == "s" and rec.secret_value:
-                # General value
-                general_value = rec.value_ids.filtered(
-                    lambda x: not x.server_id and not x.partner_id and x.id
-                )
-                if general_value:
-                    general_value.secret_value = rec.with_user(
-                        SUPERUSER_ID
-                    ).secret_value
-                else:
-                    key_value_obj.create(
-                        {
-                            "key_id": rec.id,
-                            "secret_value": rec.secret_value,
-                        }
-                    )
+        # Create records one by one to ensure that we preserve
+        # the original value list order.
+        # This is done to avoid possible errors when this list is modified
+        # by some other module that overrides this function.
+        # We also need to avoid secret values being written to the database
+        # any other way besides the _set_secret_value method.
+        records = self.browse()
+        for vals in vals_list:
+            secret_value = vals.pop("secret_value", None)
+            new_key = super().create(vals)
+            if secret_value:
+                new_key._set_secret_value(secret_value)
+            records |= new_key
+        return records
 
     def write(self, vals):
+        """Write key values"""
+        # Remove secret value from vals and set it later
+        if "secret_value" in vals and not self.env.context.get("write_secret_value"):
+            secret_value = vals.pop("secret_value", None)
+            has_secret_value = True
+        else:
+            has_secret_value = False
         res = super().write(vals)
-        if "secret_value" in vals:
-            self.invalidate_recordset(["secret_value"])
+        # Set secret value
+        if has_secret_value:
+            for key in self:
+                key._set_secret_value(secret_value)
         return res
 
     def _get_reference_pattern(self):
@@ -150,7 +136,7 @@ class CxTowerKey(models.Model):
     def _fetch_query(self, query, fields):
         """Substitute secret value with placeholder"""
         records = super()._fetch_query(query, fields)
-        if self._fields["secret_value"] in fields and not self.env.user._is_superuser():
+        if self._fields["secret_value"] in fields:
             # Public user used for substitution
             self.env.cache.update(
                 records,
@@ -430,12 +416,7 @@ class CxTowerKey(models.Model):
         """
 
         # Return None in case of empty recordset
-        if not self:
-            return
-
-        # One record per time
         self.ensure_one()
-
         self.env.cr.execute(
             """
             SELECT secret_value
@@ -447,3 +428,31 @@ class CxTowerKey(models.Model):
         result = self.env.cr.fetchone()
         if result:
             return result[0]
+
+    def _set_secret_value(self, value=None):
+        """Set secret value.
+        Override this method in case you need
+        to implement custom key storages.
+
+        Args:
+            value (str): secret value
+        """
+        self.ensure_one()
+        if self.key_type == "s":
+            # Set general value or create new one if not exists
+            general_value = self.value_ids.filtered(
+                lambda x: not x.server_id and not x.partner_id
+            )
+            if general_value:
+                general_value._set_secret_value(value)
+            else:
+                self.value_ids.create(
+                    {
+                        "key_id": self.id,
+                        "secret_value": value,
+                    }
+                )
+
+        elif self.key_type == "k":
+            self.with_context(write_secret_value=True).write({"secret_value": value})
+            self.invalidate_recordset(["secret_value"])

@@ -1,3 +1,5 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import base64
 
 from odoo.exceptions import AccessError, ValidationError
@@ -115,6 +117,7 @@ records:
   path: false
   code: echo 'Test Command From Yaml'
   server_status: false
+  no_split_for_sudo: false
 - cetmix_tower_model: command
   access_level: manager
   reference: test_command_from_yaml_2
@@ -125,6 +128,7 @@ records:
   path: false
   code: echo 'Test Command From Yaml 2'
   server_status: false
+  no_split_for_sudo: false
 """
 
         # -- 1 --

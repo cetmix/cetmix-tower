@@ -19,6 +19,7 @@
         "views/cx_tower_file_template_view.xml",
         "views/cx_tower_plan_view.xml",
         "views/cx_tower_server_template_view.xml",
+        "views/cx_tower_server_view.xml",
         "views/cx_tower_variable_view.xml",
         "views/cx_tower_variable_value_view.xml",
         "views/cx_tower_os_view.xml",

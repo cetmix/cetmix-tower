@@ -86,7 +86,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         readonly=True,
         string="Command Variables",
     )
-    custom_variable_values = fields.One2many(
+    custom_variable_value_ids = fields.One2many(
         "cx.tower.command.run.wizard.variable.value",
         "wizard_id",
     )
@@ -125,7 +125,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             else:
                 record.update({"code": False, "path": False})
 
-    @api.depends("code", "server_ids", "action", "custom_variable_values.value_char")
+    @api.depends("code", "server_ids", "action", "custom_variable_value_ids.value_char")
     def _compute_rendered_code(self):
         for record in self:
             if record.server_ids and len(record.server_ids) == 1:
@@ -139,10 +139,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 variable_values = server_id.get_variable_values(
                     variables.get(str(record.id))
                 )
-                if variable_values and record.custom_variable_values:
+                if variable_values and record.custom_variable_value_ids:
                     custom_vals = {
                         custom_value.variable_id.reference: custom_value.value_char
-                        for custom_value in record.custom_variable_values
+                        for custom_value in record.custom_variable_value_ids
                         if custom_value.variable_id
                     }
                     variable_values[server_id.id].update(custom_vals)
@@ -226,7 +226,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         Reset custom variable values after change code
         """
         # Remove existing custom variable values
-        self.custom_variable_values = False
+        self.custom_variable_value_ids = False
 
         if (
             not self.command_variable_ids
@@ -252,7 +252,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             [("id", "in", self.command_variable_ids.ids)]
         )
 
-        self.custom_variable_values = [
+        self.custom_variable_value_ids = [
             (
                 0,
                 0,
@@ -304,7 +304,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             "log": {"label": log_label},
             "variable_values": {
                 value.variable_id.reference: value.value_char
-                for value in self.custom_variable_values
+                for value in self.custom_variable_value_ids
             },
         }
         for server in self.server_ids:
@@ -373,6 +373,12 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         result = ""
 
+        # Set the "no_split_for_sudo" property
+        if self.command_id and self.command_id.no_split_for_sudo:
+            no_split_for_sudo = True
+        else:
+            no_split_for_sudo = False
+
         for server in self.server_ids:
             server_name = server.name
             # Prepare key renderer values
@@ -383,7 +389,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
             kwargs = {
                 "key": key_vals,
+                "no_split_for_sudo": no_split_for_sudo,
             }
+
             if self.action == "python_code":
                 command_result = server._run_python_code(
                     code=self.rendered_code, **kwargs
@@ -393,7 +401,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     server._get_ssh_client(raise_on_error=True),
                     self.rendered_code,
                     self.path or None,
-                    sudo=self.use_sudo,
+                    sudo=self.use_sudo and server.use_sudo,
                     **kwargs,
                 )
             command_error = command_result["error"]
