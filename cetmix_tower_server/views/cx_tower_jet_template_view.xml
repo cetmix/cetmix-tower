@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Template Form View -->
+    <record id="cx_tower_jet_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.form</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field name="arch" type="xml">
+            <form string="Jet Template">
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('active', '=', True)]}"
+                    />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Odoo Instance" />
+                        </h1>
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="Tags"
+                            options="{'color_field': 'color'}"
+                        />
+                    </div>
+                    <notebook>
+                        <page string="General Settings" name="general_settings">
+                            <group name="main">
+                                <group name="general">
+                                    <field
+                                        name="reference"
+                                        placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                    />
+                                    <field name="access_level" />
+                                    <field name="active" invisible="1" />
+                                </group>
+                                <group name="servers">
+                                    <field name="plan_install_id" />
+                                    <field name="plan_uninstall_id" />
+                                    <field
+                                        name="server_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+
+                                </group>
+                                <field name="note" placeholder="Add notes here..." />
+                            </group>
+                        </page>
+                        <page name="configuration" string="Configuration">
+                            <field name="variable_value_ids" order="variable_reference">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="variable_reference" invisible="1" />
+                                    <field name="variable_id" />
+                                    <field name="variable_type" invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                    />
+                                    <field name="access_level" optional="show" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                        <field name="access_level" />
+                                    </group>
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Actions" name="actions">
+                            <field name="action_ids">
+                                <tree
+                                    editable="bottom"
+                                    decoration-success="not state_from_id"
+                                    decoration-danger="not state_to_id"
+                                >
+                                    <field name="priority" widget="handle" />
+                                    <field name="name" />
+                                    <field
+                                        name="state_from_id"
+                                        placeholder="Is initial"
+                                    />
+                                    <field name="state_transit_id" />
+                                    <field name="state_to_id" placeholder="Is final" />
+                                    <field
+                                        name="color"
+                                        widget="color_picker"
+                                        string=" "
+                                    />
+                                    <field name="state_error_id" optional="hide" />
+                                    <field name="plan_id" />
+                                    <field name="reference" optional="hide" />
+                                </tree>
+                            </field>
+                            <field
+                                name="message_actions"
+                                readonly="1"
+                                nolabel="1"
+                                class="alert alert-warning"
+                                role="alert"
+                            />
+                        </page>
+                        <page string="Dependencies" name="dependencies">
+                            <group>
+                                <group name="requires" string="Requires">
+                                    <field name="template_requires_ids" string=" ">
+                                        <tree editable="bottom">
+                                            <field name="state_id" />
+                                            <field name="template_required_id" />
+                                            <field name="state_required_id" />
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group name="required_by" string="Required By">
+                                    <field name="template_required_by_ids" string=" ">
+                                        <tree editable="bottom">
+                                            <field name="state_required_id" />
+                                            <field name="template_id" />
+                                            <field name="state_id" />
+                                        </tree>
+                                    </field>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Template Tree View -->
+    <record id="cx_tower_jet_template_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.tree</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="reference" />
+                <field name="access_level" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Template Search View -->
+    <record id="cx_tower_jet_template_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.search</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Jet Templates">
+                <field name="name" />
+                <field name="reference" />
+                <filter
+                    string="User Access"
+                    name="user_access"
+                    domain="[('access_level', '=', '1')]"
+                />
+                <filter
+                    string="Manager Access"
+                    name="manager_access"
+                    domain="[('access_level', '=', '2')]"
+                />
+                <filter
+                    string="Root Access"
+                    name="root_access"
+                    domain="[('access_level', '=', '3')]"
+                />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Access Level"
+                        name="group_by_access_level"
+                        context="{'group_by': 'access_level'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Template Action -->
+    <record id="cx_tower_jet_template_action" model="ir.actions.act_window">
+        <field name="name">Jet Templates</field>
+        <field name="res_model">cx.tower.jet.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Jet Template!
+            </p>
+            <p>
+                Jet Templates are used to create and manage Jets.
+            </p>
+        </field>
+    </record>
+
+</odoo>

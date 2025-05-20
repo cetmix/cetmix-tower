@@ -205,6 +205,26 @@
                         >
                             <field name="file_count" widget="statinfo" string="Files" />
                         </button>
+                        <button
+                            name="action_open_jet_templates"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                        >
+                            <field
+                                name="jet_template_count"
+                                string="Jet Templates"
+                                widget="statinfo"
+                            />
+                        </button>
+                        <button
+                            name="action_open_jets"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                        >
+                            <field name="jet_count" string="Jets" widget="statinfo" />
+                        </button>
                     </div>
                     <widget
                         name="web_ribbon"

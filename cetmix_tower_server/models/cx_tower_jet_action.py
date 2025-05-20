@@ -1,0 +1,56 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from odoo import fields, models
+
+
+class CxTowerJetAction(models.Model):
+    """Jet Actions represent transitions between states in a jet's lifecycle"""
+
+    _name = "cx.tower.jet.action"
+    _description = "Cetmix Tower Jet Action"
+    _inherit = ["cx.tower.reference.mixin"]
+    _order = "priority, id"
+
+    active = fields.Boolean(related="jet_template_id.active", readonly=True)
+    priority = fields.Integer(default=10, required=True)
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        string="Jet Template",
+        help="Jet template that this action belongs to",
+    )
+    color = fields.Integer(related="state_to_id.color", readonly=True)
+    note = fields.Text()
+
+    # -- State Transitions
+    state_from_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="From State",
+        help="Source state for this transition. Leave blank for an initial state",
+    )
+
+    state_transit_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="Transit State",
+        required=True,
+        help="Intermediate state during the transition",
+    )
+
+    state_to_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="To State",
+        help="Destination state for this transition. Leave blank for a final state",
+    )
+
+    state_error_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="Error State",
+        help="State to transition to if an error occurs",
+    )
+
+    plan_id = fields.Many2one(
+        string="Flight Plan",
+        comodel_name="cx.tower.plan",
+        required=True,
+        help="Flight plan to execute when this action is triggered",
+    )

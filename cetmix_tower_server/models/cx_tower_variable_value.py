@@ -81,6 +81,17 @@ class TowerVariableValue(models.Model):
     server_template_id = fields.Many2one(
         comodel_name="cx.tower.server.template", index=True, ondelete="cascade"
     )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        string="Jet",
+        ondelete="cascade",
+    )
+
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        string="Jet Template",
+        ondelete="cascade",
+    )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_variable_value_variable_rel",
@@ -437,6 +448,8 @@ class TowerVariableValue(models.Model):
             "cx.tower.server": ("server_id", "Server"),
             "cx.tower.plan.line.action": ("plan_line_action_id", "Action"),
             "cx.tower.server.template": ("server_template_id", "Server Template"),
+            "cx.tower.jet.template": ("jet_template_id", "Jet Template"),
+            "cx.tower.jet": ("jet_id", "Jet"),
         }
 
     def _check_is_global(self):

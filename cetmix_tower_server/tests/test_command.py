@@ -1909,3 +1909,44 @@ else:
                     "action": "ssh_command",
                 }
             )
+
+    def test_server_render_command_with_jet(self):
+        """Test rendering command using `_render_command` method
+        of cx.tower.server
+        """
+
+        # -- 1 --
+        # Test with default path and jet
+        rendered_command = self.server_test_1._render_command(
+            command=self.command_create_dir, jet=self.jet_sample
+        )
+        rendered_code_expected = "cd /jets/jet1 && mkdir jet_templates"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # -- 2 --
+        # Test with custom variable values
+        custom_variable_values = {"test_path_": "/such/much/jet"}
+        rendered_command = self.server_test_1._render_command(
+            command=self.command_create_dir,
+            jet=self.jet_sample,
+            custom_variable_values=custom_variable_values,
+        )
+        rendered_code_expected = "cd /such/much/jet && mkdir jet_templates"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )

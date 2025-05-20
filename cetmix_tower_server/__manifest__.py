@@ -47,6 +47,7 @@
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
         "data/ir_config_parameter.xml",
+        "data/cx_tower_jet_state.xml",
         "wizards/cx_tower_command_run_wizard_view.xml",
         "wizards/cx_tower_plan_run_wizard_view.xml",
         "wizards/cx_tower_server_template_create_wizard_view.xml",
@@ -71,6 +72,9 @@
         "views/cx_tower_scheduled_task_view.xml",
         "views/res_partner_view.xml",
         "views/res_config_settings.xml",
+        "views/cx_tower_jet_view.xml",
+        "views/cx_tower_jet_state_view.xml",
+        "views/cx_tower_jet_template_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [

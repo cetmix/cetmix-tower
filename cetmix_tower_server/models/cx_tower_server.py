@@ -217,6 +217,26 @@ class CxTowerServer(models.Model):
         help="This Flightplan will be run when the server is deleted",
     )
 
+    # ---- Jets
+    jet_template_ids = fields.Many2many(
+        comodel_name="cx.tower.jet.template",
+        relation="cx_tower_jet_template_server_rel",
+        column1="server_id",
+        column2="jet_template_id",
+        string="Installed Jet Templates",
+    )
+    jet_template_count = fields.Integer(
+        compute="_compute_jet_template_count",
+    )
+    jet_ids = fields.One2many(
+        comodel_name="cx.tower.jet",
+        inverse_name="server_id",
+        string="Jets",
+    )
+    jet_count = fields.Integer(
+        compute="_compute_jet_count",
+    )
+
     # ---- Access. Add relation for mixin fields
 
     user_ids = fields.Many2many(
@@ -276,6 +296,17 @@ class CxTowerServer(models.Model):
             ("deleting", "Deleting"),
             ("delete_error", "Deletion Error"),
         ]
+
+    # ---- Computed fields
+    def _compute_jet_template_count(self):
+        """Compute total jet templates installed on server"""
+        for server in self:
+            server.jet_template_count = len(server.jet_template_ids)
+
+    def _compute_jet_count(self):
+        """Compute total jets installed on server"""
+        for server in self:
+            server.jet_count = len(server.jet_ids)
 
     def _compute_file_count(self):
         """Compute total server files"""
@@ -504,6 +535,39 @@ class CxTowerServer(models.Model):
         """
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_file_action"
+        )
+        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
+
+        context = self._context.copy()
+        if "context" in action and isinstance((action["context"]), str):
+            context.update(ast.literal_eval(action["context"]))
+        else:
+            context.update(action.get("context", {}))
+
+        context.update(
+            {
+                "default_server_id": self.id,  # pylint: disable=no-member
+            }
+        )
+        action["context"] = context
+        return action
+
+    def action_open_jet_templates(self):
+        """
+        Open jet templates of the current server
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_template_action"
+        )
+        action["domain"] = [("server_ids", "in", self.ids)]  # pylint: disable=no-member
+        return action
+
+    def action_open_jets(self):
+        """
+        Open jets of the current server
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_action"
         )
         action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
 
@@ -803,7 +867,16 @@ class CxTowerServer(models.Model):
     # ---- Command execution
     # ------------------------------
 
-    def run_command(self, command, path=None, sudo=None, ssh_connection=None, **kwargs):
+    def run_command(
+        self,
+        command,
+        path=None,
+        sudo=None,
+        ssh_connection=None,
+        jet_template=None,
+        jet=None,
+        **kwargs,
+    ):
         """This is the main function to use for running commands.
         It renders command code, creates log record and calls command runner.
 
@@ -817,6 +890,8 @@ class CxTowerServer(models.Model):
                 Pass to reuse existing connection.
                 This is useful in case you would like to speed up
                 the ssh command running.
+            jet (cx.tower.jet()): Jet record
+                Pass to run for specific jet
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log", dict(): values passed to logger
@@ -906,7 +981,13 @@ class CxTowerServer(models.Model):
 
         # Render command
         custom_variable_values = kwargs.get("variable_values", {})
-        rendered_command = self._render_command(command, path, custom_variable_values)
+        rendered_command = self._render_command(
+            command=command,
+            path=path,
+            jet_template=jet_template,
+            jet=jet,
+            custom_variable_values=custom_variable_values,
+        )
         rendered_command_code = rendered_command["rendered_code"]
         rendered_command_path = rendered_command["rendered_path"]
 
@@ -939,14 +1020,22 @@ class CxTowerServer(models.Model):
             **kwargs,
         )
 
-    def _render_command(self, command, path=None, custom_variable_values=None):
+    def _render_command(
+        self,
+        command,
+        path=None,
+        jet_template=None,
+        jet=None,
+        custom_variable_values=None,
+    ):
         """Renders command code for selected command for current server
 
         Args:
             command (cx.tower.command): Command to render
             path (Char): Path where to run the command.
                 Provide in case you need to override default command path
-
+            jet (cx.tower.jet()): Jet to render command for
+            custom_variable_values (dict): Custom variable values to render command
         Returns:
             dict: rendered values
                 {
@@ -957,6 +1046,10 @@ class CxTowerServer(models.Model):
         self.ensure_one()
 
         variables = []
+
+        # Set jet template
+        if jet:
+            jet_template = jet.jet_template_id
 
         # Get variables from code
         if command.code:
@@ -973,42 +1066,75 @@ class CxTowerServer(models.Model):
                 if ve not in variables:
                     variables.append(ve)
 
-        # Get variable values for current server
-        variable_values_dict = (
-            self.sudo().get_variable_values(variables)  # pylint: disable=no-member
-            if variables
-            else False
-        )
+        # If there are variables to render, get variable values
+        if variables:
+            # For the server
+            server_values = self.sudo().get_variable_values(variables)  # pylint: disable=no-member
 
-        # Extract variable values for current server
-        variable_values = (
-            variable_values_dict.get(self.id) if variable_values_dict else {}
-        )  # pylint: disable=no-member
+            # Extract variable values for current server
+            variable_values = server_values.get(self.id) if server_values else {}  # pylint: disable=no-member
 
-        # Apply custom variable values only if user has write access to the server
-        has_write_access = self._have_access_to_server("write")
-        if custom_variable_values and has_write_access:
-            variable_values.update(custom_variable_values)
+            # For the jet template
+            if jet_template:
+                template_values = jet_template.sudo().get_variable_values(variables)
 
-        # Render command code and path using variables
-        if variable_values:
-            if command.action == "python_code":
-                variable_values["pythonic_mode"] = True
+                # Extract variable values for jet template
+                if template_values:
+                    # Only update non-None values
+                    self._append_jet_variable_values(
+                        variable_values, template_values.get(jet_template.id, {})
+                    )
 
-            rendered_code = (
-                command.render_code_custom(command.code, **variable_values)
-                if command.code
-                else False
-            )
-            rendered_path = (
-                command.render_code_custom(path, **variable_values) if path else False
-            )
+            # For the jet
+            if jet:
+                jet_values = jet.sudo().get_variable_values(variables)
+                if jet_values:
+                    # Only update non-None values
+                    self._append_jet_variable_values(
+                        variable_values, jet_values.get(jet.id, {})
+                    )
+
+            # Apply custom variable values only if user has write access to the server
+            has_write_access = self._have_access_to_server("write")
+            if custom_variable_values and has_write_access:
+                variable_values.update(custom_variable_values)
+
+            # Render command code and path using variables
+            if variable_values:
+                if command.action == "python_code":
+                    variable_values["pythonic_mode"] = True
+
+                rendered_code = (
+                    command.render_code_custom(command.code, **variable_values)
+                    if command.code
+                    else False
+                )
+                rendered_path = (
+                    command.render_code_custom(path, **variable_values)
+                    if path
+                    else False
+                )
 
         else:
             rendered_code = command.code
             rendered_path = path
 
         return {"rendered_code": rendered_code, "rendered_path": rendered_path}
+
+    def _append_jet_variable_values(self, variable_values, jet_variable_values):
+        """Append jet or jet template variable values to the variable values
+
+        Args:
+            variable_values (dict): Variable values
+            jet_variable_values (dict): Jet or jet template variable values
+        """
+        for key, value in jet_variable_values.items():
+            if value is None:
+                continue
+            if key == "tower":
+                variable_values[key].update(value)
+            else:
+                variable_values[key] = value
 
     def _have_access_to_server(self, operation):
         """Check access to the server.

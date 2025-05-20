@@ -59,6 +59,33 @@
         sequence="2"
     />
 
+    <!-- ========================= Jets ========================= -->
+    <menuitem id="menu_cx_tower_jet_root" name="Jets" parent="menu_root" sequence="5" />
+
+    <menuitem
+        id="menu_cx_tower_jet"
+        name="Jets"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_action"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_cx_tower_jet_template"
+        name="Templates"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_template_action"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_state"
+        name="States"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_state_action"
+        sequence="30"
+    />
+
+
     <!-- ========================= Commands ========================= -->
     <menuitem
         id="menu_cx_tower_command_root"
