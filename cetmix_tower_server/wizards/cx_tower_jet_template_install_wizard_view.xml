@@ -1,0 +1,49 @@
+<odoo>
+    <record id="cx_tower_jet_template_install_wiz_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.install.wiz.form</field>
+        <field name="model">cx.tower.jet.template.install.wiz</field>
+        <field name="arch" type="xml">
+            <form string="Install Jet Template">
+                <group>
+                    <field
+                        name="jet_template_id"
+                        placeholder="Select a jet template"
+                        domain="jet_template_domain"
+                    />
+                </group>
+                <field
+                    name="server_ids"
+                    required="1"
+                    default_focus="1"
+                    domain="server_domain"
+                    options="{'no_create': True, 'no_create_edit': True}"
+                />
+                <field name="server_domain" invisible="1" />
+                <field name="jet_template_domain" invisible="1" />
+                <footer>
+                    <button
+                        name="action_install_template"
+                        type="object"
+                        string="Install"
+                        class="oe_highlight"
+                        invisible="not server_ids"
+                        confirm="Are you sure you want to install the template on the selected servers?"
+                    />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_jet_template_install_wiz_action" model="ir.actions.act_window">
+        <field name="name">Install on Servers</field>
+        <field name="res_model">cx.tower.jet.template.install.wiz</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cx_tower_jet_template_install_wiz_view_form" />
+        <field name="context">{'default_jet_template_id': active_id}</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_cx_tower_jet_template" />
+        <field name="binding_view_types">form,list</field>
+    </record>
+</odoo>

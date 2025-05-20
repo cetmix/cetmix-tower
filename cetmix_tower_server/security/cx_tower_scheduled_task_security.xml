@@ -17,10 +17,18 @@
                 '|',
                 '|',
                 '|',
+                '|',
+                '|',
+                '|',
+                '|',
                     ('server_ids.user_ids', 'in', [user.id]),
                     ('server_ids.manager_ids', 'in', [user.id]),
                     ('server_template_ids.user_ids', 'in', [user.id]),
-                    ('server_template_ids.manager_ids', 'in', [user.id])
+                    ('server_template_ids.manager_ids', 'in', [user.id]),
+                    ('jet_ids.user_ids', 'in', [user.id]),
+                    ('jet_ids.manager_ids', 'in', [user.id]),
+                    ('jet_template_ids.user_ids', 'in', [user.id]),
+                    ('jet_template_ids.manager_ids', 'in', [user.id])
             ]
         </field>
     </record>

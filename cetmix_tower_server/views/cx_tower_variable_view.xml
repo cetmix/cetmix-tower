@@ -144,9 +144,11 @@
                                     <field name="variable_id" column_invisible="1" />
                                     <field name="variable_type" column_invisible="1" />
                                     <field name="is_global" widget="boolean_toggle" />
-                                    <field name="server_id" />
-                                    <field name="server_template_id" />
-                                    <field name="plan_line_action_id" />
+                                    <field name="server_id" optional="hide" />
+                                    <field name="server_template_id" optional="hide" />
+                                    <field name="jet_template_id" optional="hide" />
+                                    <field name="jet_id" optional="hide" />
+                                    <field name="plan_line_action_id" optional="hide" />
                                     <field
                                         name="value_char"
                                         placeholder="undefined"

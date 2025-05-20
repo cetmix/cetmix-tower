@@ -30,6 +30,27 @@ class CxTowerCommandLog(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"
     )
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        index=True,
+        ondelete="cascade",
+        compute="_compute_jet_id",
+        store=True,
+        readonly=False,
+    )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        index=True,
+        ondelete="cascade",
+        compute="_compute_jet_id",
+        store=True,
+        readonly=False,
+    )
+    waypoint_id = fields.Many2one(
+        comodel_name="cx.tower.jet.waypoint",
+        related="plan_log_id.waypoint_id",
+        readonly=True,
+    )
 
     # -- Time
     start_date = fields.Datetime(string="Started")
@@ -121,6 +142,17 @@ class CxTowerCommandLog(models.Model):
     def _compute_name(self):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.command_id.name))  # type: ignore
+
+    @api.depends("plan_log_id")
+    def _compute_jet_id(self):
+        for command_log in self:
+            if command_log.plan_log_id:
+                command_log.update(
+                    {
+                        "jet_id": command_log.plan_log_id.jet_id,
+                        "jet_template_id": command_log.plan_log_id.jet_template_id,
+                    }
+                )
 
     @api.depends("start_date", "finish_date")
     def _compute_duration(self):

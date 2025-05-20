@@ -44,40 +44,51 @@
                                 name="template_id"
                                 domain="[('source', '=', source)]"
                             />
-                                <field name="server_id" required="1" />
-                                <field name="server_dir" widget="ace_tower" />
-                                <field name="full_server_path" />
-                            </group>
-                            <group>
-                                <field
+                            <field
                                 name="keep_when_deleted"
                                 invisible="source != 'tower'"
                             />
-                                <field name="auto_sync" />
-                                <field
+                            <field name="auto_sync" />
+                            <field
                                 name="auto_sync_interval"
                                 invisible="not auto_sync or source != 'server'"
                                 required="auto_sync and source == 'server'"
                             />
-                                <field
+                            <field
                                 name="sync_date_next"
                                 invisible="not auto_sync or source != 'server'"
                             />
-                                <field name="sync_date_last" />
-                                <field
+                            <field name="sync_date_last" />
+
+                        </group>
+                        <group>
+                            <field
+                                name="server_id"
+                                readonly="jet_id"
+                                required="not jet_id"
+                            />
+                            <field
+                                name="jet_template_id"
+                                invisible="not jet_template_id"
+                                readonly="jet_id"
+                            />
+                            <field name="jet_id" invisible="not jet_id" />
+                            <field name="server_dir" widget="ace_tower" />
+                            <field name="full_server_path" />
+                            <field
                                 name="variable_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                                 invisible="not variable_ids"
                             />
-                                <field
+                            <field
                                 name="secret_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                                 invisible="not secret_ids"
                             />
-                            </group>
                         </group>
+                    </group>
                     <notebook>
                         <page
                             name="code"
@@ -153,6 +164,8 @@
                 <field name="source" />
                 <field name="file_type" optional="show" />
                 <field name="server_id" />
+                <field name="jet_template_id" optional="hide" />
+                <field name="jet_id" optional="hide" />
                 <field name="sync_date_last" optional="show" />
                 <field name="template_id" optional="show" />
                 <field
@@ -223,6 +236,18 @@
                         name="group_by_server"
                         domain="[]"
                         context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="Jet Template"
+                        name="group_by_jet_template"
+                        domain="[]"
+                        context="{'group_by': 'jet_template_id'}"
+                    />
+                    <filter
+                        string="Jet"
+                        name="group_by_jet"
+                        domain="[]"
+                        context="{'group_by': 'jet_id'}"
                     />
                     <filter
                         string="Template"

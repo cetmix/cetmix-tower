@@ -26,13 +26,23 @@
                     role="alert"
                 />
                 <group>
+                    <field name="show_jets" invisible="1" />
+                    <field
+                        name="jet_ids"
+                        string="Run on"
+                        widget="many2many_tags"
+                        invisible="not show_jets"
+                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    />
                     <field name="show_servers" invisible="1" />
                     <field
                         name="server_ids"
                         widget="many2many_tags"
                         string="Run on"
-                        required="1"
-                        invisible="result"
+                        invisible="not show_servers"
+                        readonly="not jet_ids"
+                        required="not jet_ids"
+                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     />
                     <label
                         for="applicability"

@@ -26,7 +26,7 @@
                                 name="use_sudo"
                                 invisible="action != 'ssh_command'"
                             />
-                            <field name="command_id" options="{'no_create': True}" />
+                            <field name="command_id" />
                         </div>
                         <field name="plan_run_id" invisible="action != 'plan'" />
                         <field

@@ -126,7 +126,32 @@
                     <notebook>
                         <page name="servers" string="Servers">
                             <field name="server_ids">
-                                <tree>
+                                <tree create="0" edit="0">
+                                    <field name="name" />
+                                    <field name="reference" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="server_templates" string="Server Templates">
+                            <field name="server_template_ids">
+                                <tree create="0" edit="0">
+                                    <field name="name" />
+                                    <field name="reference" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="jets" string="Jets">
+                            <field name="jet_ids">
+                                <tree create="0" edit="0">
+                                    <field name="name" />
+                                    <field name="reference" />
+                                    <field name="jet_template_id" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="jet_templates" string="Jet Templates">
+                            <field name="jet_template_ids">
+                                <tree create="0" edit="0">
                                     <field name="name" />
                                     <field name="reference" />
                                 </tree>

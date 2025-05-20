@@ -143,10 +143,10 @@
                 <field
                     name="status"
                     widget="badge"
-                    decoration-danger="status == '2'"
-                    decoration-info="status == '1'"
-                    decoration-success="status == '4'"
-                    decoration-warning="status in ['3','5','6']"
+                    decoration-danger="status == 'stopped'"
+                    decoration-info="status in ['stopping','restarting','starting']"
+                    decoration-success="status == 'running'"
+                    decoration-warning="status in ['deleting','delete_error']"
                 />
             </tree>
         </field>
@@ -171,6 +171,15 @@
                         class="btn-primary"
                         string="Flight Plan"
                         icon="fa-paper-plane"
+                    />
+                    <button
+                        name="action_new_jet"
+                        type="object"
+                        class="btn-primary"
+                        string="New Jet"
+                        icon="fa-plane"
+                        groups="cetmix_tower_server.group_manager"
+                        invisible="not jet_template_ids"
                     />
                     <button
                         name="test_ssh_connection"
@@ -203,6 +212,14 @@
                             icon="fa-files-o"
                         >
                             <field name="file_count" widget="statinfo" string="Files" />
+                        </button>
+                        <button
+                            name="action_open_jets"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                        >
+                            <field name="jet_count" string="Jets" widget="statinfo" />
                         </button>
                     </div>
                     <widget
@@ -422,6 +439,7 @@
                             <field name="server_log_ids">
                                 <tree>
                                     <field name="name" />
+                                    <field name="jet_id" />
                                     <button
                                         type="object"
                                         string="Open"
@@ -441,18 +459,52 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="display_name" />
                                     <field name="action" />
+                                    <field name="interval_type" />
+                                    <field name="interval_number" optional="hide" />
                                     <field name="is_running" optional="hide" />
                                     <field name="next_call" optional="hide" />
                                     <field name="last_call" optional="hide" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page
+                            name="jet_templates"
+                            string="Jet Templates"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <button
+                                name="action_install_jet_template"
+                                string="Install Jet Template"
+                                type="object"
+                                class="oe_highlight"
+                            />
+                            <field name="jet_template_ids">
+                                <tree create="0" edit="0">
+                                    <field name="name" />
                                     <button
+                                        name="action_uninstall_from_server"
                                         type="object"
-                                        name="action_run"
-                                        class="fa fa-play oe_highlight"
-                                        title="Run Manually"
-                                        confirm="Are you sure?"
+                                        string="Uninstall"
+                                        class="btn-danger"
+                                        confirm="Jet template will be uninstalled from the server. Are you sure?"
+                                        context="{'server_id': parent.id}"
                                     />
                                 </tree>
                             </field>
+                        </page>
+                        <page
+                            name="metadata"
+                            string="Metadata"
+                            groups="base.group_no_one"
+                        >
+                            <group>
+                                <field name="metadata" invisible="1" />
+                                <field
+                                    name="metadata_text"
+                                    string="Metadata"
+                                    readonly="1"
+                                />
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -490,12 +542,23 @@
                 <filter
                     string="Running"
                     name="running"
-                    domain="[('status', '=', '4')]"
+                    domain="[('status', '=', 'running')]"
                 />
                 <filter
                     string="Not Running"
                     name="not_running"
-                    domain="[('status', 'in', ['2', '3', '5', '6'])]"
+                    domain="[('status', '!=', 'running')]"
+                />
+                <separator />
+                <filter
+                    string="With Jets"
+                    name="with_jets"
+                    domain="[('jet_ids', '!=', False)]"
+                />
+                <filter
+                    string="With Jet Templates"
+                    name="with_jet_templates"
+                    domain="[('jet_template_ids', '!=', False)]"
                 />
                 <group expand="0" string="Group By">
                     <filter

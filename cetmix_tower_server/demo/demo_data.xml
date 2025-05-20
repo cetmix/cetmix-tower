@@ -477,6 +477,7 @@ Expected result:
     <record id="command_update_upgrade" model="cx.tower.command">
         <field name="name">Update packages</field>
         <field name="action">ssh_command</field>
+        <field name="reference">demo_update_upgrade</field>
         <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
@@ -618,6 +619,77 @@ server.write({"name":name})</field>
         <field name="code"># Update the server name
 name = server.name + " --last-one-- "
 server.write({"name":name})</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <!-- Installation Commands -->
+    <record id="command_odoo_install" model="cx.tower.command">
+        <field name="name">Install Odoo</field>
+        <field name="action">python_code</field>
+        <field name="code">#ok</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_odoo_uninstall" model="cx.tower.command">
+        <field name="name">Uninstall Odoo</field>
+        <field name="action">python_code</field>
+        <field name="code">#ok</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_wordpress_install" model="cx.tower.command">
+        <field name="name">Install WordPress</field>
+        <field name="action">python_code</field>
+        <field name="code">#ok</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_wordpress_uninstall" model="cx.tower.command">
+        <field name="name">Uninstall WordPress</field>
+        <field name="action">python_code</field>
+        <field name="code">#ok</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_woocommerce_install" model="cx.tower.command">
+        <field name="name">Install WooCommerce</field>
+        <field name="action">python_code</field>
+        <field name="code">#ok</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_woocommerce_uninstall" model="cx.tower.command">
+        <field name="name">Uninstall WooCommerce</field>
+        <field name="action">python_code</field>
+        <field name="code">#ok</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <!-- Cloning Commands - Ensure Jets are Running -->
+    <record id="command_ensure_jet_running" model="cx.tower.command">
+        <field name="name">Ensure Jet is Running</field>
+        <field name="action">python_code</field>
+        <field name="code"># Ensure jet is in running state
+result={"exit_code": 0, "message": "Jet is running"}
+        </field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_clone_jet_same_server" model="cx.tower.command">
+        <field name="name">Clone Jet Same Server</field>
+        <field name="action">python_code</field>
+        <field name="code"># Clone jet on the same server
+result={"exit_code": 0, "message": "Jet cloned successfully"}
+        </field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="command_clone_jet_different_server" model="cx.tower.command">
+        <field name="name">Clone Jet Different Server</field>
+        <field name="action">python_code</field>
+        <field name="code"># Clone jet to a different server
+result={"exit_code": 0, "message": "Jet cloned to different server successfully"}
+        </field>
         <field name="access_level">2</field>
     </record>
 
@@ -832,6 +904,219 @@ server.write({"name":name})</field>
         />
         <field name="sequence">10</field>
         <field name="value_char">1</field>
+    </record>
+
+    <!-- ===============================================
+    Installation Flight Plans
+    ================================================ -->
+    <record id="plan_install_odoo" model="cx.tower.plan">
+        <field name="name">Install Odoo</field>
+        <field name="note">Installation flight plan for Odoo</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_install_odoo_line" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_install_odoo" />
+        <field name="command_id" ref="command_odoo_install" />
+    </record>
+
+    <record id="plan_uninstall_odoo" model="cx.tower.plan">
+        <field name="name">Uninstall Odoo</field>
+        <field name="note">Uninstallation flight plan for Odoo</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_uninstall_odoo_line" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_uninstall_odoo" />
+        <field name="command_id" ref="command_odoo_uninstall" />
+    </record>
+
+    <record id="plan_install_wordpress" model="cx.tower.plan">
+        <field name="name">Install WordPress</field>
+        <field name="note">Installation flight plan for WordPress</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_install_wordpress_line" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_install_wordpress" />
+        <field name="command_id" ref="command_wordpress_install" />
+    </record>
+
+    <record id="plan_uninstall_wordpress" model="cx.tower.plan">
+        <field name="name">Uninstall WordPress</field>
+        <field name="note">Uninstallation flight plan for WordPress</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_uninstall_wordpress_line" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_uninstall_wordpress" />
+        <field name="command_id" ref="command_wordpress_uninstall" />
+    </record>
+
+    <record id="plan_install_woocommerce" model="cx.tower.plan">
+        <field name="name">Install WooCommerce</field>
+        <field name="note">Installation flight plan for WooCommerce</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_install_woocommerce_line" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_install_woocommerce" />
+        <field name="command_id" ref="command_woocommerce_install" />
+    </record>
+
+    <record id="plan_uninstall_woocommerce" model="cx.tower.plan">
+        <field name="name">Uninstall WooCommerce</field>
+        <field name="note">Uninstallation flight plan for WooCommerce</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_uninstall_woocommerce_line" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_uninstall_woocommerce" />
+        <field name="command_id" ref="command_woocommerce_uninstall" />
+    </record>
+
+    <!-- ===============================================
+    Cloning Flight Plans
+    ================================================ -->
+    <!-- Odoo Cloning Plans -->
+    <record id="plan_clone_odoo_same_server" model="cx.tower.plan">
+        <field name="name">Clone Odoo Same Server</field>
+        <field
+            name="note"
+        >Clone Odoo jet on the same server, ensuring it's running</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_clone_odoo_same_server_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_clone_odoo_same_server" />
+        <field name="command_id" ref="command_ensure_jet_running" />
+    </record>
+
+    <record id="plan_clone_odoo_same_server_line_2" model="cx.tower.plan.line">
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_clone_odoo_same_server" />
+        <field name="command_id" ref="command_clone_jet_same_server" />
+    </record>
+
+    <record id="plan_clone_odoo_different_server" model="cx.tower.plan">
+        <field name="name">Clone Odoo Different Server</field>
+        <field
+            name="note"
+        >Clone Odoo jet to a different server, ensuring it's running</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_clone_odoo_different_server_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_clone_odoo_different_server" />
+        <field name="command_id" ref="command_ensure_jet_running" />
+    </record>
+
+    <record id="plan_clone_odoo_different_server_line_2" model="cx.tower.plan.line">
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_clone_odoo_different_server" />
+        <field name="command_id" ref="command_clone_jet_different_server" />
+    </record>
+
+    <!-- WordPress Cloning Plans -->
+    <record id="plan_clone_wordpress_same_server" model="cx.tower.plan">
+        <field name="name">Clone WordPress Same Server</field>
+        <field
+            name="note"
+        >Clone WordPress jet on the same server, ensuring it's running</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_clone_wordpress_same_server_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_clone_wordpress_same_server" />
+        <field name="command_id" ref="command_ensure_jet_running" />
+    </record>
+
+    <record id="plan_clone_wordpress_same_server_line_2" model="cx.tower.plan.line">
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_clone_wordpress_same_server" />
+        <field name="command_id" ref="command_clone_jet_same_server" />
+    </record>
+
+    <record id="plan_clone_wordpress_different_server" model="cx.tower.plan">
+        <field name="name">Clone WordPress Different Server</field>
+        <field
+            name="note"
+        >Clone WordPress jet to a different server, ensuring it's running</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record
+        id="plan_clone_wordpress_different_server_line_1"
+        model="cx.tower.plan.line"
+    >
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_clone_wordpress_different_server" />
+        <field name="command_id" ref="command_ensure_jet_running" />
+    </record>
+
+    <record
+        id="plan_clone_wordpress_different_server_line_2"
+        model="cx.tower.plan.line"
+    >
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_clone_wordpress_different_server" />
+        <field name="command_id" ref="command_clone_jet_different_server" />
+    </record>
+
+    <!-- WooCommerce Cloning Plans -->
+    <record id="plan_clone_woocommerce_same_server" model="cx.tower.plan">
+        <field name="name">Clone WooCommerce Same Server</field>
+        <field
+            name="note"
+        >Clone WooCommerce jet on the same server, ensuring it's running</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record id="plan_clone_woocommerce_same_server_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_clone_woocommerce_same_server" />
+        <field name="command_id" ref="command_ensure_jet_running" />
+    </record>
+
+    <record id="plan_clone_woocommerce_same_server_line_2" model="cx.tower.plan.line">
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_clone_woocommerce_same_server" />
+        <field name="command_id" ref="command_clone_jet_same_server" />
+    </record>
+
+    <record id="plan_clone_woocommerce_different_server" model="cx.tower.plan">
+        <field name="name">Clone WooCommerce Different Server</field>
+        <field
+            name="note"
+        >Clone WooCommerce jet to a different server, ensuring it's running</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <record
+        id="plan_clone_woocommerce_different_server_line_1"
+        model="cx.tower.plan.line"
+    >
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_clone_woocommerce_different_server" />
+        <field name="command_id" ref="command_ensure_jet_running" />
+    </record>
+
+    <record
+        id="plan_clone_woocommerce_different_server_line_2"
+        model="cx.tower.plan.line"
+    >
+        <field name="sequence">20</field>
+        <field name="plan_id" ref="plan_clone_woocommerce_different_server" />
+        <field name="command_id" ref="command_clone_jet_different_server" />
     </record>
 
     <!-- ===============================================
@@ -1075,7 +1360,7 @@ server.write({"name":name})</field>
     <record id="cx_tower_scheduled_task_demo_1" model="cx.tower.scheduled.task">
         <field name="name">Scheduled Task Demo #1</field>
         <field name="reference">scheduled_task_demo_1</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">1</field>
         <field name="server_ids" eval="[(4, ref('server_demo_1'))]" />
         <field name="server_template_ids" eval="[(4, ref('demo_server_template_1'))]" />
@@ -1088,7 +1373,7 @@ server.write({"name":name})</field>
     <record id="cx_tower_scheduled_task_demo_2" model="cx.tower.scheduled.task">
         <field name="name">Scheduled Task Demo #2</field>
         <field name="reference">scheduled_task_demo_2</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">2</field>
         <field
             name="server_ids"
@@ -1099,6 +1384,43 @@ server.write({"name":name})</field>
         <field name="interval_number">2</field>
         <field name="interval_type">days</field>
         <field name="next_call" eval="(DateTime.now() - relativedelta(days=2))" />
+    </record>
+
+    <!-- Scheduled Tasks -->
+    <record id="cx_tower_scheduled_task_odoo" model="cx.tower.scheduled.task">
+        <field name="name">Odoo Scheduled Task</field>
+        <field name="reference">scheduled_task_odoo</field>
+        <field name="active">False</field>
+        <field name="sequence">10</field>
+        <field name="action">command</field>
+        <field name="command_id" ref="command_list_dir" />
+        <field name="interval_number">6</field>
+        <field name="interval_type">hours</field>
+        <field name="next_call" eval="(DateTime.now() + relativedelta(hours=6))" />
+    </record>
+
+    <record id="cx_tower_scheduled_task_wordpress" model="cx.tower.scheduled.task">
+        <field name="name">WordPress Scheduled Task</field>
+        <field name="reference">scheduled_task_wordpress</field>
+        <field name="active">False</field>
+        <field name="sequence">11</field>
+        <field name="action">plan</field>
+        <field name="plan_id" ref="plan_demo_3" />
+        <field name="interval_number">12</field>
+        <field name="interval_type">hours</field>
+        <field name="next_call" eval="(DateTime.now() + relativedelta(hours=12))" />
+    </record>
+
+    <record id="cx_tower_scheduled_task_woocommerce" model="cx.tower.scheduled.task">
+        <field name="name">WooCommerce Scheduled Task</field>
+        <field name="reference">scheduled_task_woocommerce</field>
+        <field name="active">False</field>
+        <field name="sequence">12</field>
+        <field name="action">command</field>
+        <field name="command_id" ref="command_update_upgrade" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="next_call" eval="(DateTime.now() + relativedelta(days=1))" />
     </record>
 
 </odoo>

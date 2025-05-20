@@ -71,6 +71,7 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         cls.plan_2_line_2 = cls.plan_line.create(
             {
                 "sequence": 10,
+                "plan_id": cls.plan_2.id,
                 "command_id": cls.command_create_dir.id,
             }
         )
@@ -1145,11 +1146,16 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
             parent_plan_log,
             "Second plan log should contain parent log link",
         )
+        triggering = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.triggered_plan_log_id
+        )
+        self.assertEqual(
+            len(triggering), 1, "Expected exactly one triggering command log"
+        )
         self.assertEqual(
             child_plan_log.plan_status,
-            parent_plan_log.command_log_ids.command_status,
-            "The command status of main plan should be equal "
-            "of status second flight plan",
+            triggering.command_status,
+            "Parent run-plan command status must equal child plan status",
         )
         self.assertEqual(
             parent_plan_log.command_log_ids.triggered_plan_log_id,
@@ -1506,7 +1512,9 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         )
         self.assertEqual(
             child_plan_log.plan_status,
-            parent_plan_log.command_log_ids.command_status,
+            parent_plan_log.command_log_ids.filtered(
+                lambda log: log.triggered_plan_log_id
+            ).command_status,
             "The command status of main plan should be equal "
             "of status second flight plan",
         )
@@ -1559,7 +1567,9 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         self.assertEqual(len(plan_log_records), 1, msg="Should be 1 plan logs")
         self.assertEqual(
             PLAN_LINE_CONDITION_CHECK_FAILED,
-            plan_log_records.command_log_ids.command_status,
+            plan_log_records.command_log_ids.filtered(
+                lambda log: log.command_id == self.command_run_flight_plan_1
+            ).command_status,
             "Command status should be skipped",
         )
 
@@ -2010,6 +2020,147 @@ custom_values['random_var_reference'] = 'another_random_var_value'
             "https://www.cetmix.com",
         )
 
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
+    def test_plan_render_jet_template(self):
+        """Test plan rendering jet template"""
+        plan_log_record_count = self.PlanLog.search_count(
+            [("server_id", "=", self.server_test_1.id)]
+        )
+        self.assertEqual(plan_log_record_count, 0, "Plan logs should be empty")
+
+        # Set variable values for the server
+        res = self.CetmixTower.server_set_variable_value(
+            self.server_test_1.reference, "test_path_", "/opt/tower"
+        )
+        self.assertEqual(res["exit_code"], 0, "Variable 'test_path_' not found/updated")
+        res = self.CetmixTower.server_set_variable_value(
+            self.server_test_1.reference, "test_dir", "server1"
+        )
+        self.assertEqual(res["exit_code"], 0, "Variable 'test_dir' not found/updated")
+
+        # -- 1--
+        # Run plan without jet template
+        self.server_test_1.run_flight_plan(self.plan_2)
+
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", self.plan_2.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1, "A single plan log should be created")
+        self.assertEqual(
+            len(plan_log.command_log_ids), 2, "Two commands should be executed"
+        )
+        self.assertFalse(plan_log.jet_template_id, "Jet template should be empty")
+
+        # Check the SSH command output. Second command
+        rendered_code_expected = "cd /opt/tower && mkdir server1"
+        ssh_command_log = plan_log.command_log_ids[1]
+        self.assertEqual(
+            ssh_command_log.code, rendered_code_expected, "SSH command should succeed"
+        )
+
+        # Check the nested plan command output.
+        # This is needed to ensure that the nested plan commands
+        # are rendered properly.
+        nested_ssh_command_log = plan_log.command_log_ids[
+            0
+        ].triggered_plan_log_id.command_log_ids[0]
+        self.assertEqual(
+            nested_ssh_command_log.code,
+            rendered_code_expected,
+            "SSH command should succeed",
+        )
+
+        # -- 2 --
+        # Run plan with jet template
+
+        # Delete previous plan log
+        plan_log.unlink()
+
+        self.server_test_1.run_flight_plan(
+            self.plan_2, jet_template=self.jet_template_sample
+        )
+
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", self.plan_2.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1, "A single plan log should be created")
+        self.assertEqual(
+            len(plan_log.command_log_ids), 2, "Two commands should be executed"
+        )
+        self.assertEqual(
+            plan_log.jet_template_id,
+            self.jet_template_sample,
+            "Jet template doesn't match",
+        )
+
+        # Check the SSH command output. Second command
+        rendered_code_expected = "cd /jets/templates/template1 && mkdir jet_templates"
+        ssh_command_log = plan_log.command_log_ids[1]
+        self.assertEqual(
+            ssh_command_log.code, rendered_code_expected, "SSH command should succeed"
+        )
+
+        # Check the nested plan command output.
+        # This is needed to ensure that the nested plan commands
+        # are rendered properly.
+        nested_ssh_command_log = plan_log.command_log_ids[
+            0
+        ].triggered_plan_log_id.command_log_ids[0]
+        self.assertEqual(
+            nested_ssh_command_log.code,
+            rendered_code_expected,
+            "SSH command should succeed",
+        )
+
+        # -- 3 --
+        # Run plan with jet
+        # Delete previous plan log
+        plan_log.unlink()
+
+        self.server_test_1.run_flight_plan(self.plan_2, jet=self.jet_sample)
+
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", self.plan_2.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1, "A single plan log should be created")
+        self.assertEqual(
+            len(plan_log.command_log_ids), 2, "Two commands should be executed"
+        )
+        self.assertEqual(
+            plan_log.jet_template_id,
+            self.jet_template_sample,
+            "Jet template doesn't match",
+        )
+        self.assertEqual(plan_log.jet_id, self.jet_sample, "Jet doesn't match")
+
+        # Check the SSH command output. Second command
+        rendered_code_expected = "cd /jets/jet1 && mkdir jet_templates"
+        ssh_command_log = plan_log.command_log_ids[1]
+        self.assertEqual(
+            ssh_command_log.code, rendered_code_expected, "SSH command should succeed"
+        )
+
+        # Check the nested plan command output.
+        # This is needed to ensure that the nested plan commands
+        # are rendered properly.
+        nested_ssh_command_log = plan_log.command_log_ids[
+            0
+        ].triggered_plan_log_id.command_log_ids[0]
+        self.assertEqual(
+            nested_ssh_command_log.code,
+            rendered_code_expected,
+            "SSH command should succeed",
+        )
+
     def test_plan_with_custom_values_in_condition(self):
         """
         Ensure that plan line conditions see updated custom_values
@@ -2093,17 +2244,17 @@ custom_values['random_var_reference'] = 'another_random_var_value'
         # Save plan_log for control is_running
         plan_log_holder = {}
 
-        def fake_run(self, server, plan_log, **kwargs):
+        def fake_run(self, server, plan_log_record, **kwargs):
             # Save plan_log for control is_running
-            plan_log_holder["log"] = plan_log
+            plan_log_holder["log"] = plan_log_record
 
             # Call stop() after first command
-            if len(plan_log.command_log_ids) == 0:
-                plan_log.stop()
+            if len(plan_log_record.command_log_ids) == 0:
+                plan_log_record.stop()
                 # After this call plan_log should be stopped,
                 # and finish_date should be filled
             # Continue execution in standard way
-            return _run_super(self, server, plan_log, **kwargs)
+            return _run_super(self, server, plan_log_record, **kwargs)
 
         with patch.object(cx_tower_plan_line_obj, "_run", new=fake_run):
             plan_log = plan._run_single(server)
