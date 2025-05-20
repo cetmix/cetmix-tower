@@ -1,0 +1,44 @@
+<odoo noupdate="1">
+    <record id="cx_tower_jet_state_building" model="cx.tower.jet.state">
+        <field name="name">Building</field>
+        <field name="sequence">1</field>
+        <field name="color">4</field>
+        <field name="note">Jet is being created</field>
+    </record>
+    <record id="cx_tower_jet_state_stopped" model="cx.tower.jet.state">
+        <field name="name">Stopped</field>
+        <field name="sequence">2</field>
+        <field name="color">9</field>
+        <field name="note">Jet is stopped and ready to be started</field>
+    </record>
+    <record id="cx_tower_jet_state_starting" model="cx.tower.jet.state">
+        <field name="name">Starting</field>
+        <field name="sequence">3</field>
+        <field name="color">3</field>
+        <field name="note">Jet is being started</field>
+    </record>
+    <record id="cx_tower_jet_state_running" model="cx.tower.jet.state">
+        <field name="name">Running</field>
+        <field name="sequence">4</field>
+        <field name="color">10</field>
+        <field name="note">Jet is running</field>
+    </record>
+    <record id="cx_tower_jet_state_stopping" model="cx.tower.jet.state">
+        <field name="name">Stopping</field>
+        <field name="sequence">5</field>
+        <field name="color">1</field>
+        <field name="note">Jet is being stopped</field>
+    </record>
+    <record id="cx_tower_jet_state_restarting" model="cx.tower.jet.state">
+        <field name="name">Restarting</field>
+        <field name="sequence">6</field>
+        <field name="color">6</field>
+        <field name="note">Jet is being restarted</field>
+    </record>
+    <record id="cx_tower_jet_state_removing" model="cx.tower.jet.state">
+        <field name="name">Removing</field>
+        <field name="sequence">7</field>
+        <field name="color">7</field>
+        <field name="note">Jet is being removed</field>
+    </record>
+</odoo>

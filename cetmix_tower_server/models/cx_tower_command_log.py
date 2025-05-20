@@ -30,6 +30,13 @@ class CxTowerCommandLog(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"
     )
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+    )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        string="Jet",
+    )
 
     # -- Time
     start_date = fields.Datetime(string="Started")

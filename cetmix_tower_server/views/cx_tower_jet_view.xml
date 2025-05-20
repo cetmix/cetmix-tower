@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <!-- Jet Form View -->
+    <record id="cx_tower_jet_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.form</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <form string="Jet">
+                <header>
+                    <field name="state_id" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Production Odoo" />
+                        </h1>
+                    </div>
+                    <group>
+                        <field
+                            name="reference"
+                            placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                        />
+                        <field
+                            name="url"
+                            placeholder="Jet URL, eg 'https://meme.example.com'"
+                            widget="url"
+                        />
+                    </group>
+                    <notebook>
+                        <page name="general" string="General Settings">
+                            <group>
+                                <group>
+                                    <field name="jet_template_id" />
+                                    <field name="server_id" />
+                                    <field name="server_ids" invisible="1" />
+                                </group>
+                                <group>
+                                    <field
+                                        name="available_action_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                    <field name="action_to_trigger_id" />
+                                </group>
+                            </group>
+                        </page>
+                        <page name="configuration" string="Configuration">
+                            <field name="variable_value_ids" order="variable_reference">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="variable_reference" invisible="1" />
+                                    <field name="variable_id" />
+                                    <field name="variable_type" invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                    />
+                                    <field name="access_level" optional="show" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                        <field name="access_level" />
+                                    </group>
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Jet Tree View -->
+    <record id="cx_tower_jet_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.tree</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="reference" />
+                <field name="jet_template_id" />
+                <field name="server_id" />
+                <field name="state_id" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Jet Search View -->
+    <record id="cx_tower_jet_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.search</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <search string="Search Jets">
+                <field name="name" />
+                <field name="reference" />
+                <field name="jet_template_id" />
+                <field name="server_id" />
+                <field name="state_id" />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Template"
+                        name="group_by_template"
+                        context="{'group_by': 'jet_template_id'}"
+                    />
+                    <filter
+                        string="Server"
+                        name="group_by_server"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="State"
+                        name="group_by_state"
+                        context="{'group_by': 'state_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Jet Kanban View -->
+    <record id="cx_tower_jet_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.jet.kanban</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <kanban
+                default_group_by="state_id"
+                class="o_kanban_small_column"
+                quick_create="false"
+                records_draggable="1"
+                group_create="false"
+            >
+                <field name="name" />
+                <field name="reference" />
+                <field name="jet_template_id" />
+                <field name="server_id" />
+                <field name="state_id" />
+                <field name="url" />
+                <field name="available_action_ids" />
+                <field name="color" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            t-attf-class="oe_kanban_global_click oe_kanban_card #{record.color.raw_value ? 'oe_kanban_color_' + record.color.raw_value : ''}"
+                        >
+                            <!-- Title and reference -->
+                            <div class="oe_kanban_details">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name" />
+                                </strong>
+                                <div class="o_kanban_record_subtitle">
+                                    <field name="reference" />
+                                </div>
+                            </div>
+                            <!-- Main content -->
+                            <div class="o_kanban_record_body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong>Template:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <field name="jet_template_id" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong>Server:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <field name="server_id" />
+                                    </div>
+                                </div>
+                                <div t-if="record.url.raw_value" class="row mt-2">
+                                    <div class="col-12">
+                                        <a
+                                            t-att-href="record.url.raw_value"
+                                            target="_blank"
+                                        >
+                                            <i class="fa fa-external-link" /> Open Jet
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Footer with available actions as tags -->
+                            <div
+                                t-if="record.available_action_ids.raw_value.length > 0"
+                                class="o_kanban_record_bottom mt-2"
+                            >
+                                <div class="oe_kanban_bottom_left">
+                                    <strong>Available Actions:</strong>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field
+                                        name="available_action_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Update Jet Action to include kanban view -->
+    <record id="cx_tower_jet_action" model="ir.actions.act_window">
+        <field name="name">Jets</field>
+        <field name="res_model">cx.tower.jet</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'group_by': 'state_id'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Jet!
+            </p>
+            <p>
+                Jets represent application instances that are managed independently
+                from their host servers.
+            </p>
+        </field>
+    </record>
+
+</odoo>
