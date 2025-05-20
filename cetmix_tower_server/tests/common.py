@@ -20,6 +20,8 @@ class TestTowerCommon(BaseCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Disable transaction commit to avoid race conditions
+        cls.env = cls.env["base"].with_context(cetmix_tower_no_commit=True).env
 
         # ----------------------------------------------
         # -- Create core elements invoked in the tests
@@ -276,6 +278,80 @@ class TestTowerCommon(BaseCommon):
         # Scheduled task
         cls.ScheduledTask = cls.env["cx.tower.scheduled.task"]
         cls.ScheduledTaskCv = cls.env["cx.tower.scheduled.task.cv"]
+        # Jet State
+        cls.JetState = cls.env["cx.tower.jet.state"]
+
+        # Jet Action
+        cls.JetAction = cls.env["cx.tower.jet.action"]
+
+        # Jet Template Install
+        cls.JetTemplateInstall = cls.env["cx.tower.jet.template.install"]
+
+        # Jet Template Install Line
+        cls.JetTemplateInstallLine = cls.env["cx.tower.jet.template.install.line"]
+
+        # Jet Template Dependency
+        cls.JetTemplateDependency = cls.env["cx.tower.jet.template.dependency"]
+
+        # Jet Template
+        cls.JetTemplate = cls.env["cx.tower.jet.template"]
+        cls.jet_template_sample = cls.JetTemplate.create(
+            {
+                "name": "Sample Jet Template",
+                "server_ids": [(4, cls.server_test_1.id)],
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": cls.variable_path.id,
+                            "value_char": "/jets/templates/template1",
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {"variable_id": cls.variable_os.id, "value_char": "Debian 10"},
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": cls.variable_url.id,
+                            "value_char": "https://jets.example.com",
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": cls.variable_dir.id,
+                            "value_char": "jet_templates",
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Jets
+        cls.Jet = cls.env["cx.tower.jet"]
+        cls.jet_sample = cls.Jet.create(
+            {
+                "name": "Sample Jet",
+                "jet_template_id": cls.jet_template_sample.id,
+                "server_id": cls.server_test_1.id,
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": cls.variable_path.id,
+                            "value_char": "/jets/jet1",
+                        },
+                    )
+                ],
+            }
+        )
 
         # apply ssh connection patches
         cls.apply_patches()

@@ -76,6 +76,34 @@ FILE_UPLOAD_FAILED = -401
 # Returned when the file could not be downloaded from the server
 FILE_DOWNLOAD_FAILED = -402
 
+
+# -- Jet: -500 > -599
+
+# Returned when the jet action is not found
+JET_ACTION_NOT_FOUND = -501
+
+# Returned when the jet template is not found
+JET_TEMPLATE_NOT_FOUND = -502
+
+# Returned when the jet is not found
+JET_NOT_FOUND = -503
+
+# Returned when a jet state error occurs
+JET_STATE_ERROR = -504
+
+# Returned when the jet action is not available
+JET_ACTION_NOT_AVAILABLE = -505
+
+# Returned when the jet dependencies are not satisfied
+JET_DEPENDENCIES_NOT_SATISFIED = -506
+
+# Returned when the waypoint template is not found or not set
+WAYPOINT_TEMPLATE_NOT_FOUND = -507
+
+# Returned when waypoint creation fails (e.g. template not for jet, jet busy)
+WAYPOINT_CREATE_FAILED = -508
+
+
 # -- Default values
 
 # Default Python code used in Python code command

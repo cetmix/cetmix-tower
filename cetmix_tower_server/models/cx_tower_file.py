@@ -107,7 +107,12 @@ class CxTowerFile(models.Model):
         "Otherwise there will be a server error message logged.",
     )
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=False, ondelete="cascade"
+        comodel_name="cx.tower.server",
+        index=True,
+        ondelete="cascade",
+        compute="_compute_server_id",
+        store=True,
+        readonly=False,
     )
     code_on_server = fields.Text(
         readonly=True,
@@ -135,6 +140,21 @@ class CxTowerFile(models.Model):
         relation="cx_tower_file_variable_rel",
         column1="file_id",
         column2="variable_id",
+    )
+
+    # Jets
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        help="Jet template this file belongs to",
+        index=True,
+        compute="_compute_server_id",
+        store=True,
+        readonly=False,
+    )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        help="Jet this file belongs to",
+        index=True,
     )
 
     @classmethod
@@ -195,11 +215,28 @@ class CxTowerFile(models.Model):
         return "text"
 
     # -- Computes
+
+    @api.depends("jet_id", "jet_id.server_id", "jet_id.jet_template_id")
+    def _compute_server_id(self):
+        for record in self:
+            if record.jet_id:
+                record.update(
+                    {
+                        "server_id": record.jet_id.server_id,
+                        "jet_template_id": record.jet_id.jet_template_id,
+                    }
+                )
+            else:
+                # Reset the jet template id if the jet is removed
+                if record.jet_template_id:
+                    record.jet_template_id = False
+
     @api.depends("server_id", "template_id", "name", "server_dir", "code")
     def _compute_render(self):
         """
         Compute file name, directory and code
         """
+        variable_obj = self.env["cx.tower.variable"]
         for file in self:
             if not file.server_id:
                 file.update(
@@ -219,8 +256,13 @@ class CxTowerFile(models.Model):
                 )
             )
             render_code_custom = file.render_code_custom
-            var_vals = file.server_id.get_variable_values(variables).get(
-                file.server_id.id
+
+            # Get variable values for the server the file is linked to
+            var_vals = variable_obj._get_variable_values_by_references(
+                variables,
+                server=file.server_id,
+                jet_template=file.jet_template_id,
+                jet=file.jet_id,
             )
 
             rendered_code = ""
@@ -494,7 +536,7 @@ class CxTowerFile(models.Model):
         Check the values and reformat if necessary
         """
         if "server_dir" in values:
-            server_dir = values.get("server_dir", "").strip()
+            server_dir = (values.get("server_dir") or "").strip()
             if server_dir.endswith("/") and server_dir != "/":
                 server_dir = server_dir[:-1]
             values.update(

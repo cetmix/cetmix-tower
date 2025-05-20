@@ -111,10 +111,8 @@ class CxTowerKey(models.Model):
 
 
         Args:
-            key_type (Char): Key type
+            key_type (Char): Key type selection value ('s' for secret, 'k' for SSH key)
 
-        Raises:
-            ValidationError: If key type is not valid
 
         Returns:
             Char: key prefix

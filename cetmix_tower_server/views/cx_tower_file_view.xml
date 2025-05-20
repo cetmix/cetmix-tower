@@ -43,11 +43,6 @@
                                 name="template_id"
                                 domain="[('source', '=', source)]"
                             />
-                            <field name="server_id" required="1" />
-                            <field name="server_dir" widget="ace_tower" />
-                            <field name="full_server_path" />
-                        </group>
-                        <group>
                             <field
                                 name="keep_when_deleted"
                                 invisible="source != 'tower'"
@@ -63,6 +58,21 @@
                                 invisible="not auto_sync or source != 'server'"
                             />
                             <field name="sync_date_last" />
+                        </group>
+                        <group>
+                            <field
+                                name="server_id"
+                                readonly="jet_id"
+                                required="not jet_id"
+                            />
+                            <field
+                                name="jet_template_id"
+                                invisible="not jet_template_id"
+                                readonly="jet_id"
+                            />
+                            <field name="jet_id" invisible="not jet_id" />
+                            <field name="server_dir" widget="ace_tower" />
+                            <field name="full_server_path" />
                             <field
                                 name="variable_ids"
                                 widget="many2many_tags"
@@ -148,6 +158,8 @@
                 <field name="source" />
                 <field name="file_type" optional="show" />
                 <field name="server_id" />
+                <field name="jet_template_id" optional="hide" />
+                <field name="jet_id" optional="hide" />
                 <field name="sync_date_last" optional="show" />
                 <field name="template_id" optional="show" />
                 <field
@@ -218,6 +230,18 @@
                         name="group_by_server"
                         domain="[]"
                         context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="Jet Template"
+                        name="group_by_jet_template"
+                        domain="[]"
+                        context="{'group_by': 'jet_template_id'}"
+                    />
+                    <filter
+                        string="Jet"
+                        name="group_by_jet"
+                        domain="[]"
+                        context="{'group_by': 'jet_id'}"
                     />
                     <filter
                         string="Template"

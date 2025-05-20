@@ -10,12 +10,25 @@
         <field name="perm_create" eval="0" />
         <field name="perm_unlink" eval="0" />
         <field name="domain_force">
-            [
+            ['|',
                 '|',
-                ('scheduled_task_id.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.manager_ids', 'in', [user.id]),
+                '|',
+                '|',
+                '|',
+                '|',
+                '|',
+                '|',
                 '|',
                     ('scheduled_task_id.server_ids.user_ids', 'in', [user.id]),
-                    ('scheduled_task_id.server_ids.manager_ids', 'in', [user.id])
+                    ('scheduled_task_id.server_ids.manager_ids', 'in', [user.id]),
+                    ('scheduled_task_id.server_template_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.server_template_ids.manager_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_ids.manager_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_template_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_template_ids.manager_ids', 'in', [user.id])
             ]
         </field>
     </record>

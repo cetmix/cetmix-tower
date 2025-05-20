@@ -6,12 +6,20 @@
         <field name="arch" type="xml">
             <form string="Run Plan">
                 <group>
+                    <field name="show_jets" invisible="1" />
+                    <field
+                        name="jet_ids"
+                        string="Run on"
+                        widget="many2many_tags"
+                        invisible="not show_jets"
+                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    />
                     <field name="show_servers" invisible="1" />
                     <field
                         name="server_ids"
                         widget="many2many_tags"
-                        required="1"
                         string="Run on"
+                        invisible="not show_servers"
                         groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     />
                     <label for="applicability" string="Show Flight Plans" />

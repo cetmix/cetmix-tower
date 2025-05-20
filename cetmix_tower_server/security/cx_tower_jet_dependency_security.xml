@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Access -->
+    <!-- User is in "Users" or "Managers" of both the Jet and the depended Jet -->
+    <record id="rule_cx_tower_jet_dependency_manager_read" model="ir.rule">
+        <field name="name">Jet Dependency: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_dependency" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            ["&amp;",
+                "|",
+                    ("jet_id.user_ids", "in", [user.id]),
+                    ("jet_id.manager_ids", "in", [user.id]),
+                "|",
+                    ("jet_depends_on_id.user_ids", "in", [user.id]),
+                    ("jet_depends_on_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create/Delete Access -->
+    <!-- User is in "Managers" of the Jet AND in "Users" or "Managers" of the depended Jet -->
+    <record id="rule_cx_tower_jet_dependency_manager_crud" model="ir.rule">
+        <field
+            name="name"
+        >Jet Dependency: Manager write &amp; create &amp; unlink</field>
+        <field name="model_id" ref="model_cx_tower_jet_dependency" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [
+                ("jet_id.manager_ids", "in", [user.id]),
+                "|",
+                    ("jet_depends_on_id.user_ids", "in", [user.id]),
+                    ("jet_depends_on_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+    </record>
+
+    <!-- Root Full Access -->
+    <record id="rule_cx_tower_jet_dependency_root_full" model="ir.rule">
+        <field name="name">Jet Dependency: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_dependency" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

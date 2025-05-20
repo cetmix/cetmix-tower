@@ -16,6 +16,14 @@ class CxTowerPlanRunWizard(models.TransientModel):
     server_ids = fields.Many2many(
         "cx.tower.server",
         string="Servers",
+        required=True,
+        compute="_compute_server_ids",
+        readonly=False,
+        store=True,
+    )
+    jet_ids = fields.Many2many(
+        "cx.tower.jet",
+        string="Jets",
     )
     plan_id = fields.Many2one(
         string="Flight Plan",
@@ -57,6 +65,10 @@ class CxTowerPlanRunWizard(models.TransientModel):
         compute="_compute_show_servers",
         store=True,
     )
+    show_jets = fields.Boolean(
+        compute="_compute_show_jets",
+        compute_sudo=True,
+    )
     custom_variable_value_ids = fields.One2many(
         "cx.tower.plan.run.wizard.variable.value",
         "wizard_id",
@@ -69,10 +81,23 @@ class CxTowerPlanRunWizard(models.TransientModel):
             res["applicability"] = "this"
         return res
 
+    @api.depends("jet_ids")
+    def _compute_server_ids(self):
+        for rec in self:
+            if rec.jet_ids:
+                rec.server_ids = rec.jet_ids.server_id
+
     @api.depends("server_ids")
     def _compute_show_servers(self):
         for rec in self:
-            rec.show_servers = bool(rec.server_ids and len(rec.server_ids) > 1)
+            rec.show_servers = (
+                bool(rec.server_ids and len(rec.server_ids) > 1) and not rec.jet_ids
+            )
+
+    @api.depends("jet_ids")
+    def _compute_show_jets(self):
+        for rec in self:
+            rec.show_jets = bool(rec.jet_ids and len(rec.jet_ids) > 1)
 
     @api.depends("plan_id")
     def _compute_plan_line_ids(self):
@@ -116,8 +141,12 @@ class CxTowerPlanRunWizard(models.TransientModel):
                 "plan_log": {"label": plan_label},
                 "variable_values": variable_values,
             }
-            for server in self.server_ids:
-                server.run_flight_plan(self.plan_id, **custom_values)
+            if self.jet_ids:
+                for jet in self.jet_ids:
+                    jet.run_flight_plan(self.plan_id, **custom_values)
+            else:
+                for server in self.server_ids:
+                    server.run_flight_plan(self.plan_id, **custom_values)
             return {
                 "type": "ir.actions.act_window",
                 "name": _("Plan Log"),

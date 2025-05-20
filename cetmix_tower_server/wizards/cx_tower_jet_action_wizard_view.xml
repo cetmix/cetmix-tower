@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_action_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.action.wizard.view.form</field>
+        <field name="model">cx.tower.jet.action.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Trigger Jet Action">
+                <group>
+                    <field
+                        name="action_id"
+                        options="{'no_create': True}"
+                        placeholder="Select an action..."
+                        domain="[('id', 'in', action_available_ids)]"
+                    />
+                    <field name="action_available_ids" invisible="1" />
+                    <field name="jet_ids" />
+                </group>
+
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not action_id or not jet_ids"
+                        confirm="Trigger the action for the selected jets?"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Context Action for triggering jet actions -->
+    <record id="action_cx_tower_jet_trigger_action" model="ir.actions.act_window">
+        <field name="name">Trigger Action</field>
+        <field name="res_model">cx.tower.jet.action.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_cx_tower_jet" />
+        <field name="binding_view_types">list</field>
+        <field name="context">{'default_jet_ids': active_ids}</field>
+    </record>
+</odoo>
