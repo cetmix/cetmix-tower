@@ -1,0 +1,1 @@
+Although OVH allows API calls without using an SDK, we found that integrating the OVH SDK into Cetmix Tower makes provisioning, configuring, and maintaining OVH instances more convenient for the end user. However, not all Cetmix Tower users require this functionality, so to avoid overloading the system, we have included it in a separate module.
