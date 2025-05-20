@@ -23,6 +23,15 @@ class CxTowerCommandRunWizard(models.TransientModel):
     server_ids = fields.Many2many(
         "cx.tower.server",
         string="Servers",
+        compute="_compute_server_ids",
+        readonly=False,
+        required=True,
+        store=True,
+    )
+    jet_ids = fields.Many2many(
+        "cx.tower.jet",
+        string="Jets",
+        help="Jets to run the command on",
     )
     command_id = fields.Many2one(
         "cx.tower.command",
@@ -80,6 +89,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
         compute="_compute_show_servers",
         compute_sudo=True,
     )
+    show_jets = fields.Boolean(
+        compute="_compute_show_jets",
+        compute_sudo=True,
+    )
     os_compatibility_warning = fields.Text(
         compute="_compute_os_compatibility_warning",
         compute_sudo=True,
@@ -112,10 +125,25 @@ class CxTowerCommandRunWizard(models.TransientModel):
             res["applicability"] = "this"
         return res
 
-    @api.depends("server_ids")
+    @api.depends("jet_ids")
+    def _compute_server_ids(self):
+        for rec in self:
+            if rec.jet_ids:
+                rec.server_ids = rec.jet_ids.server_id
+
+    @api.depends("server_ids", "jet_ids")
     def _compute_show_servers(self):
         for rec in self:
-            rec.show_servers = bool(rec.server_ids and len(rec.server_ids) > 1)
+            rec.show_servers = (
+                bool(rec.server_ids and len(rec.server_ids) > 1)
+                and not rec.jet_ids
+                and not rec.result
+            )
+
+    @api.depends("jet_ids")
+    def _compute_show_jets(self):
+        for rec in self:
+            rec.show_jets = bool(rec.jet_ids and len(rec.jet_ids) > 1)
 
     @api.depends("command_id", "server_ids", "action")
     def _compute_code(self):
@@ -141,14 +169,24 @@ class CxTowerCommandRunWizard(models.TransientModel):
         for record in self:
             if record.server_ids and len(record.server_ids) == 1:
                 # Render code preview for the first server only.
-                server_id = record.server_ids[0]
+                if record.jet_ids:
+                    server_id = record.jet_ids[0].server_id
+                else:
+                    server_id = record.server_ids[0]
 
                 # Get variable list
                 variables = record.get_variables()
 
                 # Get variable values
-                variable_values = server_id.get_variable_values(
-                    variables.get(str(record.id))
+                variable_values = self.env[
+                    "cx.tower.variable"
+                ]._get_variable_values_by_references(
+                    variables.get(str(record.id)),
+                    server=server_id,
+                    jet_template=record.jet_ids[0].jet_template_id
+                    if record.jet_ids
+                    else None,
+                    jet=record.jet_ids[0] if record.jet_ids else None,
                 )
                 if variable_values and record.custom_variable_value_ids:
                     custom_vals = {
@@ -156,14 +194,14 @@ class CxTowerCommandRunWizard(models.TransientModel):
                         for custom_value in record.custom_variable_value_ids
                         if custom_value.variable_id
                     }
-                    variable_values[server_id.id].update(custom_vals)
+                    variable_values.update(custom_vals)
 
                 # Render template
                 if variable_values:
                     record.rendered_code = record.render_code(
                         pythonic_mode=record.action == "python_code",
-                        **variable_values.get(server_id.id),
-                    ).get(self.id)  # pylint: disable=no-member
+                        **variable_values,
+                    )[record.id]  # pylint: disable=no-member
                 else:
                     record.rendered_code = record.code
             else:
@@ -258,13 +296,16 @@ class CxTowerCommandRunWizard(models.TransientModel):
     @api.onchange("command_variable_ids", "server_ids")
     def _onchange_command_variable_ids(self):
         """
-        Reset custom variable values after change code
+        Reset custom variable values after code change
         """
+
+        self.ensure_one()
         # Remove existing custom variable values
         self.custom_variable_value_ids = False
 
         if (
-            not self.command_variable_ids
+            self.jet_ids
+            or not self.command_variable_ids
             or not self.server_ids
             or len(self.server_ids) > 1
         ):
@@ -272,15 +313,18 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         # Add new custom variable values
         # Render values for the first server only.
-        server_id = self.server_ids
+        server = self.server_ids[0]
 
         # Get variable list
         variables = self.get_variables()
 
         # Get variable values
-        variable_values = server_id.get_variable_values(variables.get(str(self.id)))[
-            server_id.id
-        ]
+        variable_values = self.env[
+            "cx.tower.variable"
+        ]._get_variable_values_by_references(
+            variables.get(str(self.id)),
+            server=server._origin if hasattr(server, "_origin") else server,
+        )
 
         # Filter variables current user has access to
         command_variables = self.command_variable_ids.search(
@@ -300,7 +344,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     ).id
                     if variable.variable_type == "o"
                     else None,
-                    "variable_value_id": server_id.variable_value_ids.filtered(
+                    "variable_value_id": server.variable_value_ids.filtered(
                         lambda v, var=variable: v.variable_id == var
                     )[:1].id,
                 },
@@ -313,11 +357,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
         Return wizard action to select command and execute it
         """
         context = self.env.context.copy()
-        context.update(
-            {
-                "default_server_ids": self.server_ids.ids,
-            }
-        )
+        if self.jet_ids:
+            context["default_jet_ids"] = self.jet_ids.ids
+        else:
+            context["default_server_ids"] = self.server_ids.ids
         return {
             "type": "ir.actions.act_window",
             "name": _("Run Command"),
@@ -328,7 +371,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
         }
 
     def run_command_on_server(self):
-        """Run command on selected servers"""
+        """Run command on selected servers or jets"""
+        self.ensure_one()
+
         # Check if all required values are set
         if self.has_missing_required_values:
             raise ValidationError(self.missing_required_variables_message)
@@ -348,13 +393,22 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 for value in self.custom_variable_value_ids
             },
         }
-        for server in self.server_ids:
-            server.run_command(
-                self.command_id,
-                sudo=self.use_sudo,
-                path=path_value,
-                **kwargs,
-            )
+        if self.jet_ids:
+            for jet in self.jet_ids:
+                jet.run_command(
+                    command=self.command_id,
+                    sudo=self.use_sudo,
+                    path=path_value,
+                    **kwargs,
+                )
+        else:
+            for server in self.server_ids:
+                server.run_command(
+                    command=self.command_id,
+                    sudo=self.use_sudo,
+                    path=path_value,
+                    **kwargs,
+                )
         return {
             "type": "ir.actions.act_window",
             "name": _("Command Log"),
@@ -368,19 +422,33 @@ class CxTowerCommandRunWizard(models.TransientModel):
         """
         Runs a given code as is in wizard
         """
+        self.ensure_one()
+
         # Check if multiple servers are selected
         if len(self.server_ids) > 1:
             raise ValidationError(
                 _("You cannot run custom code on multiple servers at once.")
             )
 
+        # Check if multiple jets are selected
+        if len(self.jet_ids) > 1:
+            raise ValidationError(
+                _("You cannot run custom code on multiple jets at once.")
+            )
+
+        # From now we have one server or one jet selected
         # Raise access error if non manager is trying to call this method
-        if not self.env.user.has_group(
-            "cetmix_tower_server.group_manager"
-        ) and not self.env.user.has_group("cetmix_tower_server.group_root"):
+        if not self._is_privileged_user():
             raise AccessError(_("You are not allowed to execute commands in wizard"))
 
-        self.ensure_one()
+        # Check if jet is currently executing an action
+        if self.jet_ids and self.jet_ids.current_action_id:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' is currently executing an action",
+                    jet=self.jet_ids.display_name,
+                )
+            )
 
         if not self.command_id.allow_parallel_run:
             running_count = (
@@ -415,10 +483,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         result = ""
 
         # Set the "no_split_for_sudo" property
-        if self.command_id and self.command_id.no_split_for_sudo:
-            no_split_for_sudo = True
-        else:
-            no_split_for_sudo = False
+        no_split_for_sudo = bool(self.command_id and self.command_id.no_split_for_sudo)
 
         for server in self.server_ids:
             server_name = server.name
@@ -431,6 +496,15 @@ class CxTowerCommandRunWizard(models.TransientModel):
             kwargs = {
                 "key": key_vals,
                 "no_split_for_sudo": no_split_for_sudo,
+                "log": {
+                    "jet_id": self.jet_ids and self.jet_ids[0].id
+                    if self.jet_ids
+                    else None,
+                    "jet_template_id": self.jet_ids
+                    and self.jet_ids[0].jet_template_id.id
+                    if self.jet_ids
+                    else None,
+                },
             }
 
             if self.action == "python_code":

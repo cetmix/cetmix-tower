@@ -5,7 +5,16 @@ import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.osv.expression import OR
+
+# Context keys to remove on record creation.
+# This is needed to avoid values being set from context keys
+CONTEXT_KEYS_TO_REMOVE = [
+    "default_server_id",
+    "default_jet_template_id",
+    "default_plan_line_action_id",
+    "default_jet_id",
+    "default_server_template_id",
+]
 
 
 class TowerVariableValue(models.Model):
@@ -81,6 +90,19 @@ class TowerVariableValue(models.Model):
     server_template_id = fields.Many2one(
         comodel_name="cx.tower.server.template", index=True, ondelete="cascade"
     )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        string="Jet",
+        ondelete="cascade",
+        index=True,
+    )
+
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        string="Jet Template",
+        ondelete="cascade",
+        index=True,
+    )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_variable_value_variable_rel",
@@ -101,11 +123,6 @@ class TowerVariableValue(models.Model):
             "Variable can be declared only once for the same record!",
         ),
         (
-            "unique_variable_value_server",
-            "unique (variable_id, server_id)",
-            "A variable value cannot be assigned multiple times to the same server!",
-        ),
-        (
             "unique_variable_value_template",
             "unique (variable_id, server_template_id)",
             (
@@ -120,6 +137,17 @@ class TowerVariableValue(models.Model):
                 "A variable value cannot be assigned multiple"
                 " times to the same plan line action!"
             ),
+        ),
+        (
+            "unique_variable_value_jet_template",
+            "unique (variable_id, jet_template_id)",
+            "A variable value cannot be assigned multiple times to "
+            "the same jet template!",
+        ),
+        (
+            "unique_variable_value_jet",
+            "unique (variable_id, jet_id)",
+            "A variable value cannot be assigned multiple times to the same jet!",
         ),
     ]
 
@@ -252,8 +280,14 @@ class TowerVariableValue(models.Model):
                         )
                     )
 
-    @api.constrains("server_id", "server_template_id", "plan_line_action_id")
-    def _check_single_assignment(self):
+    @api.constrains(
+        "server_id",
+        "server_template_id",
+        "plan_line_action_id",
+        "jet_id",
+        "jet_template_id",
+    )
+    def _check_assignment(self):
         """Ensure that a variable is only assigned to one model at a time."""
         for record in self:
             # Check how many of the fields are set
@@ -261,14 +295,66 @@ class TowerVariableValue(models.Model):
                 bool(record.server_id)
                 + bool(record.server_template_id)
                 + bool(record.plan_line_action_id)
+                + bool(record.jet_id)
+                + bool(record.jet_template_id)
             )
             if count_assigned > 1:
                 raise ValidationError(
                     _(
                         "Variable '%(var)s' can only be assigned to one of the models "
                         "at a time: "
-                        "Server, Server Template, or Plan Line Action.",
+                        "Server, Jet, Jet Template, Server Template, or "
+                        "Plan Line Action.",
                         var=record.variable_id.name,
+                    )
+                )
+
+    @api.constrains("server_id", "server_template_id", "jet_id", "jet_template_id")
+    def _check_unique_for_server_no_jet_no_jet_template(self):
+        """Ensure uniqueness of variable+server when both jet fields are empty"""
+        # Filter records that have both jet fields empty
+        records_to_check = self.filtered(
+            lambda r: not r.jet_id and not r.jet_template_id
+        )
+
+        if not records_to_check:
+            return
+
+        # Use read_group to find duplicates efficiently
+        domain = [
+            ("jet_id", "=", False),
+            ("jet_template_id", "=", False),
+            ("variable_id", "in", records_to_check.mapped("variable_id").ids),
+            ("server_id", "in", records_to_check.mapped("server_id").ids),
+        ]
+
+        grouped_data = self.read_group(
+            domain=domain,
+            fields=["variable_id", "server_id"],
+            groupby=["variable_id", "server_id"],
+            lazy=False,
+        )
+
+        # Check for groups with more than 1 record
+        for group in grouped_data:
+            if group["__count"] > 1:
+                variable_name = (
+                    group.get("variable_id", ["", "Unknown"])[1]
+                    if group.get("variable_id")
+                    else "Unknown"
+                )
+                server_name = (
+                    group.get("server_id", ["", "Unknown"])[1]
+                    if group.get("server_id")
+                    else "Unknown"
+                )
+                raise ValidationError(
+                    _(
+                        "Multiple records found with Variable '%(variable_name)s'"
+                        " and Server '%(server_name)s' "
+                        "with both Jet and Jet Template empty.",
+                        variable_name=variable_name,
+                        server_name=server_name,
                     )
                 )
 
@@ -344,6 +430,14 @@ class TowerVariableValue(models.Model):
         """
         Workaround for the default value not being set
         """
+        # Remove all 'default_' keys from context
+        # This is needed to avoid values being set from context keys
+        # Eg 'default_server_id' will set the server_id even if it's
+        # not provided in vals_list.
+        # This is a workaround to avoid the issue.
+
+        self = self._self_with_clean_context()
+
         variable_obj = self.env["cx.tower.variable"]
         for vals in vals_list:
             # Set access level from the variable
@@ -359,70 +453,17 @@ class TowerVariableValue(models.Model):
 
     # -- Business logic --
 
-    def get_by_variable_reference(
-        self,
-        variable_reference,
-        server_id=None,
-        server_template_id=None,
-        check_global=True,
-    ):
-        """Get record based on its reference.
-
-        Important: references are case sensitive!
-
-        Args:
-            variable_reference (Char): variable reference
-            server_reference (Int): Server ID
-            server_template_reference (Int): Server template ID
+    def _self_with_clean_context(self):
+        """
+        Clean context to avoid values being set from context keys
 
         Returns:
-            Dict: Variable values that match provided reference
+            self: with context cleaned
         """
-
-        domain = [("variable_reference", "=", variable_reference)]
-        # Server or server template specific
-        if server_id:
-            domain.append(("server_id", "=", server_id))
-        elif server_template_id:
-            domain.append(("server_template_id", "=", server_template_id))
-
-        if check_global:
-            domain = OR(
-                [
-                    domain,
-                    [
-                        ("variable_reference", "=", variable_reference),
-                        ("is_global", "=", True),
-                    ],
-                ]
-            )
-
-        search_result = self.search(domain)
-        result = {}
-        if search_result:
-            if server_id:
-                value_char = search_result.filtered("server_id").mapped("value_char")
-                result.update(
-                    {"server": value_char and value_char[0] if value_char else None}
-                )
-            if server_template_id:
-                value_char = search_result.filtered("server_template_id").mapped(
-                    "value_char"
-                )
-                result.update(
-                    {
-                        "server_template": value_char and value_char[0]
-                        if value_char
-                        else None
-                    }
-                )
-            if check_global:
-                value_char = search_result.filtered("is_global").mapped("value_char")
-                result.update(
-                    {"global": value_char and value_char[0] if value_char else None}
-                )
-
-        return result
+        context = self.env.context.copy()
+        for key in CONTEXT_KEYS_TO_REMOVE:
+            context.pop(key, None)
+        return self.with_context(context)  # pylint: disable=context-overridden
 
     def _used_in_models(self):
         """Returns information about models which use this mixin.
@@ -437,6 +478,8 @@ class TowerVariableValue(models.Model):
             "cx.tower.server": ("server_id", "Server"),
             "cx.tower.plan.line.action": ("plan_line_action_id", "Action"),
             "cx.tower.server.template": ("server_template_id", "Server Template"),
+            "cx.tower.jet.template": ("jet_template_id", "Jet Template"),
+            "cx.tower.jet": ("jet_id", "Jet"),
         }
 
     def _check_is_global(self):

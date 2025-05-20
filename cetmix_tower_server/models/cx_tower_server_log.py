@@ -25,7 +25,14 @@ class CxTowerServerLog(models.Model):
     NO_LOG_FETCHED_MESSAGE = _("<log is empty>")
 
     active = fields.Boolean(default=True)
-    server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
+    server_id = fields.Many2one(
+        "cx.tower.server",
+        ondelete="cascade",
+        compute="_compute_server_id",
+        index=True,
+        store=True,
+        readonly=False,
+    )
     log_type = fields.Selection(
         selection=lambda self: self._selection_log_type(),
         required=True,
@@ -63,6 +70,27 @@ class CxTowerServerLog(models.Model):
         help="This file template will be used to create log files"
         " when server is created from a template",
     )
+
+    # -- Jet Template related
+    jet_template_id = fields.Many2one(
+        "cx.tower.jet.template",
+        ondelete="cascade",
+        index=True,
+        help="This jet template will be used to create log files when jet is created",
+    )
+
+    # -- Jet related
+    jet_id = fields.Many2one(
+        "cx.tower.jet",
+        ondelete="cascade",
+        index=True,
+    )
+
+    @api.depends("jet_id")
+    def _compute_server_id(self):
+        for record in self:
+            if not record.server_id and record.jet_id:
+                record.server_id = record.jet_id.server_id.id
 
     def _selection_log_type(self):
         """Actions that can be run by a command.
@@ -158,7 +186,8 @@ class CxTowerServerLog(models.Model):
         Returns:
             Text: formatted log text
         """
-        return log_text
+        # Remove the null bytes
+        return log_text.replace("\x00", "")
 
     def _get_log_from_file(self):
         """Get log from a file.
@@ -169,8 +198,12 @@ class CxTowerServerLog(models.Model):
         """
         self.ensure_one()
         if self.file_id.source == "server":
+            self.file_id.download(raise_error=False)
             return self.file_id.code
         if self.file_id.source == "tower":
+            result = self.file_id.action_get_current_server_code()
+            if isinstance(result, dict):
+                return
             return self.file_id.code_on_server
 
     def _get_log_from_command(self):
@@ -182,7 +215,10 @@ class CxTowerServerLog(models.Model):
 
         use_sudo = self.use_sudo and self.server_id.use_sudo
         command_result = self.server_id.with_context(no_command_log=True).run_command(
-            self.command_id, sudo=use_sudo
+            self.command_id,
+            jet=self.jet_id,
+            jet_template=self.jet_template_id,
+            sudo=use_sudo,
         )
         log_text = self.NO_LOG_FETCHED_MESSAGE
         if command_result:

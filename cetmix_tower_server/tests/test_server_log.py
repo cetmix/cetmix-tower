@@ -3,41 +3,33 @@
 
 from odoo.exceptions import AccessError
 
-from .common import TestTowerCommon
+from .common_jets import TestTowerJetsCommon
 
 
-class TestTowerServerLog(TestTowerCommon):
+class TestTowerServerLog(TestTowerJetsCommon):
     """Test the cx.tower.server.log model access rights."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
-        # Create test server logs with specific users
-        cls.server_log_1 = (
-            cls.ServerLog.with_user(cls.user)
-            .sudo()
-            .create(
-                {
-                    "name": "Test Log 1",
-                    "server_id": cls.server_test_1.id,
-                    "log_type": "file",
-                    "access_level": "1",
-                }
-            )
+        # Create test server logs
+        cls.server_log_1 = cls.ServerLog.create(
+            {
+                "name": "Test Log 1",
+                "server_id": cls.server_test_1.id,
+                "log_type": "file",
+                "access_level": "1",
+            }
         )
 
-        cls.server_log_2 = (
-            cls.ServerLog.with_user(cls.manager)
-            .sudo()
-            .create(
-                {
-                    "name": "Test Log 2",
-                    "server_id": cls.server_test_1.id,
-                    "log_type": "file",
-                    "access_level": "1",
-                }
-            )
+        cls.server_log_2 = cls.ServerLog.create(
+            {
+                "name": "Test Log 2",
+                "server_id": cls.server_test_1.id,
+                "log_type": "file",
+                "access_level": "1",
+            }
         )
 
         # Create additional server for testing
@@ -50,6 +42,52 @@ class TestTowerServerLog(TestTowerCommon):
                 "ssh_port": 22,
                 "user_ids": [(6, 0, [])],
                 "manager_ids": [(6, 0, [])],
+            }
+        )
+
+        # Use pre-created jet_template_test and jet_test from TestTowerJetsCommon
+        # Ensure jet_template_test has server_test_1 in server_ids
+        cls.jet_template_test.write({"server_ids": [(4, cls.server_test_1.id)]})
+
+        # Create server logs linked to Jet
+        cls.server_log_jet_1 = cls.ServerLog.create(
+            {
+                "name": "Test Jet Log 1",
+                "server_id": cls.server_test_1.id,
+                "jet_id": cls.jet_test.id,
+                "log_type": "file",
+                "access_level": "1",
+            }
+        )
+
+        cls.server_log_jet_2 = cls.ServerLog.create(
+            {
+                "name": "Test Jet Log 2",
+                "server_id": cls.server_test_1.id,
+                "jet_id": cls.jet_test.id,
+                "log_type": "file",
+                "access_level": "2",
+            }
+        )
+
+        # Create server logs linked to Jet Template
+        cls.server_log_jet_template_1 = cls.ServerLog.create(
+            {
+                "name": "Test Jet Template Log 1",
+                "server_id": cls.server_test_1.id,
+                "jet_template_id": cls.jet_template_test.id,
+                "log_type": "file",
+                "access_level": "1",
+            }
+        )
+
+        cls.server_log_jet_template_2 = cls.ServerLog.create(
+            {
+                "name": "Test Jet Template Log 2",
+                "server_id": cls.server_test_1.id,
+                "jet_template_id": cls.jet_template_test.id,
+                "log_type": "file",
+                "access_level": "2",
             }
         )
 
@@ -266,7 +304,7 @@ class TestTowerServerLog(TestTowerCommon):
 
     def test_log_text_refresh_mechanism(self):
         """Test log_text can only be updated via refresh action"""
-        test_log = self.ServerLog.sudo().create(
+        test_log = self.ServerLog.create(
             {
                 "name": "Refresh Test Log",
                 "server_id": self.server_test_1.id,
@@ -308,3 +346,312 @@ class TestTowerServerLog(TestTowerCommon):
         self.assertFalse(copied.log_text, "Copied log must not keep log_text")
         self.assertNotEqual(copied.id, original.id)
         self.assertTrue(bool(copied.name))
+
+    def test_jet_user_access(self):
+        """Test user access to server logs via Jet"""
+        # Set user to jet's user_ids (replaces any existing users)
+        self.jet_test.write({"user_ids": [(6, 0, [self.user.id])]})
+
+        # Case 1: User should be able to read when:
+        # - access_level == "1"
+        # - user is in jet's user_ids
+        recs = self.ServerLog.with_user(self.user).search(
+            [("id", "in", [self.server_log_jet_1.id, self.server_log_jet_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            1,
+            "User should be able to read logs with access_level '1'"
+            " when in jet's user_ids",
+        )
+        self.assertEqual(recs.id, self.server_log_jet_1.id)
+
+        # Case 2: User should not be able to read when not in jet's user_ids
+        self.jet_test.write({"user_ids": [(5, 0, 0)]})  # Remove all users
+        recs = self.ServerLog.with_user(self.user).search(
+            [("id", "=", self.server_log_jet_1.id)]
+        )
+        self.assertEqual(
+            len(recs),
+            0,
+            "User should not be able to read when not in jet's user_ids",
+        )
+
+        # Case 3: User should not be able to read when access_level > "1"
+        # Set user back to jet's user_ids
+        self.jet_test.write({"user_ids": [(6, 0, [self.user.id])]})
+        recs = self.ServerLog.with_user(self.user).search(
+            [("id", "=", self.server_log_jet_2.id)]
+        )
+        self.assertEqual(
+            len(recs),
+            0,
+            "User should not be able to read logs with access_level > '1'",
+        )
+
+    def test_jet_manager_access(self):
+        """Test manager access to server logs via Jet"""
+        # Set manager to jet's manager_ids (replaces any existing managers)
+        self.jet_test.write({"manager_ids": [(6, 0, [self.manager.id])]})
+
+        # Case 1: Manager should be able to read when:
+        # - access_level <= "2"
+        # - manager is in jet's user_ids or manager_ids
+        recs = self.ServerLog.with_user(self.manager).search(
+            [("id", "in", [self.server_log_jet_1.id, self.server_log_jet_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read all logs when in jet's manager_ids",
+        )
+
+        # Case 2: Manager should be able to create and write when:
+        # - access_level <= "2"
+        # - manager is in jet's manager_ids
+        try:
+            new_log = self.ServerLog.with_user(self.manager).create(
+                {
+                    "name": "Manager Jet Test Log",
+                    "server_id": self.server_test_1.id,
+                    "jet_id": self.jet_test.id,
+                    "log_type": "file",
+                    "access_level": "2",
+                }
+            )
+        except AccessError:
+            self.fail("Manager should be able to create logs when in jet's manager_ids")
+
+        try:
+            new_log.write({"name": "Updated Jet Name"})
+        except AccessError:
+            self.fail("Manager should be able to write logs when in jet's manager_ids")
+        self.assertEqual(new_log.name, "Updated Jet Name")
+
+        # Case 3: Manager should be able to unlink when:
+        # - access_level <= "2"
+        # - created by manager
+        # - manager is in jet's manager_ids
+        try:
+            new_log.unlink()
+        except AccessError:
+            self.fail(
+                "Manager should be able to unlink own logs when in jet's manager_ids"
+            )
+
+        # Case 4: Manager should not be able to unlink logs created by others
+        with self.assertRaises(AccessError):
+            self.server_log_jet_1.with_user(self.manager).unlink()
+
+        # Case 5: Manager should not be able to access logs with access_level > "2"
+        high_access_log = (
+            self.ServerLog.with_user(self.manager)
+            .sudo()
+            .create(
+                {
+                    "name": "High Access Jet Log",
+                    "server_id": self.server_test_1.id,
+                    "jet_id": self.jet_test.id,
+                    "log_type": "file",
+                    "access_level": "3",
+                }
+            )
+        )
+
+        recs = self.ServerLog.with_user(self.manager).search(
+            [("id", "=", high_access_log.id)]
+        )
+        self.assertEqual(
+            len(recs),
+            0,
+            "Manager should not be able to read logs with access_level > '2'",
+        )
+
+        # Case 6: Manager should be able to read when in jet's user_ids
+        # Remove managers and add manager to jet's user_ids
+        self.jet_test.write(
+            {
+                "manager_ids": [(5, 0, 0)],  # Remove managers
+                "user_ids": [(6, 0, [self.manager.id])],  # Set to users
+            }
+        )
+        recs = self.ServerLog.with_user(self.manager).search(
+            [("id", "in", [self.server_log_jet_1.id, self.server_log_jet_2.id])]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read when in jet's user_ids",
+        )
+
+    def test_jet_template_user_access(self):
+        """Test user access to server logs via Jet Template"""
+        # Set user to jet template's user_ids (replaces any existing users)
+        self.jet_template_test.write({"user_ids": [(6, 0, [self.user.id])]})
+
+        # Case 1: User should be able to read when:
+        # - access_level == "1"
+        # - user is in jet template's user_ids
+        recs = self.ServerLog.with_user(self.user).search(
+            [
+                (
+                    "id",
+                    "in",
+                    [
+                        self.server_log_jet_template_1.id,
+                        self.server_log_jet_template_2.id,
+                    ],
+                )
+            ]
+        )
+        self.assertEqual(
+            len(recs),
+            1,
+            "User should be able to read logs with access_level '1'"
+            " when in jet template's user_ids",
+        )
+        self.assertEqual(recs.id, self.server_log_jet_template_1.id)
+
+        # Case 2: User should not be able to read when not in jet template's user_ids
+        self.jet_template_test.write({"user_ids": [(5, 0, 0)]})  # Remove all users
+        recs = self.ServerLog.with_user(self.user).search(
+            [("id", "=", self.server_log_jet_template_1.id)]
+        )
+        self.assertEqual(
+            len(recs),
+            0,
+            "User should not be able to read when not in jet template's user_ids",
+        )
+
+        # Case 3: User should not be able to read when access_level > "1"
+        # Set user back to jet template's user_ids
+        self.jet_template_test.write({"user_ids": [(6, 0, [self.user.id])]})
+        recs = self.ServerLog.with_user(self.user).search(
+            [("id", "=", self.server_log_jet_template_2.id)]
+        )
+        self.assertEqual(
+            len(recs),
+            0,
+            "User should not be able to read logs with access_level > '1'",
+        )
+
+    def test_jet_template_manager_access(self):
+        """Test manager access to server logs via Jet Template"""
+        # Set manager to jet template's manager_ids (replaces any existing managers)
+        self.jet_template_test.write({"manager_ids": [(6, 0, [self.manager.id])]})
+
+        # Case 1: Manager should be able to read when:
+        # - access_level <= "2"
+        # - manager is in jet template's user_ids or manager_ids
+        recs = self.ServerLog.with_user(self.manager).search(
+            [
+                (
+                    "id",
+                    "in",
+                    [
+                        self.server_log_jet_template_1.id,
+                        self.server_log_jet_template_2.id,
+                    ],
+                )
+            ]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read all logs when"
+            " in jet template's manager_ids",
+        )
+
+        # Case 2: Manager should be able to create and write when:
+        # - access_level <= "2"
+        # - manager is in jet template's manager_ids
+        try:
+            new_log = self.ServerLog.with_user(self.manager).create(
+                {
+                    "name": "Manager Jet Template Test Log",
+                    "server_id": self.server_test_1.id,
+                    "jet_template_id": self.jet_template_test.id,
+                    "log_type": "file",
+                    "access_level": "2",
+                }
+            )
+        except AccessError:
+            self.fail(
+                "Manager should be able to create logs when "
+                "in jet template's manager_ids"
+            )
+
+        try:
+            new_log.write({"name": "Updated Jet Template Name"})
+        except AccessError:
+            self.fail(
+                "Manager should be able to write logs when "
+                "in jet template's manager_ids"
+            )
+        self.assertEqual(new_log.name, "Updated Jet Template Name")
+
+        # Case 3: Manager should be able to unlink when:
+        # - access_level <= "2"
+        # - created by manager
+        # - manager is in jet template's manager_ids
+        try:
+            new_log.unlink()
+        except AccessError:
+            self.fail(
+                "Manager should be able to unlink own logs"
+                " when in jet template's manager_ids"
+            )
+
+        # Case 4: Manager should not be able to unlink logs created by others
+        with self.assertRaises(AccessError):
+            self.server_log_jet_template_1.with_user(self.manager).unlink()
+
+        # Case 5: Manager should not be able to access logs with access_level > "2"
+        high_access_log = (
+            self.ServerLog.with_user(self.manager)
+            .sudo()
+            .create(
+                {
+                    "name": "High Access Jet Template Log",
+                    "server_id": self.server_test_1.id,
+                    "jet_template_id": self.jet_template_test.id,
+                    "log_type": "file",
+                    "access_level": "3",
+                }
+            )
+        )
+
+        recs = self.ServerLog.with_user(self.manager).search(
+            [("id", "=", high_access_log.id)]
+        )
+        self.assertEqual(
+            len(recs),
+            0,
+            "Manager should not be able to read logs with access_level > '2'",
+        )
+
+        # Case 6: Manager should be able to read when in jet template's user_ids
+        # Remove managers and add manager to jet template's user_ids
+        self.jet_template_test.write(
+            {
+                "manager_ids": [(5, 0, 0)],  # Remove managers
+                "user_ids": [(6, 0, [self.manager.id])],  # Set to users
+            }
+        )
+        recs = self.ServerLog.with_user(self.manager).search(
+            [
+                (
+                    "id",
+                    "in",
+                    [
+                        self.server_log_jet_template_1.id,
+                        self.server_log_jet_template_2.id,
+                    ],
+                )
+            ]
+        )
+        self.assertEqual(
+            len(recs),
+            2,
+            "Manager should be able to read when in jet template's user_ids",
+        )

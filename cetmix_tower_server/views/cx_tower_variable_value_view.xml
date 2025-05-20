@@ -11,15 +11,48 @@
                 <field name="is_global" widget="boolean_toggle" />
                 <field
                     name="server_id"
-                    attrs="{'readonly': ['|',('server_template_id', '!=', False), ('plan_line_action_id', '!=', False)]}"
+                    optional="show"
+                    attrs="{'readonly': ['|', '|', '|',
+                        ('plan_line_action_id', '!=', False),
+                        ('jet_template_id', '!=', False),
+                        ('jet_id', '!=', False),
+                        ('server_template_id', '!=', False)]}"
                 />
-            <field
+                <field
+                    name="jet_template_id"
+                    optional="show"
+                    attrs="{'readonly': ['|', '|', '|',
+                        ('server_id', '!=', False),
+                        ('plan_line_action_id', '!=', False),
+                        ('jet_id', '!=', False),
+                        ('server_template_id', '!=', False)]}"
+                />
+                <field
+                    name="jet_id"
+                    optional="show"
+                    attrs="{'readonly': ['|', '|', '|',
+                        ('server_id', '!=', False),
+                        ('plan_line_action_id', '!=', False),
+                        ('jet_template_id', '!=', False),
+                        ('server_template_id', '!=', False)]}"
+                />
+                <field
                     name="server_template_id"
-                    attrs="{'readonly': ['|',('server_id', '!=', False), ('plan_line_action_id', '!=', False)]}"
+                    optional="show"
+                    attrs="{'readonly': ['|', '|', '|',
+                            ('server_id', '!=', False),
+                            ('plan_line_action_id', '!=', False),
+                            ('jet_template_id', '!=', False),
+                            ('jet_id', '!=', False)]}"
                 />
-            <field
+                <field
                     name="plan_line_action_id"
-                    attrs="{'readonly': ['|',('server_id', '!=', False), ('server_template_id', '!=', False)]}"
+                    optional="show"
+                    attrs="{'readonly': ['|', '|', '|',
+                        ('server_id', '!=', False),
+                        ('jet_template_id', '!=', False),
+                        ('jet_id', '!=', False),
+                        ('server_template_id', '!=', False)]}"
                 />
                 <field
                     name="value_char"
