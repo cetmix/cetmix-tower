@@ -1,3 +1,9 @@
+## 14.0.1.0.11 (2025-05-20)
+
+- Features: References for secret values. (4696)
+- Features: Make the "Host key" field non-required in the form view to improve the UX. (4699)
+
+
 ## 14.0.1.0.10 (2025-05-13)
 
 - Features: Use `sudo` parameter to pass sudo mode to command runner instead of using context. (4678)
