@@ -501,6 +501,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_value__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__reference
@@ -1075,8 +1076,8 @@ msgid "Custom Exit Code"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_values
-msgid "Custom Variable Values"
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_value_ids
+msgid "Custom Variable Value"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2199,6 +2200,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__name
@@ -2692,6 +2694,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__reference
@@ -2724,6 +2727,7 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_value_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_os_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_action_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_reference_unique
