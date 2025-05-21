@@ -1918,7 +1918,9 @@ else:
         # -- 1 --
         # Test with default path and jet
         rendered_command = self.server_test_1._render_command(
-            command=self.command_create_dir, jet=self.jet_sample
+            command=self.command_create_dir,
+            jet_template=self.jet_template_sample,
+            jet=self.jet_sample,
         )
         rendered_code_expected = "cd /jets/jet1 && mkdir jet_templates"
         rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
@@ -1939,6 +1941,7 @@ else:
         custom_variable_values = {"test_path_": "/such/much/jet"}
         rendered_command = self.server_test_1._render_command(
             command=self.command_create_dir,
+            jet_template=self.jet_template_sample,
             jet=self.jet_sample,
             custom_variable_values=custom_variable_values,
         )

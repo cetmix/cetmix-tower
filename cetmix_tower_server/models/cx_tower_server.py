@@ -916,6 +916,32 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
 
+        # Check if command can be run on this server:
+        # 1. Server is listed in command's server_ids
+        # 2. There are no server_ids at all (command is not server specific)
+        if command.server_ids and self.id not in [s.id for s in command.server_ids]:
+            raise ValidationError(
+                _(
+                    "Command '%(cmd)s' is not compatible with the server '%(server)s'.",
+                    cmd=command.name,
+                    server=self.name,
+                )  # pylint: disable=no-member
+            )
+
+        # Check if jet belongs to the server
+        if jet and not jet.server_id == self:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' doesn't belong to the server '%(server)s'.",
+                    jet=jet.name,
+                    server=self.name,  # pylint: disable=no-member
+                )
+            )
+
+        # Set jet template from jet if jet is provided
+        if jet:
+            jet_template = jet.jet_template_id
+
         # Populate `sudo` value from the server settings if not provided explicitly
         if self.sudo().ssh_username == "root":
             sudo = False
@@ -963,6 +989,42 @@ class CxTowerServer(models.Model):
                 ]
             )
         )
+        # Get log vals from kwargs and update them
+        if not no_command_log:
+            log_obj = self.env["cx.tower.command.log"]
+            log_vals = kwargs.get("log", {})
+            log_vals.update(
+                {
+                    "use_sudo": sudo,
+                    "jet_template_id": jet_template.id if jet_template else None,
+                    "jet_id": jet.id if jet else None,
+                }
+            )
+
+            # Check if command is already running and parallel run is not allowed
+            if not command.allow_parallel_run:
+                running_count = log_obj.sudo().search_count(
+                    [
+                        ("server_id", "=", self.id),  # pylint: disable=no-member
+                        ("command_id", "=", command.id),
+                        ("is_running", "=", True),
+                    ]
+                )
+                # Create log record and exit
+                # if the same command is currently running on the same server
+                if running_count > 0:
+                    now = fields.Datetime.now()
+                    log_obj.record(
+                        server_id=self.id,  # pylint: disable=no-member
+                        command_id=command.id,
+                        start_date=now,
+                        finish_date=now,
+                        status=ANOTHER_COMMAND_RUNNING,
+                        response=None,
+                        error=_("Another instance of the command is already running"),
+                        **log_vals,
+                    )
+                    return
 
         # Another command is running, return error
         if another_command_running:
@@ -1048,10 +1110,6 @@ class CxTowerServer(models.Model):
         self.ensure_one()
 
         variables = []
-
-        # Set jet template
-        if jet:
-            jet_template = jet.jet_template_id
 
         # Get variables from code
         if command.code:
@@ -1181,6 +1239,10 @@ class CxTowerServer(models.Model):
         """
 
         self.ensure_one()
+
+        # Set jet template from jet if jet is provided
+        if jet:
+            jet_template = jet.jet_template_id
 
         # Run flight plan
         return flight_plan._run_single(
