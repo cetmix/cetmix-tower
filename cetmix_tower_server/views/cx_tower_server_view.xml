@@ -283,8 +283,8 @@
                                     >
                                         <field
                                             name="host_key"
-                                            placeholder="Host key"
-                                            attrs="{'required': [('skip_host_key', '=', False), ('id', '>', 0)]}"
+                                            attrs="{'invisible': [('skip_host_key', '=', True)]}"
+                                            placeholder="Host key is missing!"
                                         />
                                         <button
                                             name="action_show_host_key"
