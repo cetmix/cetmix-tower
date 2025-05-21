@@ -377,7 +377,9 @@ class CxTowerServer(models.Model):
                 continue
 
             plan_label = generate_random_id(4)
-            server.plan_delete_id._run_single(server, plan_log={"label": plan_label})
+            server.plan_delete_id._run_single(
+                server=server, **{"plan_log": {"label": plan_label}}
+            )
             plan_log = flight_plan_log_obj.search(
                 [
                     ("server_id", "=", server.id),
@@ -1158,12 +1160,15 @@ class CxTowerServer(models.Model):
                 has_write_access = False
         return has_write_access
 
-    def run_flight_plan(self, flight_plan, **kwargs):
+    def run_flight_plan(self, flight_plan, jet_template=None, jet=None, **kwargs):
         """
         Runs flight plan on the current server.
 
         Args:
-            flight_plan (cx.tower.plan()): flight plan record
+            flight_plan (cx.tower.plan()): flight plan to run
+            jet_template (cx.tower.jet.template()): jet template
+                to run the flight plan on
+            jet (cx.tower.jet()): jet to run the flight plan on
             kwargs (dict): Optional arguments
                 Following are supported but not limited to:
                     - "plan_log": {values passed to flightplan logger}
@@ -1178,7 +1183,9 @@ class CxTowerServer(models.Model):
         self.ensure_one()
 
         # Run flight plan
-        return flight_plan._run_single(self, **kwargs)
+        return flight_plan._run_single(
+            self, jet_template=jet_template, jet=jet, **kwargs
+        )
 
     def _command_runner_wrapper(
         self,
@@ -1278,8 +1285,8 @@ class CxTowerServer(models.Model):
             response = self.with_context(
                 prevent_plan_recursion=True
             )._command_runner_flight_plan(
-                log_record,
-                command.flight_plan_id,
+                log_record=log_record,
+                flight_plan=command.flight_plan_id,
                 **kwargs,
             )
             need_check_server_status = True
@@ -1519,7 +1526,10 @@ class CxTowerServer(models.Model):
             # add executed command with action "plan" to save link to plan log
             kwargs["flight_plan_command_log"] = log_record
             plan_log_record = flight_plan.with_context(from_command=True)._run_single(
-                self, **kwargs
+                server=self,
+                jet_template=log_record.jet_template_id,
+                jet=log_record.jet_id,
+                **kwargs,
             )
         except Exception as e:
             if raise_on_error:

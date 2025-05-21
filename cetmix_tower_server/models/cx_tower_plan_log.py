@@ -22,6 +22,13 @@ class CxTowerPlanLog(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"
     )
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+    )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+    )
+
     plan_id = fields.Many2one(
         string="Flight Plan",
         comodel_name="cx.tower.plan",
@@ -129,7 +136,9 @@ class CxTowerPlanLog(models.Model):
             else:
                 plan_log.duration_current = plan_log.duration
 
-    def start(self, server, plan, start_date=None, **kwargs):
+    def start(
+        self, server, plan, jet_template=None, jet=None, start_date=None, **kwargs
+    ):
         """
         Runs plan on server.
         Creates initial log records for each command that cannot be executed until
@@ -166,6 +175,8 @@ class CxTowerPlanLog(models.Model):
 
         vals = {
             "server_id": server.id,
+            "jet_template_id": jet_template.id if jet_template else None,
+            "jet_id": jet.id if jet else None,
             "plan_id": plan.id,
             "is_running": True,
             "start_date": start_date or fields.Datetime.now(),
@@ -188,7 +199,7 @@ class CxTowerPlanLog(models.Model):
             plan, server, variable_values=variable_values
         ):
             if is_executable:
-                line._run(server, plan_log, **kwargs)
+                line._run(server=server, plan_log_record=plan_log, **kwargs)
                 break
             else:
                 if self._context.get("no_command_log"):
@@ -196,7 +207,11 @@ class CxTowerPlanLog(models.Model):
                 line._skip(
                     server,
                     plan_log,
-                    log={"variable_values": dict(variable_values or {})},
+                    log={
+                        "variable_values": dict(variable_values or {}),
+                        "jet_template_id": jet_template.id if jet_template else None,
+                        "jet_id": jet.id if jet else None,
+                    },
                 )
                 break
         else:

@@ -174,11 +174,13 @@ class CxTowerPlan(models.Model):
         res = super()._get_post_create_fields()
         return res + ["line_ids"]
 
-    def _run_single(self, server, **kwargs):
+    def _run_single(self, server, jet_template=None, jet=None, **kwargs):
         """Run single Flight Plan on a single server
 
         Args:
             server (cx.tower.server()): Server object
+            jet_template (cx.tower.jet.template()): jet template record
+            jet (cx.tower.jet()): jet record
             kwargs (dict): Optional arguments
                 Following are supported but not limited to:
                     - "plan_log": {values passed to flightplan logger}
@@ -240,7 +242,14 @@ class CxTowerPlan(models.Model):
                 return plan_log
 
         # Start Flight Plan and return the log record
-        return plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)
+        return plan_log_obj.start(
+            server=server,
+            plan=self,
+            jet_template=jet_template,
+            jet=jet,
+            start_date=fields.Datetime.now(),
+            **kwargs,
+        )
 
     def _get_next_action_values(self, command_log):
         """Get next action values based of previous command result:

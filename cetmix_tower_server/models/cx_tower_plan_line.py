@@ -205,7 +205,14 @@ class CxTowerPlanLine(models.Model):
 
         # Set path
         path = self.path or command_as_root.path
-        server.run_command(command_as_root, path, sudo=use_sudo, **kwargs)
+        server.run_command(
+            command=command_as_root,
+            path=path,
+            sudo=use_sudo,
+            jet_template=plan_log_record.jet_template_id,
+            jet=plan_log_record.jet_id,
+            **kwargs,
+        )
 
     def _is_executable_line(self, server, variable_values=None):
         """
@@ -274,18 +281,21 @@ class CxTowerPlanLine(models.Model):
         # Log the unsuccessful execution attempt
         now = fields.Datetime.now()
         log_vals = kwargs.get("log", {})
+        log_vals.update(
+            {
+                "plan_log_id": plan_log_record.id,
+                "condition": self.condition,
+                "is_skipped": True,
+            }
+        )
 
         self.env["cx.tower.command.log"].record(
-            server.id,
-            self.command_id.id,
-            now,
-            now,
-            PLAN_LINE_CONDITION_CHECK_FAILED,
-            None,
-            _("Plan line condition check failed."),
-            plan_log_id=plan_log_record.id,
-            condition=self.condition,
-            is_skipped=True,
+            server_id=server.id,
+            command_id=self.command_id.id,
+            start_date=now,
+            finish_date=now,
+            status=PLAN_LINE_CONDITION_CHECK_FAILED,
+            error=_("Plan line condition check failed."),
             **log_vals,
         )
 
