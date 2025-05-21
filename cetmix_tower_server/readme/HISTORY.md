@@ -1,3 +1,9 @@
+## 16.0.1.0.8 (2025-05-21)
+
+- Features: References for secret values. (4696)
+- Features: Make the "Host key" field non-required in the form view to improve the UX. (4699)
+
+
 ## 16.0.1.0.7 (2025-05-16)
 
 - Features: Option to preserve command splitting when using sudo​. (4641)

@@ -1,3 +1,8 @@
+## 16.0.1.0.5 (2025-05-21)
+
+- Features: Export/import secret values related to Server. (4696)
+
+
 ## 16.0.1.0.4 (2025-05-16)
 
 - Features: Export/import servers and files to/from YAML. (4670)
