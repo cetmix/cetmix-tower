@@ -36,3 +36,26 @@ class CxTowerServer(models.Model):
             "git_project_rel_ids",
         ]
         return res
+
+    def _get_force_x2m_resolve_models(self):
+        res = super()._get_force_x2m_resolve_models()
+
+        # Add File in order to always try to use existing one
+        res += ["cx.tower.file"]
+        return res
+
+    def _update_or_create_related_record(
+        self, model, reference, values, create_immediately=False
+    ):
+        # Files must be created immediately because they are related
+        # to both server and git project.
+        # So if a file is not created immediately when it is created
+        # for the server, the same file will be created for the git project.
+        # This will lead to creation of two files with the same content
+        # for the same server.
+
+        if model._name == "cx.tower.file":
+            create_immediately = True
+        return super()._update_or_create_related_record(
+            model, reference, values, create_immediately=create_immediately
+        )

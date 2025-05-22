@@ -315,13 +315,17 @@ msgid "Git Project Rel"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_rel_ids
+msgid "Git Project Relations"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__git_project_rel_ids
 msgid "Git Project Server File Relations"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.actions.act_window,name:cetmix_tower_git.cx_tower_git_project_action
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_ids
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file_template__git_project_ids
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
@@ -584,6 +588,7 @@ msgid "Sequence"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__server_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__server_id
 msgid "Server"
 msgstr ""
