@@ -1,1 +1,1 @@
-Error when rendering a file not attached to a server.
+Error when rendering a file not attached to a server. Duplicated file is created when importing a YAML file with a git project.

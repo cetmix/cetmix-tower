@@ -6,20 +6,28 @@ from odoo import api, fields, models
 class CxTowerFile(models.Model):
     _inherit = "cx.tower.file"
 
-    git_project_ids = fields.Many2many(
-        comodel_name="cx.tower.git.project",
-        relation="cx_tower_git_project_rel",
-        column1="file_id",
-        column2="git_project_id",
-        string="Git Projects",
-        copy=False,
-    )
     git_project_id = fields.Many2one(
         comodel_name="cx.tower.git.project",
         compute="_compute_git_project_id",
+        store=True,
+    )
+    git_project_rel_ids = fields.One2many(
+        comodel_name="cx.tower.git.project.rel",
+        inverse_name="file_id",
+        string="Git Project Relations",
+        copy=False,
     )
 
-    @api.depends("git_project_ids")
+    # Get server from the first related git project relation
+    # This is needed for YAML import
+    server_id = fields.Many2one(
+        comodel_name="cx.tower.server",
+        compute="_compute_git_project_id",
+        store=True,
+        readonly=False,
+    )
+
+    @api.depends("git_project_rel_ids.server_id", "git_project_rel_ids.git_project_id")
     def _compute_git_project_id(self):
         """
         Link to project using the proxy model.
@@ -27,6 +35,13 @@ class CxTowerFile(models.Model):
         for record in self:
             # File is related to project via proxy model.
             # So there can be only one record in o2m field.
-            record.git_project_id = (
-                record.git_project_ids and record.git_project_ids[0].id
+            git_project_relation = (
+                record.git_project_rel_ids and record.git_project_rel_ids[0]
             )
+            if git_project_relation:
+                record.update(
+                    {
+                        "git_project_id": git_project_relation.git_project_id,
+                        "server_id": git_project_relation.server_id,
+                    }
+                )
