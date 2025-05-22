@@ -77,6 +77,15 @@
         action="cx_tower_jet_template_action"
         sequence="20"
     />
+
+    <menuitem
+        id="menu_cx_tower_jet_template_install"
+        name="Template Installations"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_template_install_action"
+        sequence="25"
+    />
+
     <menuitem
         id="menu_cx_tower_jet_state"
         name="States"

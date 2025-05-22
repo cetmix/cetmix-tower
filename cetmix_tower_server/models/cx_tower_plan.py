@@ -241,12 +241,18 @@ class CxTowerPlan(models.Model):
                 )
                 return plan_log
 
+        # Save jet template and jet in kwargs
+        plan_log_vals = kwargs.get("plan_log", {})
+        if jet_template:
+            plan_log_vals["jet_template_id"] = jet_template.id
+        if jet:
+            plan_log_vals["jet_id"] = jet.id
+        kwargs["plan_log"] = plan_log_vals
+
         # Start Flight Plan and return the log record
         return plan_log_obj.start(
             server=server,
             plan=self,
-            jet_template=jet_template,
-            jet=jet,
             start_date=fields.Datetime.now(),
             **kwargs,
         )

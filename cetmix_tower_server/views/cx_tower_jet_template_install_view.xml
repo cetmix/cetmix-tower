@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Template Install Tree View -->
+    <record id="cx_tower_jet_template_install_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.install.tree</field>
+        <field name="model">cx.tower.jet.template.install</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+                <field name="template_id" />
+                <field name="server_id" />
+                <field name="action" />
+                <field
+                    name="state"
+                    decoration-info="state == 'i'"
+                    decoration-success="state == 'd'"
+                    decoration-danger="state == 'f'"
+                />
+                <field name="create_date" string="Started" />
+                <field name="date_done" />
+                <field name="display_name" invisible="1" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Template Install Form View -->
+    <record id="cx_tower_jet_template_install_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.install.form</field>
+        <field name="model">cx.tower.jet.template.install</field>
+        <field name="arch" type="xml">
+            <form string="Jet Template Installation" create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="i,d,f" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_flight_plan_logs"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-list-alt"
+                        >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Flight Plan</span>
+                                <span class="o_stat_text">Logs</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="template_id" />
+                            <field name="server_id" />
+                            <field name="action" />
+                        </group>
+                        <group>
+                            <field name="create_date" string="Started" />
+                            <field name="current_template_installing_id" />
+                            <field name="date_done" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Templates to Install" name="to_install">
+                            <field name="template_to_install_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="reference" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Installed Templates" name="installed">
+                            <field name="template_installed_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="reference" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Template Install Search View -->
+    <record id="cx_tower_jet_template_install_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.install.search</field>
+        <field name="model">cx.tower.jet.template.install</field>
+        <field name="arch" type="xml">
+            <search string="Search Template Installations">
+                <field name="template_id" />
+                <field name="server_id" />
+                <filter
+                    string="Installing"
+                    name="installing"
+                    domain="[('state', '=', 'i')]"
+                />
+                <filter string="Done" name="done" domain="[('state', '=', 'd')]" />
+                <filter string="Failed" name="failed" domain="[('state', '=', 'f')]" />
+                <separator />
+                <filter
+                    string="Install Action"
+                    name="install_action"
+                    domain="[('action', '=', 'i')]"
+                />
+                <filter
+                    string="Uninstall Action"
+                    name="uninstall_action"
+                    domain="[('action', '=', 'u')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Template"
+                        name="group_by_template"
+                        context="{'group_by': 'template_id'}"
+                    />
+                    <filter
+                        string="Server"
+                        name="group_by_server"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="State"
+                        name="group_by_state"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        string="Action"
+                        name="group_by_action"
+                        context="{'group_by': 'action'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Template Install Action -->
+    <record id="cx_tower_jet_template_install_action" model="ir.actions.act_window">
+        <field name="name">Template Installations</field>
+        <field name="res_model">cx.tower.jet.template.install</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_installing': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No template installations found!
+            </p>
+            <p>
+                Template installations are created automatically when you install jet templates on servers.
+            </p>
+        </field>
+    </record>
+</odoo>

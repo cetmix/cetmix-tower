@@ -587,6 +587,19 @@ class CxTowerServer(models.Model):
         action["context"] = context
         return action
 
+    def action_uninstall_jet_template(self):
+        """
+        Uninstall jet template from the current server
+        """
+        self.ensure_one()
+        params = self.env.context.get("params", {})
+        if params.get("cx.tower.jet.template", "") == "cx.tower.jet.template":
+            jet_template_id = params.get("id")
+            if jet_template_id:
+                self.env["cx.tower.jet.template"].browse(
+                    jet_template_id
+                ).uninstall_from_servers(self)
+
     # ------------------------------
     # ---- Connectivity
     # ------------------------------

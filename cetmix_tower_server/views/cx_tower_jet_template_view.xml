@@ -7,6 +7,15 @@
         <field name="model">cx.tower.jet.template</field>
         <field name="arch" type="xml">
             <form string="Jet Template">
+                <header>
+                    <button
+                        name="action_install_on_servers"
+                        type="object"
+                        string="Install"
+                        class="btn-primary"
+                    />
+                    <button name="action_test" type="object" string="Test" />
+                </header>
                 <sheet>
                     <widget
                         name="web_ribbon"
@@ -39,12 +48,6 @@
                                 <group name="servers">
                                     <field name="plan_install_id" />
                                     <field name="plan_uninstall_id" />
-                                    <field
-                                        name="server_ids"
-                                        widget="many2many_tags"
-                                        options="{'color_field': 'color'}"
-                                    />
-
                                 </group>
                                 <field name="note" placeholder="Add notes here..." />
                             </group>
@@ -132,6 +135,12 @@
                                             <field name="state_required_id" />
                                         </tree>
                                     </field>
+                                    <field
+                                        name="dependency_graph_image"
+                                        string=" "
+                                        widget="image"
+                                        attrs="{'invisible': [('dependency_graph_image', '=', False)]}"
+                                    />
                                 </group>
                                 <group name="required_by" string="Required By">
                                     <field name="template_required_by_ids" string=" ">
@@ -143,6 +152,59 @@
                                     </field>
                                 </group>
                             </group>
+                        </page>
+                        <page name="servers" string="Installed on Servers">
+                            <field name="server_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="partner_id" optional="show" />
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="color"
+                                        widget="color_picker"
+                                        optional="show"
+                                    />
+                                    <field
+                                        name="status"
+                                        widget="badge"
+                                        decoration-danger="status == '2'"
+                                        decoration-info="status == '1'"
+                                        decoration-success="status == '4'"
+                                        decoration-warning="status in ['3','5','6']"
+                                    />
+                                    <button
+                                        name="action_uninstall_jet_template"
+                                        type="object"
+                                        string="Uninstall"
+                                        class="btn-danger"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="installations" string="Installation Logs">
+                            <field name="template_installation_all_ids">
+                                <tree>
+                                    <field name="server_id" />
+                                    <field name="action" />
+                                    <field name="state" />
+                                    <field name="date_done" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="date_done" />
+                                        <field
+                                            name="template_installed_ids"
+                                            widget="many2many_tags"
+                                        />
+                                    </group>
+                                </form>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

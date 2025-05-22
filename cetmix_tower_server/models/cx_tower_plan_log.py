@@ -24,9 +24,17 @@ class CxTowerPlanLog(models.Model):
     )
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
+        readonly=True,
+    )
+    jet_template_install_id = fields.Many2one(
+        string="Jet Template Install Job",
+        comodel_name="cx.tower.jet.template.install",
+        readonly=True,
+        help="Jet Template Install/Uninstall record being run. ",
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
+        readonly=True,
     )
 
     plan_id = fields.Many2one(
@@ -136,9 +144,7 @@ class CxTowerPlanLog(models.Model):
             else:
                 plan_log.duration_current = plan_log.duration
 
-    def start(
-        self, server, plan, jet_template=None, jet=None, start_date=None, **kwargs
-    ):
+    def start(self, server, plan, start_date=None, **kwargs):
         """
         Runs plan on server.
         Creates initial log records for each command that cannot be executed until
@@ -175,8 +181,6 @@ class CxTowerPlanLog(models.Model):
 
         vals = {
             "server_id": server.id,
-            "jet_template_id": jet_template.id if jet_template else None,
-            "jet_id": jet.id if jet else None,
             "plan_id": plan.id,
             "is_running": True,
             "start_date": start_date or fields.Datetime.now(),
@@ -299,6 +303,18 @@ class CxTowerPlanLog(models.Model):
             else:
                 # Set deletion error if flightplan failed
                 self.server_id.status = "delete_error"
+        
+        # Jet Template action
+        if not self.jet_template_id:
+            return
+
+        # Finish template install/uninstall
+        if self.jet_template_install_id:
+            self.jet_template_install_id._flight_plan_finished(
+                jet_template=self.jet_template_id,
+                plan_status=plan_status,
+            )
+            # print(f"Finished template install/uninstall {self.jet_template_id.name}")
 
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
         """
