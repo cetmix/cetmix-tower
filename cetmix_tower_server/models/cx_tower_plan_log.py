@@ -25,6 +25,13 @@ class CxTowerPlanLog(models.Model):
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
     )
+    jet_template_action = fields.Selection(
+        selection=[
+            ("i", "Install"),
+            ("u", "Uninstall"),
+        ],
+        help="Action being performed on the Jet Template",
+    )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
     )
@@ -136,9 +143,7 @@ class CxTowerPlanLog(models.Model):
             else:
                 plan_log.duration_current = plan_log.duration
 
-    def start(
-        self, server, plan, jet_template=None, jet=None, start_date=None, **kwargs
-    ):
+    def start(self, server, plan, start_date=None, **kwargs):
         """
         Runs plan on server.
         Creates initial log records for each command that cannot be executed until
@@ -175,8 +180,6 @@ class CxTowerPlanLog(models.Model):
 
         vals = {
             "server_id": server.id,
-            "jet_template_id": jet_template.id if jet_template else None,
-            "jet_id": jet.id if jet else None,
             "plan_id": plan.id,
             "is_running": True,
             "start_date": start_date or fields.Datetime.now(),
@@ -299,6 +302,16 @@ class CxTowerPlanLog(models.Model):
             else:
                 # Set deletion error if flightplan failed
                 self.server_id.status = "delete_error"
+        
+        # Jet Template action
+        if not self.jet_template_id:
+            return
+
+        # Finish install
+        if self.jet_template_action == "i":
+            self.jet_template_id._finish_install(
+                self.server_id, success=plan_status == 0
+            )
 
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
         """

@@ -31,6 +31,7 @@ class CxTowerJetTemplate(models.Model):
         column1="jet_template_id",
         column2="server_id",
         string="Installed on Servers",
+        readonly=False,
         help="These servers have this jet template installed",
     )
 
@@ -88,6 +89,21 @@ class CxTowerJetTemplate(models.Model):
         for template in self:
             template.message_actions = template._compose_message_actions()
 
+    def action_install_on_servers(self):
+        """Action to install the Jet Template on the selected servers."""
+        self.ensure_one()
+        # Open the wizard to install the template on the selected servers
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Install on Servers",
+            "res_model": "cx.tower.jet.template.install.wiz",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_jet_template_id": self.id,
+            },
+        }
+
     def _compose_message_actions(self):
         """Compose the warning message for the actions."""
         self.ensure_one()
@@ -143,6 +159,64 @@ class CxTowerJetTemplate(models.Model):
                     "is used as the final action."
                 )
         return message
+
+    def install_on_servers(self, servers):
+        """Install the Jet Template on the selected servers.
+
+        Args:
+            servers (cx.tower.server()): Servers to install the Jet Template on
+        """
+        self.ensure_one()
+
+        # Save the action being performed on the Jet Template
+        kwargs = {
+            "plan_log": {
+                "jet_template_action": "i",
+            },
+        }
+        for server in servers:
+            if self.plan_install_id:
+                server.run_flight_plan(
+                    self.plan_install_id, jet_template=self, **kwargs
+                )
+            else:
+                self._finish_install(server)
+
+    def _finish_install(self, server, success=True):
+        """Finish the installation of the Jet Template on the server.
+        This method is called when the installation plan finishes.
+
+        Args:
+            server (cx.tower.server()): Server to finish the installation on
+            success (bool): True if the installation was successful, False otherwise
+        """
+        self.ensure_one()
+        if success:
+            self.write({"server_ids": [(4, server.id)]})
+
+        # Call the post-install hook
+        self._post_finish_install(server, success)
+        return
+
+    def _post_finish_install(self, server, success):
+        """Helper method to implement post-install actions.
+
+        Args:
+            server (cx.tower.server()): Server to finish the uninstallation on
+            status (str): Status of the uninstallation. Possible values:
+                - "success": Uninstallation was successful
+        """
+        return
+
+    def uninstall_from_servers(self, servers):
+        """Uninstall the Jet Template from the selected servers.
+
+        Args:
+            servers (cx.tower.server()): Servers to uninstall the Jet Template from
+        """
+        self.ensure_one()
+        # TODO: Implement the uninstallation
+        pass
 
     # def _get_action_path(self, state_from=None, state_to=None):
     #     """Get the sequence of actions needed to transition

@@ -35,7 +35,6 @@ class CxTowerCommandLog(models.Model):
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
-        string="Jet",
     )
 
     # -- Time
