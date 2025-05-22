@@ -144,14 +144,14 @@
         <field name="model">cx.tower.file</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="rendered_name" />
+                <field name="name" optional="hide" />
+                <field name="rendered_name" optional="show" />
+                <field name="full_server_path" optional="hide" />
                 <field name="source" />
                 <field name="file_type" optional="show" />
                 <field name="file" widget="binary" optional="show" filename="name" />
-                <field name="name" column_invisible="1" />
                 <field name="server_id" />
-                <field name="full_server_path" optional="hide" />
-                <field name="sync_date_last" />
+                <field name="sync_date_last" optional="show" />
                 <field name="template_id" optional="show" />
                 <field
                     name="secret_ids"
