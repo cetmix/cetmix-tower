@@ -46,14 +46,36 @@
                                 >Files will be pulled from server to Tower automatically using cron job.</span>
                             </div>
                             <div class="mt8">
-                            <button
+                                <button
                                     name="action_configure_cron_pull_files_from_server"
                                     string="Cron Job"
                                     type="object"
                                     class="btn-link"
                                     icon="fa-arrow-right"
                                 />
-                        </div>
+                            </div>
+                        </setting>
+                        <setting
+                            id="cetmix_tower_run_scheduled_tasks"
+                            title="Run scheduled tasks"
+                            help="Scheduled tasks will be run automatically using cron job."
+                        >
+                            <div class="o_form_label">
+                                <span>Run scheduled tasks</span>
+                            </div>
+                            <div class="text-muted">
+                                <span
+                                >Scheduled tasks will be run automatically using cron job.</span>
+                            </div>
+                            <div class="mt8">
+                                <button
+                                    name="action_configure_run_scheduled_tasks_cron"
+                                    string="Cron Job"
+                                    type="object"
+                                    class="btn-link"
+                                    icon="fa-arrow-right"
+                                />
+                            </div>
                         </setting>
                     </block>
                 </app>

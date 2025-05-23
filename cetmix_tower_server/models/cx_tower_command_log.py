@@ -85,6 +85,12 @@ class CxTowerCommandLog(models.Model):
     plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log", ondelete="cascade")
     triggered_plan_log_id = fields.Many2one(comodel_name="cx.tower.plan.log")
 
+    scheduled_task_id = fields.Many2one(
+        "cx.tower.scheduled.task",
+        ondelete="set null",
+        help="Scheduled task that triggered this command",
+    )
+
     @api.depends("name", "command_id.name")
     def _compute_name(self):
         for rec in self:
