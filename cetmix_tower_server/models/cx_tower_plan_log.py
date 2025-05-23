@@ -76,6 +76,11 @@ class CxTowerPlanLog(models.Model):
     parent_flight_plan_log_id = fields.Many2one(
         "cx.tower.plan.log", string="Main Log", ondelete="cascade"
     )
+    scheduled_task_id = fields.Many2one(
+        "cx.tower.scheduled.task",
+        ondelete="set null",
+        help="Scheduled task that triggered this flight plan",
+    )
 
     @api.depends("server_id.name", "name")
     def _compute_name(self):

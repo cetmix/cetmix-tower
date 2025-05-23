@@ -58,6 +58,22 @@
                                 />
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="run_scheduled_tasks">
+                                <div>Run scheduled tasks</div>
+                                <div class="text-muted">
+                                    Scheduled tasks will be run automatically using cron job.
+                                    <br />
+                                </div>
+                                <button
+                                    name="action_configure_run_scheduled_tasks_cron"
+                                    string="Cron Job"
+                                    type="object"
+                                    class="oe_link"
+                                    icon="fa-arrow-right"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </xpath>

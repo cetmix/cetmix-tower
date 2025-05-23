@@ -14,6 +14,7 @@ from . import test_variable_value
 from . import test_variable_option
 from . import test_command_wizard
 from . import test_reference_mixin
+from . import test_scheduled_task
 from . import test_update_related_variable_names
 from . import test_key
 from . import test_cetmix_tower

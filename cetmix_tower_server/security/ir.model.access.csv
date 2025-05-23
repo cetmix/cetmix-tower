@@ -57,3 +57,9 @@ access_cetmix_tower_user,Cetmix Tower->User,model_cetmix_tower,group_user,1,1,0,
 access_shortcut_user,Shortcut->User,model_cx_tower_shortcut,group_user,1,0,0,0
 access_shortcut_manager,Shortcut->Manager,model_cx_tower_shortcut,group_manager,1,0,0,0
 access_shortcut_root,Shortcut->Root,model_cx_tower_shortcut,group_root,1,1,1,1
+access_scheduled_task_user,Scheduled Task->User,model_cx_tower_scheduled_task,group_user,0,0,0,0
+access_scheduled_task_manager,Scheduled Task->Manager,model_cx_tower_scheduled_task,group_manager,1,1,1,1
+access_scheduled_task_root,Scheduled Task->Root,model_cx_tower_scheduled_task,group_root,1,1,1,1
+access_scheduled_task_cv_user,Scheduled Task Custom Variable Value->User,model_cx_tower_scheduled_task_cv,group_user,0,0,0,0
+access_scheduled_task_cv_manager,Scheduled Task Custom Variable Value->Manager,model_cx_tower_scheduled_task_cv,group_manager,1,1,1,1
+access_scheduled_task_cv_root,Scheduled Task Custom Variable Value->Root,model_cx_tower_scheduled_task_cv,group_root,1,1,1,1

@@ -84,6 +84,14 @@
         sequence="120"
         groups="group_user"
     />
+    <menuitem
+        id="menu_cx_tower_scheduled_task"
+        name="Scheduled Tasks"
+        action="action_cx_tower_scheduled_task"
+        parent="menu_tools"
+        sequence="1"
+        groups="group_manager"
+    />
 
     <!-- Settings -->
     <menuitem
