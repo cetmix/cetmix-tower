@@ -1,0 +1,54 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_aws
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_aws
+#: code:addons/cetmix_tower_aws/models/constants.py:0
+#, python-format
+msgid ""
+"#  - boto3: Python 'boto3' library for AWS services. Available methods: 'client', 'resource', 'Session'\n"
+"#    Supports AWS services like EC2, S3, RDS, Lambda, CloudWatch, etc."
+msgstr ""
+
+#. module: cetmix_tower_aws
+#: code:addons/cetmix_tower_aws/models/constants.py:0
+#, python-format
+msgid ""
+"<ul><li><code>boto3</code>: Python 'boto3' library for AWS services. "
+"Available methods: 'client', 'resource', 'Session'<br/>Supports AWS services"
+" like EC2, S3, RDS, Lambda, CloudWatch, etc.<br/>Please check the <a "
+"href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html' "
+"target='_blank'>Boto3 Documentation</a> for the detailed information about "
+"the services and methods.</li></ul>"
+msgstr ""
+
+#. module: cetmix_tower_aws
+#: model:ir.model,name:cetmix_tower_aws.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr ""
+
+#. module: cetmix_tower_aws
+#: model:ir.model.fields,field_description:cetmix_tower_aws.field_cx_tower_command__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: cetmix_tower_aws
+#: model:ir.model.fields,field_description:cetmix_tower_aws.field_cx_tower_command__id
+msgid "ID"
+msgstr ""
+
+#. module: cetmix_tower_aws
+#: model:ir.model.fields,field_description:cetmix_tower_aws.field_cx_tower_command____last_update
+msgid "Last Modified on"
+msgstr ""

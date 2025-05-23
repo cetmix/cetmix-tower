@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- ===============================================
+    Keys
+    ================================================ -->
+    <record id="aws_access_key" model="cx.tower.key">
+        <field name="name">AWS Access Key</field>
+        <field name="reference">aws_access_key</field>
+        <field name="key_type">s</field>
+        <field name="secret_value">AKIAIOSFODNN7EXAMPLE</field>
+    </record>
+
+    <record id="aws_secret_access_key" model="cx.tower.key">
+        <field name="name">AWS Secret Access Key</field>
+        <field name="reference">aws_secret_access_key</field>
+        <field name="key_type">s</field>
+        <field name="secret_value">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</field>
+    </record>
+
+    <!-- ===============================================
+    Variables
+    ================================================ -->
+    <record id="variable_aws_region_name" model="cx.tower.variable">
+        <field name="name">AWS Region Name</field>
+        <field name="reference">aws_region_name</field>
+    </record>
+
+    <!-- ===============================================
+    Global Variable values
+    ================================================ -->
+    <record id="global_value_aws_region" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_aws_region_name" />
+        <field name="value_char">us-east-1</field>
+    </record>
+
+    <!-- ===============================================
+    Commands
+    ================================================ -->
+    <record id="command_list_ec2_instances" model="cx.tower.command">
+        <field name="name">List AWS EC2 Instances</field>
+        <field name="action">python_code</field>
+        <field name="code">
+# List EC2 instances using boto3
+result = {"exit_code": 0, "message": None}
+
+session = boto3.Session(
+    aws_access_key_id=#!cxtower.secret.aws_access_key!#,
+    aws_secret_access_key=#!cxtower.secret.aws_secret_access_key!#,
+    region_name={{ aws_region_name }}
+)
+ec2 = session.client('ec2')
+instances = ec2.describe_instances()
+
+instance_details = []
+for reservation in instances['Reservations']:
+    for instance in reservation['Instances']:
+        instance_detail = "Instance ID: " + instance['InstanceId']
+        instance_detail += ", Type: " + instance.get('InstanceType', 'Unknown')
+        instance_detail += ", State: " + instance.get('State', {}).get('Name', 'Unknown')
+        instance_details.append(instance_detail)
+
+if instance_details:
+    result["message"] = "Found " + str(len(instance_details)) + " EC2 instances:\n" + "\n".join(instance_details)
+else:
+    result["message"] = "No EC2 instances found"
+        </field>
+        <field name="access_level">1</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field name="note">List EC2 instances using boto3 AWS SDK</field>
+    </record>
+</odoo>
