@@ -20,27 +20,32 @@ class ResConfigSettings(models.TransientModel):
         """
         Configure cron job to pull files from server
         """
-        self.ensure_one()
-        cron_id = self.env.ref(
+        return self._get_cron_job_action(
             "cetmix_tower_server.ir_cron_auto_pull_files_from_server"
-        ).id
-        if not cron_id:
-            raise ValidationError(_("Cron job not found"))
-        return {
-            "name": _("Cron Job"),
-            "views": [(False, "form")],
-            "res_model": "ir.cron",
-            "res_id": cron_id,
-            "type": "ir.actions.act_window",
-            "target": "new",
-        }
+        )
 
     def action_configure_zombie_commands_cron(self):
         """
         Configure cron job to check zombie commands
         """
+        return self._get_cron_job_action(
+            "cetmix_tower_server.ir_cron_check_zombie_commands"
+        )
+
+    def action_configure_run_scheduled_tasks_cron(self):
+        """
+        Configure cron job to run scheduled tasks
+        """
+        return self._get_cron_job_action(
+            "cetmix_tower_server.ir_cron_run_scheduled_tasks"
+        )
+
+    def _get_cron_job_action(self, cron_xml_id):
+        """
+        Get action to configure cron job
+        """
         self.ensure_one()
-        cron_id = self.env.ref("cetmix_tower_server.ir_cron_check_zombie_commands").id
+        cron_id = self.env.ref(cron_xml_id).id
         if not cron_id:
             raise ValidationError(_("Cron job not found"))
         return {
