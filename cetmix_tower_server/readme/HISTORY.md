@@ -1,3 +1,8 @@
+## 16.0.1.0.9 (2025-05-23)
+
+- Bugfixes: Error when rendering a file not attached to a server. (4715)
+
+
 ## 16.0.1.0.8 (2025-05-21)
 
 - Features: References for secret values. (4696)

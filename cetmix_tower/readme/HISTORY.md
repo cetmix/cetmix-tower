@@ -1,3 +1,8 @@
+## 16.0.1.0.9 (2025-05-23)
+
+- Bugfixes: Error when rendering a file not attached to a server. Duplicated file is created when importing a YAML file with a git project. (4715)
+
+
 ## 16.0.1.0.8 (2025-05-21)
 
 - Features: References for secret values. Export/import secret values related to Server. (4696)

@@ -1,3 +1,8 @@
+## 16.0.1.0.3 (2025-05-23)
+
+- Bugfixes: Duplicated file is created when importing a YAML file with a git project. (4715)
+
+
 ## 16.0.1.0.2 (2025-05-16)
 
 - Features: Record references for git relations. (4670)
