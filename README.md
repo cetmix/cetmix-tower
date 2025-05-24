@@ -76,7 +76,7 @@ addon | version | maintainers | summary
 [cetmix_tower](cetmix_tower/) | 16.0.1.0.9 |  | Odoo SAAS Server Application Management
 [cetmix_tower_aws](cetmix_tower_aws/) | 16.0.1.0.0 |  | Cetmix Tower AWS EC2 API integration
 [cetmix_tower_git](cetmix_tower_git/) | 16.0.1.0.3 |  | Cetmix Tower Git Management Tools
-[cetmix_tower_server](cetmix_tower_server/) | 16.0.1.0.9 |  | Manage servers and applications from Odoo
+[cetmix_tower_server](cetmix_tower_server/) | 16.0.1.0.10 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_notify_backend](cetmix_tower_server_notify_backend/) | 16.0.1.0.0 |  | Backend notifications for Cetmix Tower
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 16.0.1.0.2 |  | Cetmix Tower asynchronous task execution using 'queue_job'
 [cetmix_tower_yaml](cetmix_tower_yaml/) | 16.0.1.0.5 |  | Cetmix Tower YAML export/import
