@@ -32,6 +32,11 @@ class CxTowerPlanLog(models.Model):
         ],
         help="Action being performed on the Jet Template",
     )
+    jet_template_installed_by_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        help="Jet Template that is installing this one. "
+        "This happens when a template is installing its dependencies.",
+    )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
     )
@@ -310,7 +315,9 @@ class CxTowerPlanLog(models.Model):
         # Finish install
         if self.jet_template_action == "i":
             self.jet_template_id._finish_install(
-                self.server_id, success=plan_status == 0
+                server=self.server_id,
+                installed_by_template=self.jet_template_installed_by_id,
+                success=plan_status == 0,
             )
 
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
