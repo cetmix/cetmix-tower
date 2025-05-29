@@ -1,13 +1,17 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from types import SimpleNamespace
+
+from dns import exception, resolver, reversename
 from pytz import timezone
 
-from odoo import api, fields, models, tools
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError
+from odoo.tools import ormcache
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
-from .constants import DEFAULT_PYTHON_CODE, DEFAULT_PYTHON_CODE_HELP, DEFAULT_SSH_CODE
+from .constants import DEFAULT_PYTHON_CODE, DEFAULT_PYTHON_CODE_HELP
 
 requests = wrap_module(__import__("requests"), ["post", "get", "delete", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
@@ -34,6 +38,17 @@ hashlib = wrap_module(
 hmac = wrap_module(
     __import__("hmac"),
     ["new", "compare_digest"],
+)
+tldextract = wrap_module(__import__("tldextract"), ["extract"])
+dns_resolver = wrap_module(resolver, ["resolve", "query"])
+dns_reversename = wrap_module(reversename, ["from_address", "to_address"])
+dns_exception = wrap_module(exception, ["DNSException"])
+
+
+dns = SimpleNamespace(
+    resolver=dns_resolver,
+    reversename=dns_reversename,
+    exception=dns_exception,
 )
 
 
@@ -198,17 +213,19 @@ class CxTowerCommand(models.Model):
         """
         return DEFAULT_PYTHON_CODE
 
-    def _get_default_ssh_code(self):
-        """
-        Default ssh command code
-        """
-        return DEFAULT_SSH_CODE
-
     def _get_default_python_code_help(self):
         """
         Default python code help
         """
-        return DEFAULT_PYTHON_CODE_HELP
+
+        # Available libraries are Odoo objects + Python libraries
+        available_libraries = self._get_python_command_odoo_objects()
+        available_libraries.update(self._get_python_command_libraries())
+        help_text_fragments = []
+        for key, value in available_libraries.items():
+            help_text_fragments.append(f"<li><code>{key}</code>: {value['help']}</li>")
+        help_text = "<ul>" + "".join(help_text_fragments) + "</ul>"
+        return f"{DEFAULT_PYTHON_CODE_HELP}{help_text}"
 
     # -- Computes
     @api.depends("action")
@@ -217,14 +234,11 @@ class CxTowerCommand(models.Model):
         Compute default code
         """
         default_python_code = self._get_default_python_code()
-        default_ssh_code = self._get_default_ssh_code()
         for command in self:
             if command.action == "python_code":
                 command.code = default_python_code
-            elif command.action == "ssh_command":
-                command.code = default_ssh_code
-            else:
-                command.code = False
+                continue
+            command.code = False
 
     @api.depends("action")
     def _compute_command_help(self):
@@ -278,25 +292,220 @@ class CxTowerCommand(models.Model):
         return not self.server_ids or server.id in self.server_ids.ids
 
     # -- Business logic
+    @ormcache()
     @api.model
-    def _get_eval_context(self, server=None):
+    def _get_python_command_libraries(self):
         """
-        Evaluation context to pass to safe_eval to run python code
+        Get available python imports. Use this method to import python libraries.
+        Please be advised, that this method is cached.
+        If you need to use a non-cached import, eg for Odoo objects,
+        use the `_get_python_command_odoo_objects` method instead.
+
+
+        Returns:
+            dict: Available libraries:
+                {"<library_name>": {
+                    "import": <library_import>,
+                    "help": <library_help_html>
+                }}
+        """
+        python_libraries = {
+            "time": {
+                "import": tools.safe_eval.time,
+                "help": _("Python 'time' library"),
+            },
+            "datetime": {
+                "import": tools.safe_eval.datetime,
+                "help": _("Python 'datetime' library"),
+            },
+            "dateutil": {
+                "import": tools.safe_eval.dateutil,
+                "help": _("Python 'dateutil' library"),
+            },
+            "timezone": {
+                "import": timezone,
+                "help": _("Python 'timezone' library"),
+            },
+            "requests": {
+                "import": requests,
+                "help": _(
+                    "Python 'requests' library. Available methods: 'post', 'get',"
+                    " 'delete', 'request'"
+                ),
+            },
+            "json": {
+                "import": json,
+                "help": _("Python 'json' library. Available methods: 'dumps'"),
+            },
+            "float_compare": {
+                "import": float_compare,
+                "help": _("Float compare. Odoo helper function to compare floats."),
+            },
+            "env": {"import": self.env, "help": _("Odoo Environment")},
+            "UserError": {
+                "import": UserError,
+                "help": _("UserError. Helper to raise UserError."),
+            },
+            "tower": {
+                "import": self.env["cetmix.tower"],
+                "help": _(
+                    "Cetmix Tower "
+                    "<a href='https://cetmix.com/tower/documentation/odoo_automation'"
+                    " target='_blank'>helper class</a> shortcut"
+                ),
+            },
+            "hashlib": {
+                "import": hashlib,
+                "help": _(
+                    "Python 'hashlib' library. "
+                    "<a href='https://docs.python.org/3/library/hashlib.html'"
+                    " target='_blank'>Documentation</a>. "
+                    "Available methods: 'sha1', 'sha224', "
+                    "'sha256', 'sha384',"
+                    " 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', "
+                    "'shake_128', 'shake_256',"
+                    " 'blake2b', 'blake2s', 'md5', 'new'"
+                ),
+            },
+            "hmac": {
+                "import": hmac,
+                "help": _(
+                    "Python 'hmac' library. "
+                    "<a href='https://docs.python.org/3/library/hmac.html'"
+                    " target='_blank'>Documentation</a>. "
+                    "Use 'new' to create HMAC objects. "
+                    "Available methods on the HMAC *object*: 'update', 'copy',"
+                    " 'digest', 'hexdigest'. "
+                    " Module-level function: 'compare_digest'."
+                ),
+            },
+            "tldextract": {
+                "import": tldextract,
+                "help": _(
+                    "Python 'tldextract' library. Use "
+                    "<code>tldextract.extract()</code> to parse domains. "
+                    "Check <a href='https://github.com/john-kurkowski/tldextract'"
+                    " target='_blank'>tldextract</a> for more information."
+                ),
+            },
+            "dns": {
+                "import": dns,
+                "help": _(
+                    "Python 'dnspython' library. "
+                    "<a href='https://dnspython.readthedocs.io'"
+                    " target='_blank'>Documentation</a>."
+                    "<ul><li><code>dns.resolver</code>: "
+                    "wrapped dnspython. Use "
+                    '<code>dns.resolver.resolve(hostname, "A")</code> for '
+                    "DNS lookups.</li>"
+                    "<li><code>dns.reversename</code>: wrapped dnspython. "
+                    'Use <code>dns.reversename.from_address("8.8.8.8")</code>'
+                    " to build and reverse PTR records.</li>"
+                    "<li><code>dns.exception</code>: wrapped dnspython. "
+                    "Catch "
+                    "<code>dns.exception.DNSException</code> to handle "
+                    "DNS-related errors.</li>"
+                    "</ul>"
+                ),
+            },
+        }
+        custom_python_libraries = self._custom_python_libraries()
+        for libraries in custom_python_libraries.values():
+            python_libraries.update(libraries)
+        return python_libraries
+
+    def _get_python_command_odoo_objects(self, server=None):
+        """
+        This method is used to import Odoo objects.
+        Because Odoo objects can be records, this method is not cached.
+        Use this method to import Odoo objects that are not cached.
+        If you need to import some static objects, use the
+        `_get_python_command_libraries` method instead.
+
+        Args:
+            server: Server to get the Odoo objects for.
+
+        Returns:
+            dict: Available Odoo objects:
+                {"<object_name>": {
+                    "import": <object_import>,
+                    "help": <object_help_html>
+                }}
         """
         return {
-            "uid": self._uid,
-            "user": self.env.user,
-            "time": tools.safe_eval.time,
-            "datetime": tools.safe_eval.datetime,
-            "dateutil": tools.safe_eval.dateutil,
-            "timezone": timezone,
-            "requests": requests,
-            "json": json,
-            "float_compare": float_compare,
-            "env": self.env,
-            "UserError": UserError,
-            "server": server or self._context.get("active_server"),
-            "tower": self.env["cetmix.tower"],
-            "hashlib": hashlib,
-            "hmac": hmac,
+            "uid": {"import": self._uid, "help": _("Current Odoo user ID")},
+            "user": {"import": self.env.user, "help": _("Current Odoo user")},
+            "server": {
+                "import": server,
+                "help": _("Current Cetmix Tower server this command is running on"),
+            },
         }
+
+    def _custom_python_libraries(self):
+        """
+        This function is designed to be used in custom modules
+        extending Cetmix Tower to add  custom python libraries
+        to the evaluation context.
+
+        Returns:
+            Dict: Custom python libraries.
+
+        The following format is used:
+        {
+            <module_name>: {"<library_name>": {
+                "import": <library_import>,
+                "help": <library_help_html>
+            }
+        }
+
+        Where:
+
+        <module_name> Odoo module technical name.
+        <library_name> is the name of the library how it will be used in the code.
+        <library_import> is the library to import.
+        <library_help_html> is the help text for the library shown in the "Help" tab.
+
+        Example:
+
+        ```python
+        # Custom module extending Cetmix Tower
+        custom_python_libraries = super()._custom_python_libraries()
+        custom_python_libraries.update({
+            "cetmix_tower_aws": {
+                "boto3": {
+                    "import": boto3,
+                    "help": "Python 'boto3' library. "
+                    "<a href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html'"
+                    " target='_blank'>Documentation</a>."
+                },
+                "custom_library_name": {
+                    "import": custom_library_import,
+                    "help": "Custom library help text"
+                }
+            }
+        })
+        return custom_python_libraries
+
+        ```
+        """
+        return {}
+
+    def _get_python_command_eval_context(self, server=None):
+        """
+        Get the evaluation context for the python command.
+        This method is used to get the evaluation context for the python command.
+
+        Args:
+            server: Server to get the evaluation context for.
+
+        Returns:
+            dict: Evaluation context for the python command.
+        """
+
+        # Get the Odoo objects first
+        imports = self._get_python_command_odoo_objects(server=server)
+
+        # Update with the libraries
+        imports.update(self._get_python_command_libraries())
+        eval_context = {key: value["import"] for key, value in imports.items()}
+        return eval_context
