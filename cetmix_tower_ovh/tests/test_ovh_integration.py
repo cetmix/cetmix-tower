@@ -56,37 +56,6 @@ class TestOvhIntegration(common.TransactionCase):
         self.assertTrue(hasattr(ovh_obj, "Client"))
         self.assertEqual(eval_context["server"], test_server)
 
-    def test_tldextract_in_evaluation_context(self):
-        """Test that tldextract is added to the evaluation context."""
-        eval_context = self.env["cx.tower.command"]._get_eval_context()
-        self.assertIn("tldextract", eval_context)
-        tldextract = eval_context["tldextract"]
-        self.assertTrue(callable(getattr(tldextract, "extract", None)))
-
-    def test_tldextract_extract_domain(self):
-        """Test tldextract.extract returns correct domain parts."""
-        eval_context = self.env["cx.tower.command"]._get_eval_context()
-        tldextract = eval_context["tldextract"]
-        result = tldextract.extract("https://sub.example.co.uk")
-        self.assertEqual(result.domain, "example")
-        self.assertEqual(result.suffix, "co.uk")
-        self.assertEqual(result.subdomain, "sub")
-
-    def test_ovh_and_tldextract_together(self):
-        """Test both ovh and tldextract are present in the context."""
-        eval_context = self.env["cx.tower.command"]._get_eval_context()
-        self.assertIn("ovh", eval_context)
-        self.assertIn("tldextract", eval_context)
-
-    def test_tldextract_with_invalid_url(self):
-        """Test tldextract.extract handles invalid URLs gracefully."""
-        eval_context = self.env["cx.tower.command"]._get_eval_context()
-        tldextract = eval_context["tldextract"]
-        result = tldextract.extract("not_a_url")
-        self.assertEqual(result.domain, "not_a_url")
-        self.assertEqual(result.suffix, "")
-        self.assertEqual(result.subdomain, "")
-
     def test_ovh_client_instantiation(self):
         """Test that ovh.Client can be instantiated from context."""
         eval_context = self.env["cx.tower.command"]._get_eval_context()

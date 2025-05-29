@@ -5,7 +5,7 @@
 {
     "name": "Cetmix Tower OVH",
     "summary": """Cetmix Tower OVH API integration""",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.1.0",
     "category": "Productivity",
     "license": "AGPL-3",
     "author": "Cetmix, Giovanni Serra",
@@ -16,7 +16,7 @@
     "demo": [
         "demo/demo_data.xml",
     ],
-    "external_dependencies": {"python": ["ovh", "tldextract"]},
+    "external_dependencies": {"python": ["ovh"]},
     "depends": [
         "cetmix_tower_server",
     ],

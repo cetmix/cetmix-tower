@@ -8,7 +8,6 @@ from . import constants
 
 # Wrap ovh safely
 ovh = wrap_module(__import__("ovh"), ["Client"])
-tldextract = wrap_module(__import__("tldextract"), ["extract"])
 
 
 class CxTowerCommand(models.Model):
@@ -22,7 +21,7 @@ class CxTowerCommand(models.Model):
         Overrides _get_eval_context to add OVH to the evaluation context.
         """
         eval_context = super()._get_eval_context(server=server)
-        eval_context.update({"ovh": ovh, "tldextract": tldextract})
+        eval_context.update({"ovh": ovh})
         return eval_context
 
     def _compute_code(self):
