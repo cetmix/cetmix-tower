@@ -19,5 +19,6 @@
     "external_dependencies": {"python": ["ovh", "tldextract"]},
     "depends": [
         "cetmix_tower_server",
+        "cetmix_tower_tldextract",
     ],
 }

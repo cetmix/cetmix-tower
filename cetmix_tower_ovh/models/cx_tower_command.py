@@ -4,11 +4,13 @@
 from odoo import api, models
 from odoo.tools.safe_eval import wrap_module
 
+from odoo.addons.cetmix_tower_tldextract.models import tldextract_wrapper
+
 from . import constants
 
 # Wrap ovh safely
 ovh = wrap_module(__import__("ovh"), ["Client"])
-tldextract = wrap_module(__import__("tldextract"), ["extract"])
+tldextract = tldextract_wrapper.tldextract
 
 
 class CxTowerCommand(models.Model):
