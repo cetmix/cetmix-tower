@@ -74,9 +74,18 @@ Authors
 -------
 
 * Cetmix
+* Giovanni Serra
 
 Maintainers
 -----------
+
+.. |maintainer-GSLabIt| image:: https://github.com/GSLabIt.png?size=40px
+    :target: https://github.com/GSLabIt
+    :alt: GSLabIt
+
+Current maintainer:
+
+|maintainer-GSLabIt| 
 
 This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/14.0/cetmix_tower_tldextract>`_ project on GitHub.
 

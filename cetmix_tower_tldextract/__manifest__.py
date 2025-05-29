@@ -7,10 +7,14 @@
     "version": "14.0.1.0.0",
     "category": "Productivity",
     "license": "AGPL-3",
-    "author": "Cetmix",
+    "author": "Cetmix, Giovanni Serra",
+    "maintainers": ["GSLabIt"],
     "website": "https://cetmix.com",
     "application": False,
     "installable": True,
+    "demo": [
+        "demo/demo_data.xml",
+    ],
     "external_dependencies": {"python": ["tldextract"]},
     "depends": [
         "cetmix_tower_server",

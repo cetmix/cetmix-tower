@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="command_tldextract_demo" model="cx.tower.command">
+        <field name="name">Demo: tldextract usage</field>
+        <field name="action">python_code</field>
+        <field name="code">
+# Demo for tldextract
+url = "blog.example.co.uk"
+res = tldextract.extract(url)
+result = {
+    "exit_code": 0,
+    "message": "Domain: {}, Suffix: {}, Subdomain: {}".format(res.domain, res.suffix, res.subdomain)
+}
+        </field>
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+        <field
+            name="note"
+        >This command demonstrates use of tldextract for parsing domains.</field>
+    </record>
+</odoo>
