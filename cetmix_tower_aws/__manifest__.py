@@ -4,7 +4,7 @@
 {
     "name": "Cetmix Tower AWS",
     "summary": """Cetmix Tower AWS EC2 API integration""",
-    "version": "16.0.1.0.0",
+    "version": "17.0.1.0.0",
     "category": "Productivity",
     "license": "AGPL-3",
     "author": "Cetmix",
