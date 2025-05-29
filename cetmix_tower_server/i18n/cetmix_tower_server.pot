@@ -73,38 +73,6 @@ msgid ""
 "<p\n"
 ">Various fields may use Python code or Python expressions. The\n"
 "    following variables can be used:</p>\n"
-"<ul>\n"
-"    <li><code>user</code>: Current Odoo user</li>\n"
-"    <li><code\n"
-"        >env</code>: Odoo Environment on which the action is\n"
-"        triggered</li>\n"
-"    <li><code\n"
-"        >server</code>: Server on which the command is run</li>\n"
-"    <li><code\n"
-"        >tower</code>: 'cetmix.tower' helper class shortcut</li>\n"
-"    <li><code>time</code>, <code>datetime</code>, <code\n"
-"        >dateutil</code>\n"
-"        , <code\n"
-"        >timezone</code>: useful Python libraries</li>\n"
-"    <li><code\n"
-"        >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'</li>\n"
-"    <li><code\n"
-"        >json</code>: Python 'json' library. Available methods: 'dumps'</li>\n"
-"    <li><code>hashlib</code>: Python 'hashlib' library.\n"
-"            Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br\n"
-"        />\n"
-"            'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'</li>\n"
-"    <li><code\n"
-"        >hmac</code>: Python 'hmac' library. Use 'new' to create HMAC objects.<br\n"
-"        />\n"
-"        Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br\n"
-"        />\n"
-"        Module-level function: 'compare_digest'.</li>\n"
-"    <li><code\n"
-"        >UserError</code>: Warning Exception to use with <code\n"
-"        >\n"
-"        raise</code></li>\n"
-"</ul>\n"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -131,33 +99,6 @@ msgid ""
 "# You can return command result in the 'result' variable which is a dictionary:\n"
 "#   result = {\"exit_code\": 0, \"message\": \"Some message\"}\n"
 "#   default value is {\"exit_code\": 0, \"message\": None}\n"
-"#\n"
-"# Available variables:\n"
-"#  - user: Current Odoo User\n"
-"#  - env: Odoo Environment on which the action is triggered\n"
-"#  - server: server on which the command is run\n"
-"#  - tower: 'cetmix.tower' helper class\n"
-"#  - time, datetime, dateutil, timezone: useful Python libraries\n"
-"#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'\n"
-"#  - json: Python 'json' library. Available methods: 'dumps'\n"
-"#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',\n"
-"#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',\n"
-"#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'\n"
-"#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.\n"
-"#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.\n"
-"#    Module-level function: 'compare_digest'.\n"
-"#  - float_compare: Odoo function to compare floats based on specific precisions\n"
-"#  - UserError: Warning Exception to use with raise\n"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
-#: code:addons/cetmix_tower_server/models/constants.py:0
-#, python-format
-msgid ""
-"# Run any SSH command on the target system\n"
-"# Examples: ls, cd, pwd, mkdir, rm\n"
-"# Adapt commands to your specific OS.\n"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -658,6 +599,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Cetmix Tower"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Cetmix Tower <a "
+"href='https://cetmix.com/tower/documentation/odoo_automation' "
+"target='_blank'>helper class</a> shortcut"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1165,6 +1116,27 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/res_config_settings.py:0
 #, python-format
 msgid "Cron job not found"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Current Cetmix Tower server this command is running on"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Current Odoo user"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Current Odoo user ID"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1712,6 +1684,13 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids_count
 msgid "Flight plan this command is used in"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Float compare. Odoo helper function to compare floats."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2538,6 +2517,13 @@ msgid "OSs"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Odoo Environment"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_delete_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__plan_delete_id
 msgid "On Delete Plan"
@@ -2838,6 +2824,98 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Put your notes here..."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'datetime' library"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'dateutil' library"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Python 'dnspython' library. <a href='https://dnspython.readthedocs.io' "
+"target='_blank'>Documentation</a>.<ul><li><code>dns.resolver</code>: wrapped"
+" dnspython. Use <code>dns.resolver.resolve(hostname, \"A\")</code> for DNS "
+"lookups.</li><li><code>dns.reversename</code>: wrapped dnspython. Use "
+"<code>dns.reversename.from_address(\"8.8.8.8\")</code> to build and reverse "
+"PTR records.</li><li><code>dns.exception</code>: wrapped dnspython. Catch "
+"<code>dns.exception.DNSException</code> to handle DNS-related "
+"errors.</li></ul>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Python 'hashlib' library. <a "
+"href='https://docs.python.org/3/library/hashlib.html' "
+"target='_blank'>Documentation</a>. Available methods: 'sha1', 'sha224', "
+"'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', "
+"'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Python 'hmac' library. <a href='https://docs.python.org/3/library/hmac.html'"
+" target='_blank'>Documentation</a>. Use 'new' to create HMAC objects. "
+"Available methods on the HMAC *object*: 'update', 'copy', 'digest', "
+"'hexdigest'.  Module-level function: 'compare_digest'."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'json' library. Available methods: 'dumps'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Python 'requests' library. Available methods: 'post', 'get', 'delete', "
+"'request'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'time' library"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'timezone' library"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Python 'tldextract' library. Use <code>tldextract.extract()</code> to parse "
+"domains. Check <a href='https://github.com/john-kurkowski/tldextract' "
+"target='_blank'>tldextract</a> for more information."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4038,6 +4116,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:res.groups,name:cetmix_tower_server.group_user
 msgid "User"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "UserError. Helper to raise UserError."
 msgstr ""
 
 #. module: cetmix_tower_server
