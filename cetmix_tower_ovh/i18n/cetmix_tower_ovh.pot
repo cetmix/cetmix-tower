@@ -18,9 +18,7 @@ msgstr ""
 #, python-format
 msgid ""
 "#  - ovh: Python 'ovh' library for OVH services. Available methods: 'Client'\n"
-"#    Supports OVH services\n"
-"#  - tldextract: Python 'tldextract' library. Available methods: 'extract'\n"
-"#    Supports domain extraction"
+"#    Supports OVH services"
 msgstr ""
 
 #. module: cetmix_tower_ovh
@@ -30,11 +28,8 @@ msgid ""
 "<ul><li><code>ovh</code>: Python 'ovh' library for OVH services.  Available "
 "methods: 'Client'<br/>Supports OVH services<br/>Please check the <a "
 "href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1' "
-"target='_blank'>OVH Documentation</a> for the detailed information about the"
-" services and methods.</li><li><code>tldextract</code>: Python 'tldextract' "
-"library.  Available methods: 'extract'<br/>Supports domain extraction. See "
-"<a href='https://tldextract.readthedocs.io/' target='_blank'>tldextract "
-"docs</a></li></ul>"
+"target='_blank'>OVH Documentation</a> for detailed information about the "
+"services and methods.</li></ul>"
 msgstr ""
 
 #. module: cetmix_tower_ovh
