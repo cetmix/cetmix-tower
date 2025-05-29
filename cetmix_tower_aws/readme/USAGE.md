@@ -7,24 +7,14 @@ Please check the official Boto3 Documentation https://boto3.amazonaws.com/v1/doc
 
 * **Navigate to Command Creation**
    - Go to `Cetmix Tower > Commands > Commands`
-   - Click the `Create` button
+   - Create new command:
 
 * **Configure Command Settings**
    - Set a descriptive `Name` (e.g., "List AWS EC2 Instances")
    - Leave `Reference` blank to generate automatically (or set a custom reference)
-   - Select `Action`: "Execute Python code"
+   - Select `Action`: "Run Python code"
    - Set `Access Level`: Choose appropriate level (e.g., "Manager")
-   - Optional: Set `Default Path` if needed
    - Optional: Add `Tags` (e.g., "aws", "ec2") for better organization
-
-* **Add Required Variables**
-   - In the `Variables` tab, add the previously configured variable:
-     - `aws_region_name`
-   
-* **Add Required Secrets**
-   - In the `Secrets` field, add the previously configured secrets:
-     - `aws_access_key`
-     - `aws_secret_access_key`
 
 * **Write Python Code**
    - Go to the `Code` tab
@@ -69,7 +59,7 @@ Please check the official Boto3 Documentation https://boto3.amazonaws.com/v1/doc
    - Click the `Run Command` button at the top of the server form
    - In the popup dialog:
      - Select your AWS EC2 command from the dropdown
-     - Verify the variable values (if any need adjustment)
+     - Verify the configuration values (if any need adjustment)
      - Click `Run` to execute
 
 * **View Command Results**
