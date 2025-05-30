@@ -1,3 +1,8 @@
+## 14.0.1.0.8 (2025-05-30)
+
+- Features: Terminate command with error if job has failed (4718)
+
+
 ## 14.0.1.0.7 (2025-05-13)
 
 - Features: 'sudo' parameter is not passed to command. (4678)
