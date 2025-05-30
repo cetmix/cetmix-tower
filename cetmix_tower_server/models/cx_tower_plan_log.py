@@ -24,21 +24,17 @@ class CxTowerPlanLog(models.Model):
     )
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
+        readonly=True,
     )
-    jet_template_action = fields.Selection(
-        selection=[
-            ("i", "Install"),
-            ("u", "Uninstall"),
-        ],
-        help="Action being performed on the Jet Template",
-    )
-    jet_template_installed_by_id = fields.Many2one(
-        comodel_name="cx.tower.jet.template",
-        help="Jet Template that is installing this one. "
-        "This happens when a template is installing its dependencies.",
+    jet_template_install_id = fields.Many2one(
+        string="Jet Template Install Job",
+        comodel_name="cx.tower.jet.template.install",
+        readonly=True,
+        help="Jet Template Install/Uninstall record being run. ",
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
+        readonly=True,
     )
 
     plan_id = fields.Many2one(
@@ -312,12 +308,11 @@ class CxTowerPlanLog(models.Model):
         if not self.jet_template_id:
             return
 
-        # Finish install
-        if self.jet_template_action == "i":
-            self.jet_template_id._finish_install(
-                server=self.server_id,
-                installed_by_template=self.jet_template_installed_by_id,
-                success=plan_status == 0,
+        # Finish template install/uninstall
+        if self.jet_template_install_id:
+            self.jet_template_install_id._flight_plan_finished(
+                jet_template=self.jet_template_id,
+                plan_status=plan_status,
             )
 
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):

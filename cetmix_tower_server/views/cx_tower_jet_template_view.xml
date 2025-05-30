@@ -188,7 +188,7 @@
                             </field>
                         </page>
                         <page name="installations" string="Installation Logs">
-                            <field name="template_install_ids">
+                            <field name="template_installation_all_ids">
                                 <tree>
                                     <field name="server_id" />
                                     <field name="action" />

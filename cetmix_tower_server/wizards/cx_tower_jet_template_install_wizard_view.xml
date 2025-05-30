@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="cx_tower_jet_template_install_wiz_view_form" model="ir.ui.view">
         <field name="name">cx.tower.jet.template.install.wiz.form</field>

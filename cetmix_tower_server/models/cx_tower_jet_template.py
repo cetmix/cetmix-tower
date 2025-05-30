@@ -81,13 +81,26 @@ class CxTowerJetTemplate(models.Model):
         " to be in a specific"
         " state to function",
     )
-    template_install_ids = fields.Many2many(
+    template_install_completed_ids = fields.Many2many(
         comodel_name="cx.tower.jet.template.install",
         relation="cx_tower_jet_template_install_installed_rel",
         column1="jet_template_id",
         column2="template_install_id",
-        string="Installations",
+        string="Completed Installations",
     )
+    template_install_to_be_completed_ids = fields.Many2many(
+        comodel_name="cx.tower.jet.template.install",
+        relation="cx_tower_jet_template_install_to_install_rel",
+        column1="jet_template_id",
+        column2="template_install_id",
+        string="Installations to be Completed",
+    )
+    template_installation_all_ids = fields.Many2many(
+        comodel_name="cx.tower.jet.template.install",
+        compute="_compute_template_installation_all_ids",
+        string="All Installations",
+    )
+
     dependency_graph_image = fields.Binary(
         string="Dependency Graph",
         compute="_compute_dependency_graph_image",
@@ -131,6 +144,18 @@ class CxTowerJetTemplate(models.Model):
                     f"for template {template.name}: {e}"
                 )
                 template.dependency_graph_image = False
+
+    @api.depends(
+        "template_install_completed_ids",
+        "template_install_to_be_completed_ids",
+    )
+    def _compute_template_installation_all_ids(self):
+        """Compute the all installations for the template."""
+        for template in self:
+            template.template_installation_all_ids = (
+                template.template_install_completed_ids
+                | template.template_install_to_be_completed_ids
+            )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Actions
@@ -392,16 +417,28 @@ class CxTowerJetTemplate(models.Model):
 
     def _get_all_dependencies(self):
         """Get all templates that this template depends on (directly or indirectly)
+        ordered by dependency level
 
         Returns:
-            recordset: All templates that this template depends on
+            recordset: All templates that this template depends on, ordered by level
         """
         graph = self._build_dependency_graph()
+        dependencies = self.browse()
 
-        # Get all template IDs except the current one
-        dependency_ids = [tid for tid in graph.keys() if tid != self.id]
+        # Build list of (template_id, level) tuples, excluding self
+        dependencies_with_levels = []
+        for template_id, info in graph.items():
+            if template_id != self.id:
+                dependencies_with_levels.append((info["template"], info["level"]))
 
-        return self.env["cx.tower.jet.template"].browse(dependency_ids)
+        # Sort by level (closest dependencies first)
+        dependencies_with_levels.sort(key=lambda x: x[1])
+
+        # Extract just the template IDs in the correct order
+        for dependency in dependencies_with_levels:
+            dependencies |= dependency[0]
+
+        return dependencies
 
     def _check_dependency_satisfaction(self, server):
         """Check if all dependant templates are installed on the server.
