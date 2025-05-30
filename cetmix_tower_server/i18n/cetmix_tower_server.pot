@@ -189,7 +189,8 @@ msgid ""
 "-202 no runner found for the command action,\n"
 "-203 Python code execution failed\n"
 "-205 plan line condition check failed\n"
-"503 if SSH connection error occurred"
+"503 if SSH connection error occurred\n"
+"601 if queue job failed"
 msgstr ""
 
 #. module: cetmix_tower_server
