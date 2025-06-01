@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-03 14:41+0200\n"
+"PO-Revision-Date: 2025-05-29 22:27+0200\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-"
 "server-14-0-dev/cetmix_tower_git/it/>\n"
@@ -123,6 +123,7 @@ msgstr "Numero o link branch/PR/commit"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__reference
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project_rel__reference
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__reference
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_source__reference
 msgid ""
@@ -348,13 +349,17 @@ msgid "Git Project Rel"
 msgstr "Rel progetto Git"
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_rel_ids
+msgid "Git Project Relations"
+msgstr "Relazioni progetto Git"
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__git_project_rel_ids
 msgid "Git Project Server File Relations"
 msgstr "Relazioni file server progetto Git"
 
 #. module: cetmix_tower_git
 #: model:ir.actions.act_window,name:cetmix_tower_git.cx_tower_git_project_action
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_ids
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file_template__git_project_ids
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
@@ -584,6 +589,7 @@ msgstr "Inserisci qui le note..."
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__reference
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__reference
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__reference
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__reference
 msgid "Reference"
@@ -601,7 +607,6 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_ids
-#| msgid "Remotes"
 msgid "Remote"
 msgstr "Remote"
 
@@ -638,6 +643,7 @@ msgid "Sequence"
 msgstr "Sequenza"
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__server_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__server_id
 msgid "Server"
 msgstr "Server"
@@ -723,6 +729,7 @@ msgstr "YAML"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__yaml_code
 msgid "Yaml Code"
