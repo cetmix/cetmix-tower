@@ -51,7 +51,9 @@ class CxTowerPlanLog(models.Model):
     )
 
     # -- Commands
-    is_running = fields.Boolean(help="Plan is being executed right now")
+    is_running = fields.Boolean(
+        help="Plan is being executed right now", compute="_compute_duration", store=True
+    )
     plan_line_executed_id = fields.Many2one(
         comodel_name="cx.tower.plan.line",
         help="Flight Plan line that is being currently executed",
@@ -65,7 +67,11 @@ class CxTowerPlanLog(models.Model):
         "-301 if another instance of this flight plan is running, \n"
         "-302 if plan is empty, \n"
         "-303 if plan reference is missing, \n"
-        "-304 if plan line reference is missing",
+        "-304 if plan line reference is missing, \n"
+        "-306 if plan is not compatible with server",
+    )
+    custom_message = fields.Text(
+        help="Custom message to be displayed in the plan log",
     )
     parent_flight_plan_log_id = fields.Many2one(
         "cx.tower.plan.log", string="Main Log", ondelete="cascade"
@@ -76,13 +82,27 @@ class CxTowerPlanLog(models.Model):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.plan_id.name))  # type: ignore
 
-    @api.depends("finish_date")
+    @api.depends("start_date", "finish_date")
     def _compute_duration(self):
         for plan_log in self:
-            if plan_log.finish_date and plan_log.start_date:
-                plan_log.duration = (
-                    plan_log.finish_date - plan_log.start_date
-                ).total_seconds()
+            # Not started yet
+            if not plan_log.start_date:
+                continue
+
+            # If plan is finished, compute duration
+            if plan_log.finish_date:
+                plan_log.update(
+                    {
+                        "duration": (
+                            plan_log.finish_date - plan_log.start_date
+                        ).total_seconds(),
+                        "is_running": False,
+                    }
+                )
+                continue
+
+            # If plan is running, set is_running to True
+            plan_log.is_running = True
 
     @api.depends("is_running")
     def _compute_duration_current(self):
@@ -105,7 +125,7 @@ class CxTowerPlanLog(models.Model):
         Args:
             server (cx.tower.server()) server.
             plan (cx.tower.plan()) Flight Plan.
-            start_date (datetime) command start date time.
+            start_date (datetime) flight plan start date time.
             **kwargs (dict): optional values
                 Following keys are supported but not limited to:
                 - "plan_log": {values passed to flightplan logger}
@@ -151,7 +171,6 @@ class CxTowerPlanLog(models.Model):
         else:
             plan_log.sudo().write(
                 {
-                    "is_running": False,
                     "finish_date": fields.Datetime.now(),
                     "plan_status": PLAN_IS_EMPTY,
                 }
@@ -191,6 +210,44 @@ class CxTowerPlanLog(models.Model):
             else:
                 # Set deletion error if flightplan failed
                 self.server_id.status = "delete_error"
+
+    def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
+        """
+        Record plan log without running it.
+
+        Args:
+            server (cx.tower.server()) server.
+            plan (cx.tower.plan()) Flight Plan.
+            status (int) plan execution code
+            start_date (datetime) flight plan start date time.
+            finish_date (datetime) flight plan finish date time.
+            **kwargs (dict): optional values
+                Following keys are supported but not limited to:
+                - "plan_log": {values passed to flightplan logger}
+                - "log": {values passed to logger}
+                - "key": {values passed to key parser}
+                - "no_command_log" (bool): If True, no logs will be recorded for
+                                   non-executable lines.
+        Returns:
+            cx.tower.plan.log(): New flightplan log record.
+        """
+
+        default_date = fields.Datetime.now()
+        vals = {
+            "server_id": server.id,
+            "plan_id": plan.id,
+            "start_date": start_date or default_date,
+            "finish_date": finish_date or default_date,
+            "plan_status": status,
+        }
+
+        # Extract and apply plan log kwargs
+        plan_log_kwargs = kwargs.get("plan_log")
+        if plan_log_kwargs:
+            vals.update(plan_log_kwargs)
+
+        plan_log = self.sudo().create(vals)
+        return plan_log
 
     def _plan_finished(self):
         """Triggered when flightplan in finished

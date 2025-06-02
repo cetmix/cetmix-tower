@@ -44,6 +44,10 @@
                                 name="plan_status"
                                 attrs="{'invisible': [('is_running', '=', True)]}"
                             />
+                            <field
+                                name="custom_message"
+                                attrs="{'invisible': [('custom_message', '=', False)]}"
+                            />
                         </group>
                         <group>
                             <field
