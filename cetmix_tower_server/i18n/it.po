@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-03 15:52+0200\n"
+"PO-Revision-Date: 2025-05-29 22:45+0200\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14/"
 "cetmix_tower_server/it/>\n"
@@ -286,6 +286,19 @@ msgstr ""
 "# Esegui qualsiasi comando SSH sul sistema di destinazione\n"
 "# Esempi: ls, cd, pwd, mkdir, rm\n"
 "# Adatta i comandi al tuo sistema operativo specifico.\n"
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
+#, python-format
+#| msgid "%(name)s (copy)"
+msgid "%(name)s (copy %(number)s)"
+msgstr "%(name)s (copia %(number)s)"
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
+#, python-format
+msgid "%(name)s (copy)"
+msgstr "%(name)s (copia)"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
@@ -649,8 +662,10 @@ msgstr "Binario"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_value__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__reference
@@ -1249,9 +1264,9 @@ msgid "Custom Exit Code"
 msgstr "Codice uscita personalizzato"
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_values
-msgid "Custom Variable Values"
-msgstr "Valori variabile predefiiti"
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_value_ids
+msgid "Custom Variable Value"
+msgstr "Valore variabile predefinito"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
@@ -2006,6 +2021,15 @@ msgid "If enabled file will be synced automatically using cron"
 msgstr "Se abilitata il file verrà sincronizzato automaticamente usando cron"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
+msgid ""
+"If enabled, do not split command on '&&' when using sudo.Prepend sudo once "
+"to the whole command."
+msgstr ""
+"Se abilitata, non dividere il comando su '&&' quando si usa sudo. Anteporre "
+"sudo una volta a tutto il comando."
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 msgid ""
 "If enabled, multiple instances of the same command can be run on the same "
@@ -2415,6 +2439,7 @@ msgstr "Scadenza mia attività"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__name
@@ -2465,6 +2490,11 @@ msgstr "Data sincronizzazione successiva"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "No"
 msgstr "No"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
+msgid "No Split for sudo"
+msgstr "Non dividere per sudo"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
@@ -2919,8 +2949,10 @@ msgstr "Rilevata chiamata piano ricorsiva nel piano %(name)s."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__reference
@@ -2946,11 +2978,14 @@ msgstr "Codice riferimento"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_command_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_template_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_rel_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_value_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_os_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_action_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_reference_unique
@@ -4659,9 +4694,6 @@ msgstr "con etichette"
 
 #~ msgid "sudo password was not provided!"
 #~ msgstr "la password sudo non è stata fornita!"
-
-#~ msgid "%(name)s (copy)"
-#~ msgstr "%(name)s (copia)"
 
 #~ msgid "SSH execute command error"
 #~ msgstr "Errore comando esecuzione SSH"
