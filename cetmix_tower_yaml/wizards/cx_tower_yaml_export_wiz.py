@@ -5,6 +5,8 @@ import base64
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from ..models.cx_tower_yaml_mixin import YamlExportCollector
+
 FILE_HEADER = """
 # This file is generated with Cetmix Tower.
 # Details and documentation: https://cetmix.com/tower
@@ -55,12 +57,14 @@ class CxTowerYamlExportWiz(models.TransientModel):
             else FILE_HEADER
         )
 
-        # Compose list of dictionaries ready for YAML conversion
+        # Use the YAML export collector for unique records
+        collector = YamlExportCollector()
         record_list = []
         for record in records:
             record_yaml_dict = record.with_context(
                 explode_related_record=explode_related_record,
                 remove_empty_values=remove_empty_values,
+                yaml_collector=collector,
             )._prepare_record_for_yaml()
             if record_yaml_dict:
                 record_list.append(record_yaml_dict)

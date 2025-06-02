@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import base64
 
+import yaml
+
 from odoo.exceptions import AccessError, ValidationError
 
 from odoo.addons.base.tests.common import BaseCommon
@@ -188,3 +190,65 @@ records:
         self.test_wizard.yaml_code = ""
         with self.assertRaises(ValidationError):
             self.test_wizard.action_generate_yaml_file()
+
+    def test_reference_object_uniqueness(self):
+        """
+        Ensure each reference is exported as a full object only once
+        (other times only as ref).
+        """
+
+        # Prepare YAML export for flight_plan with two same commands
+        self.flight_plan_test_wizard.line_ids = [
+            (0, 0, {"command_id": self.command_test_wizard.id}),
+            (0, 0, {"command_id": self.command_test_wizard.id}),
+        ]
+
+        # Prepare YAML code
+        self.test_wizard.onchange_explode_child_records()
+        yaml_data = yaml.safe_load(self.test_wizard.yaml_code)
+
+        # reference counters
+        ref_full = set()
+        ref_refs = set()
+
+        # Recursively walk through the YAML data and count references
+        def walk(obj):
+            if isinstance(obj, dict):
+                ref = obj.get("reference")
+                # dict only with "reference" = ref, otherwise — full object
+                if ref:
+                    if list(obj.keys()) == ["reference"]:
+                        ref_refs.add(ref)
+                    else:
+                        ref_full.add(ref)
+                for v in obj.values():
+                    walk(v)
+            elif isinstance(obj, list):
+                for v in obj:
+                    walk(v)
+
+        # Walk through the YAML data
+        walk(yaml_data["records"])
+
+        # Each reference as a full object — only once
+        for ref in ref_full:
+            self.assertEqual(
+                list(ref_full).count(ref),
+                1,
+                f"Reference '{ref}' appears as a full object more than once",
+            )
+        # Check that no full objects appear more than once
+        self.assertEqual(
+            len(ref_full),
+            len(set(ref_full)),
+            "Some full objects appear more than once",
+        )
+
+        # Check that for each ref there is no only reference, but no full object
+        for ref in ref_refs:
+            self.assertIn(
+                ref,
+                ref_full,
+                f"Reference '{ref}' is used only as a reference, "
+                "but no full object present",
+            )
