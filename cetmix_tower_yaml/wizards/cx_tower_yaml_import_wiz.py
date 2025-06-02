@@ -95,7 +95,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 continue
 
             # Update existing record
-            if self.if_record_exists == "update" and odoo_record:
+            elif self.if_record_exists == "update" and odoo_record:
                 try:
                     record_values = model.with_context(
                         force_create_related_record=False
@@ -117,7 +117,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
 
             # Or create a new record
             record_values = model.with_context(
-                force_create_related_record=(self.if_record_exists == "create")
+                force_create_related_record=self.if_record_exists == "create",
             )._post_process_yaml_dict_values(record)
             try:
                 odoo_record = model.with_context(from_yaml=True).create(record_values)

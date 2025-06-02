@@ -1,12 +1,15 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
 from builtins import UnicodeEncodeError
 
 import yaml
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class CustomDumper(yaml.Dumper):
@@ -18,6 +21,35 @@ class CustomDumper(yaml.Dumper):
         if isinstance(value, str) and "\n" in value:
             style = "|"
         return super().represent_scalar(tag, value, style)
+
+
+class YamlExportCollector:
+    """
+    Collector for YAML export.
+    Tracks unique records by their (model_name, reference) tuple to avoid duplicates.
+    """
+
+    def __init__(self):
+        """
+        Initialize the collector.
+        """
+        self.added_references = set()
+
+    def add(self, key):
+        """
+        Add a record to the collector if its reference is unique.
+        :param key: tuple, key of the record
+        """
+        if key and key not in self.added_references:
+            self.added_references.add(key)
+
+    def is_added(self, key):
+        """
+        Check by (model, reference) tuple.
+        :param key: tuple, key of the record
+        :return: bool
+        """
+        return key in self.added_references
 
 
 class CxTowerYamlMixin(models.AbstractModel):
@@ -189,6 +221,13 @@ class CxTowerYamlMixin(models.AbstractModel):
         Returns:
             dict(): processed values
         """
+        collector = self._context.get("yaml_collector")
+        ref = values.get("reference")
+        collector_key = (self._name, ref) if ref else None
+
+        if collector and collector_key and collector.is_added(collector_key):
+            return {"reference": ref}
+
         # We don't need id because we are not using it
         values.pop("id", None)
 
@@ -234,6 +273,9 @@ class CxTowerYamlMixin(models.AbstractModel):
                         explode_related_record=explode_related_record
                     )._process_relation_field_value(key, value, record_mode=True)
                     new_values.update({key: processed_value})
+
+        if collector and collector_key:
+            collector.add(collector_key)
 
         return new_values
 
@@ -376,6 +418,7 @@ class CxTowerYamlMixin(models.AbstractModel):
         # If the value is a dictionary, extract the reference from it
         elif isinstance(value, dict):
             reference = value.get("reference")
+
             record = self._update_or_create_related_record(
                 comodel, reference, value, create_immediately=True
             )
@@ -510,6 +553,19 @@ class CxTowerYamlMixin(models.AbstractModel):
         # If there's no reference but value is a dict, create a new record
         else:
             if create_immediately:
+                # Only 'reference' provided, no other data: do not create,
+                # just log warning
+                if set(values.keys()) == {"reference"}:
+                    _logger.warning(
+                        "Attempted to import a record for model '%s' with reference "
+                        "'%s', but only the 'reference' field was provided. "
+                        "It is possible that this record has already been imported. "
+                        "Creation will be skipped.",
+                        model._name,
+                        reference,
+                    )
+                    return False
+
                 record = model.with_context(from_yaml=True).create(
                     model._post_process_yaml_dict_values(values)
                 )
