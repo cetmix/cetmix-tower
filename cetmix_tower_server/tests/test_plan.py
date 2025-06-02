@@ -6,9 +6,11 @@ from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
 
 from ..models.constants import (
+    ANOTHER_PLAN_RUNNING,
     GENERAL_ERROR,
     PLAN_IS_EMPTY,
     PLAN_LINE_CONDITION_CHECK_FAILED,
+    PLAN_NOT_COMPATIBLE_WITH_SERVER,
 )
 from .common import TestTowerCommon
 
@@ -92,6 +94,7 @@ class TestTowerPlan(TestTowerCommon):
                 "ssh_port": 22,
                 "user_ids": [(6, 0, [cls.user.id])],
                 "manager_ids": [(6, 0, [cls.manager.id])],
+                "skip_host_key": True,
             }
         )
 
@@ -1286,6 +1289,31 @@ class TestTowerPlan(TestTowerCommon):
                 }
             )
 
+        # Set the previous command back
+
+        self.plan_line_1.write(
+            {
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        # --- Check server dependency handling
+
+        # Remove all existing flight plan logs
+        self.PlanLog.search([]).unlink()
+
+        # Set server dependency for plan 2
+        self.plan_2.write(
+            {
+                "server_ids": [(6, 0, [self.server.id])],
+            }
+        )
+        plan_log = self.server_test_1.run_flight_plan(self.plan_2)
+        self.assertEqual(plan_log.plan_status, PLAN_NOT_COMPATIBLE_WITH_SERVER)
+
+        # Run plan on allowed server
+        plan_log = self.server.run_flight_plan(self.plan_2)
+        self.assertEqual(plan_log.plan_status, 0)
+
     def test_failed_first_child_plan_with_another_plan(self):
         """
         Check that child plan was failed then parent plan is failed too
@@ -1549,12 +1577,8 @@ class TestTowerPlan(TestTowerCommon):
         )
 
         # Should fail when executing on non-allowed server
-        with self.assertRaisesRegex(
-            ValidationError,
-            f"Flight plan '{plan.name}' is not compatible "
-            f"with the server '{self.server_test_1.name}'.",
-        ):
-            plan._run_single(self.server_test_1)
+        plan_log = plan._run_single(self.server_test_1)
+        self.assertEqual(plan_log.plan_status, PLAN_NOT_COMPATIBLE_WITH_SERVER)
 
         # Should work on allowed server
         plan._run_single(test_server)
@@ -1562,3 +1586,29 @@ class TestTowerPlan(TestTowerCommon):
             [("plan_id", "=", plan.id), ("server_id", "=", test_server.id)], limit=1
         )
         self.assertEqual(plan_log.command_log_ids.command_status, 0)
+
+    def test_another_plan_running(self):
+        """Test the parallel plan running"""
+
+        # Ensure that the plan doesn't allow parallel running
+        self.plan_1.write({"allow_parallel_run": False})
+
+        # Create a new plan log with a plan that is already running
+        self.PlanLog.create(
+            {
+                "plan_id": self.plan_1.id,
+                "server_id": self.server_test_1.id,
+                "start_date": fields.Datetime.now(),
+            }
+        )
+
+        # Launch the same plan on the same server
+        plan_log = self.server_test_1.run_flight_plan(self.plan_1)
+        self.assertEqual(plan_log.plan_status, ANOTHER_PLAN_RUNNING)
+
+        # Now allow parallel running
+        self.plan_1.write({"allow_parallel_run": True})
+
+        # Launch the same plan on the same server
+        plan_log = self.server_test_1.run_flight_plan(self.plan_1)
+        self.assertEqual(plan_log.plan_status, 0)
