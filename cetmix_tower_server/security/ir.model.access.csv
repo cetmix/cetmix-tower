@@ -85,5 +85,7 @@ access_cx_tower_jet_dependency_manager,cx.tower.jet.dependency manager,model_cx_
 access_cx_tower_jet_dependency_root,cx.tower.jet.dependency root,model_cx_tower_jet_dependency,group_root,1,1,1,1
 access_cx_tower_jet_template_install_manager,Jet Template Install->Manager,model_cx_tower_jet_template_install,group_manager,1,1,1,1
 access_cx_tower_jet_template_install_root,Jet Template Install->Root,model_cx_tower_jet_template_install,group_root,1,1,1,1
+access_cx_tower_jet_template_install_line_manager,Jet Template Install Line->Manager,model_cx_tower_jet_template_install_line,group_manager,1,1,1,1
+access_cx_tower_jet_template_install_line_root,Jet Template Install Line->Root,model_cx_tower_jet_template_install_line,group_root,1,1,1,1
 access_cx_tower_jet_template_install_wiz_manager,Jet Template Install Wizard->Manager,model_cx_tower_jet_template_install_wiz,group_manager,1,1,1,1
 access_cx_tower_jet_template_install_wiz_root,Jet Template Install Wizard->Root,model_cx_tower_jet_template_install_wiz,group_root,1,1,1,1

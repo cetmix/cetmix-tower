@@ -24,6 +24,13 @@ class CxTowerJetTemplateInstall(models.Model):
         default="i",
     )
     date_done = fields.Datetime(string="Completed on", readonly=True)
+    line_ids = fields.One2many(
+        comodel_name="cx.tower.jet.template.install.line",
+        inverse_name="jet_template_install_id",
+        auto_join=True,
+        string="Templates to install",
+        help="Complete list of templates to install/uninstall including dependencies",
+    )
     template_to_install_ids = fields.Many2many(
         comodel_name="cx.tower.jet.template",
         relation="cx_tower_jet_template_install_to_install_rel",
@@ -58,6 +65,7 @@ class CxTowerJetTemplateInstall(models.Model):
             else:
                 record.display_name = f"{str(record.create_date)}"
 
+    @api.model
     def install(self, server, template):
         """Install the template on the server.
 
@@ -69,12 +77,21 @@ class CxTowerJetTemplateInstall(models.Model):
         # Compose the list of templates to install
         template_to_install = template | template._check_dependency_satisfaction(server)
 
+        # Prepare the list of templates to install
+        template_to_install_lines = []
+        order = 0
+        for t in template_to_install:
+            template_to_install_lines.append(
+                (0, 0, {"jet_template_id": t.id, "order": order})
+            )
+            order += 1
+
         # Create a new install record
         install_record = self.create(
             {
                 "template_id": template.id,
                 "server_id": server.id,
-                "template_to_install_ids": [(4, t.id) for t in template_to_install],
+                "line_ids": template_to_install_lines,
                 "action": "i",
             }
         )
