@@ -5,6 +5,7 @@ import yaml
 from odoo import _
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase
+from odoo.tools import mute_logger
 
 
 class TestTowerYamlImportWizUpload(TransactionCase):
@@ -357,7 +358,8 @@ class TestTowerYamlImportWizUpload(TransactionCase):
     def test_action_import_yaml_create_new_record(self):
         """Test YAML import wizard action when creating a new record"""
         self.import_wizard.if_record_exists = "create"
-        import_wizard_result_action = self.import_wizard.action_import_yaml()
+        with mute_logger("odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin"):
+            import_wizard_result_action = self.import_wizard.action_import_yaml()
 
         # -- 1 --
         # Test if new record is created instead of updating existing one
