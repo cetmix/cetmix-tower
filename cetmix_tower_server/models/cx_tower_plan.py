@@ -3,7 +3,6 @@
 from operator import indexOf
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import expr_eval
 
 from .constants import (
@@ -11,6 +10,7 @@ from .constants import (
     PLAN_LINE_CONDITION_CHECK_FAILED,
     PLAN_LINE_NOT_ASSIGNED,
     PLAN_NOT_ASSIGNED,
+    PLAN_NOT_COMPATIBLE_WITH_SERVER,
 )
 
 
@@ -118,6 +118,82 @@ class CxTowerPlan(models.Model):
         for plan in self:
             plan.command_ids = [(6, 0, plan.line_ids.mapped("command_id").ids)]
 
+    def copy(self, default=None):
+        # Call the super method to handle basic duplication
+        default = dict(default or {})
+        new_plan = super().copy(default=default)
+
+        # Duplicate the lines from the original plan
+        for line in self.line_ids:
+            new_line = line.copy(
+                {
+                    # assign the new plan to the duplicated line
+                    "plan_id": new_plan.id,
+                }
+            )
+
+            # Duplicate actions linked to the line
+            for action in line.action_ids:
+                new_action = action.with_context(reference_mixin_skip_copy=True).copy(
+                    # link new actions to the new line
+                    {"line_id": new_line.id, "name": line.name}
+                )
+
+                # Duplicate variable values linked to the action
+                for variable_value in action.variable_value_ids:
+                    variable_value.with_context(reference_mixin_skip_self=True).copy(
+                        {"plan_line_action_id": new_action.id}
+                    )
+
+        return new_plan
+
+    def action_open_plan_logs(self):
+        """
+        Open current flight plan log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan_log"
+        )
+        action["domain"] = [("plan_id", "=", self.id)]
+        return action
+
+    def _is_plan_incompatible_with_server(self, server):
+        """
+        Check if the flight plan is compatible with the server.
+        Note: this function uses the inverse logic to simplify the checks.
+
+        Args:
+            server (cx.tower.server()): Server object
+
+        Returns:
+            Char or False: Incompatible reason or False if compatible
+        """
+
+        # Check if the flight plan is compatible with the server
+        if not self.server_ids:
+            return False
+        if server.id not in self.server_ids.ids:
+            return _("Flight plan is not compatible with the server")
+
+        # Check if the flight plan commands are compatible with the server
+        for command in self.command_ids:
+            # Check the entire command first
+            if not command._check_server_compatibility(server):
+                return _(
+                    "Command %(command_name)s is not compatible with the server",
+                    command_name=command.name,
+                )  # pylint: disable=no-member
+
+            # Check if the nested flight plan is compatible with the server
+            if command.action == "plan":
+                plan_check_result = (
+                    command.flight_plan_id._is_plan_incompatible_with_server(server)
+                )
+                if plan_check_result:
+                    return plan_check_result
+
+        return False
+
     def _get_post_create_fields(self):
         res = super()._get_post_create_fields()
         return res + ["line_ids"]
@@ -141,24 +217,6 @@ class CxTowerPlan(models.Model):
         # Ensure we have a single server record
         server.ensure_one()
 
-        # Check if flight plan can be run on this server:
-        # 1. Server is listed in command's server_ids
-        # 2. There are no server_ids at all (command is not server specific)
-        # This check is skipped if 'from_command' context key is set to True
-        if (
-            not self.env.context.get("from_command")
-            and self.server_ids
-            and server.id not in [s.id for s in self.server_ids]
-        ):
-            raise ValidationError(
-                _(
-                    "Flight plan '%(plan)s' is not compatible with"
-                    " the server '%(server)s'.",
-                    plan=self.name,
-                    server=server.name,
-                )  # pylint: disable=no-member
-            )
-
         # Check plan access before running
         # This is needed to avoid possible access violations
         self.check_access_rights("read")
@@ -167,6 +225,23 @@ class CxTowerPlan(models.Model):
         # Access log as root to bypass access restrictions
         plan_log_obj = self.env["cx.tower.plan.log"].sudo()
 
+        # Check if flight plan and all its commands can be run on this server
+        # This check is skipped if 'from_command' context key is set to True
+        if not self.env.context.get("from_command"):
+            plan_is_incompatible = self._is_plan_incompatible_with_server(server)
+            if plan_is_incompatible:
+                # Create a log record with the custom message and exit
+                plan_log_kwargs = kwargs.get("plan_log", {})
+                plan_log_kwargs["custom_message"] = plan_is_incompatible
+                kwargs["plan_log"] = plan_log_kwargs
+                plan_log = plan_log_obj.record(
+                    server=server,
+                    plan=self,
+                    status=PLAN_NOT_COMPATIBLE_WITH_SERVER,
+                    **kwargs,
+                )
+                return plan_log
+
         # Check if the same plan is being run on this server right now
         if not self.allow_parallel_run or self.env.context.get(
             "prevent_plan_recursion"
@@ -174,12 +249,15 @@ class CxTowerPlan(models.Model):
             running_count = plan_log_obj.search_count(
                 [
                     ("server_id", "=", server.id),
-                    ("plan_id", "=", self.id),
+                    ("plan_id", "=", self.id),  # pylint: disable=no-member
                     ("is_running", "=", True),
                 ]
             )
             if running_count > 0:
-                return ANOTHER_PLAN_RUNNING
+                plan_log = plan_log_obj.record(
+                    server=server, plan=self, status=ANOTHER_PLAN_RUNNING, **kwargs
+                )
+                return plan_log
 
         # Start Flight Plan and return the log record
         return plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)
@@ -311,42 +389,3 @@ class CxTowerPlan(models.Model):
 
         # NB: we are not putting any fallback here in case
         # someone needs to inherit and extend this function
-
-    def action_open_plan_logs(self):
-        """
-        Open current flight plan log records
-        """
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "cetmix_tower_server.action_cx_tower_plan_log"
-        )
-        action["domain"] = [("plan_id", "=", self.id)]
-        return action
-
-    def copy(self, default=None):
-        # Call the super method to handle basic duplication
-        default = dict(default or {})
-        new_plan = super().copy(default=default)
-
-        # Duplicate the lines from the original plan
-        for line in self.line_ids:
-            new_line = line.copy(
-                {
-                    # assign the new plan to the duplicated line
-                    "plan_id": new_plan.id,
-                }
-            )
-
-            # Duplicate actions linked to the line
-            for action in line.action_ids:
-                new_action = action.with_context(reference_mixin_skip_copy=True).copy(
-                    # link new actions to the new line
-                    {"line_id": new_line.id, "name": line.name}
-                )
-
-                # Duplicate variable values linked to the action
-                for variable_value in action.variable_value_ids:
-                    variable_value.with_context(reference_mixin_skip_self=True).copy(
-                        {"plan_line_action_id": new_action.id}
-                    )
-
-        return new_plan

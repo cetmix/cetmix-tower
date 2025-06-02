@@ -9,6 +9,7 @@ from odoo.tests.common import Form
 from odoo.tools import mute_logger
 
 from ..models.constants import (
+    ANOTHER_COMMAND_RUNNING,
     COMMAND_TIMED_OUT,
     COMMAND_TIMED_OUT_MESSAGE,
     GENERAL_ERROR,
@@ -1273,6 +1274,41 @@ result = re.sub(pattern, replacement, value)
         self.assertIsNone(
             command_result["error"], "Command error doesn't match expected one"
         )
+
+    def test_another_command_is_running(self):
+        """Test a case when another command is running on the same server"""
+
+        # Remove all existing command logs
+        self.CommandLog.search([]).unlink()
+
+        # Create a new command log
+        initial_command_log = self.CommandLog.create(
+            {
+                "server_id": self.server_test_1.id,
+                "command_id": self.command_create_new_command.id,
+                "start_date": Datetime.now(),
+            }
+        )
+
+        # Run the command without creating a log record
+        command_result = self.server_test_1.with_context(
+            no_command_log=True
+        ).run_command(self.command_create_new_command)
+        self.assertEqual(command_result["status"], ANOTHER_COMMAND_RUNNING)
+
+        # Run the command with creating a log record
+        command_result = self.server_test_1.run_command(self.command_create_new_command)
+
+        # Get the command log
+        command_log = self.CommandLog.search(
+            [
+                ("server_id", "=", self.server_test_1.id),
+                ("command_id", "=", self.command_create_new_command.id),
+                ("id", "!=", initial_command_log.id),
+            ]
+        )
+        self.assertEqual(len(command_log), 1, "Must be a single log record")
+        self.assertEqual(command_log.command_status, ANOTHER_COMMAND_RUNNING)
 
     # ---------------------
     # *********************
