@@ -1,3 +1,8 @@
+## 14.0.1.1.0 (2025-06-03)
+
+- Features: cetmix_tower_server_queue: Add async file upload/download via job queue (3720)
+
+
 ## 14.0.1.0.8 (2025-05-30)
 
 - Features: Terminate command with error if job has failed (4718)
