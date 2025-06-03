@@ -14,5 +14,6 @@
     "depends": ["cetmix_tower_server", "queue_job"],
     "data": [
         "views/cx_tower_command_log_view.xml",
+        "views/cx_tower_file_view.xml",
     ],
 }
