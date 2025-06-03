@@ -504,7 +504,7 @@ class CxTowerServer(models.Model):
     # ---- Connectivity
     # ------------------------------
 
-    def _get_ssh_client(self, raise_on_error=True, timeout=5000):
+    def _get_ssh_client(self, raise_on_error=True, timeout=5000, skip_host_key=False):
         """Create a new SSH client instance
 
         Args:
@@ -512,6 +512,8 @@ class CxTowerServer(models.Model):
              in case or error, otherwise False will be returned
             Defaults to True.
             timeout (int, optional): SSH connection timeout in seconds.
+            skip_host_key (bool, optional): If true will skip host key verification.
+                Defaults to False.
 
         Raises:
             ValidationError: If the provided server reference is invalid or
@@ -526,9 +528,10 @@ class CxTowerServer(models.Model):
             host_key = self._get_host_key_value()
 
             # Check host only if IP address is present
+            skip_host_key = skip_host_key or self.skip_host_key
             if (
                 not host_key
-                and not self.skip_host_key
+                and not skip_host_key
                 and (self.ip_v4_address or self.ip_v6_address)
             ):
                 raise ValidationError(
@@ -770,8 +773,9 @@ class CxTowerServer(models.Model):
         self.check_access_rule("read")
 
         try:
+            # Skip host key verification to obtain the server's real host key.
             client = self._get_ssh_client(
-                raise_on_error=raise_on_error, timeout=timeout
+                raise_on_error=raise_on_error, timeout=timeout, skip_host_key=True
             )
 
             # Disable host key verification for this connection only, to obtain the
