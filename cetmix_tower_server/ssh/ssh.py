@@ -1,6 +1,9 @@
+# ruff: noqa: UP007
+
 import io
 import logging
 import time
+from typing import Optional, Union
 
 _logger = logging.getLogger(__name__)
 
@@ -31,7 +34,7 @@ class KeyLoader:
     """
 
     @staticmethod
-    def load_private_key(ssh_key: str) -> RSAKey | DSSKey | ECDSAKey | Ed25519Key:
+    def load_private_key(ssh_key: str) -> Union[RSAKey, DSSKey, ECDSAKey, Ed25519Key]:
         """
         Load a private SSH key from a string.
         """
@@ -61,9 +64,9 @@ class SSHConnection:
         host: str,
         port: int,
         username: str,
-        password: str | None = None,
-        ssh_key: str | None = None,
-        host_key: str | None = None,
+        password: Optional[str] = None,
+        ssh_key: Optional[str] = None,
+        host_key: Optional[str] = None,
         mode: str = "p",  # "p" for password, "k" for key
         allow_agent: bool = False,
         timeout: int = 5000,
@@ -80,7 +83,7 @@ class SSHConnection:
         self.mode = mode
         self.allow_agent = allow_agent
         self.timeout = timeout
-        self._ssh_client: SSHClient | None = None
+        self._ssh_client: Optional[SSHClient] = None
 
     def connect(self) -> SSHClient:
         """
@@ -187,7 +190,7 @@ class SftpService:
         Initialize the SftpService instance.
         """
         self.connection = connection
-        self._sftp_client: SFTPClient | None = None
+        self._sftp_client: Optional[SFTPClient] = None
 
     def get_client(self) -> SFTPClient:
         """
@@ -198,7 +201,7 @@ class SftpService:
             self._sftp_client = SFTPClient.from_transport(transport)
         return self._sftp_client
 
-    def upload_file(self, file: str | io.BytesIO, remote_path: str) -> None:
+    def upload_file(self, file: Union[str, io.BytesIO], remote_path: str) -> None:
         """
         Upload a file to the remote server.
         """
@@ -247,7 +250,7 @@ class CommandExecutor:
         self.connection = connection
 
     def exec_command(
-        self, command: str, sudo: str | None = None
+        self, command: str, sudo: Optional[str] = None
     ) -> tuple[int, list[str], list[str]]:
         """
         Run a command on the remote server.
