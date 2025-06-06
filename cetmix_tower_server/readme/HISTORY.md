@@ -1,3 +1,8 @@
+## 14.0.1.2.0 (2025-06-06)
+
+- Features: Add the tldextract and dnspython libraries. (4737)
+
+
 ## 14.0.1.0.11 (2025-05-20)
 
 - Features: References for secret values. (4696)
