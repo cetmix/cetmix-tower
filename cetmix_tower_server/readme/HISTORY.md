@@ -1,3 +1,8 @@
+## 16.0.1.0.11 (2025-06-06)
+
+- Bugfixes: Host key cannot be retrieved from the UI. (4747)
+
+
 ## 16.0.1.0.10 (2025-05-24)
 
 - Features: Improve command log and flight plan form views (4697)
