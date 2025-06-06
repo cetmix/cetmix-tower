@@ -95,6 +95,10 @@ DEFAULT_PYTHON_CODE = _(
 #  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
 #    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
 #    Module-level function: 'compare_digest'.
+#  - tldextract: Python 'tldextract' library. Use 'tldextract.extract()' to parse domains.
+#  - dns.resolver: wrapped dnspython. Use 'dns.resolver.resolve(hostname, "A")' for DNS lookups.
+#  - dns.reversename: wrapped dnspython. Use 'dns.reversename.from_address("8.8.8.8")' to build and reverse PTR records.
+#  - dns.exception: wrapped dnspython. Catch 'dns.exception.DNSException' to handle DNS-related errors.
 #  - float_compare: Odoo function to compare floats based on specific precisions
 #  - UserError: Warning Exception to use with raise
 """  # noqa: E501
@@ -151,6 +155,10 @@ Please refer to the <a href="https://cetmix.com/tower/documentation/command/#pyt
         Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br
         />
         Module-level function: 'compare_digest'.</li>
+        <li><code>tldextract</code>: Python 'tldextract' library. Use <code>tldextract.extract()</code> to parse domains.</li>
+        <li><code>dns.resolver</code>: wrapped dnspython. Use <code>dns.resolver.resolve(hostname, "A")</code> for DNS lookups.</li>
+        <li><code>dns.reversename</code>: wrapped dnspython. Use <code>dns.reversename.from_address("8.8.8.8")</code> to build and reverse PTR records.</li>
+        <li><code>dns.exception</code>: wrapped dnspython. Catch <code>dns.exception.DNSException</code> to handle DNS-related errors.</li>
     <li><code
         >UserError</code>: Warning Exception to use with <code
         >

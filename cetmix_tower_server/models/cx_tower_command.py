@@ -1,5 +1,8 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from types import SimpleNamespace
+
+from dns import exception, resolver, reversename
 from pytz import timezone
 
 from odoo import api, fields, models, tools
@@ -34,6 +37,17 @@ hashlib = wrap_module(
 hmac = wrap_module(
     __import__("hmac"),
     ["new", "compare_digest"],
+)
+tldextract = wrap_module(__import__("tldextract"), ["extract"])
+dns_resolver = wrap_module(resolver, ["resolve", "query"])
+dns_reversename = wrap_module(reversename, ["from_address", "to_address"])
+dns_exception = wrap_module(exception, ["DNSException"])
+
+
+dns = SimpleNamespace(
+    resolver=dns_resolver,
+    reversename=dns_reversename,
+    exception=dns_exception,
 )
 
 
@@ -277,4 +291,6 @@ class CxTowerCommand(models.Model):
             "tower": self.env["cetmix.tower"],
             "hashlib": hashlib,
             "hmac": hmac,
+            "tldextract": tldextract,
+            "dns": dns,
         }

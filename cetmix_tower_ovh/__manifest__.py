@@ -16,7 +16,7 @@
     "demo": [
         "demo/demo_data.xml",
     ],
-    "external_dependencies": {"python": ["ovh", "tldextract"]},
+    "external_dependencies": {"python": ["ovh"]},
     "depends": [
         "cetmix_tower_server",
     ],
