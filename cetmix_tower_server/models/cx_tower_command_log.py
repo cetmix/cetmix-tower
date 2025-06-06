@@ -63,8 +63,10 @@ class CxTowerCommandLog(models.Model):
         "-101 not found,\n"
         "-201 another instance of this command is running,\n"
         "-202 no runner found for the command action,\n"
-        "-203 Python code execution failed\n"
-        "-205 plan line condition check failed\n"
+        "-203 Python code execution failed,\n"
+        "-205 plan line condition check failed,\n"
+        "-206 command timed out,\n"
+        "-207 command is not compatible with server,\n"
         "503 if SSH connection error occurred",
     )
     command_response = fields.Text(string="Response")
@@ -185,8 +187,8 @@ class CxTowerCommandLog(models.Model):
         self,
         server_id,
         command_id,
-        start_date,
-        finish_date,
+        start_date=None,
+        finish_date=None,
         status=0,
         response=None,
         error=None,
@@ -207,12 +209,13 @@ class CxTowerCommandLog(models.Model):
             (cx.tower.command.log()) new command log record
         """
         vals = kwargs or {}
+        now = fields.Datetime.now()
         vals.update(
             {
                 "server_id": server_id,
                 "command_id": command_id,
-                "start_date": start_date,
-                "finish_date": finish_date,
+                "start_date": start_date or now,
+                "finish_date": finish_date or now,
                 "command_status": status,
                 "command_response": response,
                 "command_error": error,

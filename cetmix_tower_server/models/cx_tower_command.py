@@ -254,6 +254,17 @@ class CxTowerCommand(models.Model):
         action["domain"] = [("id", "in", self.flight_plan_used_ids.ids)]
         return action
 
+    def _check_server_compatibility(self, server):
+        """Check if the command is compatible with the server
+        Args:
+            server (cx.tower.server()): Server object
+
+        Returns:
+            bool: True if the command is compatible with the server, False otherwise
+        """
+        self.ensure_one()
+        return not self.server_ids or server.id in self.server_ids.ids
+
     # -- Business logic
     @api.model
     def _get_eval_context(self, server=None):

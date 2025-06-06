@@ -60,6 +60,7 @@ class CxTowerPlanLine(models.Model):
         comodel_name="cx.tower.plan.line.action",
         inverse_name="line_id",
         auto_join=True,
+        copy=False,
         help="Actions trigger based on command result."
         " If empty next command will be executed",
     )
