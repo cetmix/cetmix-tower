@@ -196,8 +196,10 @@ msgid ""
 "-101 not found,\n"
 "-201 another instance of this command is running,\n"
 "-202 no runner found for the command action,\n"
-"-203 Python code execution failed\n"
-"-205 plan line condition check failed\n"
+"-203 Python code execution failed,\n"
+"-205 plan line condition check failed,\n"
+"-206 command timed out,\n"
+"-207 command is not compatible with server,\n"
 "503 if SSH connection error occurred"
 msgstr ""
 
@@ -208,7 +210,8 @@ msgid ""
 "-301 if another instance of this flight plan is running, \n"
 "-302 if plan is empty, \n"
 "-303 if plan reference is missing, \n"
-"-304 if plan line reference is missing"
+"-304 if plan line reference is missing, \n"
+"-306 if plan is not compatible with server"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -449,6 +452,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
 #, python-format
@@ -836,9 +840,9 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
-msgid "Command '%(cmd)s' is not compatible with the server '%(server)s'."
+msgid "Command %(command_name)s is not compatible with the server"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -895,6 +899,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__is_running
 msgid "Command is being executed right now"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Command is not compatible with the server"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1111,6 +1122,11 @@ msgid "Custom Exit Code"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__custom_message
+msgid "Custom Message"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_value_ids
 msgid "Custom Variable Value"
 msgstr ""
@@ -1119,6 +1135,11 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Custom label. Can be used for search/tracking"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__custom_message
+msgid "Custom message to be displayed in the plan log"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1591,7 +1612,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
-msgid "Flight plan '%(plan)s' is not compatible with the server '%(server)s'."
+msgid "Flight plan is not compatible with the server"
 msgstr ""
 
 #. module: cetmix_tower_server
