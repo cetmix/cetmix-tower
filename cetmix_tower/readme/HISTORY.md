@@ -1,3 +1,8 @@
+## 16.0.1.0.10 (2025-06-06)
+
+- Features: Improve command and flight plan log management. (4749)
+
+
 ## 16.0.1.0.9 (2025-05-23)
 
 - Bugfixes: Error when rendering a file not attached to a server. Duplicated file is created when importing a YAML file with a git project. (4715)
