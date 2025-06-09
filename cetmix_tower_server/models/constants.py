@@ -65,14 +65,6 @@ FILE_DOWNLOAD_FAILED = -402
 
 # -- Default values
 
-# Default SSH code used in SSH command
-DEFAULT_SSH_CODE = _(
-    """# Run any SSH command on the target system
-# Examples: ls, cd, pwd, mkdir, rm
-# Adapt commands to your specific OS.
-"""
-)
-
 # Default Python code used in Python code command
 DEFAULT_PYTHON_CODE = _(
     """# Please refer to the 'Help' tab and documentation for more information.
@@ -80,29 +72,9 @@ DEFAULT_PYTHON_CODE = _(
 # You can return command result in the 'result' variable which is a dictionary:
 #   result = {"exit_code": 0, "message": "Some message"}
 #   default value is {"exit_code": 0, "message": None}
-#
-# Available variables:
-#  - user: Current Odoo User
-#  - env: Odoo Environment on which the action is triggered
-#  - server: server on which the command is run
-#  - tower: 'cetmix.tower' helper class
-#  - time, datetime, dateutil, timezone: useful Python libraries
-#  - requests: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'
-#  - json: Python 'json' library. Available methods: 'dumps'
-#  - hashlib: Python 'hashlib' library. Available methods: 'sha1', 'sha224', 'sha256',
-#    'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128',
-#    'shake_256', 'blake2b', 'blake2s', 'md5', 'new'
-#  - hmac: Python 'hmac' library. Use 'new' to create HMAC objects.
-#    Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.
-#    Module-level function: 'compare_digest'.
-#  - tldextract: Python 'tldextract' library. Use 'tldextract.extract()' to parse domains.
-#  - dns.resolver: wrapped dnspython. Use 'dns.resolver.resolve(hostname, "A")' for DNS lookups.
-#  - dns.reversename: wrapped dnspython. Use 'dns.reversename.from_address("8.8.8.8")' to build and reverse PTR records.
-#  - dns.exception: wrapped dnspython. Catch 'dns.exception.DNSException' to handle DNS-related errors.
-#  - float_compare: Odoo function to compare floats based on specific precisions
-#  - UserError: Warning Exception to use with raise
 """  # noqa: E501
 )
+
 
 # Default Python code help displayed in the "Help" tab
 DEFAULT_PYTHON_CODE_HELP = _(
@@ -128,41 +100,5 @@ Please refer to the <a href="https://cetmix.com/tower/documentation/command/#pyt
 <p
 >Various fields may use Python code or Python expressions. The
     following variables can be used:</p>
-<ul>
-    <li><code>user</code>: Current Odoo user</li>
-    <li><code
-        >env</code>: Odoo Environment on which the action is
-        triggered</li>
-    <li><code
-        >server</code>: Server on which the command is run</li>
-    <li><code
-        >tower</code>: 'cetmix.tower' helper class shortcut</li>
-    <li><code>time</code>, <code>datetime</code>, <code
-        >dateutil</code>
-        , <code
-        >timezone</code>: useful Python libraries</li>
-    <li><code
-        >requests</code>: Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'</li>
-    <li><code
-        >json</code>: Python 'json' library. Available methods: 'dumps'</li>
-    <li><code>hashlib</code>: Python 'hashlib' library.
-            Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256',<br
-        />
-            'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'</li>
-    <li><code
-        >hmac</code>: Python 'hmac' library. Use 'new' to create HMAC objects.<br
-        />
-        Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.<br
-        />
-        Module-level function: 'compare_digest'.</li>
-        <li><code>tldextract</code>: Python 'tldextract' library. Use <code>tldextract.extract()</code> to parse domains.</li>
-        <li><code>dns.resolver</code>: wrapped dnspython. Use <code>dns.resolver.resolve(hostname, "A")</code> for DNS lookups.</li>
-        <li><code>dns.reversename</code>: wrapped dnspython. Use <code>dns.reversename.from_address("8.8.8.8")</code> to build and reverse PTR records.</li>
-        <li><code>dns.exception</code>: wrapped dnspython. Catch <code>dns.exception.DNSException</code> to handle DNS-related errors.</li>
-    <li><code
-        >UserError</code>: Warning Exception to use with <code
-        >
-        raise</code></li>
-</ul>
 """  # noqa: E501
 )
