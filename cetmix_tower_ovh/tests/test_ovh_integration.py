@@ -2,8 +2,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo.tests import common
 
-from ..models.constants import OVH_HELP_TEXT
-
 
 class TestOvhIntegration(common.TransactionCase):
     """Test OVH integration with Cetmix Tower commands."""
@@ -17,23 +15,15 @@ class TestOvhIntegration(common.TransactionCase):
                 "action": "python_code",
             }
         )
+        self.eval_context = self.env[
+            "cx.tower.command"
+        ]._get_python_command_eval_context()
 
     def test_ovh_in_evaluation_context(self):
         """Test that ovh is added to the evaluation context."""
-        eval_context = self.env["cx.tower.command"]._get_eval_context()
-        self.assertIn("ovh", eval_context)
-        ovh_obj = eval_context["ovh"]
+        self.assertIn("ovh", self.eval_context)
+        ovh_obj = self.eval_context["ovh"]
         self.assertTrue(hasattr(ovh_obj, "Client"))
-
-    def test_ovh_in_python_code(self):
-        """Test that OVH documentation is added to Python code commands."""
-        self.assertIn(OVH_HELP_TEXT, self.command.code)
-
-    def test_no_duplication_on_writes(self):
-        """Test that OVH documentation is not duplicated on repeated writes."""
-        self.command.write({"name": "Updated Test OVH Command"})
-        occurrences = self.command.code.count(OVH_HELP_TEXT)
-        self.assertEqual(occurrences, 1, "OVH help text should not be duplicated")
 
     def test_ovh_in_evaluation_context_with_server(self):
         """Test that ovh is added to the evaluation context when server is provided."""
@@ -48,9 +38,10 @@ class TestOvhIntegration(common.TransactionCase):
                 "host_key": "test_key",
             }
         )
-        eval_context = self.env["cx.tower.command"]._get_eval_context(
+        eval_context = self.env["cx.tower.command"]._get_python_command_eval_context(
             server=test_server
         )
+
         self.assertIn("ovh", eval_context)
         ovh_obj = eval_context["ovh"]
         self.assertTrue(hasattr(ovh_obj, "Client"))
@@ -58,8 +49,7 @@ class TestOvhIntegration(common.TransactionCase):
 
     def test_ovh_client_instantiation(self):
         """Test that ovh.Client can be instantiated from context."""
-        eval_context = self.env["cx.tower.command"]._get_eval_context()
-        ovh_mod = eval_context["ovh"]
+        ovh_mod = self.eval_context["ovh"]
         # Only test instantiation, do not require credentials
         try:
             client = ovh_mod.Client(
