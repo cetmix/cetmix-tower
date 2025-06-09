@@ -14,25 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: cetmix_tower_ovh
-#: code:addons/cetmix_tower_ovh/models/constants.py:0
-#, python-format
-msgid ""
-"#  - ovh: Python 'ovh' library for OVH services. Available methods: 'Client'\n"
-"#    Supports OVH services"
-msgstr ""
-
-#. module: cetmix_tower_ovh
-#: code:addons/cetmix_tower_ovh/models/constants.py:0
-#, python-format
-msgid ""
-"<ul><li><code>ovh</code>: Python 'ovh' library for OVH services.  Available "
-"methods: 'Client'<br/>Supports OVH services<br/>Please check the <a "
-"href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1' "
-"target='_blank'>OVH Documentation</a> for detailed information about the "
-"services and methods.</li></ul>"
-msgstr ""
-
-#. module: cetmix_tower_ovh
 #: model:ir.model,name:cetmix_tower_ovh.model_cx_tower_command
 msgid "Cetmix Tower Command"
 msgstr ""
@@ -50,4 +31,15 @@ msgstr ""
 #. module: cetmix_tower_ovh
 #: model:ir.model.fields,field_description:cetmix_tower_ovh.field_cx_tower_command____last_update
 msgid "Last Modified on"
+msgstr ""
+
+#. module: cetmix_tower_ovh
+#: code:addons/cetmix_tower_ovh/models/cx_tower_command.py:0
+#, python-format
+msgid ""
+"Python 'ovh' library for OVH services. Available methods: "
+"'Client'<br/>Supports OVH services<br/>Please check the <a "
+"href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1' "
+"target='_blank'>OVH Documentation</a> for detailed information about the "
+"services and methods."
 msgstr ""
