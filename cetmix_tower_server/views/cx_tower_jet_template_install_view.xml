@@ -58,24 +58,24 @@
                         </group>
                         <group>
                             <field name="create_date" string="Started" />
-                            <field name="current_template_installing_id" />
+                            <field name="current_line_id" />
                             <field name="date_done" />
                         </group>
                     </group>
                     <notebook>
                         <page string="Templates to Install" name="to_install">
-                            <field name="template_to_install_ids">
+                            <field name="line_ids">
                                 <tree>
-                                    <field name="name" />
-                                    <field name="reference" />
+                                    <field name="jet_template_id" />
+                                    <field name="state" />
                                 </tree>
                             </field>
                         </page>
                         <page string="Installed Templates" name="installed">
-                            <field name="template_installed_ids">
+                            <field name="line_ids">
                                 <tree>
-                                    <field name="name" />
-                                    <field name="reference" />
+                                    <field name="jet_template_id" />
+                                    <field name="state" />
                                 </tree>
                             </field>
                         </page>

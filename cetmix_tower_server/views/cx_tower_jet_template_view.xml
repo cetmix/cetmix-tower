@@ -198,10 +198,12 @@
                                 <form>
                                     <group>
                                         <field name="date_done" />
-                                        <field
-                                            name="template_installed_ids"
-                                            widget="many2many_tags"
-                                        />
+                                        <field name="line_ids">
+                                            <tree>
+                                                <field name="jet_template_id" />
+                                                <field name="state" />
+                                            </tree>
+                                        </field>
                                     </group>
                                 </form>
                             </field>

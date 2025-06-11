@@ -1141,31 +1141,36 @@ class CxTowerServer(models.Model):
 
         # If there are variables to render, get variable values
         if variables:
+            # Get system variable values
+            system_variable_values = self.env[
+                "cx.tower.variable"
+            ]._get_system_variable_values(self, jet_template, jet)
+
             # For the server
-            server_values = self.sudo().get_variable_values(variables)  # pylint: disable=no-member
+            server_values = self.sudo().get_variable_values(
+                variables, system_variable_values=system_variable_values
+            )  # pylint: disable=no-member
 
             # Extract variable values for current server
             variable_values = server_values.get(self.id) if server_values else {}  # pylint: disable=no-member
 
             # For the jet template
             if jet_template:
-                template_values = jet_template.sudo().get_variable_values(variables)
+                template_values = jet_template.sudo().get_variable_values(
+                    variables, system_variable_values=system_variable_values
+                )
 
                 # Extract variable values for jet template
                 if template_values:
-                    # Only update non-None values
-                    self._append_jet_variable_values(
-                        variable_values, template_values.get(jet_template.id, {})
-                    )
+                    variable_values.update(template_values.get(jet_template.id, {}))
 
             # For the jet
             if jet:
-                jet_values = jet.sudo().get_variable_values(variables)
+                jet_values = jet.sudo().get_variable_values(
+                    variables, system_variable_values=system_variable_values
+                )
                 if jet_values:
-                    # Only update non-None values
-                    self._append_jet_variable_values(
-                        variable_values, jet_values.get(jet.id, {})
-                    )
+                    variable_values.update(jet_values.get(jet.id, {}))
 
             # Apply custom variable values only if user has write access to the server
             has_write_access = self._have_access_to_server("write")
@@ -1193,21 +1198,6 @@ class CxTowerServer(models.Model):
             rendered_path = path
 
         return {"rendered_code": rendered_code, "rendered_path": rendered_path}
-
-    def _append_jet_variable_values(self, variable_values, jet_variable_values):
-        """Append jet or jet template variable values to the variable values
-
-        Args:
-            variable_values (dict): Variable values
-            jet_variable_values (dict): Jet or jet template variable values
-        """
-        for key, value in jet_variable_values.items():
-            if value is None:
-                continue
-            if key == "tower":
-                variable_values[key].update(value)
-            else:
-                variable_values[key] = value
 
     def _have_access_to_server(self, operation):
         """Check access to the server.

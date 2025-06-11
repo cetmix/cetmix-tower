@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
+import uuid
 
 from odoo import _, api, fields, models
 from odoo.tools.safe_eval import wrap_module
@@ -366,3 +367,107 @@ class TowerVariable(models.Model):
                 val=value_char,
             ),
         )
+
+    # -------------------
+    #   System Variables
+    # -------------------
+    @api.model
+    def _get_system_variable_values(self, server=None, jet_template=None, jet=None):
+        """
+        Get the values for the `tower` system variable.
+
+        Args:
+            server (cx.tower.server()): server record
+            jet_template (cx.tower.jet.template()): jet template record
+            jet (cx.tower.jet()): jet record
+
+        Returns:
+            dict(): `tower` values.
+                {
+                    'tools': {..helper tools vals...}
+                    'server': {..server vals..},
+                    'jet_template': {..jet template vals..},
+                    'jet': {..jet vals..},
+                }
+        """
+        return {
+            "tools": self._parse_system_variable_tools(),
+            "server": self._parse_system_variable_server(server),
+            "jet_template": self._parse_system_variable_jet_template(jet_template),
+            "jet": self._parse_system_variable_jet(jet),
+        }
+
+    def _parse_system_variable_server(self, server=None):
+        """Parser system variable of `server` type.
+
+        Args:
+            server (cx.tower.server()): server record
+
+        Returns:
+            dict(): `server` values of the `tower` variable.
+        """
+        # Get current server
+        values = {}
+        if server:
+            values = {
+                "name": server.name,
+                "reference": server.reference,
+                "username": server.ssh_username,
+                "partner_name": server.partner_id.name if server.partner_id else False,
+                "ipv4": server.ip_v4_address,
+                "ipv6": server.ip_v6_address,
+                "status": server.status,
+                "os": server.os_id.name if server.os_id else False,
+                "url": server.url,
+            }
+        return values
+
+    def _parse_system_variable_jet_template(self, jet_template=None):
+        """Parser system variable of `server` type.
+
+        Args:
+            jet_template (cx.tower.jet.template()): jet template record
+
+        Returns:
+            dict(): `jet_template` values of the `tower` variable.
+        """
+        # Get current server
+        values = {}
+        if jet_template:
+            values = {
+                "name": jet_template.name,
+                "reference": jet_template.reference,
+            }
+        return values
+
+    def _parse_system_variable_jet(self, jet=None):
+        """Parser system variable of `jet` type.
+
+        Args:
+            jet (cx.tower.jet()): jet record
+        """
+        values = {}
+        if jet:
+            values = {
+                "name": jet.name,
+                "reference": jet.reference,
+                "state": jet.state_id.name if jet.state_id else False,
+            }
+        return values
+
+    def _parse_system_variable_tools(self):
+        """Parser system variable of `tools` type.
+
+        Returns:
+            dict(): `server` values of the `tower` variable.
+        """
+        today = fields.Date.to_string(fields.Date.today())
+        now = fields.Datetime.to_string(fields.Datetime.now())
+        values = {
+            "uuid": uuid.uuid4(),
+            "today": today,
+            "now": now,
+            "today_underscore": re.sub(r"[-: .\/]", "_", today),
+            "now_underscore": re.sub(r"[-: .\/]", "_", now),
+        }
+        return values
