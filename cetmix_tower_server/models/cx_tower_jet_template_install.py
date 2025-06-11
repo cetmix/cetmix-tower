@@ -31,24 +31,10 @@ class CxTowerJetTemplateInstall(models.Model):
         string="Templates to install",
         help="Complete list of templates to install/uninstall including dependencies",
     )
-    template_to_install_ids = fields.Many2many(
-        comodel_name="cx.tower.jet.template",
-        relation="cx_tower_jet_template_install_to_install_rel",
-        column1="template_install_id",
-        column2="jet_template_id",
-        help="Template to install",
-    )
-    template_installed_ids = fields.Many2many(
-        comodel_name="cx.tower.jet.template",
-        relation="cx_tower_jet_template_install_installed_rel",
-        column1="template_install_id",
-        column2="jet_template_id",
-        help="Already installed templates",
-    )
-    current_template_installing_id = fields.Many2one(
-        comodel_name="cx.tower.jet.template",
+    current_line_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template.install.line",
         string="Currently Installing",
-        help="Template currently being installed",
+        help="Line that is currently being installed",
     )
 
     state = fields.Selection(
@@ -114,97 +100,70 @@ class CxTowerJetTemplateInstall(models.Model):
             return
 
         # Get the template to install
-        templates_to_install = self.template_to_install_ids
-        if not templates_to_install:
-            self.write(
+        # Pick the templates with no state
+        for template_line in self.line_ids.sorted("order", reverse=True):
+            if template_line.state != "t":
+                continue
+
+            # Get the flight plan to install the template
+            flight_plan = template_line.jet_template_id.plan_install_id  # pylint: disable=no-member
+
+            # Run the corresponding flight plan
+            if flight_plan:
+                # Update the current template installing
+                self.write(
+                    {
+                        "current_line_id": template_line.id,
+                    }
+                )
+
+                # Compose the params
+                params = {
+                    "jet_template_install_id": self.id,  # pylint: disable=no-member
+                }
+                # Run the flight plan
+                self.server_id.run_flight_plan(
+                    flight_plan=flight_plan,
+                    jet_template=template_line.jet_template_id,
+                    **{"plan_log": params},
+                )
+                return
+
+            # Mark the template as installed if no flight plan
+            template_line.write(
                 {
                     "state": "d",
-                    "date_done": fields.Datetime.now(),
-                    "current_template_installing_id": False,
-                }
-            )
-            return
-
-        # Get the last template to install
-        template_to_install = templates_to_install[-1]
-
-        # Get the flight plan to install the template
-        flight_plan = template_to_install.plan_install_id  # pylint: disable=no-member
-        if flight_plan:
-            # Update the current template installing
-            self.write(
-                {
-                    "current_template_installing_id": template_to_install.id,
                 }
             )
 
-            # Compose the params
-            params = {
-                "jet_template_install_id": self.id,  # pylint: disable=no-member
-            }
-            # Run the flight plan
-            self.server_id.run_flight_plan(
-                flight_plan=flight_plan,
-                jet_template=template_to_install,
-                **{"plan_log": params},
-            )
-            return
-
-        # Remove the template from the list of templates to install
-        # and add it to the list of installed templates
-        self.write(
-            {
-                "template_to_install_ids": [(3, template_to_install.id)],
-                "template_installed_ids": [(4, template_to_install.id)],
-                "current_template_installing_id": template_to_install.id,
-            }
-        )
-
-        # Add the server to the list of servers installed on the template
-        template_to_install.write(
-            {
-                "server_ids": [(4, self.server_id.id)],
-            }
-        )
-
-        # Process the installation of the template
-        self._process_install()
-
-    def _flight_plan_finished(self, jet_template, plan_status):
-        """_summary_
+    def _flight_plan_finished(self, plan_status):
+        """
+        Triggered when a flight plan that is used for installing/uninstalling
+        a template is finished.
 
         Args:
-            jet_template (cx.tower.jet.template()): The template the plan was run for.
             exit_code (int): The exit code of the flight plan.
         """
         self.ensure_one()
 
         # Flight plan finished successfully
         if plan_status == 0:
-            # Remove the template from the list of templates to install
-            values = {
-                "template_to_install_ids": [(3, jet_template.id)],
-                "template_installed_ids": [(4, jet_template.id)],
-            }
-
-            # Add the server to the list of servers installed on the template
-            jet_template.write(
+            # Mark current line as done
+            self.current_line_id.write(
                 {
-                    "server_ids": [(4, self.server_id.id)],
+                    "state": "d",
                 }
             )
+
+            # Continue the installation
+            self._process_install()
         else:
-            # Mark the installation as failed
-            values = {
-                "state": "f",
-                "date_done": fields.Datetime.now(),
-            }
-
-        # Update the installation record
-        self.write(values)
-
-        # Process the installation
-        self._process_install()
+            # Mark current line as failed
+            self.current_line_id.write(
+                {
+                    "state": "f",
+                }
+            )
 
     def action_view_flight_plan_logs(self):
         """Open flight plan logs related to this installation"""

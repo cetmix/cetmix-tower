@@ -303,7 +303,7 @@ class CxTowerPlanLog(models.Model):
             else:
                 # Set deletion error if flightplan failed
                 self.server_id.status = "delete_error"
-        
+
         # Jet Template action
         if not self.jet_template_id:
             return
@@ -311,7 +311,6 @@ class CxTowerPlanLog(models.Model):
         # Finish template install/uninstall
         if self.jet_template_install_id:
             self.jet_template_install_id._flight_plan_finished(
-                jet_template=self.jet_template_id,
                 plan_status=plan_status,
             )
             # print(f"Finished template install/uninstall {self.jet_template_id.name}")

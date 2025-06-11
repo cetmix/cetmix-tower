@@ -1,8 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
-import re
-import uuid
 
 from odoo import fields, models
 from odoo.tools.safe_eval import safe_eval
@@ -18,6 +16,8 @@ class TowerVariableMixin(models.AbstractModel):
     _name = "cx.tower.variable.mixin"
     _description = "Tower Variables mixin"
 
+    SYSTEM_VARIABLE_REFERENCE = "tower"
+
     variable_value_ids = fields.One2many(
         string="Variable Values",
         comodel_name="cx.tower.variable.value",
@@ -25,12 +25,15 @@ class TowerVariableMixin(models.AbstractModel):
         help="Variable values for selected record",
     )
 
-    def get_variable_values(self, variable_references, apply_modifiers=True):
+    def get_variable_values(
+        self, variable_references, apply_modifiers=True, system_variable_values=None
+    ):
         """Get variable values for selected records
 
         Args:
             variable_references (list of Char): variable names
             apply_modifiers (bool): apply Python modifiers to the values
+            system_variable_values (dict): values for the `tower` system variable
 
         Returns:
             dict {record_id: {variable_reference: value}}
@@ -41,33 +44,35 @@ class TowerVariableMixin(models.AbstractModel):
         if variable_references:
             global_values = self.get_global_variable_values(variable_references)
 
-            # Get record wise values
+            # Compute variable values for each record
             for rec in self:
-                res_vars = global_values.get(
-                    rec.id, {}
-                )  # set global values as defaults
-                for variable_reference in variable_references:
-                    # Check if this is a system variable
-                    system_value = self._get_system_variable_value(variable_reference)
-                    if system_value:
-                        res_vars.update({variable_reference: system_value})
+                # 1. System variable values
+                res_vars = {"tower": system_variable_values or {}}
 
-                    # Get regular value
-                    else:
-                        value = rec.variable_value_ids.filtered(
-                            lambda v,
-                            variable_reference=variable_reference: v.variable_reference
-                            == variable_reference
-                        )
-                        if value:
-                            res_vars.update({variable_reference: value.value_char})
+                # 2. Global values
+                res_vars.update(global_values.get(rec.id, {}))
+
+                # 3. Record values
+                for variable_reference in variable_references:
+                    # System variable values are already handled above
+                    if variable_reference == self.SYSTEM_VARIABLE_REFERENCE:
+                        continue
+                    value = rec.variable_value_ids.filtered(
+                        lambda v,
+                        variable_reference=variable_reference: v.variable_reference
+                        == variable_reference
+                    )
+                    if value:
+                        res_vars.update({variable_reference: value.value_char})
 
                 res.update({rec.id: res_vars})
 
             # Final render
             # Render templates in values
             for variable_values in res.values():
-                self._render_variable_values(variable_values)
+                self._render_variable_values(
+                    variable_values, system_variable_values=system_variable_values
+                )
 
         # Apply modifiers
         if apply_modifiers:
@@ -96,6 +101,9 @@ class TowerVariableMixin(models.AbstractModel):
             for rec in self:
                 res_vars = {}
                 for variable_reference in variable_references:
+                    # System variable values are already handled above
+                    if variable_reference == self.SYSTEM_VARIABLE_REFERENCE:
+                        continue
                     # Get variable value
                     value = values.filtered(
                         lambda v,
@@ -107,74 +115,6 @@ class TowerVariableMixin(models.AbstractModel):
                     )
                 res.update({rec.id: res_vars})
         return res
-
-    def _get_system_variable_value(self, variable_reference):
-        """Get the value of a system variable. Eg `tower.server.partner_name`
-
-        Args:
-            variable_reference (Char): variable value
-
-        Returns:
-            dict(): populates `tower` variable with with values.
-                {
-                    'server': {..server vals..},
-                    'tools': {..helper tools vals...}
-                }.
-        """
-
-        # This works for a single record only!
-        self.ensure_one()
-
-        variable_value = {}
-        if variable_reference == "tower":
-            variable_value.update(
-                {
-                    "server": self._parse_system_variable_server(),
-                    "tools": self._parse_system_variable_tools(),
-                }
-            )
-
-        return variable_value
-
-    def _parse_system_variable_server(self):
-        """Parser system variable of `server` type.
-
-        Returns:
-            dict(): `server` values of the `tower` variable.
-        """
-        # Get current server
-        values = {}
-        server = self._get_current_server()
-        if server:
-            values = {
-                "name": server.name,
-                "reference": server.reference,
-                "username": server.ssh_username,
-                "partner_name": server.partner_id.name if server.partner_id else False,
-                "ipv4": server.ip_v4_address,
-                "ipv6": server.ip_v6_address,
-                "status": server.status,
-                "os": server.os_id.name if server.os_id else False,
-                "url": server.url,
-            }
-        return values
-
-    def _parse_system_variable_tools(self):
-        """Parser system variable of `tools` type.
-
-        Returns:
-            dict(): `server` values of the `tower` variable.
-        """
-        today = fields.Date.to_string(fields.Date.today())
-        now = fields.Datetime.to_string(fields.Datetime.now())
-        values = {
-            "uuid": uuid.uuid4(),
-            "today": today,
-            "now": now,
-            "today_underscore": re.sub(r"[-: .\/]", "_", today),
-            "now_underscore": re.sub(r"[-: .\/]", "_", now),
-        }
-        return values
 
     def _compose_variable_global_values_domain(self, variable_references):
         """Compose domain for global variables
@@ -190,7 +130,7 @@ class TowerVariableMixin(models.AbstractModel):
         ]
         return domain
 
-    def _render_variable_values(self, variable_values):
+    def _render_variable_values(self, variable_values, system_variable_values=None):
         """Renders variable values using other variable values.
         For example we have the following values:
             "server_root": "/opt/server"
@@ -201,6 +141,7 @@ class TowerVariableMixin(models.AbstractModel):
 
         Args:
             variable_values (dict): values to complete
+            system_variable_values (dict): values for the `tower` system variable
         """
         self.ensure_one()
         TemplateMixin = self.env["cx.tower.template.mixin"]
@@ -211,7 +152,11 @@ class TowerVariableMixin(models.AbstractModel):
                 value_vars = TemplateMixin.get_variables_from_code(var_value)
 
                 # Render variables used in value
-                res = self.get_variable_values(value_vars, apply_modifiers=True)
+                res = self.get_variable_values(
+                    value_vars,
+                    apply_modifiers=True,
+                    system_variable_values=system_variable_values,
+                )
 
                 # Render value using variables
                 variable_values[key] = TemplateMixin.render_code_custom(
@@ -264,20 +209,3 @@ class TowerVariableMixin(models.AbstractModel):
                         value,
                         str(e),
                     )
-
-    def _get_current_server(self):
-        """Get current server record.
-            This is needed to render system variables properly.
-
-        Returns:
-            cx.tower.server(): server record
-        """
-        self.ensure_one()
-
-        if self._name == "cx.tower.server":
-            server = self
-        elif self._name == "cx.tower.variable.value" and self.server_id:
-            server = self.server_id
-        else:
-            server = None
-        return server
