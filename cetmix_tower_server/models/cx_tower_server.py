@@ -1531,7 +1531,11 @@ class CxTowerServer(models.Model):
                 command_code, pythonic_mode=True, **kwargs.get("key", {})
             )
 
-            eval_context = self.env["cx.tower.command"]._get_eval_context(self)
+            # Get the evaluation context for the python command
+            eval_context = self.env[
+                "cx.tower.command"
+            ]._get_python_command_eval_context(server=self)
+
             safe_eval(
                 code,
                 eval_context,
