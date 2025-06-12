@@ -1,3 +1,8 @@
+## 14.0.1.3.0 (2025-06-12)
+
+- Features: Simplify the way Python libraries can be added using custom Odoo modules. (4768)
+
+
 ## 14.0.1.2.0 (2025-06-06)
 
 - Features: Add the tldextract and dnspython libraries. (4737)
