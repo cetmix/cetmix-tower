@@ -5,7 +5,6 @@ import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.osv.expression import OR
 
 
 class TowerVariableValue(models.Model):
@@ -369,72 +368,6 @@ class TowerVariableValue(models.Model):
         return super().create(vals_list)
 
     # -- Business logic --
-
-    def get_by_variable_reference(
-        self,
-        variable_reference,
-        server_id=None,
-        server_template_id=None,
-        check_global=True,
-    ):
-        """Get record based on its reference.
-
-        Important: references are case sensitive!
-
-        Args:
-            variable_reference (Char): variable reference
-            server_reference (Int): Server ID
-            server_template_reference (Int): Server template ID
-
-        Returns:
-            Dict: Variable values that match provided reference
-        """
-
-        domain = [("variable_reference", "=", variable_reference)]
-        # Server or server template specific
-        if server_id:
-            domain.append(("server_id", "=", server_id))
-        elif server_template_id:
-            domain.append(("server_template_id", "=", server_template_id))
-
-        if check_global:
-            domain = OR(
-                [
-                    domain,
-                    [
-                        ("variable_reference", "=", variable_reference),
-                        ("is_global", "=", True),
-                    ],
-                ]
-            )
-
-        search_result = self.search(domain)
-        result = {}
-        if search_result:
-            if server_id:
-                value_char = search_result.filtered("server_id").mapped("value_char")
-                result.update(
-                    {"server": value_char and value_char[0] if value_char else None}
-                )
-            if server_template_id:
-                value_char = search_result.filtered("server_template_id").mapped(
-                    "value_char"
-                )
-                result.update(
-                    {
-                        "server_template": value_char and value_char[0]
-                        if value_char
-                        else None
-                    }
-                )
-            if check_global:
-                value_char = search_result.filtered("is_global").mapped("value_char")
-                result.update(
-                    {"global": value_char and value_char[0] if value_char else None}
-                )
-
-        return result
-
     def _used_in_models(self):
         """Returns information about models which use this mixin.
 

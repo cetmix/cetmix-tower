@@ -81,26 +81,16 @@ class CxTowerJetTemplate(models.Model):
         " to be in a specific"
         " state to function",
     )
-    template_install_completed_ids = fields.Many2many(
-        comodel_name="cx.tower.jet.template.install",
-        relation="cx_tower_jet_template_install_installed_rel",
-        column1="jet_template_id",
-        column2="template_install_id",
-        string="Completed Installations",
-    )
-    template_install_to_be_completed_ids = fields.Many2many(
-        comodel_name="cx.tower.jet.template.install",
-        relation="cx_tower_jet_template_install_to_install_rel",
-        column1="jet_template_id",
-        column2="template_install_id",
-        string="Installations to be Completed",
-    )
-    template_installation_all_ids = fields.Many2many(
-        comodel_name="cx.tower.jet.template.install",
-        compute="_compute_template_installation_all_ids",
-        string="All Installations",
-    )
 
+    # Installation
+    install_ids = fields.One2many(
+        comodel_name="cx.tower.jet.template.install.line",
+        inverse_name="jet_template_id",
+        string="Installations",
+        help="Installations of the template",
+        auto_join=True,
+    )
+    # Dependency Graph
     dependency_graph_image = fields.Binary(
         string="Dependency Graph",
         compute="_compute_dependency_graph_image",
@@ -144,18 +134,6 @@ class CxTowerJetTemplate(models.Model):
                     f"for template {template.name}: {e}"
                 )
                 template.dependency_graph_image = False
-
-    @api.depends(
-        "template_install_completed_ids",
-        "template_install_to_be_completed_ids",
-    )
-    def _compute_template_installation_all_ids(self):
-        """Compute the all installations for the template."""
-        for template in self:
-            template.template_installation_all_ids = (
-                template.template_install_completed_ids
-                | template.template_install_to_be_completed_ids
-            )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Actions

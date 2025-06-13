@@ -380,8 +380,13 @@ class CxTowerPlan(models.Model):
         if action == "n" and plan_line:
             server = command_log.server_id
             variable_values = command_log.variable_values or plan_log.variable_values
-            if plan_line._is_executable_line(server, variable_values=variable_values):
-                plan_line._run(server, plan_log, variable_values=variable_values)
+            if plan_line._is_executable_line(
+                server=server,
+                jet_template=plan_log.jet_template_id,
+                jet=plan_log.jet_id,
+                variable_values=variable_values,
+            ):
+                plan_line._run(server, plan_log)
             else:
                 plan_line._skip(
                     server,

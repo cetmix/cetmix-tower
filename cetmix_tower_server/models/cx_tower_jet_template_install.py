@@ -10,8 +10,9 @@ class CxTowerJetTemplateInstall(models.Model):
 
     _name = "cx.tower.jet.template.install"
     _description = "Jet Template Install/Uninstall"
+    _order = "create_date desc"
 
-    template_id = fields.Many2one(
+    jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         help="Tem",
     )
@@ -38,8 +39,8 @@ class CxTowerJetTemplateInstall(models.Model):
     )
 
     state = fields.Selection(
-        selection=[("i", "Installing"), ("d", "Done"), ("f", "Failed")],
-        default="i",
+        selection=[("p", "Processing"), ("i", "Installed"), ("f", "Failed")],
+        default="p",
     )
 
     @api.depends("create_date", "date_done")
@@ -75,7 +76,7 @@ class CxTowerJetTemplateInstall(models.Model):
         # Create a new install record
         install_record = self.create(
             {
-                "template_id": template.id,
+                "jet_template_id": template.id,
                 "server_id": server.id,
                 "line_ids": template_to_install_lines,
                 "action": "i",
@@ -95,25 +96,35 @@ class CxTowerJetTemplateInstall(models.Model):
         # may run asynchronously and we don't want to
         # block the execution of the function
 
-        # Check if job is already done
-        if self.state != "i":
+        # Continue only if the job is still processing
+        if self.state != "p":
             return
 
+        # Exit if there are some lines currently being installed
+        if self.current_line_id:
+            return
+
+        # In case no lines are to be installed, mark the job as done
+        all_installed = True
+
         # Get the template to install
-        # Pick the templates with no state
-        for template_line in self.line_ids.sorted("order", reverse=True):
-            if template_line.state != "t":
+        for installation_task in self.line_ids.sorted("order", reverse=True):
+            # Pick the templates only in the "To Install" state
+            if installation_task.state != "t":
                 continue
 
+            # Mark the template as still to be processed
+            all_installed = False
+
             # Get the flight plan to install the template
-            flight_plan = template_line.jet_template_id.plan_install_id  # pylint: disable=no-member
+            flight_plan = installation_task.jet_template_id.plan_install_id  # pylint: disable=no-member
 
             # Run the corresponding flight plan
             if flight_plan:
                 # Update the current template installing
                 self.write(
                     {
-                        "current_line_id": template_line.id,
+                        "current_line_id": installation_task.id,
                     }
                 )
 
@@ -124,15 +135,28 @@ class CxTowerJetTemplateInstall(models.Model):
                 # Run the flight plan
                 self.server_id.run_flight_plan(
                     flight_plan=flight_plan,
-                    jet_template=template_line.jet_template_id,
+                    jet_template=installation_task.jet_template_id,
                     **{"plan_log": params},
                 )
-                return
+            else:
+                # Mark the template line as installed if no flight plan
+                installation_task.write(
+                    {
+                        "state": "i",
+                    }
+                )
+                # Add to the list of installed templates
+                installation_task.jet_template_id.write(
+                    {"server_ids": [(4, self.server_id.id)]}
+                )
+                # Continue the installation
+                self._process_install()
 
-            # Mark the template as installed if no flight plan
-            template_line.write(
+        if all_installed:
+            self.write(
                 {
-                    "state": "d",
+                    "state": "i",
+                    "date_done": fields.Datetime.now(),
                 }
             )
 
@@ -151,9 +175,16 @@ class CxTowerJetTemplateInstall(models.Model):
             # Mark current line as done
             self.current_line_id.write(
                 {
-                    "state": "d",
+                    "state": "i",
                 }
             )
+            # Add template to the list of installed templates
+            self.current_line_id.jet_template_id.write(
+                {"server_ids": [(4, self.server_id.id)]}
+            )
+
+            # Remove the link to the current line
+            self.current_line_id = False
 
             # Continue the installation
             self._process_install()
@@ -164,15 +195,22 @@ class CxTowerJetTemplateInstall(models.Model):
                     "state": "f",
                 }
             )
+            # We leave the last line link to simplify the debugging process
+            self.write(
+                {
+                    "state": "f",
+                    "date_done": fields.Datetime.now(),
+                }
+            )
 
     def action_view_flight_plan_logs(self):
         """Open flight plan logs related to this installation"""
         self.ensure_one()
 
         return {
-            "name": _("Flight Plan Logs - %s", self.template_id.name),
+            "name": _("Flight Plan Logs - %s", self.jet_template_id.name),
             "type": "ir.actions.act_window",
             "res_model": "cx.tower.plan.log",
             "view_mode": "tree,form",
-            "domain": [("jet_template_install_id", "=", self.id)],
+            "domain": [("jet_template_install_id", "=", self.id)],  # pylint: disable=no-member
         }

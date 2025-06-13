@@ -74,13 +74,7 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(value, global_value.value_char)
 
-        # -- 2 -- Do not fetch global value now
-        value = self.CetmixTower.server_get_variable_value(
-            self.server_test_1.reference, variable_meme.reference, check_global=False
-        )
-        self.assertIsNone(value)
-
-        # -- 3 -- Add server value and try again
+        # -- 2 -- Add server value and try again
         server_value = self.VariableValue.create(
             {
                 "variable_id": variable_meme.id,

@@ -50,9 +50,6 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Ensure that the flight plan log is for correct jet template
         self.assertEqual(plan_log.jet_template_id, self.jet_template_sample)
 
-        # Ensure that the flight plan log is with correct action
-        self.assertEqual(plan_log.jet_template_action, "i")
-
         # Ensure that the flight plan log is successful
         self.assertEqual(plan_log.plan_status, 0)
 
@@ -85,9 +82,6 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Ensure that the flight plan log is for correct jet template
         self.assertEqual(plan_log.jet_template_id, self.jet_template_sample)
-
-        # Ensure that the flight plan log is with correct action
-        self.assertEqual(plan_log.jet_template_action, "i")
 
         # Ensure that the flight plan log is not successful
         self.assertNotEqual(plan_log.plan_status, 0)

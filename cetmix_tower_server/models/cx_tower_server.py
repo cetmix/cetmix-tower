@@ -929,18 +929,6 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
 
-        # Check if command can be run on this server:
-        # 1. Server is listed in command's server_ids
-        # 2. There are no server_ids at all (command is not server specific)
-        if command.server_ids and self.id not in [s.id for s in command.server_ids]:
-            raise ValidationError(
-                _(
-                    "Command '%(cmd)s' is not compatible with the server '%(server)s'.",
-                    cmd=command.name,
-                    server=self.name,
-                )  # pylint: disable=no-member
-            )
-
         # Check if jet belongs to the server
         if jet and not jet.server_id == self:
             raise ValidationError(
@@ -1122,55 +1110,33 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
 
-        variables = []
+        variable_references = []
 
         # Get variables from code
         if command.code:
             variables_extracted = command.get_variables_from_code(command.code)
             for ve in variables_extracted:
-                if ve not in variables:
-                    variables.append(ve)
+                if ve not in variable_references:
+                    variable_references.append(ve)
 
         # Get variables from path
         path = path if path else command.path
         if path:
             variables_extracted = command.get_variables_from_code(path)
             for ve in variables_extracted:
-                if ve not in variables:
-                    variables.append(ve)
+                if ve not in variable_references:
+                    variable_references.append(ve)
 
         # If there are variables to render, get variable values
-        if variables:
-            # Get system variable values
-            system_variable_values = self.env[
-                "cx.tower.variable"
-            ]._get_system_variable_values(self, jet_template, jet)
-
-            # For the server
-            server_values = self.sudo().get_variable_values(
-                variables, system_variable_values=system_variable_values
-            )  # pylint: disable=no-member
-
-            # Extract variable values for current server
-            variable_values = server_values.get(self.id) if server_values else {}  # pylint: disable=no-member
-
-            # For the jet template
-            if jet_template:
-                template_values = jet_template.sudo().get_variable_values(
-                    variables, system_variable_values=system_variable_values
+        if variable_references:
+            # Get the variable values
+            variable_values = (
+                self.env["cx.tower.variable"]
+                .sudo()
+                ._get_variable_values_by_references(
+                    variable_references, server=self, jet_template=jet_template, jet=jet
                 )
-
-                # Extract variable values for jet template
-                if template_values:
-                    variable_values.update(template_values.get(jet_template.id, {}))
-
-            # For the jet
-            if jet:
-                jet_values = jet.sudo().get_variable_values(
-                    variables, system_variable_values=system_variable_values
-                )
-                if jet_values:
-                    variable_values.update(jet_values.get(jet.id, {}))
+            )
 
             # Apply custom variable values only if user has write access to the server
             has_write_access = self._have_access_to_server("write")

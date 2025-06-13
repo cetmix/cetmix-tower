@@ -200,6 +200,7 @@ class CxTowerFile(models.Model):
         """
         Compute file name, directory and code
         """
+        variable_obj = self.env["cx.tower.variable"]
         for file in self:
             if not file.server_id:
                 file.update(
@@ -220,15 +221,11 @@ class CxTowerFile(models.Model):
             )
             render_code_custom = file.render_code_custom
 
-            # Get system variable values
-            system_variable_values = self.env[
-                "cx.tower.variable"
-            ]._get_system_variable_values(file.server_id)
-
             # Get variable values for the server the file is linked to
-            var_vals = file.server_id.get_variable_values(
-                variables, system_variable_values=system_variable_values
-            ).get(file.server_id.id)
+            var_vals = variable_obj._get_variable_values_by_references(
+                variables,
+                server=file.server_id,
+            )
 
             rendered_code = ""
             if file.file_type == "text" and file.source == "tower":

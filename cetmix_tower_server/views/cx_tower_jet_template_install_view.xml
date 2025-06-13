@@ -6,13 +6,12 @@
         <field name="model">cx.tower.jet.template.install</field>
         <field name="arch" type="xml">
             <tree create="false" edit="false">
-                <field name="template_id" />
+                <field name="jet_template_id" />
                 <field name="server_id" />
                 <field name="action" />
                 <field
                     name="state"
-                    decoration-info="state == 'i'"
-                    decoration-success="state == 'd'"
+                    decoration-success="state == 'i'"
                     decoration-danger="state == 'f'"
                 />
                 <field name="create_date" string="Started" />
@@ -29,7 +28,7 @@
         <field name="arch" type="xml">
             <form string="Jet Template Installation" create="false" edit="false">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="i,d,f" />
+                    <field name="state" widget="statusbar" statusbar_visible="p,i,f" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -52,7 +51,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="template_id" />
+                            <field name="jet_template_id" />
                             <field name="server_id" />
                             <field name="action" />
                         </group>
@@ -91,14 +90,18 @@
         <field name="model">cx.tower.jet.template.install</field>
         <field name="arch" type="xml">
             <search string="Search Template Installations">
-                <field name="template_id" />
+                <field name="jet_template_id" />
                 <field name="server_id" />
                 <filter
-                    string="Installing"
-                    name="installing"
+                    string="Processing"
+                    name="processing"
+                    domain="[('state', '=', 'p')]"
+                />
+                <filter
+                    string="Installed"
+                    name="installed"
                     domain="[('state', '=', 'i')]"
                 />
-                <filter string="Done" name="done" domain="[('state', '=', 'd')]" />
                 <filter string="Failed" name="failed" domain="[('state', '=', 'f')]" />
                 <separator />
                 <filter
@@ -115,7 +118,7 @@
                     <filter
                         string="Template"
                         name="group_by_template"
-                        context="{'group_by': 'template_id'}"
+                        context="{'group_by': 'jet_template_id'}"
                     />
                     <filter
                         string="Server"

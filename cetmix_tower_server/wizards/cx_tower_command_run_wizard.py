@@ -147,8 +147,11 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 variables = record.get_variables()
 
                 # Get variable values
-                variable_values = server_id.get_variable_values(
-                    variables.get(str(record.id))
+                variable_values = self.env[
+                    "cx.tower.variable"
+                ]._get_variable_values_by_references(
+                    variables.get(str(record.id)),
+                    server=server_id,
                 )
                 if variable_values and record.custom_variable_value_ids:
                     custom_vals = {
@@ -156,14 +159,14 @@ class CxTowerCommandRunWizard(models.TransientModel):
                         for custom_value in record.custom_variable_value_ids
                         if custom_value.variable_id
                     }
-                    variable_values[server_id.id].update(custom_vals)
+                    variable_values.update(custom_vals)
 
                 # Render template
                 if variable_values:
                     record.rendered_code = record.render_code(
                         pythonic_mode=record.action == "python_code",
-                        **variable_values.get(server_id.id),
-                    ).get(self.id)  # pylint: disable=no-member
+                        **variable_values,
+                    )[record.id]  # pylint: disable=no-member
                 else:
                     record.rendered_code = record.code
             else:
@@ -278,9 +281,12 @@ class CxTowerCommandRunWizard(models.TransientModel):
         variables = self.get_variables()
 
         # Get variable values
-        variable_values = server_id.get_variable_values(variables.get(str(self.id)))[
-            server_id.id
-        ]
+        variable_values = self.env[
+            "cx.tower.variable"
+        ]._get_variable_values_by_references(
+            variables.get(str(self.id)),
+            server=server_id,
+        )
 
         # Filter variables current user has access to
         command_variables = self.command_variable_ids.search(

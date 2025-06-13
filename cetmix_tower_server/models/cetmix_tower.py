@@ -167,27 +167,25 @@ class CetmixTower(models.AbstractModel):
             variable_reference (Char): Variable reference
             check_global (bool, optional): Check for global value if variable
                 is not defined for selected server. Defaults to True.
+            NOTE: 'check_global' is deprecated. Global values are always checked.
         Returns:
             Char: variable value or None
         """
+        if not check_global:
+            _logger.warning(
+                "server_get_variable_value: 'check_global' is deprecated and "
+                "will be removed in the future. "
+                "Global values are always checked."
+            )
 
         # Get server by reference
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
             return None
-        result = self.env["cx.tower.variable.value"].get_by_variable_reference(
-            variable_reference=variable_reference,
-            server_id=server.id,
-            check_global=check_global,
-        )
-
-        # Get server defined value first
-        value = result.get("server")
-
-        # Get global value if value is not set
-        if not value and check_global:
-            value = result.get("global")
-        return value
+        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
+        if not variable:
+            return None
+        return variable._get_value(server_id=server.id)
 
     @api.model
     def server_check_ssh_connection(
