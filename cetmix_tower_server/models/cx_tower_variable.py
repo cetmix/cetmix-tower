@@ -4,7 +4,7 @@ import logging
 import uuid
 
 from odoo import _, api, fields, models
-from odoo.tools.safe_eval import wrap_module
+from odoo.tools.safe_eval import safe_eval, wrap_module
 
 _logger = logging.getLogger(__name__)
 
@@ -26,6 +26,8 @@ re = wrap_module(
     ],
 )
 
+_logger = logging.getLogger(__name__)
+
 
 class TowerVariable(models.Model):
     """Variables"""
@@ -41,6 +43,7 @@ class TowerVariable(models.Model):
     _order = "name"
 
     DEFAULT_VALIDATION_MESSAGE = _("Invalid value!")
+    SYSTEM_VARIABLE_REFERENCE = "tower"
 
     value_ids = fields.One2many(
         string="Values",
@@ -157,6 +160,7 @@ class TowerVariable(models.Model):
             )
 
     def action_open_values(self):
+        """Open the variable values"""
         self.ensure_one()
         context = self.env.context.copy()
         context.update(
@@ -354,7 +358,7 @@ class TowerVariable(models.Model):
         if (
             not self.validation_pattern
             or not value_char
-            or re.match(self.validation_pattern, value_char)
+            or re.match(self.validation_pattern, value_char)  # pylint: disable=no-member
         ):
             return True, None
         message = self.validation_message or self.DEFAULT_VALIDATION_MESSAGE
@@ -363,14 +367,292 @@ class TowerVariable(models.Model):
             _(
                 "Variable: %(var)s, Value: %(val)s\n%(msg)s",
                 msg=message,
-                var=self.name,
+                var=self.name,  # pylint: disable=no-member
                 val=value_char,
             ),
         )
 
-    # -------------------
-    #   System Variables
-    # -------------------
+    # ------------------------------
+    # ---- Managing variable values
+    # ------------------------------
+    def _get_value(
+        self,
+        server_id=None,
+        server_template_id=None,
+        plan_line_action_id=None,
+        jet_template_id=None,
+        jet_id=None,
+    ):
+        """Get the value of the variable.
+
+        0. No arguments: return the global value.
+        1. Server Template: return the Server Template specific value
+            or the global value.
+        2. Server: return the Server specific value or the global value.
+        3. Jet Template: return the Jet Template specific value
+            or the Server value
+            or the global value.
+        4. Jet: return the Jet specific value
+            or the Jet Template value
+            or the Server value
+            or the global value.
+        5. Plan Line Action: return the Plan Line Action specific value.
+
+        Args:
+            server_id (Integer): Server ID
+            server_template_id (Integer): Server Template ID
+            plan_line_action_id (Integer): Plan Line Action ID
+            jet_template_id (Integer): Jet Template ID
+            jet_id (Integer): Jet ID
+
+        Returns:
+            Char: The value of the variable or None if no value is found.
+        """
+        self.ensure_one()
+        value_ids = self.value_ids
+
+        # 1. Prepare the values
+
+        # Initialize all values to None
+        global_value_char = (
+            server_value_char
+        ) = (
+            server_template_value_char
+        ) = (
+            plan_line_action_value_char
+        ) = jet_template_value_char = jet_value_char = None
+
+        # Check all values for the variable and assign them.
+        # Note: we are not using filtered() to avoid multiple iterations
+        # on the same recordset.
+        for variable_value_id in value_ids:
+            # Fetch the server value
+            if (
+                server_id
+                and not server_value_char
+                and variable_value_id.server_id.id == server_id
+            ):
+                server_value_char = variable_value_id.value_char
+                continue
+            # Fetch the server template value
+            if (
+                server_template_id
+                and not server_template_value_char
+                and variable_value_id.server_template_id.id == server_template_id
+            ):
+                server_template_value_char = variable_value_id.value_char
+                continue
+            # Fetch the plan line action value
+            if (
+                plan_line_action_id
+                and not plan_line_action_value_char
+                and variable_value_id.plan_line_action_id.id == plan_line_action_id
+            ):
+                plan_line_action_value_char = variable_value_id.value_char
+                continue
+            # Fetch the jet template value
+            if (
+                jet_template_id
+                and not jet_template_value_char
+                and variable_value_id.jet_template_id.id == jet_template_id
+            ):
+                jet_template_value_char = variable_value_id.value_char
+                continue
+            # Fetch the jet value
+            if jet_id and not jet_value_char and variable_value_id.jet_id.id == jet_id:
+                jet_value_char = variable_value_id.value_char
+                continue
+            # Fetch the global value
+            if not global_value_char and variable_value_id.is_global:
+                global_value_char = variable_value_id.value_char
+
+        # 2. Compose the response
+        # 2.1. Server Template
+        if server_template_id:
+            return server_template_value_char or global_value_char
+
+        # 2.2. Jet
+        if jet_id:
+            return (
+                jet_value_char
+                or jet_template_value_char
+                or server_value_char
+                or global_value_char
+            )
+
+        # 2.3. Jet Template
+        if jet_template_id:
+            return jet_template_value_char or server_value_char or global_value_char
+
+        # 2.3. Server
+        if server_id:
+            return server_value_char or global_value_char
+
+        # 2.3. Plan Line Action
+        if plan_line_action_id:
+            return plan_line_action_value_char
+
+        # 2.4. Global
+        return global_value_char
+
+    @api.model
+    def _get_variable_values_by_references(
+        self,
+        variable_references,
+        apply_modifiers=True,
+        server=None,
+        jet_template=None,
+        jet=None,
+    ):
+        """Get variable values for multiple references.
+        This method is designed to be used for template rendering.
+        It also includes system variable values in the result.
+
+        Args:
+            variable_references (list of Char): variable names
+            apply_modifiers (bool): apply Python modifiers to the values
+            server (cx.tower.server): Server
+            jet_template (cx.tower.jet.template): Jet Template
+            jet (cx.tower.jet): Jet
+
+        Returns:
+            dict {variable_reference: value}
+        """
+
+        # 1. Get system variable values
+        variable_values = {}
+        system_vars = self._get_system_variable_values(
+            server=server, jet_template=jet_template, jet=jet
+        )
+        if system_vars:
+            variable_values[self.SYSTEM_VARIABLE_REFERENCE] = system_vars
+
+        # Return just system variable values if no references are provided
+        # or the only one is the system variable
+        # Need a fallback in case system variable is provides several times
+        if not variable_references or (
+            all(
+                reference == self.SYSTEM_VARIABLE_REFERENCE
+                for reference in variable_references
+            )
+        ):
+            return variable_values
+
+        # 2. Get variable value records
+        for reference in variable_references:
+            # Do not overwrite system variable values
+            if reference == self.SYSTEM_VARIABLE_REFERENCE:
+                continue
+            variable = self.get_by_reference(reference)  # pylint: disable=no-member
+
+            # Assign the value to the variable values dictionary
+            variable_value = (
+                variable._get_value(
+                    server_id=server and server.id,
+                    jet_template_id=jet_template and jet_template.id,
+                    jet_id=jet and jet.id,
+                )
+                if variable
+                else None
+            )
+            variable_values[reference] = variable_value
+
+        # 3. Render templates in values
+        self._render_variable_values(
+            variable_values, server=server, jet_template=jet_template, jet=jet
+        )
+
+        # 4. Apply modifiers
+        if apply_modifiers:
+            self._apply_modifiers(variable_values)
+
+        return variable_values
+
+    def _render_variable_values(
+        self, variable_values, server=None, jet_template=None, jet=None
+    ):
+        """Renders variable values using other variable values.
+        For example we have the following values:
+            "server_root": "/opt/server"
+            "server_assets": "{{ server_root }}/assets"
+
+        This function will render the "server_assets" variable:
+            "server_assets": "/opt/server/assets"
+
+        Args:
+            variable_values (dict): variable values to complete
+            server (cx.tower.server): Server
+            jet_template (cx.tower.jet.template): Jet Template
+            jet (cx.tower.jet): Jet
+        """
+        TemplateMixin = self.env["cx.tower.template.mixin"]
+        for key, var_value in variable_values.items():
+            # Skip system variable values
+            if not var_value or key == self.SYSTEM_VARIABLE_REFERENCE:
+                continue
+
+            # Render only if template is found
+            if "{{ " in var_value:
+                # Get variables used in value
+                value_vars = TemplateMixin.get_variables_from_code(var_value)
+
+                # Render variables used in value
+                values_for_value = self._get_variable_values_by_references(
+                    value_vars,
+                    apply_modifiers=True,
+                    server=server,
+                    jet_template=jet_template,
+                    jet=jet,
+                )
+
+                # Render value using variables
+                variable_values[key] = TemplateMixin.render_code_custom(
+                    var_value, **values_for_value
+                )
+
+    def _apply_modifiers(self, variable_values):
+        """Apply pre-defined Python expression to the dictionary
+            of variable values.
+
+        Args:
+            variable_values (dict): variable values
+            {variable_reference: value}
+        """
+
+        for variable_reference, value in variable_values.items():
+            if not value:
+                continue
+
+            # ORM should cache resolved variables
+            variable = self.get_by_reference(variable_reference)
+
+            # Should never happen.. anyway
+            if not variable:
+                continue
+
+            # Skip if no expression to apply
+            if not variable.applied_expression:
+                continue
+
+            # Evaluate expression
+            eval_context = variable._get_eval_context(value)
+            try:
+                safe_eval(
+                    variable.applied_expression,
+                    eval_context,
+                    mode="exec",
+                    nocopy=True,
+                )
+                variable_values[variable_reference] = eval_context.get("result")
+            except Exception as e:
+                _logger.error(
+                    "Error evaluating applied expression for "
+                    "variable %s value %s: %s",
+                    variable.name,
+                    value,
+                    str(e),
+                )
+
     @api.model
     def _get_system_variable_values(self, server=None, jet_template=None, jet=None):
         """
@@ -409,6 +691,8 @@ class TowerVariable(models.Model):
         # Get current server
         values = {}
         if server:
+            # Using sudo() to get all fields
+            server = server.sudo()
             values = {
                 "name": server.name,
                 "reference": server.reference,
@@ -434,6 +718,8 @@ class TowerVariable(models.Model):
         # Get current server
         values = {}
         if jet_template:
+            # Using sudo() to get all fields
+            jet_template = jet_template.sudo()
             values = {
                 "name": jet_template.name,
                 "reference": jet_template.reference,
@@ -448,6 +734,8 @@ class TowerVariable(models.Model):
         """
         values = {}
         if jet:
+            # Using sudo() to get all fields
+            jet = jet.sudo()
             values = {
                 "name": jet.name,
                 "reference": jet.reference,

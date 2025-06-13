@@ -679,7 +679,7 @@ result = {
         )
         variable_value_path.value_char = None
         rendered_command = self.server_test_1._render_command(self.command_create_dir)
-        rendered_code_expected = "cd False && mkdir test-odoo-1"
+        rendered_code_expected = "cd None && mkdir test-odoo-1"
         rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
 
         self.assertEqual(
@@ -808,9 +808,7 @@ result = re.sub(pattern, replacement, value)
         # -- 2 --
         # Set invalid expression modifier
         self.variable_path.applied_expression = "invalid"
-        with mute_logger(
-            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
-        ):
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_variable"):
             rendered_command = self.server_test_1._render_command(
                 self.command_create_dir
             )
@@ -850,9 +848,7 @@ result = re.sub(pattern, replacement, value)
                 "action": "ssh_command",
             }
         )
-        with mute_logger(
-            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
-        ):
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_variable"):
             rendered_command = self.server_test_1._render_command(
                 command_with_complex_variable
             )
@@ -866,9 +862,7 @@ result = re.sub(pattern, replacement, value)
         # -- 4 --
         # Remove modifier from variable "Path" and check again
         self.variable_dir.applied_expression = None
-        with mute_logger(
-            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
-        ):
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_variable"):
             rendered_command = self.server_test_1._render_command(
                 command_with_complex_variable
             )

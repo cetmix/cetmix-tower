@@ -214,12 +214,14 @@ class CxTowerPlanLine(models.Model):
             **kwargs,
         )
 
-    def _is_executable_line(self, server, variable_values=None):
+    def _is_executable_line(self, server, jet_template=None, jet=None, variable_values=None):
         """
         Check if this line can be executed based on its condition.
 
         Args:
             server (cx.tower.server()): The server on which conditions are checked.
+            jet_template (cx.tower.jet.template()): The jet template being used.
+            jet (cx.tower.jet()): The jet being used.
             variable_values (dict, optional): Custom values provided when running the
                 flight plan. These values are merged with server variables when
                 rendering the condition.
@@ -236,17 +238,19 @@ class CxTowerPlanLine(models.Model):
             # Values from server variables referenced in the condition
             server_values = {}
             if variables:
-                variable_values_dict = server.get_variable_values(variables)
-                server_values = variable_values_dict.get(server.id, {}) or {}
-
-            # Merge with custom values passed to the flight plan (if any)
-            merged_values = {**server_values, **(variable_values or {})}
-
-            # Render condition with all available values (in pythonic mode)
-            if merged_values:
-                condition = self.command_id.render_code_custom(
-                    condition, pythonic_mode=True, **merged_values
+                variable_obj = self.env["cx.tower.variable"]
+                variable_values = variable_obj._get_variable_values_by_references(
+                    variables,
+                    server=server,
+                    jet_template=jet_template,
+                    jet=jet,
                 )
+                # Merge with custom values passed to the flight plan (if any)
+                merged_values = {**server_values, **(variable_values or {})}
+                if merged_values:
+                    condition = self.command_id.render_code_custom(
+                        condition, pythonic_mode=True, **merged_values
+                    )
 
             # For evaluate a string that contains an expression that mostly uses
             # Python constants, arithmetic expressions and the objects directly provided

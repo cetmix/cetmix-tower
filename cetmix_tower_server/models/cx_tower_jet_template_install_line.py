@@ -8,9 +8,9 @@ class CxTowerJetTemplateInstallLine(models.Model):
 
     _name = "cx.tower.jet.template.install.line"
     _description = "Jet Template Install/Uninstall Line"
-    _log_access = False
     _order = "order desc"
 
+    order = fields.Integer()
     jet_template_install_id = fields.Many2one(
         comodel_name="cx.tower.jet.template.install",
         ondelete="cascade",
@@ -19,16 +19,17 @@ class CxTowerJetTemplateInstallLine(models.Model):
         comodel_name="cx.tower.jet.template",
         ondelete="cascade",
     )
-    installed = fields.Boolean(
-        default=False,
+    server_id = fields.Many2one(
+        comodel_name="cx.tower.server",
+        related="jet_template_install_id.server_id",
+        readonly=True,
     )
     state = fields.Selection(
         selection=[
             ("t", "To Install"),
-            ("i", "Installing"),
-            ("d", "Done"),
+            ("p", "Processing"),
+            ("i", "Installed"),
             ("f", "Failed"),
         ],
         default="t",
     )
-    order = fields.Integer()

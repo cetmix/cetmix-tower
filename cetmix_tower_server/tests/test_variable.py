@@ -108,12 +108,12 @@ class TestTowerVariable(TestTowerCommon):
         self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Test 'get_variable_values' function
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_os", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_os", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        self.assertEqual(len(res_vars), 5, "Must be a 5 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_os = res_vars["test_os"]
         var_url = res_vars["test_url"]
@@ -131,12 +131,12 @@ class TestTowerVariable(TestTowerCommon):
         self.VariableValue.create(
             {"variable_id": self.variable_dir.id, "value_char": "/global/dir"}
         )
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_os", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_os", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        self.assertEqual(len(res_vars), 5, "Must be a 5 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_os = res_vars["test_os"]
         var_url = res_vars["test_url"]
@@ -157,12 +157,12 @@ class TestTowerVariable(TestTowerCommon):
             f.save()
 
         # Check
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_os", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_os", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        self.assertEqual(len(res_vars), 5, "Must be a 5 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_os = res_vars["test_os"]
         var_url = res_vars["test_url"]
@@ -202,12 +202,13 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Check values
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        # Including system variable
+        self.assertEqual(len(res_vars), 4, "Must be a 4 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_url = res_vars["test_url"]
         var_version = res_vars["test_version"]
@@ -362,8 +363,9 @@ class TestTowerVariable(TestTowerCommon):
         # Get variables
         variables = command.get_variables().get(str(command.id))
         # Get variable values
-        variable_values = self.server_test_1.get_variable_values(variables).get(
-            self.server_test_1.id
+        variable_values = self.Variable._get_variable_values_by_references(
+            variables,
+            server=self.server_test_1,
         )
 
         # Check values
@@ -409,15 +411,15 @@ class TestTowerVariable(TestTowerCommon):
         )
 
     @patch(
-        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.fields.Datetime.now",
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable.fields.Datetime.now",
         return_value=fields.Datetime.now(),
     )
     @patch(
-        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.fields.Date.today",
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable.fields.Date.today",
         return_value=fields.Date.today(),
     )
     @patch(
-        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.uuid.uuid4",
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable.uuid.uuid4",
         return_value="suchmuchuuid4",
     )
     def test_system_variable_tools_type_values(self, mock_uuid4, mock_today, mock_now):
@@ -431,8 +433,9 @@ class TestTowerVariable(TestTowerCommon):
         # Get variables
         variables = command.get_variables().get(str(command.id))
         # Get variable values
-        variable_values = self.server_test_1.get_variable_values(variables).get(
-            self.server_test_1.id
+        variable_values = self.Variable._get_variable_values_by_references(
+            variables,
+            server=self.server_test_1,
         )
 
         # Check values
@@ -518,64 +521,6 @@ class TestTowerVariable(TestTowerCommon):
 
         self.assertEqual(
             expected_value, result_value, "Result value doesn't match expected"
-        )
-
-    def test_get_by_variable_reference(self):
-        """Test getting variable values by variable reference"""
-
-        variable_meme = self.Variable.create(
-            {"name": "Meme Variable", "reference": "meme_variable"}
-        )
-        global_value = self.VariableValue.create(
-            {"variable_id": variable_meme.id, "value_char": "Memes Globalvs"}
-        )
-
-        # -- 1 -- Get value for Server with no server value defined
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_id=self.server_test_1.id
-        )
-        self.assertIsNone(server_result.get("server"))
-        self.assertIsNone(server_result.get("server_template"))
-        self.assertEqual(server_result.get("global"), global_value.value_char)
-
-        # -- 2 -- Add server value and try again
-        server_value = self.VariableValue.create(
-            {
-                "variable_id": variable_meme.id,
-                "value_char": "Memes Servervs",
-                "server_id": self.server_test_1.id,
-            }
-        )
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_id=self.server_test_1.id
-        )
-        self.assertEqual(server_result.get("server"), server_value.value_char)
-        self.assertEqual(server_result.get("global"), global_value.value_char)
-        self.assertIsNone(server_result.get("server_template"))
-
-        # -- 3 -- Do not fetch global value now
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_id=self.server_test_1.id, check_global=False
-        )
-        self.assertIsNone(server_result.get("global"))
-        self.assertEqual(server_result.get("server"), server_value.value_char)
-        self.assertIsNone(server_result.get("server_template"))
-
-        # -- 4 -- Check server template value
-        server_template_value = self.VariableValue.create(
-            {
-                "variable_id": variable_meme.id,
-                "value_char": "Memes Servervs Templatvs",
-                "server_template_id": self.server_template_sample.id,
-            }
-        )
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_template_id=self.server_template_sample.id
-        )
-        self.assertEqual(server_result.get("global"), global_value.value_char)
-        self.assertIsNone(server_result.get("server"))
-        self.assertEqual(
-            server_result.get("server_template"), server_template_value.value_char
         )
 
     def test_single_assignment(self):

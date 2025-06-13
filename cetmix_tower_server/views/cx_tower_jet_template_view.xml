@@ -188,22 +188,17 @@
                             </field>
                         </page>
                         <page name="installations" string="Installation Logs">
-                            <field name="template_installation_all_ids">
+                            <field name="install_ids">
                                 <tree>
+                                    <field name="create_date" />
                                     <field name="server_id" />
-                                    <field name="action" />
                                     <field name="state" />
-                                    <field name="date_done" />
                                 </tree>
                                 <form>
                                     <group>
-                                        <field name="date_done" />
-                                        <field name="line_ids">
-                                            <tree>
-                                                <field name="jet_template_id" />
-                                                <field name="state" />
-                                            </tree>
-                                        </field>
+                                        <field name="create_date" />
+                                        <field name="server_id" />
+                                        <field name="state" />
                                     </group>
                                 </form>
                             </field>
