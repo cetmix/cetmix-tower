@@ -232,14 +232,10 @@ class CxTowerPlanLine(models.Model):
         self.ensure_one()
         condition = self.condition
         if condition:
-            # Collect variable references used in the condition
-            variables = self.command_id.get_variables_from_code(condition)
-
-            # Values from server variables referenced in the condition
-            server_values = {}
+            variables = self.command_id.get_variables_from_code(condition)  # pylint: disable=no-member
             if variables:
                 variable_obj = self.env["cx.tower.variable"]
-                variable_values = variable_obj._get_variable_values_by_references(
+                server_values = variable_obj._get_variable_values_by_references(
                     variables,
                     server=server,
                     jet_template=jet_template,
@@ -295,7 +291,7 @@ class CxTowerPlanLine(models.Model):
 
         self.env["cx.tower.command.log"].record(
             server_id=server.id,
-            command_id=self.command_id.id,
+            command_id=self.command_id.id,  # pylint: disable=no-member
             start_date=now,
             finish_date=now,
             status=PLAN_LINE_CONDITION_CHECK_FAILED,

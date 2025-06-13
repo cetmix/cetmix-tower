@@ -554,16 +554,6 @@ class CxTowerServer(models.Model):
         action["context"] = context
         return action
 
-    def action_open_jet_templates(self):
-        """
-        Open jet templates of the current server
-        """
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "cetmix_tower_server.cx_tower_jet_template_action"
-        )
-        action["domain"] = [("server_ids", "in", self.ids)]  # pylint: disable=no-member
-        return action
-
     def action_open_jets(self):
         """
         Open jets of the current server

@@ -11,12 +11,12 @@
                 <field name="action" />
                 <field
                     name="state"
-                    decoration-success="state == 'i'"
-                    decoration-danger="state == 'f'"
+                    widget="badge"
+                    decoration-success="state == 'installed'"
+                    decoration-danger="state == 'failed'"
                 />
                 <field name="create_date" string="Started" />
                 <field name="date_done" />
-                <field name="display_name" invisible="1" />
             </tree>
         </field>
     </record>
@@ -28,9 +28,24 @@
         <field name="arch" type="xml">
             <form string="Jet Template Installation" create="false" edit="false">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="p,i,f" />
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="processing"
+                    />
                 </header>
                 <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Installed"
+                        attrs="{'invisible': [('state', '!=', 'installed')]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Failed"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('state', '!=', 'failed')]}"
+                    />
                     <div class="oe_button_box" name="button_box">
                         <button
                             name="action_view_flight_plan_logs"
@@ -44,11 +59,6 @@
                             </div>
                         </button>
                     </div>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="display_name" />
-                        </h1>
-                    </div>
                     <group>
                         <group>
                             <field name="jet_template_id" />
@@ -57,20 +67,15 @@
                         </group>
                         <group>
                             <field name="create_date" string="Started" />
-                            <field name="current_line_id" />
+                            <field
+                                name="current_line_id"
+                                attrs="{'invisible': [('current_line_id', '=', False)]}"
+                            />
                             <field name="date_done" />
                         </group>
                     </group>
                     <notebook>
-                        <page string="Templates to Install" name="to_install">
-                            <field name="line_ids">
-                                <tree>
-                                    <field name="jet_template_id" />
-                                    <field name="state" />
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Installed Templates" name="installed">
+                        <page string="Installation Steps" name="installation_steps">
                             <field name="line_ids">
                                 <tree>
                                     <field name="jet_template_id" />
@@ -95,19 +100,23 @@
                 <filter
                     string="Processing"
                     name="processing"
-                    domain="[('state', '=', 'p')]"
+                    domain="[('state', '=', 'processing')]"
                 />
                 <filter
                     string="Installed"
                     name="installed"
-                    domain="[('state', '=', 'i')]"
+                    domain="[('state', '=', 'installed')]"
                 />
-                <filter string="Failed" name="failed" domain="[('state', '=', 'f')]" />
+                <filter
+                    string="Failed"
+                    name="failed"
+                    domain="[('state', '=', 'failed')]"
+                />
                 <separator />
                 <filter
                     string="Install Action"
                     name="install_action"
-                    domain="[('action', '=', 'i')]"
+                    domain="[('action', '=', 'install')]"
                 />
                 <filter
                     string="Uninstall Action"

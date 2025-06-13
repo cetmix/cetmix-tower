@@ -6,6 +6,7 @@ import logging
 import xml.etree.ElementTree as ET
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ class CxTowerJetTemplate(models.Model):
         "cx.tower.access.mixin",
         "cx.tower.variable.mixin",
     ]
+    _order = "name asc"
 
     active = fields.Boolean(default=True)
     tag_ids = fields.Many2many(
@@ -153,6 +155,16 @@ class CxTowerJetTemplate(models.Model):
                 "default_jet_template_id": self.id,
             },
         }
+
+    def action_uninstall_from_server(self, server=None):
+        """Action to uninstall the Jet Template from the selected servers."""
+        self.ensure_one()
+        # Open the wizard to uninstall the template from the selected servers
+        if not server:
+            server_id = self.env.context.get("default_server_id")
+            server = self.env["cx.tower.server"].browse(server_id)
+        if not server:
+            raise ValidationError(_("No server selected"))
 
     def action_test(self):
         """Test button"""
