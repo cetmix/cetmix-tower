@@ -8,9 +8,26 @@
         <field name="arch" type="xml">
             <form string="Jet">
                 <header>
+                    <button name="action_test" type="object" string="Test" />
                     <field name="state_id" widget="statusbar" />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Command Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Flight Plan Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="e.g. Production Odoo" />
@@ -42,6 +59,7 @@
                                         options="{'color_field': 'color'}"
                                     />
                                     <field name="action_to_trigger_id" />
+                                    <field name="test_state_id" />
                                 </group>
                             </group>
                         </page>

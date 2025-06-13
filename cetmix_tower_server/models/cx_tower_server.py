@@ -554,16 +554,6 @@ class CxTowerServer(models.Model):
         action["context"] = context
         return action
 
-    def action_open_jet_templates(self):
-        """
-        Open jet templates of the current server
-        """
-        action = self.env["ir.actions.actions"]._for_xml_id(
-            "cetmix_tower_server.cx_tower_jet_template_action"
-        )
-        action["domain"] = [("server_ids", "in", self.ids)]  # pylint: disable=no-member
-        return action
-
     def action_open_jets(self):
         """
         Open jets of the current server
@@ -586,6 +576,21 @@ class CxTowerServer(models.Model):
         )
         action["context"] = context
         return action
+
+    def action_install_jet_template(self):
+        """Action to install the Jet Template on the selected servers."""
+        self.ensure_one()
+        # Open the wizard to install the template on the selected servers
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Install Jet Template",
+            "res_model": "cx.tower.jet.template.install.wiz",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_server_ids": self.ids,  # pylint: disable=no-member
+            },
+        }
 
     def action_uninstall_jet_template(self):
         """

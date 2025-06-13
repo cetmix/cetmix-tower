@@ -8,7 +8,8 @@ class CxTowerJetTemplateInstallLine(models.Model):
 
     _name = "cx.tower.jet.template.install.line"
     _description = "Jet Template Install/Uninstall Line"
-    _order = "order desc"
+    _order = "create_date desc"
+    _rec_name = "jet_template_id"
 
     order = fields.Integer()
     jet_template_install_id = fields.Many2one(
@@ -26,10 +27,10 @@ class CxTowerJetTemplateInstallLine(models.Model):
     )
     state = fields.Selection(
         selection=[
-            ("t", "To Install"),
-            ("p", "Processing"),
-            ("i", "Installed"),
-            ("f", "Failed"),
+            ("to_install", "To Install"),
+            ("processing", "Processing"),
+            ("installed", "Installed"),
+            ("failed", "Failed"),
         ],
-        default="t",
+        default="to_install",
     )

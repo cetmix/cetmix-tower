@@ -206,18 +206,6 @@
                             <field name="file_count" widget="statinfo" string="Files" />
                         </button>
                         <button
-                            name="action_open_jet_templates"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-plane"
-                        >
-                            <field
-                                name="jet_template_count"
-                                string="Jet Templates"
-                                widget="statinfo"
-                            />
-                        </button>
-                        <button
                             name="action_open_jets"
                             type="object"
                             class="oe_stat_button"
@@ -474,6 +462,26 @@
                                         class="fa fa-play oe_highlight"
                                         title="Run Manually"
                                         confirm="Are you sure?"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="jet_templates" string="Jet Templates">
+                            <button
+                                name="action_install_jet_template"
+                                string="Install Jet Template"
+                                type="object"
+                                class="oe_highlight"
+                            />
+                            <field name="jet_template_ids">
+                                <tree create="0" edit="0">
+                                    <field name="name" />
+                                    <button
+                                        name="action_uninstall_from_server"
+                                        type="object"
+                                        string="Uninstall"
+                                        class="btn-danger"
+                                        context="{'default_server_id': parent.id}"
                                     />
                                 </tree>
                             </field>

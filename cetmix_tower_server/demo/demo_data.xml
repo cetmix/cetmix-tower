@@ -457,6 +457,7 @@
     <record id="command_update_upgrade" model="cx.tower.command">
         <field name="name">Update packages</field>
         <field name="action">ssh_command</field>
+        <field name="reference">demo_update_upgrade</field>
         <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
