@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Demo Product Templates -->
+    <record id="product_basic_cloud_server" model="product.template">
+        <field name="name">Basic Cloud Server</field>
+        <field name="type">service</field>
+        <field name="list_price">50.0</field>
+        <field name="categ_id" ref="product.product_category_all" />
+        <field name="description">
+            Basic cloud server instance with configurable resources.
+            Perfect for small applications and development environments.
+        </field>
+    </record>
+
+    <record id="product_premium_cloud_server" model="product.template">
+        <field name="name">Premium Cloud Server</field>
+        <field name="type">service</field>
+        <field name="list_price">150.0</field>
+        <field name="categ_id" ref="product.product_category_all" />
+        <field name="description">
+            Premium cloud server instance with enhanced performance.
+            Suitable for production applications with moderate traffic.
+        </field>
+    </record>
+
+    <record id="product_enterprise_cloud_server" model="product.template">
+        <field name="name">Enterprise Cloud Server</field>
+        <field name="type">service</field>
+        <field name="list_price">300.0</field>
+        <field name="categ_id" ref="product.product_category_all" />
+        <field name="description">
+            Enterprise-grade cloud server with high availability.
+            Designed for mission-critical applications.
+        </field>
+    </record>
+
+    <record id="product_database_hosting" model="product.template">
+        <field name="name">Database Hosting</field>
+        <field name="type">service</field>
+        <field name="list_price">75.0</field>
+        <field name="categ_id" ref="product.product_category_all" />
+        <field name="description">
+            Managed database hosting service with automated backups.
+            Supports multiple database engines.
+        </field>
+    </record>
+
+    <!-- Demo Product Attributes -->
+    <record id="product_attribute_server_size" model="product.attribute">
+        <field name="name">Server Size</field>
+        <field name="display_type">radio</field>
+        <field name="tower_linked_model">cx.tower.variable.option</field>
+        <field
+            name="tower_domain"
+        >[('variable_id.reference', '=', 'server_size')]</field>
+    </record>
+
+    <record id="product_attribute_database_version" model="product.attribute">
+        <field name="name">Database Version</field>
+        <field name="display_type">select</field>
+        <field name="tower_linked_model">cx.tower.variable.option</field>
+        <field
+            name="tower_domain"
+        >[('variable_id.reference', '=', 'db_version')]</field>
+    </record>
+</odoo>

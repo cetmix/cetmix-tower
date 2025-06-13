@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="product_attribute_tower_form" model="ir.ui.view">
+        <field name="name">product.attribute.tower.form</field>
+        <field name="model">product.attribute</field>
+        <field name="inherit_id" ref="product.product_attribute_view_form" />
+        <field name="arch" type="xml">
+
+            <!-- Add Tower fields after main fields -->
+            <xpath expr="//group[@name='main_fields']" position="after">
+                <group name="tower_fields" string="Cetmix Tower Integration">
+                    <field name="tower_variable_id" />
+                </group>
+            </xpath>
+
+            <!-- Add sync button before value_ids field -->
+            <xpath expr="//field[@name='value_ids']" position="before">
+                <button
+                    type="object"
+                    title="Sync Attribute Values from Tower Variable"
+                    string="Sync from Tower Variable"
+                    class="oe_highlight"
+                    name="action_sync_tower_values"
+                    attrs="{'invisible': [('tower_variable_id', '=', False)]}"
+                />
+            </xpath>
+
+            <!-- Add Tower fields to the tree view of attribute values -->
+            <xpath
+                expr="//field[@name='value_ids']/tree/field[@name='name']"
+                position="after"
+            >
+                <field
+                    name="tower_variable_reference"
+                    readonly="1"
+                    optional="show"
+                    string="Tower Variable Ref"
+                />
+                <field
+                    name="is_from_tower"
+                    readonly="1"
+                    optional="show"
+                    string="From Tower"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
