@@ -370,198 +370,106 @@ ul.auto-toc {
 !! source digest: sha256:cac4935d65aa245e5bfff04e195b4e0344bf2744580ec3063da5734afcede7f1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/16.0/cetmix_tower_product"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
-<p>This module extends Odoo’s product attribute system to enable seamless
-integration between product configuration and Cetmix Tower service
-instance provisioning. It allows product managers to define product
-attributes that directly map to Cetmix Tower variable options and
-values, ensuring that when customers configure products in the sales
-process, the selected attribute values automatically determine the
-service instance configuration parameters.</p>
-<p>The module adapts the mechanics from <tt class="docutils literal">product_attribute_model_link</tt>
-but creates a hardcoded connection specifically for Cetmix Tower models.
-This creates a bridge between the sales configuration interface and the
-technical service provisioning backend without external dependencies.</p>
-<p><strong>Key Features:</strong></p>
+<div class="section" id="cetmix-tower-product-1">
+<h1>Cetmix Tower Product</h1>
+<p>This module provides integration between Cetmix Tower server
+configuration variables and Odoo product attributes.</p>
+<div class="section" id="key-features">
+<h2>Key Features</h2>
 <ul class="simple">
-<li>Link product attributes to Cetmix Tower Variable Options
-(<tt class="docutils literal">cx.tower.variable.option</tt>)</li>
-<li>Link product attributes to Cetmix Tower Variable Values
-(<tt class="docutils literal">cx.tower.variable.value</tt>)</li>
-<li>Domain filtering to select specific Tower variables</li>
-<li>Automatic creation of product attribute values from Tower data</li>
-<li>Wizard-based selection interface for Tower records</li>
-<li>Warning system for configuration changes</li>
-<li>Demo data with realistic cloud service scenarios</li>
+<li><strong>Direct Tower Variable Linking</strong>: Link product attributes directly to
+specific Tower variables</li>
+<li><strong>Manual Synchronization</strong>: On-demand sync button to import Tower
+variable values as product attribute values</li>
+<li><strong>Duplicate Prevention</strong>: Intelligent duplicate detection prevents
+creation of attribute values with identical names or Tower references</li>
 </ul>
 <p><strong>Table of contents</strong></p>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
-<li><a class="reference internal" href="#initial-setup" id="toc-entry-2">Initial Setup</a></li>
-<li><a class="reference internal" href="#populating-attribute-values" id="toc-entry-3">Populating Attribute Values</a></li>
-<li><a class="reference internal" href="#domain-configuration-examples" id="toc-entry-4">Domain Configuration Examples</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#usage" id="toc-entry-5">Usage</a><ul>
-<li><a class="reference internal" href="#creating-tower-linked-product-attributes" id="toc-entry-6">Creating Tower-Linked Product Attributes</a></li>
-<li><a class="reference internal" href="#using-tower-linked-attributes-on-products" id="toc-entry-7">Using Tower-Linked Attributes on Products</a></li>
-<li><a class="reference internal" href="#sales-order-configuration" id="toc-entry-8">Sales Order Configuration</a></li>
-<li><a class="reference internal" href="#managing-attribute-values" id="toc-entry-9">Managing Attribute Values</a></li>
-<li><a class="reference internal" href="#known-limitations" id="toc-entry-10">Known Limitations</a></li>
-<li><a class="reference internal" href="#best-practices" id="toc-entry-11">Best Practices</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-12">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-13">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-14">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-15">Maintainers</a></li>
-</ul>
-</li>
-</ul>
+</div>
 </div>
 <div class="section" id="configuration">
-<h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
-<div class="section" id="initial-setup">
-<h2><a class="toc-backref" href="#toc-entry-2">Initial Setup</a></h2>
-<ol class="arabic simple">
-<li>Install the module through <strong>Apps</strong> menu</li>
-<li>Navigate to <strong>Sales → Configuration → Product Attributes</strong></li>
-<li>Click <strong>Create</strong> to create a new product attribute</li>
-<li>In the product attribute form:<ul>
-<li>Fill in the attribute name (e.g., “Server Configuration”, “Database
-Type”)</li>
-<li>Select <strong>Linked Tower Model</strong> from the dropdown:<ul>
-<li><strong>Cetmix Tower Variable Options</strong> (<tt class="docutils literal">cx.tower.variable.option</tt>)</li>
-<li><strong>Cetmix Tower Variable Values</strong> (<tt class="docutils literal">cx.tower.variable.value</tt>)</li>
+<h1>Configuration</h1>
+<div class="section" id="prerequisites">
+<h2>Prerequisites</h2>
+<p>Before configuring this module, ensure you have:</p>
+<ul class="simple">
+<li>Cetmix Tower Server module installed and configured</li>
+<li>Tower variables and variable values defined in your Tower setup</li>
 </ul>
-</li>
-<li>Configure the <strong>Domain</strong> field to filter available records
-(optional)</li>
-<li>Click <strong>Add Attribute Values from Tower Variables</strong> button to
-populate values</li>
+</div>
+<div class="section" id="setup-process">
+<h2>Setup Process</h2>
+<div class="section" id="link-product-attributes-to-tower-variables">
+<h3>1. Link Product Attributes to Tower Variables</h3>
+<ol class="arabic simple">
+<li>Navigate to <strong>Sales &gt; Configuration &gt; Products &gt; Attributes</strong></li>
+<li>Open an existing product attribute or create a new one</li>
+<li>In the <strong>Cetmix Tower Integration</strong> section:<ul>
+<li>Select a <strong>Tower Variable</strong> from the dropdown</li>
+<li>This establishes the direct link between your product attribute and
+Tower infrastructure</li>
 </ul>
 </li>
 </ol>
 </div>
-<div class="section" id="populating-attribute-values">
-<h2><a class="toc-backref" href="#toc-entry-3">Populating Attribute Values</a></h2>
+<div class="section" id="synchronize-tower-values">
+<h3>2. Synchronize Tower Values</h3>
 <ol class="arabic simple">
-<li>After selecting the linked model, click <strong>Add Attribute Values from
-Tower Variables</strong></li>
-<li>A wizard opens showing filtered records from the selected Tower model</li>
-<li>Select the desired Tower records to create corresponding attribute
-values</li>
-<li>The system automatically creates <tt class="docutils literal">product.attribute.value</tt> records
-with proper mapping:<ul>
-<li>For Variable Options: <tt class="docutils literal">name</tt> = <tt class="docutils literal">value_char</tt>,
-<tt class="docutils literal">linked_record_ref</tt> = <tt class="docutils literal">variable_id.name</tt></li>
-<li>For Variable Values: <tt class="docutils literal">name</tt> = <tt class="docutils literal">value_char</tt>,
-<tt class="docutils literal">linked_record_ref</tt> = <tt class="docutils literal">variable_id.name</tt></li>
+<li>After linking a Tower variable to your product attribute:<ul>
+<li>Click the <strong>“Sync from Tower Variable”</strong> button</li>
+<li>The system will import all values from the linked Tower variable as
+product attribute values</li>
+<li>Existing attribute values are preserved - only new Tower values are
+added</li>
 </ul>
 </li>
 </ol>
 </div>
-<div class="section" id="domain-configuration-examples">
-<h2><a class="toc-backref" href="#toc-entry-4">Domain Configuration Examples</a></h2>
-<p>Filter by specific variable:</p>
-<pre class="literal-block">
-[('variable_id.name', '=', 'server_size')]
-</pre>
-<p>Filter by access level:</p>
-<pre class="literal-block">
-[('access_level', '&gt;=', 2)]
-</pre>
-<p>Filter active options:</p>
-<pre class="literal-block">
-[('active', '=', True)]
-</pre>
-<p>Multiple conditions:</p>
-<pre class="literal-block">
-[('variable_id.reference', '=', 'server_size'), ('active', '=', True)]
-</pre>
+<div class="section" id="duplicate-prevention">
+<h3>3. Duplicate Prevention</h3>
+<p>The module automatically prevents duplicates during synchronization:</p>
+<ul class="simple">
+<li>Values already linked to the same Tower variable value are skipped</li>
+<li>Attribute values with identical names are not created again</li>
+</ul>
+</div>
+</div>
+<div class="section" id="ongoing-management">
+<h2>Ongoing Management</h2>
+<ul class="simple">
+<li><strong>Re-sync at any time</strong>: Click the sync button to import new Tower
+variable values</li>
+<li><strong>Safe deletions</strong>: Deleting Tower variable values will not remove
+product attribute values</li>
+<li><strong>Independent management</strong>: Product attribute values can be managed
+independently after import</li>
+</ul>
+<p>No additional configuration files or complex setup procedures are
+required.</p>
 </div>
 </div>
 <div class="section" id="usage">
-<h1><a class="toc-backref" href="#toc-entry-5">Usage</a></h1>
-<div class="section" id="creating-tower-linked-product-attributes">
-<h2><a class="toc-backref" href="#toc-entry-6">Creating Tower-Linked Product Attributes</a></h2>
+<h1>Usage</h1>
+<div class="section" id="use-in-product-configuration">
+<h2>Use in Product Configuration</h2>
+<p>Once synchronized, Tower-linked attribute values work like standard
+product attributes.</p>
+</div>
+<div class="section" id="example-scenarios">
+<h2>Example Scenarios</h2>
+<div class="section" id="server-configuration-attribute">
+<h3>Server Configuration Attribute</h3>
 <ol class="arabic simple">
-<li>Go to <strong>Sales → Configuration → Product Attributes</strong></li>
-<li>Click <strong>Create</strong></li>
-<li>Enter attribute details:<ul>
-<li><strong>Name</strong>: Descriptive name (e.g., “Server Size”, “Database
-Version”)</li>
-<li><strong>Linked Tower Model</strong>: Select either “Cetmix Tower Variable
-Options” or “Cetmix Tower Variable Values”</li>
-<li><strong>Domain</strong>: Optional filter expression</li>
-</ul>
-</li>
-<li>Click <strong>Add Attribute Values from Tower Variables</strong></li>
-<li>Select desired Tower records in the wizard</li>
-<li>Save the attribute</li>
+<li>Create attribute: “Odoo Version”</li>
+<li>Link to Tower variable: “Demo Odoo Version”</li>
+<li>Sync values: “16.0”, “17.0”, “18.0”</li>
+<li>Use in product templates for installations related to Odoo</li>
 </ol>
 </div>
-<div class="section" id="using-tower-linked-attributes-on-products">
-<h2><a class="toc-backref" href="#toc-entry-7">Using Tower-Linked Attributes on Products</a></h2>
-<ol class="arabic simple">
-<li>Navigate to <strong>Sales → Products → Products</strong></li>
-<li>Open any product template</li>
-<li>Go to <strong>Attributes &amp; Variants</strong> tab</li>
-<li>Add the Tower-linked attribute</li>
-<li>Select which Tower-sourced values should be available for this
-product</li>
-<li>Product variants are automatically created based on Tower
-configurations</li>
-</ol>
-</div>
-<div class="section" id="sales-order-configuration">
-<h2><a class="toc-backref" href="#toc-entry-8">Sales Order Configuration</a></h2>
-<ol class="arabic simple">
-<li>Create a new sales order</li>
-<li>Add products with Tower-linked attributes</li>
-<li>Configure product options using the Tower-sourced attribute values</li>
-<li>The selected attribute values map directly to Tower service
-parameters</li>
-<li>Order processing can use these mappings for automated provisioning</li>
-</ol>
-</div>
-<div class="section" id="managing-attribute-values">
-<h2><a class="toc-backref" href="#toc-entry-9">Managing Attribute Values</a></h2>
-<ul class="simple">
-<li><strong>View Tower Variable Reference</strong>: In the attribute values list, check
-the “Tower Variable” column to see which Tower variable each value
-maps to</li>
-<li><strong>Manual Synchronization</strong>: Re-run the wizard to add new Tower
-variables as attribute values</li>
-<li><strong>Domain Updates</strong>: Modify the domain filter and re-run the wizard to
-refresh available options</li>
-</ul>
-</div>
-<div class="section" id="known-limitations">
-<h2><a class="toc-backref" href="#toc-entry-10">Known Limitations</a></h2>
-<ul class="simple">
-<li>Manual synchronization required when Tower variables change</li>
-<li>Domain filtering requires knowledge of Tower model structure</li>
-<li>No automatic cleanup when Tower variables are deleted</li>
-<li>Limited to two specific Tower models only</li>
-</ul>
-</div>
-<div class="section" id="best-practices">
-<h2><a class="toc-backref" href="#toc-entry-11">Best Practices</a></h2>
-<ol class="arabic simple">
-<li><strong>Naming Convention</strong>: Use descriptive attribute names that match
-your Tower variable purposes</li>
-<li><strong>Domain Filtering</strong>: Use specific domains to avoid cluttering
-attribute values with irrelevant options</li>
-<li><strong>Regular Updates</strong>: Periodically refresh attribute values when Tower
-variables are updated</li>
-<li><strong>Testing</strong>: Test the complete flow from product configuration to
-service provisioning</li>
-</ol>
 </div>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-12">Bug Tracker</a></h1>
+<h1>Bug Tracker</h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -569,15 +477,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-13">Credits</a></h1>
+<h1>Credits</h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-14">Authors</a></h2>
+<h2>Authors</h2>
 <ul class="simple">
 <li>Cetmix</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-15">Maintainers</a></h2>
+<h2>Maintainers</h2>
 <p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/16.0/cetmix_tower_product">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>

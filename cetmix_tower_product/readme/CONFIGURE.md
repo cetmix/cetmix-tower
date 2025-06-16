@@ -1,48 +1,33 @@
-## Initial Setup
 
-1.  Install the module through **Apps** menu
-2.  Navigate to **Sales → Configuration → Product Attributes**
-3.  Click **Create** to create a new product attribute
-4.  In the product attribute form:
-    - Fill in the attribute name (e.g., "Server Configuration",
-      "Database Type")
-    - Select **Linked Tower Model** from the dropdown:
-      - **Cetmix Tower Variable Options** (`cx.tower.variable.option`)
-      - **Cetmix Tower Variable Values** (`cx.tower.variable.value`)
-    - Configure the **Domain** field to filter available records
-      (optional)
-    - Click **Add Attribute Values from Tower Variables** button to
-      populate values
+### Prerequisite
 
-## Populating Attribute Values
+To access product attributes and the Odoo product configurator, you must have the sale_management module installed.
 
-1.  After selecting the linked model, click **Add Attribute Values from
-    Tower Variables**
-2.  A wizard opens showing filtered records from the selected Tower
-    model
-3.  Select the desired Tower records to create corresponding attribute
-    values
-4.  The system automatically creates `product.attribute.value` records
-    with proper mapping:
-    - For Variable Options: `name` = `value_char`, `linked_record_ref` =
-      `variable_id.name`
-    - For Variable Values: `name` = `value_char`, `linked_record_ref` =
-      `variable_id.name`
+### 1. Link Product Attributes to Tower Variables
 
-## Domain Configuration Examples
+1. Navigate to **Sales > Configuration > Products > Attributes**
+2. Open an existing product attribute or create a new one
+3. In the **Cetmix Tower Integration** section:
+   * Select a **Tower Variable** from the dropdown.
+   * This establishes the direct link between your product attribute and Tower variable.
 
-Filter by specific variable:
+### 2. Synchronize Tower Values
 
-    [('variable_id.name', '=', 'server_size')]
+1. After linking a Tower variable to your product attribute:
+   * Click the **"Sync from Tower Variable"** button.
+   * The system will import all values from the linked Tower variable as product attribute values.
+   * Existing attribute values are preserved - only new Tower values are added.
 
-Filter by access level:
+### 3. Duplicate Prevention
 
-    [('access_level', '>=', 2)]
+The module automatically prevents duplicates during synchronization:
+* Values already linked to the same Tower variable value are skipped.
+* Attribute values with identical names are not created again.
 
-Filter active options:
+## Ongoing Management
 
-    [('active', '=', True)]
+* **Re-sync at any time**: Click the sync button to import new Tower variable values.
+* **Safe deletions**: Deleting Tower variable values will not remove product attribute values.
+* **Independent management**: Product attribute values can be managed independently after import.
 
-Multiple conditions:
-
-    [('variable_id.reference', '=', 'server_size'), ('active', '=', True)] 
+No additional configuration files or complex setup procedures are required. 

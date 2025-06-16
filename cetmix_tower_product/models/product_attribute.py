@@ -8,12 +8,11 @@ from odoo.exceptions import ValidationError
 class ProductAttribute(models.Model):
     _inherit = "product.attribute"
 
-    # Link directly to the Tower Variable (not options or values)
+    # Link directly to the Tower Variable
     tower_variable_id = fields.Many2one(
         comodel_name="cx.tower.variable",
         help="Tower variable that will be used as source for attribute values. "
         "Both predefined options and actual values will be available.",
-        ondelete="set null",
     )
 
     def action_sync_tower_values(self):

@@ -22,30 +22,18 @@ Cetmix Tower Product
 
 |badge1| |badge2| |badge3|
 
-This module extends Odoo's product attribute system to enable seamless
-integration between product configuration and Cetmix Tower service
-instance provisioning. It allows product managers to define product
-attributes that directly map to Cetmix Tower variable options and
-values, ensuring that when customers configure products in the sales
-process, the selected attribute values automatically determine the
-service instance configuration parameters.
+This module provides integration between Cetmix Tower server
+configuration variables and Odoo product attributes.
 
-The module adapts the mechanics from ``product_attribute_model_link``
-but creates a hardcoded connection specifically for Cetmix Tower models.
-This creates a bridge between the sales configuration interface and the
-technical service provisioning backend without external dependencies.
+Key Features
+------------
 
-**Key Features:**
-
-- Link product attributes to Cetmix Tower Variable Options
-  (``cx.tower.variable.option``)
-- Link product attributes to Cetmix Tower Variable Values
-  (``cx.tower.variable.value``)
-- Domain filtering to select specific Tower variables
-- Automatic creation of product attribute values from Tower data
-- Wizard-based selection interface for Tower records
-- Warning system for configuration changes
-- Demo data with realistic cloud service scenarios
+- **Direct Tower Variable Linking**: Link product attributes directly to
+  specific Tower variables.
+- **Manual Synchronization**: On-demand sync button to import Tower
+  variable values as product attribute values.
+- **Duplicate Prevention**: Intelligent duplicate detection prevents
+  creation of attribute values with identical names or Tower references.
 
 **Table of contents**
 
@@ -55,141 +43,74 @@ technical service provisioning backend without external dependencies.
 Configuration
 =============
 
-Initial Setup
--------------
+Prerequisite
+~~~~~~~~~~~~
 
-1. Install the module through **Apps** menu
-2. Navigate to **Sales → Configuration → Product Attributes**
-3. Click **Create** to create a new product attribute
-4. In the product attribute form:
+To access product attributes and the Odoo product configurator, you must
+have the sale_management module installed.
 
-   - Fill in the attribute name (e.g., "Server Configuration", "Database
-     Type")
-   - Select **Linked Tower Model** from the dropdown:
+1. Link Product Attributes to Tower Variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-     - **Cetmix Tower Variable Options** (``cx.tower.variable.option``)
-     - **Cetmix Tower Variable Values** (``cx.tower.variable.value``)
+1. Navigate to **Sales > Configuration > Products > Attributes**
+2. Open an existing product attribute or create a new one
+3. In the **Cetmix Tower Integration** section:
 
-   - Configure the **Domain** field to filter available records
-     (optional)
-   - Click **Add Attribute Values from Tower Variables** button to
-     populate values
+   - Select a **Tower Variable** from the dropdown.
+   - This establishes the direct link between your product attribute and
+     Tower variable.
 
-Populating Attribute Values
----------------------------
+2. Synchronize Tower Values
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. After selecting the linked model, click **Add Attribute Values from
-   Tower Variables**
-2. A wizard opens showing filtered records from the selected Tower model
-3. Select the desired Tower records to create corresponding attribute
-   values
-4. The system automatically creates ``product.attribute.value`` records
-   with proper mapping:
+1. After linking a Tower variable to your product attribute:
 
-   - For Variable Options: ``name`` = ``value_char``,
-     ``linked_record_ref`` = ``variable_id.name``
-   - For Variable Values: ``name`` = ``value_char``,
-     ``linked_record_ref`` = ``variable_id.name``
+   - Click the **"Sync from Tower Variable"** button.
+   - The system will import all values from the linked Tower variable as
+     product attribute values.
+   - Existing attribute values are preserved - only new Tower values are
+     added.
 
-Domain Configuration Examples
------------------------------
+3. Duplicate Prevention
+~~~~~~~~~~~~~~~~~~~~~~~
 
-Filter by specific variable:
+The module automatically prevents duplicates during synchronization:
 
-::
+- Values already linked to the same Tower variable value are skipped.
+- Attribute values with identical names are not created again.
 
-   [('variable_id.name', '=', 'server_size')]
+Ongoing Management
+------------------
 
-Filter by access level:
+- **Re-sync at any time**: Click the sync button to import new Tower
+  variable values.
+- **Safe deletions**: Deleting Tower variable values will not remove
+  product attribute values.
+- **Independent management**: Product attribute values can be managed
+  independently after import.
 
-::
-
-   [('access_level', '>=', 2)]
-
-Filter active options:
-
-::
-
-   [('active', '=', True)]
-
-Multiple conditions:
-
-::
-
-   [('variable_id.reference', '=', 'server_size'), ('active', '=', True)] 
+No additional configuration files or complex setup procedures are
+required.
 
 Usage
 =====
 
-Creating Tower-Linked Product Attributes
-----------------------------------------
+Use in Product Configuration
+----------------------------
 
-1. Go to **Sales → Configuration → Product Attributes**
-2. Click **Create**
-3. Enter attribute details:
+Once synchronized, Tower-linked attribute values work like standard
+product attributes.
 
-   - **Name**: Descriptive name (e.g., "Server Size", "Database
-     Version")
-   - **Linked Tower Model**: Select either "Cetmix Tower Variable
-     Options" or "Cetmix Tower Variable Values"
-   - **Domain**: Optional filter expression
-
-4. Click **Add Attribute Values from Tower Variables**
-5. Select desired Tower records in the wizard
-6. Save the attribute
-
-Using Tower-Linked Attributes on Products
------------------------------------------
-
-1. Navigate to **Sales → Products → Products**
-2. Open any product template
-3. Go to **Attributes & Variants** tab
-4. Add the Tower-linked attribute
-5. Select which Tower-sourced values should be available for this
-   product
-6. Product variants are automatically created based on Tower
-   configurations
-
-Sales Order Configuration
--------------------------
-
-1. Create a new sales order
-2. Add products with Tower-linked attributes
-3. Configure product options using the Tower-sourced attribute values
-4. The selected attribute values map directly to Tower service
-   parameters
-5. Order processing can use these mappings for automated provisioning
-
-Managing Attribute Values
--------------------------
-
-- **View Tower Variable Reference**: In the attribute values list, check
-  the "Tower Variable" column to see which Tower variable each value
-  maps to
-- **Manual Synchronization**: Re-run the wizard to add new Tower
-  variables as attribute values
-- **Domain Updates**: Modify the domain filter and re-run the wizard to
-  refresh available options
-
-Known Limitations
+Example Scenarios
 -----------------
 
-- Manual synchronization required when Tower variables change
-- Domain filtering requires knowledge of Tower model structure
-- No automatic cleanup when Tower variables are deleted
-- Limited to two specific Tower models only
+Server Configuration Attribute
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Best Practices
---------------
-
-1. **Naming Convention**: Use descriptive attribute names that match
-   your Tower variable purposes
-2. **Domain Filtering**: Use specific domains to avoid cluttering
-   attribute values with irrelevant options
-3. **Regular Updates**: Periodically refresh attribute values when Tower
-   variables are updated
-4. **Testing**: Test the complete flow from product configuration to
-   service provisioning
+1. Create attribute: "Odoo Version".
+2. Link to Tower variable: "Demo Odoo Version".
+3. Sync values: "16.0", "17.0", "18.0".
+4. Use in product templates for installations related to Odoo.
 
 Bug Tracker
 ===========
