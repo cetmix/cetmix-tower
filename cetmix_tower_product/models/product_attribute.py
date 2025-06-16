@@ -50,31 +50,28 @@ class ProductAttribute(models.Model):
     def _sync_tower_variable_values(self):
         """Sync from Tower variable values - get all values"""
         created_values = self.env["product.attribute.value"]
+        all_attribute_values = self.env["product.attribute.value"].search(
+            [("attribute_id", "=", self.id)]
+        )
+        existing_names = set(all_attribute_values.mapped("name"))
+        existing_tower_value_ids = set(
+            all_attribute_values.mapped("tower_variable_value_id").ids
+        )
 
         # Build domain for variable values - get all values for this variable
         domain = [("variable_id", "=", self.tower_variable_id.id)]
 
         variable_values = self.env["cx.tower.variable.value"].search(domain)
-
+        vals_list = []
         for var_value in variable_values:
             value_name = var_value.value_char or var_value.variable_reference
 
-            # Check if already exists by tower_variable_value_id
-            existing_by_tower_id = self.env["product.attribute.value"].search(
-                [
-                    ("attribute_id", "=", self.id),
-                    ("tower_variable_value_id", "=", var_value.id),
-                ]
-            )
-
-            # Check if already exists by name (to prevent duplicate names)
-            existing_by_name = self.env["product.attribute.value"].search(
-                [("attribute_id", "=", self.id), ("name", "=", value_name)]
-            )
-
             # Only create if doesn't exist by tower ID and by name
-            if not existing_by_tower_id and not existing_by_name:
-                created_values |= self.env["product.attribute.value"].create(
+            if (
+                var_value.id not in existing_tower_value_ids
+                and value_name not in existing_names
+            ):
+                vals_list.append(
                     {
                         "name": value_name,
                         "attribute_id": self.id,
@@ -82,30 +79,36 @@ class ProductAttribute(models.Model):
                         "tower_variable_reference": self.tower_variable_id.reference,
                     }
                 )
+                # Add to sets to prevent creating duplicates from this sync batch
+                existing_names.add(value_name)
+                existing_tower_value_ids.add(var_value.id)
+
+        if vals_list:
+            created_values |= self.env["product.attribute.value"].create(vals_list)
 
         return created_values
 
     def _sync_tower_options(self):
         """Sync from Tower variable options - for option-type variables"""
         created_values = self.env["product.attribute.value"]
+        all_attribute_values = self.env["product.attribute.value"].search(
+            [("attribute_id", "=", self.id)]
+        )
+        existing_names = set(all_attribute_values.mapped("name"))
+        existing_tower_option_ids = set(
+            all_attribute_values.mapped("tower_option_id").ids
+        )
 
         # Get all options for this Tower variable
         tower_options = self.tower_variable_id.option_ids
-
+        vals_list = []
         for option in tower_options:
-            # Check if already exists by tower_option_id
-            existing_by_tower_id = self.env["product.attribute.value"].search(
-                [("attribute_id", "=", self.id), ("tower_option_id", "=", option.id)]
-            )
-
-            # Check if already exists by name (to prevent duplicate names)
-            existing_by_name = self.env["product.attribute.value"].search(
-                [("attribute_id", "=", self.id), ("name", "=", option.value_char)]
-            )
-
             # Only create if doesn't exist by tower ID and by name
-            if not existing_by_tower_id and not existing_by_name:
-                created_values |= self.env["product.attribute.value"].create(
+            if (
+                option.id not in existing_tower_option_ids
+                and option.value_char not in existing_names
+            ):
+                vals_list.append(
                     {
                         "name": option.value_char,
                         "attribute_id": self.id,
@@ -113,5 +116,11 @@ class ProductAttribute(models.Model):
                         "tower_variable_reference": self.tower_variable_id.reference,
                     }
                 )
+                # Add to sets to prevent creating duplicates from this sync batch
+                existing_names.add(option.value_char)
+                existing_tower_option_ids.add(option.id)
+
+        if vals_list:
+            created_values |= self.env["product.attribute.value"].create(vals_list)
 
         return created_values

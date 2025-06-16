@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<odoo>
+<odoo noupdate="1">
     <!-- 1. Create global value for variable_demo_os -->
     <record id="demo_os_global_value" model="cx.tower.variable.value">
         <field name="variable_id" ref="cetmix_tower_server.variable_demo_os" />
