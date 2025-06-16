@@ -1,66 +1,172 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Demo Product Templates -->
-    <record id="product_basic_cloud_server" model="product.template">
-        <field name="name">Basic Cloud Server</field>
-        <field name="type">service</field>
-        <field name="list_price">50.0</field>
-        <field name="categ_id" ref="product.product_category_all" />
-        <field name="description">
-            Basic cloud server instance with configurable resources.
-            Perfect for small applications and development environments.
-        </field>
+    <!-- 1. Create global value for variable_demo_os -->
+    <record id="demo_os_global_value" model="cx.tower.variable.value">
+        <field name="variable_id" ref="cetmix_tower_server.variable_demo_os" />
+        <field name="value_char">Ubuntu</field>
+        <field name="is_global" eval="True" />
     </record>
 
-    <record id="product_premium_cloud_server" model="product.template">
-        <field name="name">Premium Cloud Server</field>
-        <field name="type">service</field>
-        <field name="list_price">150.0</field>
-        <field name="categ_id" ref="product.product_category_all" />
-        <field name="description">
-            Premium cloud server instance with enhanced performance.
-            Suitable for production applications with moderate traffic.
-        </field>
-    </record>
-
-    <record id="product_enterprise_cloud_server" model="product.template">
-        <field name="name">Enterprise Cloud Server</field>
-        <field name="type">service</field>
-        <field name="list_price">300.0</field>
-        <field name="categ_id" ref="product.product_category_all" />
-        <field name="description">
-            Enterprise-grade cloud server with high availability.
-            Designed for mission-critical applications.
-        </field>
-    </record>
-
-    <record id="product_database_hosting" model="product.template">
-        <field name="name">Database Hosting</field>
-        <field name="type">service</field>
-        <field name="list_price">75.0</field>
-        <field name="categ_id" ref="product.product_category_all" />
-        <field name="description">
-            Managed database hosting service with automated backups.
-            Supports multiple database engines.
-        </field>
-    </record>
-
-    <!-- Demo Product Attributes -->
-    <record id="product_attribute_server_size" model="product.attribute">
-        <field name="name">Server Size</field>
+    <!-- 2. Create product attribute based on variable_demo_odoo_version -->
+    <record id="product_attribute_odoo_version" model="product.attribute">
+        <field name="name">Odoo Version</field>
         <field name="display_type">radio</field>
-        <field name="tower_linked_model">cx.tower.variable.option</field>
         <field
-            name="tower_domain"
-        >[('variable_id.reference', '=', 'server_size')]</field>
+            name="tower_variable_id"
+            ref="cetmix_tower_server.variable_demo_odoo_version"
+        />
     </record>
 
-    <record id="product_attribute_database_version" model="product.attribute">
-        <field name="name">Database Version</field>
+    <!-- 3. Create product attribute based on demo_language -->
+    <record id="product_attribute_language" model="product.attribute">
+        <field name="name">Language</field>
         <field name="display_type">select</field>
-        <field name="tower_linked_model">cx.tower.variable.option</field>
         <field
-            name="tower_domain"
-        >[('variable_id.reference', '=', 'db_version')]</field>
+            name="tower_variable_id"
+            ref="cetmix_tower_server.variable_demo_language"
+        />
     </record>
+
+    <!-- Create product attribute for demo OS -->
+    <record id="product_attribute_operating_system" model="product.attribute">
+        <field name="name">Operating System</field>
+        <field name="display_type">radio</field>
+        <field name="tower_variable_id" ref="cetmix_tower_server.variable_demo_os" />
+    </record>
+
+    <!-- Create attribute values for Odoo Version (from Tower options) -->
+    <record id="attr_value_odoo_14" model="product.attribute.value">
+        <field name="name">14.0</field>
+        <field name="attribute_id" ref="product_attribute_odoo_version" />
+        <field
+            name="tower_option_id"
+            ref="cetmix_tower_server.option_demo_odoo_version_14"
+        />
+        <field name="tower_variable_reference">demo_odoo_version</field>
+    </record>
+    <record id="attr_value_odoo_15" model="product.attribute.value">
+        <field name="name">15.0</field>
+        <field name="attribute_id" ref="product_attribute_odoo_version" />
+        <field
+            name="tower_option_id"
+            ref="cetmix_tower_server.option_demo_odoo_version_15"
+        />
+        <field name="tower_variable_reference">demo_odoo_version</field>
+    </record>
+    <record id="attr_value_odoo_16" model="product.attribute.value">
+        <field name="name">16.0</field>
+        <field name="attribute_id" ref="product_attribute_odoo_version" />
+        <field
+            name="tower_option_id"
+            ref="cetmix_tower_server.option_demo_odoo_version_16"
+        />
+        <field name="tower_variable_reference">demo_odoo_version</field>
+    </record>
+    <record id="attr_value_odoo_17" model="product.attribute.value">
+        <field name="name">17.0</field>
+        <field name="attribute_id" ref="product_attribute_odoo_version" />
+        <field
+            name="tower_option_id"
+            ref="cetmix_tower_server.option_demo_odoo_version_17"
+        />
+        <field name="tower_variable_reference">demo_odoo_version</field>
+    </record>
+    <record id="attr_value_odoo_18" model="product.attribute.value">
+        <field name="name">18.0</field>
+        <field name="attribute_id" ref="product_attribute_odoo_version" />
+        <field
+            name="tower_option_id"
+            ref="cetmix_tower_server.option_demo_odoo_version_18"
+        />
+        <field name="tower_variable_reference">demo_odoo_version</field>
+    </record>
+
+    <!-- Create attribute values for Language (from Tower options) -->
+    <record id="attr_value_lang_en_us" model="product.attribute.value">
+        <field name="name">English (US)</field>
+        <field name="attribute_id" ref="product_attribute_language" />
+        <field name="tower_option_id" ref="cetmix_tower_server.option_language_en_us" />
+        <field name="tower_variable_reference">demo_language</field>
+    </record>
+    <record id="attr_value_lang_it" model="product.attribute.value">
+        <field name="name">Italian</field>
+        <field name="attribute_id" ref="product_attribute_language" />
+        <field name="tower_option_id" ref="cetmix_tower_server.option_language_it" />
+        <field name="tower_variable_reference">demo_language</field>
+    </record>
+    <record id="attr_value_lang_es_mx" model="product.attribute.value">
+        <field name="name">Spanish (Mexican)</field>
+        <field name="attribute_id" ref="product_attribute_language" />
+        <field name="tower_option_id" ref="cetmix_tower_server.option_language_es_mx" />
+        <field name="tower_variable_reference">demo_language</field>
+    </record>
+    <record id="attr_value_lang_de" model="product.attribute.value">
+        <field name="name">German</field>
+        <field name="attribute_id" ref="product_attribute_language" />
+        <field name="tower_option_id" ref="cetmix_tower_server.option_language_de" />
+        <field name="tower_variable_reference">demo_language</field>
+    </record>
+    <record id="attr_value_lang_de_ch" model="product.attribute.value">
+        <field name="name">German (Switzerland)</field>
+        <field name="attribute_id" ref="product_attribute_language" />
+        <field name="tower_option_id" ref="cetmix_tower_server.option_language_de_ch" />
+        <field name="tower_variable_reference">demo_language</field>
+    </record>
+
+    <!-- Create attribute values for Operating System (from Tower values) -->
+    <record id="attr_value_os_ubuntu" model="product.attribute.value">
+        <field name="name">Ubuntu</field>
+        <field name="attribute_id" ref="product_attribute_operating_system" />
+        <field name="tower_variable_value_id" ref="demo_os_global_value" />
+        <field name="tower_variable_reference">demo_os</field>
+    </record>
+
+    <!-- 4. Create demo product "Odoo Service" -->
+    <record id="product_odoo_service" model="product.template">
+        <field name="name">Odoo Service</field>
+        <field name="detailed_type">service</field>
+        <field name="list_price">1.0</field>
+        <field name="standard_price">1.0</field>
+        <field name="categ_id" ref="product.product_category_all" />
+        <field name="description">
+            Professional Odoo hosting service
+        </field>
+    </record>
+
+
+
+
+      <!-- Assign Odoo Version attribute to Odoo Service with explicit values -->
+    <record
+        id="odoo_service_version_attribute_line"
+        model="product.template.attribute.line"
+    >
+        <field name="product_tmpl_id" ref="product_odoo_service" />
+        <field name="attribute_id" ref="product_attribute_odoo_version" />
+        <field
+            name="value_ids"
+            eval="[(6, 0, [ref('attr_value_odoo_14'), ref('attr_value_odoo_15'), ref('attr_value_odoo_16'), ref('attr_value_odoo_17'), ref('attr_value_odoo_18')])]"
+        />
+    </record>
+
+    <!-- Assign Language attribute to Odoo Service with explicit values -->
+    <record
+        id="odoo_service_language_attribute_line"
+        model="product.template.attribute.line"
+    >
+        <field name="product_tmpl_id" ref="product_odoo_service" />
+        <field name="attribute_id" ref="product_attribute_language" />
+        <field
+            name="value_ids"
+            eval="[(6, 0, [ref('attr_value_lang_en_us'), ref('attr_value_lang_it'), ref('attr_value_lang_es_mx'), ref('attr_value_lang_de'), ref('attr_value_lang_de_ch')])]"
+        />
+    </record>
+
+    <!-- Assign Operating System attribute to Odoo Service with explicit values -->
+    <record id="odoo_service_os_attribute_line" model="product.template.attribute.line">
+        <field name="product_tmpl_id" ref="product_odoo_service" />
+        <field name="attribute_id" ref="product_attribute_operating_system" />
+        <field name="value_ids" eval="[(6, 0, [ref('attr_value_os_ubuntu')])]" />
+    </record>
+
 </odoo>

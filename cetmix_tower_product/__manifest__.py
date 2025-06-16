@@ -16,7 +16,7 @@
     "data": [
         "views/product_attribute_views.xml",
     ],
-    # "demo": [
-    #     "demo/demo_data.xml",  # Commented for now
-    # ],
+    "demo": [
+        "demo/demo_data.xml",
+    ],
 }
