@@ -26,6 +26,7 @@ class CxTowerServerTemplate(models.Model):
             "variable_value_ids",
             "server_log_ids",
             "shortcut_ids",
+            "scheduled_task_ids",
             "flight_plan_id",
             "plan_delete_id",
         ]
@@ -36,5 +37,5 @@ class CxTowerServerTemplate(models.Model):
 
         # Add Flight Plan in order to always try to use existing one
         # This is useful to avoid duplicating existing plans
-        res += ["cx.tower.plan", "cx.tower.shortcut"]
+        res += ["cx.tower.plan", "cx.tower.shortcut", "cx.tower.scheduled.task"]
         return res
