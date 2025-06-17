@@ -14,5 +14,6 @@ from . import cx_tower_key
 from . import cx_tower_key_value
 from . import cx_tower_server_log
 from . import cx_tower_shortcut
+from . import cx_tower_scheduled_task
 from . import cx_tower_file
 from . import cx_tower_server
