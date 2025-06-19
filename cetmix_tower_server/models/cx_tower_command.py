@@ -97,6 +97,18 @@ class CxTowerCommand(models.Model):
         comodel_name="cx.tower.file.template",
         help="This template will be used to create or update the pushed file",
     )
+    template_code = fields.Text(
+        string="Template Code",
+        related="file_template_id.code",
+        readonly=True,
+        help="Code of the associated file template",
+    )
+    flight_plan_line_ids = fields.One2many(
+        comodel_name="cx.tower.plan.line",
+        related="flight_plan_id.line_ids",
+        readonly=True,
+        help="Lines of the associated flight plan",
+    )
     code = fields.Text(
         compute="_compute_code",
         store=True,
