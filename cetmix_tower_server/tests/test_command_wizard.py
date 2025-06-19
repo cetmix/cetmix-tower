@@ -1,3 +1,6 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo.exceptions import AccessError, ValidationError
 
 from .common import TestTowerCommon
@@ -500,3 +503,70 @@ class TestTowerCommandWizard(TestTowerCommon):
         self.assertTrue(wiz_mgr.show_servers)
         # Enforcement should not override manager's choice of 'shared'
         self.assertEqual(wiz_mgr.applicability, "shared")
+
+    def test_required_variable_validation(self):
+        """
+        Wizard must block execution when a required variable is empty
+        and allow it after the value is provided.
+        """
+        # Create a required variable
+        var = self.Variable.create(
+            {
+                "name": "Req Var",
+                "reference": "req_var",
+                "variable_type": "s",
+            }
+        )
+        self.VariableValue.create(
+            {
+                "variable_id": var.id,
+                "server_id": self.server_test_1.id,
+                "required": True,
+                "value_char": "",
+            }
+        )
+
+        # Create command that uses this variable
+        cmd = self.Command.create(
+            {
+                "name": "Echo Req Var",
+                "action": "ssh_command",
+                "code": "echo {{ req_var }}",
+                "variable_ids": [(4, var.id)],
+            }
+        )
+
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+
+        # Create wizard as manager user
+        wiz = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.manager)
+            .create(
+                {
+                    "server_ids": [self.server_test_1.id],
+                    "command_id": cmd.id,
+                }
+            )
+        )
+
+        # Create lines of configuration
+        wiz._onchange_command_variable_ids()
+        wiz._compute_has_missing_required_values()
+
+        # Test blocking behavior
+        self.assertTrue(wiz.has_missing_required_values)
+        with self.assertRaises(ValidationError):
+            wiz.run_command_on_server()
+
+        # Fill the value directly in the wizard line
+        wiz.custom_variable_value_ids.filtered(
+            lambda line: line.variable_id == var
+        ).value_char = "filled"
+
+        # Recompute the flag
+        wiz._compute_has_missing_required_values()
+        self.assertFalse(wiz.has_missing_required_values)
+
+        # Now the execution should pass
+        wiz.run_command_on_server()

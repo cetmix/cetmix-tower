@@ -354,6 +354,7 @@
                                         attrs="{'readonly': [('variable_type', '=', 's')]}"
                                     />
                                     <field name="access_level" optional="show" />
+                                    <field name="required" optional="show" />
                                 </tree>
                                 <form>
                                     <group>
@@ -369,6 +370,7 @@
                                             options="{'string': 'Copy value'}"
                                         />
                                         <field name="access_level" />
+                                        <field name="required" />
                                     </group>
                                     <field
                                         name="note"
