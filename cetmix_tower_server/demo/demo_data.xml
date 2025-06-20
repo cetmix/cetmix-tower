@@ -937,4 +937,37 @@ else:
             name="note"
         >Runs a flight plan for a server template. Use as an example to create your own shortcuts.</field>
     </record>
+
+    <!-- ===============================================
+    Scheduled Tasks
+    ================================================ -->
+    <record id="cx_tower_scheduled_task_demo_1" model="cx.tower.scheduled.task">
+        <field name="name">Scheduled Task Demo #1</field>
+        <field name="reference">scheduled_task_demo_1</field>
+        <field name="active">True</field>
+        <field name="sequence">1</field>
+        <field name="server_ids" eval="[(4, ref('server_demo_1'))]" />
+        <field name="server_template_ids" eval="[(4, ref('demo_server_template_1'))]" />
+        <field name="action">command</field>
+        <field name="command_id" ref="command_update_upgrade" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="next_call" eval="(DateTime.now() - relativedelta(hours=1))" />
+    </record>
+    <record id="cx_tower_scheduled_task_demo_2" model="cx.tower.scheduled.task">
+        <field name="name">Scheduled Task Demo #2</field>
+        <field name="reference">scheduled_task_demo_2</field>
+        <field name="active">True</field>
+        <field name="sequence">2</field>
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('server_demo_1'), ref('server_demo_2')])]"
+        />
+        <field name="action">plan</field>
+        <field name="plan_id" ref="plan_demo_1" />
+        <field name="interval_number">2</field>
+        <field name="interval_type">days</field>
+        <field name="next_call" eval="(DateTime.now() - relativedelta(days=2))" />
+    </record>
+
 </odoo>

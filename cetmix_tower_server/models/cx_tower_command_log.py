@@ -94,6 +94,11 @@ class CxTowerCommandLog(models.Model):
         readonly=True,
         string="Triggered Flight Plan Commands",
     )
+    scheduled_task_id = fields.Many2one(
+        "cx.tower.scheduled.task",
+        ondelete="set null",
+        help="Scheduled task that triggered this command",
+    )
 
     @api.depends("name", "command_id.name")
     def _compute_name(self):

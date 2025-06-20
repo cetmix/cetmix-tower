@@ -24,6 +24,8 @@ from . import cx_tower_plan_log
 from . import cx_tower_server_log
 from . import cx_tower_server_template
 from . import cx_tower_shortcut
+from . import cx_tower_scheduled_task
+from . import cx_tower_scheduled_task_cv
 from . import cetmix_tower
 from . import cx_tower_variable_option
 from . import ir_actions_server

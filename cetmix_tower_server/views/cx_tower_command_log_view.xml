@@ -58,10 +58,15 @@
                             <field
                                 name="plan_log_id"
                                 invisible="context.get('opened_from_plan', False)"
+                                attrs="{'invisible': [('plan_log_id', '=', False)]}"
                             />
                             <field
                                 name="triggered_plan_log_id"
                                 attrs="{'invisible': [('triggered_plan_log_id', '=', False)]}"
+                            />
+                            <field
+                                name="scheduled_task_id"
+                                attrs="{'invisible': [('scheduled_task_id', '=', False)]}"
                             />
                         </group>
                         <group>

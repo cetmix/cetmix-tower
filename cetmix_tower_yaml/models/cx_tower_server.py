@@ -31,6 +31,7 @@ class CxTowerServer(models.Model):
             "secret_ids",
             "server_log_ids",
             "shortcut_ids",
+            "scheduled_task_ids",
             "plan_delete_id",
             "file_ids",
         ]
@@ -40,5 +41,5 @@ class CxTowerServer(models.Model):
         res = super()._get_force_x2m_resolve_models()
 
         # This is useful to avoid duplicating existing plans
-        res += ["cx.tower.shortcut"]
+        res += ["cx.tower.shortcut", "cx.tower.scheduled.task"]
         return res

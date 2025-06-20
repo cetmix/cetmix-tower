@@ -76,6 +76,15 @@ class CxTowerServerTemplate(models.Model):
         string="Shortcuts",
     )
 
+    # --- Scheduled Tasks
+    scheduled_task_ids = fields.Many2many(
+        comodel_name="cx.tower.scheduled.task",
+        relation="cx_tower_server_template_scheduled_task_rel",
+        column1="server_template_id",
+        column2="scheduled_task_id",
+        string="Scheduled Tasks",
+    )
+
     # --- Flight Plan
     flight_plan_id = fields.Many2one(
         "cx.tower.plan",
@@ -337,6 +346,7 @@ class CxTowerServerTemplate(models.Model):
             "variable_value_ids",
             "server_log_ids",
             "shortcut_ids",
+            "scheduled_task_ids",
         ]
 
     def _prepare_server_values(self, pick_all_template_variables=True, **kwargs):
