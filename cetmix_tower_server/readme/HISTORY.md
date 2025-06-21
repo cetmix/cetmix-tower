@@ -1,3 +1,8 @@
+## 16.0.1.1.1 (2025-06-21)
+
+- Features: Command view improvements (4753)
+
+
 ## 16.0.1.1.0 (2025-06-20)
 
 - Features: Run commands and flight plans using scheduled tasks. (4650)
