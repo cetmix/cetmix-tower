@@ -1,6 +1,10 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+
 from odoo import _
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests import TransactionCase
+from odoo.tests import TransactionCase, tagged
 
 
 class TestTowerYamlMixin(TransactionCase):
@@ -480,3 +484,42 @@ class TestTowerYamlMixin(TransactionCase):
             record.name, values_to_update["name"], "Value was not updated properly"
         )
         self.assertNotEqual(record.id, file_template.id, "New record must be created")
+
+    @tagged("post_install", "-at_install")
+    def test_prepare_record_truncates_code_for_server_files(self):
+        """Mixin must set code=False for cx.tower.file when source=='server'."""
+        File = self.env["cx.tower.file"]
+        srv_file = File.create(
+            {
+                "name": "srv.log",
+                "reference": "srvlog",
+                "source": "server",
+                "file_type": "text",
+                "server_dir": "/tmp",
+                "code": "BIG DATA",
+            }
+        )
+        rec = srv_file._prepare_record_for_yaml()
+        self.assertIn("code", rec)
+        self.assertFalse(rec["code"], "Expected code=False for server-sourced files")
+
+    @tagged("post_install", "-at_install")
+    def test_prepare_record_keeps_code_for_tower_files(self):
+        """Mixin must keep code for cx.tower.file when source=='tower'."""
+        File = self.env["cx.tower.file"]
+        tw_file = File.create(
+            {
+                "name": "local.txt",
+                "reference": "localtxt",
+                "source": "tower",
+                "file_type": "text",
+                "server_dir": "/etc",
+                "code": "SMALL DATA",
+            }
+        )
+        rec = tw_file._prepare_record_for_yaml()
+        self.assertEqual(
+            rec["code"],
+            "SMALL DATA",
+            "Expected original code for tower-sourced files",
+        )
