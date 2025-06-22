@@ -1,3 +1,6 @@
+# Copyright (C) 2022 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from unittest.mock import patch
 
 from psycopg2 import IntegrityError
@@ -937,3 +940,151 @@ class TestTowerVariable(TestTowerCommon):
             f"{variable_default_message.DEFAULT_VALIDATION_MESSAGE}",
             "Default validation message doesn't match",
         )
+
+
+class TestVariableReferenceRename(TestTowerCommon):
+    """Ensure variable rename updates all Jinja references using shared fixtures."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.ref_old = cls.variable_version.reference
+        cls.ref_new = "software_version"
+
+        cls.command = cls.Command.create(
+            {
+                "name": "Show version (test)",
+                "code": f"echo {{ {{ {cls.ref_old} }} }}",
+                "variable_ids": [(6, 0, [cls.variable_version.id])],
+            }
+        )
+
+        cls.file = cls.File.create(
+            {
+                "name": "test_version.txt",
+                "server_dir": "/tmp",
+                "code": f"{{ {{ {cls.ref_old} }} }}",
+                "variable_ids": [(6, 0, [cls.variable_version.id])],
+            }
+        )
+
+    def _rename(self):
+        """Rename variable and invalidate caches for records under test."""
+        self.variable_version.write({"reference": self.ref_new})
+        self.command.invalidate_recordset()
+        self.file.invalidate_recordset()
+
+    def test_false_references_are_ignored(self):
+        """Ignore malformed or non-Jinja references."""
+        cmd_plain = self.Command.create(
+            {
+                "name": "Plain",
+                "code": "print(test_version)",
+                "variable_ids": [(6, 0, [self.variable_version.id])],
+            }
+        )
+        cmd_bad = self.Command.create(
+            {
+                "name": "BadBrackets",
+                "code": "{test_version}",
+                "variable_ids": [(6, 0, [self.variable_version.id])],
+            }
+        )
+
+        self._rename()
+        cmd_plain.invalidate_recordset()
+        cmd_bad.invalidate_recordset()
+
+        self.assertEqual(cmd_plain.code, "print(test_version)")
+        self.assertEqual(cmd_bad.code, "{test_version}")
+
+    def test_multiple_occurrences_replace_all(self):
+        """Replace all valid Jinja references in one field."""
+        code = "A: {{ test_version }}, B: {{  test_version   }}, C-end"
+        cmd_multi = self.Command.create(
+            {
+                "name": "Multi",
+                "code": code,
+                "variable_ids": [(6, 0, [self.variable_version.id])],
+            }
+        )
+
+        self._rename()
+        cmd_multi.invalidate_recordset()
+        actual_ref = self.variable_version.reference
+        expected = f"A: {{{{ {actual_ref} }}}}, " f"B: {{{{  {actual_ref}   }}}}, C-end"
+        self.assertEqual(cmd_multi.code, expected)
+
+    def test_template_files_updated(self):
+        """Propagate rename in template and generated file."""
+        tpl = self.env["cx.tower.file.template"].create(
+            {
+                "name": "TmpTpl",
+                "file_name": "tpl.txt",
+                "server_dir": "/tmp",
+                "code": "{{ test_version }}",
+                "variable_ids": [(6, 0, [self.variable_version.id])],
+            }
+        )
+        tpl_file = self.File.create(
+            {
+                "name": "from_tpl.txt",
+                "server_dir": "/tmp",
+                "template_id": tpl.id,
+                "code": "{{ test_version }}",
+            }
+        )
+
+        self._rename()
+        tpl.invalidate_recordset()
+        tpl_file.invalidate_recordset()
+
+        actual_ref = self.variable_version.reference
+        expected = f"{{{{ {actual_ref} }}}}"
+        self.assertEqual(tpl.code, expected)
+        self.assertEqual(tpl_file.code, expected)
+
+    def test_value_and_plan_line_update(self):
+        """Update value_char and plan line condition."""
+
+        def patched_mapping(_):
+            return {
+                "cx.tower.command": ["code", "path"],
+                "cx.tower.file": ["code", "server_dir", "name"],
+                "cx.tower.file.template": ["code", "server_dir", "file_name"],
+                "cx.tower.variable.value": ["value_char"],
+                "cx.tower.plan.line": ["condition"],
+            }
+
+        with patch.object(
+            type(self.variable_version),
+            "_get_propagation_field_mapping",
+            patched_mapping,
+        ):
+            val = self.env["cx.tower.variable.value"].create(
+                {
+                    "variable_id": self.variable_version.id,
+                    "value_char": "hello {{ test_version }} world",
+                }
+            )
+
+            pl = self.plan_line_1
+            pl.write(
+                {
+                    "variable_ids": [(6, 0, [self.variable_version.id])],
+                    "condition": "if {{ test_version }} then",
+                }
+            )
+
+            self.assertIn(self.variable_version.id, pl.variable_ids.ids)
+
+            self._rename()
+            val.invalidate_recordset()
+            pl.invalidate_recordset()
+
+            actual_ref = self.variable_version.reference
+            expected_val = f"hello {{{{ {actual_ref} }}}} world"
+            self.assertEqual(val.value_char, expected_val)
+            expected_cond = f"if {{{{ {actual_ref} }}}} then"
+            self.assertEqual(pl.condition, expected_cond)
