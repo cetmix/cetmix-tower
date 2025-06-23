@@ -1,3 +1,8 @@
+## 16.0.1.1.1 (2025-06-23)
+
+- Features: YAML code optimisation (4728)
+
+
 ## 16.0.1.1.0 (2025-06-20)
 
 - Features: Export/import scheduled tasks to/from YAML. (4650)
