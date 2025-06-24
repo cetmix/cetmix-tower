@@ -7,31 +7,122 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="explode_child_records" />
-                    <field name="remove_empty_values" />
-                    <field name="preview_code" />
+                    <field name="yaml_file_name" placeholder="my_snippet.yaml" />
                 </group>
-                <field
-                    name="comment"
-                    placeholder="Comment to be added to the beginning of exported YAML file"
-                />
-                <field
-                    name="yaml_code"
-                    widget="ace"
-                    options="{'mode': 'yaml'}"
-                    force_save="1"
-                    readonly="1"
-                    invisible="not preview_code"
-                />
-                <footer>
-                    <button
+                <group>
+                    <group>
+                        <field name="explode_child_records" />
+                        <field name="remove_empty_values" />
+                    </group>
+                    <group>
+                        <field name="add_manifest" />
+                        <field name="preview_code" />
+                    </group>
+                </group>
+
+                <group
+                    string="Manifest"
+                    attrs="{'invisible': [('add_manifest','=',False)]}"
+                >
+                    <field
+                        name="manifest_template_id"
+                        placeholder="Select a pre-defined template"
+                        help="Select a template to auto-populate manifest fields"
+                    />
+                    <group string="Information">
+
+                        <field
+                            name="manifest_name"
+                            attrs="{'required': [('add_manifest','!=',False)]}"
+                        />
+                        <field
+                            name="manifest_summary"
+                            attrs="{'required': [('manifest_name','!=',False)]}"
+                            placeholder="Short summary, 160 symbols max"
+                        />
+                        <field
+                            name="manifest_author_ids"
+                            widget="many2many_tags"
+                            attrs="{'required': [('manifest_name','!=',False)]}"
+                        />
+                        <field
+                            name="manifest_version"
+                            placeholder="Use the Major.Minor.Patch format, e.g. 1.2.3"
+                        />
+                        <field name="manifest_website" />
+                    </group>
+
+                    <group string="License and pricing">
+                        <field
+                            name="manifest_license"
+                            attrs="{'required': [('manifest_name','!=',False)]}"
+                        />
+                        <field
+                            name="manifest_price"
+                            attrs="{'invisible': [('manifest_license', '!=', 'Custom')]}"
+                        />
+                        <field
+                            name="manifest_currency"
+                            attrs="{'invisible': [('manifest_price', '=', 0)]}"
+                        />
+                    </group>
+                </group>
+
+                <notebook>
+
+                    <page
+                        string="Description"
+                        attrs="{'invisible': [('add_manifest','=',False)]}"
+                    >
+                        <field
+                            name="manifest_description"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                            placeholder="Detailed description (optional)"
+                        />
+                    </page>
+
+                    <page
+                        string="License text"
+                        attrs="{'invisible': [('manifest_license', '!=', 'Custom')]}"
+                    >
+                        <field
+                            name="manifest_license_text"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                            placeholder="License text"
+                            attrs="{'required': [('manifest_license', '=', 'Custom')]}"
+                        />
+                    </page>
+
+                    <page
+                        string="Preview code"
+                        attrs="{'invisible': [('preview_code','=',False)]}"
+                    >
+                        <field
+                            name="yaml_code"
+                            widget="ace"
+                            options="{'mode': 'yaml'}"
+                            force_save="1"
+                            nolabel="1"
+                            colspan="4"
+                            readonly="1"
+                        />
+                    </page>
+
+                </notebook>
+
+            <footer>
+                <button
                         string="Generate YAML file"
                         type="object"
                         name="action_generate_yaml_file"
                         class="oe_highlight"
                     />
-                    <button string="Close" special="cancel" />
-                </footer>
+                <button string="Close" special="cancel" />
+            </footer>
             </form>
         </field>
     </record>
