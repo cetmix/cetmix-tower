@@ -9,6 +9,72 @@
                 <group>
                     <field name="if_record_exists" />
                 </group>
+                <group
+                    attrs="{'invisible': [
+                        ('manifest_name', '=', False),
+                    ]}"
+                >
+                    <group string="Information">
+                        <field name="manifest_name" string="Name" />
+                        <field name="manifest_summary" string="Summary" />
+                        <field name="manifest_author_string" string="Author" />
+                        <field name="manifest_version" string="Version" />
+                        <field
+                            name="manifest_website"
+                            string="Website"
+                            attrs="{'invisible': [('manifest_website', '=', False)]}"
+                        />
+                    </group>
+                    <group string="License and pricing">
+                        <field name="manifest_license" string="License" />
+                        <field
+                            name="manifest_price"
+                            string="Price"
+                            attrs="{'invisible': [('manifest_price', '=', False)]}"
+                        />
+                        <field
+                            name="manifest_currency"
+                            string="Currency"
+                            attrs="{'invisible': [('manifest_currency', '=', False)]}"
+                        />
+                    </group>
+                    <notebook>
+                        <page
+                            string="Description"
+                            attrs="{'invisible':[('manifest_description','=',False)]}"
+                        >
+                            <field
+                                name="manifest_description"
+                                widget="text"
+                                nolabel="1"
+                                colspan="4"
+                            />
+                        </page>
+                        <page
+                            string="License text"
+                            attrs="{'invisible':[('manifest_license_text','=',False)]}"
+                        >
+                            <field
+                                name="manifest_license_text"
+                                widget="text"
+                                nolabel="1"
+                                colspan="4"
+                            />
+                        </page>
+                        <page string="Preview code">
+                            <field
+                                name="yaml_code"
+                                widget="ace"
+                                options="{'mode': 'yaml'}"
+                                force_save="1"
+                                nolabel="1"
+                                colspan="4"
+                            />
+                        </page>
+                    </notebook>
+
+                </group>
+
                 <div
                     class="alert alert-warning"
                     role="alert"
@@ -50,16 +116,6 @@
                         attrs="{'invisible': [('secret_list', '=', False)]}"
                     />
                 </div>
-                <group>
-                    <field name="preview_code" />
-                </group>
-                <field
-                    name="yaml_code"
-                    widget="ace"
-                    options="{'mode': 'yaml'}"
-                    force_save="1"
-                    attrs="{'invisible': [('preview_code', '=', False)]}"
-                />
                 <footer>
                     <button
                         string="Import"
