@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_yaml_manifest_author_tree" model="ir.ui.view">
+        <field name="name">yaml.manifest.author.tree</field>
+        <field name="model">cx.tower.yaml.manifest.author</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_yaml_manifest_author_form" model="ir.ui.view">
+        <field name="name">yaml.manifest.author.form</field>
+        <field name="model">cx.tower.yaml.manifest.author</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_yaml_manifest_author" model="ir.actions.act_window">
+        <field name="name">YAML Manifest Authors</field>
+        <field name="res_model">cx.tower.yaml.manifest.author</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">current</field>
+    </record>
+    <menuitem
+        id="menu_yaml_manifest_author_action"
+        name="YAML Manifest Authors"
+        parent="cetmix_tower_server.menu_settings"
+        action="action_yaml_manifest_author"
+        sequence="17"
+    />
+</odoo>
