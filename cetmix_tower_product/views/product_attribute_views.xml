@@ -9,7 +9,10 @@
             <!-- Add Tower fields after main fields -->
             <xpath expr="//group[@name='main_fields']" position="after">
                 <group name="tower_fields" string="Cetmix Tower Integration">
-                    <field name="tower_variable_id" />
+                    <field
+                        name="tower_variable_id"
+                        domain="[('variable_type', '=', 'o')]"
+                    />
                 </group>
             </xpath>
 

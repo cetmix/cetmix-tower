@@ -11,8 +11,8 @@ class ProductAttribute(models.Model):
     # Link directly to the Tower Variable
     tower_variable_id = fields.Many2one(
         comodel_name="cx.tower.variable",
-        help="Tower variable that will be used as source for attribute values. "
-        "Both predefined options and actual values will be available.",
+        domain=[("variable_type", "=", "o")],
+        help="Tower variable options",
     )
 
     def action_sync_tower_values(self):
@@ -20,73 +20,12 @@ class ProductAttribute(models.Model):
         self.ensure_one()
         if not self.tower_variable_id:
             raise ValidationError(_("No Tower Variable selected to sync from."))
-
-        return self._sync_tower_values()
+        return self._sync_tower_options()
 
     def _sync_tower_values(self):
-        """Core sync logic for Tower values"""
-        self.ensure_one()
-        created_values = self.env["product.attribute.value"]
-
-        # Check variable type and sync accordingly
-        if self.tower_variable_id.variable_type == "o":
-            # For option-type variables, sync from Tower variable options
-            created_values |= self._sync_tower_options()
-        else:
-            # For other variable types (e.g., 's'), sync from Tower variable values
-            created_values |= self._sync_tower_variable_values()
-
-        return {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": _("Sync Complete"),
-                "message": _("%d attribute values synchronized from Tower variable.")
-                % len(created_values),
-                "type": "success",
-            },
-        }
-
-    def _sync_tower_variable_values(self):
-        """Sync from Tower variable values - get all values"""
-        created_values = self.env["product.attribute.value"]
-        all_attribute_values = self.env["product.attribute.value"].search(
-            [("attribute_id", "=", self.id)]
-        )
-        existing_names = set(all_attribute_values.mapped("name"))
-        existing_tower_value_ids = set(
-            all_attribute_values.mapped("tower_variable_value_id").ids
-        )
-
-        # Build domain for variable values - get all values for this variable
-        domain = [("variable_id", "=", self.tower_variable_id.id)]
-
-        variable_values = self.env["cx.tower.variable.value"].search(domain)
-        vals_list = []
-        for var_value in variable_values:
-            value_name = var_value.value_char or var_value.variable_reference
-
-            # Only create if doesn't exist by tower ID and by name
-            if (
-                var_value.id not in existing_tower_value_ids
-                and value_name not in existing_names
-            ):
-                vals_list.append(
-                    {
-                        "name": value_name,
-                        "attribute_id": self.id,
-                        "tower_variable_value_id": var_value.id,
-                        "tower_variable_reference": self.tower_variable_id.reference,
-                    }
-                )
-                # Add to sets to prevent creating duplicates from this sync batch
-                existing_names.add(value_name)
-                existing_tower_value_ids.add(var_value.id)
-
-        if vals_list:
-            created_values |= self.env["product.attribute.value"].create(vals_list)
-
-        return created_values
+        """[REMOVED: Only sync options now]"""
+        # This method is no longer needed, kept for backward compatibility if called
+        return self._sync_tower_options()
 
     def _sync_tower_options(self):
         """Sync from Tower variable options - for option-type variables"""
