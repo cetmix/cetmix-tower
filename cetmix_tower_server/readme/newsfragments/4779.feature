@@ -1,1 +1,0 @@
-Required variables in servers

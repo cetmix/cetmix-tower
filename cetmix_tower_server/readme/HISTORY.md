@@ -1,3 +1,8 @@
+## 16.0.1.1.2 (2025-06-25)
+
+- Features: Required variables in servers (4779)
+
+
 ## 16.0.1.1.1 (2025-06-21)
 
 - Features: Command view improvements (4753)
