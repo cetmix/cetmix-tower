@@ -30,6 +30,7 @@
                     optional="show"
                     attrs="{'readonly': [('variable_type', '=', 's')]}"
                 />
+                <field name="required" optional="show" />
                 <field name="access_level" optional="show" />
                 <field name="variable_ids" optional="hide" widget="many2many_tags" />
             </tree>

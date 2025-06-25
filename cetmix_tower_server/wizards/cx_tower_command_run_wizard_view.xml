@@ -6,6 +6,7 @@
         <field name="model">cx.tower.command.run.wizard</field>
         <field name="arch" type="xml">
             <form string="Run Command">
+            <field name="has_missing_required_values" invisible="1" />
                 <div
                     class="alert alert-warning"
                     role="alert"
@@ -105,6 +106,15 @@
                             options="{'mode': 'python'}"
                             groups="cetmix_tower_server.group_manager"
                         />
+                        <div
+                            class="alert alert-danger"
+                            role="alert"
+                            attrs="{'invisible': [('has_missing_required_values','=',False)]}"
+                        >
+                            <span
+                            >Fill in required configuration variables on the “Configuration Values” tab before you can run the command.</span>
+                        </div>
+
                     </page>
                     <page
                         name="configuration_values"
@@ -147,18 +157,30 @@
                                     attrs="{'readonly': [('variable_type', '!=', 'o')]}"
                                     options="{'no_create': True}"
                                 />
+                                <field name="required" readonly="1" />
                             </tree>
                         </field>
+                        <div
+                            class="alert alert-danger"
+                            role="alert"
+                            attrs="{'invisible': [('has_missing_required_values', '=', False)]}"
+                        >
+                            <field
+                                name="missing_required_variables_message"
+                                readonly="1"
+                                nolabel="1"
+                            />
+                        </div>
                     </page>
                     <page
                         name="preview"
                         string="Preview"
-                        attrs="{'invisible': [('show_servers', '=', True)]}"
+                        attrs="{'invisible':[('show_servers','=',True)]}"
                     >
                         <field
                             name="rendered_code"
                             widget="ace"
-                            options="{'mode': 'python'}"
+                            options="{'mode':'python'}"
                             groups="cetmix_tower_server.group_manager"
                         />
                     </page>
@@ -168,9 +190,12 @@
                         name="run_command_on_server"
                         type="object"
                         string="Run"
-                        help="Run code using sever method and log result"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|',('result', '!=', False),('command_id', '=', False)]}"
+                        help="Run code using server method and log result"
+                        attrs="{'invisible': ['|', '|',
+                                              ('result','!=',False),
+                                              ('command_id','=',False),
+                                              ('has_missing_required_values','=',True)]}"
                     />
                     <button
                         name="run_command_in_wizard"
@@ -179,7 +204,11 @@
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
                         groups="cetmix_tower_server.group_manager"
-                        attrs="{'invisible': ['|', '|', ('result', '!=', False), ('code', '=', False), ('show_servers', '=', True)]}"
+                        attrs="{'invisible': ['|','|','|',
+                                            ('result','!=',False),
+                                            ('code','=',False),
+                                            ('show_servers','=',True),
+                                            ('has_missing_required_values','=',True)]}"
                     />
                     <button string="Cancel" special="cancel" />
                     <button

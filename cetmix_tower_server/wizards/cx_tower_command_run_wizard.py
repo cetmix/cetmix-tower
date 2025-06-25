@@ -93,6 +93,12 @@ class CxTowerCommandRunWizard(models.TransientModel):
     have_access_to_server = fields.Boolean(
         compute="_compute_have_access_to_server",
     )
+    has_missing_required_values = fields.Boolean(
+        compute="_compute_has_missing_required_values"
+    )
+    missing_required_variables_message = fields.Text(
+        compute="_compute_has_missing_required_values"
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -213,6 +219,30 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 server._have_access_to_server("write") for server in record.server_ids
             )
 
+    @api.depends(
+        "custom_variable_value_ids.value_char",
+        "custom_variable_value_ids.required",
+    )
+    def _compute_has_missing_required_values(self):
+        """
+        Mark the wizard when at least one *required* variable
+        has an empty value **and** build a human-readable message.
+        """
+        for wiz in self:
+            missing = wiz.custom_variable_value_ids.filtered(
+                lambda var_line: var_line.required and not var_line.value_char
+            )
+            wiz.has_missing_required_values = bool(missing)
+            wiz.missing_required_variables_message = (
+                _(
+                    "Please provide values for the following "
+                    "configuration variables: %(vars)s",
+                    vars=", ".join(missing.mapped("variable_id.name")),
+                )
+                if missing
+                else False
+            )
+
     @api.onchange("action", "applicability")
     def _onchange_action(self):
         """
@@ -265,6 +295,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     ).id
                     if variable.variable_type == "o"
                     else None,
+                    "variable_value_id": server_id.variable_value_ids.filtered(
+                        lambda v, var=variable: v.variable_id == var
+                    )[:1].id,
                 },
             )
             for variable in command_variables
@@ -291,6 +324,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
     def run_command_on_server(self):
         """Run command on selected servers"""
+        # Check if all required values are set
+        if self.has_missing_required_values:
+            raise ValidationError(self.missing_required_variables_message)
         # Check if command is selected
         if not self.command_id:
             raise ValidationError(_("Please select a command to execute"))
@@ -456,6 +492,13 @@ class CxTowerCommandRunWizardVariableValue(models.TransientModel):
     )
     option_id = fields.Many2one(
         "cx.tower.variable.option", domain="[('variable_id', '=', variable_id)]"
+    )
+
+    variable_value_id = fields.Many2one("cx.tower.variable.value")
+    required = fields.Boolean(
+        related="variable_value_id.required",
+        readonly=True,
+        store=True,
     )
 
     @api.depends("option_id", "variable_id", "variable_type")
