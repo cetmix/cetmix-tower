@@ -250,6 +250,13 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
+msgid ""
+"<span>Fill in required configuration variables on the “Configuration Values”"
+" tab before you can run the command.</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 msgid "<strong>IPv4 Address:</strong>"
 msgstr ""
@@ -1798,6 +1805,7 @@ msgid "Has Message"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__has_missing_required_values
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__has_missing_required_values
 msgid "Has Missing Required Values"
 msgstr ""
@@ -2333,6 +2341,7 @@ msgid "Missing Required Variables"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__missing_required_variables_message
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables_message
 msgid "Missing Required Variables Message"
 msgstr ""
@@ -2779,6 +2788,14 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
+#, python-format
+msgid ""
+"Please provide values for the following configuration variables: %(vars)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #, python-format
 msgid "Please resolve the following issues with configuration variables:"
@@ -3011,6 +3028,7 @@ msgid "Repeat every x."
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__required
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__required
 msgid "Required"
@@ -3128,7 +3146,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
-msgid "Run code using sever method and log result"
+msgid "Run code using server method and log result"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4156,6 +4174,7 @@ msgid "Variable Reference"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_value_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_value_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_value_ids
 msgid "Variable Value"
