@@ -20,16 +20,14 @@ from odoo.tests import TransactionCase, tagged
 class TestServerLog(TransactionCase):
     """YAML export/import tests for cx.tower.server.log."""
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        env = cls.env
-        cls.File = env["cx.tower.file"]
-        cls.Server = env["cx.tower.server"]
-        cls.ServerLog = env["cx.tower.server.log"]
+    def setUp(self, *args, **kwargs):
+        super().setUp(*args, **kwargs)
+        self.File = self.env["cx.tower.file"]
+        self.Server = self.env["cx.tower.server"]
+        self.ServerLog = self.env["cx.tower.server.log"]
 
         # Create a file to reference from the log
-        cls.file = cls.File.create(
+        self.file = self.File.create(
             {
                 "name": "repos.yaml",
                 "reference": "reposyaml",
@@ -41,7 +39,7 @@ class TestServerLog(TransactionCase):
         )
 
         # Create a server (use password auth to satisfy constraints)
-        cls.server = cls.Server.create(
+        self.server = self.Server.create(
             {
                 "name": "Srv-YAML-Test",
                 "reference": "srv_yaml_test",
@@ -55,13 +53,13 @@ class TestServerLog(TransactionCase):
         )
 
         # Create a file-type log linked to the file above
-        cls.log = cls.ServerLog.create(
+        self.log = self.ServerLog.create(
             {
                 "name": "Log from file",
                 "reference": "log_from_file",
                 "log_type": "file",
-                "file_id": cls.file.id,
-                "server_id": cls.server.id,
+                "file_id": self.file.id,
+                "server_id": self.server.id,
                 "use_sudo": False,
             }
         )
