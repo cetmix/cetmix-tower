@@ -1,7 +1,11 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
+
 from odoo import _, api, fields, models
 from odoo.tools.safe_eval import wrap_module
+
+_logger = logging.getLogger(__name__)
 
 re = wrap_module(
     __import__("re"),
@@ -268,6 +272,79 @@ class TowerVariable(models.Model):
         return {
             "re": re,
             "value": value_char,
+        }
+
+    #  Reference rename propagation
+
+    def write(self, vals):
+        """Override the write method to propagate variable reference updates.
+
+        Records the old reference values, performs the write, and if the reference
+        field has changed, initiates propagation to update related records.
+        """
+        old_refs = (
+            {rec.id: rec.reference for rec in self} if "reference" in vals else {}
+        )
+        res = super().write(vals)
+        if "reference" in vals:
+            for rec in self:
+                old_ref = old_refs.get(rec.id)
+                if old_ref and old_ref != rec.reference:
+                    rec._propagate_reference_change(old_ref, rec.reference)
+        return res
+
+    def _propagate_reference_change(self, old_ref, new_ref):
+        """Replace all occurrences of an old variable reference with a new one.
+
+        Compiles a pattern matching the old Jinja-style reference, then searches across
+        configured models and fields to substitute any matches, preserving formatting.
+        """
+        pattern = re.compile(r"(\{\{\s*)" + re.escape(old_ref) + r"(\s*\}\})")
+
+        def _replace(text):
+            """Helper to replace old_ref with new_ref in the given text."""
+            return pattern.sub(lambda m: f"{m.group(1)}{new_ref}{m.group(2)}", text)
+
+        model_fields_map = self._get_propagation_field_mapping()
+
+        for model_name, field_names in model_fields_map.items():
+            Model = self.env[model_name]
+
+            if model_name == "cx.tower.variable.value":
+                domain = [("variable_id", "=", self.id)]
+            else:
+                domain = [("variable_ids", "in", self.ids)]
+
+            for record in Model.search(domain):
+                vals = {}
+                for field_name in field_names:
+                    value = record[field_name]
+                    if isinstance(value, str) and old_ref in value:
+                        new_value = _replace(value)
+                        if new_value != value:
+                            vals[field_name] = new_value
+
+                if vals:
+                    record.with_context(skip_reference_propagation=True).write(vals)
+                    _logger.debug(
+                        "Variable reference updated in %s(%s): %s",
+                        model_name,
+                        record.id,
+                        ", ".join(vals.keys()),
+                    )
+
+    def _get_propagation_field_mapping(self):
+        """Return the mapping of models to fields for reference change propagation.
+
+        The returned dict maps each model name to a list of field names
+        that may contain variable references requiring updates.
+        """
+        return {
+            "cx.tower.command": ["code", "path"],
+            "cx.tower.file": ["code", "server_dir", "name"],
+            "cx.tower.file.template": ["code", "server_dir", "file_name"],
+            "cx.tower.variable.value": ["value_char"],
+            "cx.tower.plan.line": ["condition"],
         }
 
     def _validate_value(self, value_char=None):
