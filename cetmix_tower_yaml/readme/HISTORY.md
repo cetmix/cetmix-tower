@@ -1,3 +1,8 @@
+## 14.0.1.1.0 (2025-06-27)
+
+- Features: YAML code optimisation (4728)
+
+
 ## 14.0.1.0.7 (2025-05-20)
 
 - Features: Export/import secret values related to Server. (4696)
