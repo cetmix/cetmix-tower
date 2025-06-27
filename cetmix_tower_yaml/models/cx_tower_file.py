@@ -33,3 +33,14 @@ class CxTowerFile(models.Model):
         if self.env.context.get("from_yaml"):
             return
         super()._post_create_write(op_type)
+
+    def _prepare_record_for_yaml(self):
+        """
+        Override to drop file `code` when the source is 'server'.
+        """
+        record_dict = super()._prepare_record_for_yaml()
+
+        if record_dict.get("source") == "server":
+            record_dict["code"] = False
+
+        return record_dict
