@@ -15,6 +15,14 @@ class ProductAttribute(models.Model):
         help="Tower variable options",
     )
 
+    auto_sync_tower_values = fields.Boolean(
+        string="Auto sync values from related Cetmix Tower variable",
+        help=(
+            "If enabled, attribute values will be automatically synced when "
+            "options are added or removed in the linked Tower variable."
+        ),
+    )
+
     def action_sync_tower_values(self):
         """Manually sync attribute values from Tower variable"""
         self.ensure_one()
@@ -30,18 +38,28 @@ class ProductAttribute(models.Model):
     def _sync_tower_options(self):
         """Sync from Tower variable options - for option-type variables"""
         created_values = self.env["product.attribute.value"]
-        all_attribute_values = self.env["product.attribute.value"].search(
+
+        # Get all current attribute values for this attribute
+        remaining_attribute_values = self.env["product.attribute.value"].search(
             [("attribute_id", "=", self.id)]
         )
-        existing_names = set(all_attribute_values.mapped("name"))
+
+        # Get all current Tower options for this variable
+        current_tower_options = self.tower_variable_id.option_ids
+
+        # Since the relation has `ondelete="cascade"`, any attribute value
+        # linked to a deleted Tower option has already been removed by the
+        # database, so no explicit cleanup is needed here.
+
+        # Recalculate existing values after removal
+        existing_names = set(remaining_attribute_values.mapped("name"))
         existing_tower_option_ids = set(
-            all_attribute_values.mapped("tower_option_id").ids
+            remaining_attribute_values.mapped("tower_option_id").ids
         )
 
-        # Get all options for this Tower variable
-        tower_options = self.tower_variable_id.option_ids
+        # Add new attribute values for new Tower options
         vals_list = []
-        for option in tower_options:
+        for option in current_tower_options:
             # Only create if doesn't exist by tower ID and by name
             if (
                 option.id not in existing_tower_option_ids
@@ -60,6 +78,8 @@ class ProductAttribute(models.Model):
                 existing_tower_option_ids.add(option.id)
 
         if vals_list:
-            created_values |= self.env["product.attribute.value"].create(vals_list)
+            created_values = self.env["product.attribute.value"].create(vals_list)
 
-        return created_values
+        return {
+            "created": created_values,
+        }

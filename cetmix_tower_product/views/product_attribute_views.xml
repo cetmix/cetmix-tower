@@ -13,6 +13,10 @@
                         name="tower_variable_id"
                         domain="[('variable_type', '=', 'o')]"
                     />
+                    <field
+                        name="auto_sync_tower_values"
+                        attrs="{'invisible': [('tower_variable_id', '=', False)]}"
+                    />
                 </group>
             </xpath>
 

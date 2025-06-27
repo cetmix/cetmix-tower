@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
-    <!-- 1. Create global value for variable_demo_os -->
-    <record id="demo_os_global_value" model="cx.tower.variable.value">
-        <field name="variable_id" ref="cetmix_tower_server.variable_demo_os" />
-        <field name="value_char">Ubuntu</field>
-        <field name="is_global" eval="True" />
-    </record>
-
     <!-- 2. Create product attribute based on variable_demo_odoo_version -->
     <record id="product_attribute_odoo_version" model="product.attribute">
         <field name="name">Odoo Version</field>
         <field name="display_type">radio</field>
+        <field name="create_variant">dynamic</field>
         <field
             name="tower_variable_id"
             ref="cetmix_tower_server.variable_demo_odoo_version"
@@ -21,17 +15,11 @@
     <record id="product_attribute_language" model="product.attribute">
         <field name="name">Language</field>
         <field name="display_type">select</field>
+        <field name="create_variant">dynamic</field>
         <field
             name="tower_variable_id"
             ref="cetmix_tower_server.variable_demo_language"
         />
-    </record>
-
-    <!-- Create product attribute for demo OS -->
-    <record id="product_attribute_operating_system" model="product.attribute">
-        <field name="name">Operating System</field>
-        <field name="display_type">radio</field>
-        <field name="tower_variable_id" ref="cetmix_tower_server.variable_demo_os" />
     </record>
 
     <!-- Create attribute values for Odoo Version (from Tower options) -->
@@ -113,14 +101,6 @@
         <field name="tower_variable_reference">demo_language</field>
     </record>
 
-    <!-- Create attribute values for Operating System (from Tower values) -->
-    <record id="attr_value_os_ubuntu" model="product.attribute.value">
-        <field name="name">Ubuntu</field>
-        <field name="attribute_id" ref="product_attribute_operating_system" />
-        <field name="tower_variable_value_id" ref="demo_os_global_value" />
-        <field name="tower_variable_reference">demo_os</field>
-    </record>
-
     <!-- 4. Create demo product "Odoo Service" -->
     <record id="product_odoo_service" model="product.template">
         <field name="name">Odoo Service</field>
@@ -133,10 +113,7 @@
         </field>
     </record>
 
-
-
-
-      <!-- Assign Odoo Version attribute to Odoo Service with explicit values -->
+    <!-- Assign Odoo Version attribute to Odoo Service with explicit values -->
     <record
         id="odoo_service_version_attribute_line"
         model="product.template.attribute.line"
@@ -160,13 +137,6 @@
             name="value_ids"
             eval="[(6, 0, [ref('attr_value_lang_en_us'), ref('attr_value_lang_it'), ref('attr_value_lang_es_mx'), ref('attr_value_lang_de'), ref('attr_value_lang_de_ch')])]"
         />
-    </record>
-
-    <!-- Assign Operating System attribute to Odoo Service with explicit values -->
-    <record id="odoo_service_os_attribute_line" model="product.template.attribute.line">
-        <field name="product_tmpl_id" ref="product_odoo_service" />
-        <field name="attribute_id" ref="product_attribute_operating_system" />
-        <field name="value_ids" eval="[(6, 0, [ref('attr_value_os_ubuntu')])]" />
     </record>
 
 </odoo>
