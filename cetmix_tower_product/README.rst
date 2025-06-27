@@ -25,15 +25,21 @@ Cetmix Tower Product
 This module provides integration between Cetmix Tower server
 configuration variables and Odoo product attributes.
 
-Key Features
-------------
+*Key Features*
 
 - **Direct Tower Variable Linking**: Link product attributes directly to
   specific Tower variables.
 - **Manual Synchronization**: On-demand sync button to import Tower
   variable values as product attribute values.
-- **Duplicate Prevention**: Intelligent duplicate detection prevents
-  creation of attribute values with identical names or Tower references.
+- **Automatic Synchronization**: Enable *Auto Sync Values* on an
+  attribute to add new Tower options automatically whenever they are
+  created.
+- **Duplicate Prevention**: Sync skips options that already exist or
+  have the same name.
+- **Centralised Management**: Attribute values are read-only in Odoo –
+  add or remove options in Cetmix Tower and sync again.
+- **Integrity Protection**: A Tower option cannot be deleted if it is
+  already used in a product variant.
 
 **Table of contents**
 
@@ -43,14 +49,12 @@ Key Features
 Configuration
 =============
 
-Prerequisite
-~~~~~~~~~~~~
+*Prerequisite*
 
 To access product attributes and the Odoo product configurator, you must
 have the sale_management module installed.
 
-1. Link Product Attributes to Tower Variables
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*1. Link Product Attributes to Tower Variables*
 
 1. Navigate to **Sales > Configuration > Products > Attributes**
 2. Open an existing product attribute or create a new one
@@ -59,58 +63,57 @@ have the sale_management module installed.
    - Select a **Tower Variable** from the dropdown.
    - This establishes the direct link between your product attribute and
      Tower variable.
+   - (Optional) Tick **Auto Sync Values** to let Odoo pull in new Tower
+     options automatically.
 
-2. Synchronize Tower Values
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*2. Sync Tower Options*
 
-1. After linking a Tower variable to your product attribute:
+1. After you link a Tower variable to your product attribute:
 
-   - Click the **"Sync from Tower Variable"** button.
-   - The system will import all values from the linked Tower variable as
-     product attribute values.
-   - Existing attribute values are preserved - only new Tower values are
-     added.
+   - Click **"Sync from Tower Variable"**.
+   - All options of the linked Tower variable are copied to Odoo as
+     attribute values.
+   - Existing values stay – only brand-new options are added.
 
-3. Duplicate Prevention
-~~~~~~~~~~~~~~~~~~~~~~~
+*3. What happens next?*
 
-The module automatically prevents duplicates during synchronization:
+- **No manual editing**: You cannot create or delete these attribute
+  values inside Odoo. Do it in Cetmix Tower instead and then press
+  **Sync** again.
+- **Duplicate protection**: The sync skips options that already exist or
+  have the same name.
+- **Option in use**: A Tower option that is already used in any product
+  variant cannot be deleted in Tower.
+- **Auto-sync convenience**: When **Auto Sync Values** is enabled, new
+  options appear automatically without pressing **Sync**.
 
-- Values already linked to the same Tower variable value are skipped.
-- Attribute values with identical names are not created again.
-
-Ongoing Management
-------------------
-
-- **Re-sync at any time**: Click the sync button to import new Tower
-  variable values.
-- **Safe deletions**: Deleting Tower variable values will not remove
-  product attribute values.
-- **Independent management**: Product attribute values can be managed
-  independently after import.
-
-No additional configuration files or complex setup procedures are
-required.
+No extra configuration files or complex setup steps are needed.
 
 Usage
 =====
 
-Use in Product Configuration
-----------------------------
+*Use in Product Configuration*
 
 Once synchronized, Tower-linked attribute values work like standard
 product attributes.
 
-Example Scenarios
------------------
+*Example Scenarios*
 
-Server Configuration Attribute
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*Server Configuration Attribute*
 
 1. Create attribute: "Odoo Version".
 2. Link to Tower variable: "Demo Odoo Version".
 3. Sync values: "16.0", "17.0", "18.0".
 4. Use in product templates for installations related to Odoo.
+
+*Keeping the list up-to-date*
+
+Need a new option or want to remove one? Open the linked variable in
+Cetmix Tower, modify its options there, and press **Sync from Tower
+Variable** in Odoo. You can't add or delete the values directly in Odoo.
+
+If **Auto Sync Values** is enabled on the attribute, new options appear
+automatically.
 
 Bug Tracker
 ===========

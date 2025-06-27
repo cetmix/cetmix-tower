@@ -1,33 +1,28 @@
-
-### Prerequisite
+*Prerequisite*
 
 To access product attributes and the Odoo product configurator, you must have the sale_management module installed.
 
-### 1. Link Product Attributes to Tower Variables
+*1. Link Product Attributes to Tower Variables*
 
 1. Navigate to **Sales > Configuration > Products > Attributes**
 2. Open an existing product attribute or create a new one
 3. In the **Cetmix Tower Integration** section:
    * Select a **Tower Variable** from the dropdown.
    * This establishes the direct link between your product attribute and Tower variable.
+   * (Optional) Tick **Auto Sync Values** to let Odoo pull in new Tower options automatically.
 
-### 2. Synchronize Tower Values
+*2. Sync Tower Options*
 
-1. After linking a Tower variable to your product attribute:
-   * Click the **"Sync from Tower Variable"** button.
-   * The system will import all values from the linked Tower variable as product attribute values.
-   * Existing attribute values are preserved - only new Tower values are added.
+1. After you link a Tower variable to your product attribute:
+   * Click **"Sync from Tower Variable"**.
+   * All options of the linked Tower variable are copied to Odoo as attribute values.
+   * Existing values stay – only brand-new options are added.
 
-### 3. Duplicate Prevention
+*3. What happens next?*
 
-The module automatically prevents duplicates during synchronization:
-* Values already linked to the same Tower variable value are skipped.
-* Attribute values with identical names are not created again.
+* **No manual editing**: You cannot create or delete these attribute values inside Odoo.  Do it in Cetmix Tower instead and then press **Sync** again.
+* **Duplicate protection**: The sync skips options that already exist or have the same name.
+* **Option in use**: A Tower option that is already used in any product variant cannot be deleted in Tower.
+* **Auto-sync convenience**: When **Auto Sync Values** is enabled, new options appear automatically without pressing **Sync**.
 
-## Ongoing Management
-
-* **Re-sync at any time**: Click the sync button to import new Tower variable values.
-* **Safe deletions**: Deleting Tower variable values will not remove product attribute values.
-* **Independent management**: Product attribute values can be managed independently after import.
-
-No additional configuration files or complex setup procedures are required. 
+No extra configuration files or complex setup steps are needed. 
