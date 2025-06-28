@@ -467,6 +467,12 @@
                             </field>
                         </page>
                         <page name="jet_templates" string="Jet Templates">
+                            <button
+                                name="action_install_jet_template"
+                                string="Install Jet Template"
+                                type="object"
+                                class="oe_highlight"
+                            />
                             <field name="jet_template_ids">
                                 <tree create="0" edit="0">
                                     <field name="name" />

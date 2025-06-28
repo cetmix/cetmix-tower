@@ -577,6 +577,21 @@ class CxTowerServer(models.Model):
         action["context"] = context
         return action
 
+    def action_install_jet_template(self):
+        """Action to install the Jet Template on the selected servers."""
+        self.ensure_one()
+        # Open the wizard to install the template on the selected servers
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Install Jet Template",
+            "res_model": "cx.tower.jet.template.install.wiz",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_server_ids": self.ids,  # pylint: disable=no-member
+            },
+        }
+
     def action_uninstall_jet_template(self):
         """
         Uninstall jet template from the current server

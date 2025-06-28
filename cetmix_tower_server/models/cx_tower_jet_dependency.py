@@ -20,13 +20,6 @@ class CxTowerJetDependency(models.Model):
         help="The Jet template that requires another template",
     )
 
-    state_id = fields.Many2one(
-        string="In State",
-        comodel_name="cx.tower.jet.state",
-        ondelete="restrict",
-        help="The state that the Jet should be in",
-    )
-
     template_required_id = fields.Many2one(
         string="Required Jet",
         comodel_name="cx.tower.jet.template",

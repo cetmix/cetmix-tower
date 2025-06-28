@@ -49,13 +49,10 @@ class CxTowerJet(models.Model):
         tracking=True,
     )
 
-    # Action to trigger
-    action_to_trigger_id = fields.Many2one(
+    # Currently executing action
+    current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
-        string="Action to Trigger",
-        store=False,
-        readonly=False,
-        domain="[('id', 'in', available_action_ids)]",
+        string="Currently Executing Action",
     )
 
     # Variables used for configuration
@@ -68,6 +65,30 @@ class CxTowerJet(models.Model):
         comodel_name="cx.tower.jet.action",
         compute="_compute_available_actions",
         string="Available Actions",
+    )
+
+    command_log_ids = fields.One2many(
+        comodel_name="cx.tower.command.log",
+        inverse_name="jet_id",
+    )
+    plan_log_ids = fields.One2many(
+        comodel_name="cx.tower.plan.log",
+        inverse_name="jet_id",
+    )
+
+    # TODO: test
+    test_state_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="Test State",
+    )
+    # TODO: test
+    # Action to trigger
+    action_to_trigger_id = fields.Many2one(
+        comodel_name="cx.tower.jet.action",
+        string="Action to Trigger",
+        store=False,
+        readonly=False,
+        domain="[('id', 'in', available_action_ids)]",
     )
 
     @api.depends("state_id", "jet_template_id")
@@ -109,39 +130,41 @@ class CxTowerJet(models.Model):
         """Onchange action to trigger"""
         for jet in self:
             if jet.action_to_trigger_id:
-                jet.trigger_action(jet.action_to_trigger_id)
+                jet._trigger_action(jet.action_to_trigger_id)
 
-    def _get_system_variable_value(self, variable_reference):
-        """Return the jet template variable values
-
-        Args:
-            variable_reference (Char): variable value
-
-        Returns:
-            dict(): populates `tower` variable with with values.
-                {
-                    'jet_template': {..jet template vals..},
-                }.
-        """
-
-        # This works for a single record only!
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Odoo Actions
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def action_test(self):
+        """Test the jet"""
         self.ensure_one()
+        self._bring_to_state(self.test_state_id)
 
-        variable_value = {}
-        if variable_reference == "tower":
-            variable_value.update(
-                {
-                    "jet": {
-                        "name": self.name,  # pylint: disable=no-member
-                        "reference": self.reference,  # pylint: disable=no-member
-                        "state": self.state_id.name,
-                    },
-                }
-            )
-        return variable_value
+    def action_open_command_logs(self):
+        """
+        Open current server command log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_command_log"
+        )
+        action["domain"] = [("jet_id", "=", self.id)]  # pylint: disable=no-member
+        return action
 
-    def trigger_action(self, action):
-        """Trigger an action on this jet
+    def action_open_plan_logs(self):
+        """
+        Open current server flightplan log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan_log"
+        )
+        action["domain"] = [("jet_id", "=", self.id)]  # pylint: disable=no-member
+        return action
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Jet Actions and states
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def _trigger_action(self, action):
+        """Trigger an action on the jet.
 
         Args:
             action (cx.tower.jet.action()): The action to trigger
@@ -158,35 +181,111 @@ class CxTowerJet(models.Model):
                     "Action '%(action)s' is not available for jet"
                     " '%(jet)s' in state '%(state)s'",
                     action=action.name,
-                    jet=self.name,
+                    jet=self.name,  # pylint: disable=no-member
                     state=self.state_id.name,
                 )
             )
 
+        # Update the jet state
+        transit_state = action.state_transit_id
+        target_state = action.state_to_id
+        self.write(
+            {
+                "state_id": transit_state,
+                "current_action_id": action.id,
+            }
+        )
+
         # Execute the flight plan if defined
         if action.plan_id:
-            # TODO: Implement flight plan execution for jets
-            pass
+            # Run the flight plan
+            self.server_id.run_flight_plan(
+                flight_plan=action.plan_id,
+                jet=self,
+            )
+            # Flight plan will trigger the `_flight_plan_finished` function again
+            # if the flight plan is finished successfully.
+            # So we don't need continue the loop in this case.
+            return
 
-        # Update the jet state
-        target_state = action.state_to_id
-        transit_state = action.state_transit_id
-        if target_state:
-            self.state_id = transit_state
-            self.state_id = target_state
+        self.write(
+            {
+                "state_id": target_state,
+                "current_action_id": False,
+            }
+        )
 
-        # # Update the last run time
-        # self.last_run_datetime = fields.Datetime.now()
+    def _bring_to_state(self, state=None):
+        """
+        Bring the jet to a specific state.
 
-        # # Log the action
-        # self.env["cx.tower.jet.log"].create(
-        #     {
-        #         "jet_id": self.id,
-        #         "action_id": action.id,
-        #         "state_from_id": action.state_from_id.id,
-        #         "state_to_id": target_state.id,
-        #         "execution_datetime": self.last_run_datetime,
-        #     }
-        # )
+        Args:
+            state (cx.tower.jet.state()): The state to bring the jet to
+        """
+        self.ensure_one()
 
-        # return True
+        # Exit if jet is already in the target state or running an action
+        if self.state_id == state or self.current_action_id:
+            return
+
+        # Create a new state transition
+        self.env["cx.tower.jet.state.transition"].create(
+            {
+                "jet_id": self.id,  # pylint: disable=no-member
+                "state_from_id": self.state_id,
+                "state_to_id": state,
+                "state_id": self.state_id,
+            }
+        )
+
+    def _bring_to_state_old(self, state=None):
+        """
+        Bring the jet to a specific state.
+
+        Args:
+            state (cx.tower.jet.state()): The state to bring the jet to
+
+        Returns:
+        """
+        self.ensure_one()
+
+        # Set the destination state
+        self.write(
+            {
+                "state_to_id": state,
+            }
+        )
+
+        # Compute the path of actions to bring the jet to the target state
+        path = self.jet_template_id._get_action_path(
+            state_from=self.state_id, state_to=state
+        )
+
+        # Execute the actions in the path
+        for action in path:
+            self._trigger_action(action)
+
+    def _flight_plan_finished(self, plan_status):
+        """
+        Handle the completion of a flight plan.
+
+        Args:
+            plan_status (int): The status of the flight plan
+            (0: success, other: failure)
+        """
+        self.ensure_one()
+
+        vals = {"current_action_id": False}
+        if plan_status == 0:
+            # Set the state to the destination state
+            vals["state_id"] = (
+                self.current_action_id.state_to_id
+                and self.current_action_id.state_to_id.id
+            )  # type: ignore
+
+            # Check if the action state is the destination state
+            # If we have reached the destination state, nothing to do here anymore
+            if self.current_action_id.state_to_id == self.state_to_id:
+                self.write(vals)
+
+        self.write(vals)

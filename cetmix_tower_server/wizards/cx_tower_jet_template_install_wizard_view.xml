@@ -4,7 +4,9 @@
         <field name="model">cx.tower.jet.template.install.wiz</field>
         <field name="arch" type="xml">
             <form string="Install Jet Template">
-                <field name="jet_template_id" invisible="1" />
+                <group>
+                    <field name="jet_template_id" placeholder="Select a jet template" />
+                </group>
                 <field
                     name="server_ids"
                     required="1"

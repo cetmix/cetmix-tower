@@ -51,6 +51,5 @@ class CxTowerJetAction(models.Model):
     plan_id = fields.Many2one(
         string="Flight Plan",
         comodel_name="cx.tower.plan",
-        required=True,
         help="Flight plan to execute when this action is triggered",
     )

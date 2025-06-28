@@ -17,6 +17,22 @@
                     <button name="action_test" type="object" string="Test" />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Command Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Flight Plan Logs"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                    </div>
                     <widget
                         name="web_ribbon"
                         title="Archived"
@@ -48,6 +64,7 @@
                                 <group name="servers">
                                     <field name="plan_install_id" />
                                     <field name="plan_uninstall_id" />
+                                    <field name="limit_per_server" />
                                 </group>
                                 <field name="note" placeholder="Add notes here..." />
                             </group>
@@ -112,25 +129,42 @@
                                         widget="color_picker"
                                         string=" "
                                     />
-                                    <field name="state_error_id" optional="hide" />
+                                    <field name="state_error_id" optional="show" />
                                     <field name="plan_id" />
                                     <field name="reference" optional="hide" />
                                 </tree>
                             </field>
-                            <field
-                                name="message_actions"
-                                readonly="1"
-                                nolabel="1"
+                            <p
+                                id="message_actions"
                                 class="alert alert-warning"
                                 role="alert"
-                            />
+                            >
+                            Help:
+                            <ul>
+                                <li
+                                    >Action with an initial state can be triggered only from that state.</li>
+                                <li
+                                    >Action without an initial state can be triggered from any state. Such actions can be used to create a new Jet.</li>
+                                <li
+                                    >Action without a final state do not change the state. Such actions can be used to destroy a Jet.</li>
+                                <li
+                                    >You need to save your changes to be able to select newly added actions in the fields below.</li>
+                            </ul>
+                            </p>
+                            <group>
+                                <field name="action_create_id" />
+                                <field name="action_destroy_id" />
+                            </group>
+                            <group>
+                                <field name="test_state_from_id" />
+                                <field name="test_state_to_id" />
+                            </group>
                         </page>
                         <page string="Dependencies" name="dependencies">
                             <group>
                                 <group name="requires" string="Requires">
                                     <field name="template_requires_ids" string=" ">
                                         <tree editable="bottom">
-                                            <field name="state_id" />
                                             <field name="template_required_id" />
                                             <field name="state_required_id" />
                                         </tree>
@@ -145,9 +179,8 @@
                                 <group name="required_by" string="Required By">
                                     <field name="template_required_by_ids" string=" ">
                                         <tree editable="bottom">
-                                            <field name="state_required_id" />
                                             <field name="template_id" />
-                                            <field name="state_id" />
+                                            <field name="state_required_id" />
                                         </tree>
                                     </field>
                                 </group>

@@ -80,7 +80,7 @@
 
     <menuitem
         id="menu_cx_tower_jet_template_install"
-        name="Template Installations"
+        name="Installation Logs"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_template_install_action"
         sequence="25"

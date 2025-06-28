@@ -99,7 +99,8 @@ class CxTowerJetTemplateInstall(models.Model):
             return
 
         # Get the template to install
-        for installation_task in self.line_ids.sorted("order", reverse=True):
+        installation_tasks = self.line_ids.sorted("order", reverse=True)
+        for installation_task in installation_tasks:
             # Pick the templates only in the "To Install" state
             if installation_task.state != "to_install":
                 continue

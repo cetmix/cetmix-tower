@@ -20,6 +20,7 @@ class CxTowerJetTemplate(models.Model):
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
         "cx.tower.variable.mixin",
+        "mail.thread",
     ]
     _order = "name asc"
 
@@ -42,17 +43,32 @@ class CxTowerJetTemplate(models.Model):
         readonly=False,
         help="These servers have this jet template installed",
     )
+    limit_per_server = fields.Integer(
+        string="Limit per Server",
+        help="Maximum number of Jets that can be launched on a server. "
+        "Set to 0 for unlimited.",
+    )
 
     # Flight Plan
     plan_install_id = fields.Many2one(
         comodel_name="cx.tower.plan",
         string="Flight Plan for Installation",
-        help="Flight plan used to install the " "template from a server",
+        help="Flight plan used to install the template from a server",
     )
     plan_uninstall_id = fields.Many2one(
         comodel_name="cx.tower.plan",
         string="Flight Plan for Uninstallation",
-        help="Flight plan used to uninstall the " "template from a server",
+        help="Flight plan used to uninstall the template from a server",
+    )
+
+    # Logs
+    command_log_ids = fields.One2many(
+        comodel_name="cx.tower.command.log",
+        inverse_name="jet_template_id",
+    )
+    plan_log_ids = fields.One2many(
+        comodel_name="cx.tower.plan.log",
+        inverse_name="jet_template_id",
     )
 
     # Configuration variables
@@ -65,6 +81,37 @@ class CxTowerJetTemplate(models.Model):
         comodel_name="cx.tower.jet.action",
         inverse_name="jet_template_id",
         string="Lifecycle Actions",
+    )
+    action_create_id = fields.Many2one(
+        comodel_name="cx.tower.jet.action",
+        string="Create Jet",
+        help="The action is used to create a new Jet",
+        compute="_compute_border_actions",
+        readonly=False,
+        store=True,
+        precompute=True,
+        domain="[('state_from_id', '=', False), "
+        "('state_to_id', '!=', False),"
+        " ('jet_template_id', '=', id)]",
+    )
+    action_destroy_id = fields.Many2one(
+        comodel_name="cx.tower.jet.action",
+        string="Destroy Jet",
+        compute="_compute_border_actions",
+        readonly=False,
+        store=True,
+        precompute=True,
+        help="The action is used to destroy a Jet",
+        domain="[('state_to_id', '=', False), ('jet_template_id', '=', id)]",
+    )
+    # TODO: this field is for test only!!
+    test_state_from_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="Test State From",
+    )
+    test_state_to_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="Test State To",
     )
 
     # Dependencies
@@ -103,19 +150,46 @@ class CxTowerJetTemplate(models.Model):
         help="SVG image of the dependency graph of the template",
     )
 
-    # Messages
-    message_actions = fields.Text(compute="_compute_message_actions")
-
     @api.depends(
+        "action_ids",
         "action_ids.state_from_id",
         "action_ids.state_to_id",
-        "action_ids.name",
         "action_ids.priority",
     )
-    def _compute_message_actions(self):
-        """Compute the warning message for the actions."""
+    def _compute_border_actions(self):
         for template in self:
-            template.message_actions = template._compose_message_actions()
+            # If no initial state, add the one automatically
+            if not template.action_create_id:
+                # Has no initial state and has a final state
+                suitable_actions = template.action_ids.filtered(
+                    lambda a: not a.state_from_id and a.state_to_id
+                )
+                # Take the first one
+                if suitable_actions:
+                    template.action_create_id = suitable_actions[0]
+
+            # If "Create" action has an initial state
+            # or does not have a final state
+            # it cannot be used to create a new Jet
+            elif (
+                template.action_create_id.state_from_id
+                or not template.action_create_id.state_to_id
+            ):
+                template.action_create_id = False
+
+            if not template.action_destroy_id:
+                # Has no final state
+                suitable_actions = template.action_ids.filtered(
+                    lambda a: not a.state_to_id
+                )
+                # Take the first one
+                if suitable_actions:
+                    template.action_destroy_id = suitable_actions[0]
+
+            # If "Destroy" action has a final state
+            # it cannot be used to destroy a Jet
+            elif template.action_destroy_id.state_to_id:
+                template.action_destroy_id = False
 
     @api.depends(
         "template_requires_ids",
@@ -138,7 +212,19 @@ class CxTowerJetTemplate(models.Model):
                 template.dependency_graph_image = False
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #   Actions
+    #   Odoo constraints
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    @api.constrains("action_create_id", "action_destroy_id")
+    def _check_action_create_destroy(self):
+        for template in self:
+            if not template.action_create_id or not template.action_destroy_id:
+                raise ValidationError(
+                    _("The 'Create Jet' and 'Destroy Jet' actions must be set.")
+                )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     def action_install_on_servers(self):
@@ -166,80 +252,119 @@ class CxTowerJetTemplate(models.Model):
         if not server:
             raise ValidationError(_("No server selected"))
 
+    def action_open_command_logs(self):
+        """
+        Open current server command log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_command_log"
+        )
+        action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
+        return action
+
+    def action_open_plan_logs(self):
+        """
+        Open current server flightplan log records
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan_log"
+        )
+        action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
+        return action
+
     def action_test(self):
         """Test button"""
         self.ensure_one()
 
-        # dependencies = self._get_all_dependencies()
-        # dependents = self._get_all_depend_on_this()
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Jet Actions
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-        # print(f"Template: {self.name}")
-        # print(f"Depends on {len(dependencies)} templates:")
-        # for template in dependencies:
-        #     print(f"  - {template.name}")
+    def _get_action_path(self, state_from=None, state_to=None):
+        """Return the order of actions that lead from one state to another.
+        If the initial state is not provided, must start with "Create Action".
+        If the final state is not provided, must end with "Destroy Action".
 
-        # print(f"Required by {len(dependents)} templates:")
-        # for template in dependents:
-        #     print(f"  - {template.name}")
+        Args:
+            state_from (cx.tower.jet.state()): State to start from
+            state_to (cx.tower.jet.state()): State to end at
 
-    def _compose_message_actions(self):
-        """Compose the warning message for the actions."""
+        Returns:
+            list: List of actions that lead from one state to another
+        """
         self.ensure_one()
-        message = ""
 
-        # Find actions without states
-        initial_actions = final_actions = self.env["cx.tower.jet.action"]
+        original_state_to = state_to
+        path = []
+
+        create_action = self.action_create_id if self.action_create_id else False
+        destroy_action = self.action_destroy_id if self.action_destroy_id else False
+
+        if not state_from:
+            if not create_action:
+                return []
+            path.append(create_action)
+            state_from = create_action.state_to_id
+
+        if not state_to:
+            if not destroy_action:
+                return []
+            state_to = destroy_action.state_from_id
+
+        if state_from == state_to:
+            if not original_state_to and destroy_action:
+                return path + [destroy_action]
+            return path
+
+        adjacency = self._get_action_adjacency()
+        state_path = self._find_action_path_bfs(state_from, state_to, adjacency)
+        if state_path is not None:
+            result_path = path + state_path
+            if not original_state_to and destroy_action:
+                result_path.append(destroy_action)
+            return result_path
+
+        if (
+            not original_state_to
+            and destroy_action
+            and state_from == destroy_action.state_from_id
+        ):
+            return path + [destroy_action]
+
+        return []
+
+    def _get_action_adjacency(self):
+        """Build adjacency list for state transitions."""
+        adjacency = {}
         for action in self.action_ids:
-            if not action.state_from_id and action.state_to_id:
-                initial_actions |= action
-            if not action.state_to_id and action.state_from_id:
-                final_actions |= action
+            if action.state_from_id and action.state_to_id:
+                if action.state_from_id not in adjacency:
+                    adjacency[action.state_from_id] = []
+                adjacency[action.state_from_id].append((action.state_to_id, action))
+        return adjacency
 
-        # Parse the initial actions
-        if not initial_actions:
-            message = _(
-                "You need to define at least one initial action "
-                "with the empty 'From State'."
-            )
-        else:
-            # Get the name of the first initial action
-            # (which will be used as default)
-            default_action = initial_actions[0]
-            message = _(
-                "Default initial action is '%(action_name)s'.",
-                action_name=default_action.name,
-            )
+    def _find_action_path_bfs(self, state_from, state_to, adjacency):
+        """Find the shortest path of actions from state_from to state_to
+        using BFS.
 
-            # If there are multiple initial actions, add an additional message
-            if len(initial_actions) > 1:
-                message += _(
-                    "The first action with an empty 'From State' "
-                    "is used as the initial action."
-                )
-
-        # Parse the final actions
-        if not final_actions:
-            message += "\n" + _(
-                "You need to define at least one final action "
-                "with the empty 'To State'."
-            )
-        else:
-            # Get the name of the first initial action
-            # (which will be used as default)
-            default_action = final_actions[0]
-            message += "\n" + _(
-                "Default final action is '%(action_name)s'.",
-                action_name=default_action.name,
-            )
-
-            # If there are multiple initial actions,
-            # add an additional message
-            if len(final_actions) > 1:
-                message += _(
-                    "The first action with an empty 'To State' "
-                    "is used as the final action."
-                )
-        return message
+        Args:
+            state_from (cx.tower.jet.state()): State to start from
+            state_to (cx.tower.jet.state()): State to end at
+            adjacency (dict): Adjacency list for state transitions
+        """
+        queue = [(state_from, [])]
+        visited = {state_from}
+        while queue:
+            current_state, state_path = queue.pop(0)
+            if current_state not in adjacency:
+                continue
+            for next_state, action in adjacency[current_state]:
+                if next_state == state_to:
+                    return state_path + [action]
+                if next_state not in visited:
+                    visited.add(next_state)
+                    queue.append((next_state, state_path + [action]))
+        return None
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Install/Uninstall
@@ -261,6 +386,14 @@ class CxTowerJetTemplate(models.Model):
         for server in servers:
             # Check all templates that this one depends on
             # are installed on the server
+            if server.id in self.server_ids.ids:
+                _logger.info(
+                    "Template '%s' is already installed on the server '%s'",
+                    self.name,  # pylint: disable=no-member
+                    server.name,
+                )
+                continue
+
             template_install_obj.install(
                 template=self,
                 server=server,
@@ -353,12 +486,6 @@ class CxTowerJetTemplate(models.Model):
                     else None,
                     "required_state_name": dependency.state_required_id.name
                     if dependency.state_required_id
-                    else None,
-                    "current_state_id": dependency.state_id.id
-                    if dependency.state_id
-                    else None,
-                    "current_state_name": dependency.state_id.name
-                    if dependency.state_id
                     else None,
                 }
 
