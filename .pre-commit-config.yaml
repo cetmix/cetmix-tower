@@ -91,6 +91,7 @@ repos:
         additional_dependencies:
           - "eslint@7.8.1"
           - "eslint-plugin-jsdoc@"
+          - "globals@"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:
