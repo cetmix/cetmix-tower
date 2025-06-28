@@ -1,7 +1,8 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class ProductAttributeValue(models.Model):
@@ -33,6 +34,7 @@ class ProductAttributeValue(models.Model):
     is_from_tower = fields.Boolean(
         compute="_compute_is_from_tower",
         store=True,
+        readonly=True,
         help="True if this attribute value comes from Tower variables",
     )
 
@@ -60,18 +62,54 @@ class ProductAttributeValue(models.Model):
 
         return self.name
 
-    def action_open_tower_record(self):
-        """Open the related Tower record"""
-        self.ensure_one()
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Prevent manual creation of values for attributes linked to Tower."""
 
-        if self.tower_option_id:
-            return {
-                "type": "ir.actions.act_window",
-                "name": "Tower Variable Option",
-                "res_model": "cx.tower.variable.option",
-                "res_id": self.tower_option_id.id,
-                "view_mode": "form",
-                "target": "current",
+        attribute_ids = {v["attribute_id"] for v in vals_list if "attribute_id" in v}
+        if attribute_ids:
+            attributes = self.env["product.attribute"].browse(attribute_ids)
+            # Create a lookup dict for faster access
+            tower_linked_attrs = {
+                attr.id: attr.tower_variable_id
+                for attr in attributes
+                if attr.tower_variable_id
             }
+        else:
+            tower_linked_attrs = {}
 
-        # No linked Tower record for string values anymore
+        for vals in vals_list:
+            if vals.get("tower_option_id"):
+                continue
+
+            attribute_id = vals.get("attribute_id")
+            if not attribute_id:
+                continue
+
+            if attribute_id in tower_linked_attrs:
+                raise UserError(
+                    _(
+                        "Cannot create attribute values for Tower-linked attributes. "
+                        "Please add the option '%(option_name)s' in Cetmix Tower "
+                        "instead.",
+                        option_name=vals.get("name", "Unknown"),
+                    )
+                )
+
+        return super().create(vals_list)
+
+    def unlink(self):
+        """Prevent manual deletion of values originating from Tower."""
+
+        for record in self:
+            if record.tower_option_id or record.attribute_id.tower_variable_id:
+                raise UserError(
+                    _(
+                        "Cannot delete attribute value '%(value_name)s' that is "
+                        "synchronised with Cetmix Tower. Remove the corresponding "
+                        "option in Cetmix Tower to delete it here.",
+                        value_name=record.name,
+                    )
+                )
+
+        return super().unlink()

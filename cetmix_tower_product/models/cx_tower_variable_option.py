@@ -11,27 +11,29 @@ class TowerVariableOption(models.Model):
     def create(self, vals_list):
         """Override create to trigger auto-sync when new options are created"""
         records = super().create(vals_list)
-        for record in records:
-            record._trigger_product_attribute_autosync()
+
+        # Optimization: batch sync triggers instead of calling per-record
+        # Aggregate all variables from the created records
+        variables = {rec.variable_id for rec in records if rec.variable_id}
+        if variables:
+            # Batch trigger sync for all affected variables at once
+            self._batch_trigger_product_attribute_autosync(variables)
+
         return records
 
-    # No need to override `unlink`: when a Tower option is deleted PostgreSQL
-    # cascades the removal of related `product.attribute.value` thanks to the
-    # `ondelete="cascade"` on `tower_option_id`.
+    def _batch_trigger_product_attribute_autosync(self, variables):
+        """Batch trigger auto-sync for multiple variables to avoid N+1 queries"""
+        if not variables:
+            return
 
-    def _trigger_product_attribute_autosync(self):
-        """Trigger auto-sync for product attributes linked to this option's variable"""
-        for record in self:
-            if record.variable_id:
-                # Find all product attributes linked to this variable
-                # with auto_sync enabled
-                attributes = self.env["product.attribute"].search(
-                    [
-                        ("tower_variable_id", "=", record.variable_id.id),
-                        ("auto_sync_tower_values", "=", True),
-                    ]
-                )
+        # Find all product attributes linked to these variables with auto_sync enabled
+        attributes = self.env["product.attribute"].search(
+            [
+                ("tower_variable_id", "in", [var.id for var in variables]),
+                ("auto_sync_tower_values", "=", True),
+            ]
+        )
 
-                # Trigger sync for each attribute
-                for attribute in attributes:
-                    attribute._sync_tower_options()
+        # Trigger sync once per attribute (batched approach)
+        for attribute in attributes:
+            attribute._sync_tower_options()

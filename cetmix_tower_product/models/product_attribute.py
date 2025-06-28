@@ -30,11 +30,6 @@ class ProductAttribute(models.Model):
             raise ValidationError(_("No Tower Variable selected to sync from."))
         return self._sync_tower_options()
 
-    def _sync_tower_values(self):
-        """[REMOVED: Only sync options now]"""
-        # This method is no longer needed, kept for backward compatibility if called
-        return self._sync_tower_options()
-
     def _sync_tower_options(self):
         """Sync from Tower variable options - for option-type variables"""
         created_values = self.env["product.attribute.value"]
@@ -47,11 +42,6 @@ class ProductAttribute(models.Model):
         # Get all current Tower options for this variable
         current_tower_options = self.tower_variable_id.option_ids
 
-        # Since the relation has `ondelete="cascade"`, any attribute value
-        # linked to a deleted Tower option has already been removed by the
-        # database, so no explicit cleanup is needed here.
-
-        # Recalculate existing values after removal
         existing_names = set(remaining_attribute_values.mapped("name"))
         existing_tower_option_ids = set(
             remaining_attribute_values.mapped("tower_option_id").ids
