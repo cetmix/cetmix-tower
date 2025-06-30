@@ -113,6 +113,11 @@ msgid "Cetmix Tower Operating System"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key_value
+msgid "Cetmix Tower Secret Value Storage"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server
 msgid "Cetmix Tower Server"
 msgstr ""
@@ -599,6 +604,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
