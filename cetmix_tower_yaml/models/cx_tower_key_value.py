@@ -3,21 +3,16 @@
 from odoo import models
 
 
-class CxTowerServerLog(models.Model):
-    _name = "cx.tower.server.log"
+class CxTowerKeyValue(models.Model):
+    _name = "cx.tower.key.value"
     _inherit = [
-        "cx.tower.server.log",
+        "cx.tower.key.value",
         "cx.tower.yaml.mixin",
     ]
 
     def _get_fields_for_yaml(self):
         res = super()._get_fields_for_yaml()
         res += [
-            "name",
-            "log_type",
-            "command_id",
-            "use_sudo",
-            "file_template_id",
-            "file_id",
+            "key_id",
         ]
         return res

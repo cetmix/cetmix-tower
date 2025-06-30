@@ -279,11 +279,7 @@
                                         class="o_row"
                                         invisible="skip_host_key"
                                     >
-                                        <field
-                                            name="host_key"
-                                            placeholder="Host key"
-                                            required="not skip_host_key and id &gt; 0"
-                                        />
+                                        <field name="host_key" placeholder="Host key" />
                                         <button
                                             name="action_show_host_key"
                                             groups="cetmix_tower_server.group_manager"
