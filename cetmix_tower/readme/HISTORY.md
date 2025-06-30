@@ -1,3 +1,9 @@
+## 17.0.1.1.0 (2025-06-30)
+
+- Features: References for secret values. Export/import secret values related to Server. (4696)
+- Features: Make the "Host key" field non-required in the form view to improve the UX. (4699)
+
+
 ## 17.0.1.0.2 (2025-05-20)
 
 - Features: Option to preserve command splitting when using sudo. (4641)
