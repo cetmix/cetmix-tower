@@ -92,6 +92,7 @@ Here is an example of a python code command:
 <code style='white-space: pre-wrap'>
     server_name = server.name
     result = {"exit_code": 0, "message": "Server name is " + server_name}
+    custom_values["server_name"] = server_name
 </code>
 </p>
 <br>

@@ -208,6 +208,10 @@ class CxTowerPlan(models.Model):
                     - "plan_log": {values passed to flightplan logger}
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+                    - "variable_values", dict(): custom variable values
+                        in the format of `{variable_reference: variable_value}`
+                        eg `{'odoo_version': '16.0'}`
+                        Will be applied only if user has write access to the server.
 
         Returns:
             log_record (cx.tower.plan.log()): plan log record
@@ -379,7 +383,9 @@ class CxTowerPlan(models.Model):
         if action == "n" and plan_line_id:
             server = command_log.server_id
             if plan_line_id._is_executable_line(server):
-                plan_line_id._run(server, plan_log)
+                plan_line_id._run(
+                    server, plan_log, variable_values=plan_log.variable_values
+                )
             else:
                 plan_line_id._skip(server, plan_log)
 

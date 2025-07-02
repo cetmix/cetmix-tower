@@ -74,12 +74,19 @@ class CetmixTower(models.AbstractModel):
                 "message": response or error,
             }
 
-    def server_run_flight_plan(self, server_reference, flight_plan_reference, **kwargs):
+    def server_run_flight_plan(
+        self, server_reference, flight_plan_reference, **variable_values
+    ):
         """Run flight plan on selected server.
 
         Args:
             server_reference (Char): Server reference
             flight_plan_reference (Char): Flight plan reference
+
+        **variable_values:
+            Dict: with variable values.
+            The keys are the variable references and the values are the variable values.
+            eg `{'odoo_version': '16.0'}`
 
         Returns:
             cx.tower.plan.log(): flight plan log record or False if error
@@ -94,7 +101,10 @@ class CetmixTower(models.AbstractModel):
             # This is not the best way to handle this, but it's the only way to
             # avoid complex response handling
             return False
-        return server.run_flight_plan(flight_plan, **kwargs)
+        return server.run_flight_plan(
+            flight_plan,
+            **{"variable_values": variable_values} if variable_values else {},
+        )
 
     @api.model
     def server_set_variable_value(self, server_reference, variable_reference, value):
