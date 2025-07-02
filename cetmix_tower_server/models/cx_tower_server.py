@@ -857,7 +857,9 @@ class CxTowerServer(models.Model):
         # Prepare log object
         log_obj = self.env["cx.tower.command.log"]
         log_vals = kwargs.get("log", {})
-        log_vals.update({"use_sudo": sudo})
+        log_vals.update(
+            {"use_sudo": sudo, "variable_values": kwargs.get("variable_values", {})}
+        )
 
         # Check if no log record should be created
         no_command_log = self._context.get("no_command_log")
@@ -1050,6 +1052,10 @@ class CxTowerServer(models.Model):
                     - "plan_log": {values passed to flightplan logger}
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+                    - "variable_values", dict(): custom variable values
+                        in the format of `{variable_reference: variable_value}`
+                        eg `{'odoo_version': '16.0'}`
+                        Will be applied only if user has write access to the server.
         """
 
         self.ensure_one()
@@ -1381,6 +1387,7 @@ class CxTowerServer(models.Model):
                 status=result["status"],
                 response=result["response"],
                 error=result["error"],
+                variable_values=plan_log_record.variable_values,
             )
         else:
             return result
@@ -1421,6 +1428,7 @@ class CxTowerServer(models.Model):
                 status=result["status"],
                 response=result["response"],
                 error=result["error"],
+                variable_values=result["variable_values"],
             )
         else:
             return result
@@ -1562,7 +1570,9 @@ class CxTowerServer(models.Model):
             # Get the evaluation context for the python command
             eval_context = self.env[
                 "cx.tower.command"
-            ]._get_python_command_eval_context(server=self)
+            ]._get_python_command_eval_context(
+                server=self, variable_values=kwargs.get("variable_values", {})
+            )
 
             safe_eval(
                 code,
@@ -1570,6 +1580,7 @@ class CxTowerServer(models.Model):
                 mode="exec",
                 nocopy=True,
             )
+            kwargs["variable_values"] = eval_context.get("custom_values", {})
             result = eval_context.get("result")
             if result:
                 status = result.get("exit_code", 0)
@@ -1586,7 +1597,10 @@ class CxTowerServer(models.Model):
             else:
                 status = PYTHON_COMMAND_ERROR
                 error = [e]
-        return self._parse_command_results(status, response, error, secrets, **kwargs)
+
+        result = self._parse_command_results(status, response, error, secrets, **kwargs)
+        result["variable_values"] = kwargs.get("variable_values", {})
+        return result
 
     def _prepare_ssh_command(self, command_code, path=None, sudo=None, **kwargs):
         """Prepare ssh command

@@ -22,7 +22,7 @@ class TestTowerPlan(TestTowerCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        # Command
+        # Commands
         cls.command_run_flight_plan_1 = cls.Command.create(
             {
                 "name": "Run Flight Plan",
@@ -30,7 +30,28 @@ class TestTowerPlan(TestTowerCommon):
                 "flight_plan_id": cls.plan_1.id,
             }
         )
-
+        cls.command_python_custom_variable_values_1 = cls.Command.create(
+            {
+                "name": "Python command to set custom variable values",
+                "action": "python_code",
+                "code": """
+custom_values['test_path_'] = '/test_path'
+custom_values['test_dir'] = 'test_dir'
+custom_values['_my_value'] = 'Just To Test'
+""",
+            }
+        )
+        cls.command_python_custom_variable_values_2 = cls.Command.create(
+            {
+                "name": "Python command to update custom variable values",
+                "action": "python_code",
+                "code": f"""
+custom_values['test_path_'] = '/another_test_path'
+custom_values['random_var_reference'] = 'random_var_value'
+custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
+""",
+            }
+        )
         # Flight plan
         cls.plan_2 = cls.Plan.create(
             {
@@ -1612,3 +1633,368 @@ class TestTowerPlan(TestTowerCommon):
         # Launch the same plan on the same server
         plan_log = self.server_test_1.run_flight_plan(self.plan_1)
         self.assertEqual(plan_log.plan_status, 0)
+
+    def test_plan_custom_variables(self):
+        """Test plan with custom variables"""
+        command_python_1_id = self.command_python_custom_variable_values_1.id
+        command_python_2_id = self.command_python_custom_variable_values_2.id
+
+        plan = self._create_plan(
+            **{
+                "name": "Plan with custom variables",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_1_id,
+                            "sequence": 1,
+                        },
+                    ),
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 2}),
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_2_id,
+                            "sequence": 3,
+                        },
+                    ),
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 4}),
+                ],
+            }
+        )
+
+        # Run plan
+        plan_log = self.server_test_1.run_flight_plan(plan)
+
+        # Check that custom variable values were updated correctly
+        # (The log of plan should contain the last updatedvalues)
+        self.assertEqual(plan_log.variable_values["test_path_"], "/another_test_path")
+        self.assertEqual(plan_log.variable_values["test_dir"], "test_dir")
+        self.assertEqual(
+            plan_log.variable_values["random_var_reference"], "random_var_value"
+        )
+        self.assertEqual(plan_log.variable_values["_my_value"], "Just To Test")
+
+        command_logs = plan_log.command_log_ids
+        self.assertEqual(
+            len(command_logs),
+            len(plan.line_ids),
+            f"Should be {len(plan.line_ids)} command logs.",
+        )
+
+        # Check that custom variable values were created correctly
+        # in first python command log
+        command_python_command_1_log = command_logs.filtered(
+            lambda log: log.command_id.id == command_python_1_id
+        )
+        self.assertEqual(
+            command_python_command_1_log.variable_values["test_path_"], "/test_path"
+        )
+        self.assertEqual(
+            command_python_command_1_log.variable_values["test_dir"], "test_dir"
+        )
+        self.assertEqual(
+            command_python_command_1_log.variable_values["_my_value"], "Just To Test"
+        )
+
+        # Check that custom variable values used in rendered command code
+        command_create_dir_logs = command_logs.filtered(
+            lambda log: log.command_id == self.command_create_dir
+        )
+        first_command_create_dir_log = command_create_dir_logs[0]
+        second_command_create_dir_log = command_create_dir_logs[1]
+
+        # the first_command_create_dir_log.code is equal to
+        # 'cd /test_path && mkdir test_dir'
+        # because rendered code contains custom variable values updated
+        # from first python command
+        self.assertEqual(
+            first_command_create_dir_log.code, "cd /test_path && mkdir test_dir"
+        )
+
+        # Check that custom variable values were updated correctly in command logs
+        command_python_command_2_log = command_logs.filtered(
+            lambda log: log.command_id.id == command_python_2_id
+        )
+        self.assertEqual(
+            command_python_command_2_log.variable_values["test_path_"],
+            "/another_test_path",
+        )
+        self.assertEqual(
+            command_python_command_2_log.variable_values["test_dir"], "test_dir"
+        )
+        self.assertEqual(
+            command_python_command_2_log.variable_values["random_var_reference"],
+            "random_var_value",
+        )
+        self.assertEqual(
+            command_python_command_2_log.variable_values["_my_value"], "Just To Test"
+        )
+        self.assertEqual(
+            command_python_command_2_log.variable_values[self.variable_url.reference],
+            "https://www.cetmix.com",
+        )
+
+        # the second_command_create_dir_log.code is equal to
+        # 'cd /another_test_path && mkdir test_dir'
+        # because rendered code contains custom variable values updated
+        # from second python command
+        self.assertEqual(
+            second_command_create_dir_log.code,
+            "cd /another_test_path && mkdir test_dir",
+        )
+
+    def test_plan_custom_variables_wizard(self):
+        """Test plan with custom variables from wizard"""
+        command_python_1_id = self.command_python_custom_variable_values_1.id
+        command_python_2_id = self.command_python_custom_variable_values_2.id
+        plan = self._create_plan(
+            **{
+                "name": "Plan with custom variables",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_1_id,
+                            "sequence": 1,
+                        },
+                    ),
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 2}),
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_2_id,
+                            "sequence": 3,
+                        },
+                    ),
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 4}),
+                ],
+            }
+        )
+
+        # Create wizard with custom variable values
+        wizard = self.env["cx.tower.plan.run.wizard"].create(
+            {
+                "plan_id": plan.id,
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+                "custom_variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_version.id,
+                            "value_char": "16.0",
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Run wizard
+        action = wizard.run_flight_plan()
+        plan_log = self.PlanLog.search(
+            [("label", "=", action["context"]["search_default_label"])],
+            limit=1,
+        )
+        self.assertTrue(plan_log, "Plan log should be created")
+
+        # Check that custom variable values were updated correctly
+        # (The log of plan should contain the last updated
+        # values + custom variable value from wizard)
+        self.assertEqual(plan_log.variable_values["test_path_"], "/another_test_path")
+        self.assertEqual(plan_log.variable_values["test_dir"], "test_dir")
+        self.assertEqual(
+            plan_log.variable_values["random_var_reference"], "random_var_value"
+        )
+        self.assertEqual(plan_log.variable_values["_my_value"], "Just To Test")
+        self.assertEqual(
+            plan_log.variable_values[self.variable_version.reference], "16.0"
+        )
+
+    def test_plan_with_another_plan_custom_variables(self):
+        """Test plan with another plan with custom variables"""
+        # Create plan with next structure:
+        # Plan 1:
+        # - Command 1: Run plan 2
+        # - Command 2: Run Python command to set custom variable values
+        # - Command 3: Create directory
+        # Plan 2:
+        # - Command 1: Python command to set custom variable values
+        # - Command 2: Create directory
+        # - Command 3: Python command to update custom variable values
+
+        command_python_1_id = self.command_python_custom_variable_values_1.id
+        command_python_2_id = self.command_python_custom_variable_values_2.id
+        plan2 = self._create_plan(
+            **{
+                "name": "Plan 2",
+                "line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_1_id,
+                            "sequence": 1,
+                        },
+                    ),
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 2}),
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_2_id,
+                            "sequence": 3,
+                        },
+                    ),
+                ],
+            }
+        )
+
+        command_run_plan_2 = self.Command.create(
+            {
+                "name": "Run Flight Plan",
+                "action": "plan",
+                "flight_plan_id": plan2.id,
+            }
+        )
+        command_python_custom_variable_values_3 = self.Command.create(
+            {
+                "name": "Python command to update custom variable values",
+                "action": "python_code",
+                "code": """
+custom_values['random_var_reference'] = 'another_random_var_value'
+""",
+            }
+        )
+
+        plan1 = self._create_plan(
+            **{
+                "name": "Plan 1",
+                "line_ids": [
+                    (0, 0, {"command_id": command_run_plan_2.id, "sequence": 1}),
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": command_python_custom_variable_values_3.id,
+                            "sequence": 2,
+                        },
+                    ),
+                    (0, 0, {"command_id": self.command_create_dir.id, "sequence": 3}),
+                ],
+            }
+        )
+
+        # Create wizard with custom variable values
+        wizard = self.env["cx.tower.plan.run.wizard"].create(
+            {
+                "plan_id": plan1.id,
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+                "custom_variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_version.id,
+                            "value_char": "16.0",
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_url.id,
+                            "value_char": "https://www.test.com",
+                        },
+                    ),
+                ],
+            }
+        )
+
+        # Run wizard
+        action = wizard.run_flight_plan()
+        plan_log = self.PlanLog.search(
+            [("label", "=", action["context"]["search_default_label"])],
+            limit=1,
+        )
+        self.assertTrue(plan_log, "Plan log should be created")
+
+        command_logs = plan_log.command_log_ids
+        self.assertEqual(
+            len(command_logs),
+            len(plan1.line_ids),
+            f"Should be {len(plan1.line_ids)} command logs.",
+        )
+
+        # First command log is run plan 2 log that contains custom variable values
+        # updated from plan 2. This command log should contain the same custom
+        # variable values as from plan 2 log
+        run_plan2_command_log = command_logs[0]
+        run_plan2_command_log_variable_values = run_plan2_command_log.variable_values
+
+        plan2_log = run_plan2_command_log.triggered_plan_log_id
+        plan2_log_variable_values = plan2_log.variable_values
+
+        # check that variable values are the same
+        self.assertEqual(
+            run_plan2_command_log_variable_values, plan2_log_variable_values
+        )
+
+        # Before finished command (run child plan): we have next variable values:
+        # {'test_version': '16.0', 'test_url': 'https://www.test.com'}
+
+        # After finished command (run child plan): we have next variable values:
+        # {
+        #     'test_version': '16.0',
+        #     'test_url': 'https://www.cetmix.com',
+        #     'test_path_': '/another_test_path',
+        #     'test_dir': 'test_dir',
+        #     '_my_value': 'Just To Test',
+        #     'random_var_reference': 'random_var_value'
+        # }
+        self.assertEqual(
+            run_plan2_command_log_variable_values["test_path_"], "/another_test_path"
+        )
+        self.assertEqual(run_plan2_command_log_variable_values["test_dir"], "test_dir")
+        self.assertEqual(
+            run_plan2_command_log_variable_values["_my_value"], "Just To Test"
+        )
+        self.assertEqual(
+            run_plan2_command_log_variable_values["random_var_reference"],
+            "random_var_value",
+        )
+        self.assertEqual(
+            run_plan2_command_log_variable_values[self.variable_version.reference],
+            "16.0",
+        )
+        self.assertEqual(
+            run_plan2_command_log_variable_values[self.variable_url.reference],
+            "https://www.cetmix.com",
+        )
+
+        # After finished main plan: we have next variable values:
+        # {
+        #     'test_version': '16.0',
+        #     'test_url': 'https://www.cetmix.com',
+        #     'test_path_': '/another_test_path',
+        #     'test_dir': 'test_dir',
+        #     '_my_value': 'Just To Test',
+        #     'random_var_reference': 'another_random_var_value'
+        # }
+        self.assertEqual(plan_log.variable_values["test_path_"], "/another_test_path")
+        self.assertEqual(plan_log.variable_values["test_dir"], "test_dir")
+        self.assertEqual(plan_log.variable_values["_my_value"], "Just To Test")
+        self.assertEqual(
+            plan_log.variable_values["random_var_reference"], "another_random_var_value"
+        )
+        self.assertEqual(
+            plan_log.variable_values[self.variable_version.reference], "16.0"
+        )
+        self.assertEqual(
+            plan_log.variable_values[self.variable_url.reference],
+            "https://www.cetmix.com",
+        )
