@@ -57,6 +57,10 @@ class CxTowerPlanRunWizard(models.TransientModel):
         compute="_compute_show_servers",
         store=True,
     )
+    custom_variable_value_ids = fields.One2many(
+        "cx.tower.plan.run.wizard.variable.value",
+        "wizard_id",
+    )
 
     @api.model
     def default_get(self, fields_list):
@@ -104,7 +108,14 @@ class CxTowerPlanRunWizard(models.TransientModel):
             # Generate custom label. Will be used later to locate the command log
             plan_label = generate_random_id(4)
             # Add custom values for log
-            custom_values = {"plan_log": {"label": plan_label}}
+            variable_values = {
+                value.variable_id.reference: value.value_char
+                for value in self.custom_variable_value_ids
+            }
+            custom_values = {
+                "plan_log": {"label": plan_label},
+                "variable_values": variable_values,
+            }
             for server in self.server_ids:
                 server.run_flight_plan(self.plan_id, **custom_values)
             return {
@@ -121,3 +132,23 @@ class CxTowerPlanRunWizard(models.TransientModel):
         return self.env.user.has_group(
             "cetmix_tower_server.group_manager"
         ) or self.env.user.has_group("cetmix_tower_server.group_root")
+
+
+class CxTowerPlanRunWizardVariableValue(models.TransientModel):
+    """
+    Custom variable values for flight plan run wizard
+    """
+
+    _inherit = "cx.tower.custom.variable.value.mixin"
+    _name = "cx.tower.plan.run.wizard.variable.value"
+    _description = "Custom variable values for plan run wizard"
+
+    wizard_id = fields.Many2one(
+        "cx.tower.plan.run.wizard",
+        string="Wizard",
+    )
+    # Override from mixin to make variable_id editable
+    variable_id = fields.Many2one(
+        "cx.tower.variable",
+        readonly=False,
+    )

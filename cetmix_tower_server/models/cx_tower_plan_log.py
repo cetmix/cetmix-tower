@@ -81,6 +81,10 @@ class CxTowerPlanLog(models.Model):
         ondelete="set null",
         help="Scheduled task that triggered this flight plan",
     )
+    variable_values = fields.Json(
+        default={},
+        help="Custom variable values passed to the flight plan",
+    )
 
     @api.depends("server_id.name", "name")
     def _compute_name(self):
@@ -138,6 +142,10 @@ class CxTowerPlanLog(models.Model):
                 - "key": {values passed to key parser}
                 - "no_command_log" (bool): If True, no logs will be recorded for
                                    non-executable lines.
+                - "variable_values", dict(): custom variable values
+                    in the format of `{variable_reference: variable_value}`
+                    eg `{'odoo_version': '16.0'}`
+                    Will be applied only if user has write access to the server.
         Returns:
             cx.tower.plan.log(): New flightplan log record.
         """
@@ -160,6 +168,11 @@ class CxTowerPlanLog(models.Model):
         plan_log_kwargs = kwargs.get("plan_log")
         if plan_log_kwargs:
             vals.update(plan_log_kwargs)
+
+        # Extract and apply variable values
+        variable_values = kwargs.get("variable_values")
+        if variable_values:
+            vals["variable_values"] = variable_values
 
         plan_log = self.sudo().create(vals)
 
@@ -269,5 +282,9 @@ class CxTowerPlanLog(models.Model):
 
         """
         self.ensure_one()
+
+        # Update plan log variable values from command log
+        self.variable_values = command_log.variable_values
+
         # Get next line to execute
         self.plan_id._run_next_action(command_log)  # type: ignore
