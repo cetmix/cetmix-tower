@@ -125,6 +125,7 @@ class CxTowerFile(models.Model):
         required=True,
     )
     file = fields.Binary(
+        string="Binary Content",
         attachment=True,
     )
     variable_ids = fields.Many2many(
@@ -199,6 +200,14 @@ class CxTowerFile(models.Model):
         """
         for file in self:
             if not file.server_id:
+                file.update(
+                    {
+                        "rendered_name": False,
+                        "rendered_server_dir": False,
+                        "rendered_code": False,
+                        "full_server_path": False,
+                    }
+                )
                 continue
             variables = list(
                 set(
