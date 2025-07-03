@@ -30,7 +30,7 @@
                             <field name="plan_id" />
                             <field
                                 name="scheduled_task_id"
-                                attrs="{'invisible': [('scheduled_task_id', '=', False)]}"
+                                invisible="not scheduled_task_id"
                             />
                             <field
                                 name="parent_flight_plan_log_id"
