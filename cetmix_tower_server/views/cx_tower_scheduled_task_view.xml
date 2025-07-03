@@ -29,7 +29,7 @@
                         string="Run Manually"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': [('is_running', '=', True)]}"
+                        invisible="is_running"
                         groups="cetmix_tower_server.group_manager"
                     />
                 </header>
@@ -38,20 +38,20 @@
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <widget
                         name="web_ribbon"
                         title="Running"
                         bg_color="bg-info"
-                        attrs="{'invisible': [('is_running', '=', False)]}"
+                        invisible="not is_running"
                     />
                     <div class="oe_button_box" name="button_box">
                         <button
                             name="action_open_command_logs"
                             type="object"
                             string="Command Logs"
-                            attrs="{'invisible': [('action', '!=', 'command')]}"
+                            invisible="action != 'command'"
                             class="oe_stat_button"
                             icon="fa-bars"
                         />
@@ -59,7 +59,7 @@
                             name="action_open_plan_logs"
                             type="object"
                             string="Flight Plan Logs"
-                            attrs="{'invisible': [('action', '!=', 'plan')]}"
+                            invisible="action != 'plan'"
                             class="oe_stat_button"
                             icon="fa-bars"
                         />
@@ -67,7 +67,7 @@
                     <div
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('warning_message', '=', False)]}"
+                        invisible="not warning_message"
                     >
                         <p>
                             <i
@@ -87,14 +87,8 @@
                             <field name="active" />
                             <field name="sequence" />
                             <field name="action" />
-                            <field
-                                name="command_id"
-                                attrs="{'invisible': [('action', '!=', 'command')]}"
-                            />
-                            <field
-                                name="plan_id"
-                                attrs="{'invisible': [('action', '!=', 'plan')]}"
-                            />
+                            <field name="command_id" invisible="action != 'command'" />
+                            <field name="plan_id" invisible="action != 'plan'" />
                             <field name="is_running" invisible="1" />
                         </group>
                         <group name="schedule">
@@ -103,7 +97,7 @@
                             <field
                                 name="last_call"
                                 readonly="1"
-                                attrs="{'invisible': [('is_running', '=', True)]}"
+                                invisible="is_running"
                             />
                             <field name="next_call" />
                         </group>
@@ -120,7 +114,7 @@
                         <page
                             name="configuration_values"
                             string="Configuration Values"
-                            attrs="{'invisible': [('custom_variable_value_ids', '=', False)]}"
+                            invisible="not custom_variable_value_ids"
                         >
                             <field name="custom_variable_value_ids">
                                 <tree editable="bottom">
@@ -128,11 +122,11 @@
                                     <field name="variable_type" invisible="1" />
                                     <field
                                         name="value_char"
-                                        attrs="{'readonly': [('variable_type', '!=', 's')]}"
+                                        readonly="variable_type != 's'"
                                     />
                                     <field
                                         name="option_id"
-                                        attrs="{'readonly': [('variable_type', '!=', 'o')]}"
+                                        readonly="variable_type != 'o'"
                                         options="{'no_create': True}"
                                     />
                                 </tree>
