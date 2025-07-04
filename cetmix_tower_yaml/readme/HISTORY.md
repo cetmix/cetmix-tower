@@ -1,3 +1,8 @@
+## 17.0.1.1.1 (2025-07-04)
+
+- Features: Export/import scheduled tasks to/from YAML. (4650)
+
+
 ## 17.0.1.1.0 (2025-06-30)
 
 - Features: Export/import secret values related to Server. (4696)

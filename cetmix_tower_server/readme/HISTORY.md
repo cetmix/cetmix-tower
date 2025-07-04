@@ -1,3 +1,8 @@
+## 17.0.1.1.2 (2025-07-04)
+
+- Features: Run commands and flight plans using scheduled tasks. (4650)
+
+
 ## 17.0.1.1.1 (2025-07-03)
 
 - Bugfixes: Error when rendering a file not attached to a server. (4715)
