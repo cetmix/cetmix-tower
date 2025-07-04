@@ -1,3 +1,8 @@
+## 17.0.1.1.3 (2025-07-04)
+
+- Bugfixes: Host key cannot be retrieved from the UI. (4747)
+
+
 ## 17.0.1.1.2 (2025-07-04)
 
 - Features: Run commands and flight plans using scheduled tasks. (4650)
