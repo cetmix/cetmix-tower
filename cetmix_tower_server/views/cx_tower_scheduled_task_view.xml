@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_cx_tower_scheduled_task_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.scheduled.task.view.tree</field>
+        <field name="model">cx.tower.scheduled.task</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="is_running == True" decoration-muted="not active">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="action" />
+                <field name="active" optional="hide" />
+                <field name="is_running" optional="hide" />
+                <field name="next_call" optional="hide" />
+                <field name="last_call" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_cx_tower_scheduled_task_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.scheduled.task.view.form</field>
+        <field name="model">cx.tower.scheduled.task</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_run"
+                        string="Run Manually"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="is_running"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                </header>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Running"
+                        bg_color="bg-info"
+                        invisible="not is_running"
+                    />
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Command Logs"
+                            invisible="action != 'command'"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Flight Plan Logs"
+                            invisible="action != 'plan'"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
+                    </div>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="not warning_message"
+                    >
+                        <p>
+                            <i
+                                class="fa fa-info-circle"
+                                role="img"
+                                aria-label="Info"
+                                title="Info"
+                            />
+                            <span>&amp;nbsp;</span>
+                            <field name="warning_message" class="text-center" />
+                        </p>
+                    </div>
+                    <group name="main">
+                        <group name="info">
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="active" />
+                            <field name="sequence" />
+                            <field name="action" />
+                            <field name="command_id" invisible="action != 'command'" />
+                            <field name="plan_id" invisible="action != 'plan'" />
+                            <field name="is_running" invisible="1" />
+                        </group>
+                        <group name="schedule">
+                            <field name="interval_number" />
+                            <field name="interval_type" />
+                            <field
+                                name="last_call"
+                                readonly="1"
+                                invisible="is_running"
+                            />
+                            <field name="next_call" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="servers" string="Servers">
+                            <field name="server_ids">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="reference" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page
+                            name="configuration_values"
+                            string="Configuration Values"
+                            invisible="not custom_variable_value_ids"
+                        >
+                            <field name="custom_variable_value_ids">
+                                <tree editable="bottom">
+                                    <field name="variable_id" />
+                                    <field name="variable_type" invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        readonly="variable_type != 's'"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        readonly="variable_type != 'o'"
+                                        options="{'no_create': True}"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="access" string="Access">
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_scheduled_task_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.scheduled.task.search</field>
+        <field name="model">cx.tower.scheduled.task</field>
+        <field name="arch" type="xml">
+            <search string="Search Scheduled Tasks">
+                <field name="command_id" />
+                <field name="plan_id" />
+                <field name="server_ids" />
+                <filter
+                    string="All"
+                    name="all"
+                    domain="['|', ('active', '=', True), ('active', '=', False)]"
+                />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Command"
+                    name="command"
+                    domain="[('action', '=', 'command')]"
+                />
+                <filter
+                    string="Flight plan"
+                    name="plan"
+                    domain="[('action', '=', 'plan')]"
+                />
+                <filter
+                    string="Running"
+                    name="running"
+                    domain="[('is_running', '=', True)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Action"
+                        name="group_by_action"
+                        domain="[]"
+                        context="{'group_by': 'action'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_scheduled_task" model="ir.actions.act_window">
+        <field name="name">Scheduled Tasks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.scheduled.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cx_tower_scheduled_task_search_view" />
+        <field name="context">{'search_default_all': 1}</field>
+    </record>
+
+</odoo>

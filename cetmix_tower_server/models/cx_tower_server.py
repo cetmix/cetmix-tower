@@ -234,6 +234,15 @@ class CxTowerServer(models.Model):
         string="Shortcuts",
     )
 
+    # ---- Scheduled Tasks
+    scheduled_task_ids = fields.Many2many(
+        comodel_name="cx.tower.scheduled.task",
+        relation="cx_tower_scheduled_task_server_rel",
+        column1="server_id",
+        column2="scheduled_task_id",
+        string="Scheduled Tasks",
+    )
+
     def _selection_status(self):
         """
         Status selection options

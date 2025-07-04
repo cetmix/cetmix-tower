@@ -271,6 +271,10 @@ class TestTowerCommon(BaseCommon):
         cls.OS = cls.env["cx.tower.os"]
         cls.PlanLineAction = cls.env["cx.tower.plan.line.action"]
 
+        # Scheduled task
+        cls.ScheduledTask = cls.env["cx.tower.scheduled.task"]
+        cls.ScheduledTaskCv = cls.env["cx.tower.scheduled.task.cv"]
+
         # apply ssh connection patches
         cls.apply_patches()
 

@@ -51,6 +51,10 @@
                                 name="triggered_plan_log_id"
                                 invisible="not triggered_plan_log_id"
                             />
+                            <field
+                                name="scheduled_task_id"
+                                invisible="not scheduled_task_id"
+                            />
                         </group>
                         <group>
                             <field name="label" invisible="not label" />
