@@ -10,7 +10,7 @@ class CxTowerCommandLog(models.Model):
 
     _name = "cx.tower.command.log"
     _description = "Cetmix Tower Command Log"
-    _order = "id asc"
+    _order = "start_date desc, id desc"
 
     active = fields.Boolean(default=True)
     name = fields.Char(compute="_compute_name", store=True)
