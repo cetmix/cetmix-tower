@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-06-15 10:12+0200\n"
+"PO-Revision-Date: 2025-07-06 08:37+0200\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-"
 "server-14-0-dev/cetmix_tower_yaml/it/>\n"
@@ -128,6 +128,11 @@ msgstr "Deposito chiave/segreto Cetmix Tower"
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_os
 msgid "Cetmix Tower Operating System"
 msgstr "Sistema operativo Cetmix Tower"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key_value
+msgid "Cetmix Tower Secret Value Storage"
+msgstr "Deposito segreto Cetmix Tower"
 
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_server
@@ -282,6 +287,7 @@ msgstr "Esplodi record figli"
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_scheduled_task_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_server_template_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_shortcut_export_yaml
@@ -294,6 +300,7 @@ msgstr "Esplodi record figli"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.view_cx_tower_scheduled_task_view_form
 msgid "Export YAML"
 msgstr "Esporta YAML"
 
@@ -512,6 +519,12 @@ msgstr ""
 "YAML esportato."
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_scheduled_task
+#, fuzzy
+msgid "Scheduled Task"
+msgstr "Lavoro schedulato"
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
 msgid "Secret List"
 msgstr "Elenco segreto"
@@ -584,6 +597,7 @@ msgstr "Valore errato per 'access_level' key: %(acv)s"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.view_cx_tower_scheduled_task_view_form
 msgid "YAML"
 msgstr "YAML"
 
@@ -631,10 +645,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
@@ -682,6 +698,7 @@ msgstr "Non si è autorizzati a creare record da YAML"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.view_cx_tower_scheduled_task_view_form
 msgid ""
 "You must be a member of the \"YAML/Export\" group to export data as YAML."
 msgstr ""
