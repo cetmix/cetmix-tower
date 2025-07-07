@@ -1,3 +1,8 @@
+## 16.0.1.1.4 (2025-07-07)
+
+- Bugfixes: Command log sorting (4816)
+
+
 ## 16.0.1.1.2 (2025-06-25)
 
 - Features: Required variables in servers (4779)
