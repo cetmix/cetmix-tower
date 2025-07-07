@@ -1,3 +1,7 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+
 import base64
 
 import yaml
@@ -599,4 +603,67 @@ records:
         # Check tag
         self.assertTrue(
             self.Tag.get_by_reference("such_much_tag"), "Tag must be created"
+        )
+
+    def test_yaml_import_server_without_password(self):
+        """Wizard should import server without ssh_password."""
+        yaml_code = (
+            "cetmix_tower_yaml_version: 1\n"
+            "records:\n"
+            "- reference: srv_nopass\n"
+            "  cetmix_tower_model: server\n"
+            "  name: YAML NoPass\n"
+            "  ssh_auth_mode: p\n"
+            "  ssh_username: root\n"
+            "  ip_v4_address: 10.0.0.3\n"
+        )
+        wiz = self.env["cx.tower.yaml.import.wiz"].create(
+            {
+                "yaml_code": yaml_code,
+                "if_record_exists": "create",
+            }
+        )
+        wiz.action_import_yaml()
+
+        srv = self.env["cx.tower.server"].get_by_reference("srv_nopass")
+        self.assertTrue(srv, "Server was not created")
+        self.assertFalse(srv.ssh_password, "ssh_password must stay empty after import")
+
+    def test_orm_create_server_requires_password(self):
+        """Creating a server via ORM/UI must fail when ssh_password is missing."""
+        with self.assertRaises(ValidationError) as err:
+            self.env["cx.tower.server"].create(
+                {
+                    "reference": "srv_ui",
+                    "name": "UI NoPass",
+                    "ssh_auth_mode": "p",
+                    "ssh_username": "root",
+                    "ip_v4_address": "10.0.0.2",
+                }
+            )
+        self.assertIn("Please provide SSH password", str(err.exception))
+
+    def test_yaml_import_server_with_skip_ssh_check(self):
+        """Explicit skip_ssh_settings_check also bypasses password validation."""
+        yaml_code = (
+            "cetmix_tower_yaml_version: 1\n"
+            "records:\n"
+            "- reference: srv_skip\n"
+            "  cetmix_tower_model: server\n"
+            "  name: YAML Skip Check\n"
+            "  ssh_auth_mode: p\n"
+            "  ssh_username: root\n"
+            "  ip_v4_address: 10.0.0.4\n"
+        )
+        wiz = self.env["cx.tower.yaml.import.wiz"].create(
+            {
+                "yaml_code": yaml_code,
+                "if_record_exists": "create",
+            }
+        )
+        wiz.with_context(skip_ssh_settings_check=True).action_import_yaml()
+
+        srv = self.env["cx.tower.server"].get_by_reference("srv_skip")
+        self.assertTrue(
+            srv, "Server must be created when skip_ssh_settings_check is set"
         )
