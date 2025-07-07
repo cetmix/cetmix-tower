@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-06-15 09:44+0200\n"
+"PO-Revision-Date: 2025-07-06 08:35+0200\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-"
 "server-14-0-dev/cetmix_tower_server/it/>\n"
@@ -300,7 +300,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
 #, python-format
-#| msgid "%(name)s (copy)"
 msgid "%(name)s (copy %(number)s)"
 msgstr "%(name)s (copy %(number)s)"
 
@@ -370,6 +369,7 @@ msgstr "<b>E</b>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid ""
 "<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Info\" title=\"Info"
 "\"/>\n"
@@ -405,6 +405,18 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
 msgid "<span>Pull files from server</span>"
 msgstr "<span>Scarica i file dal server</span>"
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
+msgid "<span>Run scheduled tasks</span>"
+msgstr "<span>Esegui lavori schedulati</span>"
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
+msgid "<span>Scheduled tasks will be run automatically using cron job.</span>"
+msgstr ""
+"<span>I lavori schedulati verranno eseguiti automaticamente usando un lavoro "
+"cron.</span>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
@@ -467,6 +479,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Access"
 msgstr "Accesso"
 
@@ -514,9 +527,11 @@ msgstr "Il livello di accesso non è definito per '%(variable)s'"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__action
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__action
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
 msgid "Action"
 msgstr "Azione"
@@ -551,6 +566,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__active
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__active
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__active
@@ -608,6 +624,11 @@ msgstr ""
 "Questo campo verrà visualizzato nel modulo della variabile."
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
+msgid "All"
+msgstr "Tutti"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
@@ -646,12 +667,14 @@ msgstr "Espressione applicata"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Archived"
 msgstr "In archivio"
 
@@ -685,15 +708,22 @@ msgid "Binary"
 msgstr "Binario"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__file
+msgid "Binary Content"
+msgstr "Contenuto binario"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_value__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line_action__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_reference_mixin__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__reference
@@ -948,6 +978,11 @@ msgid "Cetmix Tower: Check zombie commands"
 msgstr "Cetmix Tower: controllo comandi zombi"
 
 #. module: cetmix_tower_server
+#: model:ir.actions.server,name:cetmix_tower_server.ir_cron_run_scheduled_tasks_ir_actions_server
+msgid "Cetmix Tower: Run scheduled tasks"
+msgstr "Cetmix Tower: esegui lavori schedulati"
+
+#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
 #, python-format
@@ -1007,12 +1042,15 @@ msgstr "Colore"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__command_ids
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__action__command
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_shortcut__action__command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
 msgid "Command"
 msgstr "Comando"
@@ -1057,6 +1095,7 @@ msgstr "Registro comando"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Command Logs"
 msgstr "Registri comando"
 
@@ -1156,6 +1195,7 @@ msgstr "Configurazione"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Configuration Values"
 msgstr "Valori configurazione"
 
@@ -1234,6 +1274,8 @@ msgstr "Crea nuovo server da variabili modello"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__create_uid
@@ -1263,6 +1305,8 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__create_date
@@ -1304,6 +1348,11 @@ msgid "Custom Variable Value"
 msgstr "Valore variabile personalizzato"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__custom_variable_value_ids
+msgid "Custom Variable Values"
+msgstr "Valori variabile personalizzati"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Custom label. Can be used for search/tracking"
@@ -1333,6 +1382,11 @@ msgstr ""
 "Valori variabile personalizzati per procedura guidata esecuzione comando"
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_scheduled_task_cv
+msgid "Custom variable values for scheduled tasks"
+msgstr "Valori variabile personalizzati per lavori schedulati"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__sync_date_last
 msgid "Date and time of the latest successful synchronisation"
 msgstr "Data e ora dell'ultima sincronizzazione riuscita"
@@ -1341,6 +1395,11 @@ msgstr "Data e ora dell'ultima sincronizzazione riuscita"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__sync_date_next
 msgid "Date and time of the next synchronisation"
 msgstr "Data e ora della prossima sincronizzazione"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__interval_type__days
+msgid "Days"
+msgstr "Giorni"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__path
@@ -1382,6 +1441,8 @@ msgstr "Cartella nel server"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__display_name
@@ -1523,12 +1584,12 @@ msgstr "Connessione fallita. Errore: %(err)s"
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
 #, python-format
 msgid "Failure"
 msgstr "Fallimento"
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__file
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_ids
@@ -1744,8 +1805,10 @@ msgstr "Finito"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__plan_id
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__action__plan
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_shortcut__action__plan
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Flight Plan"
@@ -1765,6 +1828,7 @@ msgstr "Registro piano di volo"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Flight Plan Logs"
 msgstr "Registri piano di volo"
 
@@ -1789,8 +1853,8 @@ msgid "Flight Plans"
 msgstr "Piani di volo"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
-#| msgid "Flight Plan"
 msgid "Flight plan"
 msgstr "Piano di volo"
 
@@ -1905,6 +1969,7 @@ msgstr "Globale"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
@@ -1976,6 +2041,11 @@ msgid "Host key to verify the server"
 msgstr "Chiave host per verificare il server"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__interval_type__hours
+msgid "Hours"
+msgstr "Ore"
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
 msgid ""
 "I confirm that the key is correct and I want to insert it in the server "
@@ -1999,6 +2069,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__id
@@ -2131,6 +2203,21 @@ msgid "Insert Key"
 msgstr "Inserisci chiave"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__interval_number
+msgid "Interval Number"
+msgstr "Numero intervallo"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__interval_type
+msgid "Interval Unit"
+msgstr "Unità intervallo"
+
+#. module: cetmix_tower_server
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_scheduled_task_interval_positive
+msgid "Interval number must be greater than zero."
+msgstr "Il numero intervallo deve essere maggiore di zero."
+
+#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #, python-format
@@ -2152,6 +2239,7 @@ msgstr "Segue"
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__is_running
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__is_running
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__is_running
 msgid "Is Running"
 msgstr "In esecuzione"
 
@@ -2215,6 +2303,11 @@ msgid "Labeled"
 msgstr "Etichettato"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__last_call
+msgid "Last Execution Date"
+msgstr "Ultima data esecuzione"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__sync_date_last
 msgid "Last Sync Date"
 msgstr "Ultima data sincronia"
@@ -2234,6 +2327,8 @@ msgstr "Ultima data sincronia"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__write_uid
@@ -2263,6 +2358,8 @@ msgstr "Ultimo aggiornamento di"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__write_date
@@ -2355,6 +2452,7 @@ msgstr "Responsabile"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__manager_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__manager_ids
 msgid "Managers"
@@ -2366,6 +2464,7 @@ msgstr "Responsabili"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__manager_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__manager_ids
 msgid "Managers who can modify this record"
@@ -2403,6 +2502,11 @@ msgid "Messages"
 msgstr "Messaggi"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__interval_type__minutes
+msgid "Minutes"
+msgstr "Minuti"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables
 msgid "Missing Required Variables"
 msgstr "Variabili richieste mancanti"
@@ -2416,6 +2520,11 @@ msgstr "Messaggio variabili richieste mancanti"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Modify Code"
 msgstr "Modifica codice"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__interval_type__months
+msgid "Months"
+msgstr "Mesi"
 
 #. module: cetmix_tower_server
 #: model:cx.tower.variable,validation_message:cetmix_tower_server.variable_demo_branch
@@ -2435,12 +2544,14 @@ msgstr "Scadenza mia attività"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__name
@@ -2477,9 +2588,19 @@ msgid "Next Activity Type"
 msgstr "Tipo attività successiva"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__next_call
+msgid "Next Execution Date"
+msgstr "Data prossima esecuzione"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__sync_date_next
 msgid "Next Sync Date"
 msgstr "Data sincronizzazione successiva"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__next_call
+msgid "Next planned execution date for this task."
+msgstr "Data prossima esecuzione pianificata per questo lavoro."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -2694,6 +2815,7 @@ msgstr "Sistema operativo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__option_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__option_id
 msgid "Option"
@@ -2871,6 +2993,11 @@ msgid "Previous Version"
 msgstr "Versione anteprima"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__last_call
+msgid "Previous time the task ran successfully."
+msgstr "Orario precedente in cui il lavoro è stato eseguito con successo."
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
 msgid "Pull files from server"
 msgstr "Ricevi file dal server"
@@ -2961,11 +3088,13 @@ msgstr "Rilevata chiamata piano ricorsiva nel piano %(name)s."
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_reference_mixin__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__reference
@@ -2993,11 +3122,13 @@ msgstr "Codice riferimento"
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_value_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_os_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_action_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_line_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_plan_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_reference_mixin_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_scheduled_task_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_log_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_server_template_reference_unique
@@ -3081,6 +3212,11 @@ msgid "Rendered Server Dir"
 msgstr "Cartella server realizzato"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__interval_number
+msgid "Repeat every x."
+msgstr "Ripeti ogni x."
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__required
 msgid "Required"
@@ -3148,6 +3284,12 @@ msgstr "Esegui piano di volo"
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_run_wizard
 msgid "Run Flight Plan in Wizard"
 msgstr "Esegui piano di volo nella procedura guidata"
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "Run Manually"
+msgstr "Esegui manualmente"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
@@ -3227,9 +3369,16 @@ msgid "Run on"
 msgstr "Esegui su"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
+msgid "Run scheduled tasks"
+msgstr "Esegui lavori schedulati"
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Running"
 msgstr "In esecuzione"
 
@@ -3320,6 +3469,47 @@ msgid "SSH run command error %(err)s"
 msgstr "Errore comando esecuzione SSH %(err)s"
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_scheduled_task
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__scheduled_task_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__scheduled_task_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__scheduled_task_id
+msgid "Scheduled Task"
+msgstr "Lavoro schedulato"
+
+#. module: cetmix_tower_server
+#: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_scheduled_task
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__scheduled_task_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__scheduled_task_ids
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_scheduled_task
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid "Scheduled Tasks"
+msgstr "LAvori schedulati"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__scheduled_task_id
+msgid "Scheduled task that triggered this command"
+msgstr "Lavoro schedulato che ha attivato questo comando"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__scheduled_task_id
+msgid "Scheduled task that triggered this flight plan"
+msgstr "Lavoro schedulato che ha attivato questo piano di volo"
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
+#, python-format
+msgid "Scheduled tasks run successfully."
+msgstr "Lavori schedulati eseguiti con successo."
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
+msgid "Scheduled tasks will be run automatically using cron job."
+msgstr ""
+"I lavori schedulati verranno eseguiti automaticamente usando un lavoro cron."
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 msgid "Search Command Log"
 msgstr "Ricerca registro comando"
@@ -3358,6 +3548,11 @@ msgstr "Ricerca kiavi/segreti"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_os_search_view
 msgid "Search OS"
 msgstr "Ricerca SO"
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
+msgid "Search Scheduled Tasks"
+msgstr "Ricerca lavori schedulati"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
@@ -3439,6 +3634,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__sequence
@@ -3511,6 +3707,7 @@ msgstr "Modello server"
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_server_template
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__server_template_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__server_template_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__server_template_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
@@ -3567,6 +3764,7 @@ msgstr "Interfaccia server web, es. 'https://doge.example.com'"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__server_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__server_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_partner__server_ids
@@ -3575,6 +3773,7 @@ msgstr "Interfaccia server web, es. 'https://doge.example.com'"
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Servers"
 msgstr "Server"
@@ -3720,6 +3919,7 @@ msgstr "Stringa"
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
@@ -3857,6 +4057,18 @@ msgid "The file %(f_path)s not found."
 msgstr "File %(f_path)s non trovato."
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
+#, python-format
+msgid ""
+"The selected task interval is too low in relation to the general system "
+"settings. This may lead to task execution delays."
+msgstr ""
+"L'intervallo del lavoro selezionato è troppo piccolo in relazione alle "
+"impostazioni generali di sistema. Questo può portare a ritardi di esecuzione "
+"del lavoro."
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Then"
 msgstr "Quindi"
@@ -3981,6 +4193,7 @@ msgstr "Registro piano attivato"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_type
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_type
@@ -4009,6 +4222,13 @@ msgid ""
 msgstr ""
 "Impossibile eliminare il file '%(f)s'. \n"
 "L'operazione di eliminazione non è supportata per i file di tipo 'server'."
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
+#, python-format
+msgid "Unable to run scheduled task '%(f)s'. Error: %(e)s"
+msgstr "Impossibile eseguire il lavoro schedulato'%(f)s'. Errore: %(e)s"
 
 #. module: cetmix_tower_server
 #. odoo-python
@@ -4079,6 +4299,7 @@ msgstr "Utente"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__user_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__user_ids
 msgid "Users"
@@ -4090,6 +4311,7 @@ msgstr "Utenti"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__user_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__user_ids
 msgid "Users who can view this record"
@@ -4107,6 +4329,7 @@ msgstr "Schema di validazione"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__value_char
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__value_char
@@ -4141,6 +4364,7 @@ msgstr "Valori"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_id
@@ -4270,9 +4494,19 @@ msgid "Variables"
 msgstr "Variabili"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__warning_message
+msgid "Warning Message"
+msgstr "Messaggio di avviso"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_run_wizard__os_compatibility_warning
 msgid "Warning about OS compatibility of the command"
 msgstr "Avviso di compatibilità SO del comando"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__interval_type__weeks
+msgid "Weeks"
+msgstr "Settimane"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__path
@@ -4399,6 +4633,7 @@ msgstr "groups_ref deve essere stringa o lista di stringhe!"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "managers who can modify this record"
 msgstr "responsabili che possono modificare questo record"
 
@@ -4464,12 +4699,12 @@ msgstr "utenti che possono accedere a questo modello"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "users who can view this record"
 msgstr "utenti che possono accedere a questo record"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
-#| msgid "Set Variable Values"
 msgid "value: variable value"
 msgstr "value: valore della variabile"
 
@@ -4484,9 +4719,6 @@ msgstr "quali etichette"
 
 #~ msgid "1 hour"
 #~ msgstr "1 ora"
-
-#~ msgid "1 month"
-#~ msgstr "1 mese"
 
 #~ msgid "1 week"
 #~ msgstr "1 settimana"
@@ -4697,9 +4929,6 @@ msgstr "quali etichette"
 
 #~ msgid "Select tags to filter Commands"
 #~ msgstr "Selezionare etichette per filtrare i comandi"
-
-#~ msgid "Select tags to filter Flight Plans"
-#~ msgstr "Selezionare etichette per filtrare i piani di volo"
 
 #~ msgid "Sudo with password"
 #~ msgstr "Sudo con password"
