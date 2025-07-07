@@ -109,7 +109,9 @@
                             string="Triggered Commands"
                             attrs="{'invisible': [('command_action','!=','plan')]}"
                         >
-                            <field name="triggered_plan_command_log_ids" />
+                                <field name="triggered_plan_command_log_ids">
+                                    <tree default_order="id asc" />
+                                </field>
                         </page>
                     </notebook>
                 </sheet>
