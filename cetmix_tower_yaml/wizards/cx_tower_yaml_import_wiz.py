@@ -1,3 +1,7 @@
+# Copyright (C) 2024 Cetmix OÜ
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+
 import logging
 
 import yaml
@@ -78,7 +82,9 @@ class CxTowerYamlImportWiz(models.TransientModel):
             # Get model from cache or create new one
             model = models.get(model_name)
             if not model:
-                model = self.env[f"cx.tower.{model_name.replace('_', '.')}"]
+                model = self.env[
+                    f"cx.tower.{model_name.replace('_', '.')}"
+                ].with_context(skip_ssh_settings_check=(model_name == "server"))
                 models[model_name] = model
 
             # Get existing record by reference
@@ -98,9 +104,11 @@ class CxTowerYamlImportWiz(models.TransientModel):
             elif self.if_record_exists == "update" and odoo_record:
                 try:
                     record_values = model.with_context(
-                        force_create_related_record=False
+                        force_create_related_record=False,
                     )._post_process_yaml_dict_values(record)
-                    odoo_record.with_context(from_yaml=True).write(record_values)
+                    odoo_record.with_context(
+                        from_yaml=True,
+                    ).write(record_values)
                     odoo_record_ids.append(odoo_record.id)
                 except Exception as e:
                     raise ValidationError(
@@ -120,7 +128,9 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 force_create_related_record=self.if_record_exists == "create",
             )._post_process_yaml_dict_values(record)
             try:
-                odoo_record = model.with_context(from_yaml=True).create(record_values)
+                odoo_record = model.with_context(
+                    from_yaml=True,
+                ).create(record_values)
                 odoo_record_ids.append(odoo_record.id)
             except Exception as e:
                 raise ValidationError(
