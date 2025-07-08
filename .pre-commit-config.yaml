@@ -42,8 +42,8 @@ repos:
     rev: v1.2
     hooks:
       - id: whool-init
-  - repo: https://github.com/oca/maintainer-tools
-    rev: f9b919b9868143135a9c9cb03021089cabba8223
+  - repo: https://github.com/cetmix/cetmix-maintainer-tools
+    rev: 7f6de8cf26662e506ffe2c532ad385e5979d0f3c
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
