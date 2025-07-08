@@ -1,3 +1,8 @@
+## 16.0.1.1.4 (2025-07-08)
+
+- Bugfixes: Fix missing model names in YAML exports when exporting multiple commands with flight plans (4820)
+
+
 ## 16.0.1.1.3 (2025-07-07)
 
 - Bugfixes: Import servers with `Password` ssh authentication mode (4812)
