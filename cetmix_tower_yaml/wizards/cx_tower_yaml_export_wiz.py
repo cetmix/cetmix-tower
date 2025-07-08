@@ -67,6 +67,12 @@ class CxTowerYamlExportWiz(models.TransientModel):
                 yaml_collector=collector,
             )._prepare_record_for_yaml()
             if record_yaml_dict:
+                # Add model name to the record if it's not present
+                if "cetmix_tower_model" not in record_yaml_dict:
+                    record_yaml_dict["cetmix_tower_model"] = record._name.replace(
+                        "cx.tower.", ""
+                    ).replace(".", "_")
+
                 record_list.append(record_yaml_dict)
 
         if record_list:

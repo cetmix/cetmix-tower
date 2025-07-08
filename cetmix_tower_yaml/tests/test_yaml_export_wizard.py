@@ -260,3 +260,29 @@ records:
                 f"Reference '{ref}' is used only as a reference, "
                 "but no full object present",
             )
+
+    def test_export_required_model_name_in_yaml(self):
+        """
+        Test that the model name is required in the YAML file for each record
+        """
+        # create a command to run flight plan
+        command_run_flight_plan = self.TowerCommand.create(
+            {
+                "name": "Run Flight Plan",
+                "action": "plan",
+                "flight_plan_id": self.flight_plan_test_wizard.id,
+            }
+        )
+        # export 2 commands: command_run_flight_plan and command_test_wizard
+        wizard = self.YamlExportWizard.with_context(
+            active_model="cx.tower.command",
+            active_ids=[command_run_flight_plan.id, self.command_test_wizard.id],
+        ).create({})
+
+        wizard.onchange_explode_child_records()
+
+        yaml_data = yaml.safe_load(wizard.yaml_code)
+
+        # check that the model name is present in the YAML file for each record
+        for record in yaml_data["records"]:
+            self.assertIn("cetmix_tower_model", record)
