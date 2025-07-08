@@ -74,7 +74,7 @@
                             <field name="allow_parallel_run" />
                             <field
                                 name="no_split_for_sudo"
-                                attrs="{'invisible': [('action', '!=', 'ssh_command')]}"
+                                invisible="action != 'ssh_command'"
                             />
                             <field name="note" />
                         </group>
@@ -135,7 +135,7 @@
                         <page
                             name="plan_lines"
                             string="Flight Plan Lines"
-                            attrs="{'invisible': [('action', '!=', 'plan')]}"
+                            invisible="action != 'plan'"
                         >
                             <field name="flight_plan_line_ids">
                                 <tree>
@@ -147,7 +147,7 @@
                         <page
                             name="template_code"
                             string="Template Code"
-                            attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                            invisible="action != 'file_using_template'"
                         >
                             <field
                                 name="template_code"
