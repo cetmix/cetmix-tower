@@ -1,3 +1,8 @@
+## 17.0.1.1.2 (2025-07-08)
+
+- Bugfixes: Import servers with `Password` ssh authentication mode (4812)
+
+
 ## 17.0.1.1.1 (2025-07-04)
 
 - Features: Export/import scheduled tasks to/from YAML. (4650)
