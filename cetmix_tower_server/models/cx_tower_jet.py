@@ -42,11 +42,15 @@ class CxTowerJet(models.Model):
         domain="[('id', 'in', server_ids)]",
     )
 
-    # Current state of the Jet
+    # --States
     state_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
         string="Current State",
         tracking=True,
+    )
+    state_to_id = fields.Many2one(
+        comodel_name="cx.tower.jet.state",
+        string="Target State",
     )
 
     # Currently executing action
@@ -166,11 +170,22 @@ class CxTowerJet(models.Model):
     def _trigger_action(self, action):
         """Trigger an action on the jet.
 
+        The function flow is:
+
+        1. Bring the jet into the transit state.
+        2. Execute the flight plan if defined.
+        3. Bring the jet into the target state.
+
         Args:
             action (cx.tower.jet.action()): The action to trigger
 
         Returns:
-            Result of the action execution
+            The jet is brought into the target state.
+            In case of an error, the jet is brought into the error state
+            if the latter is defined.
+
+        Raises:
+            ValidationError: If the action is not available for this jet.
         """
         self.ensure_one()
 
@@ -196,6 +211,18 @@ class CxTowerJet(models.Model):
             }
         )
 
+        # WARNING: Explicit commit!
+        # This commit is made **only** when to ensure that the state is set
+        # even if the next action fails.
+        # Reason: Without this commit, the change would not be visible to other
+        # transactions until the end of the transaction, leading to a race
+        # condition and possible double execution.
+        # Explicit commits are strongly discouraged in Odoo business logic and
+        # should be used only with clear justification and in strictly controlled
+        # contexts (like this cron scenario). Never add this commit for general
+        # business flows!
+        self.env.cr.commit()  # pylint: disable=invalid-commit
+
         # Execute the flight plan if defined
         if action.plan_id:
             # Run the flight plan
@@ -208,62 +235,76 @@ class CxTowerJet(models.Model):
             # So we don't need continue the loop in this case.
             return
 
-        self.write(
-            {
-                "state_id": target_state,
-                "current_action_id": False,
-            }
-        )
+        # Set the state to the destination state if no plan is defined
+        final_vals = {
+            "state_id": target_state,
+            "current_action_id": False,
+        }
+
+        # Reset the target state if the jet has reached the target state
+        if target_state == self.state_to_id:
+            final_vals["state_to_id"] = None
+
+        self.write(final_vals)
+
+        # Continue the chain of actions if the final state is not reached yet
+        if self.state_to_id:
+            self._bring_to_state(self.state_to_id)
 
     def _bring_to_state(self, state=None):
         """
         Bring the jet to a specific state.
 
-        Args:
-            state (cx.tower.jet.state()): The state to bring the jet to
-        """
-        self.ensure_one()
+        The function flow is:
 
-        # Exit if jet is already in the target state or running an action
-        if self.state_id == state or self.current_action_id:
-            return
-
-        # Create a new state transition
-        self.env["cx.tower.jet.state.transition"].create(
-            {
-                "jet_id": self.id,  # pylint: disable=no-member
-                "state_from_id": self.state_id,
-                "state_to_id": state,
-                "state_id": self.state_id,
-            }
-        )
-
-    def _bring_to_state_old(self, state=None):
-        """
-        Bring the jet to a specific state.
+        1. Compute the path of actions to bring the jet
+            to the target state.
+        2. Set the target state.
+        3. Trigger the first action in the path.
+            This will trigger a chain of actions until the jet is brought
+            into the target state.
 
         Args:
             state (cx.tower.jet.state()): The state to bring the jet to
 
         Returns:
+            The jet is brought into the first state of the path.
+            In case of an error, the jet is brought into the error state
+            if the latter is defined.
+
+        Raises:
+            ValidationError: If the state is not defined.
+            ValidationError: If the path is not found.
         """
         self.ensure_one()
 
-        # Set the destination state
-        self.write(
-            {
-                "state_to_id": state,
-            }
-        )
+        # Exit if jet is already in the target state
+        if self.state_id == state:
+            return
 
         # Compute the path of actions to bring the jet to the target state
         path = self.jet_template_id._get_action_path(
             state_from=self.state_id, state_to=state
         )
+        if not path:
+            raise ValidationError(
+                _(
+                    "No path found to bring the jet %(jet)s to the state '%(state)s'",
+                    jet=self.name,  # pylint: disable=no-member
+                    state=state.name,  # type: ignore
+                )
+            )
 
-        # Execute the actions in the path
-        for action in path:
-            self._trigger_action(action)
+        # Set the target state if not already set
+        if not self.state_to_id:
+            self.write(
+                {
+                    "state_to_id": state,
+                }
+            )
+
+        # Trigger the first action in the path
+        self._trigger_action(path[0])
 
     def _flight_plan_finished(self, plan_status):
         """
@@ -275,17 +316,45 @@ class CxTowerJet(models.Model):
         """
         self.ensure_one()
 
+        # Reset the current action
         vals = {"current_action_id": False}
+
+        # If the flight plan is finished successfully,
+        # we bring the jet to the destination state
+        # of the current action
         if plan_status == 0:
             # Set the state to the destination state
             vals["state_id"] = (
                 self.current_action_id.state_to_id
                 and self.current_action_id.state_to_id.id
-            )  # type: ignore
+            )
 
-            # Check if the action state is the destination state
-            # If we have reached the destination state, nothing to do here anymore
-            if self.current_action_id.state_to_id == self.state_to_id:
-                self.write(vals)
+            # Reset the target state if the jet has reached the target state
+            # This will stop the chain of actions
+            if self.state_to_id == self.state_id:
+                vals["state_to_id"] = None
+
+        # If the flight plan is finished with an error,
+        # we bring the jet to the error state if it is defined
+        # or back to the initial state if not
+        # Reset the target state because we cannot continue the chain of actions
+        else:
+            vals.update(
+                {
+                    "state_id": (
+                        self.current_action_id.state_error_id
+                        and self.current_action_id.state_error_id.id
+                    )
+                    or (
+                        self.current_action_id.state_from_id
+                        and self.current_action_id.state_from_id.id
+                    ),
+                    "state_to_id": None,
+                }
+            )
 
         self.write(vals)
+
+        # Continue the chain of actions if the final state is not reached yet
+        if self.state_to_id:
+            self._bring_to_state(self.state_to_id)

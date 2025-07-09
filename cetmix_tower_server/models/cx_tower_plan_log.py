@@ -326,7 +326,12 @@ class CxTowerPlanLog(models.Model):
             self.jet_template_install_id._flight_plan_finished(
                 plan_status=plan_status,
             )
-            # print(f"Finished template install/uninstall {self.jet_template_id.name}")
+
+        # Jet
+        if self.jet_id:
+            self.jet_id._flight_plan_finished(
+                plan_status=plan_status,
+            )
 
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
         """

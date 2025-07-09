@@ -9,7 +9,11 @@
             <form string="Jet">
                 <header>
                     <button name="action_test" type="object" string="Test" />
-                    <field name="state_id" widget="statusbar" />
+                    <field
+                        name="state_id"
+                        widget="statusbar"
+                        options="{'clickable': '1'}"
+                    />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
