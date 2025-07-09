@@ -16,4 +16,4 @@ class QueueJob(models.Model):
                 log_record.finish(
                     status=self.QUEUE_JOB_ERROR,
                 )
-        return super(QueueJob, self).write(vals)
+        return super().write(vals)
