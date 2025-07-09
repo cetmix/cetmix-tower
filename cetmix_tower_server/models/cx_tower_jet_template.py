@@ -89,7 +89,6 @@ class CxTowerJetTemplate(models.Model):
         compute="_compute_border_actions",
         readonly=False,
         store=True,
-        precompute=True,
         domain="[('state_from_id', '=', False), "
         "('state_to_id', '!=', False),"
         " ('jet_template_id', '=', id)]",
@@ -100,7 +99,6 @@ class CxTowerJetTemplate(models.Model):
         compute="_compute_border_actions",
         readonly=False,
         store=True,
-        precompute=True,
         help="The action is used to destroy a Jet",
         domain="[('state_to_id', '=', False), ('jet_template_id', '=', id)]",
     )
@@ -157,6 +155,7 @@ class CxTowerJetTemplate(models.Model):
         "action_ids.priority",
     )
     def _compute_border_actions(self):
+        """Compute the 'Create Jet' and 'Destroy Jet' actions"""
         for template in self:
             # If no initial state, add the one automatically
             if not template.action_create_id:
@@ -215,13 +214,20 @@ class CxTowerJetTemplate(models.Model):
     #   Odoo constraints
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    @api.constrains("action_create_id", "action_destroy_id")
-    def _check_action_create_destroy(self):
-        for template in self:
-            if not template.action_create_id or not template.action_destroy_id:
-                raise ValidationError(
-                    _("The 'Create Jet' and 'Destroy Jet' actions must be set.")
-                )
+    # @api.constrains("action_create_id", "action_destroy_id")
+    # def _check_action_create_destroy(self):
+    #     """
+    #     Check that the 'Create Jet' and 'Destroy Jet' actions are set
+    #     if there are actions in the template.
+    #     """
+    #     for template in self:
+    #         # Check that the 'Create Jet' and 'Destroy Jet' actions are set
+    #         if template.action_ids and (
+    #             not template.action_create_id or not template.action_destroy_id
+    #         ):
+    #             raise ValidationError(
+    #                 _("The 'Create Jet' and 'Destroy Jet' actions must be set.")
+    #             )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
