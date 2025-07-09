@@ -327,6 +327,11 @@ class TestTowerCommon(BaseCommon):
 
         # Patch file manipulation methods for testing
         def ssh_download_file(self, remote_path):
+            if hasattr(self, "env"):
+                error = self.env.context.get("raise_download_error")
+                if error:
+                    raise ValidationError(error)
+
             _, extension = os.path.splitext(remote_path)
             if extension == ".zip":
                 return b"ok\x00"
@@ -339,6 +344,10 @@ class TestTowerCommon(BaseCommon):
         cls.addClassCleanup(download_patch.stop)
 
         def ssh_upload_file(self, file, remote_path):
+            if hasattr(self, "env"):
+                error = self.env.context.get("raise_upload_error")
+                if error:
+                    raise ValidationError(error)
             return MagicMock()
 
         upload_patch = patch.object(SftpService, "upload_file", new=ssh_upload_file)
