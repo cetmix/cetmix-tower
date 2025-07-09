@@ -1,3 +1,8 @@
+## 14.0.1.1.1 (2025-07-09)
+
+- Bugfixes: Import servers with `Password` ssh authentication mode (4812)
+
+
 ## 14.0.1.1.0 (2025-06-27)
 
 - Features: YAML code optimisation (4728)
