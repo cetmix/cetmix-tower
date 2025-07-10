@@ -47,8 +47,8 @@ class TestCxTowerFileQueue(TestTowerCommon):
             upload_file_2.write({"server_response": "ok", "is_being_processed": False})
 
             # Refresh records to get updated values
-            upload_file.refresh()
-            upload_file_2.refresh()
+            upload_file.invalidate_recordset()
+            upload_file_2.invalidate_recordset()
 
             # Verify the expected state
             self.assertEqual(upload_file.server_response, "ok")
@@ -91,8 +91,8 @@ class TestCxTowerFileQueue(TestTowerCommon):
             )
 
             # Refresh records to get updated values
-            download_file.refresh()
-            download_file_2.refresh()
+            download_file.invalidate_recordset()
+            download_file_2.invalidate_recordset()
 
             # Verify the expected state
             self.assertEqual(download_file.server_response, "ok")
@@ -117,14 +117,14 @@ class TestCxTowerFileQueue(TestTowerCommon):
 
         with trap_jobs() as trap:
             # This will trigger job creation but the job would fail if executed
-            error_file.with_context(error_context).upload(raise_error=True)
+            error_file.with_context(**error_context).upload(raise_error=True)
 
             # Verify job was created
             self.assertEqual(len(trap.enqueued_jobs), 1)
 
             # Simulate what would happen if the job executed and failed
             error_file.write({"server_response": "error", "is_being_processed": False})
-            error_file.refresh()
+            error_file.invalidate_recordset()
 
             self.assertEqual(error_file.server_response, "error")
             self.assertFalse(error_file.is_being_processed)
@@ -145,14 +145,14 @@ class TestCxTowerFileQueue(TestTowerCommon):
 
         with trap_jobs() as trap:
             # This will trigger job creation but the job would fail if executed
-            error_file.with_context(error_context).download(raise_error=True)
+            error_file.with_context(**error_context).download(raise_error=True)
 
             # Verify job was created
             self.assertEqual(len(trap.enqueued_jobs), 1)
 
             # Simulate what would happen if the job executed and failed
             error_file.write({"server_response": "error", "is_being_processed": False})
-            error_file.refresh()
+            error_file.invalidate_recordset()
 
             self.assertEqual(error_file.server_response, "error")
             self.assertFalse(error_file.is_being_processed)
