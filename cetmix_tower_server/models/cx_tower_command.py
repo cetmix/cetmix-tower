@@ -287,7 +287,7 @@ class CxTowerCommand(models.Model):
                     "help": <library_help_html>
                 }}
         """
-        return {
+        python_libraries = {
             "time": {
                 "import": tools.safe_eval.time,
                 "help": _("Python 'time' library"),
@@ -387,6 +387,10 @@ class CxTowerCommand(models.Model):
                 ),
             },
         }
+        custom_python_libraries = self._custom_python_libraries()
+        for libraries in custom_python_libraries.values():
+            python_libraries.update(libraries)
+        return python_libraries
 
     def _get_python_command_odoo_objects(self, server=None):
         """
@@ -414,6 +418,55 @@ class CxTowerCommand(models.Model):
                 "help": _("Current Cetmix Tower server this command is running on"),
             },
         }
+
+    def _custom_python_libraries(self):
+        """
+        This function is designed to be used in custom modules
+        extending Cetmix Tower to add  custom python libraries
+        to the evaluation context.
+
+        Returns:
+            Dict: Custom python libraries.
+
+        The following format is used:
+        {
+            <module_name>: {"<library_name>": {
+                "import": <library_import>,
+                "help": <library_help_html>
+            }
+        }
+
+        Where:
+
+        <module_name> Odoo module technical name.
+        <library_name> is the name of the library how it will be used in the code.
+        <library_import> is the library to import.
+        <library_help_html> is the help text for the library shown in the "Help" tab.
+
+        Example:
+
+        ```python
+        # Custom module extending Cetmix Tower
+        custom_python_libraries = super()._custom_python_libraries()
+        custom_python_libraries.update({
+            "cetmix_tower_aws": {
+                "boto3": {
+                    "import": boto3,
+                    "help": "Python 'boto3' library. "
+                    "<a href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html'"
+                    " target='_blank'>Documentation</a>."
+                },
+                "custom_library_name": {
+                    "import": custom_library_import,
+                    "help": "Custom library help text"
+                }
+            }
+        })
+        return custom_python_libraries
+
+        ```
+        """
+        return {}
 
     def _get_python_command_eval_context(self, server=None):
         """
