@@ -152,8 +152,8 @@
                             <field
                                 name="template_code"
                                 widget="ace"
+                                options="{'mode': 'python'}"
                                 readonly="1"
-                                options="{'mode': 'jinja2'}"
                             />
                         </page>
                         <page
