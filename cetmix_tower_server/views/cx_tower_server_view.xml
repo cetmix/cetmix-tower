@@ -343,6 +343,7 @@
                                     <field name="variable_type" column_invisible="1" />
                                     <field
                                         name="value_char"
+                                        widget="ace_tower"
                                         readonly="variable_type == 'o'"
                                     />
                                     <field

@@ -21,7 +21,7 @@
                     name="plan_line_action_id"
                     readonly="server_id or server_template_id"
                 />
-                <field name="value_char" readonly="variable_type == 'o'" />
+                <field name="value_char" readonly="variable_type == 'o'" widget="ace_tower" />
                 <field
                     name="option_id"
                     optional="show"
