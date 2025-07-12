@@ -76,6 +76,7 @@
     ],
     "assets": {
         "web.assets_backend": [
+            "cetmix_tower_server/static/src/**/*.xml",
             "cetmix_tower_server/static/src/**/*.js",
             "cetmix_tower_server/static/src/**/*.scss",
         ],

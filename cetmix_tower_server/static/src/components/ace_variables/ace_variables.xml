@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="cetmix_tower_server.AceCommandField" owl="1">
+        <t t-call="web.AceField" />
+        <t t-if="state.showPopup">
+            <AutocompletePopup
+                commands="state.popupItems"
+                position="state.popupPosition"
+                selectedIndex="state.selectedIndex"
+                type="state.popupType"
+                onSelectedIndexChange="updateSelectedIndex"
+                onItemClick="(command) => this.handleCommandSelection(command, this.currentEditor)"
+            />
+        </t>
+    </t>
+</templates>
