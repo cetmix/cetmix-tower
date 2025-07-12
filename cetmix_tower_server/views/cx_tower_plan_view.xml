@@ -89,7 +89,7 @@
                                     <field name="path" optional="show" />
                                     <field
                                         name="condition"
-                                        widget="ace"
+                                        widget="ace_tower"
                                         options="{'mode': 'python'}"
                                         optional="show"
                                     />
