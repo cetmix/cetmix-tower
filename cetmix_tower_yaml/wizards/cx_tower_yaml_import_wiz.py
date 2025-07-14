@@ -39,6 +39,40 @@ class CxTowerYamlImportWiz(models.TransientModel):
     )
     preview_code = fields.Boolean()
 
+    manifest_name = fields.Char(
+        readonly=True, compute="_compute_yaml_data", string="Snippet Name"
+    )
+    manifest_summary = fields.Char(
+        readonly=True, compute="_compute_yaml_data", string="Summary"
+    )
+    manifest_description = fields.Text(
+        readonly=True, compute="_compute_yaml_data", string="Description"
+    )
+    manifest_author_string = fields.Char(
+        readonly=True,
+        compute="_compute_yaml_data",
+        help="Comma-separated list",
+        string="Author",
+    )
+    manifest_version = fields.Char(
+        readonly=True, compute="_compute_yaml_data", string="Version"
+    )
+    manifest_website = fields.Char(
+        readonly=True, compute="_compute_yaml_data", string="Website"
+    )
+    manifest_license = fields.Char(
+        readonly=True, compute="_compute_yaml_data", string="License"
+    )
+    manifest_license_text = fields.Text(
+        readonly=True, compute="_compute_yaml_data", string="License text"
+    )
+    manifest_price = fields.Float(
+        readonly=True, compute="_compute_yaml_data", string="Price"
+    )
+    manifest_currency = fields.Char(
+        readonly=True, compute="_compute_yaml_data", string="Currency"
+    )
+
     @api.depends("yaml_code")
     def _compute_secret_list(self):
         """Compute list of secrets present in the YAML file"""
@@ -52,6 +86,35 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 )
             else:
                 record.secret_list = False
+
+    @api.depends("yaml_code")
+    def _compute_yaml_data(self):
+        for record in self:
+            data = yaml.safe_load(record.yaml_code)
+
+            manifest = data.get("manifest", {}) if isinstance(data, dict) else {}
+            authors = manifest.get("author")
+            if isinstance(authors, list | tuple):
+                manifest_author_string = ", ".join(authors)
+            elif isinstance(authors, str):
+                manifest_author_string = authors
+            else:
+                manifest_author_string = False
+
+            record.update(
+                {
+                    "manifest_name": manifest.get("name"),
+                    "manifest_summary": manifest.get("summary"),
+                    "manifest_description": manifest.get("description"),
+                    "manifest_author_string": manifest_author_string,
+                    "manifest_version": manifest.get("version"),
+                    "manifest_website": manifest.get("website"),
+                    "manifest_license": manifest.get("license"),
+                    "manifest_license_text": manifest.get("license_text"),
+                    "manifest_price": manifest.get("price"),
+                    "manifest_currency": manifest.get("currency"),
+                }
+            )
 
     def action_import_yaml(self):
         """Process YAML data and create records in Odoo"""

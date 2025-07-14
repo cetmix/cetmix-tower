@@ -17,3 +17,5 @@ from . import cx_tower_shortcut
 from . import cx_tower_scheduled_task
 from . import cx_tower_file
 from . import cx_tower_server
+from . import cx_tower_yaml_manifest_template
+from . import cx_tower_yaml_manifest_author

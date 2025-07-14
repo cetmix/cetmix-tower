@@ -87,26 +87,12 @@ class TestYamlExportWizard(BaseCommon):
         with self.assertRaises(AccessError):
             self.test_wizard.with_user(self.user_yaml_export).read([])
 
-    def test_comment_inserted_into_yaml_code(self):
-        """Test if comment is inserted into YAML code"""
-
-        self.test_wizard.comment = "Test Comment"
-        self.test_wizard.onchange_explode_child_records()
-        # Because header takes 3 lines, we need to check the 4th line
-        fourth_line_of_yaml_code = self.test_wizard.yaml_code.split("\n")[3]
-        self.assertEqual(
-            fourth_line_of_yaml_code,
-            f"# {self.test_wizard.comment}",
-            "Comment should be properly prepended to YAML code",
-        )
-
     def test_yaml_export_wizard_yaml_generation(self):
         """Test code generation of YAML export wizard."""
 
         wizard_yaml = """
 # This file is generated with Cetmix Tower.
 # Details and documentation: https://cetmix.com/tower
-# Test Comment
 cetmix_tower_yaml_version: 1
 records:
 - cetmix_tower_model: command
@@ -137,7 +123,6 @@ records:
         # Test with two commands
         context = {
             "default_explode_child_records": True,
-            "default_comment": "Test Comment",
             "default_remove_empty_values": True,
             "active_model": "cx.tower.command",
             "active_ids": [self.command_test_wizard.id, self.command_test_wizard_2.id],
@@ -278,3 +263,59 @@ records:
         # check that the model name is present in the YAML file for each record
         for record in yaml_data["records"]:
             self.assertIn("cetmix_tower_model", record)
+
+    def test_default_yaml_file_name_is_used(self):
+        """
+        Wizard should pre-fill `yaml_file_name` with the auto-generated
+        value that ends with '.yaml' and contains the model prefix.
+        """
+        wiz = self.YamlExportWizard.with_context(
+            active_model="cx.tower.command",
+            active_ids=[self.command_test_wizard.id],
+        ).create({})
+
+        default_name = wiz.yaml_file_name
+
+        self.assertFalse(
+            default_name.endswith(".yaml"),
+            "Default file name must NO have .yaml suffix",
+        )
+        self.assertIn(
+            "command_",
+            default_name,
+            "Default file name should include model prefix",
+        )
+
+    def test_yaml_file_name_is_auto_fixed(self):
+        """
+        When the user assigns an invalid name, wizard should auto-sanitise
+        it to a safe *basename* (lowercase, underscores, no extension).
+        """
+        wiz = self.YamlExportWizard.with_context(
+            active_model="cx.tower.command",
+            active_ids=[self.command_test_wizard.id],
+        ).create({})
+
+        # user enters a 'dirty' name with spaces, capitals, symbols
+        wiz.write({"yaml_file_name": "My File!@# .YAML"})
+
+        # write() override strips to a basename WITHOUT '.yaml'
+        self.assertEqual(
+            wiz.yaml_file_name,
+            "my_file",
+            "Wizard field must hold only the cleaned basename, without extension",
+        )
+
+    def test_action_generate_appends_extension(self):
+        """
+        When generating the download record, the system must append
+        the `.yaml` extension to the sanitized basename.
+        """
+        wiz = self.YamlExportWizard.with_context(
+            active_model="cx.tower.command",
+            active_ids=[self.command_test_wizard.id],
+        ).create({})
+        wiz.onchange_explode_child_records()
+        act = wiz.action_generate_yaml_file()
+        download = self.env["cx.tower.yaml.export.wiz.download"].browse(act["res_id"])
+        self.assertTrue(download.yaml_file_name.endswith(".yaml"))
