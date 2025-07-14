@@ -1011,12 +1011,13 @@ result = re.sub(pattern, replacement, value)
     def test_parse_ssh_command_result(self):
         """Test ssh command result parsing"""
 
+        placeholder = self.Key.SECRET_VALUE_PLACEHOLDER
         # -------------------------------------------------------
         # Case 1: regular command execution result with no error
         # We are testing secret value placeholder here
         # -------------------------------------------------------
         status = 0
-        response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
+        response = ["Such much", f"Doge like SSH {placeholder}"]
         error = []
 
         ssh_command_result = self.Server._parse_command_results(
@@ -1035,7 +1036,7 @@ result = re.sub(pattern, replacement, value)
         )
         self.assertEqual(
             result_response,
-            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_SPOILER}",
+            f"Such muchDoge like SSH {placeholder}",
             "Response in result doesn't match expected",
         )
         self.assertIsNone(result_error, "Error in response must be set to None")
@@ -1114,7 +1115,7 @@ result = re.sub(pattern, replacement, value)
         # For example this happens in 'docker build'.
         # -------------------------------------------------------
         status = 0
-        error = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
+        error = ["Such much", f"Doge like SSH {placeholder}"]
         response = []
 
         ssh_command_result = self.Server._parse_command_results(
@@ -1133,7 +1134,7 @@ result = re.sub(pattern, replacement, value)
         )
         self.assertEqual(
             result_error,
-            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_SPOILER}",
+            f"Such muchDoge like SSH {placeholder}",
             "Response in result doesn't match expected",
         )
         self.assertIsNone(result_response, "Error in response must be set to None")
@@ -1558,6 +1559,8 @@ else:
         This test ensures that a command is rendered and executed correctly,
         and that the secret value is correctly handled and replaced in the output.
         """
+
+        placeholder = self.Key.SECRET_VALUE_PLACEHOLDER
         # Case 1
         # Render the command using server_test_1
         rendered_command = self.server_test_1._render_command(
@@ -1577,7 +1580,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            self.Key.SECRET_VALUE_SPOILER,
+            placeholder,
             "The response must correctly include the secret value placeholder",
         )
 
@@ -1606,7 +1609,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            f'We use "{self.Key.SECRET_VALUE_SPOILER}"',
+            f'We use "{placeholder}"',
             "The response must correctly include the secret value placeholder",
         )
 
@@ -1635,7 +1638,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            self.Key.SECRET_VALUE_SPOILER,
+            placeholder,
             "The response must correctly include the secret value placeholder",
         )
 
@@ -1665,7 +1668,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            self.Key.SECRET_VALUE_SPOILER,
+            placeholder,
             "The response must correctly include the secret value placeholder",
         )
 
