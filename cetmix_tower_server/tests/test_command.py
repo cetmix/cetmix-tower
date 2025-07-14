@@ -1016,7 +1016,7 @@ result = re.sub(pattern, replacement, value)
         # We are testing secret value placeholder here
         # -------------------------------------------------------
         status = 0
-        response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
+        response = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_PLACEHOLDER}"]
         error = []
 
         ssh_command_result = self.Server._parse_command_results(
@@ -1035,7 +1035,7 @@ result = re.sub(pattern, replacement, value)
         )
         self.assertEqual(
             result_response,
-            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_SPOILER}",
+            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_PLACEHOLDER}",
             "Response in result doesn't match expected",
         )
         self.assertIsNone(result_error, "Error in response must be set to None")
@@ -1114,7 +1114,7 @@ result = re.sub(pattern, replacement, value)
         # For example this happens in 'docker build'.
         # -------------------------------------------------------
         status = 0
-        error = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_SPOILER}"]
+        error = ["Such much", f"Doge like SSH {self.Key.SECRET_VALUE_PLACEHOLDER}"]
         response = []
 
         ssh_command_result = self.Server._parse_command_results(
@@ -1133,7 +1133,7 @@ result = re.sub(pattern, replacement, value)
         )
         self.assertEqual(
             result_error,
-            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_SPOILER}",
+            f"Such muchDoge like SSH {self.Key.SECRET_VALUE_PLACEHOLDER}",
             "Response in result doesn't match expected",
         )
         self.assertIsNone(result_response, "Error in response must be set to None")
@@ -1577,7 +1577,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            self.Key.SECRET_VALUE_SPOILER,
+            self.Key.SECRET_VALUE_PLACEHOLDER,
             "The response must correctly include the secret value placeholder",
         )
 
@@ -1606,7 +1606,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            f'We use "{self.Key.SECRET_VALUE_SPOILER}"',
+            f'We use "{self.Key.SECRET_VALUE_PLACEHOLDER}"',
             "The response must correctly include the secret value placeholder",
         )
 
@@ -1635,7 +1635,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            self.Key.SECRET_VALUE_SPOILER,
+            self.Key.SECRET_VALUE_PLACEHOLDER,
             "The response must correctly include the secret value placeholder",
         )
 
@@ -1665,7 +1665,7 @@ else:
         # Assert that the response contains the secret spoiler text
         self.assertEqual(
             command_result["response"],
-            self.Key.SECRET_VALUE_SPOILER,
+            self.Key.SECRET_VALUE_PLACEHOLDER,
             "The response must correctly include the secret value placeholder",
         )
 

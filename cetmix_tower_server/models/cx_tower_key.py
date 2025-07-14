@@ -9,13 +9,16 @@ class CxTowerKey(models.Model):
 
     _name = "cx.tower.key"
     _description = "Cetmix Tower Key/Secret Storage"
-    _inherit = ["cx.tower.reference.mixin", "cx.tower.access.role.mixin"]
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.access.role.mixin",
+        "cx.tower.vault.mixin",
+    ]
     _order = "name"
 
     KEY_PREFIX = "#!cxtower"
     KEY_TERMINATOR = "!#"
-    SECRET_VALUE_PLACEHOLDER = "*** Insert new value to replace the existing one ***"
-    SECRET_VALUE_SPOILER = "*****"
+    SECRET_FIELDS = ["secret_value"]
 
     key_type = fields.Selection(
         selection=[
@@ -71,40 +74,6 @@ class CxTowerKey(models.Model):
             else:
                 rec.reference_code = None
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Create a new key and set secret value if key type is secret"""
-
-        # Create records one by one to ensure that we preserve
-        # the original value list order.
-        # This is done to avoid possible errors when this list is modified
-        # by some other module that overrides this function.
-        # We also need to avoid secret values being written to the database
-        # any other way besides the _set_secret_value method.
-        records = self.browse()
-        for vals in vals_list:
-            secret_value = vals.pop("secret_value", None)
-            new_key = super().create(vals)
-            if secret_value:
-                new_key._set_secret_value(secret_value)
-            records |= new_key
-        return records
-
-    def write(self, vals):
-        """Write key values"""
-        # Remove secret value from vals and set it later
-        if "secret_value" in vals and not self.env.context.get("write_secret_value"):
-            secret_value = vals.pop("secret_value", None)
-            has_secret_value = True
-        else:
-            has_secret_value = False
-        res = super().write(vals)
-        # Set secret value
-        if has_secret_value:
-            for key in self:
-                key._set_secret_value(secret_value)
-        return res
-
     def _get_reference_pattern(self):
         """
         Override mixin method
@@ -130,19 +99,6 @@ class CxTowerKey(models.Model):
         else:
             key_prefix = None
         return key_prefix
-
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
-        """Substitute fields based on api"""
-        super()._read(fields)
-        if "secret_value" in fields or fields == []:
-            # Public user used for substitution
-            for record in self:
-                try:
-                    record._cache["secret_value"] = self.SECRET_VALUE_PLACEHOLDER
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
 
     def _parse_code_and_return_key_values(self, code, pythonic_mode=False, **kwargs):
         """Replaces key placeholders in code with the corresponding values,
@@ -372,7 +328,7 @@ class CxTowerKey(models.Model):
                 key_value = filtered_key_values[0]
 
         if key_value:
-            return key_value._get_secret_value()
+            return key_value._get_secret_value("secret_value")
 
     def _replace_with_spoiler(self, code, key_values):
         """Helper function that replaces clean text keys in code with spoiler.
@@ -401,40 +357,17 @@ class CxTowerKey(models.Model):
             # If key_value contains an escaped line break replace then remove escaping
             key_value = key_value.replace("\\n", "\n")
             # Replace key including key terminator
-            code = code.replace(key_value, self.SECRET_VALUE_SPOILER)
+            code = code.replace(key_value, self.SECRET_VALUE_PLACEHOLDER)
 
         return code
 
-    def _get_secret_value(self):
-        """Get secret value.
-        Override this method in case you need
-        to implement custom key storages.
-
-        Returns:
-            str: secret value or None if no secret value is found
-        """
-
-        # Return None in case of empty recordset
-        self.ensure_one()
-        self.env.cr.execute(
-            """
-            SELECT secret_value
-            FROM cx_tower_key
-            WHERE id = %s
-            """,
-            [self.id],
-        )
-        result = self.env.cr.fetchone()
-        if result:
-            return result[0]
-
-    def _set_secret_value(self, value=None):
+    def _set_secret_values(self, vals):
         """Set secret value.
         Override this method in case you need
         to implement custom key storages.
 
         Args:
-            value (str): secret value
+            vals (dict): Dictionary of field names to secret values
         """
         self.ensure_one()
         if self.key_type == "s":
@@ -443,15 +376,11 @@ class CxTowerKey(models.Model):
                 lambda x: not x.server_id and not x.partner_id
             )
             if general_value:
-                general_value._set_secret_value(value)
+                general_value._set_secret_values(vals)
             else:
-                self.value_ids.create(
-                    {
-                        "key_id": self.id,
-                        "secret_value": value,
-                    }
-                )
+                create_vals = {"key_id": self.id}
+                create_vals.update(vals)
+                self.value_ids.create(create_vals)
 
         elif self.key_type == "k":
-            self.with_context(write_secret_value=True).write({"secret_value": value})
-            self.invalidate_recordset(["secret_value"])
+            return super()._set_secret_values(vals)

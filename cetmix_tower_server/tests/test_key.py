@@ -426,8 +426,8 @@ class TestTowerKey(TestTowerCommon):
             "cxtower.secret.DOGE_KEY"
         )
         expected_code = (
-            f"Hey {self.Key.SECRET_VALUE_SPOILER} & Doge {self.Key.SECRET_VALUE_SPOILER} so "  # noqa
-            f"like {self.Key.SECRET_VALUE_SPOILER}!\n"
+            f"Hey {self.Key.SECRET_VALUE_PLACEHOLDER} & Doge {self.Key.SECRET_VALUE_PLACEHOLDER} so "  # noqa
+            f"like {self.Key.SECRET_VALUE_PLACEHOLDER}!\n"
             "They make #!memes together. Check #!cxtower.secret.MEME_KEY&#!"
             "cxtower.secret.DOGE_KEY"
         )
@@ -734,14 +734,18 @@ class TestTowerKey(TestTowerCommon):
         manager_key_value.browse(global_value.id).write(
             {"secret_value": "updated global"}
         )
-        self.assertEqual(global_value._get_secret_value(), "updated global")
+        self.assertEqual(
+            global_value._get_secret_value("secret_value"), "updated global"
+        )
 
         # Add as server manager - should write to server value
         self.server_1.write({"manager_ids": [(4, self.manager.id)]})
         manager_key_value.browse(server_value.id).write(
             {"secret_value": "updated server"}
         )
-        self.assertEqual(server_value._get_secret_value(), "updated server")
+        self.assertEqual(
+            server_value._get_secret_value("secret_value"), "updated server"
+        )
 
         # Test create access
         for_bob = manager_key_value.create(
@@ -825,12 +829,13 @@ class TestTowerKey(TestTowerCommon):
 
         # Read
         self.assertEqual(
-            root_key_value.browse(value.id)._get_secret_value(), "root value"
+            root_key_value.browse(value.id)._get_secret_value("secret_value"),
+            "root value",
         )
 
         # Write
         root_key_value.browse(value.id).write({"secret_value": "updated value"})
-        self.assertEqual(value._get_secret_value(), "updated value")
+        self.assertEqual(value._get_secret_value("secret_value"), "updated value")
 
         # Delete
         value.unlink()
