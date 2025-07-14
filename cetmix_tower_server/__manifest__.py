@@ -18,6 +18,7 @@
     },
     "depends": [
         "mail",
+        "rpc_helper",
     ],
     "data": [
         "security/cetmix_tower_server_groups.xml",

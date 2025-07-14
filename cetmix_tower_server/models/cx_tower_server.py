@@ -83,9 +83,12 @@ class CxTowerServer(models.Model):
         "cx.tower.reference.mixin",
         "mail.thread",
         "mail.activity.mixin",
+        "cx.tower.vault.mixin",
     ]
     _description = "Cetmix Tower Server"
     _order = "name asc"
+
+    SECRET_FIELDS = ["ssh_password", "host_key"]
 
     # ---- Main
     active = fields.Boolean(default=True)
@@ -124,7 +127,8 @@ class CxTowerServer(models.Model):
         string="SSH Username", required=True, groups="cetmix_tower_server.group_manager"
     )
     ssh_password = fields.Char(
-        string="SSH Password", groups="cetmix_tower_server.group_manager"
+        string="SSH Password",
+        groups="cetmix_tower_server.group_manager",
     )
     ssh_key_id = fields.Many2one(
         comodel_name="cx.tower.key",
@@ -286,7 +290,6 @@ class CxTowerServer(models.Model):
         """Ensure SSH settings are valid.
         Set 'skip_ssh_settings_check' context key to skip the checks
         """
-
         # Skip the check if context key is set
         if self._context.get("skip_ssh_settings_check"):
             return
@@ -301,10 +304,6 @@ class CxTowerServer(models.Model):
                         srv=rec.name,
                     )
                 )
-            if rec.ssh_auth_mode == "p" and not rec.ssh_password:
-                validation_errors.append(
-                    _("Please provide SSH password for %(srv)s", srv=rec.name)
-                )
             if rec.ssh_auth_mode == "k" and not rec.ssh_key_id:
                 validation_errors.append(
                     _("Please provide SSH Key for %(srv)s", srv=rec.name)
@@ -314,13 +313,6 @@ class CxTowerServer(models.Model):
             if validation_errors:
                 validation_error = "\n".join(validation_errors)
                 raise ValidationError(validation_error)
-
-    def write(self, vals):
-        """Invalidate host_key cache"""
-        res = super().write(vals)
-        if "host_key" in vals:
-            self.invalidate_recordset(["host_key"])
-        return res
 
     def unlink(self):
         """Run post-delete flight plan"""
@@ -359,22 +351,6 @@ class CxTowerServer(models.Model):
                 server.status = "deleting"
 
         return super(CxTowerServer, servers_to_delete).unlink()
-
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
-        """Replace host_key with secret value spoiler"""
-        super()._read(fields)
-        spoiler = self.env["cx.tower.key"].SECRET_VALUE_SPOILER
-        # Public user used for substitution
-        if "host_key" in fields or fields == []:
-            for record in self:
-                try:
-                    record._cache["host_key"] = (
-                        spoiler if record._cache["host_key"] else None
-                    )
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
@@ -551,7 +527,7 @@ class CxTowerServer(models.Model):
         self.ensure_one()
         self = self.sudo()
         try:
-            host_key = self._get_host_key_value()
+            host_key = self._get_secret_value("host_key")
 
             # Check host only if IP address is present
             skip_host_key = skip_host_key or self.skip_host_key
@@ -733,7 +709,7 @@ class CxTowerServer(models.Model):
             Char: password ready to be used for connection parameters
         """
         self.ensure_one()
-        password = self.sudo().ssh_password
+        password = self._get_secret_value("ssh_password")
         return password
 
     def _get_ssh_key(self):
@@ -748,31 +724,10 @@ class CxTowerServer(models.Model):
         # regardless of access rights
         if self.sudo().ssh_key_id:
             # Use context key to read secret value
-            ssh_key = self.ssh_key_id._get_secret_value()
+            ssh_key = self.ssh_key_id._get_secret_value("secret_value")
         else:
             ssh_key = None
         return ssh_key
-
-    def _get_host_key_value(self):
-        """Get host key value
-
-        Returns:
-            Char: Host key value
-        """
-        # Return None in case of empty recordset
-        if not self:
-            return
-        self.env.cr.execute(
-            """
-            SELECT host_key
-            FROM cx_tower_server
-            WHERE id = %s
-            """,
-            [self.id],
-        )
-        result = self.env.cr.fetchone()
-        if result:
-            return result[0]
 
     @ensure_ssh_disconnect
     def _get_host_key_from_host(self, raise_on_error=True, timeout=60):
@@ -1980,3 +1935,21 @@ class CxTowerServer(models.Model):
                 "sticky": sticky,
             },
         }
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to validate SSH password before record creation."""
+        # Validate SSH password before creating records
+        if not self._context.get("skip_ssh_settings_check"):
+            validation_errors = []
+            for vals in vals_list:
+                if vals.get("ssh_auth_mode") == "p" and not vals.get("ssh_password"):
+                    server_name = vals["name"]
+                    validation_errors.append(
+                        _("Please provide SSH password for %(srv)s", srv=server_name)
+                    )
+
+            if validation_errors:
+                raise ValidationError("\n".join(validation_errors))
+
+        return super().create(vals_list)
