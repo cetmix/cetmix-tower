@@ -6,6 +6,8 @@ from . import cx_tower_access_mixin
 from . import cx_tower_access_role_mixin
 from . import cx_tower_reference_mixin
 from . import cx_tower_key_mixin
+from . import cx_tower_vault_mixin
+from . import cx_tower_vault
 from . import cx_tower_variable
 from . import cx_tower_variable_value
 from . import cx_tower_file
