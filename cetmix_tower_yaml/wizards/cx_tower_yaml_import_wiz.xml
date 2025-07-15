@@ -9,11 +9,7 @@
                 <group>
                     <field name="if_record_exists" />
                 </group>
-                <group
-                    attrs="{'invisible': [
-                        ('manifest_name', '=', False),
-                    ]}"
-                >
+                <group invisible="not manifest_name">
                     <group string="Information">
                         <field name="manifest_name" string="Name" />
                         <field name="manifest_summary" string="Summary" />
@@ -22,7 +18,7 @@
                         <field
                             name="manifest_website"
                             string="Website"
-                            attrs="{'invisible': [('manifest_website', '=', False)]}"
+                            invisible="not manifest_website"
                         />
                     </group>
                     <group string="License and pricing">
@@ -30,19 +26,16 @@
                         <field
                             name="manifest_price"
                             string="Price"
-                            attrs="{'invisible': [('manifest_price', '=', False)]}"
+                            invisible="not manifest_price"
                         />
                         <field
                             name="manifest_currency"
                             string="Currency"
-                            attrs="{'invisible': [('manifest_currency', '=', False)]}"
+                            invisible="not manifest_currency"
                         />
                     </group>
                     <notebook>
-                        <page
-                            string="Description"
-                            attrs="{'invisible':[('manifest_description','=',False)]}"
-                        >
+                        <page string="Description" invisible="not manifest_description">
                             <field
                                 name="manifest_description"
                                 widget="text"
@@ -52,7 +45,7 @@
                         </page>
                         <page
                             string="License text"
-                            attrs="{'invisible':[('manifest_license_text','=',False)]}"
+                            invisible="not manifest_license_text"
                         >
                             <field
                                 name="manifest_license_text"
