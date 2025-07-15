@@ -1,3 +1,11 @@
+## 17.0.1.2.1 (2025-07-15)
+
+- Features: Improve command log and flight plan form views (4697)
+- Features: Command view improvements (4753)
+
+- Bugfixes: Command log sorting (4816)
+
+
 ## 17.0.1.1.3 (2025-07-04)
 
 - Bugfixes: Host key cannot be retrieved from the UI. (4747)
