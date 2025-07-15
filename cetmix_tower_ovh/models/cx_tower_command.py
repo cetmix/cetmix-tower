@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import _, models
-from odoo.tools import ormcache
 from odoo.tools.safe_eval import wrap_module
 
 # Wrap ovh safely
@@ -14,25 +13,26 @@ class CxTowerCommand(models.Model):
 
     _inherit = "cx.tower.command"
 
-    @ormcache()  # Use ormcache to cache the result
-    def _get_python_command_libraries(self):
+    def _custom_python_libraries(self):
         """
         Add the ovh library to the available libraries.
         """
-        python_libraries = super()._get_python_command_libraries()
+        python_libraries = super()._custom_python_libraries()
         python_libraries.update(
             {
-                "ovh": {
-                    "import": ovh,
-                    "help": _(
-                        "Python 'ovh' library for OVH services. "
-                        "Available methods: 'Client'<br/>"
-                        "Supports OVH services<br/>"
-                        "Please check the <a "
-                        "href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1'"
-                        " target='_blank'>OVH Documentation</a> for detailed "
-                        "information about the services and methods."
-                    ),
+                "cetmix_tower_ovh": {
+                    "ovh": {
+                        "import": ovh,
+                        "help": _(
+                            "Python 'ovh' library for OVH services. "
+                            "Available methods: 'Client'<br/>"
+                            "Supports OVH services<br/>"
+                            "Please check the <a "
+                            "href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1'"
+                            " target='_blank'>OVH Documentation</a> for detailed "
+                            "information about the services and methods."
+                        ),
+                    }
                 }
             }
         )

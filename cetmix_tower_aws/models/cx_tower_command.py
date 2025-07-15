@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import _, models
-from odoo.tools import ormcache
 from odoo.tools.safe_eval import wrap_module
 
 # Wrap boto3 safely
@@ -14,27 +13,28 @@ class CxTowerCommand(models.Model):
 
     _inherit = "cx.tower.command"
 
-    @ormcache()  # Use ormcache to cache the result
-    def _get_python_command_libraries(self):
+    def _custom_python_libraries(self):
         """
         Add the boto3 library to the available libraries.
         """
-        python_libraries = super()._get_python_command_libraries()
-        python_libraries.update(
+        custom_python_libraries = super()._custom_python_libraries()
+        custom_python_libraries.update(
             {
-                "boto3": {
-                    "import": boto3,
-                    "help": _(
-                        "Python 'boto3' library for AWS services. "
-                        "Available methods: 'client', 'resource', 'Session'<br/>"
-                        "Supports AWS services like EC2, S3, RDS, Lambda, "
-                        "CloudWatch, etc.<br/>"
-                        "Please check the <a "
-                        "href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html'"
-                        " target='_blank'>Boto3 Documentation</a> for the detailed "
-                        "information about the services and methods."
-                    ),
-                },
+                "cetmix_tower_aws": {
+                    "boto3": {
+                        "import": boto3,
+                        "help": _(
+                            "Python 'boto3' library for AWS services. "
+                            "Available methods: 'client', 'resource', 'Session'<br/>"
+                            "Supports AWS services like EC2, S3, RDS, Lambda, "
+                            "CloudWatch, etc.<br/>"
+                            "Please check the <a "
+                            "href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html'"
+                            " target='_blank'>Boto3 Documentation</a> for the detailed "
+                            "information about the services and methods."
+                        ),
+                    },
+                }
             }
         )
-        return python_libraries
+        return custom_python_libraries
