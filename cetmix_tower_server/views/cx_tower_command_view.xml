@@ -72,7 +72,10 @@
                                 placeholder="optional, eg /home/{{ tower.server.username }}"
                             />
                             <field name="allow_parallel_run" />
-                            <field name="no_split_for_sudo" />
+                            <field
+                                name="no_split_for_sudo"
+                                invisible="action != 'ssh_command'"
+                            />
                             <field name="note" />
                         </group>
                         <group>
@@ -128,6 +131,30 @@
                             invisible="action != 'python_code'"
                         >
                             <field name="command_help" />
+                        </page>
+                        <page
+                            name="plan_lines"
+                            string="Flight Plan Lines"
+                            invisible="action != 'plan'"
+                        >
+                            <field name="flight_plan_line_ids">
+                                <tree>
+                                    <field name="command_id" />
+                                    <field name="tag_ids" widget="many2many_tags" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page
+                            name="template_code"
+                            string="Template Code"
+                            invisible="action != 'file_using_template'"
+                        >
+                            <field
+                                name="template_code"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                                readonly="1"
+                            />
                         </page>
                         <page
                             name="access"
