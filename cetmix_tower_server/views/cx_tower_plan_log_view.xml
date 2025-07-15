@@ -42,6 +42,10 @@
                                 invisible="not is_running"
                             />
                             <field name="plan_status" invisible="is_running" />
+                            <field
+                                name="custom_message"
+                                invisible="not custom_message"
+                            />
                         </group>
                         <group>
                             <field name="label" invisible="not label" />

@@ -16,6 +16,7 @@ from odoo.addons.base.models.res_users import check_identity
 from ..ssh.ssh import SSHConnection, SSHManager
 from .constants import (
     ANOTHER_COMMAND_RUNNING,
+    COMMAND_NOT_COMPATIBLE_WITH_SERVER,
     COMMAND_TIMED_OUT,
     COMMAND_TIMED_OUT_MESSAGE,
     FILE_CREATION_FAILED,
@@ -844,59 +845,70 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
 
-        # Check if command can be run on this server:
-        # 1. Server is listed in command's server_ids
-        # 2. There are no server_ids at all (command is not server specific)
-        if command.server_ids and self.id not in [s.id for s in command.server_ids]:
-            raise ValidationError(
-                _(
-                    "Command '%(cmd)s' is not compatible with the server '%(server)s'.",
-                    cmd=command.name,
-                    server=self.name,
-                )  # pylint: disable=no-member
-            )
-
         # Populate `sudo` value from the server settings if not provided explicitly
         if self.sudo().ssh_username == "root":
             sudo = False
         elif sudo is None or sudo:
             sudo = self.sudo().use_sudo
 
-        # Check if no log record should be created
+        # Prepare log object
+        log_obj = self.env["cx.tower.command.log"]
+        log_vals = kwargs.get("log", {})
+        log_vals.update({"use_sudo": sudo})
 
+        # Check if no log record should be created
         no_command_log = self._context.get("no_command_log")
 
-        # Get log vals from kwargs and update them
-        if not no_command_log:
-            log_obj = self.env["cx.tower.command.log"]
-            log_vals = kwargs.get("log", {})
-            log_vals.update({"use_sudo": sudo})
+        # Check if command can be run on this server:
+        # 1. Server is listed in command's server_ids
+        # 2. There are no server_ids at all (command is not server specific)
+        if not command._check_server_compatibility(self):
+            error = _("Command is not compatible with the server")
+            if no_command_log:
+                return {
+                    "status": COMMAND_NOT_COMPATIBLE_WITH_SERVER,
+                    "response": None,
+                    "error": error,
+                }
+            log_obj.record(
+                server_id=self.id,  # pylint: disable=no-member
+                command_id=command.id,
+                status=COMMAND_NOT_COMPATIBLE_WITH_SERVER,
+                error=error,
+                **log_vals,
+            )
+            return
 
-            # Check if command is already running and parallel run is not allowed
-            if not command.allow_parallel_run:
-                running_count = log_obj.sudo().search_count(
-                    [
-                        ("server_id", "=", self.id),  # pylint: disable=no-member
-                        ("command_id", "=", command.id),
-                        ("is_running", "=", True),
-                    ]
-                )
-                # Create log record and exit
-                # if the same command is currently running on the same server
-                if running_count > 0:
-                    now = fields.Datetime.now()
-                    log_obj.record(
-                        self.id,  # pylint: disable=no-member
-                        command.id,
-                        now,
-                        now,
-                        ANOTHER_COMMAND_RUNNING,
-                        None,
-                        _("Another instance of the command is already running"),
-                        **log_vals,
-                    )
-                    return
+        # Check if another instance of the same command is running
+        another_command_running = (
+            not command.allow_parallel_run
+            and log_obj.sudo().search_count(
+                [
+                    ("server_id", "=", self.id),  # pylint: disable=no-member
+                    ("command_id", "=", command.id),
+                    ("is_running", "=", True),
+                ]
+            )
+        )
 
+        # Another command is running, return error
+        if another_command_running:
+            if no_command_log:
+                return {
+                    "status": ANOTHER_COMMAND_RUNNING,
+                    "response": None,
+                    "error": _("Another instance of the command is already running"),
+                }
+            log_obj.record(
+                server_id=self.id,  # pylint: disable=no-member
+                command_id=command.id,
+                status=ANOTHER_COMMAND_RUNNING,
+                error=_("Another instance of the command is already running"),
+                **log_vals,
+            )
+            return
+
+        # Render command
         custom_variable_values = kwargs.get("variable_values", {})
         rendered_command = self._render_command(command, path, custom_variable_values)
         rendered_command_code = rendered_command["rendered_code"]
@@ -1168,10 +1180,10 @@ class CxTowerServer(models.Model):
         )
         if log_record:
             log_record.finish(
-                fields.Datetime.now(),
-                NO_COMMAND_RUNNER_FOUND,
-                None,
-                error_message,
+                finish_date=fields.Datetime.now(),
+                status=NO_COMMAND_RUNNER_FOUND,
+                response=None,
+                error=error_message,
             )
         else:
             raise ValidationError(error_message)
@@ -1226,10 +1238,10 @@ class CxTowerServer(models.Model):
                 }
                 if log_record:
                     return log_record.finish(
-                        fields.Datetime.now(),
-                        command_result["status"],
-                        command_result["response"],
-                        command_result["error"],
+                        finish_date=fields.Datetime.now(),
+                        status=command_result["status"],
+                        response=command_result["response"],
+                        error=command_result["error"],
                     )
                 else:
                     return command_result
@@ -1248,19 +1260,19 @@ class CxTowerServer(models.Model):
 
             # Log the successful creation and upload of the file
             return log_record.finish(
-                fields.Datetime.now(),
-                0,
-                _("File created and uploaded successfully"),
-                None,
+                finish_date=fields.Datetime.now(),
+                status=0,
+                response=_("File created and uploaded successfully"),
+                error=None,
             )
 
         except Exception as e:
             # Log any exception that occurs during the process
             log_record.finish(
-                fields.Datetime.now(),
-                FILE_CREATION_FAILED,
-                None,
-                _("An error occurred: %(error)s", error=str(e)),
+                finish_date=fields.Datetime.now(),
+                status=FILE_CREATION_FAILED,
+                response=None,
+                error=_("An error occurred: %(error)s", error=str(e)),
             )
 
     def _command_runner_ssh(
@@ -1306,10 +1318,10 @@ class CxTowerServer(models.Model):
         # Log result
         if log_record:
             log_record.finish(
-                fields.Datetime.now(),
-                command_result["status"],
-                command_result["response"],
-                command_result["error"],
+                finish_date=fields.Datetime.now(),
+                status=command_result["status"],
+                response=command_result["response"],
+                error=command_result["error"],
             )
         else:
             return command_result
@@ -1362,10 +1374,10 @@ class CxTowerServer(models.Model):
         result = {"status": status, "response": response, "error": error}
         if log_record:
             log_record.finish(
-                fields.Datetime.now(),
-                result["status"],
-                result["response"],
-                result["error"],
+                finish_date=fields.Datetime.now(),
+                status=result["status"],
+                response=result["response"],
+                error=result["error"],
             )
         else:
             return result
@@ -1402,10 +1414,10 @@ class CxTowerServer(models.Model):
         # Log result
         if log_record:
             log_record.finish(
-                fields.Datetime.now(),
-                result["status"],
-                result["response"],
-                result["error"],
+                finish_date=fields.Datetime.now(),
+                status=result["status"],
+                response=result["response"],
+                error=result["error"],
             )
         else:
             return result
@@ -1738,7 +1750,9 @@ class CxTowerServer(models.Model):
         zombie_command_logs = self.env["cx.tower.command.log"].search(domain)
         if zombie_command_logs:
             zombie_command_logs.finish(
-                status=COMMAND_TIMED_OUT, error=COMMAND_TIMED_OUT_MESSAGE
+                status=COMMAND_TIMED_OUT,
+                response=None,
+                error=COMMAND_TIMED_OUT_MESSAGE,
             )
 
     # ------------------------------

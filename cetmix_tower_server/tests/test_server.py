@@ -1,5 +1,6 @@
 from odoo.exceptions import AccessError, ValidationError
 
+from ..models.constants import COMMAND_NOT_COMPATIBLE_WITH_SERVER
 from .common import TestTowerCommon
 
 
@@ -762,10 +763,27 @@ result = {
             self.fail(f"Command should execute on allowed server but failed: {e}")
 
         # Should fail on non-allowed server
-        with self.assertRaises(
-            ValidationError, msg="Command should not execute on non-allowed server"
-        ):
-            self.server_test_2.run_command(command)
+        command_result = self.server_test_2.with_context(
+            no_command_log=True
+        ).run_command(command)
+        self.assertEqual(
+            command_result["status"],
+            COMMAND_NOT_COMPATIBLE_WITH_SERVER,
+            "Command should not execute on non-allowed server",
+        )
+
+        # Clear all existing command logs
+        self.CommandLog.search([]).unlink()
+        # Same test but with command log
+        self.server_test_2.run_command(command)
+
+        command_log = self.CommandLog.search([])
+        self.assertEqual(len(command_log), 1, "Must be a single log record")
+        self.assertEqual(
+            command_log.command_status,
+            COMMAND_NOT_COMPATIBLE_WITH_SERVER,
+            "Command should not execute on non-allowed server",
+        )
 
         # Command without server restrictions should work on any server
         unrestricted_command = self.Command.create(
