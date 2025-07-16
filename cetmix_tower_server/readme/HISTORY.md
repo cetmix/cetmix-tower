@@ -1,3 +1,8 @@
+## 17.0.1.4.0 (2025-07-16)
+
+- Features: Required variables in servers (4779)
+
+
 ## 17.0.1.3.0 (2025-07-15)
 
 - Features: Improve command and flight plan log management. (4749)
