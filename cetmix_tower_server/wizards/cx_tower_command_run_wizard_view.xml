@@ -6,6 +6,7 @@
         <field name="model">cx.tower.command.run.wizard</field>
         <field name="arch" type="xml">
             <form string="Run Command">
+            <field name="has_missing_required_values" invisible="1" />
                 <div
                     class="alert alert-warning"
                     role="alert"
@@ -86,6 +87,15 @@
                             options="{'mode': 'python'}"
                             groups="cetmix_tower_server.group_manager"
                         />
+                        <div
+                            class="alert alert-danger"
+                            role="alert"
+                            invisible="not has_missing_required_values"
+                        >
+                            <span
+                            >Fill in required configuration variables on the “Configuration Values” tab before you can run the command.</span>
+                        </div>
+
                     </page>
                     <page
                         name="configuration_values"
@@ -128,14 +138,26 @@
                                     readonly="variable_type != 'o'"
                                     options="{'no_create': True}"
                                 />
+                                <field name="required" readonly="1" />
                             </tree>
                         </field>
+                        <div
+                            class="alert alert-danger"
+                            role="alert"
+                            invisible="not has_missing_required_values"
+                        >
+                            <field
+                                name="missing_required_variables_message"
+                                readonly="1"
+                                nolabel="1"
+                            />
+                        </div>
                     </page>
                     <page name="preview" string="Preview" invisible="show_servers">
                         <field
                             name="rendered_code"
                             widget="ace"
-                            options="{'mode': 'python'}"
+                            options="{'mode':'python'}"
                             groups="cetmix_tower_server.group_manager"
                         />
                     </page>
@@ -145,9 +167,9 @@
                         name="run_command_on_server"
                         type="object"
                         string="Run"
-                        help="Run code using sever method and log result"
                         class="oe_highlight"
-                        invisible="result or not command_id"
+                        help="Run code using server method and log result"
+                        invisible="result or not command_id or has_missing_required_values"
                     />
                     <button
                         name="run_command_in_wizard"
@@ -156,7 +178,7 @@
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
                         groups="cetmix_tower_server.group_manager"
-                        invisible="result or not code or show_servers"
+                        invisible="result or not code or show_servers or has_missing_required_values"
                     />
                     <button string="Cancel" special="cancel" />
                     <button

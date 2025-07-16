@@ -152,6 +152,7 @@
                                         optional="show"
                                         readonly="variable_type == 's'"
                                     />
+                                    <field name="required" optional="show" />
                                 </tree>
                                 <form>
                                     <group>
