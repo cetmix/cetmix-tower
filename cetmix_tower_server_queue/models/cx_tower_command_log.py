@@ -16,6 +16,18 @@ class CxTowerCommandLog(models.Model):
         groups="queue_job.group_queue_job_manager",
     )
 
+    command_status = fields.Integer(
+        help="0 if command finished successfully.\n"
+        "-100 general error,\n"
+        "-101 not found,\n"
+        "-201 another instance of this command is running,\n"
+        "-202 no runner found for the command action,\n"
+        "-203 Python code execution failed\n"
+        "-205 plan line condition check failed\n"
+        "503 if SSH connection error occurred\n"
+        "601 if queue job failed"
+    )
+
     def finish(
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
