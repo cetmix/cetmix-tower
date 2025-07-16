@@ -1,3 +1,9 @@
+## 16.0.1.1.0 (2025-07-16)
+
+- Features: cetmix_tower_server_queue: Add async file upload/download via job queue (3720)
+- Features: Terminate command with error if job has failed (4718)
+
+
 ## 16.0.1.0.2 (2025-05-16)
 
 - Features: 'sudo' parameter is not passed to command. (4678)

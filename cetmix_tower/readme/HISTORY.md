@@ -1,3 +1,8 @@
+## 16.0.1.1.0 (2025-07-16)
+
+- Features: cetmix_tower_server_queue: Add async file upload/download via job queue (3720)
+
+
 ## 16.0.1.0.10 (2025-06-06)
 
 - Features: Improve command and flight plan log management. (4749)
