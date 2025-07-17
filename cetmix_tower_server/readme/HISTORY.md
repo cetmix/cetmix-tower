@@ -1,3 +1,8 @@
+## 16.0.1.3.0 (2025-07-17)
+
+- Features: Add the tldextract and dnspython libraries. (4737)
+
+
 ## 16.0.1.1.4 (2025-07-07)
 
 - Bugfixes: Command log sorting (4816)
