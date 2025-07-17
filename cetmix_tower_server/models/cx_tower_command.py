@@ -341,18 +341,9 @@ class CxTowerCommand(models.Model):
                 "import": float_compare,
                 "help": _("Float compare. Odoo helper function to compare floats."),
             },
-            "env": {"import": self.env, "help": _("Odoo Environment")},
             "UserError": {
                 "import": UserError,
                 "help": _("UserError. Helper to raise UserError."),
-            },
-            "tower": {
-                "import": self.env["cetmix.tower"],
-                "help": _(
-                    "Cetmix Tower "
-                    "<a href='https://cetmix.com/tower/documentation/odoo_automation'"
-                    " target='_blank'>helper class</a> shortcut"
-                ),
             },
             "hashlib": {
                 "import": hashlib,
@@ -435,9 +426,18 @@ class CxTowerCommand(models.Model):
         return {
             "uid": {"import": self._uid, "help": _("Current Odoo user ID")},
             "user": {"import": self.env.user, "help": _("Current Odoo user")},
+            "env": {"import": self.env, "help": _("Odoo Environment")},
             "server": {
                 "import": server,
                 "help": _("Current Cetmix Tower server this command is running on"),
+            },
+            "tower": {
+                "import": self.env["cetmix.tower"],
+                "help": _(
+                    "Cetmix Tower "
+                    "<a href='https://cetmix.com/tower/documentation/odoo_automation'"
+                    " target='_blank'>helper class</a> shortcut"
+                ),
             },
         }
 
