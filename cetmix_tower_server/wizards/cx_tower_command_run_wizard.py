@@ -472,6 +472,7 @@ class CxTowerCommandRunWizardVariableValue(models.TransientModel):
     Custom variable values for command run wizard
     """
 
+    _inherit = "cx.tower.custom.variable.value.mixin"
     _name = "cx.tower.command.run.wizard.variable.value"
     _description = "Custom variable values for command run wizard"
 
@@ -479,39 +480,3 @@ class CxTowerCommandRunWizardVariableValue(models.TransientModel):
         "cx.tower.command.run.wizard",
         string="Wizard",
     )
-    variable_id = fields.Many2one(
-        "cx.tower.variable",
-        readonly=True,
-    )
-    variable_type = fields.Selection(related="variable_id.variable_type", readonly=True)
-    value_char = fields.Char(
-        string="Value",
-        compute="_compute_value_char",
-        readonly=False,
-        store=True,
-    )
-    option_id = fields.Many2one(
-        "cx.tower.variable.option", domain="[('variable_id', '=', variable_id)]"
-    )
-
-    variable_value_id = fields.Many2one("cx.tower.variable.value")
-    required = fields.Boolean(
-        related="variable_value_id.required",
-        readonly=True,
-        store=True,
-    )
-
-    @api.depends("option_id", "variable_id", "variable_type")
-    def _compute_value_char(self):
-        for rec in self:
-            if rec.variable_id and rec.variable_type == "o" and rec.option_id:
-                rec.value_char = rec.option_id.value_char
-            else:
-                rec.value_char = ""
-
-    @api.onchange("variable_id")
-    def _onchange_variable_id(self):
-        """
-        Reset option_id when variable changes.
-        """
-        self.update({"option_id": None})

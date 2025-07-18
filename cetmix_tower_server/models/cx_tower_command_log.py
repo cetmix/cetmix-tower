@@ -99,6 +99,10 @@ class CxTowerCommandLog(models.Model):
         ondelete="set null",
         help="Scheduled task that triggered this command",
     )
+    variable_values = fields.Json(
+        default={},
+        help="Custom variable values passed to the command",
+    )
 
     @api.depends("name", "command_id.name")
     def _compute_name(self):
