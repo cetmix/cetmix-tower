@@ -94,11 +94,20 @@ DEFAULT_PYTHON_CODE_HELP = _(
     <li><code>exit_code</code>: Integer. Exit code of the command. "0" means success, any other value means failure. Default value is "0".</li>
     <li><code>message</code>: String. Message to be logged. Default value is "None".</li>
 </ul>
+You can also access the <code>custom_values</code> dictionary that contains custom values provided to the command or flight plan.
+Custom values can be modified, thus can be used to pass data between commands in a flight plan.
+Please keep in mind that custom values are persistent only between commands in a flight plan and are not saved to the database.
+<br/>
 Here is an example of a python code command:
+
 <code style='white-space: pre-wrap'>
     server_name = server.name
-    result = {"exit_code": 0, "message": "Server name is " + server_name}
-    custom_values["server_name"] = server_name
+    build_name = custom_values.get("build_name")
+    if build_name:
+        result = {"exit_code": 0, "message": "Build name for " + server_name + " is " + build_name}
+    else:
+        result = {"exit_code": 0, "message": "No build name provided for " + server_name}
+    custom_values["build_name"] = "New build name"
 </code>
 </p>
 <br>
