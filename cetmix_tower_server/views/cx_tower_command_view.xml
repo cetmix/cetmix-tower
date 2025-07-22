@@ -68,6 +68,7 @@
                             />
                             <field
                                 name="path"
+                                widget="ace_tower"
                                 attrs="{'invisible': [('action', '=', 'python_code')]}"
                                 placeholder="optional, eg /home/{{ tower.server.username }}"
                             />
@@ -120,7 +121,7 @@
                             <field
                                 name="code"
                                 attrs="{'required': [('action', '=', 'python_code')]}"
-                                widget="ace"
+                                widget="ace_tower"
                                 options="{'mode': 'python'}"
                                 placeholder="Enter Python code here. Help about Python expression is available in the help tab of this document."
                             />

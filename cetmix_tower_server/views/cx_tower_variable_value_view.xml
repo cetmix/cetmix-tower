@@ -23,6 +23,7 @@
                 />
                 <field
                     name="value_char"
+                    widget="ace_tower"
                     attrs="{'readonly': [('variable_type', '=', 'o')]}"
                 />
                 <field
