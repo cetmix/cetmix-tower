@@ -61,10 +61,20 @@ msgid ""
 "    <li><code>exit_code</code>: Integer. Exit code of the command. \"0\" means success, any other value means failure. Default value is \"0\".</li>\n"
 "    <li><code>message</code>: String. Message to be logged. Default value is \"None\".</li>\n"
 "</ul>\n"
+"You can also access the <code>custom_values</code> dictionary that contains custom values provided to the command or flight plan.\n"
+"Custom values can be modified, thus can be used to pass data between commands in a flight plan.\n"
+"Please keep in mind that custom values are persistent only between commands in a flight plan and are not saved to the database.\n"
+"<br/>\n"
 "Here is an example of a python code command:\n"
+"\n"
 "<code style='white-space: pre-wrap'>\n"
 "    server_name = server.name\n"
-"    result = {\"exit_code\": 0, \"message\": \"Server name is \" + server_name}\n"
+"    build_name = custom_values.get(\"build_name\")\n"
+"    if build_name:\n"
+"        result = {\"exit_code\": 0, \"message\": \"Build name for \" + server_name + \" is \" + build_name}\n"
+"    else:\n"
+"        result = {\"exit_code\": 0, \"message\": \"No build name provided for \" + server_name}\n"
+"    custom_values[\"build_name\"] = \"New build name\"\n"
 "</code>\n"
 "</p>\n"
 "<br>\n"
@@ -483,6 +493,16 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__auto_sync_interval
 msgid "Auto Sync Interval"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__value_char
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__value_char
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__value_char
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task_cv__value_char
+msgid ""
+"Automatically populated from selected option. Manual edits will be "
+"overwritten when option changes."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -942,6 +962,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__command_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_root
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Commands"
@@ -979,6 +1000,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Configuration Values"
 msgstr ""
@@ -1056,6 +1078,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__create_uid
@@ -1087,6 +1110,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__create_date
@@ -1152,6 +1176,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__custom_variable_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__custom_variable_value_ids
 msgid "Custom Variable Value"
 msgstr ""
 
@@ -1184,13 +1209,33 @@ msgid "Custom secret values can be defined only for key type 'secret'"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_custom_variable_value_mixin
+msgid "Custom variable values"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command_run_wizard_variable_value
 msgid "Custom variable values for command run wizard"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_run_wizard_variable_value
+msgid "Custom variable values for plan run wizard"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_scheduled_task_cv
 msgid "Custom variable values for scheduled tasks"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__variable_values
+msgid "Custom variable values passed to the command"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__variable_values
+msgid "Custom variable values passed to the flight plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1248,6 +1293,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__display_name
@@ -1873,6 +1919,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__id
@@ -2113,6 +2160,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__write_uid
@@ -2144,6 +2192,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__write_date
@@ -2600,6 +2649,8 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__option_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__option_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__option_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__option_id
@@ -3081,6 +3132,9 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__required
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__required
 msgid "Required"
@@ -4022,6 +4076,8 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_type
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__variable_type
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_type
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_type
@@ -4161,6 +4217,8 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__value_char
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__value_char
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__value_char
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__value_char
@@ -4196,6 +4254,8 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__variable_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__variable_id
@@ -4220,6 +4280,9 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__variable_value_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_custom_variable_value_mixin__variable_value_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__variable_value_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__variable_value_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__variable_value_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__variable_value_ids
 msgid "Variable Value"
@@ -4235,7 +4298,9 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable_value
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__variable_values
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__variable_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__variable_values
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__variable_value_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__variable_value_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin__variable_value_ids
@@ -4373,6 +4438,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__wizard_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard_variable_value__wizard_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__wizard_id
 msgid "Wizard"
 msgstr ""
