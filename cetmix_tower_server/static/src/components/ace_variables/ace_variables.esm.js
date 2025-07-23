@@ -20,17 +20,18 @@ class AceCommandField extends AceField {
         this.clickOutsideListener = null;
         this.inputTimeout = null;
         this.variables = [];
-        this.variablesLoaded = false;
+        this.secrets = [];
 
         // Use reactive state for properties that affect rendering
         this.state = useState({
             showPopup: false,
-            popupVariables: [],
+            popupItems: [],
             popupPosition: {},
             selectedIndex: 0,
+            // Add popup type to distinguish between variables and secrets
+            popupType: "variables",
         });
 
-        this.loadVariables();
         this.updateSelectedIndex = this.updateSelectedIndex.bind(this);
     }
 
@@ -45,16 +46,35 @@ class AceCommandField extends AceField {
                 [],
                 ["name", "reference"]
             );
-            this.variablesLoaded = true;
             console.log(`Loaded ${this.variables.length} variables for autocomplete`);
         } catch (error) {
             console.error("Failed to load variables for autocomplete:", error);
             this.variables = [];
-            this.variablesLoaded = false;
             this.env.services.notification.add(
                 "Failed to load autocomplete variables",
                 {type: "warning"}
             );
+        }
+    }
+
+    /**
+     * Load secrets from the backend using ORM service
+     * @returns {Promise<void>}
+     */
+    async loadSecrets() {
+        try {
+            this.secrets = await this.orm.searchRead(
+                "cx.tower.key",
+                [["key_type", "=", "s"]],
+                ["name", "reference"]
+            );
+            console.log(`Loaded ${this.secrets.length} secrets for autocomplete`);
+        } catch (error) {
+            console.error("Failed to load secrets for autocomplete:", error);
+            this.secrets = [];
+            this.env.services.notification.add("Failed to load autocomplete secrets", {
+                type: "warning",
+            });
         }
     }
 
@@ -87,7 +107,7 @@ class AceCommandField extends AceField {
             },
         });
 
-        // Set up input listener for {{ trigger
+        // Set up input listener for {{ and #! triggers
         this.inputListener = () => {
             // Clear any existing timeout
             if (this.inputTimeout) {
@@ -100,6 +120,7 @@ class AceCommandField extends AceField {
                 const line = session.getLine(cursor.row);
                 const textBeforeCursor = line.substring(0, cursor.column);
 
+                // Check for variables trigger {{
                 if (textBeforeCursor.endsWith("{{")) {
                     // Remove {{ symbols from editor
                     const startColumn = Math.max(0, cursor.column - 2);
@@ -115,7 +136,25 @@ class AceCommandField extends AceField {
                         column: startColumn,
                     };
                     this.aceEditor.moveCursorToPosition(newCursor);
-                    this.showCustomCompletions(this.aceEditor);
+                    this.showCustomCompletions(this.aceEditor, "variables");
+                }
+                // Check for secrets trigger !#
+                else if (textBeforeCursor.endsWith("#!")) {
+                    // Remove !# symbols from editor
+                    const startColumn = Math.max(0, cursor.column - 2);
+                    const range = {
+                        start: {row: cursor.row, column: startColumn},
+                        end: {row: cursor.row, column: cursor.column},
+                    };
+                    session.replace(range, "");
+
+                    // Update cursor position
+                    const newCursor = {
+                        row: cursor.row,
+                        column: startColumn,
+                    };
+                    this.aceEditor.moveCursorToPosition(newCursor);
+                    this.showCustomCompletions(this.aceEditor, "secrets");
                 }
             }, 10);
         };
@@ -124,40 +163,52 @@ class AceCommandField extends AceField {
     }
 
     /**
-     * Show custom completions popup with available variables
+     * Show custom completions popup with available variables or secrets
      * @param {Object} editor - ACE editor instance
+     * @param {String} type - Type of completion ('variables' or 'secrets')
      * @returns {Promise<void>}
      */
-    async showCustomCompletions(editor) {
+    async showCustomCompletions(editor, type = "variables") {
         const cursor = editor.getCursorPosition();
         const session = editor.getSession();
         const line = session.getLine(cursor.row);
         const textBeforeCursor = line.substring(0, cursor.column);
 
-        // Check if we're already in a variable context
-        const isInVariableContext = textBeforeCursor.endsWith("{{");
-        // Check if we're inside a variable (between {{ and }})
-        const lastOpenBrace = textBeforeCursor.lastIndexOf("{{");
-        const lastCloseBrace = textBeforeCursor.lastIndexOf("}}");
-        const isInsideVariable = lastOpenBrace > lastCloseBrace && lastOpenBrace !== -1;
+        let items = [];
+        let triggerLength = 0;
 
-        if (!this.variablesLoaded) {
+        if (type === "secrets") {
+            // Handle secrets
+            await this.loadSecrets();
+
+            if (!this.secrets.length) {
+                return;
+            }
+
+            items = this.secrets;
+        } else {
+            // Handle variables
             await this.loadVariables();
-        }
 
-        if (!this.variables.length) {
-            return;
+            if (!this.variables.length) {
+                return;
+            }
+
+            items = this.variables;
+            // Check if we're already in a variable context
+            const isInVariableContext = textBeforeCursor.endsWith("{{");
+
+            if (isInVariableContext) {
+                triggerLength = 2;
+            }
         }
 
         const position = this.calculatePopupPosition(editor, cursor);
 
-        // If we're already inside a variable context, just show popup
-        if (isInVariableContext || isInsideVariable) {
-            await this.showAutocompletePopup(this.variables, position, editor, 2);
-        } else {
-            // Just show popup without inserting anything
-            await this.showAutocompletePopup(this.variables, position, editor, 0);
-        }
+        // Set popup type in state
+        this.state.popupType = type;
+
+        await this.showAutocompletePopup(items, position, editor, triggerLength, type);
     }
 
     /**
@@ -218,22 +269,31 @@ class AceCommandField extends AceField {
     }
 
     /**
-     * Display the autocomplete popup with variables at the specified position
-     * @param {Array} variables - Array of available variables
+     * Display the autocomplete popup with variables or secrets at the specified position
+     * @param {Array} items - Array of available variables or secrets
      * @param {Object} position - Position object with left and top coordinates
      * @param {Object} editor - ACE editor instance
      * @param {Number} triggerLength - Length of trigger text that should be replaced
+     * @param {String} type - Type of completion ('variables' or 'secrets')
      * @returns {Promise<void>}
      */
-    async showAutocompletePopup(variables, position, editor, triggerLength) {
+    async showAutocompletePopup(
+        items,
+        position,
+        editor,
+        triggerLength,
+        type = "variables"
+    ) {
         this.hideAutocompletePopup();
 
-        this.state.popupVariables = variables;
+        this.state.popupItems = items;
         this.state.popupPosition = position;
         this.state.showPopup = true;
         this.state.selectedIndex = 0;
+        this.state.popupType = type;
         this.currentEditor = editor;
         this.currentTriggerLength = triggerLength;
+        this.currentType = type;
 
         // Add click outside listener
         this.clickOutsideListener = (event) => {
@@ -305,42 +365,101 @@ class AceCommandField extends AceField {
 
         // Get line length for validation
         const lineLength = session.getLine(cursor.row).length;
-
-        // Check if we're already in a variable context
-        const lastOpenBrace = textBeforeCursor.lastIndexOf("{{");
-        const lastCloseBrace = textBeforeCursor.lastIndexOf("}}");
-        const isInsideVariable = lastOpenBrace > lastCloseBrace && lastOpenBrace !== -1;
+        const currentType = this.currentType || this.state.popupType;
 
         let range = null;
         let insertText = "";
 
-        if (isInsideVariable) {
-            // We're inside a variable context, replace from after {{ to cursor
-            range = {
-                start: {row: cursor.row, column: lastOpenBrace + 2},
-                end: {row: cursor.row, column: cursor.column},
-            };
-            // Clamp range to valid bounds
-            range.start.column = Math.max(0, Math.min(range.start.column, lineLength));
-            range.end.column = Math.max(
-                range.start.column,
-                Math.min(range.end.column, lineLength)
-            );
-            insertText = ` ${command.reference} `;
+        if (currentType === "secrets") {
+            // Handle secrets insertion
+            // Check if we're inside a secret context (between #!cxtower.secret and !#)
+            const lastSecretStart = textBeforeCursor.lastIndexOf("#!cxtower.secret");
+            const lastSecretEnd = textBeforeCursor.lastIndexOf("!#");
+
+            // Count occurrences of start and end delimiters for more robust validation
+            const startCount = (textBeforeCursor.match(/#!cxtower\.secret/g) || [])
+                .length;
+            const endCount = (textBeforeCursor.match(/!#/g) || []).length;
+            const isInsideSecret =
+                startCount > endCount &&
+                lastSecretStart > lastSecretEnd &&
+                lastSecretStart !== -1;
+
+            if (isInsideSecret) {
+                // We're inside a secret context, replace from after #!cxtower to cursor
+                range = {
+                    start: {row: cursor.row, column: lastSecretStart + 16},
+                    end: {row: cursor.row, column: cursor.column},
+                };
+                // Clamp range to valid bounds
+                range.start.column = Math.max(
+                    0,
+                    Math.min(range.start.column, lineLength)
+                );
+                range.end.column = Math.max(
+                    range.start.column,
+                    Math.min(range.end.column, lineLength)
+                );
+                insertText = `${command.reference}!#`;
+            } else {
+                // We're not in a secret context, insert complete secret
+                const triggerLength = this.currentTriggerLength || 0;
+                range = {
+                    start: {row: cursor.row, column: cursor.column - triggerLength},
+                    end: {row: cursor.row, column: cursor.column},
+                };
+                // Clamp range to valid bounds
+                range.start.column = Math.max(
+                    0,
+                    Math.min(range.start.column, lineLength)
+                );
+                range.end.column = Math.max(
+                    range.start.column,
+                    Math.min(range.end.column, lineLength)
+                );
+                insertText = `#!cxtower.secret.${command.reference}!#`;
+            }
         } else {
-            // We're not in a variable context, insert complete variable
-            const triggerLength = this.currentTriggerLength || 0;
-            range = {
-                start: {row: cursor.row, column: cursor.column - triggerLength},
-                end: {row: cursor.row, column: cursor.column},
-            };
-            // Clamp range to valid bounds
-            range.start.column = Math.max(0, Math.min(range.start.column, lineLength));
-            range.end.column = Math.max(
-                range.start.column,
-                Math.min(range.end.column, lineLength)
-            );
-            insertText = `{{ ${command.reference} }}`;
+            // Handle variables insertion (existing logic)
+            const lastOpenBrace = textBeforeCursor.lastIndexOf("{{");
+            const lastCloseBrace = textBeforeCursor.lastIndexOf("}}");
+            const isInsideVariable =
+                lastOpenBrace > lastCloseBrace && lastOpenBrace !== -1;
+
+            if (isInsideVariable) {
+                // We're inside a variable context, replace from after {{ to cursor
+                range = {
+                    start: {row: cursor.row, column: lastOpenBrace + 2},
+                    end: {row: cursor.row, column: cursor.column},
+                };
+                // Clamp range to valid bounds
+                range.start.column = Math.max(
+                    0,
+                    Math.min(range.start.column, lineLength)
+                );
+                range.end.column = Math.max(
+                    range.start.column,
+                    Math.min(range.end.column, lineLength)
+                );
+                insertText = ` ${command.reference} `;
+            } else {
+                // We're not in a variable context, insert complete variable
+                const triggerLength = this.currentTriggerLength || 0;
+                range = {
+                    start: {row: cursor.row, column: cursor.column - triggerLength},
+                    end: {row: cursor.row, column: cursor.column},
+                };
+                // Clamp range to valid bounds
+                range.start.column = Math.max(
+                    0,
+                    Math.min(range.start.column, lineLength)
+                );
+                range.end.column = Math.max(
+                    range.start.column,
+                    Math.min(range.end.column, lineLength)
+                );
+                insertText = `{{ ${command.reference} }}`;
+            }
         }
 
         // Replace the text

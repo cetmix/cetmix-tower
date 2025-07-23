@@ -150,7 +150,7 @@ class AutocompletePopup extends Component {
             if (this.props.onSelectedIndexChange) {
                 this.props.onSelectedIndexChange(0);
             }
-        }, 150); // 150ms delay
+        }, 150);
     }
 
     /**
@@ -311,6 +311,7 @@ AutocompletePopup.props = {
     position: {type: Object},
     selectedIndex: {type: Number, optional: true},
     onSelectedIndexChange: {type: Function, optional: true},
+    type: {type: String, optional: true},
 };
 
 export {AutocompletePopup};
