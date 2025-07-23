@@ -224,6 +224,11 @@ class CxTowerCommand(models.Model):
         help_text_fragments = []
         for key, value in available_libraries.items():
             help_text_fragments.append(f"<li><code>{key}</code>: {value['help']}</li>")
+
+        help_text_fragments.append(
+            f"<li><code>custom_values</code>: {_('Flight plan custom values')}</li>"
+        )
+
         help_text = "<ul>" + "".join(help_text_fragments) + "</ul>"
         return f"{DEFAULT_PYTHON_CODE_HELP}{help_text}"
 
@@ -490,7 +495,7 @@ class CxTowerCommand(models.Model):
         """
         return {}
 
-    def _get_python_command_eval_context(self, server=None):
+    def _get_python_command_eval_context(self, server=None, **kwargs):
         """
         Get the evaluation context for the python command.
         This method is used to get the evaluation context for the python command.
@@ -508,4 +513,6 @@ class CxTowerCommand(models.Model):
         # Update with the libraries
         imports.update(self._get_python_command_libraries())
         eval_context = {key: value["import"] for key, value in imports.items()}
+
+        eval_context["custom_values"] = kwargs.get("variable_values", {})
         return eval_context
