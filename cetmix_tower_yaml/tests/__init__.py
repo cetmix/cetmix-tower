@@ -5,3 +5,4 @@ from . import test_plan
 from . import test_yaml_export_wizard
 from . import test_yaml_import_wizard
 from . import test_server_log
+from . import test_server_yaml
