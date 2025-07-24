@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Git",
     "summary": "Cetmix Tower Git Management Tools",
-    "version": "17.0.1.0.2",
+    "version": "17.0.1.0.3",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://cetmix.com",
