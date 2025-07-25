@@ -795,13 +795,6 @@ msgid "Close"
 msgstr ""
 
 #. module: cetmix_tower_server
-#. odoo-javascript
-#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
-#, python-format
-msgid "Close variable search"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__code
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__code
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__code
@@ -2508,6 +2501,13 @@ msgid "No runner found for command action '%(cmd_action)s'"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-javascript
+#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
+#, python-format
+msgid "No secrets found"
+msgstr ""
+
+#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
@@ -3552,20 +3552,6 @@ msgid "Search Values"
 msgstr ""
 
 #. module: cetmix_tower_server
-#. odoo-javascript
-#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
-#, python-format
-msgid "Search variables"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-javascript
-#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
-#, python-format
-msgid "Search variables..."
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key__key_type__s
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Secret"
@@ -4404,13 +4390,6 @@ msgstr ""
 msgid ""
 "Variable reference '%(var_ref)s' has an invalid option reference "
 "'%(opt_ref)s'."
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-javascript
-#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
-#, python-format
-msgid "Variable search"
 msgstr ""
 
 #. module: cetmix_tower_server
