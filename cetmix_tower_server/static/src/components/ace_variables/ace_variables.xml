@@ -4,9 +4,10 @@
         <t t-call="web.AceField" />
         <t t-if="state.showPopup">
             <AutocompletePopup
-                commands="state.popupVariables"
+                commands="state.popupItems"
                 position="state.popupPosition"
                 selectedIndex="state.selectedIndex"
+                type="state.popupType"
                 onSelectedIndexChange="updateSelectedIndex"
                 onItemClick="(command) => this.handleCommandSelection(command, this.currentEditor)"
             />

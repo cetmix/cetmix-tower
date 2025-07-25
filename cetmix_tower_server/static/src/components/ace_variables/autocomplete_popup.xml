@@ -6,10 +6,10 @@
             t-ref="popupRef"
             tabindex="0"
             role="combobox"
-            aria-label="Variable search"
+            t-att-aria-label="props.type === 'secrets' ? 'Secret search' : 'Variable search'"
             aria-expanded="true"
             aria-haspopup="listbox"
-            aria-owns="variables-list"
+            t-att-aria-owns="props.type === 'secrets' ? 'secrets-list' : 'variables-list'"
         >
             <!-- Close button for mobile convenience -->
             <button
@@ -17,7 +17,7 @@
                 t-on-click="onCloseClick"
                 type="button"
                 title="Close"
-                aria-label="Close variable search"
+                t-att-aria-label="props.type === 'secrets' ? 'Close secret search' : 'Close variable search'"
             >
                 ×
             </button>
@@ -26,47 +26,48 @@
                 <input
                     type="text"
                     class="ace-autocomplete-search-input"
-                    placeholder="Search variables..."
+                    t-att-placeholder="props.type === 'secrets' ? 'Search secrets...' : 'Search variables...'"
                     t-model="state.searchTerm"
                     t-ref="searchInput"
                     t-on-input="onSearchInput"
                     t-on-keydown="onSearchKeyDown"
                     t-on-focus="onSearchFocus"
                     t-on-blur="onSearchBlur"
-                    aria-label="Search variables"
-                    aria-controls="variables-list"
+                    t-att-aria-label="props.type === 'secrets' ? 'Search secrets' : 'Search variables'"
+                    t-att-aria-controls="props.type === 'secrets' ? 'secrets-list' : 'variables-list'"
                     aria-autocomplete="list"
-                    t-att-aria-activedescendant="`var-opt-${state.selectedIndex}`"
+                    t-att-aria-activedescendant="`${props.type === 'secrets' ? 'sec' : 'var'}-opt-${props.selectedIndex}`"
                 />
             </div>
-            <!-- Variables list -->
+            <!-- Items list -->
             <div
                 class="ace-autocomplete-items"
                 t-ref="itemsContainer"
-                id="variables-list"
+                t-att-id="props.type === 'secrets' ? 'secrets-list' : 'variables-list'"
                 role="listbox"
             >
                 <div
                     t-foreach="filteredCommands"
                     t-as="command"
                     t-key="command.name"
-                    t-att-id="`var-opt-${command_index}`"
+                    t-att-id="`${props.type === 'secrets' ? 'sec' : 'var'}-opt-${command_index}`"
                     t-att-class="getItemClass(command_index)"
                     t-on-click="() => this.onItemClick(command)"
                     role="option"
-                    t-att-aria-selected="command_index === state.selectedIndex ? 'true' : 'false'"
+                    t-att-aria-selected="command_index === props.selectedIndex ? 'true' : 'false'"
                 >
                     <span class="command-name" t-esc="command.name" />
                     <span
                         class="command-description"
-                        t-esc="`{{ ${command.reference} }}`"
+                        t-esc="props.type === 'secrets' ? `${command.reference}` : `{{ ${command.reference} }}`"
                     />
                 </div>
                 <div
                     t-if="!filteredCommands.length"
                     class="ace-autocomplete-no-results"
                 >
-                    No variables found
+                    <t t-if="props.type === 'secrets'">No secrets found</t>
+                    <t t-else="">No variables found</t>
                 </div>
             </div>
         </div>
