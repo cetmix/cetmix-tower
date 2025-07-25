@@ -1,3 +1,8 @@
+## 16.0.1.5.1 (2025-07-25)
+
+- Features: Select secrets from dropdown list in the code fields (4853)
+
+
 ## 16.0.1.5.0 (2025-07-22)
 
 - Features: Select variables from dropdown list in the code fields (4827)
