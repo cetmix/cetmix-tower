@@ -83,8 +83,9 @@ class CxTowerFile(models.Model):
                 result = super().upload(raise_error=raise_error)
                 single_msg = _("File uploaded!")
                 plural_msg = _("Files uploaded!")
-                self.env["bus.bus"].sudo().sendone(
-                    (self._cr.dbname, "res.partner", self.env.user.partner_id.id),
+                self.env["bus.bus"].sudo()._sendone(
+                    self.env.user.partner_id,
+                    "simple_notification",
                     {
                         "message": single_msg if len(self) == 1 else plural_msg,
                         "title": _("Success"),
@@ -111,8 +112,9 @@ class CxTowerFile(models.Model):
                 result = super().download(raise_error=raise_error)
                 single_msg = _("File downloaded!")
                 plural_msg = _("Files downloaded!")
-                self.env["bus.bus"].sudo().sendone(
-                    (self._cr.dbname, "res.partner", self.env.user.partner_id.id),
+                self.env["bus.bus"].sudo()._sendone(
+                    self.env.user.partner_id,
+                    "simple_notification",
                     {
                         "message": single_msg if len(self) == 1 else plural_msg,
                         "title": _("Success"),
