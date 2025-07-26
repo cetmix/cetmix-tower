@@ -45,6 +45,7 @@
                 t-ref="itemsContainer"
                 t-att-id="props.type === 'secrets' ? 'secrets-list' : 'variables-list'"
                 role="listbox"
+                aria-live="polite"
             >
                 <div
                     t-foreach="filteredCommands"

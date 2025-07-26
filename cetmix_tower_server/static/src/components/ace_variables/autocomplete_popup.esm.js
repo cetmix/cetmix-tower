@@ -67,6 +67,17 @@ class AutocompletePopup extends Component {
     }
 
     /**
+     * Component destruction cleanup
+     * Clears any pending timeouts to prevent memory leaks
+     */
+    destroy() {
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+        super.destroy();
+    }
+
+    /**
      * Updates search term from external keyboard input (from editor)
      * @param {String} char - The character typed or 'Backspace' for deletion
      */
@@ -77,7 +88,8 @@ class AutocompletePopup extends Component {
             this.state.searchTerm += char;
         }
         if (this.props.onSelectedIndexChange) {
-            this.props.onSelectedIndexChange(0);
+            const newIndex = this.filteredCommands.length > 0 ? 0 : -1;
+            this.props.onSelectedIndexChange(newIndex);
         }
     }
 
@@ -87,13 +99,13 @@ class AutocompletePopup extends Component {
      */
     get filteredCommands() {
         if (!this.state.searchTerm.trim()) {
-            return this.props.commands;
+            return this.props.commands || [];
         }
 
         const searchTerm = this.state.searchTerm.toLowerCase();
 
-        // Filter and score commands based on search relevance
-        const scoredCommands = this.props.commands
+        const commands = this.props.commands || [];
+        const scoredCommands = commands
             .map((command) => {
                 const name = (command.name || "").toLowerCase();
                 const reference = (command.reference || "").toLowerCase();
@@ -148,7 +160,8 @@ class AutocompletePopup extends Component {
         this.searchTimeout = setTimeout(() => {
             this.state.searchTerm = searchTerm;
             if (this.props.onSelectedIndexChange) {
-                this.props.onSelectedIndexChange(0);
+                const newIndex = this.filteredCommands.length > 0 ? 0 : -1;
+                this.props.onSelectedIndexChange(newIndex);
             }
         }, 150);
     }
@@ -169,26 +182,29 @@ class AutocompletePopup extends Component {
     handleKeyboardNavigation(ev) {
         if (ev.key === "ArrowDown") {
             ev.preventDefault();
-            const newIndex = Math.min(
-                (this.props.selectedIndex || 0) + 1,
-                this.filteredCommands.length - 1
-            );
+            const len = this.filteredCommands.length;
+            if (len === 0) return;
+            const current = this.props.selectedIndex ?? -1;
+            const newIndex = Math.min(current + 1, len - 1);
             if (this.props.onSelectedIndexChange) {
                 this.props.onSelectedIndexChange(newIndex);
             }
             this.scrollToSelected();
         } else if (ev.key === "ArrowUp") {
             ev.preventDefault();
-            const newIndex = Math.max((this.props.selectedIndex || 0) - 1, 0);
+            const len = this.filteredCommands.length;
+            if (len === 0) return;
+            const current = this.props.selectedIndex ?? -1;
+            const newIndex = current <= 0 ? 0 : current - 1;
             if (this.props.onSelectedIndexChange) {
                 this.props.onSelectedIndexChange(newIndex);
             }
             this.scrollToSelected();
         } else if (ev.key === "Enter") {
             ev.preventDefault();
-            const selectedCommand =
-                this.filteredCommands[this.props.selectedIndex || 0];
-            if (selectedCommand) {
+            const idx = this.props.selectedIndex ?? -1;
+            if (idx >= 0) {
+                const selectedCommand = this.filteredCommands[idx];
                 this.onItemClick(selectedCommand);
             }
         } else if (ev.key === "Escape") {
@@ -254,24 +270,6 @@ class AutocompletePopup extends Component {
     }
 
     /**
-     * Handles global keydown events for the popup
-     * @param {KeyboardEvent} ev - The keyboard event
-     */
-    onKeyDown(ev) {
-        // Handle search input from editor keyboard events
-        if (ev.key.length === 1 && ev.key.match(/[a-zA-Z0-9_]/)) {
-            // Add typed character to search
-            this.updateSearchFromEditor(ev.key);
-        } else if (ev.key === "Backspace") {
-            // Remove last character from search
-            this.updateSearchFromEditor("Backspace");
-        } else {
-            // Use common keyboard navigation logic
-            this.handleKeyboardNavigation(ev);
-        }
-    }
-
-    /**
      * Scrolls the selected item into view
      */
     scrollToSelected() {
@@ -298,7 +296,7 @@ class AutocompletePopup extends Component {
      * @returns {String} CSS class string
      */
     getItemClass(index) {
-        return index === (this.props.selectedIndex || 0)
+        return index === (this.props.selectedIndex ?? -1)
             ? "ace-autocomplete-item ace-autocomplete-item-selected"
             : "ace-autocomplete-item";
     }

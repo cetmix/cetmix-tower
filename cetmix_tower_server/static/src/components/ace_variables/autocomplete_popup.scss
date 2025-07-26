@@ -1,11 +1,11 @@
 // Define z-index variable for better management
-$z-index-autocomplete: 1050; // Above dropdowns but below modals
+$z-index-autocomplete: 1050 !default; // Above dropdowns but below modals
 
 .ace-autocomplete-popup {
-    position: absolute; // Keep original positioning for cursor placement
+    position: absolute;
     background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     z-index: $z-index-autocomplete;
     min-width: 300px;
@@ -23,14 +23,15 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
         left: 50% !important;
         transform: translateX(-50%);
         font-size: 13px;
+        max-height: 90vh;
     }
 }
 
 .ace-autocomplete-search {
     padding: 8px;
     padding-right: 48px; // Add right padding to avoid overlap with close button
-    border-bottom: 1px solid #eee;
-    background: #f8f9fa;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg, #f8f9fa);
 
     // Mobile: reduce padding
     @media (max-width: 768px) {
@@ -42,8 +43,8 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
 .ace-autocomplete-search-input {
     width: 100%;
     padding: 6px 10px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
     font-size: 13px;
     outline: none;
     box-sizing: border-box;
@@ -57,10 +58,11 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
 .ace-autocomplete-items {
     max-height: 240px;
     overflow-y: auto;
+    color-scheme: light dark; /* Let the UA adapt colors when possible */
 
     /* Standard scrollbar styling (Firefox 64+) */
     scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    scrollbar-color: var(--bs-border-color, #c1c1c1) var(--bs-tertiary-bg, #f1f1f1);
 }
 
 /* Scrollbar styling for webkit browsers */
@@ -69,22 +71,22 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
 }
 
 .ace-autocomplete-items::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--bs-tertiary-bg, #f1f1f1);
 }
 
 .ace-autocomplete-items::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+    background: var(--bs-border-color, #c1c1c1);
     border-radius: 3px;
 }
 
 .ace-autocomplete-items::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
+    background: var(--bs-secondary-color, #a8a8a8);
 }
 
 .ace-autocomplete-item {
     padding: 8px 12px;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--bs-border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -98,16 +100,16 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
 }
 
 .ace-autocomplete-item:hover {
-    background-color: #f5f5f5;
+    background-color: var(--bs-tertiary-bg, #f5f5f5);
 }
 
 .ace-autocomplete-item-selected {
-    background-color: #e6f3ff;
-    color: #0066cc;
+    background-color: var(--bs-primary-bg-subtle, #e6f3ff);
+    color: var(--bs-primary, #0d6efd);
 }
 
 .ace-autocomplete-item-selected:hover {
-    background-color: #cce7ff;
+    background-color: var(--bs-primary-border-subtle, #cce7ff);
 }
 
 .command-name {
@@ -145,7 +147,7 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
 .ace-autocomplete-no-results {
     padding: 16px 12px;
     text-align: center;
-    color: #999;
+    color: var(--bs-secondary-color, #6c757d);
     font-style: italic;
 }
 
@@ -158,7 +160,7 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
     border: none;
     font-size: 20px;
     font-weight: bold;
-    color: #666;
+    color: var(--bs-secondary-color, #6c757d);
     cursor: pointer;
     padding: 4px 8px;
     line-height: 1;
@@ -171,12 +173,12 @@ $z-index-autocomplete: 1050; // Above dropdowns but below modals
     justify-content: center;
 
     &:hover {
-        background-color: #f0f0f0;
-        color: #333;
+        background-color: var(--bs-secondary-bg, #f0f0f0);
+        color: var(--bs-body-color);
     }
 
     &:active {
-        background-color: #e0e0e0;
+        background-color: var(--bs-tertiary-bg, #e0e0e0);
     }
 
     // Mobile-friendly touch target

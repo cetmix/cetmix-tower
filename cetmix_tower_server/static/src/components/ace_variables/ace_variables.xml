@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
     <t t-name="cetmix_tower_server.AceCommandField" owl="1">
-        <t t-call="web.AceField" />
-        <t t-if="state.showPopup">
-            <AutocompletePopup
-                commands="state.popupItems"
-                position="state.popupPosition"
-                selectedIndex="state.selectedIndex"
-                type="state.popupType"
-                onSelectedIndexChange="updateSelectedIndex"
-                onItemClick="(command) => this.handleCommandSelection(command, this.currentEditor)"
+        <div class="o_field_widget oe_form_field o_ace_view_editor oe_ace_open">
+            <CodeEditorTower
+                value="state.initialValue"
+                mode="mode"
+                readonly="props.readonly"
+                onBlur.bind="commitChanges"
+                onChange.bind="handleChange"
+                class="'ace-view-editor'"
+                theme="theme"
+                maxLines="200"
             />
-        </t>
+        </div>
     </t>
 </templates>
