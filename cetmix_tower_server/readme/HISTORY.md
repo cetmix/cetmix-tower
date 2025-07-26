@@ -1,3 +1,8 @@
+## 17.0.1.10.0 (2025-08-21)
+
+- Features: Select secrets from dropdown list in the code fields (4853)
+
+
 ## 17.0.1.8.3 (2025-08-16)
 
 - Features: Improve access settings for logs (4866)
