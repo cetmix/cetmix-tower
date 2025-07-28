@@ -28,7 +28,11 @@
                     <group>
                         <group>
                             <field name="name" widget="ace_tower" />
-                            <field name="reference" />
+                            <!-- This is done to get the priority to the auto generated reference -->
+                            <field
+                                name="reference"
+                                attrs="{'invisible': [('reference', '=', False)]}"
+                            />
                             <field name="source" required="1" />
                             <field name="file_type" />
                             <field name="id" invisible="1" />
@@ -148,10 +152,10 @@
             <tree>
                 <field name="name" optional="hide" />
                 <field name="rendered_name" optional="show" />
+                <field name="reference" optional="hide" />
                 <field name="full_server_path" optional="hide" />
                 <field name="source" />
                 <field name="file_type" optional="show" />
-                <field name="file" widget="binary" optional="hide" filename="name" />
                 <field name="server_id" />
                 <field name="sync_date_last" optional="show" />
                 <field name="template_id" optional="show" />
@@ -171,6 +175,7 @@
         <field name="arch" type="xml">
             <search string="Search Files">
                 <field name="name" />
+                <field name="reference" />
                 <field name="server_id" />
                 <field name="server_dir" />
                 <filter
