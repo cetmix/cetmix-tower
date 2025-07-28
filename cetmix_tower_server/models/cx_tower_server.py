@@ -1113,7 +1113,6 @@ class CxTowerServer(models.Model):
         elif command.action == "file_using_template":
             response = self._command_runner_file_using_template(
                 log_record,
-                command.file_template_id,
                 rendered_command_path,
                 **kwargs,
             )
@@ -1165,7 +1164,6 @@ class CxTowerServer(models.Model):
     def _command_runner_file_using_template(
         self,
         log_record,
-        file_template_id,
         server_dir,
         **kwargs,
     ):
@@ -1181,8 +1179,6 @@ class CxTowerServer(models.Model):
         Args:
             log_record (recordset): The log record to update with the command's
                 status.
-            file_template_id (recordset): The file template to use for creating
-                the new file.
             server_dir (str): The directory on the server where the file should be
                 created.
             **kwargs: Additional keyword arguments.
@@ -1197,10 +1193,10 @@ class CxTowerServer(models.Model):
         """
         try:
             # Attempt to create a new file using the template for the current server
-            file = file_template_id.create_file(
+            file = log_record.command_id.file_template_id.create_file(
                 server=self,
+                if_file_exists=log_record.command_id.if_file_exists,
                 server_dir=server_dir,
-                raise_if_exists=True,
             )
 
             # If file creation failed, log the failure and exit
@@ -1220,16 +1216,32 @@ class CxTowerServer(models.Model):
                 else:
                     return command_result
 
-            if file.source == "server":
-                file.action_pull_from_server()
-            elif file.source == "tower":
-                file.action_push_to_server()
-            else:
-                raise UserError(
-                    _(
-                        "File source cannot be determined: '%(source)s'",
-                        source=file.source,
+            # Context is used to detect a retry
+            # and avoid handling skip logic on first attempt
+            is_creation_skipped = file._context.get("file_creation_skipped")
+
+            if not is_creation_skipped:
+                if file.source == "server":
+                    file.action_pull_from_server()
+                elif file.source == "tower":
+                    file.action_push_to_server()
+                else:
+                    raise UserError(
+                        _(
+                            "File source cannot be determined: '%(source)s'",
+                            source=file.source,
+                        )
                     )
+
+            if log_record.command_id.disconnect_file:
+                file.action_unlink_from_template()
+
+            if is_creation_skipped:
+                return log_record.finish(
+                    fields.Datetime.now(),
+                    0,
+                    _("File already exists on server. Upload skipped"),
+                    None,
                 )
 
             # Log the successful creation and upload of the file

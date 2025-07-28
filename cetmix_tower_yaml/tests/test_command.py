@@ -34,6 +34,8 @@ server_status: false
 variable_ids: false
 secret_ids: false
 no_split_for_sudo: false
+if_file_exists: skip
+disconnect_file: false
 """
 
         # YAML content translated into Python dict
@@ -111,6 +113,16 @@ Ensure all fields are rendered properly.""",
             self.command_test_yaml_dict["reference"],
             "YAML value doesn't match Cetmix Tower one",
         )
+        self.assertEqual(
+            command_test.if_file_exists,
+            self.command_test_yaml_dict["if_file_exists"],
+            "YAML value doesn't match Cetmix Tower one",
+        )
+        self.assertEqual(
+            command_test.disconnect_file,
+            self.command_test_yaml_dict["disconnect_file"],
+            "YAML value doesn't match Cetmix Tower one",
+        )
 
     def test_command_from_yaml(self):
         """Test if YAML is generated properly from a command"""
@@ -161,6 +173,16 @@ Ensure all fields are rendered properly.""",
             self.assertEqual(
                 command.reference,
                 self.command_test_yaml_dict["reference"],
+                "YAML value doesn't match Cetmix Tower one",
+            )
+            self.assertEqual(
+                command.if_file_exists,
+                self.command_test_yaml_dict["if_file_exists"],
+                "YAML value doesn't match Cetmix Tower one",
+            )
+            self.assertEqual(
+                command.disconnect_file,
+                self.command_test_yaml_dict["disconnect_file"],
                 "YAML value doesn't match Cetmix Tower one",
             )
 
@@ -248,6 +270,8 @@ server_status: false
 variable_ids: false
 secret_ids: false
 no_split_for_sudo: false
+if_file_exists: skip
+disconnect_file: false
 """
         # Add file template
         file_template = self.env["cx.tower.file.template"].create(
@@ -311,6 +335,8 @@ server_status: false
 variable_ids: false
 secret_ids: false
 no_split_for_sudo: false
+if_file_exists: skip
+disconnect_file: false
 """
         command_with_template.invalidate_cache(["yaml_code"])
         self.assertEqual(
