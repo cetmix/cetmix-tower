@@ -1108,6 +1108,11 @@ msgid "Directory on server"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__disconnect_file
+msgid "Disconnect from Template"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_mixin__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_access_role_mixin__display_name
@@ -1335,6 +1340,12 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_file_template.py:0
 #, python-format
 msgid "File already exists on server."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "File already exists on server. Upload skipped"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1764,6 +1775,11 @@ msgid "Icon to indicate an exception activity."
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__if_file_exists
+msgid "If File Exists"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_needaction
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_unread
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__message_needaction
@@ -1783,6 +1799,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__auto_sync
 msgid "If enabled file will be synced automatically using cron"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__disconnect_file
+msgid ""
+"If enabled, disconnects the file from its template after running the "
+"command.\n"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2458,6 +2481,11 @@ msgid "Os Compatibility Warning"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__overwrite
+msgid "Overwrite"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__partner_id
@@ -2745,6 +2773,11 @@ msgid ""
 "Python expression to apply to the variable value. \n"
 "You can use general python sting functions and 're' module for regex operations. Use 'value' variable to refer to the variable value, use 'result' to assign the final result that will be used as a variable value.\n"
 "Eg 'result = value.lower().replace(' ', '_')'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__raise
+msgid "Raise Error"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3422,6 +3455,11 @@ msgid "Show Servers"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__skip
+msgid "Skip"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__skip_host_key
 msgid "Skip Host Key"
 msgstr ""
@@ -4016,6 +4054,15 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_run_wizard__os_compatibility_warning
 msgid "Warning about OS compatibility of the command"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__if_file_exists
+msgid ""
+"What to do if file already exists on the server.\n"
+"- Skip: Do not create or update the file.\n"
+"- Overwrite: Replace the existing file with the new one.\n"
+"- Raise Error: Raise an error if the file already exists."
 msgstr ""
 
 #. module: cetmix_tower_server
