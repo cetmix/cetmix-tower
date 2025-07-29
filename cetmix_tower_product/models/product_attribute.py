@@ -57,14 +57,14 @@ class ProductAttribute(models.Model):
             ):
                 vals_list.append(
                     {
-                        "name": option.value_char,
+                        "name": option.name,
                         "attribute_id": self.id,
                         "tower_option_id": option.id,
                         "tower_variable_reference": self.tower_variable_id.reference,
                     }
                 )
                 # Add to sets to prevent creating duplicates from this sync batch
-                existing_names.add(option.value_char)
+                existing_names.add(option.name)
                 existing_tower_option_ids.add(option.id)
 
         if vals_list:

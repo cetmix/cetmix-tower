@@ -37,12 +37,7 @@
                 expr="//field[@name='value_ids']/tree/field[@name='name']"
                 position="after"
             >
-                <field
-                    name="tower_variable_reference"
-                    readonly="1"
-                    optional="show"
-                    string="Tower Variable Ref"
-                />
+
                 <field
                     name="is_from_tower"
                     readonly="1"
