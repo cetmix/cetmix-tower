@@ -29,10 +29,7 @@
                         <group>
                             <field name="name" widget="ace_tower" />
                             <!-- This is done to get the priority to the auto generated reference -->
-                            <field
-                                name="reference"
-                                attrs="{'invisible': [('reference', '=', False)]}"
-                            />
+                            <field name="reference" invisible="not reference" />
                             <field name="source" required="1" />
                             <field name="file_type" />
                             <field name="id" invisible="1" />
