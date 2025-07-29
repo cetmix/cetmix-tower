@@ -1,3 +1,8 @@
+## 16.0.1.5.3 (2025-07-29)
+
+- Features: Make file references server dependent to be more unique (4870)
+
+
 ## 16.0.1.5.1 (2025-07-25)
 
 - Features: Select secrets from dropdown list in the code fields (4853)
