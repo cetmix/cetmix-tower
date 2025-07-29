@@ -732,3 +732,9 @@ class CxTowerFile(models.Model):
             if file.server_response == "ok":
                 vals.update({"sync_date_last": last_sync_date})
             file.sudo().write(vals)
+
+    # Check cx.tower.reference.mixin for the function documentation
+    def _get_pre_populated_model_data(self):
+        res = super()._get_pre_populated_model_data()
+        res.update({"cx.tower.file": ["cx.tower.server", "server_id"]})
+        return res
