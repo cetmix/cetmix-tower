@@ -13,16 +13,15 @@ from odoo.tests import TransactionCase, tagged
 class TestServerYAML(TransactionCase):
     """YAML export/import tests for cx.tower.server with commands and plans."""
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        env = cls.env
-        cls.Server = env["cx.tower.server"]
-        cls.Command = env["cx.tower.command"]
-        cls.Plan = env["cx.tower.plan"]
+    def setUp(self):
+        super().setUp()
+        env = self.env
+        self.Server = env["cx.tower.server"]
+        self.Command = env["cx.tower.command"]
+        self.Plan = env["cx.tower.plan"]
 
         # Create a command to attach (use defaults for access_level)
-        cls.command = cls.Command.create(
+        self.command = self.Command.create(
             {
                 "name": "Test Command",
                 "reference": "test_command",
@@ -32,7 +31,7 @@ class TestServerYAML(TransactionCase):
         )
 
         # Create a flight plan to attach
-        cls.plan = cls.Plan.create(
+        self.plan = self.Plan.create(
             {
                 "name": "Test Flight Plan",
                 "reference": "test_plan",
@@ -42,7 +41,7 @@ class TestServerYAML(TransactionCase):
         )
 
         # Create server and link command and plan
-        cls.server = cls.Server.create(
+        self.server = self.Server.create(
             {
                 "name": "Server YAML Test",
                 "reference": "srv_yaml_test",
@@ -53,14 +52,19 @@ class TestServerYAML(TransactionCase):
                 "ssh_password": "dummy",
                 "use_sudo": False,
                 # Link the m2m fields
-                "command_ids": [(6, 0, [cls.command.id])],
-                "plan_ids": [(6, 0, [cls.plan.id])],
+                "command_ids": [(6, 0, [self.command.id])],
+                "plan_ids": [(6, 0, [self.plan.id])],
             }
         )
 
     def test_yaml_export_contains_command_and_plan(self):
         """Exported YAML include command_ids and plan_ids with correct references."""
-        data = yaml.safe_load(self.server.yaml_code)
+        # Support both field names: yaml (older) and yaml_code (newer)
+        if hasattr(self.server, "yaml"):
+            yaml_text = self.server.yaml
+        else:
+            yaml_text = self.server.yaml_code
+        data = yaml.safe_load(yaml_text)
         # Check command_ids
         self.assertIn(
             "command_ids",
@@ -102,14 +106,21 @@ class TestServerYAML(TransactionCase):
 
     def test_yaml_roundtrip_restores_command_and_plan(self):
         """A full export→delete→import cycle must restore the m2m relations."""
-        yaml_dict = yaml.safe_load(self.server.yaml_code)
+        # Support both field names: yaml and yaml_code
+        if hasattr(self.server, "yaml"):
+            yaml_text = self.server.yaml
+        else:
+            yaml_text = self.server.yaml_code
+        yaml_dict = yaml.safe_load(yaml_text)
         # Remove original server
         self.server.unlink()
         # Prepare values and import
         vals = self.Server._post_process_yaml_dict_values(yaml_dict)
-        restored = self.Server.with_context(
-            from_yaml=True, skip_ssh_settings_check=True
-        ).create(vals)
+        ctx = {
+            "from_yaml": True,
+            "skip_ssh_settings_check": True,
+        }
+        restored = self.Server.with_context(**ctx).create(vals)
 
         # Verify m2m links restored
         self.assertEqual(

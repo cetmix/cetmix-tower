@@ -248,7 +248,7 @@ class CxTowerServer(models.Model):
         column2="cx_tower_plan_id",
         string="Flight Plans",
     )
-    
+
     def _selection_status(self):
         """
         Status selection options
