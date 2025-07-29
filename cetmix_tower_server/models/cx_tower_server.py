@@ -243,6 +243,22 @@ class CxTowerServer(models.Model):
         string="Scheduled Tasks",
     )
 
+    command_ids = fields.Many2many(
+        comodel_name="cx.tower.command",
+        relation="cx_tower_server_command_rel",
+        column1="server_id",
+        column2="command_id",
+        string="Commands",
+    )
+
+    plan_ids = fields.Many2many(
+        comodel_name="cx.tower.plan",
+        relation="cx_tower_plan_cx_tower_server_rel",
+        column1="cx_tower_server_id",
+        column2="cx_tower_plan_id",
+        string="Flight Plans",
+    )
+
     def _selection_status(self):
         """
         Status selection options
