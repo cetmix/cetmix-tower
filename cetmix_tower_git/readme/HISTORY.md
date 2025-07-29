@@ -1,3 +1,8 @@
+## 16.0.1.0.4 (2025-07-29)
+
+- Features: Export related commands and flight plans together with server (4849)
+
+
 ## 16.0.1.0.3 (2025-05-23)
 
 - Bugfixes: Duplicated file is created when importing a YAML file with a git project. (4715)
