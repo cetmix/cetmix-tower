@@ -1,3 +1,9 @@
+## 17.0.1.0.4 (2025-10-30)
+
+- Features: Link or copy a git project when uploading the linked file using command (4759)
+- Features: Search servers by git reference (4838)
+
+
 ## 17.0.1.0.3 (2025-07-30)
 
 - Features: Export related commands and flight plans together with server (4849)
