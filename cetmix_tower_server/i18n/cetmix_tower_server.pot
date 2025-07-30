@@ -959,6 +959,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__command_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__plan_line_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__command_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__command_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_root
@@ -1689,6 +1690,7 @@ msgid "Flight Plan line that is being currently executed"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
 msgstr ""
