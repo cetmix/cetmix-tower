@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower YAML",
     "summary": "Cetmix Tower YAML export/import",
-    "version": "16.0.1.2.1",
+    "version": "16.0.1.3.0",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://cetmix.com",
