@@ -75,9 +75,9 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [cetmix_tower](cetmix_tower/) | 14.0.1.1.0 |  | Odoo SAAS Server Application Management
 [cetmix_tower_aws](cetmix_tower_aws/) | 14.0.1.2.0 |  | Cetmix Tower AWS EC2 API integration
-[cetmix_tower_git](cetmix_tower_git/) | 14.0.1.0.4 |  | Cetmix Tower Git Management Tools
+[cetmix_tower_git](cetmix_tower_git/) | 14.0.1.1.0 |  | Cetmix Tower Git Management Tools
 [cetmix_tower_ovh](cetmix_tower_ovh/) | 14.0.1.3.0 | <a href='https://github.com/GSLabIt'><img src='https://github.com/GSLabIt.png' width='32' height='32' style='border-radius:50%;' alt='GSLabIt'/></a> | Cetmix Tower OVH API integration
-[cetmix_tower_server](cetmix_tower_server/) | 14.0.1.5.0 |  | Manage servers and applications from Odoo
+[cetmix_tower_server](cetmix_tower_server/) | 14.0.1.6.0 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_notify_backend](cetmix_tower_server_notify_backend/) | 14.0.1.0.1 |  | Backend notifications for Cetmix Tower
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 14.0.1.1.0 |  | Cetmix Tower asynchronous task execution using 'queue_job'
 [cetmix_tower_yaml](cetmix_tower_yaml/) | 14.0.1.2.0 |  | Cetmix Tower YAML export/import

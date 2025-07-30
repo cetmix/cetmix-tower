@@ -1,3 +1,8 @@
+## 14.0.1.6.0 (2025-07-30)
+
+- Features: Improve the extendability of the file upload command. (4759)
+
+
 ## 14.0.1.4.0 (2025-07-15)
 
 - Features: Improve the way Python libraries are added using custom modules (4832)
