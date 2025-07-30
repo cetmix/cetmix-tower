@@ -1310,6 +1310,110 @@ result = re.sub(pattern, replacement, value)
         self.assertEqual(len(command_log), 1, "Must be a single log record")
         self.assertEqual(command_log.command_status, ANOTHER_COMMAND_RUNNING)
 
+    def test_file_using_template_create_if_exists(self):
+        """Test uploading file using template if it exists on server."""
+
+        command = self.command_create_file_with_template_server_source
+        command.write({"if_file_exists": "skip"})
+
+        # Create file to make sure that it exists on the server
+        file_template = command.file_template_id
+        orig_file = file_template.create_file(
+            server=self.server_test_1,
+            server_dir=file_template.server_dir,
+            if_file_exists=command.if_file_exists,
+        )
+
+        self.assertTrue(orig_file, "File must be created on the server")
+
+        # Test if file exists and command is set to "skip"
+        skipped_file = file_template.create_file(
+            server=self.server_test_1,
+            server_dir=file_template.server_dir,
+            if_file_exists=command.if_file_exists,
+        )
+        self.assertEqual(
+            orig_file,
+            skipped_file,
+            "Skip should return the existing file, not create a new one",
+        )
+        self.assertEqual(
+            self.env["cx.tower.file"].search_count(
+                [
+                    ("template_id", "=", file_template.id),
+                    ("server_id", "=", self.server_test_1.id),
+                ]
+            ),
+            1,
+            "There must be exactly one physical file record after skip",
+        )
+
+        # Change command to raise an error if file exists
+        command.write({"if_file_exists": "raise"})
+        with self.assertRaisesRegex(
+            ValidationError,
+            "File already exists on server.",
+        ):
+            file_template.create_file(
+                server=self.server_test_1,
+                server_dir=file_template.server_dir,
+                if_file_exists=command.if_file_exists,
+            )
+        # Change command to "overwrite" file if it exists
+        command.write({"if_file_exists": "overwrite"})
+        # Run command again, it should overwrite the file
+        file_template.create_file(
+            server=self.server_test_1,
+            server_dir=file_template.server_dir,
+            if_file_exists=command.if_file_exists,
+        )
+        self.assertEqual(
+            self.env["cx.tower.file"].search_count(
+                [
+                    ("template_id", "=", file_template.id),
+                    ("server_id", "=", self.server_test_1.id),
+                    ("server_dir", "=", file_template.server_dir),
+                ]
+            ),
+            1,
+            "There must be exactly one physical file record after overwrite",
+        )
+        self.assertEqual(
+            orig_file.code,
+            file_template.code,
+            "File code must match template after overwrite",
+        )
+        self.assertEqual(
+            orig_file.name,
+            file_template.file_name,
+            "File name must match template after overwrite",
+        )
+        self.assertEqual(
+            orig_file.source,
+            file_template.source,
+            "File source must match template after overwrite",
+        )
+
+    def test_is_file_disconnected_from_template(self):
+        """Test if file is disconnected from template after being created."""
+
+        initial_files = self.server_test_1.file_ids
+        command = self.command_create_file_with_template_server_source
+
+        command.disconnect_file = True
+        self.server_test_1.run_command(command=command)
+
+        new_files = self.server_test_1.file_ids - initial_files
+        self.assertEqual(len(new_files), 1, "Must be one new file created")
+        self.assertEqual(
+            new_files.code_on_server,
+            command.file_template_id.code,
+            "File code must match template",
+        )
+        self.assertFalse(
+            new_files.template_id, "File must be disconnected from template"
+        )
+
     # ---------------------
     # *********************
     #   Python commands
