@@ -24,6 +24,7 @@
         "views/cx_tower_file_views.xml",
         "views/cx_tower_file_template_views.xml",
         "views/cx_tower_server_view.xml",
+        "views/cx_tower_plan_line_view.xml",
     ],
     "demo": [
         "demo/demo_data.xml",

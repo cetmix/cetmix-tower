@@ -97,3 +97,41 @@ class CxTowerServer(models.Model):
 
         servers = matching.mapped("git_project_id.git_project_rel_ids.server_id")
         return servers
+
+    def _command_runner_file_using_template_create_file(
+        self,
+        file_template_id,
+        server_dir,
+        plan_line,
+        if_file_exists,
+        **kwargs,
+    ):
+        """Override to create git project relation
+        when creating a file using a template.
+        """
+        file = super()._command_runner_file_using_template_create_file(
+            file_template_id, server_dir, plan_line, if_file_exists, **kwargs
+        )
+        if file and plan_line:
+            git_project = plan_line.git_project_id
+            if not git_project:
+                return file
+
+            if plan_line.is_make_copy:
+                # Remove default_server_ids from context, because this relation
+                # will be created through git_project_rel_ids.
+                # default_server_ids will interfere at the moment when
+                # pairs of values are created through SQL query
+                # in the method write_real and it does not take into account
+                # that in this case we are creating a copy of the git project
+                git_project = git_project.with_context(default_server_ids=False).copy()
+
+            self.env["cx.tower.git.project.rel"].create(
+                {
+                    "git_project_id": git_project.id,
+                    "server_id": self.id,
+                    "file_id": file.id,
+                    "project_format": git_project._default_project_format(),
+                }
+            )
+        return file
