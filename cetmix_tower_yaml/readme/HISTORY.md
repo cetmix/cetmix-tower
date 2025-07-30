@@ -1,3 +1,8 @@
+## 17.0.1.3.0 (2025-08-01)
+
+- Features: Optional behaviour when file uploaded by command already exists on the server. (4740)
+
+
 ## 17.0.1.1.3 (2025-07-14)
 
 - Bugfixes: Fix missing model names in YAML exports when exporting multiple commands with flight plans (4820)
