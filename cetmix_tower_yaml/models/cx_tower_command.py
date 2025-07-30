@@ -25,5 +25,7 @@ class CxTowerCommand(models.Model):
             "variable_ids",
             "secret_ids",
             "no_split_for_sudo",
+            "if_file_exists",
+            "disconnect_file",
         ]
         return res
