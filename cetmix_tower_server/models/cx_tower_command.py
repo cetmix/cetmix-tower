@@ -166,6 +166,26 @@ class CxTowerCommand(models.Model):
         column2="variable_id",
     )
 
+    if_file_exists = fields.Selection(
+        selection=[
+            ("skip", "Skip"),
+            ("overwrite", "Overwrite"),
+            ("raise", "Raise Error"),
+        ],
+        default="skip",
+        help="What to do if file already exists on the server.\n"
+        "- Skip: Do not create or update the file.\n"
+        "- Overwrite: Replace the existing file with the new one.\n"
+        "- Raise Error: Raise an error if the file already exists.",
+    )
+    disconnect_file = fields.Boolean(
+        string="Disconnect from Template",
+        help=(
+            "If enabled, disconnects the file from its template "
+            "after running the command.\n"
+        ),
+    )
+
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
         relation="cx_tower_command_user_rel",
