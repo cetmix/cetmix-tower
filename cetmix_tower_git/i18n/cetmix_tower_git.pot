@@ -113,6 +113,11 @@ msgid "Cetmix Tower File Template"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_plan_line
+msgid "Cetmix Tower Flight Plan Line"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project
 msgid "Cetmix Tower Git Project"
 msgstr ""
@@ -155,6 +160,13 @@ msgid "Commit"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_plan_line__is_make_copy
+msgid ""
+"Create a copy of the Git Project instead of linking the file to the existing"
+" one."
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__create_uid
@@ -182,6 +194,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_plan_line__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__display_name
 msgid "Display Name"
 msgstr ""
@@ -297,6 +310,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file_template__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__git_project_id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_plan_line__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__git_project_ids
 msgid "Git Project"
 msgstr ""
@@ -397,6 +411,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_plan_line__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__id
 msgid "ID"
 msgstr ""
@@ -429,6 +444,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_plan_line____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -445,6 +461,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_plan_line__is_make_copy
+msgid "Make a Copy"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -585,6 +606,11 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__url_protocol__ssh
 msgid "SSH"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_plan_line__git_project_id
+msgid "Select a git project to be linked to the file and server."
 msgstr ""
 
 #. module: cetmix_tower_git
