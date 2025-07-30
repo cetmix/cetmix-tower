@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server Queue",
     "summary": "Cetmix Tower asynchronous task execution using 'queue_job'",
-    "version": "17.0.1.0.1",
+    "version": "17.0.1.1.0",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://cetmix.com",
@@ -14,5 +14,6 @@
     "depends": ["cetmix_tower_server", "queue_job"],
     "data": [
         "views/cx_tower_command_log_view.xml",
+        "views/cx_tower_file_view.xml",
     ],
 }
