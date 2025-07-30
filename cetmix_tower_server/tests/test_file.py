@@ -305,7 +305,11 @@ class TestTowerFile(TestTowerCommon):
             }
         )
 
-        file = file_template.create_file(server=self.server_test_1)
+        file = file_template.create_file(
+            server=self.server_test_1,
+            server_dir=file_template.server_dir,
+            if_file_exists="overwrite",
+        )
         self.assertEqual(file.code, self.file_template.code)
         self.assertEqual(file.template_id, file_template)
         self.assertEqual(file.server_id, self.server_test_1)
@@ -313,10 +317,16 @@ class TestTowerFile(TestTowerCommon):
         self.assertEqual(file.server_dir, self.file_template.server_dir)
 
         with self.assertRaises(exceptions.ValidationError):
-            file_template.create_file(server=self.server_test_1, raise_if_exists=True)
+            file_template.create_file(
+                server=self.server_test_1,
+                server_dir=file_template.server_dir,
+                if_file_exists="raise",
+            )
 
         another_file = file_template.create_file(
-            server=self.server_test_1, raise_if_exists=False
+            server=self.server_test_1,
+            server_dir=file_template.server_dir,
+            if_file_exists="skip",
         )
         self.assertEqual(another_file, file)
 
@@ -346,13 +356,13 @@ class TestTowerFile(TestTowerCommon):
             file_template.create_file(
                 server=self.server_test_1,
                 server_dir="/var/tmp/custom",
-                raise_if_exists=True,
+                if_file_exists="raise",
             )
 
         another_file = file_template.create_file(
             server=self.server_test_1,
             server_dir="/var/tmp/custom",
-            raise_if_exists=False,
+            if_file_exists="skip",
         )
         self.assertEqual(another_file, file)
 

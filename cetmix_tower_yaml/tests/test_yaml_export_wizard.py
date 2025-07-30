@@ -106,6 +106,8 @@ records:
   code: echo 'Test Command From Yaml'
   server_status: false
   no_split_for_sudo: false
+  if_file_exists: skip
+  disconnect_file: false
 - cetmix_tower_model: command
   access_level: manager
   reference: test_command_from_yaml_2
@@ -117,6 +119,8 @@ records:
   code: echo 'Test Command From Yaml 2'
   server_status: false
   no_split_for_sudo: false
+  if_file_exists: skip
+  disconnect_file: false
 """
 
         # -- 1 --
