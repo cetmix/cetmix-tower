@@ -21,7 +21,7 @@ class CxTowerServer(models.Model):
         # this plan should be launched as a synchronous command to
         # preserve the order of execution of commands with action “Run flight plan”.
         # Use runner only if command log record is provided.
-        if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
+        if log_record.command_action != "plan":
             job = self.with_delay()._command_runner(
                 command=command,
                 log_record=log_record,
