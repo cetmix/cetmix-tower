@@ -169,6 +169,7 @@ class TestTowerCommon(BaseCommon):
                 "path": "/home/{{ tower.server.username }}",
                 "action": "file_using_template",
                 "file_template_id": cls.template_file_tower.id,
+                "if_file_exists": "raise",
             }
         )
 
@@ -178,6 +179,7 @@ class TestTowerCommon(BaseCommon):
                 "path": "/home/{{ tower.server.username }}",
                 "action": "file_using_template",
                 "file_template_id": cls.template_file_server.id,
+                "if_file_exists": "raise",
             }
         )
 

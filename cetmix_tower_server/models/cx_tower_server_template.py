@@ -313,7 +313,7 @@ class CxTowerServerTemplate(models.Model):
         logs = server.server_log_ids.filtered(lambda rec: rec.log_type == "file")
         for log in logs.sudo():
             log.file_id = log.file_template_id.create_file(
-                server=server, raise_if_exists=False
+                server=server, if_file_exists="skip"
             ).id
 
         flight_plan = server.server_template_id.flight_plan_id
