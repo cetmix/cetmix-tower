@@ -63,6 +63,12 @@ PLAN_NOT_COMPATIBLE_WITH_SERVER = -306
 # Returned when the file could not be created on the server
 FILE_CREATION_FAILED = -400
 
+# Returned when the file could not be uploaded to the server
+FILE_UPLOAD_FAILED = -401
+
+# Returned when the file could not be downloaded from the server
+FILE_DOWNLOAD_FAILED = -402
+
 # -- Default values
 
 # Default Python code used in Python code command
