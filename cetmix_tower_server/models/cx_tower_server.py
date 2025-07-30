@@ -1376,7 +1376,7 @@ class CxTowerServer(models.Model):
             # Generate custom label and add values for log
             kwargs["plan_log"] = {
                 "label": generate_random_id(4),
-                "parent_flight_plan_log_id": log_record.plan_log_id.id,
+                "parent_command_log_id": log_record.id,
             }
             # add executed command with action "plan" to save link to plan log
             kwargs["flight_plan_command_log"] = log_record
@@ -1397,7 +1397,7 @@ class CxTowerServer(models.Model):
                 error = _("Flight plan running error")
 
         result = {"status": status, "response": response, "error": error}
-        if log_record:
+        if log_record and not plan_log_record.is_running:
             log_record.finish(
                 finish_date=fields.Datetime.now(),
                 status=result["status"],

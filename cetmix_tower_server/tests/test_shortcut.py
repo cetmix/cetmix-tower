@@ -26,7 +26,7 @@ class TestTowerShortcut(TestTowerCommon):
         # Command
         cls.command_list_dir_pro = cls.Command.create(
             {
-                "name": "Test create directory",
+                "name": "Test list directory",
                 "code": "ls -l {{ test_path_ }}",
             }
         )

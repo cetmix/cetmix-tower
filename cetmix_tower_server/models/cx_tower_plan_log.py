@@ -74,7 +74,15 @@ class CxTowerPlanLog(models.Model):
         help="Custom message to be displayed in the plan log",
     )
     parent_flight_plan_log_id = fields.Many2one(
-        "cx.tower.plan.log", string="Main Log", ondelete="cascade"
+        "cx.tower.plan.log",
+        string="Main Log",
+        related="parent_command_log_id.plan_log_id",
+    )
+    parent_command_log_id = fields.Many2one(
+        "cx.tower.command.log",
+        readonly=True,
+        ondelete="cascade",
+        help="Command that triggered this flight plan",
     )
     scheduled_task_id = fields.Many2one(
         "cx.tower.scheduled.task",
@@ -203,6 +211,10 @@ class CxTowerPlanLog(models.Model):
             plan_status (Integer) plan execution code
             **kwargs (dict): optional values
         """
+        if not self.is_running:
+            # TODO: CHECK WHY IT POSSIBLE RUNNING FOR STOPPER PLAN
+            return
+
         values = {
             "is_running": False,
             "plan_status": plan_status,
@@ -228,6 +240,9 @@ class CxTowerPlanLog(models.Model):
             else:
                 # Set deletion error if flightplan failed
                 self.server_id.status = "delete_error"
+
+        if self.parent_command_log_id:
+            self.parent_command_log_id.finish(status=plan_status)
 
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
         """
