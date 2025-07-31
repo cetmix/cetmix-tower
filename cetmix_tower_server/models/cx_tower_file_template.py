@@ -178,7 +178,9 @@ class CxTowerFileTemplate(models.Model):
         )
         var_vals = server.get_variable_values(variables).get(server.id) or {}
 
-        unrendered_path = f"{existing_dir}/{self.file_name}"
+        unrendered_path = (
+            f"{existing_dir}/{self.file_name}" if existing_dir else self.file_name
+        )
         rendered_path = self.render_code_custom(unrendered_path, **var_vals)
 
         # Filter existing files by rendered path
