@@ -73,14 +73,12 @@
                             />
                             <field
                                 name="if_file_exists"
-                                attrs="{
-                                    'invisible': [('action', '!=', 'file_using_template')],
-                                    'required': [('action', '=', 'file_using_template')],
-                                }"
+                                invisible="action != 'file_using_template'"
+                                required="action == 'file_using_template'"
                             />
                             <field
                                 name="disconnect_file"
-                                attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                                invisible="action != 'file_using_template'"
                             />
                             <field name="allow_parallel_run" />
                             <field
