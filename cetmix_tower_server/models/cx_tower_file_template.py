@@ -127,7 +127,7 @@ class CxTowerFileTemplate(models.Model):
         return action
 
     # -- Business logic
-    def create_file(self, server, server_dir="", raise_if_exists=False):
+    def create_file(self, server, server_dir="", if_file_exists="raise"):
         """
         Create a new file using the current template for the selected server.
         If the same file already exists, just ignore it or raise an error based on the
@@ -136,45 +136,88 @@ class CxTowerFileTemplate(models.Model):
         :param server: recordset
             The server (cx.tower.server) on which the file should be created. This is a
             required parameter.
+        :param if_file_exists: str, optional
+            Defines the behavior if the file already exists on the server.
         :param server_dir: str, optional
             The directory on the server where the file should be created. If not set,
             the server_dir field of the template will be used.
-        :param raise_if_exists: bool, optional
-            If set to True, raises a ValidationError if the file already exists on the
-            server. Defaults to False.
 
         :return: cx.tower.file
             Returns the newly created file record (cx.tower.file) if the file was
-            created successfully. Returns the existing file record if the file already
-            exists and raise_if_exists is False.
+            created successfully or if_file_exists is set to "overwrite".
+            Returns the existing file record if the file already exists
+            and if_file_exists is set to "skip".
 
         :raises ValidationError:
-            If the file already exists on the server and raise_if_exists is True.
+            If the file already exists on the server if_file_exists is set to "raise".
         """
         self.ensure_one()
+        # Explicit guard against invalid behavior values
+        valid_behaviors = {"skip", "raise", "overwrite"}
+        if if_file_exists not in valid_behaviors:
+            raise ValidationError(
+                f"Invalid if_file_exists value: {if_file_exists}. "
+                f"Expected one of {valid_behaviors}."
+            )
         file_model = self.env["cx.tower.file"]
-        existing_file = file_model.search(
+        existing_files = file_model.search(
             [
-                ("template_id", "=", self.id),
                 ("server_id", "=", server.id),
-                ("server_dir", "=", server_dir or self.server_dir),
                 ("source", "=", self.source),
             ],
-            limit=1,
+            order="id DESC",
         )
-        if existing_file:
-            if raise_if_exists:
-                raise ValidationError(_("File already exists on server."))
+        existing_dir = server_dir or self.server_dir
+
+        # Render the server directory and file name from the template
+        variables = list(
+            set(
+                self.get_variables_from_code(self.file_name)
+                + self.get_variables_from_code(existing_dir)
+            )
+        )
+        var_vals = server.get_variable_values(variables).get(server.id) or {}
+
+        unrendered_path = (
+            f"{existing_dir}/{self.file_name}" if existing_dir else self.file_name
+        )
+        rendered_path = self.render_code_custom(unrendered_path, **var_vals)
+
+        # Filter existing files by rendered path
+        existing_files = existing_files.filtered(
+            lambda f: f.full_server_path == rendered_path
+        )
+
+        # Filter existing files by template if it exists, otherwise take the first one
+        existing_file = (
+            existing_files.filtered(lambda f: f.template_id == self)[:1]
+            or existing_files[:1]
+        )
+
+        if existing_file and if_file_exists == "skip":
+            return existing_file.with_context(file_creation_skipped=True)
+
+        if existing_file and if_file_exists == "raise":
+            raise ValidationError(_("File already exists on server."))
+
+        if existing_file and if_file_exists == "overwrite":
+            existing_file.with_context(is_custom_server_dir=True).write(
+                {
+                    "template_id": self.id,
+                }
+            )
             return existing_file
 
-        return file_model.with_context(is_custom_server_dir=True).create(
-            {
-                "template_id": self.id,
-                "server_id": server.id,
-                "name": self.file_name,
-                "code_on_server": self.code,
-                "server_dir": server_dir or self.server_dir,
-                "file_type": self.file_type,
-                "source": self.source,
-            }
-        )
+        vals = {
+            "name": self.file_name,
+            "server_id": server.id,
+            "server_dir": existing_dir,
+            "template_id": self.id,
+            "code": self.code,
+            "file_type": self.file_type,
+            "source": self.source,
+        }
+
+        new_file = file_model.with_context(is_custom_server_dir=True).create(vals)
+        # Return new_file if no file exists
+        return new_file

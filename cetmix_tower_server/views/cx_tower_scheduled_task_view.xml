@@ -119,7 +119,10 @@
                             <field name="custom_variable_value_ids">
                                 <tree editable="bottom">
                                     <field name="variable_id" />
-                                    <field name="variable_type" invisible="1" />
+                                    <field
+                                        name="variable_type"
+                                        column_invisible="True"
+                                    />
                                     <field
                                         name="value_char"
                                         readonly="variable_type != 's'"
