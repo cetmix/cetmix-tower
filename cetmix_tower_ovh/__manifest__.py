@@ -5,7 +5,7 @@
 {
     "name": "Cetmix Tower OVH",
     "summary": """Cetmix Tower OVH API integration""",
-    "version": "14.0.1.3.0",
+    "version": "16.0.1.0.0",
     "category": "Productivity",
     "license": "AGPL-3",
     "author": "Cetmix, Giovanni Serra",
