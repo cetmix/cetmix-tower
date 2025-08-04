@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo-addon-cetmix_tower>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_aws>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_git>=16.0dev,<16.1dev',
+        'odoo-addon-cetmix_tower_ovh>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_server>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_server_notify_backend>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_server_queue>=16.0dev,<16.1dev',
