@@ -1,0 +1,1 @@
+Pin paramiko version to "<4" to maintain compatibility with legacy installations
