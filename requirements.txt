@@ -2,6 +2,6 @@
 boto3
 dnspython
 ovh
-paramiko
+paramiko<4
 pyyaml
 tldextract
