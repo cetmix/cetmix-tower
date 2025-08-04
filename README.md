@@ -23,6 +23,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [cetmix_tower](cetmix_tower/) | 17.0.1.2.0 |  | Odoo SAAS Server Application Management
+[cetmix_tower_aws](cetmix_tower_aws/) | 17.0.1.0.0 |  | Cetmix Tower AWS EC2 API integration
 [cetmix_tower_git](cetmix_tower_git/) | 17.0.1.0.3 |  | Cetmix Tower Git Management Tools
 [cetmix_tower_server](cetmix_tower_server/) | 17.0.1.8.0 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_notify_backend](cetmix_tower_server_notify_backend/) | 17.0.1.0.0 |  | Backend notifications for Cetmix Tower
