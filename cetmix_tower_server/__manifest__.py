@@ -14,7 +14,7 @@
     "application": False,
     "installable": True,
     "external_dependencies": {
-        "python": ["paramiko", "tldextract", "dnspython"],
+        "python": ["paramiko<4", "tldextract", "dnspython"],
     },
     "depends": [
         "mail",
