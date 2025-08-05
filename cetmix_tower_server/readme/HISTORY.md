@@ -1,3 +1,8 @@
+## 17.0.1.8.2 (2025-08-05)
+
+- Features: Make file references server dependent to be more unique (4870)
+
+
 ## 17.0.1.8.1 (2025-08-05)
 
 - Bugfixes: Pin paramiko version to "<4" to maintain compatibility with legacy installations (4891)
