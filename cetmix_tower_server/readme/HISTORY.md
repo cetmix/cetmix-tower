@@ -1,3 +1,8 @@
+## 16.0.1.6.2 (2025-08-05)
+
+- Bugfixes: Pin paramiko version to "<4" to maintain compatibility with legacy installations (4891)
+
+
 ## 16.0.1.6.0 (2025-07-30)
 
 - Features: Optional behaviour when file uploaded by command already exists on the server. (4740)
