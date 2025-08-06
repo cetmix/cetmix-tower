@@ -145,7 +145,6 @@ class CxTowerYamlExportWiz(models.TransientModel):
     @api.depends("manifest_template_id")
     def _compute_manifest(self):
         mapping = {
-            "manifest_name": "name",
             "manifest_author_ids": "author_ids",
             "manifest_website": "website",
             "manifest_license": "license",
@@ -161,15 +160,33 @@ class CxTowerYamlExportWiz(models.TransientModel):
                 if not rec[wiz_field]:
                     rec[wiz_field] = tmpl[tmpl_field]
 
+            # prepend template's file prefix to YAML file name
+            prefix = (tmpl.file_prefix or "").strip()
+            if prefix:
+                # sanitize prefix without defaulting to a placeholder like "snippet"
+                raw = prefix.lower()
+                sanitized_prefix = re.sub(r"_+", "_", CLEAN_STR.sub("_", raw)).strip(
+                    "_"
+                )
+                if sanitized_prefix:
+                    # use current or default base name, then clean it
+                    current = rec.yaml_file_name or rec._default_yaml_file_name()
+                    base = rec._clean_yaml_basename(current)
+                    # avoid double-prefixing
+                    if not base.startswith(f"{sanitized_prefix}_"):
+                        rec.yaml_file_name = rec._clean_yaml_basename(
+                            f"{sanitized_prefix}_{base}"
+                        )
+
     @api.onchange("manifest_license")
     def _onchange_manifest_license(self):
-        """Drop price and currency when user switches off the 'Custom' license.
+        """Drop price and currency when user switches off the 'custom' license.
 
-        If manifest_license != 'Custom', reset manifest_price to 0.0 and
+        If manifest_license != 'custom', reset manifest_price to 0.0 and
         manifest_currency to False so they won’t appear in the generated YAML.
         """
         for rec in self:
-            if rec.manifest_license != "Custom":
+            if rec.manifest_license != "custom":
                 rec.manifest_price = 0.0
                 rec.manifest_currency = False
 
@@ -220,6 +237,8 @@ class CxTowerYamlExportWiz(models.TransientModel):
         if not self.manifest_name:
             manifest = {}
         else:
+            lic = (self.manifest_license or "").lower()
+
             fields_order = [
                 ("name", self.manifest_name),
                 ("summary", self.manifest_summary),
@@ -230,16 +249,14 @@ class CxTowerYamlExportWiz(models.TransientModel):
                 ("license", self.manifest_license),
                 (
                     "license_text",
-                    self.manifest_license_text
-                    if self.manifest_license == "Custom"
+                    (self.manifest_license_text or "").strip()
+                    if lic == "custom"
                     else None,
                 ),
                 ("price", self.manifest_price),
                 (
                     "currency",
-                    self.manifest_currency
-                    if self.manifest_license == "Custom"
-                    else None,
+                    self.manifest_currency if lic == "custom" else None,
                 ),
             ]
             manifest = {k: v for k, v in fields_order if v not in (False, None, "", [])}
@@ -283,7 +300,9 @@ class CxTowerYamlExportWiz(models.TransientModel):
         """Logical cross-checks before saving YAML."""
         if self.manifest_price and not self.manifest_currency:
             raise ValidationError(_("Currency is required when price is specified"))
-        if self.manifest_license == "Custom" and not self.manifest_license_text:
+        if (self.manifest_license or "").lower() == "custom" and not (
+            self.manifest_license_text or ""
+        ).strip():
             raise ValidationError(_("License text is required for a custom license"))
 
     def write(self, vals):

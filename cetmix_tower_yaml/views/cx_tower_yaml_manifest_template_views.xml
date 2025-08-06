@@ -5,6 +5,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="file_prefix" />
                 <field name="author_ids" widget="many2many_tags" />
                 <field name="version" />
                 <field name="website" />
@@ -21,12 +22,19 @@
                 <sheet>
                     <group>
                         <field name="name" />
+                        <field name="file_prefix" />
                         <field name="author_ids" widget="many2many_tags" />
                         <field name="version" />
                         <field name="website" />
                         <field name="license" />
-                        <field name="license_text" invisible="license != 'Custom'" />
-                        <field name="currency" invisible="license != 'Custom'" />
+                        <field
+                            name="license_text"
+                            attrs="{'invisible': [('license', '!=', 'custom')]}"
+                        />
+                        <field
+                            name="currency"
+                            attrs="{'invisible': [('license', '!=', 'custom')]}"
+                        />
                     </group>
                 </sheet>
             </form>

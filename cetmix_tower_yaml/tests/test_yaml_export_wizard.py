@@ -323,3 +323,53 @@ records:
         act = wiz.action_generate_yaml_file()
         download = self.env["cx.tower.yaml.export.wiz.download"].browse(act["res_id"])
         self.assertTrue(download.yaml_file_name.endswith(".yaml"))
+
+    def test_custom_requires_text(self):
+        """Creating a template with license 'custom' but no text must fail"""
+        with self.assertRaises(ValidationError):
+            self.env["cx.tower.yaml.manifest.tmpl"].create(
+                {
+                    "name": "Bad Manifest",
+                    "license": "custom",
+                }
+            )
+
+        tmpl_ok = self.env["cx.tower.yaml.manifest.tmpl"].create(
+            {
+                "name": "Good Manifest",
+                "license": "custom",
+                "license_text": "Custom license terms",
+            }
+        )
+        self.assertEqual(tmpl_ok.license, "custom")
+        self.assertEqual(tmpl_ok.license_text, "Custom license terms")
+
+        with self.assertRaises(ValidationError):
+            self.env["cx.tower.yaml.manifest.tmpl"].create(
+                {
+                    "name": "Bad Manifest 2",
+                    "license": "custom",
+                    "license_text": "    ",
+                }
+            )
+
+    def test_wizard_resets_price_on_license_change(self):
+        """Wizard must reset price/currency when license changes away from 'custom'"""
+        wiz = self.YamlExportWizard.new(
+            {
+                "manifest_license": "custom",
+                "manifest_price": 42.0,
+                "manifest_currency": "EUR",
+            }
+        )
+        wiz.manifest_license = "agpl-3"
+        wiz._onchange_manifest_license()
+        self.assertEqual(wiz.manifest_price, 0.0)
+        self.assertFalse(wiz.manifest_currency)
+
+        wiz.manifest_price = 7.5
+        wiz.manifest_currency = "USD"
+        wiz.manifest_license = "custom"
+        wiz._onchange_manifest_license()
+        self.assertEqual(wiz.manifest_price, 7.5)
+        self.assertEqual(wiz.manifest_currency, "USD")
