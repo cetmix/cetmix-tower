@@ -144,6 +144,17 @@ class CxTowerJetTemplateInstall(models.Model):
             installation_task.jet_template_id.write(
                 {"server_ids": [(4, self.server_id.id)]}
             )
+            # WARNING: Explicit commit!
+            # This commit is made **only** when to ensure that the state is set
+            # even if the next action fails.
+            # Reason: Without this commit, the change would not be visible to other
+            # transactions until the end of the transaction, leading to a race
+            # condition and possible double execution.
+            # Explicit commits are strongly discouraged in Odoo business logic and
+            # should be used only with clear justification and in strictly controlled
+            # contexts (like this cron scenario). Never add this commit for general
+            # business flows!
+            self.env.cr.commit()  # pylint: disable=invalid-commit
 
         # Mark the installation as done
         self.write(
