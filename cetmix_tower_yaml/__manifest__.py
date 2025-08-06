@@ -14,6 +14,7 @@
     "external_dependencies": {"python": ["pyyaml"]},
     "data": [
         "security/cetmix_tower_yaml_groups.xml",
+        "security/cx_tower_yaml_wizard_access_rules.xml",
         "security/ir.model.access.csv",
         "views/cx_tower_command_view.xml",
         "views/cx_tower_file_template_view.xml",
