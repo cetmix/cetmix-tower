@@ -1,3 +1,8 @@
+## 17.0.1.8.3 (2025-08-16)
+
+- Features: Improve access settings for logs (4866)
+
+
 ## 17.0.1.8.2 (2025-08-05)
 
 - Features: Make file references server dependent to be more unique (4870)

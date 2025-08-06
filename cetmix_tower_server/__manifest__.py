@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server",
     "summary": "Manage servers and applications from Odoo",
-    "version": "17.0.1.8.2",
+    "version": "17.0.1.8.3",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
@@ -42,6 +42,7 @@
         "security/cx_tower_key_value_security.xml",
         "security/cx_tower_tag_security.xml",
         "security/cx_tower_shortcut_security.xml",
+        "security/cx_tower_server_wizard_access_rules.xml",
         "data/ir_actions_server.xml",
         "data/ir_cron.xml",
         "data/ir_config_parameter.xml",
