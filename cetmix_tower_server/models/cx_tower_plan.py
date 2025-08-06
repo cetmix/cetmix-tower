@@ -388,7 +388,11 @@ class CxTowerPlan(models.Model):
                 jet=plan_log.jet_id,
                 variable_values=variable_values,
             ):
-                plan_line._run(server, plan_log)
+                plan_line._run(
+                    server,
+                    plan_log,
+                    variable_values=variable_values,
+                )
             else:
                 plan_line._skip(
                     server,

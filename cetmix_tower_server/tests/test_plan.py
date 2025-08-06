@@ -2009,6 +2009,8 @@ custom_values['random_var_reference'] = 'another_random_var_value'
         self.assertEqual(
             plan_log.variable_values[self.variable_url.reference],
             "https://www.cetmix.com",
+        )
+
     def test_plan_render_jet_template(self):
         """Test plan rendering jet template"""
         plan_log_record_count = self.PlanLog.search_count(
