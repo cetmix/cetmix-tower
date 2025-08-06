@@ -46,31 +46,36 @@ class CxTowerYamlManifestTemplate(models.Model):
         default="1.0.0",
     )
 
+    file_prefix = fields.Char(
+        string="File prefix",
+        help="Add prefix to the exported YAML file name when this template is selected",
+    )
+
     @api.model
     def _selection_license(self):
         """Return available license options for manifest."""
         return [
-            ("AGPL-3", "AGPL-3"),
-            ("LGPL-3", "LGPL-3"),
-            ("MIT", "MIT"),
-            ("Custom", "Custom"),
+            ("agpl-3", "AGPL-3"),
+            ("lgpl-3", "LGPL-3"),
+            ("mit", "MIT"),
+            ("custom", _("Custom")),
         ]
 
     @api.model
     def _selection_currency(self):
         """Return available currency options for manifest pricing."""
         return [
-            ("EUR", "Euro"),
-            ("USD", "US Dollar"),
+            ("EUR", _("Euro")),
+            ("USD", _("US Dollar")),
         ]
 
     @api.constrains("license", "license_text")
     def _check_license_text_for_custom(self):
-        """Ensure that custom license text is provided when license is 'Custom'."""
+        """Ensure that custom license text is provided when license is 'custom'."""
         for rec in self:
-            if rec.license == "Custom" and not rec.license_text:
+            if rec.license == "custom" and not (rec.license_text or "").strip():
                 raise ValidationError(
-                    _("Provide Custom License Text when License is set to “Custom”.")
+                    _("Provide Custom License Text when License is set to 'Custom'.")
                 )
 
     @api.constrains("version")
