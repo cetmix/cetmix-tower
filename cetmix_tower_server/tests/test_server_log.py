@@ -237,3 +237,79 @@ class TestTowerServerLog(TestTowerCommon):
             test_logs.unlink()
         except AccessError:
             self.fail("Root should be able to unlink any logs")
+
+    def test_log_text_access_restrictions(self):
+        """Test log_text field access controls"""
+        test_log = self.ServerLog.create(
+            {
+                "name": "Access Test Log",
+                "server_id": self.server_test_1.id,
+                "log_type": "file",
+                "access_level": "1",
+                "log_text": "<p>Test content</p>",
+            }
+        )
+
+        # 1. Verify read access for all roles
+        for user in (self.root, self.manager, self.user):
+            content = test_log.with_user(user).log_text
+            self.assertEqual(
+                content, "<p>Test content</p>", f"{user.name} should read log_text"
+            )
+
+        # 2. Verify write prohibition for all roles
+        for user in (self.root, self.manager, self.user):
+            with self.assertRaises(
+                AccessError, msg=f"{user.name} shouldn't modify log_text"
+            ):
+                test_log.with_user(user).write({"log_text": "<p>Modified</p>"})
+
+    def test_log_text_refresh_mechanism(self):
+        """Test log_text can only be updated via refresh action"""
+        test_log = self.ServerLog.sudo().create(
+            {
+                "name": "Refresh Test Log",
+                "server_id": self.server_test_1.id,
+                "log_type": "file",
+                "access_level": "1",
+                "log_text": "<p>Initial</p>",
+            }
+        )
+
+        # 1. Direct write attempts should fail
+        with self.assertRaises(AccessError):
+            test_log.sudo().write({"log_text": "<p>Illegal Update</p>"})
+
+        # 2. Verify refresh action updates content
+        original_content = test_log.log_text
+        test_log.action_get_log_text()
+
+        self.assertNotEqual(
+            test_log.log_text,
+            original_content,
+            "action_get_log_text() should update log_text",
+        )
+
+        self.assertTrue(
+            test_log.log_text.startswith("<p>"),
+            "Refreshed content should be valid HTML",
+        )
+
+    def test_log_text_copy(self):
+        """Duplicating a log must NOT keep the log output"""
+        original = self.ServerLog.create(
+            {
+                "name": "Original Log",
+                "server_id": self.server_test_1.id,
+                "log_type": "file",
+                "access_level": "1",
+                "log_text": "<p>Original content</p>",
+            }
+        )
+
+        copied = original.copy()
+
+        # log_text must be cleared because copy=False
+        self.assertFalse(copied.log_text, "Copied log must not keep log_text")
+        self.assertNotEqual(copied.id, original.id)
+        self.assertTrue(bool(copied.name))

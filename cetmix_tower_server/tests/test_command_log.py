@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import fields
+from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
 
@@ -224,10 +225,10 @@ class TestTowerCommandLog(TestTowerCommon):
             " in users_ids or manager_ids",
         )
 
-    def test_root_unrestricted_access(self):
-        """Test root user unrestricted access"""
-        # Create test logs with various conditions
-        test_logs = self.CommandLog.with_user(self.root).create(
+    def test_root_read_only_access(self):
+        """Root can read all command logs, but cannot create/modify/delete"""
+        # Create test logs with sudo()
+        test_logs = self.CommandLog.sudo().create(
             [
                 {
                     "server_id": self.server_2.id,
@@ -241,6 +242,23 @@ class TestTowerCommandLog(TestTowerCommon):
                 ]
             ]
         )
+        # Root cannot create logs
+        with self.assertRaises(AccessError):
+            self.CommandLog.with_user(self.root).create(
+                {
+                    "server_id": self.server_2.id,
+                    "command_id": self.command_level_1.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+
+        # Root cannot modify logs
+        with self.assertRaises(AccessError):
+            test_logs.with_user(self.root).write({"start_date": fields.Datetime.now()})
+
+        # Root cannot delete logs
+        with self.assertRaises(AccessError):
+            test_logs.with_user(self.root).unlink()
 
         # Root should be able to read all logs regardless of:
         # - access_level
