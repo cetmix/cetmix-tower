@@ -104,7 +104,7 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
             raise ValidationError(_("YAML file doesn't contain any records"))
 
         # Collect and validate all record models
-        ir_model_obj = self.env["ir.model"]
+        ir_model_obj = self.env["ir.model"].sudo()
         unique_models = {}
 
         # First pass: check all records have models and collect unique models
