@@ -11,6 +11,7 @@
     "author": "Cetmix, Giovanni Serra",
     "maintainers": ["GSLabIt"],
     "website": "https://cetmix.com",
+    "images": ["static/description/banner.png"],
     "application": False,
     "installable": True,
     "demo": [
