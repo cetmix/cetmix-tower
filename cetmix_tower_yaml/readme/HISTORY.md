@@ -1,3 +1,8 @@
+## 17.0.1.3.1 (2025-08-09)
+
+- Bugfixes: Error when uploading a YAML file while not being an Odoo "Access Rights" group member (4899)
+
+
 ## 17.0.1.3.0 (2025-08-01)
 
 - Features: Optional behaviour when file uploaded by command already exists on the server. (4740)
