@@ -1,3 +1,8 @@
+## 16.0.1.6.3 (2025-08-13)
+
+- Features: Improve access settings for logs (4866)
+
+
 ## 16.0.1.6.2 (2025-08-05)
 
 - Bugfixes: Pin paramiko version to "<4" to maintain compatibility with legacy installations (4891)
