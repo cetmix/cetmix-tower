@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, fields, models
+from odoo.exceptions import AccessError
 from odoo.tools import plaintext2html
 
 
@@ -43,7 +44,7 @@ class CxTowerServerLog(models.Model):
         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
         help="File that will be executed to get the log data",
     )
-    log_text = fields.Html(readonly=True)
+    log_text = fields.Html(readonly=True, copy=False)
 
     # --- Server template related
     server_template_id = fields.Many2one("cx.tower.server.template", ondelete="cascade")
@@ -86,11 +87,19 @@ class CxTowerServerLog(models.Model):
             "target": "current",
         }
 
+    def write(self, vals):
+        """Override to protect log_text from direct modifications.
+        Bypass with context key 'cx_allow_log_text_update' for internal updates.
+        """
+        if "log_text" in vals and not self.env.context.get("cx_allow_log_text_update"):
+            raise AccessError(_("You are not allowed to modify the server log output."))
+        return super().write(vals)
+
     def action_get_log_text(self):
         """Update log text from source"""
 
         # We are using `sudo` to override command/file access limitations
-        for rec in self.sudo():
+        for rec in self.sudo().with_context(cx_allow_log_text_update=True):
             if rec.log_type == "file" and rec.file_id:
                 log_text = rec._get_log_from_file()
             elif rec.log_type == "command" and rec.command_id:

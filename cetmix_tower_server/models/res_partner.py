@@ -24,7 +24,7 @@ class ResPartner(models.Model):
         "partner_id",
         string="Secrets",
         domain=[("key_id.key_type", "=", "s")],
-        groups="cetmix_tower_server.group_user",
+        groups="cetmix_tower_server.group_manager",
     )
 
     @api.depends("server_ids", "child_ids.server_count")
