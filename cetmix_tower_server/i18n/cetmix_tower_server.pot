@@ -4566,6 +4566,13 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server_log.py:0
+#, python-format
+msgid "You are not allowed to modify the server log output."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
 #, python-format
 msgid "You cannot execute an empty command"
