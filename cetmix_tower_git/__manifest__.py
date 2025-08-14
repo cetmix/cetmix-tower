@@ -6,7 +6,7 @@
     "version": "14.0.1.1.1",
     "development_status": "Production/Stable",
     "category": "Productivity",
-    "website": "https://cetmix.com",
+    "website": "https://tower.cetmix.com",
     "author": "Cetmix",
     "license": "AGPL-3",
     "application": False,
