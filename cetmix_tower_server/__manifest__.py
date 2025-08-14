@@ -6,7 +6,7 @@
     "version": "16.0.1.6.3",
     "development_status": "Beta",
     "category": "Productivity",
-    "website": "https://cetmix.com",
+    "website": "https://tower.cetmix.com",
     "live_test_url": "https://cetmix.com/tower",
     "images": ["static/description/banner.png"],
     "author": "Cetmix",
