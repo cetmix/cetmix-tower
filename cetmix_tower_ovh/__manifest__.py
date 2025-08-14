@@ -10,7 +10,7 @@
     "license": "AGPL-3",
     "author": "Cetmix, Giovanni Serra",
     "maintainers": ["GSLabIt"],
-    "website": "https://cetmix.com",
+    "website": "https://tower.cetmix.com",
     "application": False,
     "installable": True,
     "demo": [
