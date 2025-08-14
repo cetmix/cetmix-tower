@@ -22,7 +22,7 @@ rebel_module_groups: []
 repo_description: Cetmix Tower
 repo_name: Odoo bases server management tool
 repo_slug: cetmix-tower
-repo_website: https://cetmix.com
+repo_website: https://tower.cetmix.com
 use_pyproject_toml: false
 use_ruff: true
 
