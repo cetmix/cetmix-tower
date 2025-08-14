@@ -6,7 +6,7 @@
     "version": "17.0.1.3.1",
     "development_status": "Beta",
     "category": "Productivity",
-    "website": "https://cetmix.com",
+    "website": "https://tower.cetmix.com",
     "author": "Cetmix",
     "license": "AGPL-3",
     "installable": True,
