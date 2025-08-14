@@ -8,8 +8,8 @@
     "category": "Productivity",
     "license": "AGPL-3",
     "author": "Cetmix",
-    "website": "https://cetmix.com",
-    "live_test_url": "https://cetmix.com/tower",
+    "website": "https://tower.cetmix.com",
+    "live_test_url": "https://tower.cetmix.com/download",
     "images": ["static/description/banner.png"],
     "installable": True,
     "external_dependencies": {
