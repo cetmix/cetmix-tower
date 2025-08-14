@@ -48,7 +48,7 @@ repos:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
       - id: oca-fix-manifest-website
-        args: ["https://cetmix.com"]
+        args: ["https://tower.cetmix.com"]
       - id: oca-gen-addon-readme
         args:
           - --addons-dir=.
