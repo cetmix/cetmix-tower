@@ -371,7 +371,7 @@ class CxTowerPlan(models.Model):
             command_log (cx.tower.command.log()): Command log record
         """
         self.ensure_one()
-        action, exit_code, plan_line_id = self._get_next_action_values(command_log)
+        action, exit_code, plan_line = self._get_next_action_values(command_log)
         plan_log = command_log.plan_log_id
 
         # Update log message
@@ -380,14 +380,14 @@ class CxTowerPlan(models.Model):
             exit_code = 0
 
         # Run next line
-        if action == "n" and plan_line_id:
+        if action == "n" and plan_line:
             server = command_log.server_id
-            if plan_line_id._is_executable_line(server):
-                plan_line_id._run(
+            if plan_line._is_executable_line(server):
+                plan_line._run(
                     server, plan_log, variable_values=plan_log.variable_values
                 )
             else:
-                plan_line_id._skip(server, plan_log)
+                plan_line._skip(server, plan_log)
 
         # Exit
         if action in ["e", "ec"]:
