@@ -2,7 +2,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import _, fields, models
 from odoo.exceptions import AccessError
-from odoo.tools import plaintext2html
 
 
 class CxTowerServerLog(models.Model):
@@ -44,7 +43,7 @@ class CxTowerServerLog(models.Model):
         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
         help="File that will be executed to get the log data",
     )
-    log_text = fields.Html(readonly=True, copy=False)
+    log_text = fields.Text(readonly=True, copy=False)
 
     # --- Server template related
     server_template_id = fields.Many2one("cx.tower.server.template", ondelete="cascade")
@@ -77,7 +76,7 @@ class CxTowerServerLog(models.Model):
         Open log record in current window
         """
         self.ensure_one()
-        self.action_get_log_text()
+        self.action_update_log()
         return {
             "type": "ir.actions.act_window",
             "name": self.name,
@@ -95,52 +94,67 @@ class CxTowerServerLog(models.Model):
             raise AccessError(_("You are not allowed to modify the server log output."))
         return super().write(vals)
 
-    def action_get_log_text(self):
+    def action_update_log(self):
         """Update log text from source"""
 
         # We are using `sudo` to override command/file access limitations
         for rec in self.sudo().with_context(cx_allow_log_text_update=True):
-            if rec.log_type == "file" and rec.file_id:
-                log_text = rec._get_log_from_file()
-            elif rec.log_type == "command" and rec.command_id:
-                log_text = rec._get_log_from_command()
-            else:
-                log_text = self.NO_LOG_FETCHED_MESSAGE
-            rec.log_text = self._format_log_text(log_text)
+            rec.log_text = rec._get_formatted_log_text()
 
-    def _get_copied_name(self, force_name=None):
-        # Original name is preserved when log is duplicated
-        return force_name or self.name
-
-    def _format_log_text(self, log_text):
-        """Formats log text to prior to display it.
-        Override this function to implement custom log formatting.
-
-        Args:
-            log_text (Text): source log text
+    def _get_log_text(self):
+        """
+        Get log text from source
+        Use this function to get pure log text from source.
 
         Returns:
-            Html: formatted log text
+            Text: log text
         """
-        return plaintext2html(log_text)
+        self.ensure_one()
+        if self.log_type == "file" and self.file_id:
+            return self._get_log_from_file()
+        elif self.log_type == "command" and self.command_id:
+            return self._get_log_from_command()
+
+    def _get_formatted_log_text(self):
+        """
+        Get formatted log text.
+        Use this function to get formatted log text.
+
+        Returns:
+            Text: formatted log text
+        """
+        log_text = self._get_log_text()
+        if log_text:
+            return self._format_log_text(log_text)
+        return self.NO_LOG_FETCHED_MESSAGE
+
+    def _format_log_text(self, log_text):
+        """
+        Format log text.
+        Use this function to format log text.
+
+        Returns:
+            Text: formatted log text
+        """
+        return log_text
 
     def _get_log_from_file(self):
         """Get log from a file.
         Override this function to implement custom log handler
 
         Returns:
-            Text: log text. Supports HTML formatting
+            Text: log text
         """
         self.ensure_one()
         if self.file_id.source == "server":
-            return self.file_id.code or self.NO_LOG_FETCHED_MESSAGE
+            return self.file_id.code
         if self.file_id.source == "tower":
-            return self.file_id.code_on_server or self.NO_LOG_FETCHED_MESSAGE
+            return self.file_id.code_on_server
 
     def _get_log_from_command(self):
         """Get log from a command.
         Returns:
-            Text: log text. Supports HTML formatting
+            Text: log text
         """
         self.ensure_one()
 
@@ -157,3 +171,7 @@ class CxTowerServerLog(models.Model):
             elif error:
                 log_text = error
         return log_text
+
+    def _get_copied_name(self, force_name=None):
+        # Original name is preserved when log is duplicated
+        return force_name or self.name
