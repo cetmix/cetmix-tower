@@ -40,11 +40,4 @@
         <field name="view_id" ref="view_yaml_manifest_template_tree" />
         <field name="target">current</field>
     </record>
-    <menuitem
-        id="menu_yaml_manifest_template"
-        name="YAML Manifest Templates"
-        parent="cetmix_tower_server.menu_settings"
-        action="action_yaml_manifest_template"
-        sequence="15"
-    />
 </odoo>
