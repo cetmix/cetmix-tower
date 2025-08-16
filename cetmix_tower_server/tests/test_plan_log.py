@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import fields
+from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
 
@@ -221,10 +222,10 @@ class TestTowerPlanLog(TestTowerCommon):
             " in users_ids or manager_ids",
         )
 
-    def test_root_unrestricted_access(self):
-        """Test root user unrestricted access"""
-        # Create test logs with various conditions
-        test_logs = self.PlanLog.with_user(self.root).create(
+    def test_root_read_only_access(self):
+        """Root can read all plan logs, but cannot create/modify/delete"""
+        # Create test logs with sudo()
+        test_logs = self.PlanLog.sudo().create(
             [
                 {
                     "server_id": self.server_2.id,
@@ -245,6 +246,24 @@ class TestTowerPlanLog(TestTowerCommon):
             3,
             "Root should have unrestricted read access to all logs",
         )
+
+        # Root can't create logs
+        with self.assertRaises(AccessError):
+            self.PlanLog.with_user(self.root).create(
+                {
+                    "server_id": self.server_2.id,
+                    "plan_id": self.plan_level_1.id,
+                    "start_date": fields.Datetime.now(),
+                }
+            )
+
+        # Root cannot modify logs
+        with self.assertRaises(AccessError):
+            test_logs.with_user(self.root).write({"start_date": fields.Datetime.now()})
+
+        # Root cannot delete logs
+        with self.assertRaises(AccessError):
+            test_logs.with_user(self.root).unlink()
 
         # Test read on all records
         all_recs = self.PlanLog.with_user(self.root).search([])

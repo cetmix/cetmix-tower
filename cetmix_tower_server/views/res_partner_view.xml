@@ -22,7 +22,11 @@
       <xpath expr="//sheet/notebook" position="inside">
         <page string="Cetmix Tower" groups="cetmix_tower_server.group_user">
           <group>
-              <group name="group_secrets" string="Secrets">
+              <group
+                            name="group_secrets"
+                            string="Secrets"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                 <field name="secret_ids" string="">
                   <tree editable="bottom">
                     <field
