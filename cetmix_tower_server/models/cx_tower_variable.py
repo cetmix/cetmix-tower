@@ -89,6 +89,7 @@ class TowerVariable(models.Model):
         relation="cx_tower_command_variable_rel",
         column1="variable_id",
         column2="command_id",
+        copy=False,
     )
     command_ids_count = fields.Integer(
         string="Command Count", compute="_compute_command_ids_count"
@@ -98,6 +99,7 @@ class TowerVariable(models.Model):
         relation="cx_tower_plan_line_variable_rel",
         column1="variable_id",
         column2="plan_line_id",
+        copy=False,
     )
     plan_line_ids_count = fields.Integer(
         string="Plan Line Count", compute="_compute_plan_line_ids_count"
@@ -107,6 +109,7 @@ class TowerVariable(models.Model):
         relation="cx_tower_file_variable_rel",
         column1="variable_id",
         column2="file_id",
+        copy=False,
     )
     file_ids_count = fields.Integer(
         string="File Count", compute="_compute_file_ids_count"
@@ -116,6 +119,7 @@ class TowerVariable(models.Model):
         relation="cx_tower_file_template_variable_rel",
         column1="variable_id",
         column2="file_template_id",
+        copy=False,
     )
     file_template_ids_count = fields.Integer(
         string="File Template Count", compute="_compute_file_template_ids_count"
@@ -125,6 +129,7 @@ class TowerVariable(models.Model):
         relation="cx_tower_variable_value_variable_rel",
         column1="variable_id",
         column2="variable_value_id",
+        copy=False,
     )
     variable_value_ids_count = fields.Integer(
         string="Variable Value Count", compute="_compute_variable_value_ids_count"
