@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class CxTowerGitSource(models.Model):
@@ -24,6 +24,7 @@ class CxTowerGitSource(models.Model):
     enabled = fields.Boolean(
         default=True, help="Enable in configuration and exported to files"
     )
+    name = fields.Char(required=False)
     sequence = fields.Integer(default=10)
     git_project_id = fields.Many2one(
         comodel_name="cx.tower.git.project",
@@ -68,15 +69,49 @@ class CxTowerGitSource(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
+        # Update name
+        res._compose_name()
         # Update related files and templates on create
         res._update_related_files_and_templates()
         return res
 
     def write(self, vals):
         res = super().write(vals)
+        # Compose name
+        if "name" in vals and not vals.get("name"):
+            self._compose_name()
         # Update related files and templates on update
         self._update_related_files_and_templates()
         return res
+
+    def unlink(self):
+        """
+        Override to update related files and templates on unlink
+        """
+        related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
+        related_templates = self.mapped("git_project_id").mapped(
+            "git_project_file_template_rel_ids"
+        )
+        res = super().unlink()
+        # Update related files and templates on unlink
+        if related_files:
+            related_files._save_to_file()
+        if related_templates:
+            related_templates._save_to_file_template()
+        return res
+
+    def _compose_name(self):
+        """Compose name if not provided explicitly"""
+        for source in self:
+            if source.name:
+                continue
+            remote = fields.first(source.remote_ids)
+            if not remote:
+                source.name = _("Empty Source")
+                continue
+
+            remote_repo = remote.repo_id
+            source.name = f"{remote_repo.owner_id.name}/{remote_repo.repo}"
 
     def _update_related_files_and_templates(self):
         # Update related files and templates on update

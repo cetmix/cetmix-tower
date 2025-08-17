@@ -8,7 +8,7 @@ class CetmixTower(models.AbstractModel):
     _inherit = "cetmix.tower"
 
     @api.model
-    def server_get_by_git_ref(self, repository_url, head=None, head_type=None):
+    def servers_by_git_ref(self, repository_url, head=None, head_type=None):
         """
         Return servers linked to a given Git repository reference.
 

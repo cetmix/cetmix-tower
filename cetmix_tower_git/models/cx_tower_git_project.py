@@ -85,6 +85,17 @@ class CxTowerGitProject(models.Model):
         depends=["git_project_file_template_rel_ids"],
         copy=False,
     )
+    # Helper field to get all repositories used in this project
+    repo_ids = fields.Many2many(
+        comodel_name="cx.tower.git.repo",
+        relation="cx_tower_git_repo_project_rel",
+        column1="project_id",
+        column2="repo_id",
+        string="Repositories",
+        readonly=True,
+        copy=False,
+        help="Repositories used in this project through its sources and remotes",
+    )
     note = fields.Text()
 
     # ---- Access. Add relation for mixin fields
@@ -232,7 +243,7 @@ class CxTowerGitProject(models.Model):
             List: List of variables
         """
         variables = re.findall(r"\$([A-Z0-9_]+)", text)
-        return list(set(variables))
+        return sorted(list(set(variables)))
 
     # ------------------------------
     # YAML mixin methods
@@ -290,7 +301,7 @@ class CxTowerGitProject(models.Model):
         variable_list = self._extract_variables_from_text(yaml_code)
         if variable_list:
             comment_text += _(
-                "\n# You need to set the following variables in your environment:\n# %(vars)s \n"  # noqa: E501
+                "\n# You need to set the following variables in your environment:\n# %(vars)s\n"  # noqa: E501
                 "# and run git-aggregator with '--expand-env' parameter.\n",  # noqa: E501
                 vars=(", ".join(variable_list)),
             )

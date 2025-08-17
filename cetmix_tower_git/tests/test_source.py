@@ -161,9 +161,9 @@ class TestSource(CommonTest):
         # Source 1
         expected_result = {
             "remotes": {
-                "remote_1": "https://github.com/cetmix/cetmix-tower.git",
-                "remote_2": "https://gitlab.com/cetmix/cetmix-tower.git",
-                "remote_3": "git@my.gitlab.org:cetmix/cetmix-tower.git",
+                "remote_1": "https://github.com/cetmix-test/cetmix-tower-test.git",
+                "remote_2": "https://$GITLAB_TOKEN_NAME:$GITLAB_TOKEN@my.gitlab.com/cetmix-test/cetmix-tower-test.git",
+                "remote_3": "git@my.gitlab.com:cetmix-test/cetmix-tower-test.git",
             },
             "merges": [
                 {"remote": "remote_1", "ref": "refs/pull/123/head"},
