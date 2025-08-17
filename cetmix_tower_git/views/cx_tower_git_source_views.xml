@@ -28,7 +28,10 @@
                     />
                     <div class="oe_title">
                         <h1>
-                            <field name="name" placeholder="Name" />
+                            <field
+                                name="name"
+                                placeholder="Name. Leave blank to autogenerate"
+                            />
                         </h1>
                         <h3>
                             <field
@@ -51,25 +54,24 @@
                                 style="margin-bottom:0px;"
                                 invisible="remote_count &lt; 2"
                             >
-                        <p>
-                            The top one remote will be used as a merge target.
-                            You can re-arrange remotes by dragging them or changing their sequence value.
-                        </p>
+                            <p>
+                                The top one remote will be used as a merge target.
+                                You can re-arrange remotes by dragging them or changing their sequence value.
+                            </p>
                         </div>
                             <field name="remote_count" invisible="1" />
                             <field name="remote_ids">
-                                <tree decoration-muted="not enabled">
+                                <tree
+                                    decoration-muted="not enabled"
+                                    decoration-info="is_private == True"
+                                >
                                     <field name="sequence" widget="handle" />
-                                    <field name="name" optional="hide" />
-                                    <field name="url" optional="show" />
-                                    <field
-                                        name="is_private"
-                                        string="Private"
-                                        optional="show"
-                                    />
-                                    <field name="head_type" optional="show" />
-                                    <field name="head" optional="show" />
+                                    <field name="repo_id" />
+                                    <field name="head_type" />
+                                    <field name="head" />
+                                    <field name="url_protocol" />
                                     <field name="enabled" widget="boolean_toggle" />
+                                    <field name="is_private" optional="hide" />
                                     <field name="reference" optional="hide" />
                                     <field name="create_uid" optional="hide" />
                                 </tree>

@@ -1,5 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import api, fields, models
 
 
@@ -82,20 +83,38 @@ class CxTowerServer(models.Model):
         recordset of cx.tower.server
             Matching servers. Empty recordset if no matches.
         """
+
+        server_obj = self.env["cx.tower.server"]
         # URL MUST be already canonical.
         if not repository_url:
-            return self.env["cx.tower.server"].browse()
+            return server_obj
 
-        Remote = self.env["cx.tower.git.remote"]
-        domain = [("url", "=", repository_url)]
+        # Get repository id by URL
+        repo_id = self.env["cx.tower.git.repo"]._get_repo_id_by_url(
+            repository_url, raise_if_invalid=False
+        )
+        if not repo_id:
+            return server_obj
+        repo = self.env["cx.tower.git.repo"].browse(repo_id)
+
+        # Compose domain for remotes
+        remote_domain = [
+            ("source_id.enabled", "=", True),
+            ("enabled", "=", True),
+        ]
         if head:
-            domain.append(("head", "=", head))
+            head = self.env["cx.tower.git.remote"]._sanitize_head(head)
+            remote_domain.append(("head", "=", head))
         if head_type:
-            domain.append(("head_type", "=", head_type))
+            remote_domain.append(("head_type", "=", head_type))
 
-        matching = Remote.search(domain)
+        # Get remotes
+        remotes = repo.remote_ids.filtered_domain(remote_domain)
+        if not remotes:
+            return server_obj
 
-        servers = matching.mapped("git_project_id.git_project_rel_ids.server_id")
+        # Get servers from remotes
+        servers = remotes.mapped("git_project_id.git_project_rel_ids.server_id")
         return servers
 
     def _command_runner_file_using_template_create_file(
