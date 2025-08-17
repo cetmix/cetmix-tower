@@ -7,14 +7,13 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-07-06 09:17+0200\n"
-"Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14/"
-"cetmix_tower_server/it/>\n"
-"Language: it\n"
+"PO-Revision-Date: 2025-08-19 14:26+0100\n"
+"Last-Translator: \n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14/cetmix_tower_server/it/>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 2.3\n"
 
@@ -72,26 +71,20 @@ msgid ""
 "<h3>Help with Python expressions</h3>\n"
 "<div style=\"margin-bottom: 10px;\">\n"
 "    <p>\n"
-"        Each Python code command returns the <code>result</code> value which "
-"is a dictionary.\n"
+"        Each Python code command returns the <code>result</code> value which is a dictionary.\n"
 "        <br>There are two keys in the dictionary:\n"
 "        <ul>\n"
-"    <li><code>exit_code</code>: Integer. Exit code of the command. \"0\" "
-"means success, any other value means failure. Default value is \"0\".</li>\n"
-"    <li><code>message</code>: String. Message to be logged. Default value is "
-"\"None\".</li>\n"
+"    <li><code>exit_code</code>: Integer. Exit code of the command. \"0\" means success, any other value means failure. Default value is \"0\".</li>\n"
+"    <li><code>message</code>: String. Message to be logged. Default value is \"None\".</li>\n"
 "</ul>\n"
 "Here is an example of a python code command:\n"
 "<code style='white-space: pre-wrap'>\n"
 "    server_name = server.name\n"
-"    result = {\"exit_code\": 0, \"message\": \"Server name is \" + "
-"server_name}\n"
+"    result = {\"exit_code\": 0, \"message\": \"Server name is \" + server_name}\n"
 "</code>\n"
 "</p>\n"
 "<br>\n"
-"Please refer to the <a href=\"https://cetmix.com/tower/documentation/command/"
-"#python-code-commands\" target=\"_blank\">official documentation</a> for "
-"more information and examples.\n"
+"Please refer to the <a href=\"https://cetmix.com/tower/documentation/command/#python-code-commands\" target=\"_blank\">official documentation</a> for more information and examples.\n"
 "</div>\n"
 "<p\n"
 ">Various fields may use Python code or Python expressions. The\n"
@@ -101,27 +94,20 @@ msgstr ""
 "<h3>Aiuto con le espressioni Python</h3>\n"
 "<div style=\"margin-bottom: 10px;\">\n"
 "    <p>\n"
-"        Ogni comando in codice Python restituisce il valore <code>result</"
-"code>, che è un dizionario.\n"
+"        Ogni comando in codice Python restituisce il valore <code>result</code>, che è un dizionario.\n"
 "        <br>Il dizionario contiene due chiavi:\n"
 "        <ul>\n"
-"    <li><code>exit_code</code>: intero. Codice di uscita del comando. \"0\" "
-"indica successo, qualsiasi altro valore indica fallimento. Il valore "
-"predefinito è \"0\".</li>\n"
-"    <li><code>message</code>: stringa. Messaggio da registrare. Il valore "
-"predefinito è \"None\".</li>\n"
+"    <li><code>exit_code</code>: intero. Codice di uscita del comando. \"0\" indica successo, qualsiasi altro valore indica fallimento. Il valore predefinito è \"0\".</li>\n"
+"    <li><code>message</code>: stringa. Messaggio da registrare. Il valore predefinito è \"None\".</li>\n"
 "</ul>\n"
 "Ecco un esempio di comando in codice Python:\n"
 "<code style='white-space: pre-wrap'>\n"
 "    server_name = server.name\n"
-"    result = {\"exit_code\": 0, \"message\": \"Il nome del server è \" + "
-"server_name}\n"
+"    result = {\"exit_code\": 0, \"message\": \"Il nome del server è \" + server_name}\n"
 "</code>\n"
 "</p>\n"
 "<br>\n"
-"Per ulteriori informazioni ed esempi, consultare la <a href=\"https://cetmix."
-"com/tower/documentation/command/#python-code-commands\" target=\"_blank"
-"\">documentazione ufficiale</a>.\n"
+"Per ulteriori informazioni ed esempi, consultare la <a href=\"https://cetmix.com/tower/documentation/command/#python-code-commands\" target=\"_blank\">documentazione ufficiale</a>.\n"
 "</div>\n"
 "<p\n"
 ">Vari campi possono utilizzare codice Python o espressioni Python.\n"
@@ -145,16 +131,13 @@ msgstr "  - Variabili mancanti: %(variables)s"
 msgid ""
 "# Please refer to the 'Help' tab and documentation for more information.\n"
 "#\n"
-"# You can return command result in the 'result' variable which is a "
-"dictionary:\n"
+"# You can return command result in the 'result' variable which is a dictionary:\n"
 "#   result = {\"exit_code\": 0, \"message\": \"Some message\"}\n"
 "#   default value is {\"exit_code\": 0, \"message\": None}\n"
 msgstr ""
-"# Per ulteriori informazioni, consultare la scheda \"Aiuto\" e la "
-"documentazione.\n"
+"# Per ulteriori informazioni, consultare la scheda \"Aiuto\" e la documentazione.\n"
 "#\n"
-"# È possibile restituire il risultato del comando nella variabile \"result"
-"\", che è un dizionario:\n"
+"# È possibile restituire il risultato del comando nella variabile \"result\", che è un dizionario:\n"
 "# result = {\"exit_code\": 0, \"message\": \"Un messaggio\"}\n"
 "# il valore predefinito è {\"exit_code\": 0, \"message\": None}\n"
 
@@ -180,9 +163,7 @@ msgstr "%(shr)s attivato"
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #, python-format
 msgid "...save record to see the final expression or click the line to edit"
-msgstr ""
-"... salvare il record per vedere l'espressione finale o fare clic sulla riga "
-"per modificare"
+msgstr "... salvare il record per vedere l'espressione finale o fare clic sulla riga per modificare"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__command_status
@@ -230,22 +211,16 @@ msgstr "<b>E</b>"
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
-msgid ""
-"<i class=\"fa fa-ellipsis-v\" aria-label=\"Selection\" role=\"img\" title="
-"\"Selection\"/>"
-msgstr ""
-"<i class=\"fa fa-ellipsis-v\" aria-label=\"Selection\" role=\"img\" title="
-"\"Selezione\"/>"
+msgid "<i class=\"fa fa-ellipsis-v\" aria-label=\"Selection\" role=\"img\" title=\"Selection\"/>"
+msgstr "<i class=\"fa fa-ellipsis-v\" aria-label=\"Selection\" role=\"img\" title=\"Selezione\"/>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid ""
-"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Info\" title=\"Info"
-"\"/>\n"
+"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Info\" title=\"Info\"/>\n"
 "                            <span>&amp;nbsp;</span>"
 msgstr ""
-"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Info\" title="
-"\"Informazioni\"/>\n"
+"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Info\" title=\"Informazioni\"/>\n"
 "                            <span>&amp;nbsp;</span>"
 
 #. module: cetmix_tower_server
@@ -257,10 +232,8 @@ msgstr "<log is empty>"
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
-msgid ""
-"<span attrs=\"{'invisible': [('action', '!=', 'ssh_command')]}\">sudo</span>"
-msgstr ""
-"<span attrs=\"{'invisible': [('action', '!=', 'ssh_command')]}\">sudo</span>"
+msgid "<span attrs=\"{'invisible': [('action', '!=', 'ssh_command')]}\">sudo</span>"
+msgstr "<span attrs=\"{'invisible': [('action', '!=', 'ssh_command')]}\">sudo</span>"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban_manager
@@ -290,27 +263,18 @@ msgstr "<strong>Server:</strong>"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_action
-msgid ""
-"A variable value cannot be assigned multiple times to the same plan line "
-"action!"
-msgstr ""
-"Non è possibile assegnare più volte alla stessa azione della linea del piano "
-"un valore variabile!"
+msgid "A variable value cannot be assigned multiple times to the same plan line action!"
+msgstr "Non è possibile assegnare più volte alla stessa azione della linea del piano un valore variabile!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_template
-msgid ""
-"A variable value cannot be assigned multiple times to the same server "
-"template!"
-msgstr ""
-"Un valore di variabile non può essere assegnato più volte allo stesso "
-"modello di server!"
+msgid "A variable value cannot be assigned multiple times to the same server template!"
+msgstr "Un valore di variabile non può essere assegnato più volte allo stesso modello di server!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_server
 msgid "A variable value cannot be assigned multiple times to the same server!"
-msgstr ""
-"Un valore variabile non può essere assegnato più volte allo stesso server!"
+msgstr "Un valore variabile non può essere assegnato più volte allo stesso server!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -385,12 +349,8 @@ msgstr "Azioni"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__action_ids
-msgid ""
-"Actions trigger based on command result. If empty next command will be "
-"executed"
-msgstr ""
-"Le azioni vengono attivate in base al risultato del comando. Se vuoto, verrà "
-"eseguito il comando successivo"
+msgid "Actions trigger based on command result. If empty next command will be executed"
+msgstr "Le azioni vengono attivate in base al risultato del comando. Se vuoto, verrà eseguito il comando successivo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__active
@@ -557,11 +517,8 @@ msgstr "Binario"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_log_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_view_form
-msgid ""
-"Can contain English letters, digits and '_'. Leave blank to autogenerate"
-msgstr ""
-"Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la "
-"generazione automatica"
+msgid "Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr "Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la generazione automatica"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
@@ -577,8 +534,7 @@ msgid ""
 "Cannot change 'global' status for '%(var)s' with value '%(val)s'.\n"
 "Try to assigns it to a record instead."
 msgstr ""
-"Impossibile modificare lo stato 'global' per '%(var)s' con valore "
-"'%(val)s'. \n"
+"Impossibile modificare lo stato 'global' per '%(var)s' con valore '%(val)s'. \n"
 "Provare ad assegnarlo ad un record."
 
 #. module: cetmix_tower_server
@@ -595,19 +551,13 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_tag.py:0
 #, python-format
 msgid "Cannot delete tag '%(tag_name)s' because it is used in related records."
-msgstr ""
-"Non si può cancellare l'etichetta '%(tag_name)s' perché è utilizzata in "
-"record collegati."
+msgstr "Non si può cancellare l'etichetta '%(tag_name)s' perché è utilizzata in record collegati."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
-msgid ""
-"Cannot download %(f)s from server: Binary content is not supported for "
-"'Text' file type"
-msgstr ""
-"Impossibile scaricare %(f)s dal server: il contenuto binario non è "
-"supportato per il tipo di file 'Text'"
+msgid "Cannot download %(f)s from server: Binary content is not supported for 'Text' file type"
+msgstr "Impossibile scaricare %(f)s dal server: il contenuto binario non è supportato per il tipo di file 'Text'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
@@ -646,12 +596,8 @@ msgstr "Cetmix Tower"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
-msgid ""
-"Cetmix Tower <a href='https://cetmix.com/tower/documentation/"
-"odoo_automation' target='_blank'>helper class</a> shortcut"
-msgstr ""
-"Scorciatoia Cetmix Tower <a href='https://cetmix.com/tower/documentation/"
-"odoo_automation' target='_blank'>classe aiuto</a>"
+msgid "Cetmix Tower <a href='https://cetmix.com/tower/documentation/odoo_automation' target='_blank'>helper class</a> shortcut"
+msgstr "Scorciatoia Cetmix Tower <a href='https://cetmix.com/tower/documentation/odoo_automation' target='_blank'>classe aiuto</a>"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command
@@ -811,12 +757,8 @@ msgstr "Controllare il log %(t)s per il risultato"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
-msgid ""
-"Check the key before inserting in the server settings. Do not insert the key "
-"if you have any doubts!"
-msgstr ""
-"Controllare la chiave prima di inserirla nelle impostazioni del server. Non "
-"inserirla in caso di dubbi!"
+msgid "Check the key before inserting in the server settings. Do not insert the key if you have any doubts!"
+msgstr "Controllare la chiave prima di inserirla nelle impostazioni del server. Non inserirla in caso di dubbi!"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
@@ -957,17 +899,16 @@ msgstr "Il comando è scaduto ed è stato terminato"
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
 msgid ""
-"Command timeout in seconds after which the command will be terminated. Set "
-"to 0 to disable timeout.\n"
+"Command timeout in seconds after which the command will be terminated. Set to 0 to disable timeout.\n"
 "                                    <br/>"
 msgstr ""
-"Timeout del comando in secondi, dopo il quale il comando verrà terminato. "
-"Impostare su 0 per disabilitare il timeout..\n"
+"Timeout del comando in secondi, dopo il quale il comando verrà terminato. Impostare su 0 per disabilitare il timeout..\n"
 "                                    <br/>"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__command_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__plan_line_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__command_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag__command_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_root
@@ -989,12 +930,8 @@ msgstr "Condizione"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__condition
-msgid ""
-"Conditions under which this Flight Plan Line will be launched. e.g.: "
-"{{ odoo_version}} == '14.0'"
-msgstr ""
-"Condizioni in base alle quali verrà lanciata questa linea del piano di volo. "
-"Ad esempio: {{ odoo_version}} == '14.0'"
+msgid "Conditions under which this Flight Plan Line will be launched. e.g.: {{ odoo_version}} == '14.0'"
+msgstr "Condizioni in base alle quali verrà lanciata questa linea del piano di volo. Ad esempio: {{ odoo_version}} == '14.0'"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_res_config_settings
@@ -1131,7 +1068,7 @@ msgstr "Creato il"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
 #, python-format
 msgid "Cron Job"
-msgstr "LAvoro cron"
+msgstr "Lavoro cron"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/res_config_settings.py:0
@@ -1172,23 +1109,18 @@ msgstr "Valore variabile predefinito"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__label
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__label
 msgid "Custom label. Can be used for search/tracking"
-msgstr ""
-"Etichetta personalizzata. Può essere utilizzata per ricerca/tracciamento"
+msgstr "Etichetta personalizzata. Può essere utilizzata per ricerca/tracciamento"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Custom message to display when pattern check fails"
-msgstr ""
-"Messaggio personalizzato da visualizzare quando il controllo dello schema "
-"fallisce"
+msgstr "Messaggio personalizzato da visualizzare quando il controllo dello schema fallisce"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_key_value.py:0
 #, python-format
 msgid "Custom secret values can be defined only for key type 'secret'"
-msgstr ""
-"I valori segreti personalizzati possono essere definiti solo per il tipo di "
-"chiave 'segreto'"
+msgstr "I valori segreti personalizzati possono essere definiti solo per il tipo di chiave 'segreto'"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command_run_wizard_variable_value
@@ -1229,6 +1161,11 @@ msgstr "Cartella nel server"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__server_dir
 msgid "Directory on server"
 msgstr "Cartella nel server"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__disconnect_file
+msgid "Disconnect from Template"
+msgstr "Disconnetti dal modello"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__display_name
@@ -1311,12 +1248,8 @@ msgstr "Abilitare per saltare la verifica della chiave host"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
-msgid ""
-"Enter Python code here. Help about Python expression is available in the "
-"help tab of this document."
-msgstr ""
-"Inserisci qui il codice Python. La guida sull'espressione Python è "
-"disponibile nella scheda della guida di questo documento."
+msgid "Enter Python code here. Help about Python expression is available in the help tab of this document."
+msgstr "Inserisci qui il codice Python. La guida sull'espressione Python è disponibile nella scheda della guida di questo documento."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_error
@@ -1337,17 +1270,13 @@ msgid ""
 "Example:\n"
 "                                <br/>\n"
 "                                <code>\n"
-"                                result = value.lower().strip().replace('_', "
-"'-').replace(\" \",\"\") if value.startswith('http') else 'https://' + re."
-"sub(r'\\s+', '', value)\n"
+"                                result = value.lower().strip().replace('_', '-').replace(\" \",\"\") if value.startswith('http') else 'https://' + re.sub(r'\\s+', '', value)\n"
 "                                </code>"
 msgstr ""
 "Esempio:\n"
 "                                <br/>\n"
 "                                <code>\n"
-"                                result = value.lower().strip().replace('_', "
-"'-').replace(\" \",\"\") if value.startswith('http') else 'https://' + re."
-"sub(r'\\s+', '', value)\n"
+"                                result = value.lower().strip().replace('_', '-').replace(\" \",\"\") if value.startswith('http') else 'https://' + re.sub(r'\\s+', '', value)\n"
 "                                </code>"
 
 #. module: cetmix_tower_server
@@ -1407,20 +1336,14 @@ msgstr "File"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
-msgid ""
-"File %(f)s is not 'tower' type. This operation is supported for 'tower' "
-"files only"
-msgstr ""
-"Il file %(f)s non è di tipo 'tower'. Questa operazione è supportata solo per "
-"file di tipo 'tower'"
+msgid "File %(f)s is not 'tower' type. This operation is supported for 'tower' files only"
+msgstr "Il file %(f)s non è di tipo 'tower'. Questa operazione è supportata solo per file di tipo 'tower'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
-msgid ""
-"File %(f)s shouldn't have the '%(src)s' source  for the '%(act)s' action"
-msgstr ""
-"Il file %(f)s non dovrebbe avere l'origine '%(src)s' per l'azione '%(act)s'"
+msgid "File %(f)s shouldn't have the '%(src)s' source  for the '%(act)s' action"
+msgstr "Il file %(f)s non dovrebbe avere l'origine '%(src)s' per l'azione '%(act)s'"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_ids_count
@@ -1471,6 +1394,12 @@ msgstr "Il file esiste già"
 #, python-format
 msgid "File already exists on server."
 msgstr "Il file esiste già nel server."
+
+#. module: cetmix_tower_server
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "File already exists on server. Upload skipped"
+msgstr "Il file esiste già nel server. Aggiornamento saltato"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__code
@@ -1645,6 +1574,7 @@ msgid "Flight Plan line that is being currently executed"
 msgstr "Riga piano di volo attualmente inesecuzione"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
 msgstr "Piani di volo"
@@ -1658,8 +1588,7 @@ msgstr "Piano di volo"
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
 msgid "Flight plan '%(plan)s' is not compatible with the server '%(server)s'."
-msgstr ""
-"Il piano di volo '%(plan)s' non è compatibile con il server '%(server)s'."
+msgstr "Il piano di volo '%(plan)s' non è compatibile con il server '%(server)s'."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__flight_plan_id
@@ -1689,9 +1618,7 @@ msgstr "Piano di volo in cui è usato questo comando"
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
 msgid "Float compare. Odoo helper function to compare floats."
-msgstr ""
-"Compara virgola mobile. Funzione aiuto Odoo per comparare i numeri a virgola "
-"mobile"
+msgstr "Compara virgola mobile. Funzione aiuto Odoo per comparare i numeri a virgola mobile"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_follower_ids
@@ -1834,12 +1761,8 @@ msgstr "Chiave host per verificare il server"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
-msgid ""
-"I confirm that the key is correct and I want to insert it in the server "
-"settings"
-msgstr ""
-"Confermo che la chiave è corretta e voglio inserirla nelle impostazioni del "
-"server"
+msgid "I confirm that the key is correct and I want to insert it in the server settings"
+msgstr "Confermo che la chiave è corretta e voglio inserirla nelle impostazioni del server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cetmix_tower__id
@@ -1907,6 +1830,11 @@ msgid "Icon to indicate an exception activity."
 msgstr "Icona per indicare una attività eccezione."
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__if_file_exists
+msgid "If File Exists"
+msgstr "Se il file esiste già"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_needaction
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__message_unread
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__message_needaction
@@ -1929,39 +1857,32 @@ msgid "If enabled file will be synced automatically using cron"
 msgstr "Se abilitata il file verrà sincronizzato automaticamente usando cron"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__disconnect_file
+msgid "If enabled, disconnects the file from its template after running the command.\n"
+msgstr "Se abilitato, disconnette il file dal suo modello dopo aver eseguito il comando.\n"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__no_split_for_sudo
-msgid ""
-"If enabled, do not split command on '&&' when using sudo.Prepend sudo once "
-"to the whole command."
-msgstr ""
-"Se abilitata, non dividere il comando su '&&' quando si usa sudo. Anteporre "
-"sudo una volta a tutto il comando."
+msgid "If enabled, do not split command on '&&' when using sudo.Prepend sudo once to the whole command."
+msgstr "Se abilitata, non dividere il comando su '&&' quando si usa sudo. Anteporre sudo una volta a tutto il comando."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 msgid ""
-"If enabled, multiple instances of the same command can be run on the same "
-"server at the same time.\n"
-"Otherwise, ANOTHER_COMMAND_RUNNING status will be returned if another "
-"instance of the same command is already running"
+"If enabled, multiple instances of the same command can be run on the same server at the same time.\n"
+"Otherwise, ANOTHER_COMMAND_RUNNING status will be returned if another instance of the same command is already running"
 msgstr ""
-"Se abilitato, più istanze dello stesso comando possono essere eseguite "
-"contemporaneamente sullo stesso server.\n"
-"In caso contrario, verrà restituito lo stato ANOTHER_COMMAND_RUNNING se "
-"un'altra istanza dello stesso comando è già in esecuzione"
+"Se abilitato, più istanze dello stesso comando possono essere eseguite contemporaneamente sullo stesso server.\n"
+"In caso contrario, verrà restituito lo stato ANOTHER_COMMAND_RUNNING se un'altra istanza dello stesso comando è già in esecuzione"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__allow_parallel_run
 msgid ""
-"If enabled, multiple instances of the same flight plan can be run on the "
-"same server at the same time.\n"
-"Otherwise, ANOTHER_PLAN_RUNNING status will be returned if another instance "
-"of the same flight plan is already running"
+"If enabled, multiple instances of the same flight plan can be run on the same server at the same time.\n"
+"Otherwise, ANOTHER_PLAN_RUNNING status will be returned if another instance of the same flight plan is already running"
 msgstr ""
-"Se abilitato, più istanze dello stesso piano di volo possono essere eseguite "
-"contemporaneamente sullo stesso server.\n"
-"In caso contrario, verrà restituito lo stato ANOTHER_PLAN_RUNNING se "
-"un'altra istanza dello stesso piano di volo è già in esecuzione"
+"Se abilitato, più istanze dello stesso piano di volo possono essere eseguite contemporaneamente sullo stesso server.\n"
+"In caso contrario, verrà restituito lo stato ANOTHER_PLAN_RUNNING se un'altra istanza dello stesso piano di volo è già in esecuzione"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
@@ -1974,19 +1895,12 @@ msgstr "Se codice di uscita"
 #: code:addons/cetmix_tower_server/tests/test_plan.py:0
 #, python-format
 msgid "If exit code == 35 then Exit with command exit code"
-msgstr ""
-"Se il codice di uscita == 35 allora esci con il comando codice di uscita"
+msgstr "Se il codice di uscita == 35 allora esci con il comando codice di uscita"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
-msgid ""
-"In the Secure Shell (SSH) protocol, host keys are used to verify the "
-"identity of remote hosts. Accepting unknown host keys may leave the "
-"connection open to man-in-the-middle attacks."
-msgstr ""
-"Nel protocollo Secure Shell (SSH), le chiavi host vengono utilizzate per "
-"verificare l'identità degli host remoti. Accettare chiavi host sconosciute "
-"può esporre la connessione ad attacchi man-in-the-middle."
+msgid "In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks."
+msgstr "Nel protocollo Secure Shell (SSH), le chiavi host vengono utilizzate per verificare l'identità degli host remoti. Accettare chiavi host sconosciute può esporre la connessione ad attacchi man-in-the-middle."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard_line__required
@@ -2204,19 +2118,13 @@ msgstr "Locale"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__path
-msgid ""
-"Location where command will be executed. Overrides command default path. You "
-"can use {{ variables }} in path"
-msgstr ""
-"Posizione in cui verrà eseguito il comando. Sostituisce il percorso "
-"predefinito del comando. Si può usare {{ variables }} nel percorso"
+msgid "Location where command will be executed. Overrides command default path. You can use {{ variables }} in path"
+msgstr "Posizione in cui verrà eseguito il comando. Sostituisce il percorso predefinito del comando. Si può usare {{ variables }} nel percorso"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__path
 msgid "Location where command will be run. You can use {{ variables }} in path"
-msgstr ""
-"Ubicazione in cui verrà eseguito il comando. Si possono usare {{variabili}} "
-"nel percorso"
+msgstr "Ubicazione in cui verrà eseguito il comando. Si possono usare {{variabili}} nel percorso"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_text
@@ -2294,15 +2202,13 @@ msgstr "Errore consegna messaggio"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__validation_message
 msgid ""
 "Message to display when the variable value is invalid. \n"
-"First line will be added automatically: `Variable:<variable_name>, Value: "
-"<value>`\n"
+"First line will be added automatically: `Variable:<variable_name>, Value: <value>`\n"
 "Eg: `Variable: Customer Name, Value: Test\n"
 "Invalid value!`\n"
 "If empty, the default message will be used."
 msgstr ""
 "Messaggio da visualizzare quando il valore della variabile non è valido.\n"
-"La prima riga verrà aggiunta automaticamente: `Variabile:<nome_variabile>, "
-"Valore: <valore>`\n"
+"La prima riga verrà aggiunta automaticamente: `Variabile:<nome_variabile>, Valore: <valore>`\n"
 "Es.: `Variabile: Nome cliente, Valore: Test\n"
 "Valore non valido!`\n"
 "Se vuoto, verrà utilizzato il messaggio predefinito."
@@ -2516,12 +2422,8 @@ msgstr "SO"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
 #, python-format
-msgid ""
-"OS %(os)s used by the server '%(srv)s' is not present in the command's OS "
-"compatibility list"
-msgstr ""
-"Il sistema operativo %(os)s utilizzato dal server '%(srv)s' non è presente "
-"nell'elenco di compatibilità del sistema operativo del comando"
+msgid "OS %(os)s used by the server '%(srv)s' is not present in the command's OS compatibility list"
+msgstr "Il sistema operativo %(os)s utilizzato dal server '%(srv)s' non è presente nell'elenco di compatibilità del sistema operativo del comando"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__os_ids
@@ -2634,6 +2536,11 @@ msgid "Os Compatibility Warning"
 msgstr "Avviso di compatibilità del sistema operativo"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__overwrite
+msgid "Overwrite"
+msgstr "Sovrascrivi"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__partner_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__partner_id
@@ -2742,9 +2649,7 @@ msgstr "Fornire la password SSH per %(srv)s"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/wizards/cx_tower_server_template_create_wizard.py:0
 #, python-format
-msgid ""
-"Please provide values for the following configuration variables: "
-"%(variables)s"
+msgid "Please provide values for the following configuration variables: %(variables)s"
 msgstr "Fornire valori per le seguenti variabili configurabili: %(variables)s"
 
 #. module: cetmix_tower_server
@@ -2829,53 +2734,20 @@ msgstr "Libreria 'dateutil' Python"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
-msgid ""
-"Python 'dnspython' library. <a href='https://dnspython.readthedocs.io' "
-"target='_blank'>Documentation</a>.<ul><li><code>dns.resolver</code>: wrapped "
-"dnspython. Use <code>dns.resolver.resolve(hostname, \"A\")</code> for DNS "
-"lookups.</li><li><code>dns.reversename</code>: wrapped dnspython. Use "
-"<code>dns.reversename.from_address(\"8.8.8.8\")</code> to build and reverse "
-"PTR records.</li><li><code>dns.exception</code>: wrapped dnspython. Catch "
-"<code>dns.exception.DNSException</code> to handle DNS-related errors.</li></"
-"ul>"
-msgstr ""
-"Libreria Python 'dnspython'. <a href='https://dnspython.readthedocs.io' "
-"target='_blank'>Documentazione</a>.<ul><li><code>dns.resolver</code>: "
-"dnspython incapsulato. Utilizza <code>dns.resolver.resolve(hostname, \"A\")</"
-"code> per le ricerche DNS.</li><li><code>dns.reversename</code>: dnspython "
-"incapsulato. Utilizza <code>dns.reversename.from_address(\"8.8.8.8\")</code> "
-"per creare e invertire i record PTR.</li><li><code>dns.exception</code>: "
-"dnspython incapsulato. Cattura <code>dns.exception.DNSException</code> per "
-"gestire gli errori relativi al DNS.</li></ul>"
+msgid "Python 'dnspython' library. <a href='https://dnspython.readthedocs.io' target='_blank'>Documentation</a>.<ul><li><code>dns.resolver</code>: wrapped dnspython. Use <code>dns.resolver.resolve(hostname, \"A\")</code> for DNS lookups.</li><li><code>dns.reversename</code>: wrapped dnspython. Use <code>dns.reversename.from_address(\"8.8.8.8\")</code> to build and reverse PTR records.</li><li><code>dns.exception</code>: wrapped dnspython. Catch <code>dns.exception.DNSException</code> to handle DNS-related errors.</li></ul>"
+msgstr "Libreria Python 'dnspython'. <a href='https://dnspython.readthedocs.io' target='_blank'>Documentazione</a>.<ul><li><code>dns.resolver</code>: dnspython incapsulato. Utilizza <code>dns.resolver.resolve(hostname, \"A\")</code> per le ricerche DNS.</li><li><code>dns.reversename</code>: dnspython incapsulato. Utilizza <code>dns.reversename.from_address(\"8.8.8.8\")</code> per creare e invertire i record PTR.</li><li><code>dns.exception</code>: dnspython incapsulato. Cattura <code>dns.exception.DNSException</code> per gestire gli errori relativi al DNS.</li></ul>"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
-msgid ""
-"Python 'hashlib' library. <a href='https://docs.python.org/3/library/hashlib."
-"html' target='_blank'>Documentation</a>. Available methods: 'sha1', "
-"'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', "
-"'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
-msgstr ""
-"Libreria Python 'hashlib'. <a href='https://docs.python.org/3/library/"
-"hashlib.html' target='_blank'>Documentazione</a>. Metodi disponibili: "
-"'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', "
-"'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', "
-"'md5', 'new'"
+msgid "Python 'hashlib' library. <a href='https://docs.python.org/3/library/hashlib.html' target='_blank'>Documentation</a>. Available methods: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
+msgstr "Libreria Python 'hashlib'. <a href='https://docs.python.org/3/library/hashlib.html' target='_blank'>Documentazione</a>. Metodi disponibili: 'sha1', 'sha224', 'sha256', 'sha384', 'sha512', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'shake_128', 'shake_256', 'blake2b', 'blake2s', 'md5', 'new'"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
-msgid ""
-"Python 'hmac' library. <a href='https://docs.python.org/3/library/hmac.html' "
-"target='_blank'>Documentation</a>. Use 'new' to create HMAC objects. "
-"Available methods on the HMAC *object*: 'update', 'copy', 'digest', "
-"'hexdigest'.  Module-level function: 'compare_digest'."
-msgstr ""
-"Libreria Python 'hmac'. <a href='https://docs.python.org/3/library/hmac."
-"html' target='_blank'>Documentazione</a>. Usa 'new' per creare oggetti HMAC. "
-"Metodi disponibili sull'oggetto HMAC: 'update', 'copy', 'digest', "
-"'hexdigest'. Funzione a livello di modulo: 'compare_digest'."
+msgid "Python 'hmac' library. <a href='https://docs.python.org/3/library/hmac.html' target='_blank'>Documentation</a>. Use 'new' to create HMAC objects. Available methods on the HMAC *object*: 'update', 'copy', 'digest', 'hexdigest'.  Module-level function: 'compare_digest'."
+msgstr "Libreria Python 'hmac'. <a href='https://docs.python.org/3/library/hmac.html' target='_blank'>Documentazione</a>. Usa 'new' per creare oggetti HMAC. Metodi disponibili sull'oggetto HMAC: 'update', 'copy', 'digest', 'hexdigest'. Funzione a livello di modulo: 'compare_digest'."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
@@ -2886,12 +2758,8 @@ msgstr "Libreria Python 'json'. Metodi disponibili: 'dumps'"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
-msgid ""
-"Python 'requests' library. Available methods: 'post', 'get', 'delete', "
-"'request'"
-msgstr ""
-"Libreria Python 'Requests'. Metodi disponibili: 'post', 'get', 'delete', "
-"'request'."
+msgid "Python 'requests' library. Available methods: 'post', 'get', 'delete', 'request'"
+msgstr "Libreria Python 'Requests'. Metodi disponibili: 'post', 'get', 'delete', 'request'."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
@@ -2908,14 +2776,8 @@ msgstr "Libreria Python 'timezone'"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
-msgid ""
-"Python 'tldextract' library. Use <code>tldextract.extract()</code> to parse "
-"domains. Check <a href='https://github.com/john-kurkowski/tldextract' "
-"target='_blank'>tldextract</a> for more information."
-msgstr ""
-"Libreria Python 'tldextract'. Usa <code>tldextract.extract()</code> per "
-"analizzare i domini. Consulta <a href='https://github.com/john-kurkowski/"
-"tldextract' target='_blank'>tldextract</a> per ulteriori informazioni."
+msgid "Python 'tldextract' library. Use <code>tldextract.extract()</code> to parse domains. Check <a href='https://github.com/john-kurkowski/tldextract' target='_blank'>tldextract</a> for more information."
+msgstr "Libreria Python 'tldextract'. Usa <code>tldextract.extract()</code> per analizzare i domini. Consulta <a href='https://github.com/john-kurkowski/tldextract' target='_blank'>tldextract</a> per ulteriori informazioni."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_run_wizard__action__python_code
@@ -2945,18 +2807,17 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__applied_expression
 msgid ""
 "Python expression to apply to the variable value. \n"
-"You can use general python sting functions and 're' module for regex "
-"operations. Use 'value' variable to refer to the variable value, use "
-"'result' to assign the final result that will be used as a variable value.\n"
+"You can use general python sting functions and 're' module for regex operations. Use 'value' variable to refer to the variable value, use 'result' to assign the final result that will be used as a variable value.\n"
 "Eg 'result = value.lower().replace(' ', '_')'"
 msgstr ""
 "Espressione Python da applicare al valore della variabile.\n"
-"È possibile utilizzare le funzioni sting generali di Python e il modulo 're' "
-"per le operazioni delle espressioni regolari. Utilizzare la variabile "
-"'value' per fare riferimento al valore della variabile, utilizzare 'result' "
-"per assegnare il risultato finale che verrà utilizzato come valore della "
-"variabile.\n"
+"È possibile utilizzare le funzioni sting generali di Python e il modulo 're' per le operazioni delle espressioni regolari. Utilizzare la variabile 'value' per fare riferimento al valore della variabile, utilizzare 'result' per assegnare il risultato finale che verrà utilizzato come valore della variabile.\n"
 "Es. 'result = value.lower().replace(' ', '_')'"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__raise
+msgid "Raise Error"
+msgstr "Attiva errore"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
@@ -3023,12 +2884,8 @@ msgstr "Il riferimento deve essere univoco"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
-msgid ""
-"Reference. Can contain English letters, digits and '_'. Leave blank to "
-"autogenerate"
-msgstr ""
-"Riferimento. Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per "
-"la generazione automatica"
+msgid "Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr "Riferimento. Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la generazione automatica"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
@@ -3049,12 +2906,10 @@ msgstr "Espressione regolare, ad esempio ^[a-z0-9]+$"
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable__validation_pattern
 msgid ""
-"Regex pattern to validate the variable values using the 're.match' function. "
-"Eg. ^[a-z0-9]+$ \n"
+"Regex pattern to validate the variable values using the 're.match' function. Eg. ^[a-z0-9]+$ \n"
 "If empty, the variable values will not be validated."
 msgstr ""
-"Modello espressione regolare per convalidare i valori delle variabili "
-"utilizzando la funzione 're.match'. Ad esempio ^[a-z0-9]+$\n"
+"Modello espressione regolare per convalidare i valori delle variabili utilizzando la funzione 're.match'. Ad esempio ^[a-z0-9]+$\n"
 "Se vuoto, i valori delle variabili non verranno convalidati."
 
 #. module: cetmix_tower_server
@@ -3062,17 +2917,12 @@ msgstr ""
 msgid ""
 "Remember: Python code is executed on the Tower server, not on the remote\n"
 "                            one."
-msgstr ""
-"Ricorda: il codice Python viene eseguito sul server Tower, non su quello "
-"remoto."
+msgstr "Ricorda: il codice Python viene eseguito sul server Tower, non su quello remoto."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
-msgid ""
-"Remember: Python code is executed on the Tower server, not on the remote one."
-msgstr ""
-"Ricorda: il codice Python viene eseguito sul server Tower, non su quello "
-"remoto."
+msgid "Remember: Python code is executed on the Tower server, not on the remote one."
+msgstr "Ricorda: il codice Python viene eseguito sul server Tower, non su quello remoto."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__rendered_code
@@ -3196,18 +3046,13 @@ msgstr "Esegui un piano di volo"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
-msgid ""
-"Run code as it appears in 'Rendered code' in wizard and return to wizard. "
-"Result will not be logged"
-msgstr ""
-"Eseguire il codice come appare in 'Codice realizzato' nella procedura "
-"guidata e torna alla procedura guidata. Il risultato non verrà registrato"
+msgid "Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
+msgstr "Eseguire il codice come appare in 'Codice realizzato' nella procedura guidata e torna alla procedura guidata. Il risultato non verrà registrato"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 msgid "Run code using sever method and log result"
-msgstr ""
-"Eseguire il codice utilizzando il metodo server e registra il risultato"
+msgstr "Eseguire il codice utilizzando il metodo server e registra il risultato"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -3229,8 +3074,7 @@ msgstr "Esegui comando usando 'sudo'"
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__use_sudo
 msgid "Run commands using 'sudo'. Leave empty if 'sudo' is not needed."
-msgstr ""
-"Eseguire i comandi usando 'sudo'. Lasciare vuoto se 'sudo' non è necessario."
+msgstr "Eseguire i comandi usando 'sudo'. Lasciare vuoto se 'sudo' non è necessario."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
@@ -3437,23 +3281,19 @@ msgstr "Segreti"
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_run_wizard__applicability
 msgid ""
-"Selected server(s): only Commands that are specific to the selected "
-"server(s)\n"
+"Selected server(s): only Commands that are specific to the selected server(s)\n"
 "Non server restricted: all Commands that are not specific to any server"
 msgstr ""
 "Server selezionati: solo comandi specifici per il/i server selezionato/i\n"
-"Non limitato al server: tutti i comandi che non sono specifici per alcun "
-"server"
+"Non limitato al server: tutti i comandi che non sono specifici per alcun server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_run_wizard__applicability
 msgid ""
-"Selected server(s): only Flight Plans that are specific to the selected "
-"server(s)\n"
+"Selected server(s): only Flight Plans that are specific to the selected server(s)\n"
 "Non server restricted: all Flight Plans that are not specific to any server"
 msgstr ""
-"Server selezionati: solo i piani di volo specifici per il/i server "
-"selezionato/i\n"
+"Server selezionati: solo i piani di volo specifici per il/i server selezionato/i\n"
 "Non limitato al server: tutti i piani di volo non specifici per alcun server"
 
 #. module: cetmix_tower_server
@@ -3614,12 +3454,8 @@ msgstr "Imposta valori veriabile"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__server_status
-msgid ""
-"Set the following status if command finishes with success. Leave 'Undefined' "
-"if you don't need to update the status"
-msgstr ""
-"Impostare il seguente stato se il comando termina con successo. Lasciare "
-"\"Non definito\" se non è necessario aggiornare lo stato"
+msgid "Set the following status if command finishes with success. Leave 'Undefined' if you don't need to update the status"
+msgstr "Impostare il seguente stato se il comando termina con successo. Lasciare \"Non definito\" se non è necessario aggiornare lo stato"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_settings
@@ -3661,6 +3497,11 @@ msgstr "Visualizza chiave host"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_run_wizard__show_servers
 msgid "Show Servers"
 msgstr "Visualizza server"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__skip
+msgid "Skip"
+msgstr "Salta"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__skip_host_key
@@ -3815,13 +3656,11 @@ msgstr "Testo"
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_option.py:0
 #, python-format
 msgid ""
-"The access level for Variable Option '%(value)s' cannot be lower than the "
-"access level of its Variable '%(variable)s'.\n"
+"The access level for Variable Option '%(value)s' cannot be lower than the access level of its Variable '%(variable)s'.\n"
 "Variable Access Level: %(var_level)s\n"
 "Variable Option Access Level: %(val_level)s"
 msgstr ""
-"Il livello di accesso per l'opzione variabile '%(value)s' non può essere "
-"inferiore al livello di accesso della sua variabile '%(variable)s'.\n"
+"Il livello di accesso per l'opzione variabile '%(value)s' non può essere inferiore al livello di accesso della sua variabile '%(variable)s'.\n"
 "Livello di accesso variabile: %(var_level)s\n"
 "Livello di accesso opzione variabile: %(val_level)s"
 
@@ -3829,28 +3668,19 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 #, python-format
 msgid ""
-"The access level for Variable Value '%(value)s' cannot be lower than the "
-"access level of its Variable '%(variable)s'.\n"
+"The access level for Variable Value '%(value)s' cannot be lower than the access level of its Variable '%(variable)s'.\n"
 "Variable Access Level: %(var_level)s\n"
 "Variable Value Access Level: %(val_level)s"
 msgstr ""
-"Il livello di accesso per il valore variabile '%(value)s' non può essere "
-"inferiore al livello di accesso della sua variabile '%(variable)s'.\n"
+"Il livello di accesso per il valore variabile '%(value)s' non può essere inferiore al livello di accesso della sua variabile '%(variable)s'.\n"
 "Livello di accesso variabile: %(var_level)s\n"
 "Livello di accesso valore variabile: %(val_level)s"
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
 #, python-format
-msgid ""
-"The access level of command(s) '%(command_names)s' included in the current "
-"Flight plan is higher than the access level of the Flight plan itself. "
-"Please ensure that you want to allow those commands to be run anyway."
-msgstr ""
-"Il livello di accesso dei comandi '%(command_names)s' inclusi nel piano di "
-"volo corrente è superiore al livello di accesso del piano di volo stesso. "
-"Assicurati di voler davvero consentire a tutti quei comandi di essere "
-"eseguiti comunque."
+msgid "The access level of command(s) '%(command_names)s' included in the current Flight plan is higher than the access level of the Flight plan itself. Please ensure that you want to allow those commands to be run anyway."
+msgstr "Il livello di accesso dei comandi '%(command_names)s' inclusi nel piano di volo corrente è superiore al livello di accesso del piano di volo stesso. Assicurati di voler davvero consentire a tutti quei comandi di essere eseguiti comunque."
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_unique_variable_option_name
@@ -3885,11 +3715,8 @@ msgstr "Questo piano di volo verrà eseguito quando il server verrà eliminato"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__on_error_action
-msgid ""
-"This action will be triggered on error if no command action can be applied"
-msgstr ""
-"Questa azione verrà attivata in caso di errore se non è possibile applicare "
-"alcuna azione di comando"
+msgid "This action will be triggered on error if no command action can be applied"
+msgstr "Questa azione verrà attivata in caso di errore se non è possibile applicare alcuna azione di comando"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
@@ -3914,12 +3741,8 @@ msgstr "Questo campo verrà renderizzato utilizzando le variabili"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__file_template_id
-msgid ""
-"This file template will be used to create log files when server is created "
-"from a template"
-msgstr ""
-"Questo modello di file verrà utilizzato per creare file di registro quando "
-"il server viene creato da un modello"
+msgid "This file template will be used to create log files when server is created from a template"
+msgstr "Questo modello di file verrà utilizzato per creare file di registro quando il server viene creato da un modello"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__flight_plan_id
@@ -3928,18 +3751,14 @@ msgstr "Questo piano di volo verrà eseguito durante la creazione del server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__ssh_username
-msgid ""
-"This is required, however you can change this later in the server settings"
-msgstr ""
-"Questo è richiesto, comunque lo si può modificare dopo nelle impostazioni "
-"del server"
+msgid "This is required, however you can change this later in the server settings"
+msgstr "Questo è richiesto, comunque lo si può modificare dopo nelle impostazioni del server"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__file_template_id
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 msgid "This template will be used to create or update the pushed file"
-msgstr ""
-"Questo modello verrà utilizzato per creare o aggiornare il file inviato"
+msgstr "Questo modello verrà utilizzato per creare o aggiornare il file inviato"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_value__is_global
@@ -3954,10 +3773,8 @@ msgstr "Tempo utilizzato per l'esecuzione, secondi"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_res_config_settings__cetmix_tower_command_timeout
-msgid ""
-"Timeout for commands in seconds after which the command will be terminated"
-msgstr ""
-"Timeout per i comandi in secondi dopo i quali il comando verrà terminato"
+msgid "Timeout for commands in seconds after which the command will be terminated"
+msgstr "Timeout per i comandi in secondi dopo i quali il comando verrà terminato"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_tools
@@ -4180,12 +3997,8 @@ msgstr "Variabile"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 #, python-format
-msgid ""
-"Variable '%(var)s' can only be assigned to one of the models at a time: "
-"Server, Server Template, or Plan Line Action."
-msgstr ""
-"La variabile '%(var)s' può essere assegnata solo ad un modello alla volta: "
-"server, modello server, o azione riga piano."
+msgid "Variable '%(var)s' can only be assigned to one of the models at a time: Server, Server Template, or Plan Line Action."
+msgstr "La variabile '%(var)s' può essere assegnata solo ad un modello alla volta: server, modello server, o azione riga piano."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
@@ -4218,8 +4031,7 @@ msgstr "Valori variabile"
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_tower_variable_value_uniq
 msgid "Variable can be declared only once for the same record!"
-msgstr ""
-"La variabile può essere dichiarata solo una volta per lo stesso record!"
+msgstr "La variabile può essere dichiarata solo una volta per lo stesso record!"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_name_uniq
@@ -4235,12 +4047,8 @@ msgstr "Variabile non trovato"
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #, python-format
-msgid ""
-"Variable reference '%(var_ref)s' has an invalid option reference "
-"'%(opt_ref)s'."
-msgstr ""
-"Il riferimento variabile '%(var_ref)s' ha un riferimento opzione non valido "
-"'%(opt_ref)s'."
+msgid "Variable reference '%(var_ref)s' has an invalid option reference '%(opt_ref)s'."
+msgstr "Il riferimento variabile '%(var_ref)s' ha un riferimento opzione non valido '%(opt_ref)s'."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/cx_tower_template_mixin.py:0
@@ -4296,6 +4104,19 @@ msgid "Warning about OS compatibility of the command"
 msgstr "Avviso su incompatibilità del comando con il SO"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__if_file_exists
+msgid ""
+"What to do if file already exists on the server.\n"
+"- Skip: Do not create or update the file.\n"
+"- Overwrite: Replace the existing file with the new one.\n"
+"- Raise Error: Raise an error if the file already exists."
+msgstr ""
+"Cosa fare se il file esiste già sul server.\n"
+"- Salta: non creare o aggiornare il file.\n"
+"- Sovrascrivi: sostituisci il file esistente con quello nuovo.\n"
+"- Genera errore: genera un errore se il file esiste già."
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__path
 msgid "Where command was executed"
 msgstr "Dove è stato eseguito il comando"
@@ -4310,12 +4131,8 @@ msgstr "Può essere usato al posto del comando codice uscita"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_run_wizard__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__use_sudo
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_log__use_sudo
-msgid ""
-"Will use sudo based on server settings.If no sudo is configured will run "
-"without sudo"
-msgstr ""
-"Utilizzerà sudo in base alle impostazioni del server. Se non è configurato "
-"sudo verrà eseguito senza sudo"
+msgid "Will use sudo based on server settings.If no sudo is configured will run without sudo"
+msgstr "Utilizzerà sudo in base alle impostazioni del server. Se non è configurato sudo verrà eseguito senza sudo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_log__use_sudo__p
@@ -4361,32 +4178,22 @@ msgstr "Non si può eseguire un comando vuoto"
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
 #, python-format
 msgid "You cannot run custom code on multiple servers at once."
-msgstr ""
-"Non è possibile eseguire codice personalizzato su server multipli "
-"contemporaneamente."
+msgstr "Non è possibile eseguire codice personalizzato su server multipli contemporaneamente."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 msgid ""
-"You need 'Manager' access to the server to override the default "
-"configuration values.\n"
-"                            Without this access, the server's configured "
-"values will be used."
+"You need 'Manager' access to the server to override the default configuration values.\n"
+"                            Without this access, the server's configured values will be used."
 msgstr ""
-"Per sovrascrivere i valori di configurazione predefiniti, è necessario "
-"l'accesso \"Responsabile\" al server.\n"
-"                            Senza questo accesso, verranno utilizzati i "
-"valori configurati del server."
+"Per sovrascrivere i valori di configurazione predefiniti, è necessario l'accesso \"Responsabile\" al server.\n"
+"                            Senza questo accesso, verranno utilizzati i valori configurati del server."
 
 #. module: cetmix_tower_server
 #: code:addons/cetmix_tower_server/models/ir_actions_server.py:0
 #, python-format
-msgid ""
-"You need to have 'write' access to all servers you want to run this action "
-"on."
-msgstr ""
-"È necessario disporre dell'accesso in scrittura a tutti i server su cui si "
-"desidera eseguire questa azione."
+msgid "You need to have 'write' access to all servers you want to run this action on."
+msgstr "È necessario disporre dell'accesso in scrittura a tutti i server su cui si desidera eseguire questa azione."
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
