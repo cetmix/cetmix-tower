@@ -1,3 +1,8 @@
+## 16.0.1.0.5 (2025-08-17)
+
+- Features: Search servers by git reference (4838)
+
+
 ## 16.0.1.0.4 (2025-07-29)
 
 - Features: Export related commands and flight plans together with server (4849)
