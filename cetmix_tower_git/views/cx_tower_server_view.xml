@@ -21,7 +21,7 @@
                             <field name="auto_sync" />
                             <button
                                 type="object"
-                                string="Open"
+                                string="Configure"
                                 name="action_open_project"
                                 title="Open Git Project"
                                 class="btn-secondary"
