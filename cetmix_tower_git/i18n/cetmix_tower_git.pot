@@ -140,6 +140,11 @@ msgid "Cetmix Tower Git Source"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cetmix_tower
+msgid "Cetmix Tower Odoo Automation"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_server
 msgid "Cetmix Tower Server"
 msgstr ""
