@@ -1274,7 +1274,6 @@ class CxTowerServer(models.Model):
             plan_line = log_record.plan_log_id.plan_line_executed_id
             file_template_id = log_record.command_id.file_template_id
             file = self._command_runner_file_using_template_create_file(
-                server=self,
                 file_template_id=file_template_id,
                 if_file_exists=log_record.command_id.if_file_exists,
                 server_dir=server_dir,
