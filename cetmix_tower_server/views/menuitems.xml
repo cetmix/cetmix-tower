@@ -12,7 +12,6 @@
         id="menu_cx_tower_server_root"
         name="Servers"
         parent="menu_root"
-        groups="group_user"
         sequence="3"
     />
     <menuitem
@@ -20,7 +19,6 @@
         name="Servers"
         action="action_cx_tower_server"
         parent="menu_cx_tower_server_root"
-        groups="group_user"
         sequence="3"
     />
     <menuitem
@@ -36,7 +34,6 @@
         name="Partners"
         action="action_cx_cetmix_tower_partner"
         parent="menu_cx_tower_server_root"
-        groups="cetmix_tower_server.group_user"
         sequence="15"
     />
 
@@ -67,7 +64,6 @@
         id="menu_cx_tower_command_root"
         name="Commands"
         parent="menu_root"
-        groups="group_user"
         sequence="30"
     />
     <menuitem
@@ -90,7 +86,6 @@
         id="menu_cx_tower_file_root"
         name="Files"
         parent="menu_root"
-        groups="cetmix_tower_server.group_user"
         sequence="40"
     />
     <menuitem
@@ -109,13 +104,7 @@
     />
 
     <!-- ========================= Tools ========================= -->
-    <menuitem
-        id="menu_tools"
-        name="Tools"
-        parent="menu_root"
-        sequence="40"
-        groups="group_user"
-    />
+    <menuitem id="menu_tools" name="Tools" parent="menu_root" sequence="50" />
 
 
     <!-- ========================= Settings ========================= -->
@@ -123,7 +112,7 @@
         id="menu_settings"
         name="Settings"
         parent="menu_root"
-        sequence="50"
+        sequence="60"
         groups="group_manager"
     />
     <menuitem
