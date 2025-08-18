@@ -505,8 +505,18 @@ msgid "Manifest"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_author_action
+msgid "Manifest Authors"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_template_id
 msgid "Manifest Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_template
+msgid "Manifest Templates"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -823,6 +833,11 @@ msgid "YAML Export"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_settings_root
+msgid "YAML Export/Import"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_file_name
 msgid "YAML File Name"
 msgstr ""
@@ -839,7 +854,6 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_yaml_manifest_author
-#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_author_action
 msgid "YAML Manifest Authors"
 msgstr ""
 
@@ -850,7 +864,6 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_yaml_manifest_template
-#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_template
 msgid "YAML Manifest Templates"
 msgstr ""
 
