@@ -8,7 +8,7 @@
             <form>
                 <header>
                     <button
-                        name="action_get_log_text"
+                        name="action_update_log"
                         type="object"
                         class="oe_highlight"
                         string="Refresh"

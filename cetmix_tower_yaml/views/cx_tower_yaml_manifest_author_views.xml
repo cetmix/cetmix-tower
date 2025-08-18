@@ -29,11 +29,5 @@
         <field name="view_mode">tree,form</field>
         <field name="target">current</field>
     </record>
-    <menuitem
-        id="menu_yaml_manifest_author_action"
-        name="YAML Manifest Authors"
-        parent="cetmix_tower_server.menu_settings"
-        action="action_yaml_manifest_author"
-        sequence="17"
-    />
+
 </odoo>

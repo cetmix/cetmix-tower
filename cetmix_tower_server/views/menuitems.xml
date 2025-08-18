@@ -7,7 +7,7 @@
         groups="group_user"
         web_icon="cetmix_tower_server,static/description/icon.png"
     />
-    <!-- Servers -->
+    <!-- ========================= Servers ========================= -->
     <menuitem
         id="menu_cx_tower_server_root"
         name="Servers"
@@ -40,124 +40,58 @@
         sequence="15"
     />
 
-    <!-- Commands -->
+    <!-- ========================= Logs ========================= -->
+    <menuitem
+        id="menu_cx_tower_log_root"
+        name="Logs"
+        parent="menu_root"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_command_log"
+        name="Command Log"
+        action="action_cx_tower_command_log"
+        parent="menu_cx_tower_log_root"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_cx_tower_plan_log"
+        name="Flight Plan Log"
+        action="action_cx_tower_plan_log"
+        parent="menu_cx_tower_log_root"
+        sequence="2"
+    />
+
+    <!-- ========================= Commands ========================= -->
     <menuitem
         id="menu_cx_tower_command_root"
         name="Commands"
         parent="menu_root"
         groups="group_user"
-        sequence="3"
+        sequence="30"
     />
     <menuitem
         id="menu_cx_tower_command"
         name="Commands"
         action="action_cx_tower_command"
         parent="menu_cx_tower_command_root"
-        sequence="3"
+        sequence="10"
     />
     <menuitem
         id="menu_cx_tower_plan"
         name="Flight Plans"
         action="action_cx_tower_plan"
         parent="menu_cx_tower_command_root"
-        sequence="7"
-    />
-    <menuitem
-        id="menu_cx_tower_command_log"
-        name="Command Log"
-        action="action_cx_tower_command_log"
-        parent="menu_cx_tower_command_root"
-        sequence="70"
-    />
-    <menuitem
-        id="menu_cx_tower_plan_log"
-        name="Flight Plan Log"
-        action="action_cx_tower_plan_log"
-        parent="menu_cx_tower_command_root"
-        sequence="72"
-    />
-    <!-- Tools -->
-    <menuitem
-        id="menu_tools"
-        name="Tools"
-        parent="menu_root"
-        sequence="120"
-        groups="group_user"
-    />
-    <menuitem
-        id="menu_cx_tower_scheduled_task"
-        name="Scheduled Tasks"
-        action="action_cx_tower_scheduled_task"
-        parent="menu_tools"
-        sequence="1"
-        groups="group_manager"
+        sequence="20"
     />
 
-    <!-- Settings -->
-    <menuitem
-        id="menu_settings"
-        name="Settings"
-        parent="menu_root"
-        sequence="999"
-        groups="group_manager"
-    />
-    <menuitem
-        id="menu_cetmix_tower_general_settings"
-        name="General Settings"
-        parent="menu_settings"
-        sequence="0"
-        action="action_cetmix_tower_config_settings"
-        groups="group_manager"
-    />
-    <menuitem
-        id="menu_cx_tower_variable"
-        name="Variables"
-        action="action_cx_tower_variable"
-        parent="menu_settings"
-        sequence="3"
-    />
-    <menuitem
-        id="menu_cx_tower_variable_value"
-        name="Variable Values"
-        action="action_cx_tower_variable_value"
-        parent="menu_settings"
-        sequence="5"
-    />
-    <menuitem
-        id="menu_cx_tower_key"
-        name="Keys and Secrets"
-        action="action_cx_tower_key"
-        parent="menu_settings"
-        sequence="8"
-    />
-    <menuitem
-        id="menu_cx_tower_shortcut"
-        name="Shortcuts"
-        action="action_cx_tower_shortcut"
-        parent="menu_settings"
-        sequence="10"
-    />
-    <menuitem
-        id="menu_cx_tower_os"
-        name="OSs"
-        action="action_cx_tower_os"
-        parent="menu_settings"
-        sequence="100"
-    />
-    <menuitem
-        id="menu_cx_tower_tag"
-        name="Tags"
-        action="action_cx_tower_tag"
-        parent="menu_settings"
-        sequence="13"
-    />
-
+    <!-- ========================= Files ========================= -->
     <menuitem
         id="menu_cx_tower_file_root"
         name="Files"
-        parent="cetmix_tower_server.menu_root"
+        parent="menu_root"
         groups="cetmix_tower_server.group_user"
-        sequence="4"
+        sequence="40"
     />
     <menuitem
         id="menu_cx_tower_file"
@@ -173,5 +107,113 @@
         parent="menu_cx_tower_file_root"
         sequence="2"
     />
+
+    <!-- ========================= Tools ========================= -->
+    <menuitem
+        id="menu_tools"
+        name="Tools"
+        parent="menu_root"
+        sequence="40"
+        groups="group_user"
+    />
+
+
+    <!-- ========================= Settings ========================= -->
+    <menuitem
+        id="menu_settings"
+        name="Settings"
+        parent="menu_root"
+        sequence="50"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cetmix_tower_general_settings"
+        name="General Settings"
+        parent="menu_settings"
+        sequence="0"
+        action="action_cetmix_tower_config_settings"
+        groups="group_manager"
+    />
+    <!-- Variables -->
+    <menuitem
+        id="menu_cx_tower_variable_root"
+        name="Variables"
+        parent="menu_settings"
+        sequence="10"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cx_tower_variable"
+        name="Variables"
+        parent="menu_cx_tower_variable_root"
+        action="action_cx_tower_variable"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_cx_tower_variable_value"
+        name="Variable Values"
+        action="action_cx_tower_variable_value"
+        parent="menu_cx_tower_variable_root"
+        sequence="2"
+    />
+
+    <!-- Keys and Secrets -->
+    <menuitem
+        id="menu_cx_tower_key_root"
+        name="Keys and Secrets"
+        parent="menu_settings"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_key"
+        name="Keys and Secrets"
+        action="action_cx_tower_key"
+        parent="menu_cx_tower_key_root"
+        sequence="1"
+    />
+    <!-- Automation -->
+    <menuitem
+        id="menu_cx_tower_automation_root"
+        name="Automation"
+        parent="menu_settings"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_cx_tower_scheduled_task"
+        name="Scheduled Tasks"
+        action="action_cx_tower_scheduled_task"
+        parent="menu_cx_tower_automation_root"
+        sequence="1"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cx_tower_shortcut"
+        name="Shortcuts"
+        action="action_cx_tower_shortcut"
+        parent="menu_cx_tower_automation_root"
+        sequence="2"
+    />
+    <!-- Properties -->
+    <menuitem
+        id="menu_cx_tower_property_root"
+        name="Properties"
+        parent="menu_settings"
+        sequence="500"
+    />
+    <menuitem
+        id="menu_cx_tower_os"
+        name="Operating Systems"
+        action="action_cx_tower_os"
+        parent="menu_cx_tower_property_root"
+        sequence="100"
+    />
+    <menuitem
+        id="menu_cx_tower_tag"
+        name="Tags"
+        action="action_cx_tower_tag"
+        parent="menu_cx_tower_property_root"
+        sequence="13"
+    />
+
 
 </odoo>

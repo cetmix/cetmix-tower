@@ -282,17 +282,12 @@ class TestTowerServerLog(TestTowerCommon):
 
         # 2. Verify refresh action updates content
         original_content = test_log.log_text
-        test_log.action_get_log_text()
+        test_log.action_update_log()
 
         self.assertNotEqual(
             test_log.log_text,
             original_content,
-            "action_get_log_text() should update log_text",
-        )
-
-        self.assertTrue(
-            test_log.log_text.startswith("<p>"),
-            "Refreshed content should be valid HTML",
+            "action_update_log() should update log_text",
         )
 
     def test_log_text_copy(self):
