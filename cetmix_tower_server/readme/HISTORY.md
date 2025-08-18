@@ -1,3 +1,8 @@
+## 16.0.1.6.4 (2025-08-18)
+
+- Features: Improve the extendability of the file upload command. (4759)
+
+
 ## 16.0.1.6.3 (2025-08-13)
 
 - Features: Improve access settings for logs (4866)

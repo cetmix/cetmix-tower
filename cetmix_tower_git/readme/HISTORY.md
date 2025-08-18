@@ -1,3 +1,8 @@
+## 16.0.1.0.6 (2025-08-18)
+
+- Features: Link or copy a git project when uploading the linked file using command (4759)
+
+
 ## 16.0.1.0.5 (2025-08-17)
 
 - Features: Search servers by git reference (4838)
