@@ -488,6 +488,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_automation_root
+msgid "Automation"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Binary"
@@ -2136,6 +2141,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key_root
 msgid "Keys and Secrets"
 msgstr ""
 
@@ -2307,6 +2313,7 @@ msgid "Log Type"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_log_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "Logs"
@@ -2630,11 +2637,6 @@ msgid "OSes"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
-msgid "OSs"
-msgstr ""
-
-#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
@@ -2714,6 +2716,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__os_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__os_id
 msgid "Operating System"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
+msgid "Operating Systems"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2913,6 +2920,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__last_call
 msgid "Previous time the task ran successfully."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_property_root
+msgid "Properties"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4480,6 +4492,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable_root
 msgid "Variables"
 msgstr ""
 
