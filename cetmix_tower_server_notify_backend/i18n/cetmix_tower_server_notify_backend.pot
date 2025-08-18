@@ -54,3 +54,11 @@ msgstr ""
 #: model:ir.model,name:cetmix_tower_server_notify_backend.model_cx_tower_plan_log
 msgid "Cetmix Tower Flight Plan Log"
 msgstr ""
+
+#. module: cetmix_tower_server_notify_backend
+#. odoo-python
+#: code:addons/cetmix_tower_server_notify_backend/models/cx_tower_command_log.py:0
+#: code:addons/cetmix_tower_server_notify_backend/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "View Log"
+msgstr ""
