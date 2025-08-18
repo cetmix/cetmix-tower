@@ -436,7 +436,7 @@ class CxTowerServer(models.Model):
         """Update selected log from its source."""
         for server in self:
             if server.server_log_ids:
-                server.server_log_ids.action_get_log_text()
+                server.server_log_ids.action_update_log()
 
     def action_open_command_logs(self):
         """
