@@ -7,14 +7,13 @@ msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-07-06 08:25+0200\n"
-"Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/tower-"
-"server-14-0-dev/cetmix_tower_git/it/>\n"
-"Language: it\n"
+"PO-Revision-Date: 2025-08-19 10:42+0100\n"
+"Last-Translator: \n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_git/it/>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 2.3\n"
 
@@ -40,14 +39,11 @@ msgstr ""
 msgid ""
 "# This file is generated with Cetmix Tower https://cetmix.com/tower\n"
 "# It's designed to be used with git-aggregator tool developed by Acsone.\n"
-"# Documentation for git-aggregator: https://github.com/acsone/git-"
-"aggregator\n"
+"# Documentation for git-aggregator: https://github.com/acsone/git-aggregator\n"
 msgstr ""
 "# Questo file è generato con Cetmix Tower https://cetmix.com/tower\n"
-"# È progettato per essere usato con il tool git-aggregator sviluppato da "
-"Acsone.\n"
-"# Documentazione per git-aggregator: https://github.com/acsone/git-"
-"aggregator\n"
+"# È progettato per essere usato con il tool git-aggregator sviluppato da Acsone.\n"
+"# Documentazione per git-aggregator: https://github.com/acsone/git-aggregator\n"
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
@@ -62,28 +58,16 @@ msgstr "* Origini dove alcuni remote sono privati"
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 msgid ""
-"<b>Managers.</b> All users who have \"Manager\" group and are set as "
-"\"Managers\" in <b><u>all</u></b> related servers.\n"
-"                                        This is done to avoid unpredictable "
-"consequences when some of the servers are not updated due to access "
-"restrictions when a project is updated."
+"<b>Managers.</b> All users who have \"Manager\" group and are set as \"Managers\" in <b><u>all</u></b> related servers.\n"
+"                                        This is done to avoid unpredictable consequences when some of the servers are not updated due to access restrictions when a project is updated."
 msgstr ""
-"<b>Responsabili.</b> Tutti gli utenti che hanno il gruppo \"Responsabile\" e "
-"sono impostati come \"Responsabili\" in <b><u>tutti</u></b> i server "
-"relativi.\n"
-"                                        Questo è fatto per evitare "
-"conseguenze imprevedibili quando qualcuno dei server non è aggiornato per "
-"limitazioni di accesso quando viene aggiornato un progetto."
+"<b>Responsabili.</b> Tutti gli utenti che hanno il gruppo \"Responsabile\" e sono impostati come \"Responsabili\" in <b><u>tutti</u></b> i server relativi.\n"
+"                                        Questo è fatto per evitare conseguenze imprevedibili quando qualcuno dei server non è aggiornato per limitazioni di accesso quando viene aggiornato un progetto."
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid ""
-"<b>Users.</b> All users who have \"Manager\" group and are either set in "
-"\"Users\" or in \"Managers\" in <b><u>all</u></b> related servers."
-msgstr ""
-"<b>Utenti.</b> Tutti gli utenti che hanno il gruppo \"Responsabile\" e sono "
-"impostati come \"Utenti\" o \"Responsabili\" in <b><u>tutti</u></b> i server "
-"relativi."
+msgid "<b>Users.</b> All users who have \"Manager\" group and are either set in \"Users\" or in \"Managers\" in <b><u>all</u></b> related servers."
+msgstr "<b>Utenti.</b> Tutti gli utenti che hanno il gruppo \"Responsabile\" e sono impostati come \"Utenti\" o \"Responsabili\" in <b><u>tutti</u></b> i server relativi."
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
@@ -127,11 +111,8 @@ msgstr "Numero o link branch/PR/commit"
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project_rel__reference
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__reference
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_source__reference
-msgid ""
-"Can contain English letters, digits and '_'. Leave blank to autogenerate"
-msgstr ""
-"Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la "
-"generazione automatica"
+msgid "Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr "Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la generazione automatica"
 
 #. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_file
@@ -179,8 +160,7 @@ msgstr "Server Cetmix Tower"
 #: code:addons/cetmix_tower_git/models/cx_tower_git_project_rel.py:0
 #, python-format
 msgid "Code generator function for '%(project_format)s' format not found."
-msgstr ""
-"Funzione generazione codice per il formato '%(project_format)s' non trovata."
+msgstr "Funzione generazione codice per il formato '%(project_format)s' non trovata."
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__commit
@@ -259,12 +239,12 @@ msgstr "Modelli file"
 #. module: cetmix_tower_git
 #: model:ir.model.constraint,message:cetmix_tower_git.constraint_cx_tower_git_project_rel_project_server_file_format_uniq
 msgid "File is already related to the same project and format"
-msgstr "Il file è già relativo allo stesso progetto e formato"
+msgstr "Il file è già associato allo stesso progetto e formato"
 
 #. module: cetmix_tower_git
 #: model:ir.model.constraint,message:cetmix_tower_git.constraint_cx_tower_git_project_file_template_rel_project_server_file_format_uniq
 msgid "File template is already related to the same project and format"
-msgstr "Il file modello è già relativo allo stesso progetto e formato"
+msgstr "Il modello di file è già associato allo stesso progetto e formato"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__file_ids
@@ -303,15 +283,13 @@ msgstr "Directory radice Git Aggregator"
 #: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
 #, python-format
 msgid ""
-"Git Aggregator: Bitbucket does not support fetching PRs. Please use branch "
-"instead.\n"
+"Git Aggregator: Bitbucket does not support fetching PRs. Please use branch instead.\n"
 "\n"
 "Source: %(src)s\n"
 "URL: %(url)s\n"
 "Head: %(head)s"
 msgstr ""
-"Git Aggregator: Bitbucket non supporta il fetch delle PR. In alternativa "
-"usare branch.\n"
+"Git Aggregator: Bitbucket non supporta il recupero delle PR. In alternativa usare il branch.\n"
 "\n"
 "Origine: %(src)s\n"
 "URL: %(url)s\n"
@@ -322,7 +300,7 @@ msgstr ""
 #: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
 #, python-format
 msgid "Git Aggregator: Head number is empty in %(head)s"
-msgstr "Git Aggregator: il numero Head è vuoto in %(head)s"
+msgstr "Git Aggregator: il numero dell'head è vuoto in %(head)s"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__git_project_id
@@ -369,40 +347,24 @@ msgstr "Progetti Git"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__git_aggregator_root_dir
-msgid ""
-"Git aggregator root directory where sources will be cloned. Eg '/tmp/git-"
-"aggregator' Will use '.' if not set"
-msgstr ""
-"La directory radice di Git Aggregator dove l'origine verrà clonata. Es. '/"
-"tmp/git-aggregator'. Verrà usato '.' se non impostata"
+msgid "Git aggregator root directory where sources will be cloned. Eg '/tmp/git-aggregator' Will use '.' if not set"
+msgstr "La directory radice di Git Aggregator dove le origini verranno clonate. Es. '/tmp/git-aggregator'. Verrà usato '.' se non impostata"
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid ""
-"Git aggregator root directory where sources will be cloned. Leave blank to "
-"use '.'"
-msgstr ""
-"La directory radice di Git Aggregator dove l'origine verrà clonata. Lasciare "
-"vuoto per usare '.'"
+msgid "Git aggregator root directory where sources will be cloned. Leave blank to use '.'"
+msgstr "La directory radice di Git Aggregator dove le origini verranno clonate. Lasciare vuoto per usare '.'"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__url
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_remote_view_form
-msgid ""
-"Git remote URL. Eg 'https://github.com/cetmix/cetmix-tower.git' or "
-"'git@github.com:cetmix/cetmix-tower.git'"
-msgstr ""
-"URL remote Git. Es. 'https://github.com/cetmix/cetmix-tower.git' o "
-"'git@github.com:cetmix/cetmix-tower.git'"
+msgid "Git remote URL. Eg 'https://github.com/cetmix/cetmix-tower.git' or 'git@github.com:cetmix/cetmix-tower.git'"
+msgstr "URL del remote Git. Es. 'https://github.com/cetmix/cetmix-tower.git' o 'git@github.com:cetmix/cetmix-tower.git'"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__head
-msgid ""
-"Git remote head. Link to branch, PR, commit or commit hash. Leave blank to "
-"auto-detect"
-msgstr ""
-"Head remote Git. Link al branch, PR, commit o commit hash. Lasciare vuoto "
-"per auto-selezione"
+msgid "Git remote head. Link to branch, PR, commit or commit hash. Leave blank to auto-detect"
+msgstr "Head remoto Git. Collegamento al branch, alla PR, al commit o all'hash del commit. Lasciare vuoto per il rilevamento automatico"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__repo_provider__github
@@ -432,12 +394,12 @@ msgstr "Ha remote privati"
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head
 msgid "Head"
-msgstr "Intestazione"
+msgstr "Head"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_type
 msgid "Head Type"
-msgstr "Tipo head"
+msgstr "Tipo di head"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__id
@@ -508,15 +470,14 @@ msgstr "Nome"
 #: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
 #, python-format
 msgid "Not a valid URL. URL must end with '.git'"
-msgstr "URL non valido. URL deve finire con '.git'"
+msgstr "URL non valido. L'URL deve terminare con '.git'"
 
 #. module: cetmix_tower_git
 #. odoo-python
 #: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
 #, python-format
 msgid "Not a valid URL. URL must start with 'https://', 'git@', or 'git://'"
-msgstr ""
-"URL non valido. L'URL deve iniziare con 'https://', 'git@', or 'git://'"
+msgstr "URL non valido. L'URL deve iniziare con 'https://', 'git@' o 'git://'"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__note
@@ -589,12 +550,8 @@ msgstr "Riferimento"
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
-msgid ""
-"Reference. Can contain English letters, digits and '_'. Leave blank to "
-"autogenerate"
-msgstr ""
-"Riferimento. Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per "
-"la generazione automatica"
+msgid "Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr "Riferimento. Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la generazione automatica"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__remote_ids
@@ -650,10 +607,8 @@ msgid ""
 "Servers are added automatically based on the files linked to the project.\n"
 "IMPORTANT: This field may contain duplicates because of the relation nature!"
 msgstr ""
-"I server sono aggiunti automaticamente in base al file collegato al "
-"progetto.\n"
-"IMPORTANTE: questo campo può contenere duplicati per la natura della "
-"relazione!"
+"I server sono aggiunti automaticamente in base ai file collegati al progetto.\n"
+"IMPORTANTE: questo campo può contenere duplicati a causa della natura della relazione!"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__source_id
@@ -670,12 +625,10 @@ msgstr "Origini"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
 msgid ""
 "The top one remote will be used as a merge target.\n"
-"                            You can re-arrange remotes by dragging them or "
-"changing their sequence value."
+"                            You can re-arrange remotes by dragging them or changing their sequence value."
 msgstr ""
 "Il remote in cima verrà utilizzato come destinazione del merge.\n"
-"                            Si possono ri-organizzare i remote trascinandoli "
-"o modificando il loro numero sequenza."
+"                            È possibile riorganizzare i remote trascinandoli o modificando il loro valore di sequenza."
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__url
@@ -706,12 +659,8 @@ msgstr "Utenti che possono vedere questo record"
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__repo_provider
-msgid ""
-"Will be tried to be determined from the URL. Please select manually if auto-"
-"detection fails."
-msgstr ""
-"Si cercherà di determinarlo dall'URL. Selezionarlo manualmente se fallisce "
-"l'auto determinazione."
+msgid "Will be tried to be determined from the URL. Please select manually if auto-detection fails."
+msgstr "Si cercherà di determinarlo dall'URL. Selezionarlo manualmente se fallisce l'auto determinazione."
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
@@ -728,21 +677,13 @@ msgstr "Codice YAML"
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid ""
-"You can edit these fields at your own risk. However keep in mind that they "
-"will be automatically updated each time related servers are added, removed "
-"or updated."
-msgstr ""
-"Si può modificare questo record a proprio rischio. Comunque tenere presente "
-"che verranno aggiornati automaticamente ogni volta i server correlati "
-"vengono aggiunti, tolti o aggiornati."
+msgid "You can edit these fields at your own risk. However keep in mind that they will be automatically updated each time related servers are added, removed or updated."
+msgstr "È possibile modificare questi campi a proprio rischio. Tuttavia, tenere presente che verranno aggiornati automaticamente ogni volta che i server correlati vengono aggiunti, rimossi o aggiornati."
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid ""
-"You must be a member of the \"YAML/Export\" group to export data as YAML."
-msgstr ""
-"Bisogna appartenere al gruppo \"YAML/Export\" per esportare dati in YAML."
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
+msgstr "Bisogna appartenere al gruppo \"YAML/Export\" per esportare dati in YAML."
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
