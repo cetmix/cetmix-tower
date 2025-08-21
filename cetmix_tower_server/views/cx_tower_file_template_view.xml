@@ -32,8 +32,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="file_name" />
-                            <field name="server_dir" />
+                            <field name="file_name" widget="ace_tower" />
+                            <field name="server_dir" widget="ace_tower" />
                             <field name="source" />
                             <field
                                 name="tag_ids"
@@ -67,7 +67,7 @@
                             string="Code"
                             invisible="file_type == 'binary' or source == 'server'"
                         >
-                            <field name="code" nolabel="1" />
+                            <field name="code" widget="ace_tower" nolabel="1" />
                         </page>
                         <page
                             name="access"

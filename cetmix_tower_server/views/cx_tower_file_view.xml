@@ -45,7 +45,7 @@
                                 domain="[('source', '=', source)]"
                             />
                                 <field name="server_id" required="1" />
-                                <field name="server_dir" />
+                                <field name="server_dir" widget="ace_tower" />
                                 <field name="full_server_path" />
                             </group>
                             <group>
@@ -95,6 +95,7 @@
                             />
                             <field
                                 name="code"
+                                widget="ace_tower"
                                 nolabel="1"
                                 readonly="template_id or source == 'server'"
                             />

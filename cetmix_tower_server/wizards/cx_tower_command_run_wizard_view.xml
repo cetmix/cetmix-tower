@@ -72,6 +72,7 @@
                     </div>
                     <field
                         name="path"
+                        widget="ace_tower"
                         groups="cetmix_tower_server.group_manager"
                         invisible="action == 'python_code' or result"
                         placeholder="e.g. /home/user This field does NOT support variables"
@@ -83,7 +84,7 @@
                     <page name="code" string="Code">
                         <field
                             name="code"
-                            widget="ace"
+                            widget="ace_tower"
                             options="{'mode': 'python'}"
                             groups="cetmix_tower_server.group_manager"
                         />

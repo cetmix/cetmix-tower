@@ -1,0 +1,192 @@
+// Define z-index variable for better management
+$z-index-autocomplete: 1050 !default; // Above dropdowns but below modals
+
+.ace-autocomplete-popup {
+    position: absolute;
+    background: white;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: $z-index-autocomplete;
+    min-width: 300px;
+    max-width: 500px;
+    max-height: 300px;
+    overflow: hidden;
+    font-family: monospace;
+    font-size: 14px;
+
+    // Mobile adaptations
+    @media (max-width: 768px) {
+        width: 90%;
+        min-width: unset;
+        max-width: unset;
+        left: 50% !important;
+        transform: translateX(-50%);
+        font-size: 13px;
+        max-height: 90vh;
+    }
+}
+
+.ace-autocomplete-search {
+    padding: 8px;
+    padding-right: 48px; // Add right padding to avoid overlap with close button
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg, #f8f9fa);
+
+    // Mobile: reduce padding
+    @media (max-width: 768px) {
+        padding: 6px;
+        padding-right: 56px;
+    }
+}
+
+.ace-autocomplete-search-input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.ace-autocomplete-search-input:focus {
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
+}
+
+.ace-autocomplete-items {
+    max-height: 240px;
+    overflow-y: auto;
+    color-scheme: light dark; /* Let the UA adapt colors when possible */
+
+    /* Standard scrollbar styling (Firefox 64+) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-border-color, #c1c1c1) var(--bs-tertiary-bg, #f1f1f1);
+}
+
+/* Scrollbar styling for webkit browsers */
+.ace-autocomplete-items::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ace-autocomplete-items::-webkit-scrollbar-track {
+    background: var(--bs-tertiary-bg, #f1f1f1);
+}
+
+.ace-autocomplete-items::-webkit-scrollbar-thumb {
+    background: var(--bs-border-color, #c1c1c1);
+    border-radius: 3px;
+}
+
+.ace-autocomplete-items::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-secondary-color, #a8a8a8);
+}
+
+.ace-autocomplete-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--bs-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    // Mobile: stack items vertically with reduced padding
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 6px 12px;
+    }
+}
+
+.ace-autocomplete-item:hover {
+    background-color: var(--bs-tertiary-bg, #f5f5f5);
+}
+
+.ace-autocomplete-item-selected {
+    background-color: var(--bs-primary-bg-subtle, #e6f3ff);
+    color: var(--bs-primary, #0d6efd);
+}
+
+.ace-autocomplete-item-selected:hover {
+    background-color: var(--bs-primary-border-subtle, #cce7ff);
+}
+
+.command-name {
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+    margin-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    // Mobile adaptations
+    @media (max-width: 768px) {
+        margin-right: 0;
+        margin-bottom: 2px; // Reduced from 4px
+        width: 100%;
+        font-size: 14px;
+    }
+}
+
+.command-description {
+    color: #666;
+    font-size: 12px;
+    font-style: italic;
+    flex-shrink: 0;
+
+    // Mobile adaptations
+    @media (max-width: 768px) {
+        font-size: 11px;
+        width: 100%;
+        word-break: break-word;
+    }
+}
+
+.ace-autocomplete-no-results {
+    padding: 16px 12px;
+    text-align: center;
+    color: var(--bs-secondary-color, #6c757d);
+    font-style: italic;
+}
+
+// Close button styles
+.ace-autocomplete-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--bs-secondary-color, #6c757d);
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    border-radius: 3px;
+    z-index: 1;
+    min-width: 30px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: var(--bs-secondary-bg, #f0f0f0);
+        color: var(--bs-body-color);
+    }
+
+    &:active {
+        background-color: var(--bs-tertiary-bg, #e0e0e0);
+    }
+
+    // Mobile-friendly touch target
+    @media (max-width: 768px) {
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 24px;
+        top: 4px;
+        right: 4px;
+    }
+}
