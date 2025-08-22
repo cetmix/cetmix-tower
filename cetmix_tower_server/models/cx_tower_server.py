@@ -944,7 +944,7 @@ class CxTowerServer(models.Model):
                 )
             )
 
-        # Set jet template from jet if jet is provided
+        # Force set jet template from jet if jet is provided
         if jet:
             jet_template = jet.jet_template_id
 
@@ -958,7 +958,12 @@ class CxTowerServer(models.Model):
         log_obj = self.env["cx.tower.command.log"]
         log_vals = kwargs.get("log", {})
         log_vals.update(
-            {"use_sudo": sudo, "variable_values": kwargs.get("variable_values", {})}
+            {
+                "use_sudo": sudo,
+                "variable_values": kwargs.get("variable_values", {}),
+                "jet_template_id": jet_template.id if jet_template else None,
+                "jet_id": jet.id if jet else None,
+            }
         )
 
         # Check if no log record should be created
@@ -997,16 +1002,6 @@ class CxTowerServer(models.Model):
         )
         # Get log vals from kwargs and update them
         if not no_command_log:
-            log_obj = self.env["cx.tower.command.log"]
-            log_vals = kwargs.get("log", {})
-            log_vals.update(
-                {
-                    "use_sudo": sudo,
-                    "jet_template_id": jet_template.id if jet_template else None,
-                    "jet_id": jet.id if jet else None,
-                }
-            )
-
             # Check if command is already running and parallel run is not allowed
             if not command.allow_parallel_run:
                 running_count = log_obj.sudo().search_count(
@@ -1798,12 +1793,30 @@ class CxTowerServer(models.Model):
                             banned_keyword=banned_keyword,
                         )
                     )
+            # Get jet template and jet from kwargs or log
+            log_vals = kwargs.get("log", {})
+            if log_vals:
+                jet_template_id = log_vals.get("jet_template_id")
+                jet_id = log_vals.get("jet_id")
+            else:
+                jet_template_id = kwargs.get("jet_template_id")
+                jet_id = kwargs.get("jet_id")
+
+            jet_template = (
+                self.env["cx.tower.jet.template"].browse(jet_template_id)
+                if jet_template_id
+                else None
+            )
+            jet = self.env["cx.tower.jet"].browse(jet_id) if jet_id else None
 
             # Get the evaluation context for the python command
             eval_context = self.env[
                 "cx.tower.command"
             ]._get_python_command_eval_context(
-                server=self, variable_values=kwargs.get("variable_values", {})
+                server=self,
+                jet_template=jet_template,
+                jet=jet,
+                variable_values=kwargs.get("variable_values", {}),
             )
 
             safe_eval(

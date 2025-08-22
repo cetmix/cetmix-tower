@@ -28,8 +28,8 @@ class CxTowerJet(models.Model):
         ondelete="restrict",
     )
 
-    # Server this Jet is running on
-    server_ids = fields.Many2many(
+    # Servers where this jet template is installed
+    server_allowed_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         related="jet_template_id.server_ids",
         readonly=True,
@@ -39,7 +39,7 @@ class CxTowerJet(models.Model):
         comodel_name="cx.tower.server",
         required=True,
         ondelete="restrict",
-        domain="[('id', 'in', server_ids)]",
+        domain="[('id', 'in', server_allowed_ids)]",
     )
 
     # --States

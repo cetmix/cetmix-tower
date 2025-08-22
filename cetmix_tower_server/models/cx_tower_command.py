@@ -430,7 +430,9 @@ class CxTowerCommand(models.Model):
             python_libraries.update(libraries)
         return python_libraries
 
-    def _get_python_command_odoo_objects(self, server=None):
+    def _get_python_command_odoo_objects(
+        self, server=None, jet_template=None, jet=None
+    ):
         """
         This method is used to import Odoo objects.
         Because Odoo objects can be records, this method is not cached.
@@ -455,6 +457,16 @@ class CxTowerCommand(models.Model):
             "server": {
                 "import": server,
                 "help": _("Current Cetmix Tower server this command is running on"),
+            },
+            "jet_template": {
+                "import": jet_template,
+                "help": _(
+                    "Current Cetmix Tower jet template this command is running on"
+                ),
+            },
+            "jet": {
+                "import": jet,
+                "help": _("Current Cetmix Tower jet this command is running on"),
             },
             "tower": {
                 "import": self.env["cetmix.tower"],
@@ -527,21 +539,25 @@ class CxTowerCommand(models.Model):
         """
         return {}
 
-    @api.model
-    def _get_python_command_eval_context(self, server=None, **kwargs):
+    def _get_python_command_eval_context(
+        self, server=None, jet_template=None, jet=None, **kwargs
+    ):
         """
         Get the evaluation context for the python command.
         This method is used to get the evaluation context for the python command.
 
         Args:
             server: Server to get the evaluation context for.
-
+            jet_template: Jet template to get the evaluation context for.
+            jet: Jet to get the evaluation context for.
         Returns:
             dict: Evaluation context for the python command.
         """
 
         # Get the Odoo objects first
-        imports = self._get_python_command_odoo_objects(server=server)
+        imports = self._get_python_command_odoo_objects(
+            server=server, jet_template=jet_template, jet=jet
+        )
 
         # Update with the libraries
         imports.update(self._get_python_command_libraries())

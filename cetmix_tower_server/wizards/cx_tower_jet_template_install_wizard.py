@@ -20,17 +20,41 @@ class CxTowerJetTemplateInstallWizard(models.TransientModel):
         "cx.tower.server",
         string="Servers",
     )
+    jet_template_domain = fields.Binary(
+        compute="_compute_jet_template_domain",
+    )
     server_domain = fields.Binary(
         compute="_compute_server_domain",
     )
 
+    @api.depends("server_ids")
+    def _compute_jet_template_domain(self):
+        """
+        Show only templates that are not installed on the selected server.
+        """
+        for wizard in self:
+            if wizard.server_ids and len(wizard.server_ids) == 1:
+                server = wizard.server_ids[0]
+                templates_installed = server.jet_template_ids
+                wizard.jet_template_domain = [("id", "not in", templates_installed.ids)]
+            else:
+                wizard.jet_template_domain = []
+
     @api.depends("jet_template_id")
     def _compute_server_domain(self):
+        """
+        Show only servers where the template is not installed.
+        """
         for wizard in self:
-            servers_installed = wizard.jet_template_id.server_ids
-            wizard.server_domain = (
-                [("id", "not in", servers_installed.ids)] if servers_installed else []
-            )
+            if wizard.jet_template_id:
+                servers_installed = wizard.jet_template_id.server_ids
+                wizard.server_domain = (
+                    [("id", "not in", servers_installed.ids)]
+                    if servers_installed
+                    else []
+                )
+            else:
+                wizard.server_domain = []
 
     def action_install_template(self):
         """

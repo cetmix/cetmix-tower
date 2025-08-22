@@ -5,7 +5,11 @@
         <field name="arch" type="xml">
             <form string="Install Jet Template">
                 <group>
-                    <field name="jet_template_id" placeholder="Select a jet template" />
+                    <field
+                        name="jet_template_id"
+                        placeholder="Select a jet template"
+                        domain="jet_template_domain"
+                    />
                 </group>
                 <field
                     name="server_ids"
@@ -15,6 +19,7 @@
                     options="{'no_create': True, 'no_create_edit': True}"
                 />
                 <field name="server_domain" invisible="1" />
+                <field name="jet_template_domain" invisible="1" />
                 <footer>
                     <button
                         name="action_install_template"
