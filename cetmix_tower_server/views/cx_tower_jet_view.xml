@@ -37,24 +37,22 @@
                             <field name="name" placeholder="e.g. Production Odoo" />
                         </h1>
                     </div>
-                    <group>
-                        <field
-                            name="reference"
-                            placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
-                        />
-                        <field
-                            name="url"
-                            placeholder="Jet URL, eg 'https://meme.example.com'"
-                            widget="url"
-                        />
-                    </group>
                     <notebook>
                         <page name="general" string="General Settings">
                             <group>
                                 <group>
+                                    <field
+                                        name="reference"
+                                        placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                    />
+                                    <field
+                                        name="url"
+                                        placeholder="Jet URL, eg 'https://meme.example.com'"
+                                        widget="url"
+                                    />
                                     <field name="jet_template_id" />
                                     <field name="server_id" />
-                                    <field name="server_ids" invisible="1" />
+                                    <field name="server_allowed_ids" invisible="1" />
                                 </group>
                                 <group>
                                     <field
@@ -77,6 +75,7 @@
                                     <field
                                         name="value_char"
                                         attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                        widget="ace_tower"
                                     />
                                     <field
                                         name="option_id"

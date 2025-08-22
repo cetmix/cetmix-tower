@@ -657,6 +657,10 @@ class TowerVariable(models.Model):
     def _get_system_variable_values(self, server=None, jet_template=None, jet=None):
         """
         Get the values for the `tower` system variable.
+        This variable uses `tower.<var_provider>.<var_name>` format.
+        E.g. `tower.server.ipv6`, `tower.tools.uuid`,
+        `tower.jet_template.reference`, `tower.tools.now_underscore` etc.
+
 
         Args:
             server (cx.tower.server()): server record
