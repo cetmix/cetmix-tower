@@ -305,34 +305,6 @@ class CxTowerPlanLog(models.Model):
         # Call hook
         self._plan_finished()
 
-        # Check if we were deleting a server
-        if (
-            self.server_id._is_being_deleted()
-            and self.server_id.plan_delete_id == self.plan_id
-        ):
-            if plan_status == 0:
-                # And finally delete the server
-                self.with_context(server_force_delete=True).server_id.unlink()
-            else:
-                # Set deletion error if flightplan failed
-                self.server_id.status = "delete_error"
-
-        # Jet Template action
-        if not self.jet_template_id:
-            return
-
-        # Finish template install/uninstall
-        if self.jet_template_install_id:
-            self.jet_template_install_id._flight_plan_finished(
-                plan_status=plan_status,
-            )
-
-        # Jet
-        if self.jet_id:
-            self.jet_id._flight_plan_finished(
-                plan_status=plan_status,
-            )
-
     def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
         """
         Record plan log without running it.
