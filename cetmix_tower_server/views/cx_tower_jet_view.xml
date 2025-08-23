@@ -58,6 +58,19 @@
                             <field name="name" placeholder="e.g. Production Odoo" />
                         </h1>
                     </div>
+                    <div>Available Actions:
+                        <field
+                            name="available_action_ids"
+                            widget="many2many_tags"
+                            options="{'color_field': 'color'}"
+                        />
+                        <button
+                            name="action_open_action_wizard"
+                            type="object"
+                            string="Trigger Action"
+                            icon="fa-play"
+                        />
+                    </div>
                     <notebook>
                         <page name="general" string="General Settings">
                             <group>
@@ -76,11 +89,6 @@
                                     <field name="jet_template_id" />
                                     <field name="server_id" />
                                     <field name="server_allowed_ids" invisible="1" />
-                                    <field
-                                        name="available_action_ids"
-                                        widget="many2many_tags"
-                                        options="{'color_field': 'color'}"
-                                    />
                                 </group>
                             </group>
                         </page>

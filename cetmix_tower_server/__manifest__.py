@@ -54,6 +54,7 @@
         "wizards/cx_tower_server_host_key_wizard_view.xml",
         "wizards/cx_tower_jet_template_install_wizard_view.xml",
         "wizards/cx_tower_jet_state_wizard_view.xml",
+        "wizards/cx_tower_jet_action_wizard_view.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
