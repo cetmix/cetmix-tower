@@ -80,21 +80,6 @@ class CxTowerJet(models.Model):
         inverse_name="jet_id",
     )
 
-    # TODO: test
-    test_state_id = fields.Many2one(
-        comodel_name="cx.tower.jet.state",
-        string="Test State",
-    )
-    # TODO: test
-    # Action to trigger
-    action_to_trigger_id = fields.Many2one(
-        comodel_name="cx.tower.jet.action",
-        string="Action to Trigger",
-        store=False,
-        readonly=False,
-        domain="[('id', 'in', available_action_ids)]",
-    )
-
     @api.depends("state_id", "jet_template_id")
     def _compute_available_actions(self):
         """Compute available actions based on current state and template"""
@@ -129,21 +114,9 @@ class CxTowerJet(models.Model):
                 )
             )
 
-    @api.onchange("action_to_trigger_id")
-    def _onchange_action_to_trigger_id(self):
-        """Onchange action to trigger"""
-        for jet in self:
-            if jet.action_to_trigger_id:
-                jet._trigger_action(jet.action_to_trigger_id)
-
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def action_test(self):
-        """Test the jet"""
-        self.ensure_one()
-        self._bring_to_state(self.test_state_id)
-
     def action_open_command_logs(self):
         """
         Open current server command log records
@@ -162,6 +135,21 @@ class CxTowerJet(models.Model):
             "cetmix_tower_server.action_cx_tower_plan_log"
         )
         action["domain"] = [("jet_id", "=", self.id)]  # pylint: disable=no-member
+        return action
+
+    def action_open_state_wizard(self):
+        """Open the jet state wizard"""
+        self.ensure_one()
+
+        context = self.env.context.copy()
+        context["default_jet_ids"] = [(6, 0, self.ids)]
+        action = {
+            "type": "ir.actions.act_window",
+            "res_model": "cx.tower.jet.state.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
         return action
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

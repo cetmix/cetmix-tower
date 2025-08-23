@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
+    <!-- Jet Tree View -->
+    <record id="cx_tower_jet_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.tree</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="jet_template_id" optional="show" />
+                <field name="server_id" />
+                <field name="state_id" />
+            </tree>
+        </field>
+    </record>
+
     <!-- Jet Form View -->
     <record id="cx_tower_jet_view_form" model="ir.ui.view">
         <field name="name">cx.tower.jet.form</field>
@@ -8,7 +23,13 @@
         <field name="arch" type="xml">
             <form string="Jet">
                 <header>
-                    <button name="action_test" type="object" string="Test" />
+                    <button
+                        name="action_open_state_wizard"
+                        type="object"
+                        string="Set State"
+                        class="btn-primary"
+                        icon="fa-cog"
+                    />
                     <field
                         name="state_id"
                         widget="statusbar"
@@ -50,18 +71,16 @@
                                         placeholder="Jet URL, eg 'https://meme.example.com'"
                                         widget="url"
                                     />
+                                </group>
+                                <group>
                                     <field name="jet_template_id" />
                                     <field name="server_id" />
                                     <field name="server_allowed_ids" invisible="1" />
-                                </group>
-                                <group>
                                     <field
                                         name="available_action_ids"
                                         widget="many2many_tags"
                                         options="{'color_field': 'color'}"
                                     />
-                                    <field name="action_to_trigger_id" />
-                                    <field name="test_state_id" />
                                 </group>
                             </group>
                         </page>
@@ -114,21 +133,6 @@
                     <field name="message_ids" />
                 </div>
             </form>
-        </field>
-    </record>
-
-    <!-- Jet Tree View -->
-    <record id="cx_tower_jet_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.jet.tree</field>
-        <field name="model">cx.tower.jet</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name" />
-                <field name="reference" />
-                <field name="jet_template_id" />
-                <field name="server_id" />
-                <field name="state_id" />
-            </tree>
         </field>
     </record>
 
