@@ -152,6 +152,20 @@ class CxTowerJet(models.Model):
         }
         return action
 
+    def action_open_action_wizard(self):
+        """Open the jet action wizard"""
+        self.ensure_one()
+        context = self.env.context.copy()
+        context["default_jet_ids"] = [(6, 0, self.ids)]
+        action = {
+            "type": "ir.actions.act_window",
+            "res_model": "cx.tower.jet.action.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+        return action
+
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Jet Actions and states
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
