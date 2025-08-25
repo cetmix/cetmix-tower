@@ -34,6 +34,17 @@ class CxTowerJetTemplate(models.Model):
     )
     note = fields.Text()
 
+    # Jets
+    jet_ids = fields.One2many(
+        comodel_name="cx.tower.jet",
+        inverse_name="jet_template_id",
+        string="Jets",
+    )
+    jet_count = fields.Integer(
+        compute="_compute_jet_count",
+    )
+
+    # Servers
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         relation="cx_tower_jet_template_server_rel",
@@ -49,7 +60,7 @@ class CxTowerJetTemplate(models.Model):
         "Set to 0 for unlimited.",
     )
 
-    # Flight Plan
+    # Flight Plans
     plan_install_id = fields.Many2one(
         comodel_name="cx.tower.plan",
         string="Flight Plan for Installation",
@@ -102,15 +113,6 @@ class CxTowerJetTemplate(models.Model):
         help="The action is used to destroy a Jet",
         domain="[('state_to_id', '=', False), ('jet_template_id', '=', id)]",
     )
-    # TODO: this field is for test only!!
-    test_state_from_id = fields.Many2one(
-        comodel_name="cx.tower.jet.state",
-        string="Test State From",
-    )
-    test_state_to_id = fields.Many2one(
-        comodel_name="cx.tower.jet.state",
-        string="Test State To",
-    )
 
     # Dependencies
     template_requires_ids = fields.One2many(
@@ -147,6 +149,16 @@ class CxTowerJetTemplate(models.Model):
         recursive=True,
         help="SVG image of the dependency graph of the template",
     )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Compute functions
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    @api.depends("jet_ids")
+    def _compute_jet_count(self):
+        """Compute the number of jets for each template."""
+        for template in self:
+            template.jet_count = len(template.jet_ids)
 
     @api.depends(
         "action_ids",
@@ -211,25 +223,6 @@ class CxTowerJetTemplate(models.Model):
                 template.dependency_graph_image = False
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #   Odoo constraints
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-    # @api.constrains("action_create_id", "action_destroy_id")
-    # def _check_action_create_destroy(self):
-    #     """
-    #     Check that the 'Create Jet' and 'Destroy Jet' actions are set
-    #     if there are actions in the template.
-    #     """
-    #     for template in self:
-    #         # Check that the 'Create Jet' and 'Destroy Jet' actions are set
-    #         if template.action_ids and (
-    #             not template.action_create_id or not template.action_destroy_id
-    #         ):
-    #             raise ValidationError(
-    #                 _("The 'Create Jet' and 'Destroy Jet' actions must be set.")
-    #             )
-
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -278,12 +271,18 @@ class CxTowerJetTemplate(models.Model):
         action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
         return action
 
-    def action_test(self):
-        """Test button"""
-        self.ensure_one()
+    def action_open_jets(self):
+        """
+        Open jets of the current jet template
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_action"
+        )
+        action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
+        return action
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #   Jet Actions
+    #   Template Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     def _get_action_path(self, state_from=None, state_to=None):

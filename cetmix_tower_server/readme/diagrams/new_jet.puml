@@ -1,0 +1,73 @@
+@startuml new_jet_flow
+title New Jet Flow
+
+start
+
+:New jet is created;
+while (For every dependency)
+  if (Required jet exists?) then (Yes)
+      if (In the required state?) then (Yes)
+        :Add to linked jets;
+      else (No)
+        :Create a jet request to bring\nthis jet to the required state;
+      endif
+    else (No)
+    :Create a jet request for a new jet;
+  endif
+endwhile
+
+stop
+@enduml
+
+
+@startuml jet_request_flow
+title Jet Request Flow
+|Requesting Jet|
+:Need for a jet in a specific state;
+
+if (Jet available?) then (Yes)
+  if (In the required state?) then (Yes)
+    if (Jet is busy?) then (no)
+      :Ask to go in the required state;
+    else (Yes)
+      :Create a jet request to bring\nthis jet to the required state;
+      |Requested Jet|
+      :Finalize the current operation;
+      :Check for pending requests;
+      if (Pending requests?) then (Yes)
+        while (Pending requests?)
+          :Process the request;
+          :Callback the request issuer;
+        endwhile
+      endif
+    endif
+  else (No)
+    :Ask to go in the required state;
+  endif
+else (No)
+  |Requesting Jet|
+  :Create a jet request for a new jet;
+endif
+stop
+@enduml
+
+@startuml jet_state_transition
+title Jet State Transition
+
+start
+
+:Set the jet as "busy";
+while (Actions to reach the required state)
+  :Execute the action;
+endwhile
+
+:Set the jet as "free";
+if (Pending requests?) then (Yes)
+  while (For every pending request)
+    :Process the request;
+    :Callback the request issuer;
+  endwhile
+endif
+
+stop
+@enduml

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_cx_tower_jet_request_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.request.tree</field>
+        <field name="model">cx.tower.jet.request</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-info="state == 'new'"
+                decoration-warning="state == 'processing'"
+                decoration-success="state == 'success'"
+                decoration-danger="state == 'failed'"
+            >
+                <field name="server_id" />
+                <field name="jet_template_id" />
+                <field name="jet_id" />
+                <field name="state_requested_id" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_cx_tower_jet_request" model="ir.actions.act_window">
+        <field name="name">Jet Requests</field>
+        <field name="res_model">cx.tower.jet.request</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No jet requests found
+            </p>
+            <p>
+                Jet requests will appear here when jets request resources from templates.
+            </p>
+        </field>
+    </record>
+
+</odoo>
