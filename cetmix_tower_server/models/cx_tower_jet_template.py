@@ -116,14 +116,14 @@ class CxTowerJetTemplate(models.Model):
 
     # Dependencies
     template_requires_ids = fields.One2many(
-        comodel_name="cx.tower.jet.dependency",
+        comodel_name="cx.tower.jet.template.dependency",
         inverse_name="template_id",
         string="Requires",
         help="Define other templates that must be in specific"
         " states for this template to function",
     )
     template_required_by_ids = fields.One2many(
-        comodel_name="cx.tower.jet.dependency",
+        comodel_name="cx.tower.jet.template.dependency",
         inverse_name="template_required_id",
         string="Required by",
         help="Define other templates that require this template"

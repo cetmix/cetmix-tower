@@ -37,7 +37,7 @@ from . import res_config_settings
 from . import res_partner
 
 # Jets
-from . import cx_tower_jet_dependency
+from . import cx_tower_jet_template_dependency
 from . import cx_tower_jet_state
 from . import cx_tower_jet_action
 from . import cx_tower_jet_template
