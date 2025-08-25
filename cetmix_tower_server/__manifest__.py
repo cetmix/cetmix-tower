@@ -79,6 +79,7 @@
         "views/cx_tower_jet_state_view.xml",
         "views/cx_tower_jet_template_view.xml",
         "views/cx_tower_jet_template_install_view.xml",
+        "views/cx_tower_jet_request_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [

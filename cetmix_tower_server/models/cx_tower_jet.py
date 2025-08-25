@@ -21,25 +21,46 @@ class CxTowerJet(models.Model):
     url = fields.Char()
     color = fields.Integer(related="state_id.color", readonly=True)
 
-    # Template this Jet is based on
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         required=True,
         ondelete="restrict",
+        help="Template that this jet is based on",
     )
-
-    # Servers where this jet template is installed
+    jet_request_id = fields.Many2one(
+        comodel_name="cx.tower.jet.request",
+        help="Request this jet is currently processing",
+    )
     server_allowed_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         related="jet_template_id.server_ids",
         readonly=True,
+        help="Servers where this jet template is installed",
     )
-
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         required=True,
         ondelete="restrict",
         domain="[('id', 'in', server_allowed_ids)]",
+        help="Server where this jet is running",
+    )
+    jet_linked_to_ids = fields.Many2many(
+        comodel_name="cx.tower.jet",
+        relation="cx_tower_jet_jet_linked_rel",
+        column1="jet_id",
+        column2="jet_linked_to_id",
+        string="Linked to",
+        help="Jets this jet is linked to",
+        copy=False,
+    )
+    jet_linked_from_ids = fields.Many2many(
+        comodel_name="cx.tower.jet",
+        relation="cx_tower_jet_jet_linked_rel",
+        column1="jet_linked_to_id",
+        column2="jet_id",
+        string="Linked from",
+        help="Jets that are linked to this jet",
+        copy=False,
     )
 
     # --States
@@ -51,6 +72,7 @@ class CxTowerJet(models.Model):
     state_to_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
         string="Target State",
+        help="Destination state to which the jet is currently transitioning",
     )
 
     # Currently executing action
@@ -114,6 +136,25 @@ class CxTowerJet(models.Model):
                 )
             )
 
+    def create(self, vals_list):
+        """Create new jets and handle the entry into the initial state"""
+        jets = super().create(vals_list)
+        for jet in jets:
+            jet._on_state_enter(state=jet.state_id)
+        return jets
+
+    def write(self, vals):
+        """Handle the entry into the new state"""
+        if "state_id" in vals:
+            for jet in self:
+                jet._on_state_exit(state=jet.state_id)
+            res = super().write(vals)
+            for jet in self:
+                jet._on_state_enter(state=jet.state_id)
+        else:
+            res = super().write(vals)
+        return res
+
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -167,7 +208,7 @@ class CxTowerJet(models.Model):
         return action
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #   Jet Actions and states
+    #   Trigger Actions and change states
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def _trigger_action(self, action):
         """Trigger an action on the jet.
@@ -253,6 +294,9 @@ class CxTowerJet(models.Model):
         if self.state_to_id:
             self._bring_to_state(self.state_to_id)
 
+        # Trigger the transition finished event
+        self._finalize_transition(failed=False)
+
     def _bring_to_state(self, state=None):
         """
         Bring the jet to a specific state.
@@ -318,6 +362,9 @@ class CxTowerJet(models.Model):
         """
         self.ensure_one()
 
+        # Used in case this is the last action in the chain
+        transition_failed = False
+
         # Reset the current action
         vals = {"current_action_id": False}
 
@@ -354,9 +401,181 @@ class CxTowerJet(models.Model):
                     "state_to_id": None,
                 }
             )
+            transition_failed = True
 
         self.write(vals)
 
         # Continue the chain of actions if the final state is not reached yet
         if self.state_to_id:
             self._bring_to_state(self.state_to_id)
+
+        # Trigger the transition finished event
+        self._finalize_transition(failed=transition_failed)
+
+    def _finalize_transition(self, failed=False):
+        """
+        Handle the completion of a state transition.
+
+        Args:
+            failed (bool): True if the transition failed, False otherwise
+        """
+        self.ensure_one()
+
+        # 1. Finalize the jet request if it exists
+        if self.jet_request_id:
+            self.jet_request_id._finalize(result="success" if not failed else "failed")
+
+        # 2. Notify the jet that it is available
+        self._on_is_available()
+
+    def _finalize_request(self, result="success"):
+        """
+        Finalize the jet request.
+        """
+        self.ensure_one()
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Events handling
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def _on_state_exit(self, state=None):
+        """
+        Handle the exit of the jet from a state.
+
+        Args:
+            state (cx.tower.jet.state()): The state jet is exiting
+        """
+        self.ensure_one()
+        # TODO: Implement the logic to handle the exit of the jet from a state
+        pass
+
+    def _on_state_enter(self, state=None):
+        """
+        Handle the entry of the jet into a state.
+
+        Args:
+            state (cx.tower.jet.state()): The state jet is entering
+        """
+        self.ensure_one()
+        # TODO: Implement the logic to handle the entry of the jet into a state
+        pass
+
+    def _on_is_available(self):
+        """
+        Handle the event when the jet is not busy anymore.
+        """
+
+        # Process pending requests
+        jet_request_obj = self.env["cx.tower.jet.request"]
+
+        # 1. Requests where the jet is requested explicitly
+        explicit_requests = jet_request_obj.search(
+            [
+                ("jet_id", "=", self.id),  # pylint: disable=no-member
+                ("state", "=", "new"),
+            ]
+        )
+        if explicit_requests:
+            # Check which state is required by the request
+            # TODO: IMPORTANT: we must find a workaround to avoid infinite loops
+            # when different jets keep requesting the same target jet in different
+            # states and the target jet keeps jumping from one state to another.
+
+            # Finalize all requests that request the same state as the jet
+            same_state_requests = explicit_requests.filtered(
+                lambda r: r.state_requested_id == self.state_id
+            )
+            for request in same_state_requests:
+                request._finalize(result="success")
+
+            # Pick the first request that requests a different state
+            remaining_requests = explicit_requests - same_state_requests
+            if remaining_requests:
+                self._bring_to_state(remaining_requests[0].state_requested_id)
+
+        # 2. Requests where the jet is requested implicitly via template
+        if self._accepts_new_links():
+            implicit_requests = jet_request_obj.search(
+                [
+                    ("server_id", "=", self.server_id),
+                    ("jet_template_id", "=", self.jet_template_id),
+                    ("state", "=", "new"),
+                ]
+            )
+            same_state_requests = implicit_requests.filtered(
+                lambda r: r.state_requested_id == self.state_id
+            )
+            if same_state_requests:
+                # Set current jet as the target jet for the requests
+                same_state_requests.write({"jet_id": self.id})  # pylint: disable=no-member
+                for request in same_state_requests:
+                    request._finalize(result="success")
+
+            # Pick the first request that requests a different state
+            remaining_requests = implicit_requests - same_state_requests
+            if remaining_requests:
+                remaining_request = remaining_requests[0]
+                # Set current jet as the target jet for the request
+                remaining_request.write({"jet_id": self.id})  # pylint: disable=no-member
+                self._bring_to_state(remaining_request.state_requested_id)
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Status and busyness
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def _accepts_new_links(self):
+        """
+        Check if the jet is available to accept new links from other jets.
+
+        Returns:
+            bool: True if the jet is available to accept new links from other jets,
+                False otherwise
+        """
+        self.ensure_one()
+        # TODO: Implement the logic to check if the jet is available
+        # to accept new links from other jets
+        return True
+
+    def _is_busy(self):
+        """
+        Check if the jet is busy with some other action.
+        Overwrite this function to implement custom logic.
+
+        Returns:
+            bool: True if the jet is busy with some other action,
+                False otherwise
+        """
+        self.ensure_one()
+
+        # Jet is considered busy if it is currently transitioning to another state
+        busy = bool(self.state_to_id)
+        return busy
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Manage dependencies
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def _provide_dependencies(self):
+        """
+        Provide dependencies to the jet.
+        Ensure that the jets this jet depends exist
+        and are in the correct state.
+        """
+        self.ensure_one()
+
+        # Get the dependencies of the jet from the template
+        dependencies = self.jet_template_id.template_requires_ids
+        jet_request_obj = self.env["cx.tower.jet.request"]
+        for dependency in dependencies:
+            jet_request_obj._create_request(
+                server=self.server_id,
+                jet_template=dependency.template_required_id,
+                state=dependency.state_required_id,
+                requested_by_jet=self,
+            )
+
+    def _check_dependencies(self):
+        """
+        Check if the jet has any dependencies.
+        """
+        self.ensure_one()
+        # TODO: Implement the logic to check if the jet has any dependencies
+        pass

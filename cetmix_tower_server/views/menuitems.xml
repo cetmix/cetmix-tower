@@ -57,14 +57,6 @@
     />
 
     <menuitem
-        id="menu_cx_tower_jet_template_install"
-        name="Template Installations"
-        parent="menu_cx_tower_jet_root"
-        action="cx_tower_jet_template_install_action"
-        sequence="25"
-    />
-
-    <menuitem
         id="menu_cx_tower_jet_state"
         name="States"
         parent="menu_cx_tower_jet_root"
@@ -92,6 +84,20 @@
         action="action_cx_tower_plan_log"
         parent="menu_cx_tower_log_root"
         sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_request"
+        name="Jet Requests"
+        action="action_cx_tower_jet_request"
+        parent="menu_cx_tower_log_root"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_template_install"
+        name="Jet Template Installations"
+        parent="menu_cx_tower_log_root"
+        action="cx_tower_jet_template_install_action"
+        sequence="35"
     />
 
 

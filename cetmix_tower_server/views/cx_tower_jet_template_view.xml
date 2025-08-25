@@ -14,10 +14,19 @@
                         string="Install"
                         class="btn-primary"
                     />
-                    <button name="action_test" type="object" string="Test" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_jets"
+                            type="object"
+                            string="Jets"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                            attrs="{'invisible': [('jet_count', '=', 0)]}"
+                        >
+                            <field name="jet_count" widget="statinfo" string="Jets" />
+                        </button>
                         <button
                             name="action_open_command_logs"
                             type="object"
@@ -156,10 +165,6 @@
                                 <field name="action_create_id" />
                                 <field name="action_destroy_id" />
                             </group>
-                            <group>
-                                <field name="test_state_from_id" />
-                                <field name="test_state_to_id" />
-                            </group>
                         </page>
                         <page string="Dependencies" name="dependencies">
                             <group>
@@ -250,6 +255,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
+                <field name="jet_count" />
                 <field
                     name="server_ids"
                     widget="many2many_tags"
@@ -270,6 +276,7 @@
             <search string="Search Jet Templates">
                 <field name="name" />
                 <field name="reference" />
+                <field name="jet_count" />
                 <filter
                     string="User Access"
                     name="user_access"

@@ -87,3 +87,4 @@ access_cx_tower_jet_template_install_line_manager,Jet Template Install Line->Man
 access_cx_tower_jet_template_install_wiz_manager,Jet Template Install Wizard->Manager,model_cx_tower_jet_template_install_wiz,group_manager,1,1,1,1
 access_cx_tower_jet_state_wizard_user,Jet State Wizard->User,model_cx_tower_jet_state_wizard,group_user,1,1,1,1
 access_cx_tower_jet_action_wizard_user,Jet Action Wizard->User,model_cx_tower_jet_action_wizard,group_user,1,1,1,1
+access_cx_tower_jet_request_root,Jet Request->Root,model_cx_tower_jet_request,group_root,1,1,1,1
