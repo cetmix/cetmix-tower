@@ -496,8 +496,8 @@ class CxTowerJet(models.Model):
         if self._accepts_new_links():
             implicit_requests = jet_request_obj.search(
                 [
-                    ("server_id", "=", self.server_id),
-                    ("jet_template_id", "=", self.jet_template_id),
+                    ("server_id", "=", self.server_id.id),  # pylint: disable=no-member
+                    ("jet_template_id", "=", self.jet_template_id.id),  # pylint: disable=no-member
                     ("state", "=", "new"),
                 ]
             )

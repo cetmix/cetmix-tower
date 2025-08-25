@@ -5,11 +5,11 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class CxTowerJetDependency(models.Model):
+class CxTowerJetTemplateDependency(models.Model):
     """Define dependencies between Jet templates"""
 
-    _name = "cx.tower.jet.dependency"
-    _description = "Cetmix Tower Jet Dependency"
+    _name = "cx.tower.jet.template.dependency"
+    _description = "Cetmix Tower Jet Template Dependency"
     _log_access = False
 
     template_id = fields.Many2one(
