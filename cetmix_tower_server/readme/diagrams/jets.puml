@@ -4,10 +4,11 @@ title New Jet Flow
 start
 
 :New jet is created;
+:Build jet dependencies;
 while (For every dependency)
   if (Required jet exists?) then (Yes)
       if (In the required state?) then (Yes)
-        :Add to linked jets;
+        :Save jet in the dependency;
       else (No)
         :Create a jet request to bring\nthis jet to the required state;
       endif
@@ -56,17 +57,20 @@ title Jet State Transition
 
 start
 
-:Set the jet as "busy";
-while (Actions to reach the required state)
-  :Execute the action;
-endwhile
-
-:Set the jet as "free";
-if (Pending requests?) then (Yes)
-  while (For every pending request)
-    :Process the request;
-    :Callback the request issuer;
+:Update dependencies;
+if (All dependencies satisfied?) then (Yes)
+  while (Actions to reach the required state)
+    :Execute the action;
+    if (Pending requests?) then (Yes)
+      while (For every pending request)
+      :Process the request;
+      :Callback the request issuer;
   endwhile
+endif
+
+  endwhile
+else (No)
+  :Wait for dependencies;
 endif
 
 stop
