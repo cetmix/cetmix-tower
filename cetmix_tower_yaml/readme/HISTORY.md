@@ -1,3 +1,8 @@
+## 16.0.1.4.1 (2025-08-26)
+
+- Bugfixes: Make selection values lowercase to simplify their management. (4896)
+
+
 ## 16.0.1.3.0 (2025-07-30)
 
 - Features: Optional behaviour when file uploaded by command already exists on the server. (4740)
