@@ -63,6 +63,12 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
+msgid ""
+"Add prefix to the exported YAML file name when this template is selected"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
@@ -263,6 +269,13 @@ msgid "Currency is required when price is specified"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+#, python-format
+msgid "Custom"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license_text
 msgid "Custom license text when license type is Custom."
 msgstr ""
@@ -302,6 +315,13 @@ msgstr ""
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #, python-format
 msgid "Error updating record %(reference)s: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+#, python-format
+msgid "Euro"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -367,6 +387,11 @@ msgstr ""
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "File contains non-unicode characters or is empty"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
+msgid "File prefix"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -627,7 +652,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
 #, python-format
-msgid "Provide Custom License Text when License is set to “Custom”."
+msgid "Provide Custom License Text when License is set to 'Custom'."
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -742,6 +767,13 @@ msgstr ""
 msgid ""
 "To create new entities instead of updating existing ones, remove or modify "
 "the <code>reference</code> field in the YAML code for those entities."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+#, python-format
+msgid "US Dollar"
 msgstr ""
 
 #. module: cetmix_tower_yaml
