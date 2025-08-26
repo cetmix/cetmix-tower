@@ -68,6 +68,18 @@ class CxTowerJetTemplateDependency(models.Model):
                     )
                 )
 
+    @api.depends("template_id", "template_required_id")
+    def _compute_display_name(self):
+        for dependency in self:
+            dependency.display_name = (
+                (
+                    f"{dependency.template_id.name} ->"
+                    f" {dependency.template_required_id.name}"
+                )
+                if dependency.template_id and dependency.template_required_id
+                else "..."
+            )
+
     def _build_dependency_graph(self):
         """Build a directed graph of template dependencies
 

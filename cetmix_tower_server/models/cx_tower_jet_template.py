@@ -482,7 +482,6 @@ class CxTowerJetTemplate(models.Model):
                 "name": name,
                 "jet_template_id": self.id,
                 "server_id": server.id,
-                "jet_request_id": jet_request.id if jet_request else False,
             }
         )
 

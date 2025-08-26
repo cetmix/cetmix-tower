@@ -14,10 +14,10 @@
                 <field name="create_date" />
                 <field name="write_date" optional="hide" />
                 <field name="server_id" />
-                <field name="jet_id" />
-                <field name="jet_template_id" />
                 <field name="requested_by_jet_id" />
-                <field name="state_requested_id" />
+                <field name="jet_template_id" optional="show" />
+                <field name="state_requested_id" optional="show" />
+                <field name="jet_id" />
                 <field name="state" />
             </tree>
         </field>

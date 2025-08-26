@@ -27,7 +27,7 @@ class CxTowerJet(models.Model):
         ondelete="restrict",
         help="Template that this jet is based on",
     )
-    jet_request_id = fields.Many2one(
+    serviced_jet_request_id = fields.Many2one(
         comodel_name="cx.tower.jet.request",
         help="Request this jet is currently processing",
     )
@@ -215,6 +215,29 @@ class CxTowerJet(models.Model):
         # Update the jet state
         transit_state = action.state_transit_id
         target_state = action.state_to_id
+
+        # Check if the jet is already in the target state
+        if self.state_id == target_state:
+            self.target_state_id = None
+            self._finalize_transition(failed=False)
+
+        # Set target state if not already set
+        if not self.target_state_id:
+            self.target_state_id = target_state
+
+        # Check if all dependencies are satisfied
+        # if starting from an undefined state.
+        # This is typical for a newly created jet.
+        # Do it only if jet is not servicing a request for another jet.
+        if (
+            not self.state_id
+            and not self.serviced_jet_request_id
+            and not self._control_dependencies()
+        ):
+            # The process will be resumed
+            # when the dependencies are satisfied
+            return
+
         self.write(
             {
                 "state_id": transit_state,
@@ -317,23 +340,6 @@ class CxTowerJet(models.Model):
                 }
             )
 
-        # Check if all dependencies are satisfied
-        # if starting from an undefined state.
-        # This is typical for a newly created jet.
-        if (
-            not self.state_id
-            and not self.jet_request_id
-            and not self._control_dependencies()
-        ):
-            # The process will be resumed
-            # when the dependencies are satisfied
-            return
-
-        # If the jet is already in the target state,
-        # we can trigger the first action in the path
-        if self.state_id == self.target_state_id:
-            self._trigger_action(path[0])
-
         # Trigger the first action in the path
         self._trigger_action(path[0])
 
@@ -407,8 +413,8 @@ class CxTowerJet(models.Model):
         self.ensure_one()
 
         # 1. Finalize the jet request if it exists
-        if self.jet_request_id:
-            self.jet_request_id._finalize(failed=failed)
+        if self.serviced_jet_request_id:
+            self.serviced_jet_request_id._finalize(failed=failed)
 
         # 2. Notify the jet that it is available
         self._on_is_available()
@@ -448,8 +454,11 @@ class CxTowerJet(models.Model):
         dependency = jet_request.for_dependency_id
         if dependency and jet_request.state == "success":
             dependency.jet_depends_on_id = jet_request.jet_id
-            # Resume the dependency update
-            self._control_dependencies()
+
+        # Proceed with the state transition if all dependencies are satisfied
+        # and the transition is still in progress
+        if self._control_dependencies() and self.target_state_id:
+            self._bring_to_state(self.target_state_id)
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Event handling

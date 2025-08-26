@@ -40,12 +40,14 @@ class CxTowerJetRequest(models.Model):
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         ondelete="cascade",
+        string="Serviced by Jet",
         copy=False,
         help="Jet that is requested",
     )
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         required=True,
+        string="Requested Template",
         ondelete="cascade",
         copy=False,
         help="Template of the jet that is requested. "
@@ -61,6 +63,7 @@ class CxTowerJetRequest(models.Model):
     requested_by_jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         ondelete="cascade",
+        string="Requested by Jet",
         copy=False,
         help="Jet that is requesting the jet",
     )
@@ -205,4 +208,4 @@ class CxTowerJetRequest(models.Model):
         # 3. Remove the link to the jet that was handling the request
         if self.jet_id:
             # Unlink the jet from the request
-            self.jet_id.jet_request_id = False
+            self.jet_id.serviced_jet_request_id = False
