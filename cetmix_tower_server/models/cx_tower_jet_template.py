@@ -8,6 +8,8 @@ import xml.etree.ElementTree as ET
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .tools import generate_random_id
+
 _logger = logging.getLogger(__name__)
 
 
@@ -442,6 +444,72 @@ class CxTowerJetTemplate(models.Model):
                 }
             )
         return variable_value
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Jet creation
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def create_jet(self, server, name=None, jet_request=None):
+        """
+        Create a new jet from this template on the given server.
+
+        Args:
+            server (cx.tower.server()): The server to use
+            name (str): The name of the jet
+            jet_request (cx.tower.jet.request()): The jet request to use
+        Returns:
+            cx.tower.jet(): The new jet or False if the creation has failed
+        """
+        self.ensure_one()
+
+        # Check if the jet creation is allowed on the given server
+        if not self._allow_jet_creation(server):
+            return False
+
+        # If no name is provided, generate a random one
+        if not name:
+            name = self._generate_jet_name()
+
+        # Check if the same name already exists on the server
+        # Keep generating a new name until a unique one is found
+        Jet = self.env["cx.tower.jet"]
+        while Jet.search([("name", "=", name), ("server_id", "=", server.id)], limit=1):
+            name = self._generate_jet_name()
+
+        # Create a new jet
+        jet = self.env["cx.tower.jet"].create(
+            {
+                "name": name,
+                "jet_template_id": self.id,
+                "server_id": server.id,
+            }
+        )
+
+        return jet
+
+    def _allow_jet_creation(self, server):
+        """
+        Check if the jet creation is allowed on the given server.
+        This function can be extended to check for other conditions.
+        Eg if jet capacity is reached for the server.
+        Or server template has a certain limit on the number of jets per server.
+
+        Args:
+            server (cx.tower.server()): The server to check
+
+        Returns:
+            bool: True if the jet creation is allowed, False otherwise
+        """
+        self.ensure_one()
+        return True
+
+    def _generate_jet_name(self):
+        """Generate a unique name for a jet"""
+        self.ensure_one()
+        return (
+            f"{self.name} "
+            f"[{generate_random_id(sections=2, population=4, separator='-')}]"
+        )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Dependency Graph

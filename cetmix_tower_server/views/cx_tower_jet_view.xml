@@ -29,6 +29,7 @@
                         string="Set State"
                         class="btn-primary"
                         icon="fa-cog"
+                        attrs="{'invisible': [('target_state_id', '!=', False)]}"
                     />
                     <field
                         name="state_id"
@@ -58,7 +59,14 @@
                             <field name="name" placeholder="e.g. Production Odoo" />
                         </h1>
                     </div>
-                    <div>Available Actions:
+                    <div
+                        attrs="{'invisible': [('target_state_id', '=', False)]}"
+                    >Transitioning to:
+                        <field name="target_state_id" />
+                    </div>
+                    <div
+                        attrs="{'invisible': [('target_state_id', '!=', False)]}"
+                    >Available Actions:
                         <field
                             name="available_action_ids"
                             widget="many2many_tags"
@@ -132,6 +140,32 @@
                                     />
                                 </form>
                             </field>
+                        </page>
+                        <page string="Dependencies" name="dependencies">
+                            <group>
+                                <group name="requires" string="Requires">
+                                    <field name="jet_requires_ids" string=" ">
+                                        <tree editable="bottom">
+                                            <field name="jet_depends_on_id" />
+                                            <field
+                                                name="jet_template_dependency_id"
+                                                optional="hide"
+                                            />
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group name="required_by" string="Required By">
+                                    <field name="jet_required_by_ids" string=" ">
+                                        <tree editable="bottom">
+                                            <field name="jet_id" />
+                                            <field
+                                                name="jet_template_dependency_id"
+                                                optional="hide"
+                                            />
+                                        </tree>
+                                    </field>
+                                </group>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>

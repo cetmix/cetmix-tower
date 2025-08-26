@@ -13,6 +13,10 @@ class CxTowerJetState(models.Model):
     _order = "sequence, id"
 
     sequence = fields.Integer(default=10, required=True)
+    check_dependencies = fields.Boolean(
+        help="If enabled, dependencies will be checked "
+        "before transitioning to this state"
+    )
     active = fields.Boolean(default=True)
     color = fields.Integer()
     note = fields.Text()
