@@ -504,15 +504,22 @@ class CxTowerJet(models.Model):
         """
         self.ensure_one()
 
-        # Update the dependency if the request was for a dependency
-        dependency = jet_request.for_dependency_id
-        if dependency and jet_request.state == "success":
-            dependency.jet_depends_on_id = jet_request.jet_id
-
-        # Proceed with the state transition if all dependencies are satisfied
-        # and the transition is still in progress
-        if self._control_dependencies() and self.target_state_id:
-            self._bring_to_state(self.target_state_id)
+        # On success, update the dependency and
+        if jet_request.state == "success":
+            # Update the dependency if the request was for a dependency
+            dependency = jet_request.for_dependency_id
+            if dependency:
+                dependency.jet_depends_on_id = jet_request.jet_id
+            # Proceed with the state transition if all dependencies are satisfied
+            # and the transition is still in progress
+            if self._control_dependencies() and self.target_state_id:
+                self._bring_to_state(self.target_state_id)
+        else:
+            # Stop transition if the request failed
+            self.target_state_id = False
+            # Mark served jet request as failed
+            if self.served_jet_request_id:
+                self.served_jet_request_id._finalize(failed=True)
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Event handling
