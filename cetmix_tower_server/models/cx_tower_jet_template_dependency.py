@@ -80,6 +80,17 @@ class CxTowerJetTemplateDependency(models.Model):
                 else "..."
             )
 
+    def write(self, vals):
+        """Do not allow modifications after creation"""
+        if "template_id" in vals or "template_required_id" in vals:
+            raise ValidationError(
+                _(
+                    "You cannot modify an existing template dependency! "
+                    "Please remove it and create a new one."
+                )
+            )
+        return super().write(vals)
+
     def _build_dependency_graph(self):
         """Build a directed graph of template dependencies
 

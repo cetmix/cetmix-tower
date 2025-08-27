@@ -27,9 +27,9 @@ class CxTowerJet(models.Model):
         ondelete="restrict",
         help="Template that this jet is based on",
     )
-    serviced_jet_request_id = fields.Many2one(
+    served_jet_request_id = fields.Many2one(
         comodel_name="cx.tower.jet.request",
-        help="Request this jet is currently processing",
+        help="Request this jet is currently being served" " by this jet",
     )
     server_allowed_ids = fields.Many2many(
         comodel_name="cx.tower.server",
@@ -50,13 +50,17 @@ class CxTowerJet(models.Model):
         comodel_name="cx.tower.jet.dependency",
         inverse_name="jet_id",
         string="Requires",
-        help="Dependencies of the jets",
+        help="Another jets this jet depends on",
+        compute="_compute_jet_requires_ids",
+        store=True,
+        precompute=True,
     )
     jet_required_by_ids = fields.One2many(
         comodel_name="cx.tower.jet.dependency",
         inverse_name="jet_depends_on_id",
         string="Required By",
-        help="Dependencies of the jets",
+        help="Jets that depend on this jet",
+        readonly=True,
     )
 
     # -- States and actions
@@ -97,6 +101,9 @@ class CxTowerJet(models.Model):
         inverse_name="jet_id",
     )
 
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Compute methods
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     @api.depends("state_id", "jet_template_id")
     def _compute_available_actions(self):
         """Compute available actions based on current state and template"""
@@ -111,8 +118,62 @@ class CxTowerJet(models.Model):
             )
             jet.available_action_ids = actions
 
+    @api.depends("jet_template_id", "jet_template_id.template_requires_ids")
+    def _compute_jet_requires_ids(self):
+        """Compute the dependencies of the jets"""
+        for jet in self:
+            jet_template_dependencies = jet.jet_template_id.template_requires_ids
+
+            final_vals = []
+
+            # 1. Check removed dependencies
+            if jet_template_dependencies:
+                jet_dependencies_to_remove = jet.jet_requires_ids.filtered(
+                    lambda d,
+                    jtd=jet_template_dependencies: d.jet_template_dependency_id
+                    not in jtd
+                )
+            else:
+                jet_dependencies_to_remove = jet.jet_requires_ids
+
+            if jet_dependencies_to_remove:
+                final_vals = [(3, dep.id) for dep in jet_dependencies_to_remove]
+
+            # Check new template dependencies
+            if jet_template_dependencies:
+                if jet.jet_requires_ids:
+                    new_jet_template_dependencies = jet_template_dependencies.filtered(
+                        lambda d, j=jet: d.id
+                        not in j.jet_requires_ids.jet_template_dependency_id.ids
+                    )
+                else:
+                    new_jet_template_dependencies = jet_template_dependencies
+                for dep in new_jet_template_dependencies:
+                    final_vals.append(
+                        (
+                            0,
+                            0,
+                            {
+                                "jet_id": jet.id,
+                                "jet_template_dependency_id": dep.id,
+                            },
+                        )
+                    )
+            if final_vals:
+                jet.jet_requires_ids = final_vals
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   ORM methods
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def write(self, vals):
         """Handle the entry into the new state"""
+        if "jet_template_id" in vals or "server_id" in vals:
+            raise ValidationError(
+                _(
+                    "Jet template and server cannot be changed"
+                    " once the jet is created!"
+                )
+            )
         if "state_id" in vals:
             for jet in self:
                 jet._on_state_exit(state=jet.state_id)
@@ -228,12 +289,7 @@ class CxTowerJet(models.Model):
         # Check if all dependencies are satisfied
         # if starting from an undefined state.
         # This is typical for a newly created jet.
-        # Do it only if jet is not servicing a request for another jet.
-        if (
-            not self.state_id
-            and not self.serviced_jet_request_id
-            and not self._control_dependencies()
-        ):
+        if not self.state_id and not self._control_dependencies():
             # The process will be resumed
             # when the dependencies are satisfied
             return
@@ -399,9 +455,9 @@ class CxTowerJet(models.Model):
         # Continue the chain of actions if the final state is not reached yet
         if self.target_state_id:
             self._bring_to_state(self.target_state_id)
-
-        # Trigger the transition finished event
-        self._finalize_transition(failed=transition_failed)
+        else:
+            # Trigger the transition finished event
+            self._finalize_transition(failed=transition_failed)
 
     def _finalize_transition(self, failed=False):
         """
@@ -413,8 +469,8 @@ class CxTowerJet(models.Model):
         self.ensure_one()
 
         # 1. Finalize the jet request if it exists
-        if self.serviced_jet_request_id:
-            self.serviced_jet_request_id._finalize(failed=failed)
+        if self.served_jet_request_id:
+            self.served_jet_request_id._finalize(failed=failed)
 
         # 2. Notify the jet that it is available
         self._on_is_available()
@@ -428,17 +484,15 @@ class CxTowerJet(models.Model):
         """
         self.ensure_one()
 
+        # Save the request
+        self.served_jet_request_id = jet_request
+
         # State is reached, finalize the request
         if self.state_id == jet_request.state_requested_id:
             jet_request._finalize(failed=False)
         else:
             # Trigger the jet to bring itself to the required state
-            jet_request.write(
-                {
-                    "jet_id": self.id,  # pylint: disable=no-member
-                    "state": "processing",
-                }
-            )
+            jet_request.state = "processing"
             self._bring_to_state(jet_request.state_requested_id)
 
     def _finalize_jet_request(self, jet_request):
@@ -450,15 +504,22 @@ class CxTowerJet(models.Model):
         """
         self.ensure_one()
 
-        # Update the dependency if the request was for a dependency
-        dependency = jet_request.for_dependency_id
-        if dependency and jet_request.state == "success":
-            dependency.jet_depends_on_id = jet_request.jet_id
-
-        # Proceed with the state transition if all dependencies are satisfied
-        # and the transition is still in progress
-        if self._control_dependencies() and self.target_state_id:
-            self._bring_to_state(self.target_state_id)
+        # On success, update the dependency and
+        if jet_request.state == "success":
+            # Update the dependency if the request was for a dependency
+            dependency = jet_request.for_dependency_id
+            if dependency:
+                dependency.jet_depends_on_id = jet_request.jet_id
+            # Proceed with the state transition if all dependencies are satisfied
+            # and the transition is still in progress
+            if self._control_dependencies() and self.target_state_id:
+                self._bring_to_state(self.target_state_id)
+        else:
+            # Stop transition if the request failed
+            self.target_state_id = False
+            # Mark served jet request as failed
+            if self.served_jet_request_id:
+                self.served_jet_request_id._finalize(failed=True)
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Event handling
@@ -601,41 +662,24 @@ class CxTowerJet(models.Model):
         all_dependencies_satisfied = True
 
         jet_request_obj = self.env["cx.tower.jet.request"]
-        jet_dependency_obj = self.env["cx.tower.jet.dependency"]
 
-        # 1. Take the template dependencies and check them one by one
-        for template_dependency in self.jet_template_id.template_requires_ids:
-            # Check if that dependency is already satisfied
-            jet_dependency = self.jet_requires_ids.filtered(
-                lambda d, td=template_dependency: d.jet_template_dependency_id == td
-            )
-            # Check if there is a jet in that dependency
-            if jet_dependency:
-                # Check if the jet state matches the required state
-                if (
-                    jet_dependency.jet_depends_on_id
-                    and jet_dependency.jet_depends_on_id.state_id
-                    == template_dependency.state_required_id
-                ):
-                    continue
-            else:
-                # Create a new jet dependency
-                jet_dependency = jet_dependency_obj.create(
-                    {
-                        "jet_id": self.id,  # pylint: disable=no-member
-                        "jet_template_dependency_id": template_dependency.id,
-                    }
-                )
+        # Check if jets are present in the required state
+        for jet_dependency in self.jet_requires_ids:
+            jet_template_dependency = jet_dependency.jet_template_dependency_id
+            if (
+                jet_dependency.jet_depends_on_id
+                and jet_dependency.jet_depends_on_id.state_id
+                == jet_template_dependency.state_required_id
+            ):
+                # The dependency is satisfied, continue to the next dependency
+                continue
 
             # Create a new jet request to ensure we have the required jet
-            # in the required state
+            #  in the required state
             jet_request_obj._create_request(
                 server=self.server_id,
-                jet=jet_dependency.jet_depends_on_id
-                if jet_dependency.jet_depends_on_id
-                else None,
-                jet_template=template_dependency.template_required_id,
-                state=template_dependency.state_required_id,
+                jet_template=jet_template_dependency.template_required_id,
+                state=jet_template_dependency.state_required_id,
                 requested_by_jet=self,
                 for_dependency=jet_dependency,
             )

@@ -65,6 +65,11 @@
                         <field name="target_state_id" />
                     </div>
                     <div
+                        attrs="{'invisible': [('served_jet_request_id', '=', 232323232)]}"
+                    >Serving request:
+                        <field name="served_jet_request_id" />
+                    </div>
+                    <div
                         attrs="{'invisible': [('target_state_id', '!=', False)]}"
                     >Available Actions:
                         <field
@@ -79,6 +84,7 @@
                             icon="fa-play"
                         />
                     </div>
+
                     <notebook>
                         <page name="general" string="General Settings">
                             <group>
@@ -94,8 +100,15 @@
                                     />
                                 </group>
                                 <group>
-                                    <field name="jet_template_id" />
-                                    <field name="server_id" />
+                                    <field name="create_date" invisible="1" />
+                                    <field
+                                        name="jet_template_id"
+                                        attrs="{'readonly': [('create_date', '!=', False)]}"
+                                    />
+                                    <field
+                                        name="server_id"
+                                        attrs="{'readonly': [('create_date', '!=', False)]}"
+                                    />
                                     <field name="server_allowed_ids" invisible="1" />
                                 </group>
                             </group>
@@ -143,24 +156,30 @@
                         </page>
                         <page string="Dependencies" name="dependencies">
                             <group>
-                                <group name="requires" string="Requires">
+                                <group name="requires" string="Depends on">
                                     <field name="jet_requires_ids" string=" ">
-                                        <tree editable="bottom">
-                                            <field name="jet_depends_on_id" />
+                                        <tree>
+                                            <field
+                                                name="jet_depends_on_id"
+                                                placeholder="..no jet is assigned yet"
+                                            />
                                             <field
                                                 name="jet_template_dependency_id"
-                                                optional="hide"
+                                                optional="show"
                                             />
                                         </tree>
                                     </field>
                                 </group>
-                                <group name="required_by" string="Required By">
+                                <group name="required_by" string="Serves dependencies">
                                     <field name="jet_required_by_ids" string=" ">
-                                        <tree editable="bottom">
-                                            <field name="jet_id" />
+                                        <tree>
+                                            <field
+                                                name="jet_id"
+                                                placeholder="...no jet is assigned yet"
+                                            />
                                             <field
                                                 name="jet_template_dependency_id"
-                                                optional="hide"
+                                                optional="show"
                                             />
                                         </tree>
                                     </field>

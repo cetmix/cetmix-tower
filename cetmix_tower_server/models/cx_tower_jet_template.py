@@ -449,7 +449,7 @@ class CxTowerJetTemplate(models.Model):
     #   Jet creation
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    def create_jet(self, server, name=None, jet_request=None):
+    def create_jet(self, server, name=None):
         """
         Create a new jet from this template on the given server.
 
@@ -472,15 +472,17 @@ class CxTowerJetTemplate(models.Model):
 
         # Check if the same name already exists on the server
         # Keep generating a new name until a unique one is found
-        Jet = self.env["cx.tower.jet"]
-        while Jet.search([("name", "=", name), ("server_id", "=", server.id)], limit=1):
+        jet_obj = self.env["cx.tower.jet"]
+        while jet_obj.search(
+            [("name", "=", name), ("server_id", "=", server.id)], limit=1
+        ):
             name = self._generate_jet_name()
 
         # Create a new jet
         jet = self.env["cx.tower.jet"].create(
             {
                 "name": name,
-                "jet_template_id": self.id,
+                "jet_template_id": self.id,  # pylint: disable=no-member
                 "server_id": server.id,
             }
         )
