@@ -1,3 +1,8 @@
+## 17.0.1.4.1 (2025-08-27)
+
+- Bugfixes: Make selection values lowercase to simplify their management. (4896)
+
+
 ## 17.0.1.3.1 (2025-08-09)
 
 - Bugfixes: Error when uploading a YAML file while not being an Odoo "Access Rights" group member (4899)
