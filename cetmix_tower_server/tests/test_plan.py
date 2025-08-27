@@ -1998,3 +1998,66 @@ custom_values['random_var_reference'] = 'another_random_var_value'
             plan_log.variable_values[self.variable_url.reference],
             "https://www.cetmix.com",
         )
+
+    def test_plan_with_custom_values_in_condition(self):
+        """
+        Ensure that plan line conditions see updated custom_values
+        produced by previous commands.
+
+        1) python sets test_path_ = '/test_path'
+        2) create_dir with condition "{{ test_path_ }} == '/test_path'" -> executes
+        3) python updates test_path_ = '/another_test_path'
+        4) create_dir with condition "{{ test_path_ }} == '/another_test_path'"
+           -> executes
+        Then invert conditions and check both lines are skipped appropriately.
+        """
+        command_python_1_id = self.command_python_custom_variable_values_1.id
+        command_python_2_id = self.command_python_custom_variable_values_2.id
+
+        plan = self._create_plan(
+            **{
+                "name": "Plan with custom_values in condition",
+                "line_ids": [
+                    (0, 0, {"command_id": command_python_1_id, "sequence": 1}),
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": self.command_create_dir.id,
+                            "sequence": 2,
+                            "condition": "{{ test_path_ }} == '/test_path'",
+                        },
+                    ),
+                    (0, 0, {"command_id": command_python_2_id, "sequence": 3}),
+                    (
+                        0,
+                        0,
+                        {
+                            "command_id": self.command_create_dir.id,
+                            "sequence": 4,
+                            "condition": "{{ test_path_ }} == '/another_test_path'",
+                        },
+                    ),
+                ],
+            }
+        )
+
+        plan_log = self.server_test_1.run_flight_plan(plan)
+
+        logs = plan_log.command_log_ids
+        self.assertEqual(len(logs), 4, "Should be 4 command logs")
+
+        create_dir_logs = logs.filtered(
+            lambda line: line.command_id == self.command_create_dir
+        )
+        self.assertEqual(len(create_dir_logs), 2, "Should be 2 create_dir logs")
+
+        self.assertFalse(
+            create_dir_logs[0].is_skipped, "First create_dir must be executed"
+        )
+        self.assertFalse(
+            create_dir_logs[1].is_skipped, "Second create_dir must be executed"
+        )
+
+        self.assertIn("/test_path", create_dir_logs[0].code)
+        self.assertIn("/another_test_path", create_dir_logs[1].code)

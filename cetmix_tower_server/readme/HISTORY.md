@@ -1,3 +1,8 @@
+## 17.0.1.10.1 (2025-09-22)
+
+- Bugfixes: Check custom values in flight plan line condition (4922)
+
+
 ## 17.0.1.10.0 (2025-08-21)
 
 - Features: Select secrets from dropdown list in the code fields (4853)
