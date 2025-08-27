@@ -139,6 +139,13 @@ class CxTowerJetRequest(models.Model):
                     "Jet %s is available and not busy, finalizing request", jet.name
                 )
                 request._finalize(failed=False)
+            else:
+                jet._serve_jet_request(jet_request=request)
+                _logger.info(
+                    "Jet %s is not available or busy, triggering jet to "
+                    "bring itself to the required state",
+                    jet.name,
+                )
             return request
 
         # Step 2. Try to pick any of the existing jets from the template
@@ -172,7 +179,7 @@ class CxTowerJetRequest(models.Model):
         # Step 4. Jet is not available, or is busy create a new jet
         # TODO: Add an option to wait for the jet to become available
         if jet_template:
-            jet = jet_template.create_jet(server, jet_request=request)
+            jet = jet_template.create_jet(server)
             _logger.info("No jets available, created new jet %s", jet.name)
             if jet:
                 request.jet_id = jet
@@ -208,4 +215,4 @@ class CxTowerJetRequest(models.Model):
         # 3. Remove the link to the jet that was handling the request
         if self.jet_id:
             # Unlink the jet from the request
-            self.jet_id.serviced_jet_request_id = False
+            self.jet_id.served_jet_request_id = False
