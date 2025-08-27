@@ -27,14 +27,8 @@
                         <field name="version" />
                         <field name="website" />
                         <field name="license" />
-                        <field
-                            name="license_text"
-                            attrs="{'invisible': [('license', '!=', 'custom')]}"
-                        />
-                        <field
-                            name="currency"
-                            attrs="{'invisible': [('license', '!=', 'custom')]}"
-                        />
+                        <field name="license_text" invisible="license != 'custom'" />
+                        <field name="currency" invisible="license != 'custom'" />
                     </group>
                 </sheet>
             </form>
