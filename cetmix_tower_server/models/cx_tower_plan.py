@@ -297,7 +297,12 @@ class CxTowerPlan(models.Model):
         server_variable_values = server.variable_value_ids
 
         # Check line condition
-        if not current_line._is_executable_line(server):
+        variable_values = (
+            command_log.variable_values or command_log.plan_log_id.variable_values
+        )
+        if not current_line._is_executable_line(
+            server, variable_values=variable_values
+        ):
             # Immediately return to the next line if condition fails
             return self._get_next_action_state(
                 "n", PLAN_LINE_CONDITION_CHECK_FAILED, current_line
@@ -382,10 +387,9 @@ class CxTowerPlan(models.Model):
         # Run next line
         if action == "n" and plan_line:
             server = command_log.server_id
-            if plan_line._is_executable_line(server):
-                plan_line._run(
-                    server, plan_log, variable_values=plan_log.variable_values
-                )
+            variable_values = command_log.variable_values or plan_log.variable_values
+            if plan_line._is_executable_line(server, variable_values=variable_values):
+                plan_line._run(server, plan_log, variable_values=variable_values)
             else:
                 plan_line._skip(server, plan_log)
 

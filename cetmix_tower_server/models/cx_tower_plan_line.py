@@ -204,12 +204,15 @@ class CxTowerPlanLine(models.Model):
         path = self.path or command_as_root.path
         server.run_command(command_as_root, path, sudo=use_sudo, **kwargs)
 
-    def _is_executable_line(self, server):
+    def _is_executable_line(self, server, variable_values=None):
         """
         Check if this line can be executed based on its condition.
 
         Args:
             server (cx.tower.server()): The server on which conditions are checked.
+            variable_values (dict, optional): Custom values provided when running the
+                flight plan. These values are merged with server variables when
+                rendering the condition.
 
         Returns:
             bool: True if the line can be executed, otherwise False.
@@ -217,14 +220,22 @@ class CxTowerPlanLine(models.Model):
         self.ensure_one()
         condition = self.condition
         if condition:
+            # Collect variable references used in the condition
             variables = self.command_id.get_variables_from_code(condition)
+
+            # Values from server variables referenced in the condition
+            server_values = {}
             if variables:
-                variable_values_dict = (
-                    server.get_variable_values(variables) if variables else {}
-                )
-                variable_values = variable_values_dict.get(server.id, {})
+                variable_values_dict = server.get_variable_values(variables)
+                server_values = variable_values_dict.get(server.id, {}) or {}
+
+            # Merge with custom values passed to the flight plan (if any)
+            merged_values = {**server_values, **(variable_values or {})}
+
+            # Render condition with all available values (in pythonic mode)
+            if merged_values:
                 condition = self.command_id.render_code_custom(
-                    condition, pythonic_mode=True, **variable_values
+                    condition, pythonic_mode=True, **merged_values
                 )
 
             # For evaluate a string that contains an expression that mostly uses
