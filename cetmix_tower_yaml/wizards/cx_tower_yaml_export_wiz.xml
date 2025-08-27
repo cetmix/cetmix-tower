@@ -50,7 +50,7 @@
                         <field name="manifest_license" required="manifest_name" />
                         <field
                             name="manifest_price"
-                            invisible="manifest_license != 'Custom'"
+                            invisible="manifest_license != 'custom'"
                         />
                         <field
                             name="manifest_currency"
@@ -73,7 +73,7 @@
 
                     <page
                         string="License text"
-                        invisible="manifest_license != 'Custom'"
+                        invisible="manifest_license != 'custom'"
                     >
                         <field
                             name="manifest_license_text"
@@ -81,7 +81,7 @@
                             nolabel="1"
                             colspan="4"
                             placeholder="License text"
-                            required="manifest_license == 'Custom'"
+                            required="manifest_license == 'custom'"
                         />
                     </page>
 
