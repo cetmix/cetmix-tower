@@ -455,9 +455,9 @@ class CxTowerJet(models.Model):
         # Continue the chain of actions if the final state is not reached yet
         if self.target_state_id:
             self._bring_to_state(self.target_state_id)
-
-        # Trigger the transition finished event
-        self._finalize_transition(failed=transition_failed)
+        else:
+            # Trigger the transition finished event
+            self._finalize_transition(failed=transition_failed)
 
     def _finalize_transition(self, failed=False):
         """
