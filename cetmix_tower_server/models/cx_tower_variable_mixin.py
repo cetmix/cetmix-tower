@@ -19,6 +19,27 @@ class TowerVariableMixin(models.AbstractModel):
         help="Variable values for selected record",
     )
 
+    def get_variable_value(self, variable_reference):
+        """Get the value of a variable.
+        IMPORTANT: This method returns the value of the variable for the current record.
+        It doesn't evaluate fallback values,eg "jet->template->server->global".
+        The value will be returned only if it's explicitly set for the current record.
+
+        Args:
+            variable_reference (str): The reference of the variable to get the value for
+
+        Returns:
+            str: The value of the variable for the current record or None
+        """
+        self.ensure_one()
+
+        # Get the variable value for the current record
+        variable_value = self.variable_value_ids.filtered(
+            lambda v: v.variable_reference == variable_reference
+        )
+        if variable_value:
+            return variable_value.value_char
+
     def set_variable_value(self, variable_reference, value):
         """Set the value of a variable.
 
