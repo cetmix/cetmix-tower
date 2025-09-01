@@ -20,6 +20,7 @@ from .constants import (
     COMMAND_TIMED_OUT_MESSAGE,
     FILE_CREATION_FAILED,
     GENERAL_ERROR,
+    JET_NOT_FOUND,
     NO_COMMAND_RUNNER_FOUND,
     PYTHON_COMMAND_ERROR,
     SSH_CONNECTION_ERROR,
@@ -1312,6 +1313,11 @@ class CxTowerServer(models.Model):
                 rendered_command_code,
                 **kwargs,
             )
+        elif command.action == "jet_action":
+            response = self._command_runner_jet_action(
+                log_record,
+                **kwargs,
+            )
         elif command.action == "plan":
             response = self.with_context(
                 prevent_plan_recursion=True
@@ -1627,6 +1633,66 @@ class CxTowerServer(models.Model):
             )
         else:
             return result
+
+    def _command_runner_jet_action(
+        self,
+        log_record,
+        **kwargs,
+    ):
+        """
+        Run Jet action.
+        Updates the record in the Command Log (cx.tower.command.log)
+
+        Args:
+            log_record (cx.tower.command.log()): Command log record
+
+        Returns:
+            dict(): jet action running result if `log_record` is
+                    not defined else None
+
+        Raises:
+            ValidationError: if `log_record` is not defined
+        """
+        if not log_record:
+            raise ValidationError(
+                _("Command log is required for 'Jet Action' commands!")
+            )
+        jet_for_which_command_is_run = log_record.jet_id
+
+        # Initialize result values
+        status = 0
+        response = None
+        error = None
+
+        if not jet_for_which_command_is_run:
+            status = JET_NOT_FOUND
+            error = _("Jet for which command is run is not found.")
+            return {"status": status, "response": response, "error": error}
+
+        # Get dependent jets by template
+        dependent_jets = jet_for_which_command_is_run._get_dependent_jets_by_template(
+            log_record.command_id.jet_template_id
+        )
+
+        # If no dependent jets, finish the command
+        if not dependent_jets:
+            status = (JET_NOT_FOUND,)
+            error = (
+                _(
+                    "Jet %(jet)s has no dependent jets with template %(template)s.",
+                    jet=jet_for_which_command_is_run.name,
+                    template=log_record.command_id.jet_template_id.name,
+                ),
+            )
+            response = (None,)
+        else:
+            # Trigger the action for all dependent jets
+            for jet in dependent_jets:
+                jet._trigger_action(
+                    action=log_record.command_id.jet_action_id,
+                    current_command_log_id=log_record.id,
+                )
+        return {"status": status, "response": response, "error": error}
 
     @ensure_ssh_disconnect
     def _run_command_using_ssh(

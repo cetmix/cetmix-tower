@@ -4,6 +4,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .constants import JET_STATE_ERROR
+
 
 class CxTowerJet(models.Model):
     """Jets represent application instances that can be managed independently"""
@@ -78,6 +80,10 @@ class CxTowerJet(models.Model):
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
         string="Currently Executing Action",
+    )
+    current_command_log_id = fields.Many2one(
+        comodel_name="cx.tower.command.log",
+        string="Currently Executing Command Log",
     )
 
     # Variables used for configuration
@@ -239,7 +245,7 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Jet actions, state transitions, jet requests
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def _trigger_action(self, action):
+    def _trigger_action(self, action, **kwargs):
         """Trigger an action on the jet.
 
         The function flow is:
@@ -250,6 +256,7 @@ class CxTowerJet(models.Model):
 
         Args:
             action (cx.tower.jet.action()): The action to trigger
+            **kwargs: Additional arguments
 
         Returns:
             The jet is brought into the target state.
@@ -260,6 +267,8 @@ class CxTowerJet(models.Model):
             ValidationError: If the action is not available for this jet.
         """
         self.ensure_one()
+
+        # TODO: put action in the queue if jet is busy
 
         # Ensure the action is available for this jet
         if action.id not in self.available_action_ids.ids:
@@ -298,6 +307,7 @@ class CxTowerJet(models.Model):
             {
                 "state_id": transit_state,
                 "current_action_id": action.id,
+                "current_command_log_id": kwargs.get("current_command_log_id"),
             }
         )
 
@@ -472,7 +482,40 @@ class CxTowerJet(models.Model):
         if self.served_jet_request_id:
             self.served_jet_request_id._finalize(failed=failed)
 
-        # 2. Notify the jet that it is available
+        # 2. Finalize the command log if transition was
+        # triggered from a command
+        command_log = self.current_command_log_id
+        if command_log:
+            # Reset the current command log id
+            self.current_command_log_id = False
+
+            # Prepare the command log finish values
+            if failed:
+                error = _(
+                    "Action failed for jet %(jet)s.",
+                    jet=self.name,  # pylint: disable=no-member
+                )
+                response = None
+                status = JET_STATE_ERROR
+            else:
+                response = (
+                    _(
+                        "Jet %(jet)s was moved to the '%(state)s' state.",
+                        jet=self.name,  # pylint: disable=no-member
+                        state=self.state_id.name,
+                    ),
+                )
+                status = 0
+                error = None
+
+            # Finish the command log
+            command_log.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+
+        # 3. Notify the jet that it is available
         self._on_is_available()
 
     def _serve_jet_request(self, jet_request):
@@ -688,3 +731,29 @@ class CxTowerJet(models.Model):
             break
 
         return all_dependencies_satisfied
+
+    def _get_dependent_jets_by_template(self, jet_template):
+        """
+        Check all dependencies of the jet and returns all jets
+        of the given template.
+        Both dependent and this jet depends on jets are returned.
+
+        Args:
+            jet_template (cx.tower.jet.template()): The jet template
+
+        Returns:
+            cx.tower.jet(): Recordset of jets
+        """
+        self.ensure_one()
+
+        # Check L1 jets this jet depends on
+        l1_jets = self.jet_requires_ids.filtered(
+            lambda r: r.jet_depends_on_id.jet_template_id == jet_template
+        ).jet_depends_on_id
+        # Check L1 jets that depend on this jet
+        l2_jets = self.jet_required_by_ids.filtered(
+            lambda r: r.jet_id.jet_template_id == jet_template
+        ).jet_id
+
+        # TODO: check the entire dependency tree
+        return l1_jets | l2_jets
