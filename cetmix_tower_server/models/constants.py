@@ -74,6 +74,16 @@ FILE_UPLOAD_FAILED = -401
 # Returned when the file could not be downloaded from the server
 FILE_DOWNLOAD_FAILED = -402
 
+
+# -- Jet: -500 > -599
+
+# Returned when the jet action is not found
+JET_ACTION_NOT_FOUND = -501
+JET_TEMPLATE_NOT_FOUND = -502
+JET_NOT_FOUND = -503
+JET_STATE_ERROR = -504
+
+
 # -- Default values
 
 # Default Python code used in Python code command

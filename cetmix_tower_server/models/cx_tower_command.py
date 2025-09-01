@@ -185,6 +185,16 @@ class CxTowerCommand(models.Model):
             "after running the command.\n"
         ),
     )
+    # -- Jets
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        help="Action will be triggered for all dependent jets" " of this template",
+    )
+    jet_action_id = fields.Many2one(
+        comodel_name="cx.tower.jet.action",
+        help="Action to trigger",
+        domain="[('jet_template_id', '=', jet_template_id)]",
+    )
 
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
@@ -224,6 +234,7 @@ class CxTowerCommand(models.Model):
             ("python_code", "Run Python code"),
             ("file_using_template", "Create file using template"),
             ("plan", "Run flight plan"),
+            ("jet_action", "Trigger jet action"),
         ]
 
     # -- Defaults
