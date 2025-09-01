@@ -207,7 +207,6 @@ class CxTowerJetTemplate(models.Model):
     @api.depends(
         "template_requires_ids",
         "template_requires_ids.state_required_id",
-        "template_requires_ids.state_required_id",
         "template_requires_ids.template_required_id.dependency_graph_image",
     )
     def _compute_dependency_graph_image(self):
