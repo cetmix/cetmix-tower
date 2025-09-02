@@ -1379,6 +1379,8 @@ class CxTowerServer(models.Model):
             server=self,
             server_dir=server_dir,
             if_file_exists=log_record.command_id.if_file_exists,
+            jet_template=log_record.jet_template_id,
+            jet=log_record.jet_id,
         )
 
     def _command_runner_file_using_template(

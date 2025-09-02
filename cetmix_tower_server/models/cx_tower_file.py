@@ -137,6 +137,16 @@ class CxTowerFile(models.Model):
         column2="variable_id",
     )
 
+    # Jets
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        help="Jet template this file belongs to",
+    )
+    jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        help="Jet this file belongs to",
+    )
+
     @classmethod
     def _get_depends_fields(cls):
         """
@@ -225,6 +235,8 @@ class CxTowerFile(models.Model):
             var_vals = variable_obj._get_variable_values_by_references(
                 variables,
                 server=file.server_id,
+                jet_template=file.jet_template_id,
+                jet=file.jet_id,
             )
 
             rendered_code = ""
