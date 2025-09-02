@@ -49,39 +49,47 @@
                                 name="template_id"
                                 domain="[('source', '=', source)]"
                             />
-                                <field name="server_id" required="1" />
-                                <field name="server_dir" widget="ace_tower" />
-                                <field name="full_server_path" />
-                            </group>
-                            <group>
-                                <field
+                            <field name="server_id" required="1" />
+                            <field
+                                name="jet_template_id"
+                                attrs="{'invisible': [('jet_id', '!=', False)]}"
+                            />
+                            <field
+                                name="jet_id"
+                                attrs="{'invisible': [('jet_template_id', '!=', False)]}"
+                            />
+                            <field name="server_dir" widget="ace_tower" />
+                            <field name="full_server_path" />
+                        </group>
+                        <group>
+                            <field
                                 name="keep_when_deleted"
                                 attrs="{'invisible': [('source', '!=', 'tower')]}"
                             />
-                                <field name="auto_sync" />
-                                <field
+                            <field name="auto_sync" />
+                            <field
                                 name="auto_sync_interval"
                                 attrs="{'invisible': ['|', ('auto_sync', '=', False), ('source', '!=', 'server')], 'required': [('auto_sync', '=', True), ('source', '=', 'server')]}"
                             />
-                                <field
+                            <field
                                 name="sync_date_next"
                                 attrs="{'invisible': ['|', ('auto_sync', '=', False), ('source', '!=', 'server')]}"
                             />
-                                <field name="sync_date_last" />
-                                <field
+                            <field name="sync_date_last" />
+                            <field
                                 name="variable_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                                 attrs="{'invisible': [('variable_ids', '=', [])]}"
                             />
-                                <field
+                            <field
                                 name="secret_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                                 attrs="{'invisible': [('secret_ids', '=', [])]}"
                             />
-                            </group>
                         </group>
+                    </group>
                     <notebook>
                         <page
                             name="code"

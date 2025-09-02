@@ -135,7 +135,7 @@
                         <page
                             name="code"
                             string="Code"
-                            attrs="{'invisible': ['|',  ('action', '!=', 'ssh_command'), ('action', '!=', 'python_code')]}"
+                            attrs="{'invisible': [('action', 'not in', ['ssh_command', 'python_code'])]}"
                         >
                             <field
                                 name="code"
