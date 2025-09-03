@@ -757,3 +757,22 @@ class CxTowerJet(models.Model):
 
         # TODO: check the entire dependency tree
         return l1_jets | l2_jets
+
+    def _get_dependent_jets_by_template_reference(self, jet_template_reference):
+        """
+        A wrapper for _get_dependent_jets_by_template that allows
+        to use the reference of the jet template instead of the record.
+        Designed to be used in the Python commands
+
+        Args:
+            jet_template_reference (str): The reference of the jet template
+
+        Returns:
+            cx.tower.jet(): Recordset of jets
+        """
+        self.ensure_one()
+
+        jet_template = self.jet_template_id.get_by_reference(jet_template_reference)
+        if jet_template:
+            return self._get_dependent_jets_by_template(jet_template)
+        return False
