@@ -182,10 +182,74 @@ class CetmixTower(models.AbstractModel):
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
             return None
-        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
-        if not variable:
+        return (
+            self.env["cx.tower.variable"]
+            ._get_variable_values_by_references(
+                variable_references=[variable_reference], server=server
+            )
+            .get(variable_reference)
+        )
+
+    @api.model
+    def server_get_jet_template_variable_value(
+        self, server_reference, jet_template_reference, variable_reference
+    ):
+        """Get variable value for selected jet template on selected server.
+
+        Args:
+            server_reference (Char): Server reference
+            jet_template_reference (Char): Jet template reference
+            variable_reference (Char): Variable reference
+        Returns:
+            Char: variable value or None
+        """
+
+        # Get server by reference
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
             return None
-        return variable._get_value(server_id=server.id)
+        jet_template = self.env["cx.tower.jet.template"].get_by_reference(
+            jet_template_reference
+        )
+
+        if not jet_template:
+            return None
+
+        return (
+            self.env["cx.tower.variable"]
+            ._get_variable_values_by_references(
+                variable_references=[variable_reference],
+                server=server,
+                jet_template=jet_template,
+            )
+            .get(variable_reference)
+        )
+
+    @api.model
+    def server_get_jet_variable_value(
+        self, server_reference, jet_reference, variable_reference
+    ):
+        """Get variable value for selected jet on selected server.
+
+        Args:
+            server_reference (Char): Server reference
+            jet_reference (Char): Jet reference
+            variable_reference (Char): Variable reference
+        Returns:
+            Char: variable value or None
+        """
+
+        # Get server by reference
+        server = self.env["cx.tower.server"].get_by_reference(server_reference)
+        if not server:
+            return None
+        jet = self.env["cx.tower.jet"].get_by_reference(jet_reference)
+        if not jet:
+            return None
+
+        return self.env["cx.tower.variable"]._get_variable_values_by_references(
+            variable_references=[variable_reference], server=server, jet=jet
+        )
 
     @api.model
     def server_check_ssh_connection(
