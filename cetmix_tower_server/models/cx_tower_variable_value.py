@@ -112,7 +112,7 @@ class TowerVariableValue(models.Model):
         ),
         (
             "unique_variable_value_server",
-            "unique (variable_id, server_id)",
+            "unique (variable_id, server_id, jet_id, jet_template_id)",
             "A variable value cannot be assigned multiple times to the same server!",
         ),
         (
@@ -130,6 +130,17 @@ class TowerVariableValue(models.Model):
                 "A variable value cannot be assigned multiple"
                 " times to the same plan line action!"
             ),
+        ),
+        (
+            "unique_variable_value_jet_template",
+            "unique (variable_id, jet_template_id)",
+            "A variable value cannot be assigned multiple times to "
+            "the same jet template!",
+        ),
+        (
+            "unique_variable_value_jet",
+            "unique (variable_id, jet_id)",
+            "A variable value cannot be assigned multiple times to the same jet!",
         ),
     ]
 
