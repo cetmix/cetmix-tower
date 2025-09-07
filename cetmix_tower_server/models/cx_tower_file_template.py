@@ -41,6 +41,10 @@ class CxTowerFileTemplate(models.Model):
     keep_when_deleted = fields.Boolean(
         help="File will be kept on server when deleted in Tower",
     )
+    auto_sync = fields.Boolean(
+        help="If enabled, files created from this template will have "
+        "Auto Sync enabled by default. Used only with 'Tower' source.",
+    )
     file_type = fields.Selection(
         selection=lambda self: self.env["cx.tower.file"]._selection_file_type(),
         default=lambda self: self.env["cx.tower.file"]._default_file_type(),
@@ -216,6 +220,7 @@ class CxTowerFileTemplate(models.Model):
             "code": self.code,
             "file_type": self.file_type,
             "source": self.source,
+            "auto_sync": self.auto_sync,
         }
 
         new_file = file_model.with_context(is_custom_server_dir=True).create(vals)
