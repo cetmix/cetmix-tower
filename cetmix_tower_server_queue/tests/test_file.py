@@ -25,6 +25,7 @@ class TestCxTowerFileQueue(TestTowerCommon):
                 "template_id": self.file_template.id,
                 "server_id": self.server_test_1.id,
                 "name": "upload_test_1",
+                "auto_sync": False,
             }
         )
 
@@ -34,6 +35,7 @@ class TestCxTowerFileQueue(TestTowerCommon):
                 "source": "server",
                 "server_id": self.server_test_1.id,
                 "server_dir": "/var/tmp",
+                "auto_sync": False,
             }
         )
 
@@ -66,6 +68,7 @@ class TestCxTowerFileQueue(TestTowerCommon):
                 "template_id": self.file_template.id,
                 "server_id": self.server_test_1.id,
                 "name": "download_test_1",
+                "auto_sync": False,
             }
         )
 
@@ -75,6 +78,7 @@ class TestCxTowerFileQueue(TestTowerCommon):
                 "source": "server",
                 "server_id": self.server_test_1.id,
                 "server_dir": "/var/tmp",
+                "auto_sync": False,
             }
         )
 
@@ -109,6 +113,7 @@ class TestCxTowerFileQueue(TestTowerCommon):
                 "template_id": self.file_template.id,
                 "server_id": self.server_test_1.id,
                 "name": "error_handling_test",
+                "auto_sync": False,
             }
         )
 
