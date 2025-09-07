@@ -45,6 +45,10 @@
                                 invisible="source == 'server'"
                             />
                             <field name="file_type" />
+                            <field
+                                name="auto_sync"
+                                attrs="{'invisible': [('source', '=', 'server')]}"
+                            />
                             <field name="note" />
                             <field
                                 name="variable_ids"
@@ -105,6 +109,7 @@
                 <field name="file_type" optional="show" />
                 <field name="file_name" optional="show" />
                 <field name="server_dir" optional="hide" />
+                <field name="auto_sync" optional="hide" />
                 <field
                     name="tag_ids"
                     widget="many2many_tags"
