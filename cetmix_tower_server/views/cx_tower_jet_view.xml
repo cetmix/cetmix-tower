@@ -123,7 +123,11 @@
                             </group>
                         </page>
                         <page name="configuration" string="Configuration">
-                            <field name="variable_value_ids" order="variable_reference">
+                            <field
+                                name="variable_value_ids"
+                                order="variable_reference"
+                                context="{'default_server_id': False}"
+                            >
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field name="variable_reference" invisible="1" />

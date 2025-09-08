@@ -275,7 +275,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         # Add new custom variable values
         # Render values for the first server only.
-        server_id = self.server_ids
+        server = self.server_ids
 
         # Get variable list
         variables = self.get_variables()
@@ -285,7 +285,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             "cx.tower.variable"
         ]._get_variable_values_by_references(
             variables.get(str(self.id)),
-            server=server_id,
+            server=server._origin if hasattr(server, "_origin") else server,
         )
 
         # Filter variables current user has access to
@@ -306,7 +306,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     ).id
                     if variable.variable_type == "o"
                     else None,
-                    "variable_value_id": server_id.variable_value_ids.filtered(
+                    "variable_value_id": server.variable_value_ids.filtered(
                         lambda v, var=variable: v.variable_id == var
                     )[:1].id,
                 },

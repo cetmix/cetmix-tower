@@ -377,11 +377,11 @@ class TowerVariable(models.Model):
     # ------------------------------
     def _get_value(
         self,
-        server_id=None,
-        server_template_id=None,
-        plan_line_action_id=None,
-        jet_template_id=None,
-        jet_id=None,
+        server=None,
+        server_template=None,
+        plan_line_action=None,
+        jet_template=None,
+        jet=None,
     ):
         """Get the value of the variable.
 
@@ -399,11 +399,11 @@ class TowerVariable(models.Model):
         5. Plan Line Action: return the Plan Line Action specific value.
 
         Args:
-            server_id (Integer): Server ID
-            server_template_id (Integer): Server Template ID
-            plan_line_action_id (Integer): Plan Line Action ID
-            jet_template_id (Integer): Jet Template ID
-            jet_id (Integer): Jet ID
+            server (cx.tower.server): Server
+            server_template (cx.tower.server.template): Server Template
+            plan_line_action (cx.tower.plan.line.action): Plan Line Action
+            jet_template (cx.tower.jet.template): Jet Template
+            jet (cx.tower.jet): Jet
 
         Returns:
             Char: The value of the variable or None if no value is found.
@@ -428,38 +428,38 @@ class TowerVariable(models.Model):
         for variable_value_id in value_ids:
             # Fetch the server value
             if (
-                server_id
+                server
                 and not server_value_char
-                and variable_value_id.server_id.id == server_id
+                and variable_value_id.server_id.id == server.id
             ):
                 server_value_char = variable_value_id.value_char
                 continue
             # Fetch the server template value
             if (
-                server_template_id
+                server_template
                 and not server_template_value_char
-                and variable_value_id.server_template_id.id == server_template_id
+                and variable_value_id.server_template_id.id == server_template.id
             ):
                 server_template_value_char = variable_value_id.value_char
                 continue
             # Fetch the plan line action value
             if (
-                plan_line_action_id
+                plan_line_action
                 and not plan_line_action_value_char
-                and variable_value_id.plan_line_action_id.id == plan_line_action_id
+                and variable_value_id.plan_line_action_id.id == plan_line_action.id
             ):
                 plan_line_action_value_char = variable_value_id.value_char
                 continue
             # Fetch the jet template value
             if (
-                jet_template_id
+                jet_template
                 and not jet_template_value_char
-                and variable_value_id.jet_template_id.id == jet_template_id
+                and variable_value_id.jet_template_id.id == jet_template.id
             ):
                 jet_template_value_char = variable_value_id.value_char
                 continue
             # Fetch the jet value
-            if jet_id and not jet_value_char and variable_value_id.jet_id.id == jet_id:
+            if jet and not jet_value_char and variable_value_id.jet_id.id == jet.id:
                 jet_value_char = variable_value_id.value_char
                 continue
             # Fetch the global value
@@ -468,11 +468,11 @@ class TowerVariable(models.Model):
 
         # 2. Compose the response
         # 2.1. Server Template
-        if server_template_id:
+        if server_template:
             return server_template_value_char or global_value_char
 
         # 2.2. Jet
-        if jet_id:
+        if jet:
             return (
                 jet_value_char
                 or jet_template_value_char
@@ -481,15 +481,15 @@ class TowerVariable(models.Model):
             )
 
         # 2.3. Jet Template
-        if jet_template_id:
+        if jet_template:
             return jet_template_value_char or server_value_char or global_value_char
 
         # 2.3. Server
-        if server_id:
+        if server:
             return server_value_char or global_value_char
 
         # 2.3. Plan Line Action
-        if plan_line_action_id:
+        if plan_line_action:
             return plan_line_action_value_char
 
         # 2.4. Global
@@ -501,6 +501,8 @@ class TowerVariable(models.Model):
         variable_references,
         apply_modifiers=True,
         server=None,
+        server_template=None,
+        plan_line_action=None,
         jet_template=None,
         jet=None,
     ):
@@ -512,6 +514,8 @@ class TowerVariable(models.Model):
             variable_references (list of Char): variable names
             apply_modifiers (bool): apply Python modifiers to the values
             server (cx.tower.server): Server
+            server_template (cx.tower.server.template): Server Template
+            plan_line_action (cx.tower.plan.line.action): Plan Line Action
             jet_template (cx.tower.jet.template): Jet Template
             jet (cx.tower.jet): Jet
 
@@ -548,9 +552,11 @@ class TowerVariable(models.Model):
             # Assign the value to the variable values dictionary
             variable_value = (
                 variable._get_value(
-                    server_id=server and server.id,
-                    jet_template_id=jet_template and jet_template.id,
-                    jet_id=jet and jet.id,
+                    server=server,
+                    server_template=server_template,
+                    plan_line_action=plan_line_action,
+                    jet_template=jet_template,
+                    jet=jet,
                 )
                 if variable
                 else None

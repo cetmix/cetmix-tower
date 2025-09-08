@@ -118,6 +118,7 @@ class CxTowerJetTemplate(models.Model):
         domain="[('state_from_id', '=', False), "
         "('state_to_id', '!=', False),"
         " ('jet_template_id', '=', id)]",
+        copy=False,
     )
     action_destroy_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
@@ -127,6 +128,7 @@ class CxTowerJetTemplate(models.Model):
         store=True,
         help="The action is used to destroy a Jet",
         domain="[('state_to_id', '=', False), ('jet_template_id', '=', id)]",
+        copy=False,
     )
 
     # Dependencies
