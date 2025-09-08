@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-18 13:53+0100\n"
+"PO-Revision-Date: 2025-09-04 16:30+0100\n"
 "Last-Translator: \n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_server/it/>\n"
 "MIME-Version: 1.0\n"
@@ -380,6 +380,13 @@ msgid "Access level is not defined for '%(variable)s'"
 msgstr "Il livello di accesso non è definito per '%(variable)s'"
 
 #. module: cetmix_tower_server
+#. odoo-javascript
+#: code:addons/cetmix_tower_server/static/src/components/ace_variables/ace_variables.esm.js:0
+#, python-format
+msgid "Ace Tower Editor"
+msgstr "Editor Ace Tower"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_action
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__action
@@ -562,6 +569,11 @@ msgstr "Intervallo sincronizzazione automatica"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task_cv__value_char
 msgid "Automatically populated from selected option. Manual edits will be overwritten when option changes."
 msgstr "Compilato auitomaticamente dall'opzione selezionata. Le modifiche manuali verranno sovrascritte quando si modifica l'opzione."
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_automation_root
+msgid "Automation"
+msgstr "Automazione"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
@@ -859,7 +871,10 @@ msgid "Child plans"
 msgstr "Piani figli"
 
 #. module: cetmix_tower_server
+#. odoo-javascript
+#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+#, python-format
 msgid "Close"
 msgstr "Chiudi"
 
@@ -2192,6 +2207,7 @@ msgstr "Riferimento chiave per utilizzo inline"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key_root
 msgid "Keys and Secrets"
 msgstr "Chiavi e segreti"
 
@@ -2328,6 +2344,7 @@ msgid "Log Type"
 msgstr "Tipo registro"
 
 #. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_log_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "Logs"
@@ -2421,6 +2438,13 @@ msgstr "Variabili richieste mancanti"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__missing_required_variables_message
 msgid "Missing Required Variables Message"
 msgstr "Messaggio variabili richieste mancanti"
+
+#. module: cetmix_tower_server
+#. odoo-javascript
+#: code:addons/cetmix_tower_server/static/src/components/ace_variables/ace_variables.esm.js:0
+#, python-format
+msgid "Mode"
+msgstr "Modalità"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
@@ -2549,11 +2573,25 @@ msgid "No runner found for command action '%(cmd_action)s'"
 msgstr "Nessuna esecuzione trovata per l'azione comando '%(cmd_action)s'"
 
 #. module: cetmix_tower_server
+#. odoo-javascript
+#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
+#, python-format
+msgid "No secrets found"
+msgstr "Nessun segreto trovato"
+
+#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #, python-format
 msgid "No server found for the provided reference."
 msgstr "Nessun server trovato per il riferimento fornito."
+
+#. module: cetmix_tower_server
+#. odoo-javascript
+#: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
+#, python-format
+msgid "No variables found"
+msgstr "Nessuna variabile trovata"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
@@ -2633,11 +2671,6 @@ msgstr "SO %(os)s usato dal server '%(srv)s' non è presente nella lista compati
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__os_ids
 msgid "OSes"
-msgstr "SO"
-
-#. module: cetmix_tower_server
-#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
-msgid "OSs"
 msgstr "SO"
 
 #. module: cetmix_tower_server
@@ -2721,6 +2754,11 @@ msgstr "Apri maschera completa"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__os_id
 msgid "Operating System"
 msgstr "Sistema operativo"
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
+msgid "Operating Systems"
+msgstr "Sistemi operativi"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__option_id
@@ -2917,6 +2955,11 @@ msgstr "Versione anteprima"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__last_call
 msgid "Previous time the task ran successfully."
 msgstr "Orario precedente in cui il lavoro è stato eseguito con successo."
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_property_root
+msgid "Properties"
+msgstr "Proprietà"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
@@ -4457,6 +4500,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable_root
 msgid "Variables"
 msgstr "Variabili"
 
@@ -4683,6 +4727,9 @@ msgstr "value: valore della variabile"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_run_wizard_view_form
 msgid "with tags"
 msgstr "quali etichette"
+
+#~ msgid "OSs"
+#~ msgstr "SO"
 
 #~ msgid ""
 #~ "\n"
