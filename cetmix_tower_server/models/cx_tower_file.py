@@ -141,12 +141,10 @@ class CxTowerFile(models.Model):
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         help="Jet template this file belongs to",
-        ondelete="cascade",
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         help="Jet this file belongs to",
-        ondelete="cascade",
     )
 
     @classmethod

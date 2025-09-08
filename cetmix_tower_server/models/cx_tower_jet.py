@@ -1,5 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import ast
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -29,6 +30,9 @@ class CxTowerJet(models.Model):
         ondelete="restrict",
         help="Template that this jet is based on",
     )
+    jet_template_domain = fields.Binary(
+        compute="_compute_jet_template_domain",
+    )
     served_jet_request_id = fields.Many2one(
         comodel_name="cx.tower.jet.request",
         help="Request this jet is currently being served" " by this jet",
@@ -46,6 +50,12 @@ class CxTowerJet(models.Model):
         domain="[('id', 'in', server_allowed_ids)]",
         help="Server where this jet is running",
     )
+    file_ids = fields.One2many(
+        comodel_name="cx.tower.file",
+        inverse_name="jet_id",
+        string="Files",
+        help="Files of this jet",
+    )
 
     # Dependencies
     jet_requires_ids = fields.One2many(
@@ -62,7 +72,7 @@ class CxTowerJet(models.Model):
         inverse_name="jet_depends_on_id",
         string="Required By",
         help="Jets that depend on this jet",
-        readonly=True,
+        # readonly=True,
     )
 
     # -- States and actions
@@ -110,6 +120,14 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Compute methods
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    @api.depends("server_id")
+    def _compute_jet_template_domain(self):
+        """Compute the domain of the jet template"""
+        for jet in self:
+            jet.jet_template_domain = (
+                [("server_ids", "in", jet.server_id.ids)] if jet.server_id else []
+            )
+
     @api.depends("state_id", "jet_template_id")
     def _compute_available_actions(self):
         """Compute available actions based on current state and template"""
@@ -190,6 +208,20 @@ class CxTowerJet(models.Model):
             res = super().write(vals)
         return res
 
+    def unlink(self):
+        """
+        Unlink all related files
+        """
+        files = self.file_ids
+        res = super().unlink()
+
+        # Unlink files only after the records are deleted
+        # This is done to avoid deleting the files while
+        # the 'unlink' method fails due to some reason.
+        if files:
+            files.unlink()
+        return res
+
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -240,6 +272,32 @@ class CxTowerJet(models.Model):
             "target": "new",
             "context": context,
         }
+        return action
+
+    def action_open_files(self):
+        """
+        Open files of the current server
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_file_action"
+        )
+        action["domain"] = [("jet_id", "=", self.id)]  # pylint: disable=no-member
+
+        context = self._context.copy()
+        if "context" in action and isinstance((action["context"]), str):
+            context.update(ast.literal_eval(action["context"]))
+        else:
+            context.update(action.get("context", {}))
+
+        # Remove group_by from context
+        context.pop("group_by", None)
+
+        context.update(
+            {
+                "default_jet_id": self.id,  # pylint: disable=no-member
+            }
+        )
+        action["context"] = context
         return action
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
