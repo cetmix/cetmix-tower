@@ -3,12 +3,9 @@
 
 from unittest.mock import patch
 
-from psycopg2 import IntegrityError
-
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import Form
-from odoo.tools.misc import mute_logger
 
 from .common import TestTowerCommon
 
@@ -575,8 +572,8 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Try to create a second variable value with the same variable and server
-        with mute_logger("odoo.sql_db"), self.assertRaises(
-            IntegrityError,
+        with self.assertRaises(
+            ValidationError,
             msg="A variable value cannot be assigned multiple times to the same server",
         ):
             self.env["cx.tower.variable.value"].create(

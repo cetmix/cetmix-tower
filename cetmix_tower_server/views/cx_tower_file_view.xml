@@ -69,7 +69,7 @@
                             <field name="server_id" required="1" />
                             <field
                                 name="jet_template_id"
-                                attrs="{'invisible': [('jet_id', '=', False)]}"
+                                attrs="{'invisible': [('jet_template_id', '=', False)]}"
                             />
                             <field
                                 name="jet_id"
