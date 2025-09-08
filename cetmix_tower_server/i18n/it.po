@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-19 09:32+0100\n"
+"PO-Revision-Date: 2025-09-04 16:11+0100\n"
 "Last-Translator: \n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_server/it/>\n"
 "MIME-Version: 1.0\n"
@@ -536,6 +536,11 @@ msgstr "Intervallo sincronizzazione automatica"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task_cv__value_char
 msgid "Automatically populated from selected option. Manual edits will be overwritten when option changes."
 msgstr "Compilato automaticamente in base all'opzione selezionata. Le modifiche manuali verranno sovrascritte quando cambia l'opzione."
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_automation_root
+msgid "Automation"
+msgstr "Automazione"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
@@ -2182,6 +2187,7 @@ msgstr "Riferimento chiave per utilizzo inline"
 
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_key_root
 msgid "Keys and Secrets"
 msgstr "Chiavi e segreti"
 
@@ -2350,6 +2356,7 @@ msgid "Log Type"
 msgstr "Tipo registro"
 
 #. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_log_root
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_view_form
 msgid "Logs"
@@ -2679,11 +2686,6 @@ msgid "OSes"
 msgstr "SO"
 
 #. module: cetmix_tower_server
-#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
-msgid "OSs"
-msgstr "SO"
-
-#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 #, python-format
@@ -2764,6 +2766,11 @@ msgstr "Apri maschera completa"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__os_id
 msgid "Operating System"
 msgstr "Sistema operativo"
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_os
+msgid "Operating Systems"
+msgstr "Sistemi operativi"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__option_id
@@ -2960,6 +2967,11 @@ msgstr "Versione anteprima"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__last_call
 msgid "Previous time the task ran successfully."
 msgstr "Ora precedente in cui il lavoro è stato eseguito con successo."
+
+#. module: cetmix_tower_server
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_property_root
+msgid "Properties"
+msgstr "Proprietà"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
@@ -4520,6 +4532,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_template_mixin__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable_root
 msgid "Variables"
 msgstr "Variabili"
 
@@ -4746,6 +4759,9 @@ msgstr "valore: valore variabile"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_run_wizard_view_form
 msgid "with tags"
 msgstr "con etichette"
+
+#~ msgid "OSs"
+#~ msgstr "SO"
 
 #~ msgid ""
 #~ "\n"

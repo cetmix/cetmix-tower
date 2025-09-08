@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-08-19 11:05+0100\n"
+"PO-Revision-Date: 2025-09-04 16:14+0100\n"
 "Last-Translator: \n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_yaml/it/>\n"
 "MIME-Version: 1.0\n"
@@ -67,6 +67,11 @@ msgstr "Aggiungi manifest"
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
 msgid "Add entire child record definitions to the exported YAML file. Otherwise only references to child records will be added."
 msgstr "Aggiungere le definizioni di tutti i record figli allo YAML esportato. Altrimenti solo i riferimenti ai record figli verranno aggiunti."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
+msgid "Add prefix to the exported YAML file name when this template is selected"
+msgstr "Aggiungi prefisso al nome file YAML esportato quando è selezionato questo modello"
 
 #. module: cetmix_tower_yaml
 #. odoo-python
@@ -267,6 +272,13 @@ msgid "Currency is required when price is specified"
 msgstr "La valuta è richiesta quando è indicato il prezzo"
 
 #. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+#, python-format
+msgid "Custom"
+msgstr "Personalizzato"
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license_text
 msgid "Custom license text when license type is Custom."
 msgstr "Testo licenza personalizzata quantdo il tipo licenza è personalizzato."
@@ -307,6 +319,13 @@ msgstr "Errore durante la creazione del record '%(reference)s' nel modello '%(mo
 #, python-format
 msgid "Error updating record %(reference)s: %(error)s"
 msgstr "Errore durante l'aggiornamento del record %(reference)s: %(error)s"
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+#, python-format
+msgid "Euro"
+msgstr "Euro"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
@@ -371,6 +390,11 @@ msgstr "Nome file"
 #, python-format
 msgid "File contains non-unicode characters or is empty"
 msgstr "Il file contiene caratteri non unicode o è vuoto"
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
+msgid "File prefix"
+msgstr "Prefisso file"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
@@ -518,9 +542,19 @@ msgid "Manifest"
 msgstr "Manifest"
 
 #. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_author_action
+msgid "Manifest Authors"
+msgstr "Autori manifest"
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_template_id
 msgid "Manifest Template"
 msgstr "Modello manifest"
+
+#. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_template
+msgid "Manifest Templates"
+msgstr "Modelli manifest"
 
 #. module: cetmix_tower_yaml
 #. odoo-python
@@ -620,8 +654,8 @@ msgstr "Processo"
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
 #, python-format
-msgid "Provide Custom License Text when License is set to “Custom”."
-msgstr "fornisce un testo licenza personalizzato quando la licenza è impostata a \"Personalizzata\"."
+msgid "Provide Custom License Text when License is set to 'Custom'."
+msgstr "Fornisce un testo licenza personalizzato quando la licenza è impostata a \"Personalizzata\"."
 
 #. module: cetmix_tower_yaml
 #. odoo-python
@@ -732,6 +766,13 @@ msgid "To create new entities instead of updating existing ones, remove or modif
 msgstr "Per creare nuove entità anziché aggiornare le esistenti, rimuovere o modificare il campo <code>reference</code> nel codice YAML per quelle entità."
 
 #. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
+#, python-format
+msgid "US Dollar"
+msgstr "Dollaro USA"
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__update
 msgid "Update existing record"
 msgstr "Aggiorna record esistente"
@@ -830,6 +871,11 @@ msgid "YAML Export"
 msgstr "Esporta YAML"
 
 #. module: cetmix_tower_yaml
+#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_settings_root
+msgid "YAML Export/Import"
+msgstr "Esporta/Importa YAML"
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__yaml_file_name
 msgid "YAML File Name"
 msgstr "Nome file YAML"
@@ -846,7 +892,6 @@ msgstr "Autore manifest YAML"
 
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_yaml_manifest_author
-#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_author_action
 msgid "YAML Manifest Authors"
 msgstr "Autori manifest YAML"
 
@@ -857,7 +902,6 @@ msgstr "Modello manifest YAML"
 
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_yaml_manifest_template
-#: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_template
 msgid "YAML Manifest Templates"
 msgstr "Modelli manifest YAML"
 
