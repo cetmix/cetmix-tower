@@ -41,6 +41,13 @@
                             class="oe_stat_button"
                             icon="fa-bars"
                         />
+                        <button
+                            name="action_open_files"
+                            type="object"
+                            string="Files"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                        />
                     </div>
                     <widget
                         name="web_ribbon"

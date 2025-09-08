@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-
+import ast
 import base64
 import logging
 import xml.etree.ElementTree as ET
@@ -41,6 +41,7 @@ class CxTowerJetTemplate(models.Model):
         comodel_name="cx.tower.jet",
         inverse_name="jet_template_id",
         string="Jets",
+        copy=False,
     )
     jet_count = fields.Integer(
         compute="_compute_jet_count",
@@ -55,11 +56,19 @@ class CxTowerJetTemplate(models.Model):
         string="Installed on Servers",
         readonly=False,
         help="These servers have this jet template installed",
+        copy=False,
     )
     limit_per_server = fields.Integer(
         string="Limit per Server",
         help="Maximum number of Jets that can be launched on a server. "
         "Set to 0 for unlimited.",
+    )
+    file_ids = fields.One2many(
+        comodel_name="cx.tower.file",
+        inverse_name="jet_template_id",
+        string="Files",
+        help="Files of this jet template",
+        copy=False,
     )
 
     # Flight Plans
@@ -78,15 +87,18 @@ class CxTowerJetTemplate(models.Model):
     command_log_ids = fields.One2many(
         comodel_name="cx.tower.command.log",
         inverse_name="jet_template_id",
+        copy=False,
     )
     plan_log_ids = fields.One2many(
         comodel_name="cx.tower.plan.log",
         inverse_name="jet_template_id",
+        copy=False,
     )
 
     # Configuration variables
     variable_value_ids = fields.One2many(
         inverse_name="jet_template_id",
+        copy=True,
     )
 
     # Actions
@@ -94,6 +106,7 @@ class CxTowerJetTemplate(models.Model):
         comodel_name="cx.tower.jet.action",
         inverse_name="jet_template_id",
         string="Lifecycle Actions",
+        copy=True,
     )
     action_create_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
@@ -123,6 +136,7 @@ class CxTowerJetTemplate(models.Model):
         string="Requires",
         help="Define other templates that must be in specific"
         " states for this template to function",
+        copy=True,
     )
     template_required_by_ids = fields.One2many(
         comodel_name="cx.tower.jet.template.dependency",
@@ -140,6 +154,7 @@ class CxTowerJetTemplate(models.Model):
         string="Installations",
         help="Installations of the template",
         auto_join=True,
+        copy=False,
     )
     # Dependency Graph
     dependency_graph_image = fields.Binary(
@@ -150,6 +165,7 @@ class CxTowerJetTemplate(models.Model):
         attachment=False,
         recursive=True,
         help="SVG image of the dependency graph of the template",
+        copy=False,
     )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -224,6 +240,23 @@ class CxTowerJetTemplate(models.Model):
                 template.dependency_graph_image = False
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   ORM methods
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def unlink(self):
+        """
+        Unlink all related files
+        """
+        files = self.file_ids
+        res = super().unlink()
+
+        # Unlink files only after the records are deleted
+        # This is done to avoid deleting the files while
+        # the 'unlink' method fails due to some reason.
+        if files:
+            files.unlink()
+        return res
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -272,6 +305,30 @@ class CxTowerJetTemplate(models.Model):
         action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
         return action
 
+    def action_open_files(self):
+        """
+        Open files of the current server
+        """
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_file_action"
+        )
+        action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
+
+        context = self._context.copy()
+        if "context" in action and isinstance((action["context"]), str):
+            context.update(ast.literal_eval(action["context"]))
+        else:
+            context.update(action.get("context", {}))
+
+        context.update(
+            {
+                "default_jet_template_id": self.id,  # pylint: disable=no-member
+                "search_default_group_by_jet_id": 1,
+            }
+        )
+        action["context"] = context
+        return action
+
     def action_open_jets(self):
         """
         Open jets of the current jet template
@@ -279,7 +336,20 @@ class CxTowerJetTemplate(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_jet_action"
         )
+        context = self._context.copy()
+        if "context" in action and isinstance((action["context"]), str):
+            context.update(ast.literal_eval(action["context"]))
+        else:
+            context.update(action.get("context", {}))
+
+        context.update(
+            {
+                "default_jet_template_id": self.id,  # pylint: disable=no-member
+                "group_by": "server_id",
+            }
+        )
         action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
+        action["context"] = context
         return action
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
