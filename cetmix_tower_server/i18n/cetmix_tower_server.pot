@@ -971,6 +971,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__condition
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Condition"
 msgstr ""
 
