@@ -1,3 +1,8 @@
+## 16.0.1.7.1 (2025-09-10)
+
+- Bugfixes: Check custom values in flight plan line condition (4922)
+
+
 ## 16.0.1.6.4 (2025-08-18)
 
 - Features: Improve the extendability of the file upload command. (4759)
