@@ -6,6 +6,16 @@ import re
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+# Context keys to remove on record creation.
+# This is needed to avoid values being set from context keys
+CONTEXT_KEYS_TO_REMOVE = [
+    "default_server_id",
+    "default_jet_template_id",
+    "default_plan_line_action_id",
+    "default_jet_id",
+    "default_server_template_id",
+]
+
 
 class TowerVariableValue(models.Model):
     """
@@ -428,10 +438,8 @@ class TowerVariableValue(models.Model):
         # Eg 'default_server_id' will set the server_id even if it's
         # not provided in vals_list.
         # This is a workaround to avoid the issue.
-        context = self.env.context.copy()
-        context.pop("default_server_id", None)
-        context.pop("default_jet_template_id", None)
-        self = self.with_context(context)  # pylint: disable=context-overridden
+
+        self = self._self_with_clean_context()
 
         variable_obj = self.env["cx.tower.variable"]
         for vals in vals_list:
@@ -446,22 +454,20 @@ class TowerVariableValue(models.Model):
                 vals["access_level"] = variable.access_level
         return super().create(vals_list)
 
-    def write(self, vals):
-        """
-        Workaround for the default value not being set
-        """
-        # Remove all 'default_' keys from context
-        # This is needed to avoid values being set from context keys
-        # Eg 'default_server_id' will set the server_id even if it's
-        # not provided in vals_list.
-        # This is a workaround to avoid the issue.
-        context = self.env.context.copy()
-        context.pop("default_server_id", None)
-        context.pop("default_jet_template_id", None)
-        self = self.with_context(context)  # pylint: disable=context-overridden
-        return super().write(vals)
-
     # -- Business logic --
+
+    def _self_with_clean_context(self):
+        """
+        Clean context to avoid values being set from context keys
+
+        Returns:
+            self: with context cleaned
+        """
+        context = self.env.context.copy()
+        for key in CONTEXT_KEYS_TO_REMOVE:
+            context.pop(key, None)
+        return self.with_context(context)  # pylint: disable=context-overridden
+
     def _used_in_models(self):
         """Returns information about models which use this mixin.
 

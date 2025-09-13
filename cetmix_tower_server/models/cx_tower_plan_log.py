@@ -169,7 +169,9 @@ class CxTowerPlanLog(models.Model):
             cx.tower.plan.log(): New flightplan log record.
         """
 
-        def get_executable_line(plan, server, jet_template=None, jet=None, variable_values=None):
+        def get_executable_line(
+            plan, server, jet_template=None, jet=None, variable_values=None
+        ):
             """
             Generator to get each line and check if it's executable.
             Args:
@@ -184,7 +186,10 @@ class CxTowerPlanLog(models.Model):
                 yield (
                     line,
                     line._is_executable_line(
-                        server=server, jet_template=jet_template, jet=jet, variable_values=variable_values
+                        server=server,
+                        jet_template=jet_template,
+                        jet=jet,
+                        variable_values=variable_values,
                     ),
                 )
 
