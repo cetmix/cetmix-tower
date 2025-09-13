@@ -293,7 +293,10 @@ class CxTowerPlan(models.Model):
             command_log.variable_values or command_log.plan_log_id.variable_values or {}
         )
         if not current_line._is_executable_line(
-            server=server, jet_template=jet_template, jet=jet, variable_values=variable_values
+            server=server,
+            jet_template=jet_template,
+            jet=jet,
+            variable_values=variable_values,
         ):
             # Immediately return to the next line if condition fails
             return self._get_next_action_state(

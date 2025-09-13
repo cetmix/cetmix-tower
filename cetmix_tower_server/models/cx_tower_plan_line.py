@@ -214,7 +214,9 @@ class CxTowerPlanLine(models.Model):
             **kwargs,
         )
 
-    def _is_executable_line(self, server, jet_template=None, jet=None, variable_values=None):
+    def _is_executable_line(
+        self, server, jet_template=None, jet=None, variable_values=None
+    ):
         """
         Check if this line can be executed based on its condition.
 
