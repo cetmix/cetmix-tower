@@ -15,6 +15,7 @@ TEMPLATE_FILE_FIELD_MAPPING = {
     "file_type": "file_type",
     "server_dir": "server_dir",
     "keep_when_deleted": "keep_when_deleted",
+    "auto_sync": "auto_sync",
 }
 
 # to convert to 'relativedelta' object
@@ -484,7 +485,7 @@ class CxTowerFile(models.Model):
         return {
             key: values[name]
             for name, key in TEMPLATE_FILE_FIELD_MAPPING.items()
-            if values.get(name)
+            if name in values
         }
 
     @api.model
