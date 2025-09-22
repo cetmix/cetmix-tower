@@ -37,8 +37,9 @@
                         <field name="note" readonly="1" invisible="not note" />
                     </group>
                     <group>
-                    <field name="condition" widget="ace" options="{'mode': 'python'}" />
-            </group>
+                        <label for="condition" string="Condition" />
+                        <field name="condition" widget="ace_tower" />
+                    </group>
                     <notebook>
                         <page name="preview" string="Preview">
                             <field
@@ -75,8 +76,7 @@
                                     <field name="path" optional="show" />
                                     <field
                                         name="condition"
-                                        widget="ace"
-                                        options="{'mode': 'python'}"
+                                        widget="ace_tower"
                                         optional="show"
                                     />
                                 </tree>

@@ -150,12 +150,15 @@ class CxTowerPlanLog(models.Model):
             cx.tower.plan.log(): New flightplan log record.
         """
 
-        def get_executable_line(plan, server):
+        def get_executable_line(plan, server, variable_values=None):
             """
             Generator to get each line and check if it's executable.
             """
             for line in plan.line_ids:
-                yield line, line._is_executable_line(server)
+                yield (
+                    line,
+                    line._is_executable_line(server, variable_values=variable_values),
+                )
 
         vals = {
             "server_id": server.id,
@@ -177,7 +180,9 @@ class CxTowerPlanLog(models.Model):
         plan_log = self.sudo().create(vals)
 
         # Process each line until the first executable one is found
-        for line, is_executable in get_executable_line(plan, server):
+        for line, is_executable in get_executable_line(
+            plan, server, variable_values=variable_values
+        ):
             if is_executable:
                 line._run(server, plan_log, **kwargs)
                 break
