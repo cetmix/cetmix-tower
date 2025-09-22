@@ -1,3 +1,13 @@
+## 17.0.2.0.2 (2025-10-10)
+
+- Features: UI/UX improvements (4996)
+
+
+## 17.0.2.0.1 (2025-10-10)
+
+- Bugfixes: Improve variable value references uniqueness (4961)
+
+
 ## 17.0.2.0.0 (2025-10-09)
 
 - Features: 'Cetmix Tower Vault' - new way of centralized password/key management (4824)

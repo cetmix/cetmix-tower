@@ -165,6 +165,7 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "<b>AND</b>"
 msgstr ""
@@ -2083,6 +2084,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #, python-format
 msgid "If exit code"
@@ -2994,6 +2996,7 @@ msgid "Put your notes here"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -3188,6 +3191,9 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_authenticator_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_eval_mixin_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_reference_unique
 msgid "Reference must be unique"
 msgstr ""
 
@@ -3833,6 +3839,7 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Set Variable Values"
 msgstr ""
@@ -4103,6 +4110,7 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Then"
 msgstr ""
