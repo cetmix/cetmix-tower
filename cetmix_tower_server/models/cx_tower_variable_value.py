@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import re
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -458,6 +459,73 @@ class TowerVariableValue(models.Model):
                 is_global = False
                 break
         return is_global
+
+    def _pre_populate_references(self, model_name, field_name, vals_list):
+        """
+        Generate model-scoped references for variable values.
+
+        Overrides the mixin method to implement a model-dependent reference pattern.
+
+        Pattern:
+            <variable_reference>_<model_generic_reference>_<linked_model_generic_reference>_<linked_record_reference>
+        Global:
+            <variable_reference>_<model_generic_reference>_global
+        """
+        # Collect parent variable references
+        parent_record_refs = self._prepare_references(model_name, field_name, vals_list)
+        model_reference = self._get_model_generic_reference()
+
+        # Prepare mappings for linked models defined in _used_in_models
+        used_models = self._used_in_models() or {}
+        # Map m2o field -> model name
+        m2o_to_model = {info[0]: model for model, info in used_models.items()}
+        # Precompute linked model generic refs and record refs
+        linked_generic_by_field = {}
+        linked_refs_by_field = {}
+        for model, (m2o_field, _desc) in used_models.items():
+            linked_generic_by_field[m2o_field] = self.env[
+                model
+            ]._get_model_generic_reference()
+            linked_refs_by_field[m2o_field] = self._prepare_references(
+                model, m2o_field, vals_list
+            )
+
+        for vals in vals_list:
+            # Respect explicitly provided references with at least one valid symbol
+            existing_reference = vals.get("reference")
+            if existing_reference and bool(
+                re.search(self.REFERENCE_PRELIMINARY_PATTERN, existing_reference)
+            ):
+                continue
+
+            variable_id = vals.get(field_name)
+            variable_reference = parent_record_refs.get(variable_id)
+            if not variable_reference:
+                # Fallback to generic variable reference if parent reference missing
+                variable_reference = self.env[model_name]._get_model_generic_reference()
+
+            # Determine which related model the value is linked to
+            linked_m2o_field = next(
+                (f for f in m2o_to_model.keys() if vals.get(f)), None
+            )
+
+            if linked_m2o_field:
+                linked_model_generic = linked_generic_by_field.get(linked_m2o_field)
+                linked_record_id = vals.get(linked_m2o_field)
+                linked_record_reference = linked_refs_by_field.get(
+                    linked_m2o_field, {}
+                ).get(linked_record_id)
+                vals["reference"] = (
+                    f"{variable_reference}_"
+                    f"{model_reference}_"
+                    f"{linked_model_generic}_"
+                    f"{linked_record_reference}"
+                )
+            else:
+                # Global value (not linked to any record)
+                vals["reference"] = f"{variable_reference}_{model_reference}_global"
+
+        return vals_list
 
     # Check cx.tower.reference.mixin for the function documentation
     def _get_pre_populated_model_data(self):

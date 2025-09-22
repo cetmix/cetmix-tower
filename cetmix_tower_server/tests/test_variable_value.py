@@ -532,3 +532,33 @@ class TestTowerVariableValue(common.TestTowerCommon):
             [("plan_line_action_id", "=", self.test_plan_line_action.id)]
         )
         self.assertIn(plan_action_value.id, manager_plan_values.ids)
+
+    def test_reference_pattern_global_server_template_action(self):
+        """Ensure model-scoped references follow the required pattern."""
+        # Global
+        model_ref = self.VariableValue._get_model_generic_reference()
+        self.assertTrue(self.global_value_1.reference.endswith(f"_{model_ref}_global"))
+
+        # Server
+        srv_model_ref = self.Server._get_model_generic_reference()
+        self.assertTrue(
+            self.server_value_1.reference.startswith(
+                f"{self.variable_level_1.reference}_{model_ref}_{srv_model_ref}_"
+            )
+        )
+
+        # Server Template
+        tmpl_model_ref = self.ServerTemplate._get_model_generic_reference()
+        self.assertTrue(
+            self.template_value_1.reference.startswith(
+                f"{self.variable_level_1.reference}_{model_ref}_{tmpl_model_ref}_"
+            )
+        )
+
+        # Plan Line Action
+        action_model_ref = self.plan_line_action._get_model_generic_reference()
+        self.assertTrue(
+            self.plan_value_1.reference.startswith(
+                f"{self.variable_level_1.reference}_{model_ref}_{action_model_ref}_"
+            )
+        )
