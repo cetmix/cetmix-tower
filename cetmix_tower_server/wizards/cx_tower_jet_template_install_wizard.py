@@ -27,7 +27,7 @@ class CxTowerJetTemplateInstallWizard(models.TransientModel):
         compute="_compute_server_domain",
     )
 
-    @api.depends("server_ids")
+    @api.depends("server_ids", "server_ids.jet_template_ids")
     def _compute_jet_template_domain(self):
         """
         Show only templates that are not installed on the selected server.
@@ -40,7 +40,7 @@ class CxTowerJetTemplateInstallWizard(models.TransientModel):
             else:
                 wizard.jet_template_domain = []
 
-    @api.depends("jet_template_id")
+    @api.depends("jet_template_id", "jet_template_id.server_ids")
     def _compute_server_domain(self):
         """
         Show only servers where the template is not installed.
@@ -60,4 +60,10 @@ class CxTowerJetTemplateInstallWizard(models.TransientModel):
         """
         Install the Jet Template on the selected servers.
         """
-        self.jet_template_id.install_on_servers(self.server_ids)
+        if self.server_ids:
+            self.jet_template_id.install_on_servers(self.server_ids)
+
+        # Close the wizard
+        return {
+            "type": "ir.actions.act_window_close",
+        }

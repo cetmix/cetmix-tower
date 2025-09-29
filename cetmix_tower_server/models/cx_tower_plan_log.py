@@ -25,16 +25,19 @@ class CxTowerPlanLog(models.Model):
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         readonly=True,
+        ondelete="cascade",
     )
     jet_template_install_id = fields.Many2one(
         string="Jet Template Install Job",
         comodel_name="cx.tower.jet.template.install",
         readonly=True,
+        ondelete="cascade",
         help="Jet Template Install/Uninstall record being run. ",
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         readonly=True,
+        ondelete="cascade",
     )
 
     plan_id = fields.Many2one(
@@ -356,6 +359,7 @@ class CxTowerPlanLog(models.Model):
         Returns:
             bool: True if event was handled
         """
+        self.ensure_one()
 
         self.ensure_one()
 

@@ -219,6 +219,8 @@ class CxTowerFileTemplate(models.Model):
             existing_file.with_context(is_custom_server_dir=True).write(
                 {
                     "template_id": self.id,  # pylint: disable=no-member
+                    "jet_template_id": jet_template.id if jet_template else None,
+                    "jet_id": jet.id if jet else None,
                 }
             )
             return existing_file

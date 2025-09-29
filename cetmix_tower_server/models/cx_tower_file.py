@@ -107,7 +107,7 @@ class CxTowerFile(models.Model):
         "Otherwise there will be a server error message logged.",
     )
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=False, ondelete="cascade"
+        comodel_name="cx.tower.server", required=False, index=True, ondelete="cascade"
     )
     code_on_server = fields.Text(
         readonly=True,
@@ -141,10 +141,12 @@ class CxTowerFile(models.Model):
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         help="Jet template this file belongs to",
+        index=True,
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         help="Jet this file belongs to",
+        index=True,
     )
 
     @classmethod

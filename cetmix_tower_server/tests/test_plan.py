@@ -1146,11 +1146,16 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
             parent_plan_log,
             "Second plan log should contain parent log link",
         )
+        triggering = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.triggered_plan_log_id
+        )
+        self.assertEqual(
+            len(triggering), 1, "Expected exactly one triggering command log"
+        )
         self.assertEqual(
             child_plan_log.plan_status,
-            parent_plan_log.command_log_ids[0].command_status,
-            "The command status of main plan should be equal "
-            "of status second flight plan",
+            triggering.command_status,
+            "Parent run-plan command status must equal child plan status",
         )
         self.assertEqual(
             parent_plan_log.command_log_ids.triggered_plan_log_id,
@@ -1507,7 +1512,9 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         )
         self.assertEqual(
             child_plan_log.plan_status,
-            parent_plan_log.command_log_ids[0].command_status,
+            parent_plan_log.command_log_ids.filtered(
+                lambda log: log.triggered_plan_log_id
+            ).command_status,
             "The command status of main plan should be equal "
             "of status second flight plan",
         )
@@ -1560,7 +1567,9 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         self.assertEqual(len(plan_log_records), 1, msg="Should be 1 plan logs")
         self.assertEqual(
             PLAN_LINE_CONDITION_CHECK_FAILED,
-            plan_log_records.command_log_ids[0].command_status,
+            plan_log_records.command_log_ids.filtered(
+                lambda log: log.command_id == self.command_run_flight_plan_1
+            ).command_status,
             "Command status should be skipped",
         )
 
@@ -2019,12 +2028,14 @@ custom_values['random_var_reference'] = 'another_random_var_value'
         self.assertEqual(plan_log_record_count, 0, "Plan logs should be empty")
 
         # Set variable values for the server
-        self.CetmixTower.server_set_variable_value(
+        res = self.CetmixTower.server_set_variable_value(
             self.server_test_1.reference, "test_path_", "/opt/tower"
         )
-        self.CetmixTower.server_set_variable_value(
+        self.assertEqual(res["exit_code"], 0, "Variable 'test_path_' not found/updated")
+        res = self.CetmixTower.server_set_variable_value(
             self.server_test_1.reference, "test_dir", "server1"
         )
+        self.assertEqual(res["exit_code"], 0, "Variable 'test_dir' not found/updated")
 
         # -- 1--
         # Run plan without jet template

@@ -85,11 +85,11 @@
                             />
                             <field
                                 name="jet_template_id"
-                                attrs="{'invisible': [('action', '!=', 'jet_action')]}"
+                                attrs="{'invisible': [('action', '!=', 'jet_action')], 'required': [('action', '=', 'jet_action')]}"
                             />
                             <field
                                 name="jet_action_id"
-                                attrs="{'invisible': [('action', '!=', 'jet_action')]}"
+                                attrs="{'invisible': [('action', '!=', 'jet_action')], 'required': [('action', '=', 'jet_action')]}"
                             />
                             <field name="allow_parallel_run" />
                             <field

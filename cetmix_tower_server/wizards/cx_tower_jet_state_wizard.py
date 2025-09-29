@@ -33,9 +33,13 @@ class CxTowerJetStateWizard(models.TransientModel):
         "of jet templates of all selected jets",
     )
 
-    @api.depends("jet_ids")
+    @api.depends("jet_ids", "jet_ids.jet_template_id.action_ids.state_to_id")
     def _compute_available_states(self):
         """Compute available states based on selected jets' templates"""
+
+        # Used as a placeholder for no available states
+        state_obj = self.env["cx.tower.jet.state"]
+
         for wizard in self:
             if not wizard.jet_ids:
                 wizard.available_state_ids = False
@@ -50,15 +54,17 @@ class CxTowerJetStateWizard(models.TransientModel):
 
             available_states = first_jet.jet_template_id.action_ids.mapped(
                 "state_to_id"
-            ).filtered(lambda s: s is not False)
+            )
 
             # Intersect with states available to all other jets
             for jet in wizard.jet_ids[1:]:
-                if jet.jet_template_id.action_ids:
-                    jet_states = jet.jet_template_id.action_ids.mapped(
-                        "state_to_id"
-                    ).filtered(lambda s: s is not False)
-                    available_states &= jet_states
+                actions = jet.jet_template_id.action_ids
+                # If no actions, no available states
+                if not actions:
+                    available_states = state_obj
+                    break
+                jet_states = actions.mapped("state_to_id")
+                available_states &= jet_states
 
             # Remove current state from available states if only one jet is selected
             if len(wizard.jet_ids) == 1:

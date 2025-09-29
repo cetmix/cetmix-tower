@@ -13,6 +13,11 @@ from .tools import generate_random_id
 _logger = logging.getLogger(__name__)
 
 
+# Maximum number of retries to generate a unique jet name
+# Used to prevent infinite loop
+MAX_JET_NAME_RETRIES = 50
+
+
 class CxTowerJetTemplate(models.Model):
     """Jet Templates are templates to create and manage jets"""
 
@@ -291,6 +296,7 @@ class CxTowerJetTemplate(models.Model):
         """
         Open current server command log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_command_log"
         )
@@ -301,6 +307,7 @@ class CxTowerJetTemplate(models.Model):
         """
         Open current server flightplan log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_plan_log"
         )
@@ -311,6 +318,7 @@ class CxTowerJetTemplate(models.Model):
         """
         Open files of the current server
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_file_action"
         )
@@ -335,6 +343,7 @@ class CxTowerJetTemplate(models.Model):
         """
         Open jets of the current jet template
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_jet_action"
         )
@@ -448,6 +457,31 @@ class CxTowerJetTemplate(models.Model):
     #   Install/Uninstall
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+    def _is_installation_needed(self, server):
+        """Check if installation is needed for the given server.
+
+        Args:
+            server: Server to check
+
+        Returns:
+            bool: False if server is already installed or being installed,
+                True otherwise
+        """
+        # Check if template is already installed on the server
+        if server.id in self.server_ids.ids:
+            return False
+
+        # Check if template is already being installed on the server
+        if (
+            server.id
+            in self.install_ids.filtered(
+                lambda install: install.state in ["processing", "to_install"]
+            ).server_id.ids
+        ):
+            return False
+
+        return True
+
     def install_on_servers(self, servers):
         """Install the Jet Template on the selected servers.
 
@@ -462,11 +496,11 @@ class CxTowerJetTemplate(models.Model):
         template_install_obj = self.env["cx.tower.jet.template.install"]
 
         for server in servers:
-            # Check all templates that this one depends on
-            # are installed on the server
-            if server.id in self.server_ids.ids:
+            # Check if installation is needed for this server
+            if not self._is_installation_needed(server):
                 _logger.info(
-                    "Template '%s' is already installed on the server '%s'",
+                    "Template '%s' is already installed or being installed"
+                    " on the server '%s'",
                     self.name,  # pylint: disable=no-member
                     server.name,
                 )
@@ -527,7 +561,6 @@ class CxTowerJetTemplate(models.Model):
         Args:
             server (cx.tower.server()): The server to use
             name (str): The name of the jet
-            jet_request (cx.tower.jet.request()): The jet request to use
         Returns:
             cx.tower.jet(): The new jet or False if the creation has failed
         """
@@ -544,10 +577,21 @@ class CxTowerJetTemplate(models.Model):
         # Check if the same name already exists on the server
         # Keep generating a new name until a unique one is found
         jet_obj = self.env["cx.tower.jet"]
-        while jet_obj.search(
-            [("name", "=", name), ("server_id", "=", server.id)], limit=1
-        ):
+        # Pre-fetch existing names for this server
+        existing_names = set(
+            jet_obj.search([("server_id", "=", server.id)]).mapped("name")
+        )
+
+        for _attempt in range(MAX_JET_NAME_RETRIES):
+            if name not in existing_names:
+                break
             name = self._generate_jet_name()
+        else:
+            # Loop exhausted without finding unique name
+            raise ValidationError(
+                _("Failed to generate unique jet name after %d attempts")
+                % MAX_JET_NAME_RETRIES
+            )
 
         # Create a new jet
         jet = self.env["cx.tower.jet"].create(
@@ -602,11 +646,17 @@ class CxTowerJetTemplate(models.Model):
         graph = {}
         visited = set()
 
-        def _add_template_to_graph(template):
-            """Recursively add template and its dependencies to the graph"""
-            if template.id in visited:
-                return
+        # Use a stack to process templates iteratively instead of recursion
+        stack = [self]
 
+        while stack:
+            template = stack.pop()
+
+            # Skip if already visited
+            if template.id in visited:
+                continue
+
+            # Mark as visited
             visited.add(template.id)
 
             # Add current template to graph
@@ -637,11 +687,9 @@ class CxTowerJetTemplate(models.Model):
 
                 graph[template.id]["dependencies"].append(dep_info)
 
-                # Recursively process the required template
-                _add_template_to_graph(required_template)
-
-        # Start building the graph from current template
-        _add_template_to_graph(self)
+                # Add required template to stack if not yet visited
+                if required_template.id not in visited:
+                    stack.append(required_template)
 
         # Calculate dependency levels (distance from root template)
         self._calculate_dependency_levels(graph)
@@ -683,10 +731,10 @@ class CxTowerJetTemplate(models.Model):
         ordered by dependency level
 
         Returns:
-            recordset: All templates that this template depends on, ordered by level
+            list: All templates that this template depends on, ordered by level
         """
         graph = self._build_dependency_graph()
-        dependencies = self.browse()
+        dependencies = []
 
         # Build list of (template_id, level) tuples, excluding self
         dependencies_with_levels = []
@@ -699,7 +747,7 @@ class CxTowerJetTemplate(models.Model):
 
         # Extract just the template IDs in the correct order
         for dependency in dependencies_with_levels:
-            dependencies |= dependency[0]
+            dependencies.append(dependency[0])
 
         return dependencies
 
@@ -710,15 +758,15 @@ class CxTowerJetTemplate(models.Model):
             server (cx.tower.server()): Server to check dependencies for
 
         Returns:
-            recordset: Templates that are not installed on the server
+            list: Templates that are not installed on the server
         """
         dependencies = self._get_all_dependencies()
 
-        missing_templates = self.browse()
+        missing_templates = []
 
         for dependency in dependencies:
             if server and server.id not in dependency.server_ids.ids:
-                missing_templates |= dependency
+                missing_templates.append(dependency)
 
         return missing_templates
 
