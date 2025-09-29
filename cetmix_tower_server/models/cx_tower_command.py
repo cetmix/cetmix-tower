@@ -453,6 +453,8 @@ class CxTowerCommand(models.Model):
 
         Args:
             server: Server to get the Odoo objects for.
+            jet_template: Jet template to get the Odoo objects for.
+            jet: Jet to get the Odoo objects for.
 
         Returns:
             dict: Available Odoo objects:

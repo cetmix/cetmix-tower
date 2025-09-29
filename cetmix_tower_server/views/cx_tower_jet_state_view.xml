@@ -27,7 +27,6 @@
                             />
                             <field name="active" invisible="1" />
                             <field name="sequence" />
-                            <field name="check_dependencies" />
                         </group>
                     </group>
                     <notebook>
@@ -48,7 +47,6 @@
             <tree editable="top">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
-                <field name="check_dependencies" />
                 <field name="reference" optional="hide" />
                 <field name="color" widget="color_picker" />
             </tree>

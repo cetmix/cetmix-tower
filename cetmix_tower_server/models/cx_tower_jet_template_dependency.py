@@ -26,6 +26,7 @@ class CxTowerJetTemplateDependency(models.Model):
         ondelete="restrict",
         required=True,
         help="The Jet template that is required to be in a specific state",
+        domain="[('id', '!=', template_id)]",
     )
 
     state_required_id = fields.Many2one(
@@ -43,7 +44,10 @@ class CxTowerJetTemplateDependency(models.Model):
         ),
     ]
 
-    @api.constrains("template_id", "template_required_id")
+    @api.constrains(
+        "template_id",
+        "template_required_id",
+    )
     def _check_circular_dependency(self):
         """Check if this dependency would create a circular dependency chain"""
         for dependency in self:
@@ -57,6 +61,11 @@ class CxTowerJetTemplateDependency(models.Model):
 
             # Build dependency graph
             graph = self._build_dependency_graph()
+
+            # Add the new dependency edge being created
+            if dependency.template_id.id not in graph:
+                graph[dependency.template_id.id] = set()
+            graph[dependency.template_id.id].add(dependency.template_required_id.id)
 
             # Check for circular dependencies
             if self._has_cycle(graph, dependency.template_id.id):

@@ -178,6 +178,7 @@
                                 <group name="requires" string="Requires">
                                     <field name="template_requires_ids" string=" ">
                                         <tree editable="bottom">
+                                            <field name="template_id" invisible="1" />
                                             <field name="template_required_id" />
                                             <field name="state_required_id" />
                                         </tree>

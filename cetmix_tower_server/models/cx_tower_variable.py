@@ -26,7 +26,9 @@ re = wrap_module(
     ],
 )
 
-_logger = logging.getLogger(__name__)
+# Maximum recursion depth for variable value rendering
+# to prevent infinite loops
+MAX_DEPTH = 10
 
 
 class TowerVariable(models.Model):
@@ -411,6 +413,10 @@ class TowerVariable(models.Model):
         self.ensure_one()
         value_ids = self.value_ids
 
+        # 0. Set server from Jet if Jetprovided
+        if jet:
+            server = jet.server_id
+
         # 1. Prepare the values
 
         # Initialize all values to None
@@ -505,6 +511,7 @@ class TowerVariable(models.Model):
         plan_line_action=None,
         jet_template=None,
         jet=None,
+        _depth=0,
     ):
         """Get variable values for multiple references.
         This method is designed to be used for template rendering.
@@ -518,7 +525,7 @@ class TowerVariable(models.Model):
             plan_line_action (cx.tower.plan.line.action): Plan Line Action
             jet_template (cx.tower.jet.template): Jet Template
             jet (cx.tower.jet): Jet
-
+            _depth (int): Depth of the recursion
         Returns:
             dict {variable_reference: value}
         """
@@ -565,7 +572,11 @@ class TowerVariable(models.Model):
 
         # 3. Render templates in values
         self._render_variable_values(
-            variable_values, server=server, jet_template=jet_template, jet=jet
+            variable_values,
+            server=server,
+            jet_template=jet_template,
+            jet=jet,
+            _depth=_depth,
         )
 
         # 4. Apply modifiers
@@ -575,7 +586,7 @@ class TowerVariable(models.Model):
         return variable_values
 
     def _render_variable_values(
-        self, variable_values, server=None, jet_template=None, jet=None
+        self, variable_values, server=None, jet_template=None, jet=None, _depth=0
     ):
         """Renders variable values using other variable values.
         For example we have the following values:
@@ -590,7 +601,15 @@ class TowerVariable(models.Model):
             server (cx.tower.server): Server
             jet_template (cx.tower.jet.template): Jet Template
             jet (cx.tower.jet): Jet
+            _depth (int): Depth of the recursion
         """
+
+        # Control recursion depth
+        _depth += 1
+        if _depth > MAX_DEPTH:
+            _logger.error("Max depth %d reached for variable %s", _depth, self.name)
+            return
+
         TemplateMixin = self.env["cx.tower.template.mixin"]
         for key, var_value in variable_values.items():
             # Skip system variable values
@@ -609,6 +628,7 @@ class TowerVariable(models.Model):
                     server=server,
                     jet_template=jet_template,
                     jet=jet,
+                    _depth=_depth,
                 )
 
                 # Render value using variables
@@ -757,7 +777,7 @@ class TowerVariable(models.Model):
         """Parser system variable of `tools` type.
 
         Returns:
-            dict(): `server` values of the `tower` variable.
+            dict(): `tools` values of the `tower` variable.
         """
         today = fields.Date.to_string(fields.Date.today())
         now = fields.Datetime.to_string(fields.Datetime.now())

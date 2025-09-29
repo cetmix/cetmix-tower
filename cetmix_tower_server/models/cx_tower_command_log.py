@@ -32,9 +32,13 @@ class CxTowerCommandLog(models.Model):
     )
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
+        index=True,
+        ondelete="cascade",
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
+        index=True,
+        ondelete="cascade",
     )
 
     # -- Time

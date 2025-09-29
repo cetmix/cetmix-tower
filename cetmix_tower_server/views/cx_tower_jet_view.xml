@@ -72,7 +72,7 @@
                         <field name="target_state_id" />
                     </div>
                     <div
-                        attrs="{'invisible': [('served_jet_request_id', '=', 232323232)]}"
+                        attrs="{'invisible': [('served_jet_request_id', '=', False)]}"
                     >Serving request:
                         <field name="served_jet_request_id" />
                     </div>

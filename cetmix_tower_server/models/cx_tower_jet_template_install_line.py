@@ -11,19 +11,22 @@ class CxTowerJetTemplateInstallLine(models.Model):
     _order = "create_date desc"
     _rec_name = "jet_template_id"
 
-    order = fields.Integer()
+    order = fields.Integer(required=True, default=10)
     jet_template_install_id = fields.Many2one(
         comodel_name="cx.tower.jet.template.install",
         ondelete="cascade",
+        required=True,
+        index=True,
     )
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         ondelete="cascade",
+        required=True,
+        index=True,
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         related="jet_template_install_id.server_id",
-        readonly=True,
     )
     state = fields.Selection(
         selection=[

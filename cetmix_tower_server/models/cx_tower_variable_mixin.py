@@ -68,7 +68,7 @@ class TowerVariableMixin(models.AbstractModel):
             )
 
         # Create a new variable value
-        variable_value = self.write(
+        self.write(
             {
                 "variable_value_ids": [
                     (0, 0, {"variable_id": variable.id, "value_char": value})

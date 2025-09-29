@@ -536,6 +536,7 @@ class CxTowerServer(models.Model):
         """
         Open files of the current server
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_file_action"
         )
@@ -559,6 +560,7 @@ class CxTowerServer(models.Model):
         """
         Open jets of the current server
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_jet_action"
         )
@@ -991,7 +993,7 @@ class CxTowerServer(models.Model):
             return
 
         # Check if another instance of the same command is running
-        another_command_running = (
+        another_command_running_block = (
             not command.allow_parallel_run
             and log_obj.sudo().search_count(
                 [
@@ -1001,35 +1003,8 @@ class CxTowerServer(models.Model):
                 ]
             )
         )
-        # Get log vals from kwargs and update them
-        if not no_command_log:
-            # Check if command is already running and parallel run is not allowed
-            if not command.allow_parallel_run:
-                running_count = log_obj.sudo().search_count(
-                    [
-                        ("server_id", "=", self.id),  # pylint: disable=no-member
-                        ("command_id", "=", command.id),
-                        ("is_running", "=", True),
-                    ]
-                )
-                # Create log record and exit
-                # if the same command is currently running on the same server
-                if running_count > 0:
-                    now = fields.Datetime.now()
-                    log_obj.record(
-                        server_id=self.id,  # pylint: disable=no-member
-                        command_id=command.id,
-                        start_date=now,
-                        finish_date=now,
-                        status=ANOTHER_COMMAND_RUNNING,
-                        response=None,
-                        error=_("Another instance of the command is already running"),
-                        **log_vals,
-                    )
-                    return
-
         # Another command is running, return error
-        if another_command_running:
+        if another_command_running_block:
             if no_command_log:
                 return {
                     "status": ANOTHER_COMMAND_RUNNING,
@@ -1665,36 +1640,39 @@ class CxTowerServer(models.Model):
         status = 0
         response = None
         error = None
+        dependent_jets = None
 
         if not jet_for_which_command_is_run:
             status = JET_NOT_FOUND
             error = _("Jet for which command is run is not found.")
-            return {"status": status, "response": response, "error": error}
-
-        # Get dependent jets by template
-        dependent_jets = jet_for_which_command_is_run._get_dependent_jets_by_template(
-            log_record.command_id.jet_template_id
-        )
+        else:
+            dependent_jets = (
+                jet_for_which_command_is_run._get_dependent_jets_by_template(
+                    log_record.command_id.jet_template_id
+                )
+            )
 
         # If no dependent jets, finish the command
-        if not dependent_jets:
-            status = (JET_NOT_FOUND,)
-            error = (
-                _(
-                    "Jet %(jet)s has no dependent jets with template %(template)s.",
-                    jet=jet_for_which_command_is_run.name,
-                    template=log_record.command_id.jet_template_id.name,
-                ),
-            )
-            response = (None,)
-        else:
+        if dependent_jets:
             # Trigger the action for all dependent jets
             for jet in dependent_jets:
                 jet._trigger_action(
                     action=log_record.command_id.jet_action_id,
                     current_command_log_id=log_record.id,
                 )
-        return {"status": status, "response": response, "error": error}
+        else:
+            status = JET_NOT_FOUND
+            error = _(
+                "Jet %(jet)s has no dependent jets with template %(template)s.",
+                jet=jet_for_which_command_is_run.name,
+                template=log_record.command_id.jet_template_id.name,
+            )
+
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
 
     @ensure_ssh_disconnect
     def _run_command_using_ssh(

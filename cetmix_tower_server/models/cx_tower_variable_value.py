@@ -94,12 +94,14 @@ class TowerVariableValue(models.Model):
         comodel_name="cx.tower.jet",
         string="Jet",
         ondelete="cascade",
+        index=True,
     )
 
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         string="Jet Template",
         ondelete="cascade",
+        index=True,
     )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
@@ -119,11 +121,6 @@ class TowerVariableValue(models.Model):
             "unique (variable_id, server_id, server_template_id, "
             "plan_line_action_id, is_global)",
             "Variable can be declared only once for the same record!",
-        ),
-        (
-            "unique_variable_value_server",
-            "CHECK (1=1)",
-            "A variable value cannot be assigned multiple times to the same server!",
         ),
         (
             "unique_variable_value_template",

@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 import time
+import warnings
 
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
@@ -172,15 +173,21 @@ class CetmixTower(models.AbstractModel):
             Char: variable value or None
         """
         if not check_global:
-            _logger.warning(
+            warnings.warn(
                 "server_get_variable_value: 'check_global' is deprecated and "
                 "will be removed in the future. "
-                "Global values are always checked."
+                "Global values are always checked.",
+                DeprecationWarning,
+                stacklevel=2,
             )
 
         # Get server by reference
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
+            _logger.warning(
+                "server_get_variable_value: Server not found for reference '%s'",
+                server_reference,
+            )
             return None
         return (
             self.env["cx.tower.variable"]
@@ -191,7 +198,7 @@ class CetmixTower(models.AbstractModel):
         )
 
     @api.model
-    def server_get_jet_template_variable_value(
+    def jet_template_get_variable_value(
         self, server_reference, jet_template_reference, variable_reference
     ):
         """Get variable value for selected jet template on selected server.
@@ -213,6 +220,11 @@ class CetmixTower(models.AbstractModel):
         )
 
         if not jet_template:
+            _logger.warning(
+                "jet_template_get_variable_value: "
+                "Jet template not found for reference '%s'",
+                jet_template_reference,
+            )
             return None
 
         return (
@@ -226,29 +238,30 @@ class CetmixTower(models.AbstractModel):
         )
 
     @api.model
-    def server_get_jet_variable_value(
-        self, server_reference, jet_reference, variable_reference
-    ):
-        """Get variable value for selected jet on selected server.
+    def jet_get_variable_value(self, jet_reference, variable_reference):
+        """Get variable value for selected jet.
 
         Args:
-            server_reference (Char): Server reference
             jet_reference (Char): Jet reference
             variable_reference (Char): Variable reference
         Returns:
             Char: variable value or None
         """
 
-        # Get server by reference
-        server = self.env["cx.tower.server"].get_by_reference(server_reference)
-        if not server:
-            return None
         jet = self.env["cx.tower.jet"].get_by_reference(jet_reference)
         if not jet:
+            _logger.warning(
+                "jet_get_variable_value: Jet not found for reference '%s'",
+                jet_reference,
+            )
             return None
 
-        return self.env["cx.tower.variable"]._get_variable_values_by_references(
-            variable_references=[variable_reference], server=server, jet=jet
+        return (
+            self.env["cx.tower.variable"]
+            ._get_variable_values_by_references(
+                variable_references=[variable_reference], jet=jet
+            )
+            .get(variable_reference)
         )
 
     @api.model

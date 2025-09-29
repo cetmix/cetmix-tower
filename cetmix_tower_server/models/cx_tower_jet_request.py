@@ -113,7 +113,9 @@ class CxTowerJetRequest(models.Model):
 
         # Must have either jet or jet template
         if not jet and not jet_template:
-            raise ValidationError(_("Jet or jet template is required"))
+            raise ValidationError(
+                _("Either a jet or a jet template must be provided to create a request")
+            )
 
         # Set jet template from the jet if not provided
         if not jet_template and jet:

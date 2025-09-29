@@ -1,11 +1,13 @@
+import logging
+
 from odoo import _, api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerJetTemplateInstall(models.Model):
-    """Used to track installation of Jet Templates.
-
-    Args:
-        models (_type_): _description_
+    """
+    Used to track installation of Jet Templates on servers.
     """
 
     _name = "cx.tower.jet.template.install"
@@ -15,10 +17,14 @@ class CxTowerJetTemplateInstall(models.Model):
 
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
-        help="Tem",
+        required=True,
+        help="Template to install/uninstall",
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
+        index=True,
+        ondelete="cascade",
+        required=True,
         help="Server to install/uninstall the template on",
     )
     action = fields.Selection(
@@ -45,6 +51,7 @@ class CxTowerJetTemplateInstall(models.Model):
             ("failed", "Failed"),
         ],
         default="processing",
+        index=True,
     )
 
     @api.model
@@ -57,7 +64,9 @@ class CxTowerJetTemplateInstall(models.Model):
         """
 
         # Compose the list of templates to install
-        template_to_install = template | template._check_dependency_satisfaction(server)
+        template_to_install = [template] + template._check_dependency_satisfaction(
+            server
+        )
 
         # Prepare the template install lines
         template_to_install_lines = []
@@ -116,9 +125,12 @@ class CxTowerJetTemplateInstall(models.Model):
                         "current_line_id": installation_task.id,
                     }
                 )
+                # WARNING: Explicit commit to ensure visibility across transactions
+                # This prevents race conditions in async flight plan callbacks
+                if not self.env.context.get("no_transaction_commit"):
+                    self.env.cr.commit()  # pylint: disable=invalid-commit
 
                 # Add the install record to the flight plan params
-                # so it will be added in the flight plan log.
                 params = {
                     "jet_template_install_id": self.id,  # pylint: disable=no-member
                 }
@@ -154,7 +166,8 @@ class CxTowerJetTemplateInstall(models.Model):
             # should be used only with clear justification and in strictly controlled
             # contexts (like this cron scenario). Never add this commit for general
             # business flows!
-            self.env.cr.commit()  # pylint: disable=invalid-commit
+            if not self.env.context.get("no_transaction_commit"):
+                self.env.cr.commit()  # pylint: disable=invalid-commit
 
         # Mark the installation as done
         self.write(
@@ -170,9 +183,22 @@ class CxTowerJetTemplateInstall(models.Model):
         a template is finished.
 
         Args:
-            exit_code (int): The exit code of the flight plan.
+            plan_status (int): The exit code of the flight plan.
         """
         self.ensure_one()
+
+        # Validate callback state
+        if not self.current_line_id:
+            _logger.warning(
+                "Callback invoked with no current_line_id for install %s", self.id
+            )
+            return
+
+        if self.state != "processing":
+            _logger.warning(
+                "Callback invoked for install %s in state %s", self.id, self.state
+            )
+            return
 
         # Flight plan finished successfully
         if plan_status == 0:
@@ -187,10 +213,8 @@ class CxTowerJetTemplateInstall(models.Model):
                 {"server_ids": [(4, self.server_id.id)]}
             )
 
-            # Remove the link to the current line
-            self.current_line_id = False
-
-            # Continue the installation
+            # Remove the link to the current line and continue
+            self.write({"current_line_id": False})
             self._process_install()
         else:
             # Mark current line as failed
@@ -199,7 +223,7 @@ class CxTowerJetTemplateInstall(models.Model):
                     "state": "failed",
                 }
             )
-            # We leave the last line link to simplify the debugging process
+            # Clear the current line link
             self.write(
                 {
                     "state": "failed",
@@ -213,7 +237,10 @@ class CxTowerJetTemplateInstall(models.Model):
         self.ensure_one()
 
         return {
-            "name": _("Flight Plan Logs - %s", self.jet_template_id.name),
+            "name": _(
+                "Flight Plan Logs - %(install_name)s",
+                install_name=self.jet_template_id.name,
+            ),
             "type": "ir.actions.act_window",
             "res_model": "cx.tower.plan.log",
             "view_mode": "tree,form",

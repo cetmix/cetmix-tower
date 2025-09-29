@@ -79,8 +79,14 @@ FILE_DOWNLOAD_FAILED = -402
 
 # Returned when the jet action is not found
 JET_ACTION_NOT_FOUND = -501
+
+# Returned when the jet template is not found
 JET_TEMPLATE_NOT_FOUND = -502
+
+# Returned when the jet is not found
 JET_NOT_FOUND = -503
+
+# Returned when a jet state error occurs
 JET_STATE_ERROR = -504
 
 

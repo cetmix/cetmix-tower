@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from unittest.mock import patch
 
+from odoo.tools import mute_logger
+
 from ..models.constants import GENERAL_ERROR, NOT_FOUND, SSH_CONNECTION_ERROR
 from .common import TestTowerCommon
 
@@ -234,3 +236,168 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(result["exit_code"], 0)
         self.assertEqual(result["message"], "dev")
+
+    def test_jet_get_variable_value(self):
+        """Test getting variable value for jet"""
+        # Create a test variable
+        variable_test = self.Variable.create(
+            {"name": "Test Variable", "reference": "test_variable"}
+        )
+
+        # Create a global value for the variable
+        global_value = self.VariableValue.create(
+            {"variable_id": variable_test.id, "value_char": "Global Value"}
+        )
+
+        # -- 1 -- Get value for Jet with no jet-specific value defined
+        # Should return global value
+        value = self.CetmixTower.jet_get_variable_value(
+            jet_reference=self.jet_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertEqual(value, global_value.value_char)
+
+        # -- 2 -- Add server value and test fallback hierarchy
+        # Should return server value (fallback hierarchy)
+        server_value = self.VariableValue.create(
+            {
+                "variable_id": variable_test.id,
+                "value_char": "Server Value",
+                "server_id": self.server_test_1.id,
+            }
+        )
+        value = self.CetmixTower.jet_get_variable_value(
+            jet_reference=self.jet_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertEqual(
+            value,
+            server_value.value_char,
+            "Should return server value when no jet value is set",
+        )
+
+        # -- 3 -- Add jet-specific value and try again
+        # Should return jet-specific value (overrides server and global)
+        self.jet_sample.write(
+            {
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": variable_test.id,
+                            "value_char": "Jet Specific Value",
+                        },
+                    )
+                ]
+            }
+        )
+        value = self.CetmixTower.jet_get_variable_value(
+            jet_reference=self.jet_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertEqual(value, "Jet Specific Value")
+
+        # -- 4 -- Test with non-existent jet
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower"):
+            value = self.CetmixTower.jet_get_variable_value(
+                jet_reference="non_existent_jet",
+                variable_reference=variable_test.reference,
+            )
+        self.assertIsNone(value, "Should return None for non-existent jet")
+
+        # -- 5 -- Test with non-existent variable
+        value = self.CetmixTower.jet_get_variable_value(
+            jet_reference=self.jet_sample.reference,
+            variable_reference="non_existent_variable",
+        )
+        self.assertIsNone(value, "Should return None for non-existent variable")
+
+    def test_jet_template_get_variable_value(self):
+        """Test getting variable value for jet template on server"""
+        # Create a test variable
+        variable_test = self.Variable.create(
+            {"name": "Test Variable", "reference": "test_variable"}
+        )
+
+        # Create a global value for the variable
+        global_value = self.VariableValue.create(
+            {"variable_id": variable_test.id, "value_char": "Global Value"}
+        )
+
+        # -- 1 -- Get value for Jet Template with no jet template-specific value defined
+        # Should return global value
+        value = self.CetmixTower.jet_template_get_variable_value(
+            server_reference=self.server_test_1.reference,
+            jet_template_reference=self.jet_template_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertEqual(value, global_value.value_char)
+
+        # -- 2 -- Add server value and test fallback hierarchy
+        # Should return server value (fallback hierarchy)
+        server_value = self.VariableValue.create(
+            {
+                "variable_id": variable_test.id,
+                "value_char": "Server Value",
+                "server_id": self.server_test_1.id,
+            }
+        )
+        value = self.CetmixTower.jet_template_get_variable_value(
+            server_reference=self.server_test_1.reference,
+            jet_template_reference=self.jet_template_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertEqual(
+            value,
+            server_value.value_char,
+            "Should return server value when no jet template value is set",
+        )
+
+        # -- 3 -- Add jet template-specific value and try again
+        # Should return jet template-specific value (overrides server and global)
+        self.jet_template_sample.write(
+            {
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": variable_test.id,
+                            "value_char": "Jet Template Specific Value",
+                        },
+                    )
+                ]
+            }
+        )
+        value = self.CetmixTower.jet_template_get_variable_value(
+            server_reference=self.server_test_1.reference,
+            jet_template_reference=self.jet_template_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertEqual(value, "Jet Template Specific Value")
+
+        # -- 4 -- Test with non-existent server
+        value = self.CetmixTower.jet_template_get_variable_value(
+            server_reference="non_existent_server",
+            jet_template_reference=self.jet_template_sample.reference,
+            variable_reference=variable_test.reference,
+        )
+        self.assertIsNone(value, "Should return None for non-existent server")
+
+        # -- 5 -- Test with non-existent jet template
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower"):
+            value = self.CetmixTower.jet_template_get_variable_value(
+                server_reference=self.server_test_1.reference,
+                jet_template_reference="non_existent_jet_template",
+                variable_reference=variable_test.reference,
+            )
+        self.assertIsNone(value, "Should return None for non-existent jet template")
+
+        # -- 6 -- Test with non-existent variable
+        value = self.CetmixTower.jet_template_get_variable_value(
+            server_reference=self.server_test_1.reference,
+            jet_template_reference=self.jet_template_sample.reference,
+            variable_reference="non_existent_variable",
+        )
+        self.assertIsNone(value, "Should return None for non-existent variable")

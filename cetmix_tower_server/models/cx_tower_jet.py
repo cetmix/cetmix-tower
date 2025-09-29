@@ -35,7 +35,7 @@ class CxTowerJet(models.Model):
     )
     served_jet_request_id = fields.Many2one(
         comodel_name="cx.tower.jet.request",
-        help="Request this jet is currently being served" " by this jet",
+        help="Request this jet is currently serving",
     )
     server_allowed_ids = fields.Many2many(
         comodel_name="cx.tower.server",
@@ -62,7 +62,7 @@ class CxTowerJet(models.Model):
         comodel_name="cx.tower.jet.dependency",
         inverse_name="jet_id",
         string="Requires",
-        help="Another jets this jet depends on",
+        help="Other jets this jet depends on",
         compute="_compute_jet_requires_ids",
         store=True,
         precompute=True,
@@ -125,10 +125,17 @@ class CxTowerJet(models.Model):
         """Compute the domain of the jet template"""
         for jet in self:
             jet.jet_template_domain = (
-                [("server_ids", "in", jet.server_id.ids)] if jet.server_id else []
+                [("server_ids", "in", [jet.server_id.id])] if jet.server_id else []
             )
 
-    @api.depends("state_id", "jet_template_id")
+    @api.depends(
+        "state_id",
+        "jet_template_id",
+        "jet_template_id.action_ids",
+        "jet_template_id.action_ids.state_from_id",
+        "jet_template_id.action_ids.state_to_id",
+        "jet_template_id.action_ids.priority",
+    )
     def _compute_available_actions(self):
         """Compute available actions based on current state and template"""
         for jet in self:
@@ -229,6 +236,7 @@ class CxTowerJet(models.Model):
         """
         Open current server command log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_command_log"
         )
@@ -239,6 +247,7 @@ class CxTowerJet(models.Model):
         """
         Open current server flightplan log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_plan_log"
         )
@@ -247,8 +256,6 @@ class CxTowerJet(models.Model):
 
     def action_open_state_wizard(self):
         """Open the jet state wizard"""
-        self.ensure_one()
-
         context = self.env.context.copy()
         context["default_jet_ids"] = [(6, 0, self.ids)]
         action = {
@@ -262,7 +269,6 @@ class CxTowerJet(models.Model):
 
     def action_open_action_wizard(self):
         """Open the jet action wizard"""
-        self.ensure_one()
         context = self.env.context.copy()
         context["default_jet_ids"] = [(6, 0, self.ids)]
         action = {
@@ -278,6 +284,7 @@ class CxTowerJet(models.Model):
         """
         Open files of the current server
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_file_action"
         )
@@ -314,7 +321,8 @@ class CxTowerJet(models.Model):
 
         Args:
             action (cx.tower.jet.action()): The action to trigger
-            **kwargs: Additional arguments
+            **kwargs: Additional arguments:
+                - current_command_log_id: Optional command log ID to track execution
 
         Returns:
             The jet is brought into the target state.
@@ -556,12 +564,10 @@ class CxTowerJet(models.Model):
                 response = None
                 status = JET_STATE_ERROR
             else:
-                response = (
-                    _(
-                        "Jet %(jet)s was moved to the '%(state)s' state.",
-                        jet=self.name,  # pylint: disable=no-member
-                        state=self.state_id.name,
-                    ),
+                response = _(
+                    "Jet %(jet)s was moved to the '%(state)s' state.",
+                    jet=self.name,  # pylint: disable=no-member
+                    state=self.state_id.name,
                 )
                 status = 0
                 error = None

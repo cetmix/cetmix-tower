@@ -3,6 +3,7 @@
 from operator import indexOf
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import expr_eval
 
 from .constants import (
@@ -198,6 +199,16 @@ class CxTowerPlan(models.Model):
         self.ensure_one()
         # Ensure we have a single server record
         server.ensure_one()
+
+        # Check if Jet belongs to the server
+        if jet and jet.server_id != server:
+            raise ValidationError(
+                _(
+                    "Jet %(jet)s does not belong to server %(server)s",
+                    jet=jet.name,
+                    server=server.name,
+                )
+            )
 
         # Check plan access before running
         # This is needed to avoid possible access violations
