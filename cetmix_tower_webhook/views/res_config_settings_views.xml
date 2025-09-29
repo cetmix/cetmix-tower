@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.res_config_settings_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='cetmix_tower_settings']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="cetmix_tower_webhook_log_duration">
+                        <label for="cetmix_tower_webhook_log_duration" />
+                        <div class="text-muted">
+                            Set the number of days to keep webhook logs. Old logs will be deleted automatically.
+                            <br />
+                        </div>
+                        <div class="content-group">
+                            <div class="mt16">
+                                <field name="cetmix_tower_webhook_log_duration" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
