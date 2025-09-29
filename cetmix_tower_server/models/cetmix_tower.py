@@ -256,3 +256,36 @@ class CetmixTower(models.AbstractModel):
                         "message": _("Failed to connect. Error: %(err)s", err=e),
                     }
             time.sleep(wait_time)
+
+    @api.model
+    def server_validate_secret(
+        self, secret_value, secret_reference, server_reference=None
+    ):
+        """
+        Validate the provided secret value against the actual secret.
+
+        Accepts either a full inline reference (e.g. #!cxtower.secret.<REFERENCE>!#)
+        or just a <REFERENCE>.
+
+        Args:
+            secret_value (Char): Value to validate
+            secret_reference (Char): Reference code or inline reference
+            server_reference (Char, optional): Reference code of the server
+        Returns:
+            Bool: True if the value matches the secret, False otherwise
+        """
+        server = self.env["cx.tower.server"]
+        if server_reference:
+            server = server.get_by_reference(server_reference)
+
+        # Try to extract reference from inline format using _extract_key_parts
+        key_parts = self.env["cx.tower.key"]._extract_key_parts(secret_reference)
+        if key_parts:
+            # _extract_key_parts returns a tuple: (key_type, reference).
+            # We only need the reference part here.
+            secret_reference = key_parts[1]
+
+        value = self.env["cx.tower.key"]._resolve_key_type_secret(
+            secret_reference, server_id=server.id
+        )
+        return value == secret_value
