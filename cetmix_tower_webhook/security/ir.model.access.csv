@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_webhook,Tower Webhook,model_cx_tower_webhook,cetmix_tower_server.group_root,1,1,1,1
+access_cx_tower_webhook_authenticator,Tower Webhook Authenticator,model_cx_tower_webhook_authenticator,cetmix_tower_server.group_root,1,1,1,1
+access_cx_tower_webhook_log,Tower Webhook Log,model_cx_tower_webhook_log,cetmix_tower_server.group_root,1,0,0,0
