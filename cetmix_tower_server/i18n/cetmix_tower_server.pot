@@ -3160,6 +3160,8 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_authenticator_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_reference_unique
 msgid "Reference must be unique"
 msgstr ""
 
