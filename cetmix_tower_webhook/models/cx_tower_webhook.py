@@ -152,6 +152,7 @@ class CxTowerWebhook(models.Model):
         """Override to add fields to YAML export."""
         res = super()._get_fields_for_yaml()
         res += [
+            "name",
             "active",
             "authenticator_id",
             "endpoint",
