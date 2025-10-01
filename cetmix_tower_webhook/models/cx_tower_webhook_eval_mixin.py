@@ -8,6 +8,12 @@ from odoo.tools.safe_eval import safe_eval
 
 class CxTowerWebhookEvalMixin(models.AbstractModel):
     _name = "cx.tower.webhook.eval.mixin"
+    _inherit = [
+        "cx.tower.template.mixin",
+        "cx.tower.key.mixin",
+        "cx.tower.yaml.mixin",
+        "cx.tower.reference.mixin",
+    ]
     _description = "Eval context/code helper for Cetmix Tower Webhook"
 
     code_help = fields.Html(
@@ -19,6 +25,11 @@ class CxTowerWebhookEvalMixin(models.AbstractModel):
         default=lambda self: self._default_eval_code(),
         required=True,
     )
+
+    @classmethod
+    def _get_depends_fields(cls):
+        """Add code to the depends fields."""
+        return ["code"]
 
     def _compute_code_help(self):
         """

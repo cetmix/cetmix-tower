@@ -23,6 +23,19 @@
                         <group>
                             <field name="name" />
                             <field name="reference" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                            />
                         </group>
                         <group>
                             <field
