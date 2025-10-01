@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Webhook",
     "summary": "Webhook implementation for Cetmix Tower",
-    "version": "16.0.1.0.1",
+    "version": "16.0.1.0.2",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
@@ -16,6 +16,7 @@
         "views/cx_tower_webhook_authenticator_views.xml",
         "views/cx_tower_webhook_log_views.xml",
         "views/cx_tower_webhook_views.xml",
+        "views/cx_tower_variable_views.xml",
         "views/res_config_settings_views.xml",
         "views/menuitems.xml",
     ],

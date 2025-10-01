@@ -151,8 +151,14 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__reference
 #: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__reference
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__reference
 msgid ""
 "Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_variable
+msgid "Cetmix Tower Variable"
 msgstr ""
 
 #. module: cetmix_tower_webhook
@@ -485,6 +491,7 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__name
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__name
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__name
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_form
 msgid "Name"
 msgstr ""
@@ -525,6 +532,7 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__reference
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__reference
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__reference
 msgid "Reference"
 msgstr ""
 
@@ -582,6 +590,13 @@ msgid "Search Webhooks"
 msgstr ""
 
 #. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__secret_ids
+msgid "Secrets"
+msgstr ""
+
+#. module: cetmix_tower_webhook
 #: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__user_id
 msgid ""
 "Select a user to run the webhook from behalf of. If not set, the webhook will run as the current user.\n"
@@ -629,6 +644,13 @@ msgid "Success"
 msgstr ""
 
 #. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__code
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__code
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__code
+msgid "This field will be rendered using variables"
+msgstr ""
+
+#. module: cetmix_tower_webhook
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__trusted_proxy_ips
 msgid "Trusted Proxy IPs"
 msgstr ""
@@ -645,7 +667,15 @@ msgid "User as which the webhook code was executed (if set)."
 msgstr ""
 
 #. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__variable_ids
+msgid "Variables"
+msgstr ""
+
+#. module: cetmix_tower_webhook
 #: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_ids
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__webhook_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
 msgid "Webhook"
@@ -653,12 +683,19 @@ msgstr ""
 
 #. module: cetmix_tower_webhook
 #: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_webhook_authenticator
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_authenticator_ids
 msgid "Webhook Authenticator"
+msgstr ""
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_authenticator_ids_count
+msgid "Webhook Authenticator Count"
 msgstr ""
 
 #. module: cetmix_tower_webhook
 #: model:ir.actions.act_window,name:cetmix_tower_webhook.cx_tower_webhook_authenticator_action
 #: model:ir.ui.menu,name:cetmix_tower_webhook.menu_cetmix_tower_webhook_authenticator
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_variable_view_form
 msgid "Webhook Authenticators"
 msgstr ""
 
@@ -675,6 +712,11 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__code_status
 msgid "Webhook Code Status"
+msgstr ""
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_ids_count
+msgid "Webhook Count"
 msgstr ""
 
 #. module: cetmix_tower_webhook
@@ -712,6 +754,7 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #: model:ir.actions.act_window,name:cetmix_tower_webhook.cx_tower_webhook_action
 #: model:ir.ui.menu,name:cetmix_tower_webhook.menu_cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_variable_view_form
 msgid "Webhooks"
 msgstr ""
 
@@ -724,6 +767,7 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__yaml_code
 msgid "Yaml Code"
 msgstr ""
 
