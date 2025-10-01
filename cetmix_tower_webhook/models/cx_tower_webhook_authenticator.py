@@ -19,9 +19,7 @@ _logger = logging.getLogger(__name__)
 class CxTowerWebhookAuthenticator(models.Model):
     _name = "cx.tower.webhook.authenticator"
     _inherit = [
-        "cx.tower.reference.mixin",
         "cx.tower.webhook.eval.mixin",
-        "cx.tower.yaml.mixin",
     ]
     _description = "Webhook Authenticator"
 
@@ -39,6 +37,12 @@ class CxTowerWebhookAuthenticator(models.Model):
         help="Comma-separated list of trusted proxy IP addresses or CIDR ranges "
         "(e.g., 10.0.0.1,192.168.1.0/24). "
         "Only these proxies can set X-Forwarded-For headers.",
+    )
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_webhook_authenticator_variable_rel",
+        column1="webhook_authenticator_id",
+        column2="variable_id",
     )
 
     @api.constrains("trusted_proxy_ips")
@@ -135,7 +139,14 @@ class CxTowerWebhookAuthenticator(models.Model):
             list[str]: List of field names.
         """
         res = super()._get_fields_for_yaml()
-        res += ["name", "code", "allowed_ip_addresses", "trusted_proxy_ips"]
+        res += [
+            "name",
+            "code",
+            "allowed_ip_addresses",
+            "trusted_proxy_ips",
+            "variable_ids",
+            "secret_ids",
+        ]
         return res
 
     def authenticate(self, raise_on_error=True, **kwargs):
