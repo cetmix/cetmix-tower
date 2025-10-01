@@ -5,4 +5,5 @@ from . import cx_tower_webhook_eval_mixin
 from . import cx_tower_webhook_authenticator
 from . import cx_tower_webhook_log
 from . import cx_tower_webhook
+from . import cx_tower_variable
 from . import res_config_settings
