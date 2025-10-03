@@ -108,6 +108,7 @@ class CxTowerYamlMixin(models.AbstractModel):
         ):
             raise AccessError(_("You are not allowed to create records from YAML"))
 
+    @api.model_create_multi
     def create(self, vals_list):
         # Handle validation error when field values are not valid
         try:
