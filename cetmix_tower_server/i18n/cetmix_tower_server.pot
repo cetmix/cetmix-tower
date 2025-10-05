@@ -493,6 +493,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__auto_sync
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__auto_sync
 msgid "Auto Sync"
 msgstr ""
 
@@ -2027,6 +2028,13 @@ msgstr ""
 msgid ""
 "If enabled, do not split command on '&&' when using sudo.Prepend sudo once "
 "to the whole command."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__auto_sync
+msgid ""
+"If enabled, files created from this template will have Auto Sync enabled by "
+"default. Used only with 'Tower' source."
 msgstr ""
 
 #. module: cetmix_tower_server

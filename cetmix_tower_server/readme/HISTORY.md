@@ -1,3 +1,8 @@
+## 17.0.1.10.2 (2025-10-07)
+
+- Features: Set 'Auto Sync' in files from file templates (4949)
+
+
 ## 17.0.1.10.1 (2025-09-22)
 
 - Bugfixes: Check custom values in flight plan line condition (4922)
