@@ -45,10 +45,7 @@
                                 invisible="source == 'server'"
                             />
                             <field name="file_type" />
-                            <field
-                                name="auto_sync"
-                                attrs="{'invisible': [('source', '=', 'server')]}"
-                            />
+                            <field name="auto_sync" invisible="source == 'server'" />
                             <field name="note" />
                             <field
                                 name="variable_ids"
