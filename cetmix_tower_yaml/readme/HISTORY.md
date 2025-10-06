@@ -1,3 +1,8 @@
+## 16.0.1.4.2 (2025-10-06)
+
+- Bugfixes: Add the missing 'create' function decorator (4980)
+
+
 ## 16.0.1.4.1 (2025-08-26)
 
 - Bugfixes: Make selection values lowercase to simplify their management. (4896)
