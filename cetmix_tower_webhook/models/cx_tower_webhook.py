@@ -12,9 +12,7 @@ from .constants import DEFAULT_WEBHOOK_CODE, DEFAULT_WEBHOOK_CODE_HELP
 class CxTowerWebhook(models.Model):
     _name = "cx.tower.webhook"
     _inherit = [
-        "cx.tower.reference.mixin",
         "cx.tower.webhook.eval.mixin",
-        "cx.tower.yaml.mixin",
     ]
     _description = "Webhook"
 
@@ -70,6 +68,12 @@ class CxTowerWebhook(models.Model):
     )
     log_count = fields.Integer(
         compute="_compute_log_count",
+    )
+    variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_webhook_variable_rel",
+        column1="webhook_id",
+        column2="variable_id",
     )
 
     _sql_constraints = [
@@ -159,6 +163,8 @@ class CxTowerWebhook(models.Model):
             "method",
             "code",
             "content_type",
+            "variable_ids",
+            "secret_ids",
         ]
         return res
 

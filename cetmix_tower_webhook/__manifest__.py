@@ -16,6 +16,7 @@
         "views/cx_tower_webhook_authenticator_views.xml",
         "views/cx_tower_webhook_log_views.xml",
         "views/cx_tower_webhook_views.xml",
+        "views/cx_tower_variable_views.xml",
         "views/res_config_settings_views.xml",
         "views/menuitems.xml",
     ],
