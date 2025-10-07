@@ -4,7 +4,6 @@
     "name": "Cetmix Tower Server",
     "summary": "Manage servers and applications from Odoo",
     "version": "16.0.1.7.2",
-    "development_status": "Beta",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
     "live_test_url": "https://cetmix.com/tower",
@@ -18,6 +17,7 @@
     },
     "depends": [
         "mail",
+        "rpc_helper",
     ],
     "data": [
         "security/cetmix_tower_server_groups.xml",

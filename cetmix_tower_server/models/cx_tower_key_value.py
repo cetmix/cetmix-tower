@@ -9,8 +9,13 @@ class CxTowerKeyValue(models.Model):
     """Secret value storage"""
 
     _name = "cx.tower.key.value"
-    _inherit = "cx.tower.reference.mixin"
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.vault.mixin",
+    ]
     _description = "Cetmix Tower Secret Value Storage"
+
+    SECRET_FIELDS = ["secret_value"]
 
     name = fields.Char(related="key_id.name", readonly=False)
     key_id = fields.Many2one(
@@ -91,85 +96,3 @@ class CxTowerKeyValue(models.Model):
                 raise ValidationError(
                     _("Only one secret value can be defined for a partner")
                 )
-
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
-        """Substitute fields based on api"""
-        super()._read(fields)
-        if "secret_value" in fields or fields == []:
-            placeholder = self.env["cx.tower.key"].SECRET_VALUE_PLACEHOLDER
-            # Public user used for substitution
-            for record in self:
-                try:
-                    record._cache["secret_value"] = placeholder
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Create a new key value and set secret value"""
-
-        # Create records one by one to ensure that we preserve
-        # the original value list order.
-        # This is done to avoid possible errors when this list is modified
-        # by some other module that overrides this function.
-        # We also need to avoid secret values being written to the database
-        # any other way besides the _set_secret_value method.
-        records = self.browse()
-        for vals in vals_list:
-            secret_value = vals.pop("secret_value", None)
-            rec = super().create(vals)
-            if secret_value:
-                rec._set_secret_value(secret_value)
-            records |= rec
-        return records
-
-    def write(self, vals):
-        """Write key values"""
-        # Remove secret value from vals and set it later
-        if "secret_value" in vals and not self.env.context.get("write_secret_value"):
-            secret_value = vals.pop("secret_value", None)
-            has_secret_value = True
-        else:
-            has_secret_value = False
-        res = super().write(vals)
-        # Set secret value
-        if has_secret_value:
-            for key_value in self:
-                key_value._set_secret_value(secret_value)
-        return res
-
-    def _get_secret_value(self):
-        """Get secret value.
-        Override this method in case you need to implement custom key storages.
-
-        Returns:
-            str: secret value or None if no secret value is found
-        """
-
-        # Return None in case of empty recordset
-        self.ensure_one()
-        self.env.cr.execute(
-            """
-            SELECT secret_value
-            FROM cx_tower_key_value
-            WHERE id = %s
-            """,
-            [self.id],
-        )
-        result = self.env.cr.fetchone()
-        if result:
-            return result[0]
-
-    def _set_secret_value(self, value=None):
-        """Set secret value.
-        Override this method in case you need
-        to implement custom key storages.
-
-        Args:
-            value (str): secret value
-        """
-        self.ensure_one()
-        self.with_context(write_secret_value=True).write({"secret_value": value})
-        self.invalidate_recordset(["secret_value"])

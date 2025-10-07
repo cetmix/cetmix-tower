@@ -103,7 +103,7 @@ class TestTowerServerTemplate(TestTowerCommon):
             new_server.ssh_username, "admin", "Server SSH Username must be 'admin'"
         )
         self.assertEqual(
-            new_server.ssh_password,
+            new_server._get_secret_value("ssh_password"),
             "password",
             "Server SSH Password must be 'password'",
         )

@@ -627,7 +627,10 @@ records:
 
         srv = self.env["cx.tower.server"].get_by_reference("srv_nopass")
         self.assertTrue(srv, "Server was not created")
-        self.assertFalse(srv.ssh_password, "ssh_password must stay empty after import")
+        self.assertFalse(
+            srv._get_secret_value("ssh_password"),
+            "ssh_password must stay empty after import",
+        )
 
     def test_orm_create_server_requires_password(self):
         """Creating a server via ORM/UI must fail when ssh_password is missing."""
