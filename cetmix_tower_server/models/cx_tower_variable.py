@@ -43,7 +43,7 @@ class TowerVariable(models.Model):
         inverse_name="variable_id",
     )
     value_ids_count = fields.Integer(
-        string="Value Count", compute="_compute_value_ids_count"
+        string="Value Count", compute="_compute_variable_counters"
     )
     option_ids = fields.One2many(
         comodel_name="cx.tower.variable.option",
@@ -92,7 +92,7 @@ class TowerVariable(models.Model):
         copy=False,
     )
     command_ids_count = fields.Integer(
-        string="Command Count", compute="_compute_command_ids_count"
+        string="Command Count", compute="_compute_variable_counters"
     )
     plan_line_ids = fields.Many2many(
         comodel_name="cx.tower.plan.line",
@@ -102,7 +102,7 @@ class TowerVariable(models.Model):
         copy=False,
     )
     plan_line_ids_count = fields.Integer(
-        string="Plan Line Count", compute="_compute_plan_line_ids_count"
+        string="Plan Line Count", compute="_compute_variable_counters"
     )
     file_ids = fields.Many2many(
         comodel_name="cx.tower.file",
@@ -112,7 +112,7 @@ class TowerVariable(models.Model):
         copy=False,
     )
     file_ids_count = fields.Integer(
-        string="File Count", compute="_compute_file_ids_count"
+        string="File Count", compute="_compute_variable_counters"
     )
     file_template_ids = fields.Many2many(
         comodel_name="cx.tower.file.template",
@@ -122,7 +122,7 @@ class TowerVariable(models.Model):
         copy=False,
     )
     file_template_ids_count = fields.Integer(
-        string="File Template Count", compute="_compute_file_template_ids_count"
+        string="File Template Count", compute="_compute_variable_counters"
     )
     variable_value_ids = fields.Many2many(
         comodel_name="cx.tower.variable.value",
@@ -132,46 +132,24 @@ class TowerVariable(models.Model):
         copy=False,
     )
     variable_value_ids_count = fields.Integer(
-        string="Variable Value Count", compute="_compute_variable_value_ids_count"
+        string="Variable Value Count", compute="_compute_variable_counters"
     )
 
     _sql_constraints = [("name_uniq", "unique (name)", "Variable names must be unique")]
 
-    @api.depends("command_ids")
-    def _compute_command_ids_count(self):
-        """Count number of commands for the variable"""
-        for rec in self:
-            rec.command_ids_count = len(rec.command_ids)
-
-    @api.depends("plan_line_ids")
-    def _compute_plan_line_ids_count(self):
-        """Count number of plan lines for the variable"""
-        for rec in self:
-            rec.plan_line_ids_count = len(rec.plan_line_ids)
-
-    @api.depends("file_ids")
-    def _compute_file_ids_count(self):
-        """Count number of files for the variable"""
-        for rec in self:
-            rec.file_ids_count = len(rec.file_ids)
-
-    @api.depends("file_template_ids")
-    def _compute_file_template_ids_count(self):
-        """Count number of file templates for the variable"""
-        for rec in self:
-            rec.file_template_ids_count = len(rec.file_template_ids)
-
-    @api.depends("variable_value_ids")
-    def _compute_variable_value_ids_count(self):
+    def _compute_variable_counters(self):
         """Count number of variable values for the variable"""
         for rec in self:
-            rec.variable_value_ids_count = len(rec.variable_value_ids)
-
-    @api.depends("value_ids", "value_ids.variable_id")
-    def _compute_value_ids_count(self):
-        """Count number of values for the variable"""
-        for rec in self:
-            rec.value_ids_count = len(rec.value_ids)
+            rec.update(
+                {
+                    "variable_value_ids_count": len(rec.variable_value_ids),
+                    "command_ids_count": len(rec.command_ids),
+                    "plan_line_ids_count": len(rec.plan_line_ids),
+                    "file_ids_count": len(rec.file_ids),
+                    "file_template_ids_count": len(rec.file_template_ids),
+                    "value_ids_count": len(rec.value_ids),
+                }
+            )
 
     def action_open_values(self):
         self.ensure_one()

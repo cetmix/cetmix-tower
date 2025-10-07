@@ -144,6 +144,7 @@ class CxTowerCommand(models.Model):
         column1="command_id",
         column2="plan_id",
         store=True,
+        copy=False,
     )
     flight_plan_used_ids_count = fields.Integer(
         compute="_compute_flight_plan_used_ids_count",

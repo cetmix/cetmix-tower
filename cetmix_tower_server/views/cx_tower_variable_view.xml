@@ -228,7 +228,10 @@
         <field name="model">cx.tower.variable</field>
         <field name="arch" type="xml">
             <search string="Search Values">
-                <field name="name" />
+                <field
+                    name="name"
+                    filter_domain="['|',('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="reference" />
             </search>
         </field>
