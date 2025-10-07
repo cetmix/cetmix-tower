@@ -17,32 +17,26 @@ class CxTowerVaultMixin(models.AbstractModel):
     SECRET_VALUE_PLACEHOLDER = "*****"
     SECRET_FIELDS = []
 
-    def _read(self, fields):  # pylint: disable=missing-return # doesn't return anything
+    def _fetch_query(self, query, fields):
         """Substitute fields based on api.
 
         This method replaces values of secret fields with a placeholder value
         when they are read from the database.
 
         Args:
+            query (str): Query to fetch records
             fields (list): List of fields to read
         """
-        super()._read(fields)
+        records = super()._fetch_query(query, fields)
 
-        show_all = not fields
-        secret_fields = (
-            self.SECRET_FIELDS
-            if show_all
-            else [f for f in self.SECRET_FIELDS if f in fields]
-        )
-
-        for record in self:
-            for secret_field in secret_fields:
-                try:
-                    record._cache[secret_field] = self.SECRET_VALUE_PLACEHOLDER
-                except Exception:  # pylint: disable=except-pass
-                    # skip SpecialValue
-                    # (e.g. for missing record or access right)
-                    pass
+        # Replace secret field values with placeholders
+        for secret_field in self.SECRET_FIELDS:
+            if not fields or secret_field in [f.name for f in fields]:
+                # Use cache to set placeholder values without triggering field access
+                for record in records:
+                    field = self._fields[secret_field]
+                    self.env.cache.set(record, field, self.SECRET_VALUE_PLACEHOLDER)
+        return records
 
     @api.model_create_multi
     def create(self, vals_list):
