@@ -318,7 +318,6 @@
                                     <field
                                         name="ssh_password"
                                         attrs="{'required': [('ssh_auth_mode', '=', 'p')]}"
-                                        password="True"
                                     />
                                     <field
                                         name="ssh_key_id"

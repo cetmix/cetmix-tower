@@ -109,12 +109,10 @@ class CxTowerServer(models.Model):
     )
     skip_host_key = fields.Boolean(
         default=False,
-        copy=False,
         help="Enable to skip host key verification",
     )
     host_key = fields.Char(
         groups="cetmix_tower_server.group_manager",
-        copy=False,
         help="Host key to verify the server",
     )
     ssh_port = fields.Integer(
@@ -367,8 +365,12 @@ class CxTowerServer(models.Model):
             )
         default["file_ids"] = file_ids.ids
 
+        # Copy SSH password and host key
+        default["ssh_password"] = self._get_secret_value("ssh_password")
+        default["host_key"] = self._get_secret_value("host_key")
         result = super().copy(default=default)
 
+        # Copy server secrets
         for secret in self.secret_ids:
             secret.sudo().copy({"server_id": result.id})
 

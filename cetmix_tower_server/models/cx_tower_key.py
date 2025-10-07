@@ -74,6 +74,30 @@ class CxTowerKey(models.Model):
             else:
                 rec.reference_code = None
 
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        """Copy key. Ensure secret value is copied.
+
+        Args:
+            default (dict, optional): Default values. Defaults to None.
+
+        Returns:
+            self: Copied key
+        """
+        default = default or {}
+        default["secret_value"] = self._get_secret_value("secret_value")
+        result = super().copy(default=default)
+
+        # Copy key values
+        for value in self.value_ids:
+            value.copy(
+                {
+                    "key_id": result.id,
+                }
+            )
+
+        return result
+
     def _get_reference_pattern(self):
         """
         Override mixin method
