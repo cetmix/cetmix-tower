@@ -736,6 +736,16 @@ msgid "Cetmix Tower Variable Values"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_vault
+msgid "Cetmix Tower Vault"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_vault_mixin
+msgid "Cetmix Tower Vault Mixin"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_access_mixin
 msgid "Cetmix Tower access mixin"
 msgstr ""
@@ -1088,6 +1098,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__create_uid
 msgid "Created by"
 msgstr ""
 
@@ -1120,6 +1131,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__create_date
 msgid "Created on"
 msgstr ""
 
@@ -1308,6 +1320,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -1338,6 +1351,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__duration_current
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__duration_current
 msgid "Duration, sec"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_vault_vault_unique_key
+msgid "Each secret (model, record, field) must be unique in the vault."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1432,6 +1450,11 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
 #, python-format
 msgid "Failure"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__field_name
+msgid "Field Name"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1944,7 +1967,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__id
 msgid "ID"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__res_id
+msgid "ID of the resource that uses this vault"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2200,6 +2229,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -2237,6 +2267,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__write_uid
 msgid "Last Updated by"
 msgstr ""
 
@@ -2269,6 +2300,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -2420,6 +2452,11 @@ msgid "Missing Required Variables Message"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__res_model
+msgid "Model name of the resource that uses this vault"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Modify Code"
 msgstr ""
@@ -2467,6 +2504,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Name"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__field_name
+msgid "Name of the field that contains the secret value"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3244,6 +3286,16 @@ msgid "Required"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__res_id
+msgid "Resource ID"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__res_model
+msgid "Resource Model"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_response
 msgid "Response"
 msgstr ""
@@ -3615,6 +3667,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key__key_type__s
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Secret"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__data
+msgid "Secret Data"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4060,6 +4117,11 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "The file %(f_path)s not found."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__data
+msgid "The secret data to be stored in the vault"
 msgstr ""
 
 #. module: cetmix_tower_server
