@@ -251,6 +251,16 @@ class CommandExecutor:
     ) -> tuple[int, list[str], list[str]]:
         """
         Run a command on the remote server.
+
+        Args:
+            command (str): The command to execute.
+            sudo (Optional[str]): Sudo mode.
+
+        Returns:
+            tuple:
+                - exit_status (int)
+                - stdout (list[str])
+                - stderr (list[str])
         """
         ssh_client = self.connection.connect()
         use_sudo_with_password = sudo == "p" and self.connection.username != "root"
@@ -258,13 +268,17 @@ class CommandExecutor:
         if use_sudo_with_password and not self.connection.password:
             return 255, [], ["Sudo password not provided!"]
 
-        stdin, stdout, stderr = ssh_client.exec_command(command)
-        if use_sudo_with_password:
-            stdin.write(self.connection.password + "\n")
-            stdin.flush()
-
-        exit_status = stdout.channel.recv_exit_status()
-        return exit_status, stdout.readlines(), stderr.readlines()
+        try:
+            stdin, stdout, stderr = ssh_client.exec_command(command)
+            if use_sudo_with_password:
+                stdin.write(self.connection.password + "\n")
+                stdin.flush()
+            exit_status = stdout.channel.recv_exit_status()
+            response = stdout.readlines()
+            error = stderr.readlines()
+            return exit_status, response, error
+        except Exception as e:
+            return 255, [], [str(e)]
 
 
 class SSHManager:
@@ -356,3 +370,10 @@ class SSHManager:
             self.connection.host_key or "",
         )
         self.delete_cache(key)
+
+    @classmethod
+    def get_connection_cache(cls):
+        """
+        Get the connection cache.
+        """
+        return cls._connection_cache

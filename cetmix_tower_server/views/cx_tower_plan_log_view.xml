@@ -5,6 +5,17 @@
         <field name="model">cx.tower.plan.log</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button
+                        name="action_stop"
+                        string="Stop"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="not is_running or is_stopped"
+                        confirm="Flight Plan will be terminated after executing the current command. Continue?"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                </header>
                 <sheet>
                     <widget
                         name="web_ribbon"
@@ -15,13 +26,19 @@
                     <widget
                         name="web_ribbon"
                         title="Finished"
-                        invisible="is_running or not is_running and plan_status != 0"
+                        invisible="is_running or is_stopped or not is_running and plan_status != 0"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Stopped"
+                        bg_color="bg-danger"
+                        invisible="not is_stopped"
                     />
                     <widget
                         name="web_ribbon"
                         title="Failed"
                         bg_color="bg-danger"
-                        invisible="is_running or not is_running and plan_status == 0"
+                        invisible="is_running or is_stopped or not is_running and plan_status == 0"
                     />
                     <group>
                         <group>
@@ -37,6 +54,7 @@
                                 invisible="not parent_flight_plan_log_id"
                             />
                             <field name="is_running" invisible="not is_running" />
+                            <field name="is_stopped" invisible="not is_stopped" />
                             <field
                                 name="plan_line_executed_id"
                                 invisible="not is_running"
