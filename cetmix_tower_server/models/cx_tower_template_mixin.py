@@ -21,6 +21,7 @@ class CxTowerTemplateMixin(models.AbstractModel):
         comodel_name="cx.tower.variable",
         compute="_compute_variable_ids",
         store=True,
+        copy=False,
     )
 
     @classmethod

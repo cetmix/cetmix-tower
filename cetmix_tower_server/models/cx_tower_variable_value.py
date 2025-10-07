@@ -88,6 +88,7 @@ class TowerVariableValue(models.Model):
         string="Variables",
         compute="_compute_variable_ids",
         store=True,
+        copy=False,
     )
     required = fields.Boolean()
 
