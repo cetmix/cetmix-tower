@@ -8,8 +8,6 @@ class CxTowerVault(models.Model):
     """Vault for storing secret data.
 
     This model is used to store secret data for various resources.
-    The data is stored in the database and can be accessed using the
-    `_get_secret_values` method.
 
     The data is stored in the database and can be accessed using the
     `_get_secret_values` method.

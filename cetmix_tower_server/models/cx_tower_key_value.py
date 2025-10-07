@@ -96,3 +96,17 @@ class CxTowerKeyValue(models.Model):
                 raise ValidationError(
                     _("Only one secret value can be defined for a partner")
                 )
+
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        """Copy key value. Ensure secret value is copied.
+
+        Args:
+            default (dict, optional): Default values. Defaults to None.
+
+        Returns:
+            self: Copied key value
+        """
+        default = default or {}
+        default["secret_value"] = self._get_secret_value("secret_value")
+        return super().copy(default=default)

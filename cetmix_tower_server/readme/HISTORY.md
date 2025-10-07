@@ -1,3 +1,8 @@
+## 17.0.2.0.0 (2025-10-09)
+
+- Features: 'Cetmix Tower Vault' - new way of centralized password/key management (4824)
+
+
 ## 17.0.1.10.2 (2025-10-07)
 
 - Features: Set 'Auto Sync' in files from file templates (4949)
