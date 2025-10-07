@@ -37,6 +37,9 @@ COMMAND_TIMED_OUT_MESSAGE = _("Command timed out and was terminated")
 # Returned when the command is not compatible with the server
 COMMAND_NOT_COMPATIBLE_WITH_SERVER = -207
 
+# Returned when the command was stopped by user
+COMMAND_STOPPED = -208
+
 # -- Plan: -300 > -399
 
 # Returned when trying to execute another instance of a flightplan on the same server
@@ -57,6 +60,8 @@ PLAN_LINE_NOT_ASSIGNED = -304
 # Returned when any of the commands in the plan is not compatible with the server
 PLAN_NOT_COMPATIBLE_WITH_SERVER = -306
 
+# Returned when the flight plan was stopped by user
+PLAN_STOPPED = -308
 
 # -- File: -400 > -499
 
