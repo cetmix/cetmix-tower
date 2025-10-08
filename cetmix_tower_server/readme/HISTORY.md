@@ -1,3 +1,10 @@
+## 16.0.2.0.2 (2025-10-08)
+
+- Features: UI/UX improvements (4996)
+
+- Bugfixes: Handle secret values when a record is duplicated using copy() (4996)
+
+
 ## 16.0.2.0.1 (2025-10-08)
 
 - Bugfixes: Improve variable value references uniqueness (4961)
