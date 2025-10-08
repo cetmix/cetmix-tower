@@ -109,12 +109,10 @@ class CxTowerServer(models.Model):
     )
     skip_host_key = fields.Boolean(
         default=False,
-        copy=False,
         help="Enable to skip host key verification",
     )
     host_key = fields.Char(
         groups="cetmix_tower_server.group_manager",
-        copy=False,
         help="Host key to verify the server",
     )
     ssh_port = fields.Integer(
@@ -314,6 +312,24 @@ class CxTowerServer(models.Model):
                 validation_error = "\n".join(validation_errors)
                 raise ValidationError(validation_error)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Override create to validate SSH password before record creation."""
+        # Validate SSH password before creating records
+        if not self._context.get("skip_ssh_settings_check"):
+            validation_errors = []
+            for vals in vals_list:
+                if vals.get("ssh_auth_mode") == "p" and not vals.get("ssh_password"):
+                    server_name = vals["name"]
+                    validation_errors.append(
+                        _("Please provide SSH password for %(srv)s", srv=server_name)
+                    )
+
+            if validation_errors:
+                raise ValidationError("\n".join(validation_errors))
+
+        return super().create(vals_list)
+
     def unlink(self):
         """Run post-delete flight plan"""
         servers_to_delete = self.env["cx.tower.server"]
@@ -367,8 +383,12 @@ class CxTowerServer(models.Model):
             )
         default["file_ids"] = file_ids.ids
 
+        # Copy SSH password and host key
+        default["ssh_password"] = self._get_secret_value("ssh_password")
+        default["host_key"] = self._get_secret_value("host_key")
         result = super().copy(default=default)
 
+        # Copy server secrets
         for secret in self.secret_ids:
             secret.sudo().copy({"server_id": result.id})
 
@@ -1935,21 +1955,3 @@ class CxTowerServer(models.Model):
                 "sticky": sticky,
             },
         }
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Override create to validate SSH password before record creation."""
-        # Validate SSH password before creating records
-        if not self._context.get("skip_ssh_settings_check"):
-            validation_errors = []
-            for vals in vals_list:
-                if vals.get("ssh_auth_mode") == "p" and not vals.get("ssh_password"):
-                    server_name = vals["name"]
-                    validation_errors.append(
-                        _("Please provide SSH password for %(srv)s", srv=server_name)
-                    )
-
-            if validation_errors:
-                raise ValidationError("\n".join(validation_errors))
-
-        return super().create(vals_list)
