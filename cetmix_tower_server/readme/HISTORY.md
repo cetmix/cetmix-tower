@@ -1,3 +1,8 @@
+## 16.0.2.0.1 (2025-10-08)
+
+- Bugfixes: Improve variable value references uniqueness (4961)
+
+
 ## 16.0.2.0.0 (2025-10-07)
 
 - Features: 'Cetmix Tower Vault' - new way of centralized password/key management (4824)
