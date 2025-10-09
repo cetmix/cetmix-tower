@@ -19,7 +19,8 @@
                             <field name="action" />
                             <field
                                 name="custom_exit_code"
-                                attrs="{'invisible': [('action', '!=', 'ec')], 'required': [('action', '=', 'ec')]}"
+                                invisible="action != 'ec'"
+                                required="action == 'ec'"
                             />
                         </div>
                     </group>
@@ -35,15 +36,15 @@
                                 <field name="reference" optional="hide" />
                                 <field name="variable_reference" optional="hide" />
                                 <field name="variable_id" />
-                                <field name="variable_type" invisible="1" />
+                                <field name="variable_type" column_invisible="True" />
                                 <field
                                     name="value_char"
-                                    attrs="{'readonly': [('variable_type', '=', 'o')]}"
+                                    readonly="variable_type == 'o'"
                                 />
                                 <field
                                     name="option_id"
                                     options="{'no_create': True, 'no_create_edit': True}"
-                                    attrs="{'readonly': [('variable_type', '=', 's')]}"
+                                    readonly="variable_type == 's'"
                                 />
                                 <field name="access_level" optional="show" />
                             </tree>
