@@ -47,8 +47,6 @@ class CxTowerJetTemplateDependency(models.Model):
     @api.constrains(
         "template_id",
         "template_required_id",
-        "template_id.name",
-        "template_required_id.name",
     )
     def _check_circular_dependency(self):
         """Check if this dependency would create a circular dependency chain"""
@@ -63,6 +61,11 @@ class CxTowerJetTemplateDependency(models.Model):
 
             # Build dependency graph
             graph = self._build_dependency_graph()
+
+            # Add the new dependency edge being created
+            if dependency.template_id.id not in graph:
+                graph[dependency.template_id.id] = set()
+            graph[dependency.template_id.id].add(dependency.template_required_id.id)
 
             # Check for circular dependencies
             if self._has_cycle(graph, dependency.template_id.id):

@@ -270,8 +270,20 @@ class TestTowerCommon(BaseCommon):
         # Scheduled task
         cls.ScheduledTask = cls.env["cx.tower.scheduled.task"]
         cls.ScheduledTaskCv = cls.env["cx.tower.scheduled.task.cv"]
+        # Jet State
+        cls.JetState = cls.env["cx.tower.jet.state"]
+
         # Jet Action
         cls.JetAction = cls.env["cx.tower.jet.action"]
+
+        # Jet Template Install
+        cls.JetTemplateInstall = cls.env["cx.tower.jet.template.install"]
+
+        # Jet Template Install Line
+        cls.JetTemplateInstallLine = cls.env["cx.tower.jet.template.install.line"]
+
+        # Jet Template Dependency
+        cls.JetTemplateDependency = cls.env["cx.tower.jet.template.dependency"]
 
         # Jet Template
         cls.JetTemplate = cls.env["cx.tower.jet.template"]

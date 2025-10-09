@@ -2243,17 +2243,17 @@ custom_values['random_var_reference'] = 'another_random_var_value'
         # Save plan_log for control is_running
         plan_log_holder = {}
 
-        def fake_run(self, server, plan_log, **kwargs):
+        def fake_run(self, server, plan_log_record, **kwargs):
             # Save plan_log for control is_running
-            plan_log_holder["log"] = plan_log
+            plan_log_holder["log"] = plan_log_record
 
             # Call stop() after first command
-            if len(plan_log.command_log_ids) == 0:
-                plan_log.stop()
+            if len(plan_log_record.command_log_ids) == 0:
+                plan_log_record.stop()
                 # After this call plan_log should be stopped,
                 # and finish_date should be filled
             # Continue execution in standard way
-            return _run_super(self, server, plan_log, **kwargs)
+            return _run_super(self, server, plan_log_record, **kwargs)
 
         with patch.object(cx_tower_plan_line_obj, "_run", new=fake_run):
             plan_log = plan._run_single(server)
