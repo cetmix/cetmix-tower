@@ -1,6 +1,5 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from itertools import repeat
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -10,8 +9,13 @@ class CxTowerKeyValue(models.Model):
     """Secret value storage"""
 
     _name = "cx.tower.key.value"
-    _inherit = "cx.tower.reference.mixin"
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.vault.mixin",
+    ]
     _description = "Cetmix Tower Secret Value Storage"
+
+    SECRET_FIELDS = ["secret_value"]
 
     name = fields.Char(related="key_id.name", readonly=False)
     key_id = fields.Many2one(
@@ -93,83 +97,16 @@ class CxTowerKeyValue(models.Model):
                     _("Only one secret value can be defined for a partner")
                 )
 
-    def _fetch_query(self, query, fields):
-        """Substitute fields based on api"""
-        records = super()._fetch_query(query, fields)
-        if self._fields["secret_value"] in fields:
-            placeholder = self.env["cx.tower.key"].SECRET_VALUE_PLACEHOLDER
-            # Public user used for substitution
-            self.env.cache.update(
-                records,
-                self._fields["secret_value"],
-                repeat(placeholder),
-            )
-        return records
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Create a new key value and set secret value"""
-
-        # Create records one by one to ensure that we preserve
-        # the original value list order.
-        # This is done to avoid possible errors when this list is modified
-        # by some other module that overrides this function.
-        # We also need to avoid secret values being written to the database
-        # any other way besides the _set_secret_value method.
-        records = self.browse()
-        for vals in vals_list:
-            secret_value = vals.pop("secret_value", None)
-            rec = super().create(vals)
-            if secret_value:
-                rec._set_secret_value(secret_value)
-            records |= rec
-        return records
-
-    def write(self, vals):
-        """Write key values"""
-        # Remove secret value from vals and set it later
-        if "secret_value" in vals and not self.env.context.get("write_secret_value"):
-            secret_value = vals.pop("secret_value", None)
-            has_secret_value = True
-        else:
-            has_secret_value = False
-        res = super().write(vals)
-        # Set secret value
-        if has_secret_value:
-            for key_value in self:
-                key_value._set_secret_value(secret_value)
-        return res
-
-    def _get_secret_value(self):
-        """Get secret value.
-        Override this method in case you need to implement custom key storages.
-
-        Returns:
-            str: secret value or None if no secret value is found
-        """
-
-        # Return None in case of empty recordset
-        self.ensure_one()
-        self.env.cr.execute(
-            """
-            SELECT secret_value
-            FROM cx_tower_key_value
-            WHERE id = %s
-            """,
-            [self.id],
-        )
-        result = self.env.cr.fetchone()
-        if result:
-            return result[0]
-
-    def _set_secret_value(self, value=None):
-        """Set secret value.
-        Override this method in case you need
-        to implement custom key storages.
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        """Copy key value. Ensure secret value is copied.
 
         Args:
-            value (str): secret value
+            default (dict, optional): Default values. Defaults to None.
+
+        Returns:
+            self: Copied key value
         """
-        self.ensure_one()
-        self.with_context(write_secret_value=True).write({"secret_value": value})
-        self.invalidate_recordset(["secret_value"])
+        default = default or {}
+        default["secret_value"] = self._get_secret_value("secret_value")
+        return super().copy(default=default)
