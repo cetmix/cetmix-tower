@@ -29,7 +29,8 @@
                         <field
                             name="variable_value_ids"
                             order="variable_reference"
-                            string="Set Variable Values"
+                            string="Set Custom Values"
+                            help="Custom values will be available in the current flight plan context only. They can be used in Python commands and line conditions"
                         >
                             <tree editable="bottom">
                                 <field name="sequence" widget="handle" />
