@@ -835,7 +835,7 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
 
     def test_plan_with_update_variables(self):
         """
-        Test plan with update server variables
+        Test plan updates custom (in-flight) values
         """
         # Add new variable to server
         self.VariableValue.create(
@@ -845,7 +845,7 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
                 "server_id": self.server_test_1.id,
             }
         )
-        # Create new variable value to action to update existing server variable
+        # Create new variable value on action
         self.VariableValue.create(
             {
                 "variable_id": self.variable_version.id,
@@ -853,7 +853,15 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
                 "plan_line_action_id": self.plan_line_1_action_1.id,
             }
         )
-        # Check that server contains server variable with value
+        # Add a new variable value on action for a variable absent on the server
+        self.VariableValue.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Ubuntu",
+                "plan_line_action_id": self.plan_line_1_action_1.id,
+            }
+        )
+        # Pre-run sanity: server holds initial value and no OS value
         exist_server_values = self.server_test_1.variable_value_ids.filtered(
             lambda rec: rec.variable_id == self.variable_version
         )
@@ -867,16 +875,6 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
             "14.0",
             "The server variable value should be '14.0'",
         )
-
-        # Add a new variable value to an action that does not exist on the server
-        self.VariableValue.create(
-            {
-                "variable_id": self.variable_os.id,
-                "value_char": "Ubuntu",
-                "plan_line_action_id": self.plan_line_1_action_1.id,
-            }
-        )
-        # Check that this field is not exist on server
         exist_server_values = self.server_test_1.variable_value_ids.filtered(
             lambda rec: rec.variable_id == self.variable_os
         )
@@ -885,33 +883,44 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         )
         # Run plan
         self.plan_1._run_single(self.server_test_1)
-        # Check that exists server values was updated
-        exist_server_values = self.server_test_1.variable_value_ids.filtered(
+        # After run: server values MUST remain unchanged
+        server_version_val = self.server_test_1.variable_value_ids.filtered(
             lambda rec: rec.variable_id == self.variable_version
         )
         self.assertEqual(
-            len(exist_server_values),
-            1,
-            "The server should have only one value for the variable",
+            server_version_val.value_char,
+            "14.0",
+            "Server variable value must remain unchanged",
         )
+        self.assertFalse(
+            self.server_test_1.variable_value_ids.filtered(
+                lambda rec: rec.variable_id == self.variable_os
+            ),
+            "Server must not receive new variable from action",
+        )
+
+        # But custom (in-flight) values MUST be updated in logs
+        plan_log = self.PlanLog.search(
+            [("server_id", "=", self.server_test_1.id)], order="id desc", limit=1
+        )
+        self.assertTrue(plan_log, "Plan log should exist after run")
         self.assertEqual(
-            exist_server_values.value_char,
+            plan_log.variable_values[self.variable_version.reference],
             "16.0",
-            "The server variable value should be updated value '16.0'",
-        )
-        # Check that new server value was added to server
-        exist_server_values = self.server_test_1.variable_value_ids.filtered(
-            lambda rec: rec.variable_id == self.variable_os
+            "Plan log must contain updated custom value",
         )
         self.assertEqual(
-            len(exist_server_values),
-            1,
-            "The server should have new value for the variable",
-        )
-        self.assertEqual(
-            exist_server_values.value_char,
+            plan_log.variable_values[self.variable_os.reference],
             "Ubuntu",
-            "The server variable value should be updated value 'Ubuntu'",
+            "Plan log must contain new custom value",
+        )
+
+        last_command_log = plan_log.command_log_ids and plan_log.command_log_ids[-1]
+        self.assertTrue(last_command_log, "Command log should exist after run")
+        self.assertEqual(
+            last_command_log.variable_values[self.variable_version.reference],
+            "16.0",
+            "Command log must contain updated custom value",
         )
 
     def test_plan_with_action_variables_for_condition(self):
@@ -2437,3 +2446,151 @@ result = {
             main_plan_log.plan_status,
             "Main plan should have the same error status as the SSH command",
         )
+
+    def test_skip_command_error_flow(self):
+        """Plan flow:
+        1) success, 2) success, 3) error -> sets command_error variable,
+        4) skipped if not var, 5) runs if var and exits -1.
+        """
+        # Create commands
+        command_success = self.Command.create(
+            {
+                "name": "Command -> Success",
+                "action": "python_code",
+                "code": "# Juse return deafult values",
+            }
+        )
+        command_error = self.Command.create(
+            {
+                "name": "Command -> Error",
+                "action": "python_code",
+                "code": "result = {'exit_code': -100, 'message': 'Error'}",
+            }
+        )
+        command_after_failed = self.Command.create(
+            {
+                "name": "Command -> After failed",
+                "action": "python_code",
+                "code": (
+                    "name = server.name + ' --after-failed-- '\n"
+                    "server.write({'name': name})"
+                ),
+            }
+        )
+        command_last_one = self.Command.create(
+            {
+                "name": "Command -> The last one",
+                "action": "python_code",
+                "code": (
+                    "name = server.name + ' --last-one-- '\n"
+                    "server.write({'name': name})"
+                ),
+            }
+        )
+
+        # Variable used in conditions
+        variable_command_error = self.Variable.create(
+            {
+                "name": "command_error",
+                "reference": "test_command_error",
+                "variable_type": "s",
+            }
+        )
+
+        # Plan and lines
+        plan = self.Plan.create(
+            {
+                "name": "Test skip command error",
+                "on_error_action": "e",
+                "custom_exit_code": 0,
+            }
+        )
+
+        self.plan_line.create(
+            {"sequence": 10, "plan_id": plan.id, "command_id": command_success.id}
+        )
+        self.plan_line.create(
+            {"sequence": 20, "plan_id": plan.id, "command_id": command_success.id}
+        )
+
+        line3 = self.plan_line.create(
+            {"sequence": 30, "plan_id": plan.id, "command_id": command_error.id}
+        )
+        action3 = self.plan_line_action.create(
+            {
+                "line_id": line3.id,
+                "sequence": 10,
+                "condition": "!=",
+                "value_char": "0",
+                "action": "n",
+            }
+        )
+
+        self.VariableValue.create(
+            {
+                "variable_id": variable_command_error.id,
+                "value_char": "1",
+                "plan_line_action_id": action3.id,
+            }
+        )
+
+        self.plan_line.create(
+            {
+                "sequence": 40,
+                "plan_id": plan.id,
+                "command_id": command_after_failed.id,
+                "condition": "not {{ test_command_error }}",
+                "variable_ids": [(6, 0, [variable_command_error.id])],
+            }
+        )
+
+        line5 = self.plan_line.create(
+            {
+                "sequence": 50,
+                "plan_id": plan.id,
+                "command_id": command_last_one.id,
+                "condition": "{{ test_command_error }}",
+                "variable_ids": [(6, 0, [variable_command_error.id])],
+            }
+        )
+        self.plan_line_action.create(
+            {
+                "line_id": line5.id,
+                "sequence": 10,
+                "condition": "==",
+                "value_char": "0",
+                "action": "ec",
+                "custom_exit_code": -1,
+            }
+        )
+
+        plan_log = self.server_test_1.run_flight_plan(plan)
+
+        self.assertEqual(len(plan_log.command_log_ids), 5)
+        logs = plan_log.command_log_ids
+        self.assertTrue(
+            all(
+                log.command_status == 0
+                for log in logs.filtered(lambda log: log.command_id == command_success)
+            )
+        )
+
+        error_log = logs.filtered(lambda log: log.command_id == command_error)
+        self.assertIn(variable_command_error.reference, error_log.variable_values)
+        self.assertTrue(error_log.command_status == GENERAL_ERROR)
+
+        self.assertTrue(
+            logs.filtered(lambda log: log.command_id == command_after_failed).mapped(
+                "command_status"
+            )[0]
+            == PLAN_LINE_CONDITION_CHECK_FAILED
+        )
+        self.assertTrue(
+            logs.filtered(lambda log: log.command_id == command_last_one).mapped(
+                "command_status"
+            )[0]
+            == 0
+        )
+
+        # Final plan status must be custom exit code -1 from line 5 action
+        self.assertEqual(plan_log.plan_status, -1)
