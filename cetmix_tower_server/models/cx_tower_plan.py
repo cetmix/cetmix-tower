@@ -270,11 +270,10 @@ class CxTowerPlan(models.Model):
         # Default values
         exit_code = command_log.command_status
         server = command_log.server_id
-        server_variable_values = server.variable_value_ids
 
         # Check line condition
         variable_values = (
-            command_log.variable_values or command_log.plan_log_id.variable_values
+            command_log.variable_values or command_log.plan_log_id.variable_values or {}
         )
         if not current_line._is_executable_line(
             server, variable_values=variable_values
@@ -296,24 +295,17 @@ class CxTowerPlan(models.Model):
                 if action == "ec" and action_line.custom_exit_code:
                     exit_code = action_line.custom_exit_code
 
-                variable_value_obj = self.env["cx.tower.variable.value"]
+                # Apply action-defined values into the variable values context
                 for variable_value in action_line.variable_value_ids:
-                    variable = variable_value.variable_id
-                    server_variable_value = server_variable_values.filtered(
-                        lambda rec, variable=variable: rec.variable_id == variable,
-                    )
-                    if server_variable_value:
-                        # update exist server value
-                        server_variable_value.value_char = variable_value.value_char
-                    else:
-                        # create new value
-                        variable_value_obj.create(
-                            {
-                                "variable_id": variable.id,
-                                "value_char": variable_value.value_char,
-                                "server_id": server.id,
-                            }
-                        )
+                    ref = variable_value.variable_id.reference
+                    variable_values[ref] = variable_value.value_char
+
+                # Persist the updated custom values only in logs
+                # so they remain available within the current flight plan context
+                updated_values = dict(variable_values)
+                command_log.variable_values = updated_values
+                if command_log.plan_log_id:
+                    command_log.plan_log_id.variable_values = updated_values
 
                 return self._get_next_action_state(action, exit_code, current_line)
 
@@ -367,7 +359,11 @@ class CxTowerPlan(models.Model):
             if plan_line._is_executable_line(server, variable_values=variable_values):
                 plan_line._run(server, plan_log, variable_values=variable_values)
             else:
-                plan_line._skip(server, plan_log)
+                plan_line._skip(
+                    server,
+                    plan_log,
+                    log={"variable_values": dict(variable_values or {})},
+                )
 
         # Exit
         if action in ["e", "ec"]:
