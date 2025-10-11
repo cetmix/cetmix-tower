@@ -1960,3 +1960,8 @@ class CxTowerServer(models.Model):
                 "sticky": sticky,
             },
         }
+
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["variable_value_ids", "file_ids"]

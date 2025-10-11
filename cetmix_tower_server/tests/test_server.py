@@ -827,3 +827,64 @@ result = {
         # Test with skip_host_key
         server.skip_host_key = True
         server.test_ssh_connection()
+
+    def test_server_reference_update(self):
+        """Test server reference update cascades to dependent models"""
+        # 1. Add a variable value to server_test_1
+        variable_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Ubuntu 20.04",
+                "server_id": self.server_test_1.id,
+            }
+        )
+
+        # 2. Add a file to server_test_1
+        server_file = self.File.create(
+            {
+                "name": "test_file.txt",
+                "server_id": self.server_test_1.id,
+                "source": "tower",
+                "code": "Test file content",
+            }
+        )
+
+        # Store original references for comparison
+        original_server_reference = self.server_test_1.reference
+        original_variable_value_reference = variable_value.reference
+        original_file_reference = server_file.reference
+
+        # 3. Change the reference for server_test_1 to "awesome_server"
+        self.server_test_1.write({"reference": "awesome_server"})
+
+        # 4. Verify that references are updated for dependent models
+        # Invalidate models to refresh all references
+        self.env["cx.tower.server"].invalidate_model(["reference"])
+        self.env["cx.tower.variable.value"].invalidate_model(["reference"])
+        self.env["cx.tower.file"].invalidate_model(["reference"])
+
+        # Check that server reference was updated
+        self.assertEqual(self.server_test_1.reference, "awesome_server")
+        self.assertNotEqual(self.server_test_1.reference, original_server_reference)
+
+        # Check that variable value reference was updated
+        # to include the new server reference
+        self.assertIn("awesome_server", variable_value.reference)
+        self.assertNotEqual(variable_value.reference, original_variable_value_reference)
+
+        # Check that file reference was updated to include the new server reference
+        self.assertIn("awesome_server", server_file.reference)
+        self.assertNotEqual(server_file.reference, original_file_reference)
+
+        # Verify the reference pattern for variable value follows the expected format:
+        # <variable_reference>_<model_generic_reference>_<linked_model_generic_reference>_<linked_record_reference>  # noqa: E501
+        expected_variable_pattern = (
+            f"{self.variable_os.reference}_variable_value_server_"
+            f"{self.server_test_1.reference}"
+        )
+        self.assertEqual(variable_value.reference, expected_variable_pattern)
+
+        # Verify the reference pattern for file follows the expected format:
+        # <parent_reference>_<model_generic_reference>_<index>
+        expected_file_pattern = f"{self.server_test_1.reference}_file_1"
+        self.assertEqual(server_file.reference, expected_file_pattern)
