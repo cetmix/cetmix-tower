@@ -1088,3 +1088,43 @@ class TestVariableReferenceRename(TestTowerCommon):
             self.assertEqual(val.value_char, expected_val)
             expected_cond = f"if {{{{ {actual_ref} }}}} then"
             self.assertEqual(pl.condition, expected_cond)
+
+    def test_variable_reference_update(self):
+        """Test variable reference update cascades to dependent models"""
+        # 1. Add a variable value to variable_os
+        variable_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Ubuntu 20.04",
+                "server_id": self.server_test_1.id,
+            }
+        )
+
+        # Store original references for comparison
+        original_variable_reference = self.variable_os.reference
+        original_variable_value_reference = variable_value.reference
+
+        # 2. Change the reference for variable_os to "awesome_variable"
+        self.variable_os.write({"reference": "awesome_variable"})
+
+        # 3. Verify that references are updated for dependent models
+        # Invalidate models to refresh all references
+        self.env["cx.tower.variable"].invalidate_model(["reference"])
+        self.env["cx.tower.variable.value"].invalidate_model(["reference"])
+
+        # Check that variable reference was updated
+        self.assertEqual(self.variable_os.reference, "awesome_variable")
+        self.assertNotEqual(self.variable_os.reference, original_variable_reference)
+
+        # Check that variable value reference was updated
+        # to include the new variable reference
+        self.assertIn("awesome_variable", variable_value.reference)
+        self.assertNotEqual(variable_value.reference, original_variable_value_reference)
+
+        # Verify the reference pattern for variable value follows the expected format:
+        # <variable_reference>_<model_generic_reference>_<linked_model_generic_reference>_<linked_record_reference>  # noqa: E501
+        expected_variable_pattern = (
+            f"{self.variable_os.reference}_variable_value_server_"
+            f"{self.server_test_1.reference}"
+        )
+        self.assertEqual(variable_value.reference, expected_variable_pattern)

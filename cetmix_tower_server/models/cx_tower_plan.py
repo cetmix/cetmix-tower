@@ -48,6 +48,7 @@ class CxTowerPlan(models.Model):
         comodel_name="cx.tower.plan.line",
         inverse_name="plan_id",
         auto_join=True,
+        copy=True,
     )
     command_ids = fields.Many2many(
         string="Commands",
@@ -118,35 +119,6 @@ class CxTowerPlan(models.Model):
         for plan in self:
             plan.command_ids = [(6, 0, plan.line_ids.mapped("command_id").ids)]
 
-    def copy(self, default=None):
-        # Call the super method to handle basic duplication
-        default = dict(default or {})
-        new_plan = super().copy(default=default)
-
-        # Duplicate the lines from the original plan
-        for line in self.line_ids:
-            new_line = line.copy(
-                {
-                    # assign the new plan to the duplicated line
-                    "plan_id": new_plan.id,
-                }
-            )
-
-            # Duplicate actions linked to the line
-            for action in line.action_ids:
-                new_action = action.with_context(reference_mixin_skip_copy=True).copy(
-                    # link new actions to the new line
-                    {"line_id": new_line.id, "name": line.name}
-                )
-
-                # Duplicate variable values linked to the action
-                for variable_value in action.variable_value_ids:
-                    variable_value.with_context(reference_mixin_skip_self=True).copy(
-                        {"plan_line_action_id": new_action.id}
-                    )
-
-        return new_plan
-
     def action_open_plan_logs(self):
         """
         Open current flight plan log records
@@ -156,6 +128,11 @@ class CxTowerPlan(models.Model):
         )
         action["domain"] = [("plan_id", "=", self.id)]
         return action
+
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["line_ids"]
 
     def _is_plan_incompatible_with_server(self, server):
         """

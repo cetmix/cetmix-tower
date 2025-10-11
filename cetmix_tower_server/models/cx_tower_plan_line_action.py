@@ -55,7 +55,7 @@ class CxTowerPlanLineAction(models.Model):
     variable_value_ids = fields.One2many(
         # Other field properties are defined in mixin
         inverse_name="plan_line_action_id",
-        copy=False,
+        copy=True,
     )
 
     @api.depends("condition", "action", "value_char")
@@ -89,8 +89,13 @@ class CxTowerPlanLineAction(models.Model):
             else:
                 rec.name = _("Wrong action")
 
-    # Check cx.tower.reference.mixin for the function documentation
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["variable_value_ids"]
+
     def _get_pre_populated_model_data(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
         res = super()._get_pre_populated_model_data()
         res.update({"cx.tower.plan.line.action": ["cx.tower.plan.line", "line_id"]})
         return res
