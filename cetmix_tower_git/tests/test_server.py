@@ -1,4 +1,7 @@
-from odoo.addons.queue_job.tests.common import trap_jobs
+try:
+    from odoo.addons.queue_job.tests.common import trap_jobs
+except ImportError:
+    trap_jobs = None
 
 from .common import CommonTest
 
@@ -77,16 +80,22 @@ class TestServer(CommonTest):
             )
         )
 
-        with trap_jobs() as trap:
+        # If cetmix_tower_server_queue module is installed, test async processing
+        if self.env["ir.module.module"].search_count(
+            [("name", "=", "cetmix_tower_server_queue"), ("state", "=", "installed")]
+        ):
+            with trap_jobs() as trap:
+                wizard.action_confirm()
+
+                # Verify that jobs were created
+                self.assertGreater(
+                    len(trap.enqueued_jobs), 0, "Jobs should have been enqueued"
+                )
+
+                # Execute all trapped jobs to simulate async processing
+                trap.perform_enqueued_jobs()
+        else:
             wizard.action_confirm()
-
-            # Verify that jobs were created
-            self.assertGreater(
-                len(trap.enqueued_jobs), 0, "Jobs should have been enqueued"
-            )
-
-            # Execute all trapped jobs to simulate async processing
-            trap.perform_enqueued_jobs()
 
         # Now search for the created records after jobs have been executed
         server = self.Server.search(
