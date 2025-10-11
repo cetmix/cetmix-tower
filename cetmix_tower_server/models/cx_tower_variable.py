@@ -330,6 +330,11 @@ class TowerVariable(models.Model):
             "cx.tower.plan.line": ["condition"],
         }
 
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["value_ids"]
+
     def _validate_value(self, value_char=None):
         """
         Validate the variable value

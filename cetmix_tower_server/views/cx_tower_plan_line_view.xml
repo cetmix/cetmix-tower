@@ -52,7 +52,7 @@
                                 invisible="action != 'file_using_template'"
                             />
                             <field
-                                name="plan_line_ids"
+                                name="plan_run_line_ids"
                                 string="Flight Plan Lines"
                                 invisible="action != 'plan'"
                             >

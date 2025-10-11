@@ -123,11 +123,14 @@ class CxTowerReferenceMixin(models.AbstractModel):
                 reference = self._generate_or_fix_reference(reference)
             vals.update({"reference": reference})
 
-        # Clear cache for this method
-        if "reference" in vals:
-            self.env.registry.clear_cache()
+        res = super().write(vals)
 
-        return super().write(vals)
+        # Update references of dependent models
+        if "reference" in vals:
+            self._update_dependent_model_references()
+            # Clear caches
+            self.env.registry.clear_cache()
+        return res
 
     def unlink(self):
         """
@@ -183,6 +186,66 @@ class CxTowerReferenceMixin(models.AbstractModel):
             {model_name: [parent_model, relation_field]}
         """
         return {}
+
+    def _get_extra_vals_fields(self):
+        """Returns list of extra fields that are needed for reference generation.
+        This method if used to make custom reference generation logic more flexible.
+        Eg for 'cx.tower.variable.value':
+            'server_id', 'server_template_id', 'plan_line_action_id'.
+        So for common models like 'cx.tower.server' this method is not needed.
+
+        Returns:
+            list: List of fields:
+            [field_name1, field_name2, ...]
+        """
+        return []
+
+    def _get_dependent_model_relation_fields(self):
+        """Returns list of fields that reference dependent models.
+
+        Eg flight plan lines references are generated based on the flight plan one.
+
+        Returns:
+            list: List of fields:
+            [field_name1, field_name2, ...]
+        """
+        return []
+
+    def _update_dependent_model_references(self):
+        """Update references of dependent models"""
+        dependent_model_relation_fields = self._get_dependent_model_relation_fields()
+        if dependent_model_relation_fields:
+            for field in dependent_model_relation_fields:
+                related_model_name = self[field]._name
+
+                # Check if the related model has auto-generate settings
+                auto_generate_settings = (
+                    self[field]._get_pre_populated_model_data().get(related_model_name)
+                )
+                if auto_generate_settings:
+                    parent_model, relation_field = auto_generate_settings
+                else:
+                    continue
+
+                # Parse the field for all records
+                for record in self:
+                    related_records = record[field]
+                    # Get vals list
+                    rec_vals_list = related_records.read(
+                        [relation_field] + related_records._get_extra_vals_fields()
+                    )
+                    # Transform Many2one tuples to IDs
+                    for rv in rec_vals_list:
+                        for k, v in rv.items():
+                            # Transform m2o fields from (id, name) to id
+                            if isinstance(v, tuple):
+                                rv[k] = v[0]
+                    related_records._pre_populate_references(
+                        parent_model, relation_field, rec_vals_list
+                    )
+                    ref_by_id = {rv["id"]: rv["reference"] for rv in rec_vals_list}
+                    for related_record in related_records:
+                        related_record.reference = ref_by_id[related_record.id]
 
     def _generate_or_fix_reference(self, reference_source):
         """

@@ -2109,3 +2109,75 @@ custom_values['random_var_reference'] = 'another_random_var_value'
             1,
             "There should be maximum one command in the log",
         )
+
+    def test_flight_plan_reference_update(self):
+        """Test flight plan reference update cascades to dependent models"""
+        # 1. Add a variable value to plan_line_1_action_2
+        variable_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Ubuntu 20.04",
+                "plan_line_action_id": self.plan_line_1_action_2.id,
+            }
+        )
+
+        # Store original references for comparison
+        original_plan_reference = self.plan_1.reference
+        original_plan_line_1_reference = self.plan_line_1.reference
+        original_plan_line_2_reference = self.plan_line_2.reference
+        original_plan_line_1_action_1_reference = self.plan_line_1_action_1.reference
+        original_plan_line_1_action_2_reference = self.plan_line_1_action_2.reference
+        original_plan_line_2_action_1_reference = self.plan_line_2_action_1.reference
+        original_plan_line_2_action_2_reference = self.plan_line_2_action_2.reference
+        original_variable_value_reference = variable_value.reference
+
+        # 2. Change the reference for plan_1 to "nice_new_plan"
+        self.plan_1.write({"reference": "nice_new_plan"})
+
+        # 3. Verify that references are updated for plan lines
+        # Invalidate models to refresh all references
+        self.env["cx.tower.plan"].invalidate_model(["reference"])
+        self.env["cx.tower.plan.line"].invalidate_model(["reference"])
+        self.env["cx.tower.plan.line.action"].invalidate_model(["reference"])
+        self.env["cx.tower.variable.value"].invalidate_model(["reference"])
+
+        # Check that plan reference was updated
+        self.assertEqual(self.plan_1.reference, "nice_new_plan")
+        self.assertNotEqual(self.plan_1.reference, original_plan_reference)
+
+        # Check that plan line references were updated to include the new plan reference
+        self.assertIn("nice_new_plan", self.plan_line_1.reference)
+        self.assertIn("nice_new_plan", self.plan_line_2.reference)
+        self.assertNotEqual(self.plan_line_1.reference, original_plan_line_1_reference)
+        self.assertNotEqual(self.plan_line_2.reference, original_plan_line_2_reference)
+
+        # Check that plan line action references were updated
+        self.assertIn("nice_new_plan", self.plan_line_1_action_1.reference)
+        self.assertIn("nice_new_plan", self.plan_line_1_action_2.reference)
+        self.assertIn("nice_new_plan", self.plan_line_2_action_1.reference)
+        self.assertIn("nice_new_plan", self.plan_line_2_action_2.reference)
+        self.assertNotEqual(
+            self.plan_line_1_action_1.reference, original_plan_line_1_action_1_reference
+        )
+        self.assertNotEqual(
+            self.plan_line_1_action_2.reference, original_plan_line_1_action_2_reference
+        )
+        self.assertNotEqual(
+            self.plan_line_2_action_1.reference, original_plan_line_2_action_1_reference
+        )
+        self.assertNotEqual(
+            self.plan_line_2_action_2.reference, original_plan_line_2_action_2_reference
+        )
+
+        # Check that variable value reference was updated
+        #  to include the new plan reference
+        self.assertIn("nice_new_plan", variable_value.reference)
+        self.assertNotEqual(variable_value.reference, original_variable_value_reference)
+
+        # Verify the reference pattern for variable value follows the expected format:
+        # <variable_reference>_<model_generic_reference>_<linked_model_generic_reference>_<linked_record_reference>  # noqa: E501
+        expected_pattern = (
+            f"{self.variable_os.reference}_variable_value_plan_line_action_"
+            f"{self.plan_line_1_action_2.reference}"
+        )
+        self.assertEqual(variable_value.reference, expected_pattern)
