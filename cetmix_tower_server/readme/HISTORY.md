@@ -1,3 +1,8 @@
+## 16.0.2.0.3 (2025-10-13)
+
+- Features: Terminate running flight plan manually (3410)
+
+
 ## 16.0.2.0.2 (2025-10-08)
 
 - Features: UI/UX improvements (4996)
