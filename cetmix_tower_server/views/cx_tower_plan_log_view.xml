@@ -5,6 +5,17 @@
         <field name="model">cx.tower.plan.log</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button
+                        name="action_stop"
+                        string="Stop"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('is_running', '=', False), ('is_stopped', '=', True)]}"
+                        confirm="Flight Plan will be terminated after executing the current command. Continue?"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                </header>
                 <sheet>
                     <widget
                         name="web_ribbon"
@@ -15,13 +26,19 @@
                     <widget
                         name="web_ribbon"
                         title="Finished"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '!=', 0)]}"
+                        attrs="{'invisible': ['|', '|', ('is_running', '=', True), ('is_stopped', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '!=', 0)]}"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Stopped"
+                        bg_color="bg-danger"
+                        attrs="{'invisible': [('is_stopped', '=', False)]}"
                     />
                     <widget
                         name="web_ribbon"
                         title="Failed"
                         bg_color="bg-danger"
-                        attrs="{'invisible': ['|', ('is_running', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '=', 0)]}"
+                        attrs="{'invisible': ['|', '|', ('is_running', '=', True), ('is_stopped', '=', True), '&amp;', ('is_running', '=', False), ('plan_status', '=', 0)]}"
                     />
                     <group>
                         <group>
@@ -39,6 +56,10 @@
                             <field
                                 name="is_running"
                                 attrs="{'invisible': [('is_running', '=', False)]}"
+                            />
+                            <field
+                                name="is_stopped"
+                                attrs="{'invisible': [('is_stopped', '=', False)]}"
                             />
                             <field
                                 name="plan_line_executed_id"

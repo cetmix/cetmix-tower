@@ -11,6 +11,7 @@ from ..models.constants import (
     PLAN_IS_EMPTY,
     PLAN_LINE_CONDITION_CHECK_FAILED,
     PLAN_NOT_COMPATIBLE_WITH_SERVER,
+    PLAN_STOPPED,
 )
 from .common import TestTowerCommon
 
@@ -2061,3 +2062,50 @@ custom_values['random_var_reference'] = 'another_random_var_value'
 
         self.assertIn("/test_path", create_dir_logs[0].code)
         self.assertIn("/another_test_path", create_dir_logs[1].code)
+
+    def test_plan_stop_mid_execution(self):
+        """
+        Test that plan is correctly marked as stopped and
+        further commands are not executed.
+        """
+        plan = self._create_plan(
+            name="Test Plan Stop",
+            line_ids=[
+                (0, 0, {"command_id": self.command_create_dir.id, "sequence": 1}),
+                (0, 0, {"command_id": self.command_list_dir.id, "sequence": 2}),
+            ],
+        )
+        server = self.server_test_1
+
+        cx_tower_plan_line_obj = self.registry["cx.tower.plan.line"]
+        _run_super = cx_tower_plan_line_obj._run
+
+        # Save plan_log for control is_running
+        plan_log_holder = {}
+
+        def fake_run(self, server, plan_log, **kwargs):
+            # Save plan_log for control is_running
+            plan_log_holder["log"] = plan_log
+
+            # Call stop() after first command
+            if len(plan_log.command_log_ids) == 0:
+                plan_log.stop()
+                # After this call plan_log should be stopped,
+                # and finish_date should be filled
+            # Continue execution in standard way
+            return _run_super(self, server, plan_log, **kwargs)
+
+        with patch.object(cx_tower_plan_line_obj, "_run", new=fake_run):
+            plan_log = plan._run_single(server)
+
+        self.assertTrue(plan_log.is_stopped, "Plan should be stopped")
+        self.assertFalse(plan_log.is_running, "Plan should not be in running status")
+        self.assertEqual(
+            plan_log.plan_status, PLAN_STOPPED, "Status should be PLAN_STOPPED"
+        )
+        self.assertTrue(plan_log.finish_date, "Finish date should be filled")
+        self.assertLessEqual(
+            len(plan_log.command_log_ids),
+            1,
+            "There should be maximum one command in the log",
+        )

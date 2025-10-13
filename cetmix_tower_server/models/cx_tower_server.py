@@ -1552,7 +1552,8 @@ class CxTowerServer(models.Model):
                 response = []
                 error = [e]
 
-        return self._parse_command_results(status, response, error, secrets, **kwargs)
+        result = self._parse_command_results(status, response, error, secrets, **kwargs)
+        return result
 
     def _run_python_code(
         self,
@@ -1779,7 +1780,11 @@ class CxTowerServer(models.Model):
             # For not to save an empty list `[]` in log
             error = None
 
-        return {"status": status, "response": response, "error": error}
+        return {
+            "status": status,
+            "response": response,
+            "error": error,
+        }
 
     def _check_zombie_commands(self):
         """
