@@ -647,3 +647,8 @@ class CxTowerServerTemplate(models.Model):
             )
 
         raise ValidationError("\n".join(error_parts))
+
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["variable_value_ids"]
