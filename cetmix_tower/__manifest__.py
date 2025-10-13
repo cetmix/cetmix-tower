@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower",
     "summary": "Odoo SAAS Server Application Management",
-    "version": "16.0.1.1.0",
+    "version": "16.0.2.0.0",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
@@ -18,6 +18,6 @@
         "cetmix_tower_server_queue",
         "cetmix_tower_server_notify_backend",
         "cetmix_tower_git",
-        "cetmix_tower_yaml",
+        "cetmix_tower_webhook",
     ],
 }
