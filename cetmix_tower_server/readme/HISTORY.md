@@ -1,3 +1,8 @@
+## 16.0.2.0.4 (2025-10-13)
+
+- Features: Auto update references for related records (5005)
+
+
 ## 16.0.2.0.3 (2025-10-13)
 
 - Features: Terminate running flight plan manually (3410)
