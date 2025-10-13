@@ -1690,7 +1690,7 @@ msgid "Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_line_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_run_line_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Flight Plan Lines"
