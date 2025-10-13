@@ -73,7 +73,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[cetmix_tower](cetmix_tower/) | 16.0.1.1.0 |  | Odoo SAAS Server Application Management
+[cetmix_tower](cetmix_tower/) | 16.0.2.0.0 |  | Odoo SAAS Server Application Management
 [cetmix_tower_aws](cetmix_tower_aws/) | 16.0.1.1.0 |  | Cetmix Tower AWS EC2 API integration
 [cetmix_tower_git](cetmix_tower_git/) | 16.0.1.0.6 |  | Cetmix Tower Git Management Tools
 [cetmix_tower_ovh](cetmix_tower_ovh/) | 16.0.1.0.0 | <a href='https://github.com/GSLabIt'><img src='https://github.com/GSLabIt.png' width='32' height='32' style='border-radius:50%;' alt='GSLabIt'/></a> | Cetmix Tower OVH API integration
