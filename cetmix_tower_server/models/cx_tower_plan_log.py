@@ -196,12 +196,7 @@ class CxTowerPlanLog(models.Model):
                 line._skip(server, plan_log)
                 break
         else:
-            plan_log.sudo().write(
-                {
-                    "finish_date": fields.Datetime.now(),
-                    "plan_status": PLAN_IS_EMPTY,
-                }
-            )
+            plan_log.finish(plan_status=PLAN_IS_EMPTY)
 
         return plan_log
 
@@ -320,6 +315,7 @@ class CxTowerPlanLog(models.Model):
             vals.update(plan_log_kwargs)
 
         plan_log = self.sudo().create(vals)
+        plan_log._plan_finished()
         return plan_log
 
     def _plan_finished(self):
