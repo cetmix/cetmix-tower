@@ -520,6 +520,37 @@ records:
         self.assertIn("Secret 1", secret_list, "Key is not in the list")
         self.assertIn("Secret 2", secret_list, "Key is not in the list")
 
+    def test_extract_secret_names_with_key_id(self):
+        """Test extract secret names when secrets are nested under key_id"""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: test_model
+  reference: rec_1
+  name: Test Record
+  secret_ids:
+    - key_id:
+        reference: secret_1
+        name: Nested Secret 1
+    - key_id:
+        reference: secret_2
+        name: Nested Secret 2
+  ssh_key_id:
+    name: SSH Key Nested
+"""
+        secret_list = self.env["cx.tower.yaml.import.wiz"]._extract_secret_names(
+            yaml.safe_load(yaml_code)
+        )
+
+        # We expect 3 secrets total:
+        # - SSH Key Nested (from ssh_key_id)
+        # - Nested Secret 1
+        # - Nested Secret 2
+        self.assertCountEqual(
+            secret_list,
+            ["Nested Secret 1", "Nested Secret 2", "SSH Key Nested"],
+            "Unexpected secrets extracted for nested structure",
+        )
+
     def test_create_records_different_models(self):
         """Test create records with different models"""
 
