@@ -311,6 +311,9 @@ class TestTowerCommon(BaseCommon):
                     stdout_mock.readlines.return_value = []
                     stderr_mock.readlines.return_value = ["error"]
                     return stdin_mock, stdout_mock, stderr_mock
+                elif "raise" in command:
+                    # Simulate an exception
+                    raise Exception("error")  # pylint: disable=broad-exception-raised
                 else:
                     # Simulate success
                     stdout_mock.channel.recv_exit_status.return_value = 0
