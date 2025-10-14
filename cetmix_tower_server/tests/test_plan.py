@@ -2181,3 +2181,259 @@ custom_values['random_var_reference'] = 'another_random_var_value'
             f"{self.plan_line_1_action_2.reference}"
         )
         self.assertEqual(variable_value.reference, expected_pattern)
+
+    def test_flight_plan_with_child_plan_command_exception(self):
+        """
+        Test flight plan with child plan where command exception occurs.
+
+        Scenario:
+        - Main flight plan has 2 commands:
+          1. Simple python command (success)
+          2. Child flight plan with 2 commands where first fails with command exception
+        - Verify error propagation: command -> child plan -> main plan
+        - The command exception is simulated using the existing mocking system
+         that raises exceptions when commands contain "raise"
+        """
+
+        # Create child flight plan with 2 commands
+        child_plan = self.Plan.create(
+            {
+                "name": "Child Plan with Error",
+                "note": "Child plan that will fail on first command",
+            }
+        )
+
+        # Command 1 of child plan - will fail with command exception
+        child_command_1 = self.Command.create(
+            {
+                "name": "Child Command 1 - Command Exception",
+                "action": "ssh_command",
+                "code": "raise",  # This will trigger command exception in mock
+            }
+        )
+
+        # Command 2 of child plan - should not execute due to error in command 1
+        child_command_2 = self.Command.create(
+            {
+                "name": "Child Command 2 - Should Not Run",
+                "action": "python_code",
+                "code": """
+result = {
+    "exit_code": 0,
+    "message": "This should not execute"
+}
+            """,
+            }
+        )
+
+        # Create plan lines for child plan
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": child_command_1.id,
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": child_plan.id,
+                "command_id": child_command_2.id,
+            }
+        )
+
+        # Create command to run child plan
+        run_child_plan_command = self.Command.create(
+            {
+                "name": "Run Child Plan",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+
+        # Create main flight plan with 2 commands
+        main_plan = self.Plan.create(
+            {
+                "name": "Main Plan with Child Plan",
+                "note": "Main plan with python command and child plan",
+            }
+        )
+
+        # Command 1 of main plan - simple python command (should succeed)
+        main_command_1 = self.Command.create(
+            {
+                "name": "Main Command 1 - Python Success",
+                "action": "python_code",
+                "code": """
+result = {
+    "exit_code": 0,
+    "message": "Main plan python command executed successfully"
+}
+            """,
+            }
+        )
+
+        # Command 2 of main plan - run child plan (will fail)
+        main_command_2 = run_child_plan_command
+
+        # Create plan lines for main plan
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": main_plan.id,
+                "command_id": main_command_1.id,
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": main_plan.id,
+                "command_id": main_command_2.id,
+            }
+        )
+        # Run the first command again
+        self.plan_line.create(
+            {
+                "sequence": 30,
+                "plan_id": main_plan.id,
+                "command_id": main_command_1.id,
+            }
+        )
+
+        # Run the main flight plan
+        plan_log = self.server_test_1.run_flight_plan(main_plan)
+
+        # Verify main plan finished with error
+        self.assertNotEqual(
+            plan_log.plan_status, 0, "Main plan should not finish successfully"
+        )
+
+        # Get all plan logs for verification
+        all_plan_logs = plan_log | self.PlanLog.search(
+            [("parent_flight_plan_log_id", "=", plan_log.id)]
+        )
+
+        # Should have 2 plan logs: main plan and child plan
+        self.assertEqual(
+            len(all_plan_logs), 2, "Should have 2 plan logs: main and child"
+        )
+
+        main_plan_log = all_plan_logs.filtered(lambda log: log.plan_id == main_plan)
+        child_plan_log = all_plan_logs.filtered(
+            lambda log: log.parent_flight_plan_log_id == main_plan_log
+        )
+
+        self.assertTrue(main_plan_log, "Main plan log should exist")
+        self.assertTrue(child_plan_log, "Child plan log should exist")
+
+        # Verify child plan finished with error
+        # The child plan should finish with an error
+        # (either SSH_CONNECTION_ERROR or GENERAL_ERROR)
+        self.assertNotEqual(
+            child_plan_log.plan_status,
+            0,
+            "Child plan should not finish successfully",
+        )
+
+        # Get command logs for verification
+        all_command_logs = self.CommandLog.search(
+            [("plan_log_id", "in", all_plan_logs.ids)]
+        )
+
+        # Should have 3 command logs: main python,
+        # run child plan, child command exception
+        self.assertEqual(len(all_command_logs), 3, "Should have 3 command logs")
+
+        # Find specific command logs
+        main_python_log = all_command_logs.filtered(
+            lambda log: log.command_id == main_command_1
+        )
+        run_child_plan_log = all_command_logs.filtered(
+            lambda log: log.command_id == main_command_2
+        )
+        child_ssh_error_log = all_command_logs.filtered(
+            lambda log: log.command_id == child_command_1
+        )
+
+        # Verify main python command succeeded
+        self.assertEqual(
+            main_python_log.command_status, 0, "Main python command should succeed"
+        )
+        self.assertEqual(
+            main_python_log.command_response,
+            "Main plan python command executed successfully",
+            "Main python command should have correct response",
+        )
+
+        # Verify run child plan command failed
+        # The command should fail with an error
+        # (either SSH_CONNECTION_ERROR or GENERAL_ERROR)
+        self.assertNotEqual(
+            run_child_plan_log.command_status,
+            0,
+            "Run child plan command should fail",
+        )
+
+        # Verify child SSH command failed
+        # The SSH command should fail with an error status
+        # (could be GENERAL_ERROR -100 or 255 depending on how the exception is handled)
+        self.assertNotEqual(
+            child_ssh_error_log.command_status, 0, "Child SSH command should fail"
+        )
+        # The error message should contain information about
+        # the SSH connection failure
+        # The exact error message may vary depending
+        # on how the exception is handled
+        self.assertTrue(
+            child_ssh_error_log.command_error,
+            "Child SSH command should have an error message",
+        )
+
+        # Verify that child command 2 was not executed (no log for it)
+        child_command_2_log = all_command_logs.filtered(
+            lambda log: log.command_id == child_command_2
+        )
+        self.assertFalse(
+            child_command_2_log, "Child command 2 should not have been executed"
+        )
+
+        # Verify plan log relationships
+        self.assertEqual(
+            main_plan_log.command_log_ids,
+            main_python_log | run_child_plan_log,
+            "Main plan should have correct command logs",
+        )
+
+        self.assertEqual(
+            child_plan_log.command_log_ids,
+            child_ssh_error_log,
+            "Child plan should have only the failed command log",
+        )
+
+        # Verify that the error propagated correctly through the hierarchy
+        # The error should propagate from command -> child plan -> main plan
+        # The specific error codes may vary depending
+        # on how the system handles the error
+        self.assertNotEqual(
+            main_plan_log.plan_status,
+            0,
+            "Error should propagate from child to main plan",
+        )
+        self.assertNotEqual(
+            child_plan_log.plan_status, 0, "Error should be present in child plan"
+        )
+        self.assertNotEqual(
+            child_ssh_error_log.command_status,
+            0,
+            "SSH command should have an error status",
+        )
+        self.assertEqual(
+            child_ssh_error_log.command_status,
+            child_plan_log.plan_status,
+            "Child plan should have the same error status as the SSH command",
+        )
+        self.assertEqual(
+            child_ssh_error_log.command_status,
+            main_plan_log.plan_status,
+            "Main plan should have the same error status as the SSH command",
+        )
