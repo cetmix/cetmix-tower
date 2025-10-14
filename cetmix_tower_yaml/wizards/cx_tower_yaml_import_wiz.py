@@ -32,13 +32,13 @@ class CxTowerYamlImportWiz(models.TransientModel):
         required=True,
         help="What to do if record with the same reference already exists",
     )
-    secret_list = fields.Char(
-        readonly=True,
-        help="List of secrets present in the YAML file",
+    secret_list = fields.Html(
+        help="List of secrets present in the YAML file (formatted as HTML list)",
         compute="_compute_secret_list",
     )
-    preview_code = fields.Boolean()
-
+    preview_code = fields.Boolean(
+        help="Toggle to show or hide YAML code preview",
+    )
     manifest_name = fields.Char(
         readonly=True, compute="_compute_yaml_data", string="Snippet Name"
     )
@@ -77,20 +77,25 @@ class CxTowerYamlImportWiz(models.TransientModel):
     def _compute_secret_list(self):
         """Compute list of secrets present in the YAML file"""
         for record in self:
-            secret_list = self._extract_secret_names(yaml.safe_load(record.yaml_code))
-            if secret_list:
-                record.secret_list = _(
-                    "After import, please check and provide secret values"
-                    " if needed for the following secrets: %(secrets)s",
-                    secrets=", ".join(secret_list),
-                )
-            else:
+            yaml_data = yaml.safe_load(record.yaml_code or "{}")
+            secret_list = self._extract_secret_names(yaml_data)
+            if not secret_list:
                 record.secret_list = False
+                continue
+
+            # Build deterministic HTML list of secrets
+            items = "".join(f"<li>{name}</li>" for name in sorted(secret_list))
+            secrets_html = f"<ul>{items}</ul>"
+
+            record.secret_list = _(
+                "Following secrets are used in the code:<br/>%(secrets)s",
+                secrets=secrets_html,
+            )
 
     @api.depends("yaml_code")
     def _compute_yaml_data(self):
         for record in self:
-            data = yaml.safe_load(record.yaml_code)
+            data = yaml.safe_load(record.yaml_code or "{}")
 
             manifest = data.get("manifest", {}) if isinstance(data, dict) else {}
             authors = manifest.get("author")
@@ -265,11 +270,9 @@ class CxTowerYamlImportWiz(models.TransientModel):
     def _extract_secret_names(self, data: dict) -> list:
         """Extract names of secrets from YAML data.
 
-        Args:
-            data (dict): YAML data.
-
-        Returns:
-            list: List of unique secret names.
+        Supports both formats:
+        - secret_ids -> [{name: ...}]
+        - secret_ids -> [{key_id: {name: ...}}]
         """
         secret_names = set()
 
@@ -278,9 +281,21 @@ class CxTowerYamlImportWiz(models.TransientModel):
             if isinstance(node, dict):
                 if "secret_ids" in node and isinstance(node["secret_ids"], list):
                     for item in node["secret_ids"]:
-                        if isinstance(item, dict) and "name" in item:
-                            secret_names.add(item["name"])
+                        if not isinstance(item, dict):
+                            continue
 
+                        # Format 1: direct name
+                        if "name" in item:
+                            secret_names.add(item["name"])
+                        # Format 2: nested key_id -> name
+                        elif (
+                            "key_id" in item
+                            and isinstance(item["key_id"], dict)
+                            and "name" in item["key_id"]
+                        ):
+                            secret_names.add(item["key_id"]["name"])
+
+                # Handle single ssh_key_id
                 if "ssh_key_id" in node and isinstance(node["ssh_key_id"], dict):
                     if "name" in node["ssh_key_id"]:
                         secret_names.add(node["ssh_key_id"]["name"])

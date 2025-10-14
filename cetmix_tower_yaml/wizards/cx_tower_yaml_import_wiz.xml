@@ -9,6 +9,17 @@
                 <group>
                     <field name="if_record_exists" />
                 </group>
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    attrs="{'invisible': [('secret_list', '=', False)]}"
+                >
+                    <field name="secret_list" nolabel="1" />
+                </div>
+
+                <group>
+                    <field name="preview_code" widget="boolean_toggle" />
+                </group>
                 <group
                     attrs="{'invisible': [
                         ('manifest_name', '=', False),
@@ -38,30 +49,38 @@
                             attrs="{'invisible': [('manifest_currency', '=', False)]}"
                         />
                     </group>
-                    <notebook>
-                        <page
-                            string="Description"
-                            attrs="{'invisible':[('manifest_description','=',False)]}"
-                        >
-                            <field
-                                name="manifest_description"
-                                widget="text"
-                                nolabel="1"
-                                colspan="4"
-                            />
-                        </page>
-                        <page
-                            string="License text"
-                            attrs="{'invisible':[('manifest_license_text','=',False)]}"
-                        >
-                            <field
-                                name="manifest_license_text"
-                                widget="text"
-                                nolabel="1"
-                                colspan="4"
-                            />
-                        </page>
-                        <page string="Preview code">
+                </group>
+
+                <notebook>
+                    <page
+                        string="Description"
+                        attrs="{'invisible':[('manifest_description','=',False)]}"
+                    >
+                        <field
+                            name="manifest_description"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                        />
+                    </page>
+
+                    <page
+                        string="License text"
+                        attrs="{'invisible':[('manifest_license_text','=',False)]}"
+                    >
+                        <field
+                            name="manifest_license_text"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                        />
+                    </page>
+
+                    <page
+                        string="Code preview"
+                        attrs="{'invisible': [('preview_code', '=', False)]}"
+                    >
+                        <group>
                             <field
                                 name="yaml_code"
                                 widget="ace"
@@ -70,10 +89,9 @@
                                 nolabel="1"
                                 colspan="4"
                             />
-                        </page>
-                    </notebook>
-
-                </group>
+                        </group>
+                    </page>
+                </notebook>
 
                 <div
                     class="alert alert-warning"
@@ -81,9 +99,11 @@
                     attrs="{'invisible': [('if_record_exists', '!=', 'create')]}"
                     style="margin-bottom:0px;"
                 >
-                <p>
-                    <strong
-                        >Important:</strong> To maintain data consistency, the following model records will always be updated if they exist in Odoo:
+                    <p>
+                        <strong
+                        >Important:</strong> To maintain data consistency, the following
+                        model records will always be updated if they exist in Odoo:
+                    </p>
                     <ul>
                         <li>Variables</li>
                         <li>Variable Options</li>
@@ -91,9 +111,11 @@
                         <li>Tags</li>
                         <li>OSs</li>
                     </ul>
-                    To create new entities instead of updating existing ones, remove or modify the <code
+                    <p>
+                        To create new entities instead of updating existing ones, remove or modify
+                        the <code
                         >reference</code> field in the YAML code for those entities.
-                </p>
+                    </p>
                 </div>
                 <div
                     class="alert alert-warning"
@@ -105,16 +127,6 @@
                         Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.
                         If any of those related records doesn't exist, it will be created automatically.
                     </p>
-                </div>
-                <div
-                    class="alert alert-info"
-                    role="alert"
-                    attrs="{'invisible': [('secret_list', '=', False)]}"
-                >
-                    <field
-                        name="secret_list"
-                        attrs="{'invisible': [('secret_list', '=', False)]}"
-                    />
                 </div>
                 <footer>
                     <button
