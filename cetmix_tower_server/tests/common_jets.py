@@ -100,7 +100,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Test Jet Template",
                 "reference": "test_jet_template",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
 
@@ -111,7 +110,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Tower Core",
                 "reference": "tower_core",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
 
@@ -120,7 +118,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Docker",
                 "reference": "docker",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # Docker requires Tower Core to be running
@@ -137,7 +134,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Nginx",
                 "reference": "nginx",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # Nginx requires Docker to be running
@@ -154,7 +150,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Postgres",
                 "reference": "postgres",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # Postgres requires Docker to be running
@@ -170,7 +165,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "MariaDB",
                 "reference": "mariadb",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # MariaDB requires Docker to be running
@@ -187,7 +181,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Odoo",
                 "reference": "odoo",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # Odoo requires Postgres to be running
@@ -211,7 +204,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "WordPress",
                 "reference": "wordpress",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # WordPress requires MariaDB to be running
@@ -236,7 +228,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "WooCommerce with Odoo",
                 "reference": "woocommerce_odoo",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
         # WooCommerce requires WordPress to be running
@@ -299,7 +290,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Monitoring",
                 "reference": "monitoring",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
 
@@ -317,7 +307,6 @@ class TestTowerJetsCommon(TestTowerCommon):
             {
                 "name": "Backup",
                 "reference": "backup",
-                "server_ids": [(4, cls.server_test_1.id)],
             }
         )
 
@@ -462,5 +451,13 @@ class TestTowerJetsCommon(TestTowerCommon):
                 "state_to_id": False,  # No final state
                 "state_transit_id": cls.state_stopping.id,
                 "priority": 1,
+            }
+        )
+
+        # Create a clean template for tests that need isolation from common actions
+        cls.clean_template = cls.JetTemplate.create(
+            {
+                "name": "Clean Template",
+                "reference": "clean_template",
             }
         )

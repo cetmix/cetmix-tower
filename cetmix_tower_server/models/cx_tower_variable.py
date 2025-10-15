@@ -777,7 +777,7 @@ class TowerVariable(models.Model):
         """Parser system variable of `tools` type.
 
         Returns:
-            dict(): `server` values of the `tower` variable.
+            dict(): `tools` values of the `tower` variable.
         """
         today = fields.Date.to_string(fields.Date.today())
         now = fields.Datetime.to_string(fields.Datetime.now())

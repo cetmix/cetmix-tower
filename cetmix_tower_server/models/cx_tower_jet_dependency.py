@@ -25,7 +25,7 @@ class CxTowerJetDependency(models.Model):
         string="Jet",
         required=True,
         index=True,
-        help="Jet this dependence belongs to.",
+        help="Jet this dependency belongs to",
         ondelete="cascade",
     )
     jet_depends_on_id = fields.Many2one(
@@ -49,3 +49,16 @@ class CxTowerJetDependency(models.Model):
         for record in self:
             if record.jet_id == record.jet_depends_on_id:
                 raise ValidationError(_("A jet cannot depend on itself!"))
+            # Ensure jet dependency is not a self-dependency
+            if record.jet_id == record.jet_depends_on_id:
+                raise ValidationError(_("A jet cannot depend on itself!"))
+            # Ensure jet that we depend on has the templated
+            # from the template dependency
+            if (
+                record.jet_depends_on_id
+                and record.jet_depends_on_id.jet_template_id
+                != record.jet_template_dependency_id.template_required_id
+            ):
+                raise ValidationError(
+                    _("A jet cannot depend on a jet with a different template!")
+                )

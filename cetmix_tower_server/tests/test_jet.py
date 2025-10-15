@@ -22,7 +22,7 @@ class TestTowerJet(TestTowerJetsCommon):
         # Jet has template but no state
         self.jet_test.state_id = False
 
-        # available_action_ids should be empty recordset
+        # available_action_ids should include only the create action
         self.assertEqual(
             len(self.jet_test.available_action_ids),
             1,
@@ -118,8 +118,8 @@ class TestTowerJet(TestTowerJetsCommon):
         for state, expected_actions in test_cases:
             self.jet_test.state_id = state
             actual_actions = self.jet_test.available_action_ids
-            expected_actions_set = set(expected_actions)
-            actual_actions_set = set(actual_actions)
+            expected_actions_set = {action.id for action in expected_actions}
+            actual_actions_set = {action.id for action in actual_actions}
 
             self.assertEqual(
                 actual_actions_set,
@@ -253,16 +253,27 @@ class TestTowerJet(TestTowerJetsCommon):
         self.assertEqual(domain, expected_domain, "Domain should include server filter")
 
         # Test domain computation with a different server
+        server_test_2 = self.Server.create(
+            {
+                "name": "Test Server 2",
+                "ip_v4_address": "192.168.1.2",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key_2",
+                "os_id": self.os_debian_10.id,
+            }
+        )
         jet_with_different_server = self.Jet.create(
             {
                 "name": "Jet With Different Server",
                 "reference": "jet_with_different_server",
                 "jet_template_id": self.jet_template_test.id,
-                "server_id": self.server_test_1.id,
+                "server_id": server_test_2.id,
             }
         )
         domain = jet_with_different_server.jet_template_domain
-        expected_domain = [("server_ids", "in", [self.server_test_1.id])]
+        expected_domain = [("server_ids", "in", [server_test_2.id])]
         self.assertEqual(
             domain,
             expected_domain,
