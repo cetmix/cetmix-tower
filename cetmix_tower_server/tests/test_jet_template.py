@@ -3,231 +3,19 @@
 
 from odoo.exceptions import ValidationError
 
-from .common import TestTowerCommon
+from .common_jets import TestTowerJetsCommon
 
 
-class TestTowerJetTemplate(TestTowerCommon):
+class TestTowerJetTemplate(TestTowerJetsCommon):
     """
     Test the jet template model
     """
 
+    # All jet-related test data is now inherited from TestTowerJetsCommon
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-
-        # Create jet states
-        cls.state_initial = cls.JetState.create(
-            {
-                "name": "Initial",
-                "reference": "initial",
-                "sequence": 10,
-                "color": 1,
-            }
-        )
-        cls.state_running = cls.JetState.create(
-            {
-                "name": "Running",
-                "reference": "running",
-                "sequence": 20,
-                "color": 2,
-            }
-        )
-        cls.state_stopped = cls.JetState.create(
-            {
-                "name": "Stopped",
-                "reference": "stopped",
-                "sequence": 30,
-                "color": 3,
-            }
-        )
-        cls.state_error = cls.JetState.create(
-            {
-                "name": "Error",
-                "reference": "error",
-                "sequence": 40,
-                "color": 4,
-            }
-        )
-
-        # Create transit states
-        cls.state_starting = cls.JetState.create(
-            {
-                "name": "Starting",
-                "reference": "starting",
-                "sequence": 15,
-                "color": 5,
-            }
-        )
-        cls.state_stopping = cls.JetState.create(
-            {
-                "name": "Stopping",
-                "reference": "stopping",
-                "sequence": 25,
-                "color": 6,
-            }
-        )
-
-        # Create test states for pathfinding and adjacency tests
-        cls.state_a = cls.JetState.create(
-            {
-                "name": "State A",
-                "reference": "state_a",
-                "sequence": 30,
-            }
-        )
-        cls.state_b = cls.JetState.create(
-            {
-                "name": "State B",
-                "reference": "state_b",
-                "sequence": 31,
-            }
-        )
-        cls.state_c = cls.JetState.create(
-            {
-                "name": "State C",
-                "reference": "state_c",
-                "sequence": 32,
-            }
-        )
-        cls.state_d = cls.JetState.create(
-            {
-                "name": "State D",
-                "reference": "state_d",
-                "sequence": 33,
-            }
-        )
-
-        # Create jet template for testing
-        cls.jet_template_test = cls.JetTemplate.create(
-            {
-                "name": "Test Jet Template",
-                "reference": "test_jet_template",
-            }
-        )
-
-        # Create dependency hierarchy for testing:
-        # Odoo -> Postgres, Nginx -> Docker -> Tower Core
-        # Level 1: Base dependencies
-        cls.tower_core = cls.JetTemplate.create(
-            {
-                "name": "Tower Core",
-                "reference": "tower_core",
-            }
-        )
-
-        # Level 2: Infrastructure
-        cls.docker = cls.JetTemplate.create(
-            {
-                "name": "Docker",
-                "reference": "docker",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.docker.id,
-                "template_required_id": cls.tower_core.id,
-            }
-        )
-
-        # Level 3: Services
-        cls.nginx = cls.JetTemplate.create(
-            {
-                "name": "Nginx",
-                "reference": "nginx",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.nginx.id,
-                "template_required_id": cls.docker.id,
-            }
-        )
-
-        # Level 3: Database
-        cls.postgres = cls.JetTemplate.create(
-            {
-                "name": "Postgres",
-                "reference": "postgres",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.postgres.id,
-                "template_required_id": cls.docker.id,
-            }
-        )
-
-        cls.mariadb = cls.JetTemplate.create(
-            {
-                "name": "MariaDB",
-                "reference": "mariadb",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.mariadb.id,
-                "template_required_id": cls.docker.id,
-            }
-        )
-
-        # Level 5: Applications
-        cls.odoo = cls.JetTemplate.create(
-            {
-                "name": "Odoo",
-                "reference": "odoo",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.odoo.id,
-                "template_required_id": cls.postgres.id,
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.odoo.id,
-                "template_required_id": cls.nginx.id,
-            }
-        )
-
-        cls.wordpress = cls.JetTemplate.create(
-            {
-                "name": "WordPress",
-                "reference": "wordpress",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.wordpress.id,
-                "template_required_id": cls.mariadb.id,
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.wordpress.id,
-                "template_required_id": cls.nginx.id,
-            }
-        )
-
-        # Level 6: E-commerce Integration
-        cls.woocommerce_odoo = cls.JetTemplate.create(
-            {
-                "name": "WooCommerce with Odoo",
-                "reference": "woocommerce_odoo",
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.woocommerce_odoo.id,
-                "template_required_id": cls.wordpress.id,
-            }
-        )
-        cls.JetTemplateDependency.create(
-            {
-                "template_id": cls.woocommerce_odoo.id,
-                "template_required_id": cls.odoo.id,
-            }
-        )
 
         # Create additional servers for multi-server tests
         cls.server_test_2 = cls.Server.create(
@@ -1736,11 +1524,16 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Call install method directly
-        self.odoo.with_context(no_transaction_commit=True).install_on_servers(server)
+        self.jet_template_odoo.with_context(
+            no_transaction_commit=True
+        ).install_on_servers(server)
 
         # Verify installation record was created
         install_records = self.JetTemplateInstall.search(
-            [("jet_template_id", "=", self.odoo.id), ("server_id", "=", server.id)]
+            [
+                ("jet_template_id", "=", self.jet_template_odoo.id),
+                ("server_id", "=", server.id),
+            ]
         )
         self.assertEqual(
             len(install_records), 1, "Should create exactly one installation record"
@@ -1754,16 +1547,19 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Install Tower Core on server
-        self.tower_core.server_ids = [(4, server.id)]
+        self.jet_template_tower_core.server_ids = [(4, server.id)]
 
         # Call install method directly
-        self.postgres.with_context(no_transaction_commit=True).install_on_servers(
-            server
-        )
+        self.jet_template_postgres.with_context(
+            no_transaction_commit=True
+        ).install_on_servers(server)
 
         # Verify installation record was created
         install_records = self.JetTemplateInstall.search(
-            [("jet_template_id", "=", self.postgres.id), ("server_id", "=", server.id)]
+            [
+                ("jet_template_id", "=", self.jet_template_postgres.id),
+                ("server_id", "=", server.id),
+            ]
         )
         self.assertEqual(
             len(install_records), 1, "Should create exactly one installation record"
@@ -1816,11 +1612,16 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Call install method directly
-        self.odoo.with_context(no_transaction_commit=True).install_on_servers(server)
+        self.jet_template_odoo.with_context(
+            no_transaction_commit=True
+        ).install_on_servers(server)
 
         # Verify installation record was created
         install_records = self.JetTemplateInstall.search(
-            [("jet_template_id", "=", self.odoo.id), ("server_id", "=", server.id)]
+            [
+                ("jet_template_id", "=", self.jet_template_odoo.id),
+                ("server_id", "=", server.id),
+            ]
         )
         self.assertEqual(
             len(install_records), 1, "Should create exactly one installation record"
@@ -1895,11 +1696,16 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Call install for Odoo template
-        self.odoo.with_context(no_transaction_commit=True).install_on_servers(server)
+        self.jet_template_odoo.with_context(
+            no_transaction_commit=True
+        ).install_on_servers(server)
 
         # Verify installation log is created
         install_records = self.JetTemplateInstall.search(
-            [("jet_template_id", "=", self.odoo.id), ("server_id", "=", server.id)]
+            [
+                ("jet_template_id", "=", self.jet_template_odoo.id),
+                ("server_id", "=", server.id),
+            ]
         )
         self.assertEqual(
             len(install_records), 1, "Should create exactly one installation record"
@@ -1908,7 +1714,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         install_record = install_records[0]
         self.assertEqual(
             install_record.jet_template_id,
-            self.odoo,
+            self.jet_template_odoo,
             "Installation should be for Odoo template",
         )
         self.assertEqual(
@@ -1926,11 +1732,11 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Verify all expected templates are included
         template_ids = install_lines.mapped("jet_template_id.id")
         expected_template_ids = [
-            self.tower_core.id,
-            self.docker.id,
-            self.postgres.id,
-            self.nginx.id,
-            self.odoo.id,
+            self.jet_template_tower_core.id,
+            self.jet_template_docker.id,
+            self.jet_template_postgres.id,
+            self.jet_template_nginx.id,
+            self.jet_template_odoo.id,
         ]
         self.assertEqual(
             set(template_ids),
@@ -1941,11 +1747,17 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Verify correct order: Odoo -> Nginx -> Postgres -> Docker -> Tower Core
         # Note: Main template comes first, then dependencies in resolution order
         expected_order = [
-            (self.odoo, 0),  # Odoo first (main template)
-            (self.nginx, 1),  # Nginx second (direct dependency of Odoo)
-            (self.postgres, 2),  # Postgres third (direct dependency of Odoo)
-            (self.docker, 3),  # Docker fourth (dependency of Postgres and Nginx)
-            (self.tower_core, 4),  # Tower Core last (dependency of Docker)
+            (self.jet_template_odoo, 0),  # Odoo first (main template)
+            (self.jet_template_nginx, 1),  # Nginx second (direct dependency of Odoo)
+            (
+                self.jet_template_postgres,
+                2,
+            ),  # Postgres third (direct dependency of Odoo)
+            (
+                self.jet_template_docker,
+                3,
+            ),  # Docker fourth (dependency of Postgres and Nginx)
+            (self.jet_template_tower_core, 4),  # Tower Core last (dependency of Docker)
         ]
 
         for i, (expected_template, expected_order_num) in enumerate(expected_order):
@@ -1964,17 +1776,17 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Verify dependency relationships are correct
         # Odoo should be first (main template)
         odoo_line = install_lines.filtered(
-            lambda line: line.jet_template_id == self.odoo
+            lambda line: line.jet_template_id == self.jet_template_odoo
         )
         self.assertEqual(len(odoo_line), 1, "Should have exactly one Odoo line")
         self.assertEqual(odoo_line.order, 0, "Odoo should be first (order 0)")
 
         # Nginx and Postgres should be second and third (direct dependencies of Odoo)
         nginx_line = install_lines.filtered(
-            lambda line: line.jet_template_id == self.nginx
+            lambda line: line.jet_template_id == self.jet_template_nginx
         )
         postgres_line = install_lines.filtered(
-            lambda line: line.jet_template_id == self.postgres
+            lambda line: line.jet_template_id == self.jet_template_postgres
         )
         self.assertEqual(len(nginx_line), 1, "Should have exactly one Nginx line")
         self.assertEqual(len(postgres_line), 1, "Should have exactly one Postgres line")
@@ -1988,14 +1800,14 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Docker should be fourth (dependency of both Postgres and Nginx)
         docker_line = install_lines.filtered(
-            lambda line: line.jet_template_id == self.docker
+            lambda line: line.jet_template_id == self.jet_template_docker
         )
         self.assertEqual(len(docker_line), 1, "Should have exactly one Docker line")
         self.assertEqual(docker_line.order, 3, "Docker should be fourth (order 3)")
 
         # Tower Core should be last (dependency of Docker)
         tower_core_line = install_lines.filtered(
-            lambda line: line.jet_template_id == self.tower_core
+            lambda line: line.jet_template_id == self.jet_template_tower_core
         )
         self.assertEqual(
             len(tower_core_line), 1, "Should have exactly one Tower Core line"
@@ -2008,15 +1820,15 @@ class TestTowerJetTemplate(TestTowerCommon):
         """Test _build_dependency_graph with simple dependency chain"""
         # Use the existing dependency hierarchy
 
-        graph = self.odoo._build_dependency_graph()
+        graph = self.jet_template_odoo._build_dependency_graph()
 
         # Verify all templates are in the graph
         expected_template_ids = [
-            self.odoo.id,
-            self.postgres.id,
-            self.nginx.id,
-            self.docker.id,
-            self.tower_core.id,
+            self.jet_template_odoo.id,
+            self.jet_template_postgres.id,
+            self.jet_template_nginx.id,
+            self.jet_template_docker.id,
+            self.jet_template_tower_core.id,
         ]
         self.assertEqual(
             set(graph.keys()),
@@ -2025,8 +1837,8 @@ class TestTowerJetTemplate(TestTowerCommon):
         )
 
         # Verify Odoo template info
-        odoo_info = graph[self.odoo.id]
-        self.assertEqual(odoo_info["template"], self.odoo)
+        odoo_info = graph[self.jet_template_odoo.id]
+        self.assertEqual(odoo_info["template"], self.jet_template_odoo)
         self.assertEqual(odoo_info["name"], "Odoo")
         self.assertEqual(odoo_info["reference"], "odoo")
         self.assertEqual(odoo_info["level"], 0)  # Root template
@@ -2036,12 +1848,12 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Verify Odoo dependencies
         odoo_dep_ids = [dep["template_id"] for dep in odoo_info["dependencies"]]
-        self.assertIn(self.postgres.id, odoo_dep_ids)
-        self.assertIn(self.nginx.id, odoo_dep_ids)
+        self.assertIn(self.jet_template_postgres.id, odoo_dep_ids)
+        self.assertIn(self.jet_template_nginx.id, odoo_dep_ids)
 
         # Verify Postgres template info
-        postgres_info = graph[self.postgres.id]
-        self.assertEqual(postgres_info["template"], self.postgres)
+        postgres_info = graph[self.jet_template_postgres.id]
+        self.assertEqual(postgres_info["template"], self.jet_template_postgres)
         self.assertEqual(postgres_info["name"], "Postgres")
         self.assertEqual(postgres_info["reference"], "postgres")
         self.assertEqual(postgres_info["level"], 1)  # One level from root
@@ -2049,11 +1861,11 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Verify Postgres dependencies
         postgres_dep_ids = [dep["template_id"] for dep in postgres_info["dependencies"]]
-        self.assertIn(self.docker.id, postgres_dep_ids)
+        self.assertIn(self.jet_template_docker.id, postgres_dep_ids)
 
         # Verify Nginx template info
-        nginx_info = graph[self.nginx.id]
-        self.assertEqual(nginx_info["template"], self.nginx)
+        nginx_info = graph[self.jet_template_nginx.id]
+        self.assertEqual(nginx_info["template"], self.jet_template_nginx)
         self.assertEqual(nginx_info["name"], "Nginx")
         self.assertEqual(nginx_info["reference"], "nginx")
         self.assertEqual(nginx_info["level"], 1)  # One level from root
@@ -2061,11 +1873,11 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Verify Nginx dependencies
         nginx_dep_ids = [dep["template_id"] for dep in nginx_info["dependencies"]]
-        self.assertIn(self.docker.id, nginx_dep_ids)
+        self.assertIn(self.jet_template_docker.id, nginx_dep_ids)
 
         # Verify Docker template info
-        docker_info = graph[self.docker.id]
-        self.assertEqual(docker_info["template"], self.docker)
+        docker_info = graph[self.jet_template_docker.id]
+        self.assertEqual(docker_info["template"], self.jet_template_docker)
         self.assertEqual(docker_info["name"], "Docker")
         self.assertEqual(docker_info["reference"], "docker")
         self.assertEqual(docker_info["level"], 2)  # Two levels from root
@@ -2073,11 +1885,11 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Verify Docker dependencies
         docker_dep_ids = [dep["template_id"] for dep in docker_info["dependencies"]]
-        self.assertIn(self.tower_core.id, docker_dep_ids)
+        self.assertIn(self.jet_template_tower_core.id, docker_dep_ids)
 
         # Verify Tower Core template info
-        tower_core_info = graph[self.tower_core.id]
-        self.assertEqual(tower_core_info["template"], self.tower_core)
+        tower_core_info = graph[self.jet_template_tower_core.id]
+        self.assertEqual(tower_core_info["template"], self.jet_template_tower_core)
         self.assertEqual(tower_core_info["name"], "Tower Core")
         self.assertEqual(tower_core_info["reference"], "tower_core")
         self.assertEqual(tower_core_info["level"], 3)  # Three levels from root
@@ -2157,7 +1969,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         self.JetTemplateDependency.create(
             {
                 "template_id": template_with_state.id,
-                "template_required_id": self.tower_core.id,
+                "template_required_id": self.jet_template_tower_core.id,
                 "state_required_id": self.state_running.id,
             }
         )
@@ -2169,7 +1981,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         self.assertEqual(len(template_info["dependencies"]), 1)
 
         dep_info = template_info["dependencies"][0]
-        self.assertEqual(dep_info["template_id"], self.tower_core.id)
+        self.assertEqual(dep_info["template_id"], self.jet_template_tower_core.id)
         self.assertEqual(dep_info["template_name"], "Tower Core")
         self.assertEqual(dep_info["template_reference"], "tower_core")
         self.assertEqual(dep_info["required_state_id"], self.state_running.id)
@@ -2316,52 +2128,60 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Build the graph manually to test _calculate_dependency_levels
         graph = {
-            self.odoo.id: {
-                "template": self.odoo,
-                "name": self.odoo.name,
-                "reference": self.odoo.reference,
+            self.jet_template_odoo.id: {
+                "template": self.jet_template_odoo,
+                "name": self.jet_template_odoo.name,
+                "reference": self.jet_template_odoo.reference,
                 "dependencies": [
-                    {"template_id": self.postgres.id},
-                    {"template_id": self.nginx.id},
+                    {"template_id": self.jet_template_postgres.id},
+                    {"template_id": self.jet_template_nginx.id},
                 ],
                 "level": 0,  # Will be calculated
             },
-            self.postgres.id: {
-                "template": self.postgres,
-                "name": self.postgres.name,
-                "reference": self.postgres.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_postgres.id: {
+                "template": self.jet_template_postgres,
+                "name": self.jet_template_postgres.name,
+                "reference": self.jet_template_postgres.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,  # Will be calculated
             },
-            self.docker.id: {
-                "template": self.docker,
-                "name": self.docker.name,
-                "reference": self.docker.reference,
-                "dependencies": [{"template_id": self.tower_core.id}],
+            self.jet_template_docker.id: {
+                "template": self.jet_template_docker,
+                "name": self.jet_template_docker.name,
+                "reference": self.jet_template_docker.reference,
+                "dependencies": [{"template_id": self.jet_template_tower_core.id}],
                 "level": 0,  # Will be calculated
             },
-            self.tower_core.id: {
-                "template": self.tower_core,
-                "name": self.tower_core.name,
-                "reference": self.tower_core.reference,
+            self.jet_template_tower_core.id: {
+                "template": self.jet_template_tower_core,
+                "name": self.jet_template_tower_core.name,
+                "reference": self.jet_template_tower_core.reference,
                 "dependencies": [],
                 "level": 0,  # Will be calculated
             },
         }
 
         # Call _calculate_dependency_levels
-        self.odoo._calculate_dependency_levels(graph)
+        self.jet_template_odoo._calculate_dependency_levels(graph)
 
         # Verify levels
         self.assertEqual(
-            graph[self.odoo.id]["level"], 0, "Odoo should be level 0 (root)"
+            graph[self.jet_template_odoo.id]["level"],
+            0,
+            "Odoo should be level 0 (root)",
         )
         self.assertEqual(
-            graph[self.postgres.id]["level"], 1, "Postgres should be level 1"
+            graph[self.jet_template_postgres.id]["level"],
+            1,
+            "Postgres should be level 1",
         )
-        self.assertEqual(graph[self.docker.id]["level"], 2, "Docker should be level 2")
         self.assertEqual(
-            graph[self.tower_core.id]["level"], 3, "Tower Core should be level 3"
+            graph[self.jet_template_docker.id]["level"], 2, "Docker should be level 2"
+        )
+        self.assertEqual(
+            graph[self.jet_template_tower_core.id]["level"],
+            3,
+            "Tower Core should be level 3",
         )
 
     def test_calculate_dependency_levels_branching_dependencies(self):
@@ -2371,64 +2191,70 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Build the graph manually
         graph = {
-            self.wordpress.id: {
-                "template": self.wordpress,
-                "name": self.wordpress.name,
-                "reference": self.wordpress.reference,
+            self.jet_template_wordpress.id: {
+                "template": self.jet_template_wordpress,
+                "name": self.jet_template_wordpress.name,
+                "reference": self.jet_template_wordpress.reference,
                 "dependencies": [
-                    {"template_id": self.mariadb.id},
-                    {"template_id": self.nginx.id},
+                    {"template_id": self.jet_template_mariadb.id},
+                    {"template_id": self.jet_template_nginx.id},
                 ],
                 "level": 0,
             },
-            self.mariadb.id: {
-                "template": self.mariadb,
-                "name": self.mariadb.name,
-                "reference": self.mariadb.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_mariadb.id: {
+                "template": self.jet_template_mariadb,
+                "name": self.jet_template_mariadb.name,
+                "reference": self.jet_template_mariadb.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,
             },
-            self.nginx.id: {
-                "template": self.nginx,
-                "name": self.nginx.name,
-                "reference": self.nginx.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_nginx.id: {
+                "template": self.jet_template_nginx,
+                "name": self.jet_template_nginx.name,
+                "reference": self.jet_template_nginx.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,
             },
-            self.docker.id: {
-                "template": self.docker,
-                "name": self.docker.name,
-                "reference": self.docker.reference,
-                "dependencies": [{"template_id": self.tower_core.id}],
+            self.jet_template_docker.id: {
+                "template": self.jet_template_docker,
+                "name": self.jet_template_docker.name,
+                "reference": self.jet_template_docker.reference,
+                "dependencies": [{"template_id": self.jet_template_tower_core.id}],
                 "level": 0,
             },
-            self.tower_core.id: {
-                "template": self.tower_core,
-                "name": self.tower_core.name,
-                "reference": self.tower_core.reference,
+            self.jet_template_tower_core.id: {
+                "template": self.jet_template_tower_core,
+                "name": self.jet_template_tower_core.name,
+                "reference": self.jet_template_tower_core.reference,
                 "dependencies": [],
                 "level": 0,
             },
         }
 
         # Call _calculate_dependency_levels
-        self.wordpress._calculate_dependency_levels(graph)
+        self.jet_template_wordpress._calculate_dependency_levels(graph)
 
         # Verify levels
         self.assertEqual(
-            graph[self.wordpress.id]["level"], 0, "WordPress should be level 0 (root)"
+            graph[self.jet_template_wordpress.id]["level"],
+            0,
+            "WordPress should be level 0 (root)",
         )
         self.assertEqual(
-            graph[self.mariadb.id]["level"], 1, "MariaDB should be level 1"
+            graph[self.jet_template_mariadb.id]["level"], 1, "MariaDB should be level 1"
         )
-        self.assertEqual(graph[self.nginx.id]["level"], 1, "Nginx should be level 1")
         self.assertEqual(
-            graph[self.docker.id]["level"],
+            graph[self.jet_template_nginx.id]["level"], 1, "Nginx should be level 1"
+        )
+        self.assertEqual(
+            graph[self.jet_template_docker.id]["level"],
             2,
             "Docker should be level 2 (shortest path from WordPress)",
         )
         self.assertEqual(
-            graph[self.tower_core.id]["level"], 3, "Tower Core should be level 3"
+            graph[self.jet_template_tower_core.id]["level"],
+            3,
+            "Tower Core should be level 3",
         )
 
     def test_calculate_dependency_levels_multiple_paths(self):
@@ -2437,64 +2263,70 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Build the graph manually
         graph = {
-            self.wordpress.id: {
-                "template": self.wordpress,
-                "name": self.wordpress.name,
-                "reference": self.wordpress.reference,
+            self.jet_template_wordpress.id: {
+                "template": self.jet_template_wordpress,
+                "name": self.jet_template_wordpress.name,
+                "reference": self.jet_template_wordpress.reference,
                 "dependencies": [
-                    {"template_id": self.mariadb.id},
-                    {"template_id": self.nginx.id},
+                    {"template_id": self.jet_template_mariadb.id},
+                    {"template_id": self.jet_template_nginx.id},
                 ],
                 "level": 0,
             },
-            self.mariadb.id: {
-                "template": self.mariadb,
-                "name": self.mariadb.name,
-                "reference": self.mariadb.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_mariadb.id: {
+                "template": self.jet_template_mariadb,
+                "name": self.jet_template_mariadb.name,
+                "reference": self.jet_template_mariadb.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,
             },
-            self.nginx.id: {
-                "template": self.nginx,
-                "name": self.nginx.name,
-                "reference": self.nginx.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_nginx.id: {
+                "template": self.jet_template_nginx,
+                "name": self.jet_template_nginx.name,
+                "reference": self.jet_template_nginx.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,
             },
-            self.docker.id: {
-                "template": self.docker,
-                "name": self.docker.name,
-                "reference": self.docker.reference,
-                "dependencies": [{"template_id": self.tower_core.id}],
+            self.jet_template_docker.id: {
+                "template": self.jet_template_docker,
+                "name": self.jet_template_docker.name,
+                "reference": self.jet_template_docker.reference,
+                "dependencies": [{"template_id": self.jet_template_tower_core.id}],
                 "level": 0,
             },
-            self.tower_core.id: {
-                "template": self.tower_core,
-                "name": self.tower_core.name,
-                "reference": self.tower_core.reference,
+            self.jet_template_tower_core.id: {
+                "template": self.jet_template_tower_core,
+                "name": self.jet_template_tower_core.name,
+                "reference": self.jet_template_tower_core.reference,
                 "dependencies": [],
                 "level": 0,
             },
         }
 
         # Call _calculate_dependency_levels
-        self.wordpress._calculate_dependency_levels(graph)
+        self.jet_template_wordpress._calculate_dependency_levels(graph)
 
         # Verify levels - Docker should have level 2 (shortest path from WordPress)
         self.assertEqual(
-            graph[self.wordpress.id]["level"], 0, "WordPress should be level 0 (root)"
+            graph[self.jet_template_wordpress.id]["level"],
+            0,
+            "WordPress should be level 0 (root)",
         )
         self.assertEqual(
-            graph[self.mariadb.id]["level"], 1, "MariaDB should be level 1"
+            graph[self.jet_template_mariadb.id]["level"], 1, "MariaDB should be level 1"
         )
-        self.assertEqual(graph[self.nginx.id]["level"], 1, "Nginx should be level 1")
         self.assertEqual(
-            graph[self.docker.id]["level"],
+            graph[self.jet_template_nginx.id]["level"], 1, "Nginx should be level 1"
+        )
+        self.assertEqual(
+            graph[self.jet_template_docker.id]["level"],
             2,
             "Docker should be level 2 (shortest path)",
         )
         self.assertEqual(
-            graph[self.tower_core.id]["level"], 3, "Tower Core should be level 3"
+            graph[self.jet_template_tower_core.id]["level"],
+            3,
+            "Tower Core should be level 3",
         )
 
     def test_calculate_dependency_levels_empty_graph(self):
@@ -2506,7 +2338,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         graph = {}
 
         # Call _calculate_dependency_levels - should not raise error
-        self.tower_core._calculate_dependency_levels(graph)
+        self.jet_template_tower_core._calculate_dependency_levels(graph)
 
         # Graph should remain empty
         self.assertEqual(len(graph), 0, "Empty graph should remain empty")
@@ -2518,21 +2350,23 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Single template graph
         graph = {
-            self.tower_core.id: {
-                "template": self.tower_core,
-                "name": self.tower_core.name,
-                "reference": self.tower_core.reference,
+            self.jet_template_tower_core.id: {
+                "template": self.jet_template_tower_core,
+                "name": self.jet_template_tower_core.name,
+                "reference": self.jet_template_tower_core.reference,
                 "dependencies": [],
                 "level": 0,
             }
         }
 
         # Call _calculate_dependency_levels
-        self.tower_core._calculate_dependency_levels(graph)
+        self.jet_template_tower_core._calculate_dependency_levels(graph)
 
         # Tower Core should be level 0
         self.assertEqual(
-            graph[self.tower_core.id]["level"], 0, "Single template should be level 0"
+            graph[self.jet_template_tower_core.id]["level"],
+            0,
+            "Single template should be level 0",
         )
 
     def test_calculate_dependency_levels_missing_template_in_graph(self):
@@ -2542,20 +2376,22 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Graph with Odoo but not the referenced template
         graph = {
-            self.odoo.id: {
-                "template": self.odoo,
-                "name": self.odoo.name,
-                "reference": self.odoo.reference,
+            self.jet_template_odoo.id: {
+                "template": self.jet_template_odoo,
+                "name": self.jet_template_odoo.name,
+                "reference": self.jet_template_odoo.reference,
                 "dependencies": [{"template_id": 99999}],  # Non-existent template ID
                 "level": 0,
             }
         }
 
         # Call _calculate_dependency_levels - should handle missing template gracefully
-        self.odoo._calculate_dependency_levels(graph)
+        self.jet_template_odoo._calculate_dependency_levels(graph)
 
         # Odoo should be level 0
-        self.assertEqual(graph[self.odoo.id]["level"], 0, "Odoo should be level 0")
+        self.assertEqual(
+            graph[self.jet_template_odoo.id]["level"], 0, "Odoo should be level 0"
+        )
 
     def test_calculate_dependency_levels_complex_hierarchy(self):
         """Test _calculate_dependency_levels with complex hierarchy"""
@@ -2565,69 +2401,79 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Build the graph manually - only include Odoo's actual dependencies
         graph = {
-            self.odoo.id: {
-                "template": self.odoo,
-                "name": self.odoo.name,
-                "reference": self.odoo.reference,
+            self.jet_template_odoo.id: {
+                "template": self.jet_template_odoo,
+                "name": self.jet_template_odoo.name,
+                "reference": self.jet_template_odoo.reference,
                 "dependencies": [
-                    {"template_id": self.postgres.id},
-                    {"template_id": self.nginx.id},
+                    {"template_id": self.jet_template_postgres.id},
+                    {"template_id": self.jet_template_nginx.id},
                 ],
                 "level": 0,
             },
-            self.postgres.id: {
-                "template": self.postgres,
-                "name": self.postgres.name,
-                "reference": self.postgres.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_postgres.id: {
+                "template": self.jet_template_postgres,
+                "name": self.jet_template_postgres.name,
+                "reference": self.jet_template_postgres.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,
             },
-            self.nginx.id: {
-                "template": self.nginx,
-                "name": self.nginx.name,
-                "reference": self.nginx.reference,
-                "dependencies": [{"template_id": self.docker.id}],
+            self.jet_template_nginx.id: {
+                "template": self.jet_template_nginx,
+                "name": self.jet_template_nginx.name,
+                "reference": self.jet_template_nginx.reference,
+                "dependencies": [{"template_id": self.jet_template_docker.id}],
                 "level": 0,
             },
-            self.docker.id: {
-                "template": self.docker,
-                "name": self.docker.name,
-                "reference": self.docker.reference,
-                "dependencies": [{"template_id": self.tower_core.id}],
+            self.jet_template_docker.id: {
+                "template": self.jet_template_docker,
+                "name": self.jet_template_docker.name,
+                "reference": self.jet_template_docker.reference,
+                "dependencies": [{"template_id": self.jet_template_tower_core.id}],
                 "level": 0,
             },
-            self.tower_core.id: {
-                "template": self.tower_core,
-                "name": self.tower_core.name,
-                "reference": self.tower_core.reference,
+            self.jet_template_tower_core.id: {
+                "template": self.jet_template_tower_core,
+                "name": self.jet_template_tower_core.name,
+                "reference": self.jet_template_tower_core.reference,
                 "dependencies": [],
                 "level": 0,
             },
         }
 
         # Call _calculate_dependency_levels from Odoo
-        self.odoo._calculate_dependency_levels(graph)
+        self.jet_template_odoo._calculate_dependency_levels(graph)
 
         # Verify levels
         self.assertEqual(
-            graph[self.odoo.id]["level"], 0, "Odoo should be level 0 (root)"
+            graph[self.jet_template_odoo.id]["level"],
+            0,
+            "Odoo should be level 0 (root)",
         )
         self.assertEqual(
-            graph[self.postgres.id]["level"], 1, "Postgres should be level 1"
+            graph[self.jet_template_postgres.id]["level"],
+            1,
+            "Postgres should be level 1",
         )
-        self.assertEqual(graph[self.nginx.id]["level"], 1, "Nginx should be level 1")
-        self.assertEqual(graph[self.docker.id]["level"], 2, "Docker should be level 2")
         self.assertEqual(
-            graph[self.tower_core.id]["level"], 3, "Tower Core should be level 3"
+            graph[self.jet_template_nginx.id]["level"], 1, "Nginx should be level 1"
+        )
+        self.assertEqual(
+            graph[self.jet_template_docker.id]["level"], 2, "Docker should be level 2"
+        )
+        self.assertEqual(
+            graph[self.jet_template_tower_core.id]["level"],
+            3,
+            "Tower Core should be level 3",
         )
 
         # Verify that only Odoo's dependencies are in the graph
         expected_template_ids = [
-            self.odoo.id,
-            self.postgres.id,
-            self.nginx.id,
-            self.docker.id,
-            self.tower_core.id,
+            self.jet_template_odoo.id,
+            self.jet_template_postgres.id,
+            self.jet_template_nginx.id,
+            self.jet_template_docker.id,
+            self.jet_template_tower_core.id,
         ]
         self.assertEqual(
             set(graph.keys()),
@@ -2641,14 +2487,14 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Use existing Odoo dependency chain:
         # Odoo -> Postgres/Nginx -> Docker -> Tower Core
 
-        dependencies = self.odoo._get_all_dependencies()
+        dependencies = self.jet_template_odoo._get_all_dependencies()
 
         # Should return all dependencies in level order (closest first)
         expected_dependencies = {
-            self.postgres,
-            self.nginx,
-            self.docker,
-            self.tower_core,
+            self.jet_template_postgres,
+            self.jet_template_nginx,
+            self.jet_template_docker,
+            self.jet_template_tower_core,
         }
         self.assertEqual(
             set(dependencies),
@@ -2659,26 +2505,32 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Verify the order is correct (level 1, then level 2, then level 3)
         # Postgres and Nginx should be first (level 1)
         self.assertIn(
-            self.postgres,
+            self.jet_template_postgres,
             dependencies[:2],
             "Postgres should be in first two dependencies",
         )
         self.assertIn(
-            self.nginx, dependencies[:2], "Nginx should be in first two dependencies"
+            self.jet_template_nginx,
+            dependencies[:2],
+            "Nginx should be in first two dependencies",
         )
 
         # Docker should be third (level 2)
-        self.assertEqual(dependencies[2], self.docker, "Docker should be third")
+        self.assertEqual(
+            dependencies[2], self.jet_template_docker, "Docker should be third"
+        )
 
         # Tower Core should be last (level 3)
-        self.assertEqual(dependencies[3], self.tower_core, "Tower Core should be last")
+        self.assertEqual(
+            dependencies[3], self.jet_template_tower_core, "Tower Core should be last"
+        )
 
     def test_get_all_dependencies_no_dependencies(self):
         """Test _get_all_dependencies with template that has no dependencies"""
         # pylint: disable=protected-access
         # Use Tower Core which has no dependencies
 
-        dependencies = self.tower_core._get_all_dependencies()
+        dependencies = self.jet_template_tower_core._get_all_dependencies()
 
         # Should return empty list
         self.assertEqual(
@@ -2693,10 +2545,15 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Use WordPress dependency chain:
         # WordPress -> MariaDB/Nginx -> Docker -> Tower Core
 
-        dependencies = self.wordpress._get_all_dependencies()
+        dependencies = self.jet_template_wordpress._get_all_dependencies()
 
         # Should return all dependencies in level order
-        expected_dependencies = {self.mariadb, self.nginx, self.docker, self.tower_core}
+        expected_dependencies = {
+            self.jet_template_mariadb,
+            self.jet_template_nginx,
+            self.jet_template_docker,
+            self.jet_template_tower_core,
+        }
         self.assertEqual(
             set(dependencies),
             expected_dependencies,
@@ -2706,29 +2563,35 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Verify the order is correct
         # MariaDB and Nginx should be first (level 1)
         self.assertIn(
-            self.mariadb,
+            self.jet_template_mariadb,
             dependencies[:2],
             "MariaDB should be in first two dependencies",
         )
         self.assertIn(
-            self.nginx, dependencies[:2], "Nginx should be in first two dependencies"
+            self.jet_template_nginx,
+            dependencies[:2],
+            "Nginx should be in first two dependencies",
         )
 
         # Docker should be third (level 2)
-        self.assertEqual(dependencies[2], self.docker, "Docker should be third")
+        self.assertEqual(
+            dependencies[2], self.jet_template_docker, "Docker should be third"
+        )
 
         # Tower Core should be last (level 3)
-        self.assertEqual(dependencies[3], self.tower_core, "Tower Core should be last")
+        self.assertEqual(
+            dependencies[3], self.jet_template_tower_core, "Tower Core should be last"
+        )
 
     def test_get_all_dependencies_docker_chain(self):
         """Test _get_all_dependencies with Docker dependency chain"""
         # pylint: disable=protected-access
         # Use Docker dependency chain: Docker -> Tower Core
 
-        dependencies = self.docker._get_all_dependencies()
+        dependencies = self.jet_template_docker._get_all_dependencies()
 
         # Should return only Tower Core
-        expected_dependencies = [self.tower_core]
+        expected_dependencies = [self.jet_template_tower_core]
         self.assertEqual(
             dependencies, expected_dependencies, "Should return only Tower Core"
         )
@@ -2738,10 +2601,10 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
         # Use Nginx dependency chain: Nginx -> Docker -> Tower Core
 
-        dependencies = self.nginx._get_all_dependencies()
+        dependencies = self.jet_template_nginx._get_all_dependencies()
 
         # Should return Docker and Tower Core
-        expected_dependencies = [self.docker, self.tower_core]
+        expected_dependencies = [self.jet_template_docker, self.jet_template_tower_core]
         self.assertEqual(
             dependencies, expected_dependencies, "Should return Docker and Tower Core"
         )
@@ -2752,18 +2615,18 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Use existing WooCommerce with Odoo template
         # This tests the scenario where a template has multiple dependency paths
 
-        dependencies = self.woocommerce_odoo._get_all_dependencies()
+        dependencies = self.jet_template_woocommerce_odoo._get_all_dependencies()
 
         # Should include all dependencies from both Odoo and WordPress
         # Expected: Odoo, WordPress, Postgres, MariaDB, Nginx, Docker, Tower Core
         expected_template_ids = [
-            self.odoo.id,
-            self.wordpress.id,
-            self.postgres.id,
-            self.mariadb.id,
-            self.nginx.id,
-            self.docker.id,
-            self.tower_core.id,
+            self.jet_template_odoo.id,
+            self.jet_template_wordpress.id,
+            self.jet_template_postgres.id,
+            self.jet_template_mariadb.id,
+            self.jet_template_nginx.id,
+            self.jet_template_docker.id,
+            self.jet_template_tower_core.id,
         ]
 
         actual_template_ids = [dep.id for dep in dependencies]
@@ -2781,34 +2644,40 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Check that Odoo and WordPress are in the first two positions
         self.assertIn(
-            self.odoo, dependencies[:2], "Odoo should be in first two dependencies"
+            self.jet_template_odoo,
+            dependencies[:2],
+            "Odoo should be in first two dependencies",
         )
         self.assertIn(
-            self.wordpress,
+            self.jet_template_wordpress,
             dependencies[:2],
             "WordPress should be in first two dependencies",
         )
 
         # Check that Tower Core is last
-        self.assertEqual(dependencies[-1], self.tower_core, "Tower Core should be last")
+        self.assertEqual(
+            dependencies[-1], self.jet_template_tower_core, "Tower Core should be last"
+        )
 
     def test_get_all_dependencies_excludes_self(self):
         """Test _get_all_dependencies excludes the template itself"""
         # pylint: disable=protected-access
         # Use Odoo template
 
-        dependencies = self.odoo._get_all_dependencies()
+        dependencies = self.jet_template_odoo._get_all_dependencies()
 
         # Should not include Odoo itself
         self.assertNotIn(
-            self.odoo, dependencies, "Should not include the template itself"
+            self.jet_template_odoo,
+            dependencies,
+            "Should not include the template itself",
         )
 
         # Verify all returned dependencies are different from the root template
         for dependency in dependencies:
             self.assertNotEqual(
                 dependency.id,
-                self.odoo.id,
+                self.jet_template_odoo.id,
                 f"Should not include template with ID {dependency.id}",
             )
 
@@ -2818,13 +2687,13 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Use Odoo template
 
         # Get dependencies using _get_all_dependencies
-        dependencies = self.odoo._get_all_dependencies()
+        dependencies = self.jet_template_odoo._get_all_dependencies()
 
         # Get dependencies using _build_dependency_graph
-        graph = self.odoo._build_dependency_graph()
+        graph = self.jet_template_odoo._build_dependency_graph()
         graph_dependencies = []
         for template_id, info in graph.items():
-            if template_id != self.odoo.id:
+            if template_id != self.jet_template_odoo.id:
                 graph_dependencies.append(info["template"])
 
         # Sort graph dependencies by level to match _get_all_dependencies order
@@ -2844,18 +2713,18 @@ class TestTowerJetTemplate(TestTowerCommon):
         # WooCommerce -> WordPress/Odoo ->
         # MariaDB/Postgres/Nginx -> Docker -> Tower Core
 
-        dependencies = self.woocommerce_odoo._get_all_dependencies()
+        dependencies = self.jet_template_woocommerce_odoo._get_all_dependencies()
 
         # Should include all dependencies from both WordPress and Odoo
         # Expected: WordPress, Odoo, MariaDB, Postgres, Nginx, Docker, Tower Core
         expected_template_ids = [
-            self.wordpress.id,
-            self.odoo.id,
-            self.mariadb.id,
-            self.postgres.id,
-            self.nginx.id,
-            self.docker.id,
-            self.tower_core.id,
+            self.jet_template_wordpress.id,
+            self.jet_template_odoo.id,
+            self.jet_template_mariadb.id,
+            self.jet_template_postgres.id,
+            self.jet_template_nginx.id,
+            self.jet_template_docker.id,
+            self.jet_template_tower_core.id,
         ]
 
         actual_template_ids = [dep.id for dep in dependencies]
@@ -2873,24 +2742,34 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # Check that WordPress and Odoo are in the first two positions
         self.assertIn(
-            self.wordpress,
+            self.jet_template_wordpress,
             dependencies[:2],
             "WordPress should be in first two dependencies",
         )
         self.assertIn(
-            self.odoo, dependencies[:2], "Odoo should be in first two dependencies"
+            self.jet_template_odoo,
+            dependencies[:2],
+            "Odoo should be in first two dependencies",
         )
 
         # Check that Tower Core is last
-        self.assertEqual(dependencies[-1], self.tower_core, "Tower Core should be last")
+        self.assertEqual(
+            dependencies[-1], self.jet_template_tower_core, "Tower Core should be last"
+        )
 
         # Verify that all level 2 dependencies are present
-        level_2_deps = [self.mariadb, self.postgres, self.nginx]
+        level_2_deps = [
+            self.jet_template_mariadb,
+            self.jet_template_postgres,
+            self.jet_template_nginx,
+        ]
         for dep in level_2_deps:
             self.assertIn(dep, dependencies, f"{dep.name} should be in dependencies")
 
         # Verify that Docker is present
-        self.assertIn(self.docker, dependencies, "Docker should be in dependencies")
+        self.assertIn(
+            self.jet_template_docker, dependencies, "Docker should be in dependencies"
+        )
 
     def test_install_on_servers_woocommerce_odoo_scenario(self):
         """Test install_on_servers with WooCommerce with Odoo scenario"""
@@ -2899,14 +2778,14 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Call install for WooCommerce with Odoo template
-        self.woocommerce_odoo.with_context(
+        self.jet_template_woocommerce_odoo.with_context(
             no_transaction_commit=True
         ).install_on_servers(server)
 
         # Verify installation log is created
         install_records = self.JetTemplateInstall.search(
             [
-                ("jet_template_id", "=", self.woocommerce_odoo.id),
+                ("jet_template_id", "=", self.jet_template_woocommerce_odoo.id),
                 ("server_id", "=", server.id),
             ]
         )
@@ -2917,7 +2796,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         install_record = install_records[0]
         self.assertEqual(
             install_record.jet_template_id,
-            self.woocommerce_odoo,
+            self.jet_template_woocommerce_odoo,
             "Installation should be for WooCommerce with Odoo template",
         )
         self.assertEqual(
@@ -2941,14 +2820,17 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Note: Root template gets order 0, dependencies get higher order numbers
         # Order within same level may vary based on implementation
         expected_order = [
-            (self.woocommerce_odoo, 0),  # WooCommerce first (root template)
-            (self.odoo, 1),  # Odoo second (direct dependency)
-            (self.wordpress, 2),  # WordPress third (direct dependency)
-            (self.nginx, 3),  # Nginx fourth (level 1 dependency)
-            (self.postgres, 4),  # Postgres fifth (level 1 dependency)
-            (self.mariadb, 5),  # MariaDB sixth (level 1 dependency)
-            (self.docker, 6),  # Docker seventh (level 2 dependency)
-            (self.tower_core, 7),  # Tower Core last (level 3 dependency)
+            (
+                self.jet_template_woocommerce_odoo,
+                0,
+            ),  # WooCommerce first (root template)
+            (self.jet_template_odoo, 1),  # Odoo second (direct dependency)
+            (self.jet_template_wordpress, 2),  # WordPress third (direct dependency)
+            (self.jet_template_nginx, 3),  # Nginx fourth (level 1 dependency)
+            (self.jet_template_postgres, 4),  # Postgres fifth (level 1 dependency)
+            (self.jet_template_mariadb, 5),  # MariaDB sixth (level 1 dependency)
+            (self.jet_template_docker, 6),  # Docker seventh (level 2 dependency)
+            (self.jet_template_tower_core, 7),  # Tower Core last (level 3 dependency)
         ]
 
         for i, (expected_template, expected_order_num) in enumerate(expected_order):
@@ -2967,14 +2849,14 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Verify all expected templates are included
         template_ids = install_lines.mapped("jet_template_id.id")
         expected_template_ids = [
-            self.tower_core.id,
-            self.docker.id,
-            self.mariadb.id,
-            self.postgres.id,
-            self.nginx.id,
-            self.wordpress.id,
-            self.odoo.id,
-            self.woocommerce_odoo.id,
+            self.jet_template_tower_core.id,
+            self.jet_template_docker.id,
+            self.jet_template_mariadb.id,
+            self.jet_template_postgres.id,
+            self.jet_template_nginx.id,
+            self.jet_template_wordpress.id,
+            self.jet_template_odoo.id,
+            self.jet_template_woocommerce_odoo.id,
         ]
         self.assertEqual(
             set(template_ids),
@@ -3431,7 +3313,9 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Test with template that has no dependencies
-        missing_templates = self.tower_core._check_dependency_satisfaction(server)
+        missing_templates = self.jet_template_tower_core._check_dependency_satisfaction(
+            server
+        )
 
         # Should return empty list since tower_core has no dependencies
         self.assertEqual(
@@ -3446,7 +3330,11 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Test with different templates that have dependencies
-        templates_to_test = [self.nginx, self.odoo, self.woocommerce_odoo]
+        templates_to_test = [
+            self.jet_template_nginx,
+            self.jet_template_odoo,
+            self.jet_template_woocommerce_odoo,
+        ]
 
         for template in templates_to_test:
             # Get actual dependencies for template
@@ -3470,7 +3358,11 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Test with different templates that have dependencies
-        templates_to_test = [self.nginx, self.odoo, self.woocommerce_odoo]
+        templates_to_test = [
+            self.jet_template_nginx,
+            self.jet_template_odoo,
+            self.jet_template_woocommerce_odoo,
+        ]
 
         for template in templates_to_test:
             # Get actual dependencies for template
@@ -3496,7 +3388,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         server = self.server_test_1
 
         # Get all dependencies for odoo
-        all_deps = self.odoo._get_all_dependencies()
+        all_deps = self.jet_template_odoo._get_all_dependencies()
 
         # Install some dependencies but not all (install first half)
         half_count = len(all_deps) // 2
@@ -3505,7 +3397,9 @@ class TestTowerJetTemplate(TestTowerCommon):
                 dep.server_ids = [(4, server.id)]
 
         # Test with odoo
-        missing_templates = self.odoo._check_dependency_satisfaction(server)
+        missing_templates = self.jet_template_odoo._check_dependency_satisfaction(
+            server
+        )
 
         # Should return the remaining uninstalled dependencies
         expected_missing = set(all_deps[half_count:])
@@ -3521,7 +3415,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with odoo and None server
-        missing_templates = self.odoo._check_dependency_satisfaction(None)
+        missing_templates = self.jet_template_odoo._check_dependency_satisfaction(None)
 
         # Should return empty list when server is None (no server to check against)
         self.assertEqual(
@@ -3535,15 +3429,19 @@ class TestTowerJetTemplate(TestTowerCommon):
         server2 = self.server_test_2
 
         # Get actual dependencies for nginx
-        all_deps = self.nginx._get_all_dependencies()
+        all_deps = self.jet_template_nginx._get_all_dependencies()
 
         # Install all dependencies on server1
         for dep in all_deps:
             dep.server_ids = [(4, server1.id)]
 
         # Test with nginx on both servers
-        missing_templates_server1 = self.nginx._check_dependency_satisfaction(server1)
-        missing_templates_server2 = self.nginx._check_dependency_satisfaction(server2)
+        missing_templates_server1 = (
+            self.jet_template_nginx._check_dependency_satisfaction(server1)
+        )
+        missing_templates_server2 = (
+            self.jet_template_nginx._check_dependency_satisfaction(server2)
+        )
 
         # Server1 should have no missing dependencies
         self.assertEqual(
@@ -3596,7 +3494,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with woocommerce_odoo which should have no dependents
-        dependents = self.woocommerce_odoo._get_all_depend_on_this()
+        dependents = self.jet_template_woocommerce_odoo._get_all_depend_on_this()
 
         # Should return empty recordset since no templates depend on woocommerce_odoo
         self.assertEqual(
@@ -3610,17 +3508,17 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with docker - should have all dependents (direct and indirect)
-        dependents = self.docker._get_all_depend_on_this()
+        dependents = self.jet_template_docker._get_all_depend_on_this()
 
         # Should return all templates that depend on docker (directly or indirectly)
         # docker -> nginx/postgres/mariadb -> odoo/wordpress -> woocommerce_odoo
         expected_dependents = {
-            self.nginx,
-            self.postgres,
-            self.mariadb,
-            self.odoo,
-            self.wordpress,
-            self.woocommerce_odoo,
+            self.jet_template_nginx,
+            self.jet_template_postgres,
+            self.jet_template_mariadb,
+            self.jet_template_odoo,
+            self.jet_template_wordpress,
+            self.jet_template_woocommerce_odoo,
         }
         actual_dependents = set(dependents)
         self.assertEqual(
@@ -3634,18 +3532,18 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with tower_core - should have many indirect dependents
-        dependents = self.tower_core._get_all_depend_on_this()
+        dependents = self.jet_template_tower_core._get_all_depend_on_this()
 
         # Should return all templates that depend on tower_core (directly or indirectly)
         # tower_core -> docker -> nginx/postgres -> odoo/wordpress -> woocommerce_odoo
         expected_dependents = {
-            self.docker,
-            self.nginx,
-            self.postgres,
-            self.mariadb,
-            self.odoo,
-            self.wordpress,
-            self.woocommerce_odoo,
+            self.jet_template_docker,
+            self.jet_template_nginx,
+            self.jet_template_postgres,
+            self.jet_template_mariadb,
+            self.jet_template_odoo,
+            self.jet_template_wordpress,
+            self.jet_template_woocommerce_odoo,
         }
         actual_dependents = set(dependents)
         self.assertEqual(
@@ -3659,10 +3557,14 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with nginx - should have odoo, wordpress, and woocommerce_odoo
-        dependents = self.nginx._get_all_depend_on_this()
+        dependents = self.jet_template_nginx._get_all_depend_on_this()
 
         # Should return odoo, wordpress, and woocommerce_odoo
-        expected_dependents = {self.odoo, self.wordpress, self.woocommerce_odoo}
+        expected_dependents = {
+            self.jet_template_odoo,
+            self.jet_template_wordpress,
+            self.jet_template_woocommerce_odoo,
+        }
         actual_dependents = set(dependents)
         self.assertEqual(
             actual_dependents,
@@ -3675,10 +3577,13 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with postgres - should have odoo and woocommerce_odoo as dependents
-        dependents = self.postgres._get_all_depend_on_this()
+        dependents = self.jet_template_postgres._get_all_depend_on_this()
 
         # Should return odoo and woocommerce_odoo
-        expected_dependents = {self.odoo, self.woocommerce_odoo}
+        expected_dependents = {
+            self.jet_template_odoo,
+            self.jet_template_woocommerce_odoo,
+        }
         actual_dependents = set(dependents)
         self.assertEqual(
             actual_dependents,
@@ -3691,7 +3596,7 @@ class TestTowerJetTemplate(TestTowerCommon):
         # pylint: disable=protected-access
 
         # Test with a template that has no dependents
-        dependents = self.woocommerce_odoo._get_all_depend_on_this()
+        dependents = self.jet_template_woocommerce_odoo._get_all_depend_on_this()
 
         # Should return empty recordset
         self.assertEqual(
@@ -3706,11 +3611,11 @@ class TestTowerJetTemplate(TestTowerCommon):
 
         # For each template, check that its dependents are consistent
         templates_to_test = [
-            self.tower_core,
-            self.docker,
-            self.nginx,
-            self.postgres,
-            self.odoo,
+            self.jet_template_tower_core,
+            self.jet_template_docker,
+            self.jet_template_nginx,
+            self.jet_template_postgres,
+            self.jet_template_odoo,
         ]
 
         for template in templates_to_test:
@@ -3733,11 +3638,11 @@ class TestTowerJetTemplate(TestTowerCommon):
         # Test with templates that might have circular dependencies
         # This test ensures the method doesn't get stuck in infinite loops
         templates_to_test = [
-            self.tower_core,
-            self.docker,
-            self.nginx,
-            self.postgres,
-            self.odoo,
+            self.jet_template_tower_core,
+            self.jet_template_docker,
+            self.jet_template_nginx,
+            self.jet_template_postgres,
+            self.jet_template_odoo,
         ]
 
         for template in templates_to_test:

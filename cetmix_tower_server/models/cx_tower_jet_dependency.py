@@ -31,7 +31,6 @@ class CxTowerJetDependency(models.Model):
     jet_depends_on_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         string="Depends On",
-        required=True,
         index=True,
         help="Jet this Jet depends on.",
         ondelete="cascade",
