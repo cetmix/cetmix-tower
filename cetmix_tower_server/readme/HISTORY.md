@@ -1,3 +1,8 @@
+## 16.0.2.0.5 (2025-10-16)
+
+- Bugfixes: Flight plan command exception handling (4930)
+
+
 ## 16.0.2.0.4 (2025-10-13)
 
 - Features: Auto update references for related records (5005)
