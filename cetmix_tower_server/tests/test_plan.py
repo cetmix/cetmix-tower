@@ -2309,7 +2309,7 @@ result = {
         )
 
         # Get all plan logs for verification
-        all_plan_logs = plan_log + self.PlanLog.search(
+        all_plan_logs = plan_log | self.PlanLog.search(
             [("parent_flight_plan_log_id", "=", plan_log.id)]
         )
 
