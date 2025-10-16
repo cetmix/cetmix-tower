@@ -9,9 +9,11 @@ class CxTowerJetTemplateDependency(models.Model):
     """Define dependencies between Jet templates"""
 
     _name = "cx.tower.jet.template.dependency"
+    _inherit = "cx.tower.reference.mixin"
     _description = "Cetmix Tower Jet Template Dependency"
     _log_access = False
 
+    name = fields.Char(related="template_id.name", readonly=True)
     template_id = fields.Many2one(
         string="Jet",
         comodel_name="cx.tower.jet.template",
