@@ -3509,6 +3509,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "SSH Client is not defined."
 msgstr ""
