@@ -11,7 +11,7 @@
                         name="web_ribbon"
                         title="Disabled"
                         bg_color="bg-danger"
-                        attrs="{'invisible': [('active', '=', True)]}"
+                        invisible="active"
                     />
                     <div class="oe_button_box" name="button_box">
                         <button
@@ -20,7 +20,7 @@
                             string="Logs"
                             icon="fa-list"
                             class="oe_stat_button"
-                            attrs="{'invisible': [('log_count', '=', 0)]}"
+                            invisible="log_count == 0"
                         >
                             <field name="log_count" widget="statinfo" string="Logs" />
                         </button>
@@ -34,30 +34,27 @@
                             <field
                                 name="variable_ids"
                                 widget="many2many_tags"
-                                readonly="1"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                                attrs="{'invisible': [('variable_ids', '=', [])]}"
+                                readonly="1"
+                                invisible="not variable_ids"
                             />
                             <field
                                 name="secret_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
-                                attrs="{'invisible': [('secret_ids', '=', [])]}"
+                                invisible="not secret_ids"
                             />
                         </group>
                         <group>
                             <field name="endpoint" />
                             <field
                                 name="full_url"
-                                attrs="{'invisible': [('endpoint', '=', False)]}"
+                                invisible="not endpoint"
                                 widget="CopyClipboardChar"
                                 options="{'string': 'Copy'}"
                             />
                             <field name="method" />
-                            <field
-                                name="content_type"
-                                attrs="{'invisible': [('method', '=', 'get')]}"
-                            />
+                            <field name="content_type" invisible="method == 'get'" />
                             <field name="user_id" context="{'active_test': False}" />
                         </group>
                     </group>
