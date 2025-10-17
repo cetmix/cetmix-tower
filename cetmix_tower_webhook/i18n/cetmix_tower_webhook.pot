@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -444,13 +444,6 @@ msgid "Keep Webhook Logs for (days)"
 msgstr ""
 
 #. module: cetmix_tower_webhook
-#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator____last_update
-#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log____last_update
-msgid "Last Modified on"
-msgstr ""
-
-#. module: cetmix_tower_webhook
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__write_uid
@@ -620,16 +613,10 @@ msgstr ""
 
 #. module: cetmix_tower_webhook
 #: model:ir.model.fields,help:cetmix_tower_webhook.field_res_config_settings__cetmix_tower_webhook_log_duration
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.res_config_settings_view_form
 msgid ""
 "Set the number of days to keep webhook logs. Old logs will be deleted "
 "automatically."
-msgstr ""
-
-#. module: cetmix_tower_webhook
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.res_config_settings_view_form
-msgid ""
-"Set the number of days to keep webhook logs. Old logs will be deleted automatically.\n"
-"                            <br/>"
 msgstr ""
 
 #. module: cetmix_tower_webhook
