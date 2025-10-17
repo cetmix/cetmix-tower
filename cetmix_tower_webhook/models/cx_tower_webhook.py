@@ -86,14 +86,16 @@ class CxTowerWebhook(models.Model):
 
     def _compute_log_count(self):
         """Compute log count."""
-        result = self.env["cx.tower.webhook.log"].read_group(
-            domain=[("webhook_id", "in", self.ids)],
-            fields=["webhook_id"],
-            groupby=["webhook_id"],
-        )
-        mapped_data = {r["webhook_id"][0]: r["webhook_id_count"] for r in result}
+        data = {
+            webhook.id: count
+            for webhook, count in self.env["cx.tower.webhook.log"]._read_group(
+                domain=[("webhook_id", "in", self.ids)],
+                groupby=["webhook_id"],
+                aggregates=["__count"],
+            )
+        }
         for rec in self:
-            rec.log_count = mapped_data.get(rec.id, 0)
+            rec.log_count = data.get(rec.id, 0)
 
     @api.depends("endpoint")
     def _compute_full_url(self):

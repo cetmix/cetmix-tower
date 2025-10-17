@@ -13,7 +13,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-link"
-                    attrs="{'invisible': [('webhook_ids_count', '=', 0)]}"
+                    invisible="webhook_ids_count == 0"
                 >
                     <field
                         name="webhook_ids_count"
@@ -26,7 +26,7 @@
                     type="object"
                     class="oe_stat_button"
                     icon="fa-key"
-                    attrs="{'invisible': [('webhook_authenticator_ids_count', '=', 0)]}"
+                    invisible="webhook_authenticator_ids_count == 0"
                 >
                     <field
                         name="webhook_authenticator_ids_count"
