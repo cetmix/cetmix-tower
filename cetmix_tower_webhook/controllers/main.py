@@ -178,7 +178,7 @@ class CetmixTowerWebhookController(http.Controller):
                 content_type = webhook.content_type if webhook else "json"
                 return self._get_payload_by_content_type(content_type)
             elif http_method.upper() == "GET":
-                return dict(request.httprequest.args)
+                return request.httprequest.args.to_dict(flat=True)
         except Exception:
             return {}
         return {}
@@ -194,7 +194,7 @@ class CetmixTowerWebhookController(http.Controller):
             dict: Parsed payload as a dictionary.
         """
         if content_type == "form":
-            return dict(request.httprequest.form)
+            return request.httprequest.form.to_dict(flat=True)
         data = request.httprequest.data
         return json.loads(data or "{}") if data else {}
 
