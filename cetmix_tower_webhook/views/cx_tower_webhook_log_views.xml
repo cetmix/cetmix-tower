@@ -61,7 +61,7 @@
                         <page
                             name="response"
                             string="Response Payload"
-                            attrs="{'invisible': [('code_status', '!=', 'success')]}"
+                            invisible="code_status != 'success'"
                         >
                             <field
                                 name="result_message"
@@ -73,7 +73,7 @@
                         <page
                             name="error"
                             string="Error"
-                            attrs="{'invisible': [('code_status', '!=', 'failed'), ('authentication_status', '!=', 'failed')]}"
+                            invisible="code_status != 'failed' and authentication_status != 'failed'"
                         >
                             <code>
                                 <field name="error_message" readonly="1" />

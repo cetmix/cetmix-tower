@@ -69,16 +69,16 @@ class CxTowerWebhookAuthenticator(models.Model):
 
     def _compute_log_count(self):
         """Compute log count."""
-        result = self.env["cx.tower.webhook.log"].read_group(
-            domain=[("authenticator_id", "in", self.ids)],
-            fields=["authenticator_id"],
-            groupby=["authenticator_id"],
-        )
-        mapped_data = {
-            r["authenticator_id"][0]: r["authenticator_id_count"] for r in result
+        data = {
+            webhook.id: count
+            for webhook, count in self.env["cx.tower.webhook.log"]._read_group(
+                domain=[("authenticator_id", "in", self.ids)],
+                groupby=["authenticator_id"],
+                aggregates=["__count"],
+            )
         }
         for rec in self:
-            rec.log_count = mapped_data.get(rec.id, 0)
+            rec.log_count = data.get(rec.id, 0)
 
     def _default_eval_code(self):
         """
