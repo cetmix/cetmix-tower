@@ -1,12 +1,8 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import logging
-
 from odoo import _, api, fields, models
 
 from .constants import COMMAND_STOPPED, GENERAL_ERROR
-
-_logger = logging.getLogger(__name__)
 
 
 class CxTowerCommandLog(models.Model):
@@ -181,6 +177,10 @@ class CxTowerCommandLog(models.Model):
                 status=COMMAND_STOPPED,
                 error=_("Stopped by user %(user)s", user=user_name),
             )
+
+            # Ensure flight plan log is stopped too
+            if log.plan_log_id and log.plan_log_id.is_running:
+                log.plan_log_id.stop()
 
     def finish(
         self, finish_date=None, status=None, response=None, error=None, **kwargs

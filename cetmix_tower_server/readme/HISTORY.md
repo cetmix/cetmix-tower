@@ -1,3 +1,13 @@
+## 17.0.2.0.4 (2025-10-30)
+
+- Features: Improve the extendability of the file upload command. (4759)
+
+
+## 17.0.2.0.3 (2025-10-25)
+
+- Features: Terminate running flight plan manually (3410)
+
+
 ## 17.0.2.0.2 (2025-10-10)
 
 - Features: UI/UX improvements (4996)

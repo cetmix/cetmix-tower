@@ -211,7 +211,7 @@ class CxTowerPlanLog(models.Model):
         """
         user_name = self.env.user.name
         for log in self:
-            if not log.is_running or log.is_stopped:
+            if not log.is_running:
                 continue
 
             # Finish plan log
