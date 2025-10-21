@@ -7,6 +7,8 @@
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
+    "live_test_url": "https://tower.cetmix.com/download",
+    "images": ["static/description/banner.png"],
     "author": "Cetmix",
     "license": "AGPL-3",
     "installable": True,
