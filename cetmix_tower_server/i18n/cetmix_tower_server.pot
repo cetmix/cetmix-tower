@@ -280,6 +280,27 @@ msgid "<strong>Servers: </strong>"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "A helper shortcut to <code>env['cx.tower.command']</code>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "A helper shortcut to <code>env['cx.tower.plan']</code>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "A helper shortcut to <code>env['cx.tower.server']</code>"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_action
 msgid ""
 "A variable value cannot be assigned multiple times to the same plan line "
@@ -771,6 +792,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_tag
 msgid "Cetmix Tower Tag"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_tag_mixin
+msgid "Cetmix Tower Tag Mixin"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4147,6 +4173,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag_mixin__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
