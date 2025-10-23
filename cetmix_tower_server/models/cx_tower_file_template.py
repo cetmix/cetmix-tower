@@ -16,6 +16,7 @@ class CxTowerFileTemplate(models.Model):
         "cx.tower.key.mixin",
         "cx.tower.template.mixin",
         "cx.tower.access.role.mixin",
+        "cx.tower.tag.mixin",
     ]
     _description = "Cetmix Tower File Template"
 
@@ -31,11 +32,9 @@ class CxTowerFileTemplate(models.Model):
         compute="_compute_file_count",
     )
     tag_ids = fields.Many2many(
-        comodel_name="cx.tower.tag",
         relation="cx_tower_file_template_tag_rel",
         column1="file_template_id",
         column2="tag_id",
-        string="Tags",
     )
     note = fields.Text(help="This field is used to put some notes regarding template.")
     keep_when_deleted = fields.Boolean(
