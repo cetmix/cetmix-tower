@@ -357,7 +357,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         """
         return self.browse(self._get_id_by_reference(reference))
 
-    @ormcache("reference")
+    @ormcache("self.env.uid", "self.env.su", "reference")
     def _get_id_by_reference(self, reference):
         """Get record id based on its reference.
 

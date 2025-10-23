@@ -62,6 +62,7 @@ class CxTowerCommand(models.Model):
         "cx.tower.access.mixin",
         "cx.tower.access.role.mixin",
         "cx.tower.key.mixin",
+        "cx.tower.tag.mixin",
     ]
     _description = "Cetmix Tower Command"
     _order = "name"
@@ -83,11 +84,9 @@ class CxTowerCommand(models.Model):
         "If empty, command can be run on all servers",
     )
     tag_ids = fields.Many2many(
-        comodel_name="cx.tower.tag",
         relation="cx_tower_command_tag_rel",
         column1="command_id",
         column2="tag_id",
-        string="Tags",
     )
     os_ids = fields.Many2many(
         comodel_name="cx.tower.os",
@@ -464,6 +463,18 @@ class CxTowerCommand(models.Model):
                     "<a href='https://cetmix.com/tower/documentation/odoo_automation'"
                     " target='_blank'>helper class</a> shortcut"
                 ),
+            },
+            "tower_servers": {
+                "import": self.env["cx.tower.server"],
+                "help": _("A helper shortcut to <code>env['cx.tower.server']</code>"),
+            },
+            "tower_commands": {
+                "import": self.env["cx.tower.command"],
+                "help": _("A helper shortcut to <code>env['cx.tower.command']</code>"),
+            },
+            "tower_plans": {
+                "import": self.env["cx.tower.plan"],
+                "help": _("A helper shortcut to <code>env['cx.tower.plan']</code>"),
             },
         }
 

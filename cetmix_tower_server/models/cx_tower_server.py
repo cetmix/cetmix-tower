@@ -84,6 +84,7 @@ class CxTowerServer(models.Model):
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.vault.mixin",
+        "cx.tower.tag.mixin",
     ]
     _description = "Cetmix Tower Server"
     _order = "name asc"
@@ -173,11 +174,9 @@ class CxTowerServer(models.Model):
         groups="cetmix_tower_server.group_manager",
     )
     tag_ids = fields.Many2many(
-        comodel_name="cx.tower.tag",
         relation="cx_tower_server_tag_rel",
         column1="server_id",
         column2="tag_id",
-        string="Tags",
     )
     note = fields.Text()
     command_log_ids = fields.One2many(
