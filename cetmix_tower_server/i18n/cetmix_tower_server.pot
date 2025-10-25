@@ -161,7 +161,8 @@ msgid ""
 "-302 if plan is empty, \n"
 "-303 if plan reference is missing, \n"
 "-304 if plan line reference is missing, \n"
-"-306 if plan is not compatible with server"
+"-306 if plan is not compatible with server,\n"
+"-308 if plan is stopped by user"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1727,6 +1728,13 @@ msgid "Flight Plan Logs"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "Flight Plan Stopped"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids
 msgid "Flight Plan Used"
 msgstr ""
@@ -1742,9 +1750,23 @@ msgid "Flight Plan line that is being currently executed"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+msgid ""
+"Flight Plan will be terminated after executing the current command. "
+"Continue?"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "Flight Plans Stopped"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1784,6 +1806,11 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids_count
 msgid "Flight plan this command is used in"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__is_stopped
+msgid "Flight plan was stopped by user"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3958,6 +3985,30 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+msgid "Stop"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.actions.server,name:cetmix_tower_server.action_stop_cx_tower_plan_log
+msgid "Stop Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__is_stopped
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+msgid "Stopped"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "Stopped by user %(user)s"
 msgstr ""
 
 #. module: cetmix_tower_server
