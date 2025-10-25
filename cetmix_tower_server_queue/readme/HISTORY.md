@@ -1,3 +1,8 @@
+## 17.0.1.2.2 (2025-10-25)
+
+- Features: Terminate running flight plan manually (3410)
+
+
 ## 17.0.1.1.0 (2025-07-30)
 
 - Features: cetmix_tower_server_queue: Add async file upload/download via job queue (3720)
