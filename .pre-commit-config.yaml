@@ -39,11 +39,11 @@ repos:
         language: fail
         files: '[a-zA-Z0-9_]*/i18n/en\.po$'
   - repo: https://github.com/sbidoul/whool
-    rev: v1.2
+    rev: v1.3
     hooks:
       - id: whool-init
   - repo: https://github.com/cetmix/cetmix-maintainer-tools
-    rev: 7f6de8cf26662e506ffe2c532ad385e5979d0f3c
+    rev: 26f0bffd939600c255e4a1ff356a84c16ea124ca
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
