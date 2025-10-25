@@ -22,7 +22,7 @@ class CxTowerServer(models.Model):
         # preserve the order of execution of commands with action “Run flight plan”.
         # Use runner only if command log record is provided.
         if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
-            job = self.with_delay()._command_runner(
+            job = self.with_delay()._queue_command_runner_wrapper(
                 command=command,
                 log_record=log_record,
                 rendered_command_code=rendered_command_code,
@@ -44,3 +44,31 @@ class CxTowerServer(models.Model):
                 ssh_connection=ssh_connection,
                 **kwargs,
             )
+
+    def _queue_command_runner_wrapper(
+        self,
+        command,
+        log_record,
+        rendered_command_code,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
+    ):
+        # avoid executing command if plan was stopped
+        log_record.invalidate_recordset(["plan_log_id"])
+        if log_record.plan_log_id:
+            log_record.plan_log_id.invalidate_recordset(["is_stopped"])
+        if log_record and log_record.plan_log_id and log_record.plan_log_id.is_stopped:
+            log_record.stop()
+            return
+
+        return self._command_runner(
+            command=command,
+            log_record=log_record,
+            rendered_command_code=rendered_command_code,
+            sudo=sudo,
+            rendered_command_path=rendered_command_path,
+            ssh_connection=ssh_connection,
+            **kwargs,
+        )

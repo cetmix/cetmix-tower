@@ -1,9 +1,12 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import fields, models, tools
 
-from odoo.addons.cetmix_tower_server.models.constants import COMMAND_TIMED_OUT
+from odoo.addons.cetmix_tower_server.models.constants import (
+    COMMAND_STOPPED,
+    COMMAND_TIMED_OUT,
+)
 from odoo.addons.queue_job.job import CANCELLED
 
 
@@ -31,7 +34,24 @@ class CxTowerCommandLog(models.Model):
     def finish(
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
-        res = super().finish(finish_date, status, response, error, **kwargs)
-        if self.queue_job_id and status == COMMAND_TIMED_OUT:
+        if status == COMMAND_TIMED_OUT and self.queue_job_id:
             self.queue_job_id.sudo()._change_job_state(CANCELLED, result=error)
-        return res
+
+        # Do not update status if it was already stopped
+        if self.command_status == COMMAND_STOPPED and status != COMMAND_STOPPED:
+            return False
+
+        if status == COMMAND_STOPPED and self.queue_job_id:
+            return super().finish(finish_date, status, response, error, **kwargs)
+
+        # Avoid to finish the command log multiple times in the same time
+        try:
+            with self.env.cr.savepoint(), tools.mute_logger("odoo.sql_db"):
+                self.env.cr.execute(
+                    f"SELECT command_status FROM {self._table} WHERE id = %s FOR UPDATE NOWAIT",  # noqa: E501
+                    [self.id],
+                )
+        except Exception:
+            return {}
+
+        return super().finish(finish_date, status, response, error, **kwargs)

@@ -1,8 +1,8 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
-from .constants import PLAN_IS_EMPTY
+from .constants import PLAN_IS_EMPTY, PLAN_STOPPED
 
 
 class CxTowerPlanLog(models.Model):
@@ -54,6 +54,9 @@ class CxTowerPlanLog(models.Model):
     is_running = fields.Boolean(
         help="Plan is being executed right now", compute="_compute_duration", store=True
     )
+    is_stopped = fields.Boolean(
+        string="Stopped", default=False, help="Flight plan was stopped by user"
+    )
     plan_line_executed_id = fields.Many2one(
         comodel_name="cx.tower.plan.line",
         help="Flight Plan line that is being currently executed",
@@ -68,7 +71,8 @@ class CxTowerPlanLog(models.Model):
         "-302 if plan is empty, \n"
         "-303 if plan reference is missing, \n"
         "-304 if plan line reference is missing, \n"
-        "-306 if plan is not compatible with server",
+        "-306 if plan is not compatible with server,\n"
+        "-308 if plan is stopped by user",
     )
     custom_message = fields.Text(
         help="Custom message to be displayed in the plan log",
@@ -201,6 +205,52 @@ class CxTowerPlanLog(models.Model):
 
         return plan_log
 
+    def stop(self):
+        """
+        Force stop this plan log (and currently running command if possible).
+        """
+        user_name = self.env.user.name
+        for log in self:
+            if not log.is_running:
+                continue
+
+            # Finish plan log
+            log.finish(
+                plan_status=PLAN_STOPPED,
+                custom_message=_("Stopped by user %(user)s", user=user_name),
+                is_stopped=True,
+            )
+
+            # Stop running command
+            running_cmd_logs = log.command_log_ids.filtered(lambda c: c.is_running)
+            running_cmd_logs.stop()
+
+    def action_stop(self):
+        """
+        Action to stop the running plans.
+        """
+        self.stop()
+
+        if len(self) > 1:  # more than one plan is running
+            title = _("Flight Plans Stopped")
+            message = ", ".join([plan.name for plan in self])
+        else:
+            title = _("Flight Plan Stopped")
+            message = self.name
+
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "title": title,
+                "message": message,
+                "sticky": False,
+                "next": {
+                    "type": "ir.actions.act_window_close",
+                },
+            },
+        }
+
     def finish(self, plan_status, **kwargs):
         """Finish plan execution
 
@@ -287,6 +337,10 @@ class CxTowerPlanLog(models.Model):
 
         """
         self.ensure_one()
+
+        # Prevent scheduling further actions if this log was stopped
+        if self.is_stopped:
+            return
 
         # Update plan log variable values from command log
         self.variable_values = command_log.variable_values

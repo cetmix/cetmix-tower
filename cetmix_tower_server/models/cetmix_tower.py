@@ -1,11 +1,14 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
 import time
 
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
 from .constants import NOT_FOUND, SSH_CONNECTION_ERROR
+
+_logger = logging.getLogger(__name__)
 
 
 class CetmixTower(models.AbstractModel):
@@ -223,6 +226,12 @@ class CetmixTower(models.AbstractModel):
         # Try connecting multiple times
         for attempt in range(1, attempts + 1):
             try:
+                _logger.info(
+                    "Attempt %s of %s to connect to server %s",
+                    attempt,
+                    attempts,
+                    server_reference,
+                )
                 result = server.test_ssh_connection(
                     raise_on_error=True,
                     return_notification=False,

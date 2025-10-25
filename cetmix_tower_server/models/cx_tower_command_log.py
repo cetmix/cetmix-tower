@@ -1,8 +1,8 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
-from .constants import GENERAL_ERROR
+from .constants import COMMAND_STOPPED, GENERAL_ERROR
 
 
 class CxTowerCommandLog(models.Model):
@@ -67,6 +67,7 @@ class CxTowerCommandLog(models.Model):
         "-205 plan line condition check failed,\n"
         "-206 command timed out,\n"
         "-207 command is not compatible with server,\n"
+        "-208 command is stopped by user,\n"
         "503 if SSH connection error occurred",
     )
     command_response = fields.Text(string="Response")
@@ -163,6 +164,24 @@ class CxTowerCommandLog(models.Model):
         log_record = self.sudo().create(vals)
         return log_record
 
+    def stop(self):
+        """
+        Stop the command execution.
+        """
+        user_name = self.env.user.name
+        for log in self:
+            if not log.is_running:
+                continue
+
+            log.finish(
+                status=COMMAND_STOPPED,
+                error=_("Stopped by user %(user)s", user=user_name),
+            )
+
+            # Ensure flight plan log is stopped too
+            if log.plan_log_id and log.plan_log_id.is_running:
+                log.plan_log_id.stop()
+
     def finish(
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
@@ -185,6 +204,7 @@ class CxTowerCommandLog(models.Model):
             "command_response": response,
             "command_error": error,
         }
+
         # Apply kwargs and write
         vals.update(kwargs)
         self_with_sudo.write(vals)
