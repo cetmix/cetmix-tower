@@ -32,6 +32,8 @@
         "security/cx_tower_server_log_security.xml",
         "security/cx_tower_command_log_security.xml",
         "security/cx_tower_server_template_security.xml",
+        "security/cx_tower_jet_template_security.xml",
+        "security/cx_tower_jet_template_dependency_security.xml",
         "security/cx_tower_file_security.xml",
         "security/cx_tower_file_template_security.xml",
         "security/cx_tower_variable_security.xml",
