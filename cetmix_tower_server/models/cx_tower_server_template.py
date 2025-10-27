@@ -14,6 +14,7 @@ class CxTowerServerTemplate(models.Model):
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.access.role.mixin",
+        "cx.tower.tag.mixin",
     ]
     _description = "Cetmix Tower Server Template"
     _order = "name"
@@ -46,11 +47,9 @@ class CxTowerServerTemplate(models.Model):
     color = fields.Integer(help="For better visualization in views")
     os_id = fields.Many2one(string="Operating System", comodel_name="cx.tower.os")
     tag_ids = fields.Many2many(
-        comodel_name="cx.tower.tag",
         relation="cx_tower_server_template_tag_rel",
         column1="server_template_id",
         column2="tag_id",
-        string="Tags",
     )
 
     # --- Variables
