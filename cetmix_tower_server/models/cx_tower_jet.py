@@ -18,6 +18,7 @@ class CxTowerJet(models.Model):
         "cx.tower.variable.mixin",
         "mail.thread",
         "mail.activity.mixin",
+        "cx.tower.tag.mixin",
     ]
 
     active = fields.Boolean(default=True)
