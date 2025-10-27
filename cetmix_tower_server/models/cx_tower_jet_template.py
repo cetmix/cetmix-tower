@@ -28,17 +28,11 @@ class CxTowerJetTemplate(models.Model):
         "cx.tower.access.mixin",
         "cx.tower.variable.mixin",
         "mail.thread",
+        "cx.tower.tag.mixin",
     ]
     _order = "name asc"
 
     active = fields.Boolean(default=True)
-    tag_ids = fields.Many2many(
-        comodel_name="cx.tower.tag",
-        relation="cx_tower_jet_template_tag_rel",
-        column1="jet_template_id",
-        column2="tag_id",
-        string="Tags",
-    )
     note = fields.Text()
 
     # Jets
