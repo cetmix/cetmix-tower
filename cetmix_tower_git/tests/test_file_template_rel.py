@@ -38,14 +38,19 @@ class TestFileTemplateRel(CommonTest):
 
         # Check specific if remote is present in file
         self.assertIn(
-            self.remote_other_ssh.url,
+            self.remote_other_ssh.repo_id.url_ssh,
             self.file_template_1.code,
             "Remote is not present in file template",
         )
 
         # -- 2 --
         # Modify remove and check if file template content is updated
-        self.remote_other_ssh.url = "https://github.com/cetmix/cetmix-memes.git"
+        self.remote_other_ssh.repo_id = self.Repo.create(
+            {
+                "url": "https://github.com/cetmix/cetmix-memes.git",
+            }
+        )
+        self.remote_other_ssh.url_protocol = "https"
 
         # Must be different from previous project code
         self.assertNotEqual(
@@ -79,11 +84,15 @@ class TestFileTemplateRel(CommonTest):
 # It's designed to be used with git-aggregator tool developed by Acsone.
 # Documentation for git-aggregator: https://github.com/acsone/git-aggregator
 
+# You need to set the following variables in your environment:
+# BITBUCKET_TOKEN, GITLAB_TOKEN, GITLAB_TOKEN_NAME
+# and run git-aggregator with '--expand-env' parameter.
+
 ./git_project_1_git_source_1:
   remotes:
-    remote_1: https://github.com/cetmix/cetmix-tower.git
-    remote_2: https://gitlab.com/cetmix/cetmix-tower.git
-    remote_3: git@my.gitlab.org:cetmix/cetmix-tower.git
+    remote_1: https://github.com/cetmix-test/cetmix-tower-test.git
+    remote_2: https://$GITLAB_TOKEN_NAME:$GITLAB_TOKEN@my.gitlab.com/cetmix-test/cetmix-tower-test.git
+    remote_3: git@my.gitlab.com:cetmix-test/cetmix-tower-test.git
   merges:
   - remote: remote_1
     ref: refs/pull/123/head
@@ -94,8 +103,8 @@ class TestFileTemplateRel(CommonTest):
   target: remote_1
 ./git_project_1_git_source_1_2:
   remotes:
-    remote_1: https://bitbucket.org/cetmix/cetmix-tower.git
-    remote_2: pepefrog@memegit.com:cetmix/cetmix-tower.git
+    remote_1: https://x-token-auth:$BITBUCKET_TOKEN@bitbucket.com/cetmix-test/cetmix-tower-test-enterprise.git
+    remote_2: git@memegit.com:cetmix-test/cetmix-tower-test.git
   merges:
   - remote: remote_1
     ref: dev
