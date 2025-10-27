@@ -1,3 +1,8 @@
+## 16.0.2.0.0 (2025-10-27)
+
+- Features: Major refactoring: implement Git repository entity. (4914)
+
+
 ## 16.0.1.0.6 (2025-08-18)
 
 - Features: Link or copy a git project when uploading the linked file using command (4759)
