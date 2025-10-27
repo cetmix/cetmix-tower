@@ -25,4 +25,10 @@ from . import test_partner_server_btn
 from . import test_vault_mixin
 from . import test_tag_mixin
 from . import test_jet_template
-from . import test_jet
+from . import test_jet_template_access
+from . import test_jet_template_dependency_access
+from . import test_jet_template_install_access
+from . import test_jet_template_install_line_access
+from . import test_jet_access
+from . import test_jet_dependency_access
+from . import test_jet_action_access

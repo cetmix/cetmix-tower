@@ -6,7 +6,7 @@ import logging
 import xml.etree.ElementTree as ET
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 from .tools import generate_random_id
 
@@ -26,6 +26,7 @@ class CxTowerJetTemplate(models.Model):
     _inherit = [
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
+        "cx.tower.access.role.mixin",
         "cx.tower.variable.mixin",
         "mail.thread",
         "cx.tower.tag.mixin",
@@ -34,6 +35,14 @@ class CxTowerJetTemplate(models.Model):
 
     active = fields.Boolean(default=True)
     note = fields.Text()
+
+    # ---- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_jet_template_user_rel",
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_jet_template_manager_rel",
+    )
 
     # Jets
     jet_ids = fields.One2many(
@@ -158,15 +167,21 @@ class CxTowerJetTemplate(models.Model):
         copy=False,
     )
     # Dependency Graph
+    # Odoo blocks SVG images in fields.Binary,
+    # so we use fields.Char to store the SVG content
+    # https://github.com/odoo/odoo/blob/c27d978ade9bcbea056933d8fb8b5a924e983bde/odoo/fields.py#L2321
+    dependency_graph_svg = fields.Char(
+        compute="_compute_dependency_graph_svg",
+        store=True,
+        recursive=True,
+        copy=False,
+        help="SVG image content of the dependency" " graph of the template",
+    )
     dependency_graph_image = fields.Binary(
         string="Dependency Graph",
         compute="_compute_dependency_graph_image",
-        store=True,
-        precompute=True,
-        attachment=False,
-        recursive=True,
+        compute_sudo=True,
         help="SVG image of the dependency graph of the template",
-        copy=False,
     )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -226,19 +241,24 @@ class CxTowerJetTemplate(models.Model):
         "template_requires_ids.state_required_id",
         "template_requires_ids.template_required_id.dependency_graph_image",
     )
-    def _compute_dependency_graph_image(self):
+    def _compute_dependency_graph_svg(self):
         """Compute dependency graph image using SVG generation"""
         for template in self:
             try:
                 graph_data = template._build_dependency_graph()
                 svg_content = template._generate_svg_graph(graph_data)
-                template.dependency_graph_image = svg_content
+                template.dependency_graph_svg = svg_content
             except Exception as e:
                 _logger.error(
                     f"Error generating dependency graph "
                     f"for template {template.name}: {e}"
                 )
                 template.dependency_graph_image = False
+
+    @api.depends("dependency_graph_svg")
+    def _compute_dependency_graph_image(self):
+        for template in self:
+            template.dependency_graph_image = template.dependency_graph_svg
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   ORM methods
@@ -514,7 +534,12 @@ class CxTowerJetTemplate(models.Model):
         """
         self.ensure_one()
         # TODO: Implement the uninstallation
-        pass
+        raise UserError(
+            _(
+                "Uninstallation is not implemented yet. "
+                "Please remove the template from the servers manually."
+            )
+        )
 
     def _get_system_variable_value(self, variable_reference):
         """Return the jet template variable values
