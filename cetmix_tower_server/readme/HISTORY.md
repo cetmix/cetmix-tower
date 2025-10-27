@@ -1,3 +1,8 @@
+## 16.0.2.0.6 (2025-10-27)
+
+- Features: Tag mixin and helper commands. (5039)
+
+
 ## 16.0.2.0.5 (2025-10-16)
 
 - Bugfixes: Flight plan command exception handling (4930)
