@@ -69,7 +69,7 @@ access_scheduled_task_cv_user,Scheduled Task Custom Variable Value->User,model_c
 access_scheduled_task_cv_manager,Scheduled Task Custom Variable Value->Manager,model_cx_tower_scheduled_task_cv,group_manager,1,1,1,1
 access_scheduled_task_cv_root,Scheduled Task Custom Variable Value->Root,model_cx_tower_scheduled_task_cv,group_root,1,1,1,1
 access_cx_tower_jet_state_user,cx.tower.jet.state user,model_cx_tower_jet_state,group_user,1,0,0,0
-access_cx_tower_jet_state_manager,cx.tower.jet.state manager,model_cx_tower_jet_state,group_manager,1,1,1,1
+access_cx_tower_jet_state_manager,cx.tower.jet.state manager,model_cx_tower_jet_state,group_manager,1,0,0,0
 access_cx_tower_jet_state_root,cx.tower.jet.state root,model_cx_tower_jet_state,group_root,1,1,1,1
 access_cx_tower_jet_action_user,cx.tower.jet.action user,model_cx_tower_jet_action,group_user,1,0,0,0
 access_cx_tower_jet_action_manager,cx.tower.jet.action manager,model_cx_tower_jet_action,group_manager,1,1,1,1
@@ -77,13 +77,16 @@ access_cx_tower_jet_action_root,cx.tower.jet.action root,model_cx_tower_jet_acti
 access_cx_tower_jet_template_user,cx.tower.jet.template user,model_cx_tower_jet_template,group_user,1,0,0,0
 access_cx_tower_jet_template_manager,cx.tower.jet.template manager,model_cx_tower_jet_template,group_manager,1,1,1,1
 access_cx_tower_jet_template_dependency_manager,cx.tower.jet.template.dependency manager,model_cx_tower_jet_template_dependency,group_manager,1,1,1,1
-access_cx_tower_jet_template_install_manager,Jet Template Install->Manager,model_cx_tower_jet_template_install,group_manager,1,1,1,1
-access_cx_tower_jet_template_install_line_manager,Jet Template Install Line->Manager,model_cx_tower_jet_template_install_line,group_manager,1,1,1,1
+access_cx_tower_jet_template_install_manager,Jet Template Install->Manager,model_cx_tower_jet_template_install,group_manager,1,0,0,0
+access_cx_tower_jet_template_install_root,Jet Template Install->Root,model_cx_tower_jet_template_install,group_root,1,1,1,1
+access_cx_tower_jet_template_install_line_manager,Jet Template Install Line->Manager,model_cx_tower_jet_template_install_line,group_manager,1,0,0,0
+access_cx_tower_jet_template_install_line_root,Jet Template Install Line->Root,model_cx_tower_jet_template_install_line,group_root,1,1,1,1
 access_cx_tower_jet_template_install_wiz_manager,Jet Template Install Wizard->Manager,model_cx_tower_jet_template_install_wiz,group_manager,1,1,1,1
-access_cx_tower_jet_user,cx.tower.jet user,model_cx_tower_jet,group_user,1,1,0,0
+access_cx_tower_jet_user,cx.tower.jet user,model_cx_tower_jet,group_user,1,0,0,0
 access_cx_tower_jet_manager,cx.tower.jet manager,model_cx_tower_jet,group_manager,1,1,1,1
 access_cx_tower_jet_root,cx.tower.jet root,model_cx_tower_jet,group_root,1,1,1,1
 access_cx_tower_jet_request_root,Jet Request->Root,model_cx_tower_jet_request,group_root,1,1,1,1
-access_cx_tower_jet_dependency_user,cx.tower.jet.dependency user,model_cx_tower_jet_dependency,group_user,1,1,1,1
+access_cx_tower_jet_dependency_manager,cx.tower.jet.dependency manager,model_cx_tower_jet_dependency,group_manager,1,1,1,1
+access_cx_tower_jet_dependency_root,cx.tower.jet.dependency root,model_cx_tower_jet_dependency,group_root,1,1,1,1
 access_cx_tower_jet_state_wizard_user,Jet State Wizard->User,model_cx_tower_jet_state_wizard,group_user,1,1,1,1
 access_cx_tower_jet_action_wizard_user,Jet Action Wizard->User,model_cx_tower_jet_action_wizard,group_user,1,1,1,1

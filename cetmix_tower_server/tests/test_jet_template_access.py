@@ -366,45 +366,30 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
     # ======================
 
     def test_root_full_access(self):
-        """Test Root: Full CRUD access regardless of access_level"""
-        # Root can create
-        record = self.JetTemplate.create(
-            {
-                "name": "Root Template",
-                "reference": "root_template",
-                "access_level": "3",
-                "user_ids": [(5, 0, 0)],
-                "manager_ids": [(5, 0, 0)],
-            }
-        )
+        """
+        Test Root: Full CRUD access regardless of access_level or creator.
 
-        # Root can read any level
-        records = self.JetTemplate.search([("id", "=", record.id)])
-        self.assertEqual(len(records), 1, "Root should be able to read")
-
-        # Root can write
-        record.write({"name": "Root Updated"})
-        record.invalidate_recordset()
-        self.assertEqual(record.name, "Root Updated", "Root should be able to update")
-
-        # Root can delete
-        record.unlink()
-        records = self.JetTemplate.search([("id", "=", record.id)])
-        self.assertEqual(len(records), 0, "Root should be able to delete")
-
-    def test_root_access_all_levels(self):
-        """Test Root can access records with any access_level"""
+        Root has unrestricted access to all records via security rule
+        [(1, '=', 1)], so we test:
+        - Create records with all access levels
+        - Read records with all access levels
+        - Write to records with all access levels
+        - Delete records regardless of creator
+        """
+        # Test CRUD operations for all access levels
         for access_level in ["1", "2", "3"]:
+            # Root can create any level
             record = self.JetTemplate.create(
                 {
-                    "name": f"Level {access_level}",
-                    "reference": f"level_{access_level}",
+                    "name": f"Root Level {access_level}",
+                    "reference": f"root_level_{access_level}",
                     "access_level": access_level,
                     "user_ids": [(5, 0, 0)],
                     "manager_ids": [(5, 0, 0)],
                 }
             )
 
+            # Root can read any level
             records = self.JetTemplate.search([("id", "=", record.id)])
             self.assertEqual(
                 len(records),
@@ -412,10 +397,17 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 f"Root should be able to read access_level={access_level}",
             )
 
-    def test_root_delete_any_record(self):
-        """Test Root can delete any record regardless of creator"""
-        # Manager1 creates a record
-        record = self.JetTemplate.with_user(self.manager).create(
+            # Root can write any level
+            record.write({"name": f"Root Updated Level {access_level}"})
+            record.invalidate_recordset()
+            self.assertEqual(
+                record.name,
+                f"Root Updated Level {access_level}",
+                f"Root should be able to update access_level={access_level}",
+            )
+
+        # Test Root can delete records created by other users
+        manager_record = self.JetTemplate.with_user(self.manager).create(
             {
                 "name": "Manager's Record",
                 "reference": "managers_record",
@@ -423,16 +415,11 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "manager_ids": [(4, self.manager.id)],
             }
         )
-
-        # Root should be able to delete it
-        try:
-            record.unlink()
-            records = self.JetTemplate.search([("id", "=", record.id)])
-            self.assertEqual(
-                len(records), 0, "Root should be able to delete any record"
-            )
-        except AccessError:
-            self.fail("Root should be able to delete any record")
+        manager_record.unlink()
+        records = self.JetTemplate.search([("id", "=", manager_record.id)])
+        self.assertEqual(
+            len(records), 0, "Root should be able to delete records from any creator"
+        )
 
     # ======================
     # Edge Cases

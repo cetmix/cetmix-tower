@@ -19,11 +19,20 @@ class CxTowerJet(models.Model):
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.tag.mixin",
+        "cx.tower.access.role.mixin",
     ]
 
     active = fields.Boolean(default=True)
     url = fields.Char()
     color = fields.Integer(related="state_id.color", readonly=True)
+
+    # ---- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_jet_user_rel",
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_jet_manager_rel",
+    )
 
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",

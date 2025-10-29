@@ -20,7 +20,7 @@
     </record>
 
     <!-- Manager Read Access -->
-    <!-- Access level is "Manager" or less OR user is added in "Users" -->
+    <!-- Access level is "Manager" or less OR user is added in "Users" or "Managers" -->
     <record id="rule_cx_tower_jet_template_manager_read" model="ir.rule">
         <field name="name">Jet Template: Manager Read Access</field>
         <field name="model_id" ref="model_cx_tower_jet_template" />
@@ -28,7 +28,9 @@
         <field name="domain_force">
             ["|",
                 ("access_level", "&lt;=", "2"),
-                ("user_ids", "in", [user.id])
+                "|",
+                    ("user_ids", "in", [user.id]),
+                    ("manager_ids", "in", [user.id])
             ]
         </field>
         <field name="perm_read" eval="1" />
