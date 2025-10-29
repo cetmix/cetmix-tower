@@ -1,3 +1,8 @@
+## 16.0.2.0.1 (2025-10-29)
+
+- Features: Improve the way secrets are listed in the YAML import widget. (5010)
+
+
 ## 16.0.1.4.2 (2025-10-06)
 
 - Bugfixes: Add the missing 'create' function decorator (4980)
