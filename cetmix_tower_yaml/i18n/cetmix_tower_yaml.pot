@@ -46,8 +46,8 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid ""
-"<strong>Important:</strong> To maintain data consistency, the following "
-"model records will always be updated if they exist in Odoo:"
+"<strong>Important:</strong> To maintain data consistency, the following\n"
+"                        model records will always be updated if they exist in Odoo:"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -66,15 +66,6 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
 msgid ""
 "Add prefix to the exported YAML file name when this template is selected"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#. odoo-python
-#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
-msgid ""
-"After import, please check and provide secret values if needed for the "
-"following secrets: %(secrets)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -216,6 +207,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_upload_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Close"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Code preview"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -395,6 +391,13 @@ msgid "File prefix"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Following secrets are used in the code:<br/>%(secrets)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "Generate YAML file"
 msgstr ""
@@ -531,7 +534,7 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
-msgid "List of secrets present in the YAML file"
+msgid "List of secrets present in the YAML file (formatted as HTML list)"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -632,7 +635,6 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Preview code"
 msgstr ""
 
@@ -765,8 +767,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid ""
-"To create new entities instead of updating existing ones, remove or modify "
-"the <code>reference</code> field in the YAML code for those entities."
+"To create new entities instead of updating existing ones, remove or modify\n"
+"                        the <code>reference</code> field in the YAML code for those entities."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
+msgid "Toggle to show or hide YAML code preview"
 msgstr ""
 
 #. module: cetmix_tower_yaml
