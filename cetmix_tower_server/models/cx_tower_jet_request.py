@@ -203,15 +203,20 @@ class CxTowerJetRequest(models.Model):
         # to the required state - create a new jet
         # TODO: Add an option to wait for the jet to become available
         if jet_template:
+            _logger.info("Creating new jet using template %s", jet_template.name)
             jet = jet_template.create_jet(server)
-            _logger.info("No jets available, created new jet %s", jet.name)
             if jet:
+                _logger.info("Created new jet %s", jet.name)
                 request.jet_id = jet
                 if jet.state_id == state:
                     request._finalize(failed=False)
                 else:
                     # Trigger the jet to bring itself to the required state
                     jet._serve_jet_request(jet_request=request)
+            else:
+                _logger.error(
+                    "Failed to create new jet using template %s", jet_template.name
+                )
 
         _logger.info("Jet request creation finished")
         return request

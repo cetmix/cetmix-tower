@@ -11,20 +11,6 @@ class TestTowerJetActionAccess(TestTowerJetsCommon):
     Test access rules for Jet Action model (cx.tower.jet.action)
     """
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        # Additional manager for some scenarios
-        cls.manager2 = cls.Users.create(
-            {
-                "name": "Test Manager 2",
-                "login": "test_manager_2",
-                "email": "test_manager_2@example.com",
-                "groups_id": [(6, 0, [cls.group_manager.id])],
-            }
-        )
-
     # ======================
     # Manager Read Access
     # ======================
@@ -209,13 +195,67 @@ class TestTowerJetActionAccess(TestTowerJetsCommon):
         with self.assertRaises(AccessError):
             self.JetAction.with_user(self.manager).browse(action.id).unlink()
 
+    def test_manager_write_on_root_level_template_when_in_managers(self):
+        """Manager: can write/create/delete on Root-level template when in Managers"""
+        template = self.JetTemplate.create(
+            {
+                "name": "Root Level Template For Write",
+                "reference": "root_level_template_for_write",
+                "access_level": "3",
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        action = self.JetAction.create(
+            {
+                "name": "Action RW",
+                "reference": "action_rw",
+                "jet_template_id": template.id,
+                "state_from_id": self.state_running.id,
+                "state_to_id": self.state_stopped.id,
+                "state_transit_id": self.state_stopping.id,
+            }
+        )
+
+        # Write
+        self.JetAction.with_user(self.manager).browse(action.id).write({"priority": 42})
+        action.invalidate_recordset()
+        self.assertEqual(
+            action.priority,
+            42,
+            "Manager should write on Root-level template when in Managers",
+        )
+
+        # Create
+        created = self.JetAction.with_user(self.manager).create(
+            {
+                "name": "Action RW Created",
+                "reference": "action_rw_created",
+                "jet_template_id": template.id,
+                "state_from_id": self.state_stopped.id,
+                "state_to_id": self.state_running.id,
+                "state_transit_id": self.state_starting.id,
+            }
+        )
+        self.assertTrue(
+            created, "Manager should create on Root-level template when in Managers"
+        )
+
+        # Delete
+        self.JetAction.with_user(self.manager).browse(created.id).unlink()
+        after = self.JetAction.search([("id", "=", created.id)])
+        self.assertEqual(
+            len(after),
+            0,
+            "Manager should delete on Root-level template when in Managers",
+        )
+
     # ======================
     # Root Access
     # ======================
 
     def test_root_full_access(self):
         """Root: full CRUD access for any record"""
-        template = self.JetTemplate.create(
+        template = self.JetTemplate.with_user(self.root).create(
             {
                 "name": "Root Template",
                 "reference": "root_template",
@@ -224,7 +264,7 @@ class TestTowerJetActionAccess(TestTowerJetsCommon):
         )
 
         # Create
-        action = self.JetAction.create(
+        action = self.JetAction.with_user(self.root).create(
             {
                 "name": "Root Action",
                 "reference": "root_action",
@@ -236,18 +276,22 @@ class TestTowerJetActionAccess(TestTowerJetsCommon):
         )
 
         # Read
-        records = self.JetAction.search([("id", "=", action.id)])
+        records = self.JetAction.with_user(self.root).search([("id", "=", action.id)])
         self.assertEqual(len(records), 1, "Root should read any record")
 
         # Write
-        action.write({"priority": 7})
+        action.with_user(self.root).write({"priority": 7})
         action.invalidate_recordset()
         self.assertEqual(action.priority, 7, "Root should update any record")
 
         # Delete
-        action.unlink()
+        action.with_user(self.root).unlink()
         self.assertEqual(
-            len(self.JetAction.search([("reference", "=", "root_action")])),
+            len(
+                self.JetAction.with_user(self.root).search(
+                    [("reference", "=", "root_action")]
+                )
+            ),
             0,
             "Root should delete any record",
         )

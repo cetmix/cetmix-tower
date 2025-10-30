@@ -15,16 +15,6 @@ class TestTowerJetTemplateInstallAccess(TestTowerJetsCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        # Create additional manager for multi-manager tests
-        cls.manager2 = cls.Users.create(
-            {
-                "name": "Test Manager 2",
-                "login": "test_manager_2",
-                "email": "test_manager_2@example.com",
-                "groups_id": [(6, 0, [cls.group_manager.id])],
-            }
-        )
-
         # Create additional server for testing
         cls.server_test_2 = cls.Server.create(
             {
@@ -267,7 +257,7 @@ class TestTowerJetTemplateInstallAccess(TestTowerJetsCommon):
 
         # Root should be able to write
         try:
-            install_record.write({"state": "installed"})
+            install_record.with_user(self.root).write({"state": "installed"})
             install_record.invalidate_recordset()
             self.assertEqual(
                 install_record.state, "installed", "Root should be able to update"
@@ -277,7 +267,7 @@ class TestTowerJetTemplateInstallAccess(TestTowerJetsCommon):
 
     def test_root_create_access(self):
         """Test Root: Can create any record"""
-        template = self.JetTemplate.create(
+        template = self.JetTemplate.with_user(self.root).create(
             {
                 "name": "Root Template",
                 "reference": "root_template",
@@ -288,13 +278,15 @@ class TestTowerJetTemplateInstallAccess(TestTowerJetsCommon):
 
         # Root should be able to create
         try:
-            install_record = self.JetTemplateInstall.create(
+            install_record = self.JetTemplateInstall.with_user(self.root).create(
                 {
                     "jet_template_id": template.id,
                     "server_id": server.id,
                 }
             )
-            records = self.JetTemplateInstall.search([("id", "=", install_record.id)])
+            records = self.JetTemplateInstall.with_user(self.root).search(
+                [("id", "=", install_record.id)]
+            )
             self.assertEqual(len(records), 1, "Root should be able to create")
         except AccessError:
             self.fail("Root should be able to create any record")
@@ -305,8 +297,10 @@ class TestTowerJetTemplateInstallAccess(TestTowerJetsCommon):
 
         # Root should be able to delete
         try:
-            install_record.unlink()
-            records = self.JetTemplateInstall.search([("id", "=", install_record.id)])
+            install_record.with_user(self.root).unlink()
+            records = self.JetTemplateInstall.with_user(self.root).search(
+                [("id", "=", install_record.id)]
+            )
             self.assertEqual(len(records), 0, "Root should be able to delete")
         except AccessError:
             self.fail("Root should be able to delete any record")
@@ -334,7 +328,9 @@ class TestTowerJetTemplateInstallAccess(TestTowerJetsCommon):
 
         for scenario in scenarios:
             _, _, install_record = self._create_install_record(**scenario)
-            records = self.JetTemplateInstall.search([("id", "=", install_record.id)])
+            records = self.JetTemplateInstall.with_user(self.root).search(
+                [("id", "=", install_record.id)]
+            )
             self.assertEqual(
                 len(records),
                 1,

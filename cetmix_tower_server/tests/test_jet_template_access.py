@@ -379,7 +379,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
         # Test CRUD operations for all access levels
         for access_level in ["1", "2", "3"]:
             # Root can create any level
-            record = self.JetTemplate.create(
+            record = self.JetTemplate.with_user(self.root).create(
                 {
                     "name": f"Root Level {access_level}",
                     "reference": f"root_level_{access_level}",
@@ -390,7 +390,9 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
             )
 
             # Root can read any level
-            records = self.JetTemplate.search([("id", "=", record.id)])
+            records = self.JetTemplate.with_user(self.root).search(
+                [("id", "=", record.id)]
+            )
             self.assertEqual(
                 len(records),
                 1,
@@ -398,7 +400,9 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
             )
 
             # Root can write any level
-            record.write({"name": f"Root Updated Level {access_level}"})
+            record.with_user(self.root).write(
+                {"name": f"Root Updated Level {access_level}"}
+            )
             record.invalidate_recordset()
             self.assertEqual(
                 record.name,
@@ -415,8 +419,10 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "manager_ids": [(4, self.manager.id)],
             }
         )
-        manager_record.unlink()
-        records = self.JetTemplate.search([("id", "=", manager_record.id)])
+        manager_record.with_user(self.root).unlink()
+        records = self.JetTemplate.with_user(self.root).search(
+            [("id", "=", manager_record.id)]
+        )
         self.assertEqual(
             len(records), 0, "Root should be able to delete records from any creator"
         )
