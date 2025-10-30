@@ -11,23 +11,6 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
     Test access rules for Jet Dependency model
     """
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        # Create additional manager for multi-manager tests
-        cls.manager2 = cls.Users.create(
-            {
-                "name": "Test Manager 2",
-                "login": "test_manager_2",
-                "email": "test_manager_2@example.com",
-                "groups_id": [(6, 0, [cls.group_manager.id])],
-            }
-        )
-
-        # Set up model reference
-        cls.JetDependency = cls.env["cx.tower.jet.dependency"]
-
     # ======================
     # Manager Read Access Tests
     # ======================
@@ -214,6 +197,17 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
         try:
             dependency1.invalidate_recordset()
             dependency1.with_user(self.manager).read(["jet_id", "jet_depends_on_id"])
+            # Perform an actual write: switch to an alternative valid depends_on jet
+            depends_on_jet_alt = self._create_jet(
+                "Depends User Alt",
+                "depends_user_alt",
+                template=self.jet_template_tower_core,
+                user_ids=[(4, self.manager.id)],
+                server_user_ids=[(4, self.manager.id)],
+            )
+            dependency1.with_user(self.manager).write(
+                {"jet_depends_on_id": depends_on_jet_alt.id}
+            )
         except AccessError:
             self.fail(
                 "Manager should be able to write when in jet manager_ids "
@@ -239,6 +233,17 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
         try:
             dependency2.invalidate_recordset()
             dependency2.with_user(self.manager).read(["jet_id", "jet_depends_on_id"])
+            # Perform an actual write: switch to an alternative valid depends_on jet
+            depends_on_jet_alt2 = self._create_jet(
+                "Depends Manager Alt",
+                "depends_manager_alt",
+                template=self.jet_template_docker,
+                manager_ids=[(4, self.manager.id)],
+                server_user_ids=[(4, self.manager.id)],
+            )
+            dependency2.with_user(self.manager).write(
+                {"jet_depends_on_id": depends_on_jet_alt2.id}
+            )
         except AccessError:
             self.fail(
                 "Manager should be able to write when in jet manager_ids"
@@ -250,39 +255,21 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
         Test Manager: Create when in manager_ids of jet AND user_ids
         or manager_ids of depends.
         """
-        # Create template dependency using different templates
-        template_dep = self.JetTemplateDependency.create(
-            {
-                "template_id": self.jet_template_test.id,
-                "template_required_id": self.jet_template_tower_core.id,
-            }
-        )
-
-        # Create jets with proper access
-        jet = self._create_jet(
-            "Create Jet",
-            "create_jet",
-            template=self.jet_template_test,
-            manager_ids=[(4, self.manager.id)],
-            server_user_ids=[(4, self.manager.id)],
-        )
-
-        depends_on_jet = self._create_jet(
-            "Create Depends",
-            "create_depends",
-            template=self.jet_template_tower_core,
-            user_ids=[(4, self.manager.id)],
-            server_user_ids=[(4, self.manager.id)],
-        )
-
         # Try to create dependency as manager
+        # (helper ensures proper template dependency)
         try:
-            dependency = self.JetDependency.with_user(self.manager).create(
-                {
-                    "jet_id": jet.id,
-                    "jet_depends_on_id": depends_on_jet.id,
-                    "jet_template_dependency_id": template_dep.id,
-                }
+            _, _, dependency = self._create_jet_dependency(
+                "Create Jet",
+                "create_jet",
+                "Create Depends",
+                "create_depends",
+                jet_manager_ids=[(4, self.manager.id)],
+                depends_on_user_ids=[(4, self.manager.id)],
+                jet_server_user_ids=[(4, self.manager.id)],
+                depends_on_server_user_ids=[(4, self.manager.id)],
+                with_user=self.manager,
+                jet_template=self.jet_template_test,
+                depends_on_template=self.jet_template_tower_core,
             )
             records = self.JetDependency.search([("id", "=", dependency.id)])
             self.assertIn(
@@ -295,80 +282,46 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
 
     def test_manager_create_forbidden_not_in_jet_manager_ids(self):
         """Test Manager: Cannot create when not in jet manager_ids"""
-        # Create template dependency using different templates
-        template_dep = self.JetTemplateDependency.create(
-            {
-                "template_id": self.jet_template_test.id,
-                "template_required_id": self.jet_template_tower_core.id,
-            }
+        # Should not be able to create (manager not in jet manager_ids)
+        self.assertRaises(
+            AccessError,
+            lambda: self._create_jet_dependency(
+                "No Create Jet",
+                "no_create_jet",
+                "No Create Depends",
+                "no_create_depends",
+                jet_user_ids=[(4, self.manager.id)],
+                depends_on_user_ids=[(4, self.manager.id)],
+                jet_server_user_ids=[(4, self.manager.id)],
+                depends_on_server_user_ids=[(4, self.manager.id)],
+                with_user=self.manager,
+                jet_template=self.jet_template_test,
+                depends_on_template=self.jet_template_tower_core,
+            ),
         )
-
-        # Create jets - manager only in jet user_ids (not manager_ids)
-        jet = self._create_jet(
-            "No Create Jet",
-            "no_create_jet",
-            template=self.jet_template_test,
-            user_ids=[(4, self.manager.id)],
-            server_user_ids=[(4, self.manager.id)],
-        )
-
-        depends_on_jet = self._create_jet(
-            "No Create Depends",
-            "no_create_depends",
-            template=self.jet_template_tower_core,
-            user_ids=[(4, self.manager.id)],
-            server_user_ids=[(4, self.manager.id)],
-        )
-
-        # Should not be able to create
-        with self.assertRaises(AccessError):
-            self.JetDependency.with_user(self.manager).create(
-                {
-                    "jet_id": jet.id,
-                    "jet_depends_on_id": depends_on_jet.id,
-                    "jet_template_dependency_id": template_dep.id,
-                }
-            )
 
     def test_manager_create_forbidden_not_in_depends(self):
         """
         Test Manager: Cannot create when in jet manager_ids but NOT in depends.
         """
-        # Create template dependency using different templates
-        template_dep = self.JetTemplateDependency.create(
-            {
-                "template_id": self.jet_template_test.id,
-                "template_required_id": self.jet_template_tower_core.id,
-            }
+        # Should not be able to create (manager has no access to depends)
+        self.assertRaises(
+            AccessError,
+            lambda: self._create_jet_dependency(
+                "Create Jet",
+                "create_jet",
+                "No Depends Access",
+                "no_depends_access",
+                jet_manager_ids=[(4, self.manager.id)],
+                depends_on_user_ids=[(5, 0, 0)],
+                depends_on_manager_ids=[(5, 0, 0)],
+                jet_server_user_ids=[(4, self.manager.id)],
+                depends_on_server_user_ids=[(4, self.manager.id)],
+                with_user=self.manager,
+                jet_template=self.jet_template_test,
+                depends_on_template=self.jet_template_tower_core,
+            ),
         )
-
-        # Create jets - manager in jet manager_ids but not in depends
-        jet = self._create_jet(
-            "Create Jet",
-            "create_jet",
-            template=self.jet_template_test,
-            manager_ids=[(4, self.manager.id)],
-            server_user_ids=[(4, self.manager.id)],
-        )
-
-        depends_on_jet = self._create_jet(
-            "No Depends Access",
-            "no_depends_access",
-            template=self.jet_template_tower_core,
-            user_ids=[(5, 0, 0)],
-            manager_ids=[(5, 0, 0)],
-            server_user_ids=[(4, self.manager.id)],
-        )
-
-        # Should not be able to create
-        with self.assertRaises(AccessError):
-            self.JetDependency.with_user(self.manager).create(
-                {
-                    "jet_id": jet.id,
-                    "jet_depends_on_id": depends_on_jet.id,
-                    "jet_template_dependency_id": template_dep.id,
-                }
-            )
 
     def test_manager_unlink_access(self):
         """
@@ -415,8 +368,7 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
             depends_on_server_user_ids=[(4, self.manager.id)],
         )
 
-        with self.assertRaises(AccessError):
-            dependency.with_user(self.manager).unlink()
+        self.assertRaises(AccessError, dependency.with_user(self.manager).unlink)
 
     # ======================
     # Root Access Tests
@@ -424,52 +376,43 @@ class TestTowerJetDependencyAccess(TestTowerJetsCommon):
 
     def test_root_full_access(self):
         """Test Root: Full CRUD access regardless of access restrictions"""
-        # Create jets without any access restrictions
-        jet = self._create_jet(
+        # Root can create dependency via helper regardless of access
+        _, _, dependency = self._create_jet_dependency(
             "Root Jet",
             "root_jet",
-            template=self.jet_template_test,
-            user_ids=[(5, 0, 0)],
-            manager_ids=[(5, 0, 0)],
-        )
-
-        depends_on_jet = self._create_jet(
             "Root Depends",
             "root_depends",
-            template=self.jet_template_tower_core,
-            user_ids=[(5, 0, 0)],
-            manager_ids=[(5, 0, 0)],
-        )
-
-        # Create template dependency using different templates
-        template_dep = self.JetTemplateDependency.create(
-            {
-                "template_id": self.jet_template_test.id,
-                "template_required_id": self.jet_template_tower_core.id,
-            }
-        )
-
-        # Root can create
-        dependency = self.JetDependency.create(
-            {
-                "jet_id": jet.id,
-                "jet_depends_on_id": depends_on_jet.id,
-                "jet_template_dependency_id": template_dep.id,
-            }
+            jet_user_ids=[(5, 0, 0)],
+            jet_manager_ids=[(5, 0, 0)],
+            depends_on_user_ids=[(5, 0, 0)],
+            depends_on_manager_ids=[(5, 0, 0)],
+            with_user=self.root,
+            jet_template=self.jet_template_test,
+            depends_on_template=self.jet_template_tower_core,
         )
 
         # Root can read
-        records = self.JetDependency.search([("id", "=", dependency.id)])
+        records = self.JetDependency.with_user(self.root).search(
+            [("id", "=", dependency.id)]
+        )
         self.assertIn(dependency, records, "Root should be able to read")
 
-        # Root can write (if any fields can be updated)
+        # Root can write: switch depends_on to another valid jet
+        depends_on_jet_alt = self._create_jet(
+            "Root Depends Alt",
+            "root_depends_alt",
+            template=self.jet_template_tower_core,
+        )
         dependency.invalidate_recordset()
-        dependency.read(["jet_id", "jet_depends_on_id"])
-        self.assertTrue(True, "Root should be able to access dependency")
+        dependency.with_user(self.root).write(
+            {"jet_depends_on_id": depends_on_jet_alt.id}
+        )
 
         # Root can delete
-        dependency.unlink()
-        records = self.JetDependency.search([("id", "=", dependency.id)])
+        dependency.with_user(self.root).unlink()
+        records = self.JetDependency.with_user(self.root).search(
+            [("id", "=", dependency.id)]
+        )
         self.assertEqual(
             len(records),
             0,

@@ -15,16 +15,6 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
     def setUpClass(cls):
         super().setUpClass()
 
-        # Create additional manager for multi-manager tests
-        cls.manager2 = cls.Users.create(
-            {
-                "name": "Test Manager 2",
-                "login": "test_manager_2",
-                "email": "test_manager_2@example.com",
-                "groups_id": [(6, 0, [cls.group_manager.id])],
-            }
-        )
-
         # Create additional server for testing
         cls.server_test_2 = cls.Server.create(
             {
@@ -318,7 +308,7 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
 
         # Root should be able to write
         try:
-            install_line_record.write({"state": "installed"})
+            install_line_record.with_user(self.root).write({"state": "installed"})
             install_line_record.invalidate_recordset()
             self.assertEqual(
                 install_line_record.state, "installed", "Root should be able to update"
@@ -328,14 +318,14 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
 
     def test_root_create_access(self):
         """Test Root: Can create any record"""
-        template = self.JetTemplate.create(
+        template = self.JetTemplate.with_user(self.root).create(
             {
                 "name": "Root Template",
                 "reference": "root_template",
                 "access_level": "3",
             }
         )
-        line_template = self.JetTemplate.create(
+        line_template = self.JetTemplate.with_user(self.root).create(
             {
                 "name": "Root Line Template",
                 "reference": "root_line_template",
@@ -353,14 +343,16 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
 
         # Root should be able to create
         try:
-            install_line_record = self.JetTemplateInstallLine.create(
+            install_line_record = self.JetTemplateInstallLine.with_user(
+                self.root
+            ).create(
                 {
                     "jet_template_install_id": install_record.id,
                     "jet_template_id": line_template.id,
                     "order": 10,
                 }
             )
-            records = self.JetTemplateInstallLine.search(
+            records = self.JetTemplateInstallLine.with_user(self.root).search(
                 [("id", "=", install_line_record.id)]
             )
             self.assertEqual(len(records), 1, "Root should be able to create")
@@ -373,8 +365,8 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
 
         # Root should be able to delete
         try:
-            install_line_record.unlink()
-            records = self.JetTemplateInstallLine.search(
+            install_line_record.with_user(self.root).unlink()
+            records = self.JetTemplateInstallLine.with_user(self.root).search(
                 [("id", "=", install_line_record.id)]
             )
             self.assertEqual(len(records), 0, "Root should be able to delete")
@@ -406,7 +398,7 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
             _, _, _, _, install_line_record = self._create_install_line_record(
                 **scenario
             )
-            records = self.JetTemplateInstallLine.search(
+            records = self.JetTemplateInstallLine.with_user(self.root).search(
                 [("id", "=", install_line_record.id)]
             )
             self.assertEqual(

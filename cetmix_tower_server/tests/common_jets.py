@@ -1,6 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo import _
 from odoo.exceptions import AccessError
 
 from .common import TestTowerCommon
@@ -432,6 +433,9 @@ class TestTowerJetsCommon(TestTowerCommon):
             }
         )
 
+        # Model references reused by helpers
+        cls.JetDependency = cls.env["cx.tower.jet.dependency"]
+
     @classmethod
     def _create_jet(
         cls,
@@ -560,7 +564,11 @@ class TestTowerJetsCommon(TestTowerCommon):
         if not template_dep:
             # Create template dependency first
             # to ensure templates are different
-            _, _, template_dep = cls._create_jet_template_dependency(
+            (
+                _template,
+                _required_template,
+                template_dep,
+            ) = cls._create_jet_template_dependency(
                 template=jet_template,
                 template_required=depends_on_template,
             )
@@ -610,14 +618,13 @@ class TestTowerJetsCommon(TestTowerCommon):
             depends_on_jet.invalidate_recordset(["user_ids", "manager_ids"])
 
         # Create dependency
-        JetDependency = cls.env["cx.tower.jet.dependency"]
         dependency_vals = {
             "jet_id": jet.id,
             "jet_depends_on_id": depends_on_jet.id,
             "jet_template_dependency_id": template_dep.id,
         }
         dependency_model = (
-            JetDependency.with_user(with_user) if with_user else JetDependency
+            cls.JetDependency.with_user(with_user) if with_user else cls.JetDependency
         )
         dependency = dependency_model.create(dependency_vals)
 
@@ -634,6 +641,7 @@ class TestTowerJetsCommon(TestTowerCommon):
         template=None,
         template_required=None,
         state_required_id=None,
+        with_user=None,
     ):
         """Helper method to create a dependency between two templates
 
@@ -686,6 +694,11 @@ class TestTowerJetsCommon(TestTowerCommon):
         }
         if state_required_id:
             dependency_vals["state_required_id"] = state_required_id
-        dependency = cls.JetTemplateDependency.create(dependency_vals)
+        dependency_model = (
+            cls.JetTemplateDependency.with_user(with_user)
+            if with_user
+            else cls.JetTemplateDependency
+        )
+        dependency = dependency_model.create(dependency_vals)
 
         return template, required_template, dependency
