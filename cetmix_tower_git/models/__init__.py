@@ -8,3 +8,5 @@ from . import cx_tower_git_project
 from . import cx_tower_git_remote
 from . import cx_tower_git_source
 from . import cx_tower_server
+from . import cetmix_tower
+from . import cx_tower_plan_line

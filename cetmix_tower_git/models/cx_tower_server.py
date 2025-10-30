@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class CxTowerServer(models.Model):
@@ -59,3 +59,79 @@ class CxTowerServer(models.Model):
         return super()._update_or_create_related_record(
             model, reference, values, create_immediately=create_immediately
         )
+
+    @api.model
+    def get_servers_by_git_ref(self, repository_url, head=None, head_type=None):
+        """
+        Return servers linked to a given Git repository reference.
+
+        Parameters
+        ----------
+        repository_url : str
+            Pre-normalized canonical Git URL
+            (e.g. ``https://host/owner/repo.git``).
+        head : str, optional
+            Branch name, commit SHA, or PR identifier.
+        head_type : {'branch', 'commit', 'pr'}, optional
+            Type of the ``head`` argument.
+            If only ``head`` is provided, it will match across all head types.
+            If only ``head_type`` is provided, it will filter by type regardless of head
+
+        Returns
+        -------
+        recordset of cx.tower.server
+            Matching servers. Empty recordset if no matches.
+        """
+        # URL MUST be already canonical.
+        if not repository_url:
+            return self.env["cx.tower.server"].browse()
+
+        Remote = self.env["cx.tower.git.remote"]
+        domain = [("url", "=", repository_url)]
+        if head:
+            domain.append(("head", "=", head))
+        if head_type:
+            domain.append(("head_type", "=", head_type))
+
+        matching = Remote.search(domain)
+
+        servers = matching.mapped("git_project_id.git_project_rel_ids.server_id")
+        return servers
+
+    def _command_runner_file_using_template_create_file(
+        self,
+        file_template_id,
+        server_dir,
+        plan_line,
+        if_file_exists,
+        **kwargs,
+    ):
+        """Override to create git project relation
+        when creating a file using a template.
+        """
+        file = super()._command_runner_file_using_template_create_file(
+            file_template_id, server_dir, plan_line, if_file_exists, **kwargs
+        )
+        if file and plan_line:
+            git_project = plan_line.git_project_id
+            if not git_project:
+                return file
+
+            if plan_line.is_make_copy:
+                # Remove default_server_ids from context, because this relation
+                # will be created through git_project_rel_ids.
+                # default_server_ids will interfere at the moment when
+                # pairs of values are created through SQL query
+                # in the method write_real and it does not take into account
+                # that in this case we are creating a copy of the git project
+                git_project = git_project.with_context(default_server_ids=False).copy()
+
+            self.env["cx.tower.git.project.rel"].create(
+                {
+                    "git_project_id": git_project.id,
+                    "server_id": self.id,
+                    "file_id": file.id,
+                    "project_format": git_project._default_project_format(),
+                }
+            )
+        return file
