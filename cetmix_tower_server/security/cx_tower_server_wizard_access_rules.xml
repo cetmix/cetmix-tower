@@ -36,4 +36,33 @@
             <field name="domain_force">[('create_uid', '=', user.id)]</field>
         </record>
 
+        <!-- cx.tower.jet.template.install.wiz -->
+        <record
+        id="rule_cx_tower_jet_template_install_wiz_manager_read"
+        model="ir.rule"
+    >
+            <field name="name">Jet Template Install Wizard: Manager Read Access</field>
+            <field name="model_id" ref="model_cx_tower_jet_template_install_wiz" />
+            <field name="global" eval="True" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- cx.tower.jet.action.wiz -->
+        <record id="rule_cx_tower_jet_action_wiz_manager_read" model="ir.rule">
+            <field name="name">Jet Action Wizard: Manager Read Access</field>
+            <field name="model_id" ref="model_cx_tower_jet_action_wizard" />
+            <field name="global" eval="True" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- cx.tower.jet.state.wiz -->
+        <record id="rule_cx_tower_jet_state_wiz_manager_read" model="ir.rule">
+            <field name="name">Jet State Wizard: Manager Read Access</field>
+            <field name="model_id" ref="model_cx_tower_jet_state_wizard" />
+            <field name="global" eval="True" />
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+
+
 </odoo>

@@ -6,7 +6,7 @@ import logging
 import xml.etree.ElementTree as ET
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 from .tools import generate_random_id
 
@@ -534,7 +534,12 @@ class CxTowerJetTemplate(models.Model):
         """
         self.ensure_one()
         # TODO: Implement the uninstallation
-        pass
+        raise UserError(
+            _(
+                "Uninstallation is not implemented yet. "
+                "Please remove the template from the servers manually."
+            )
+        )
 
     def _get_system_variable_value(self, variable_reference):
         """Return the jet template variable values

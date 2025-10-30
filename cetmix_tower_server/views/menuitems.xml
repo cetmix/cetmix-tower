@@ -42,7 +42,7 @@
 
     <menuitem
         id="menu_cx_tower_jet"
-        name="Jets"
+        name="Jets (beta)"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_action"
         sequence="10"
