@@ -575,8 +575,7 @@ class CxTowerServer(models.Model):
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(_("SSH connection error %(err)s", err=e)) from e
-            else:
-                return False, e
+            return False, e
         return client
 
     def test_ssh_connection(
@@ -629,12 +628,11 @@ class CxTowerServer(models.Model):
                     raise ValidationError(
                         _("SSH connection error %(err)s", err=e)
                     ) from e
-                else:
-                    return {
-                        "status": SSH_CONNECTION_ERROR,
-                        "response": _("Connection failed."),
-                        "error": e,
-                    }
+                return {
+                    "status": SSH_CONNECTION_ERROR,
+                    "response": _("Connection failed."),
+                    "error": e,
+                }
 
         # Try command
         if try_command:
@@ -798,8 +796,6 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Error retrieving host key: %(err)s", err=e)
                 ) from e
-            else:
-                return None
 
     # ------------------------------
     # ---- Command execution
@@ -1347,7 +1343,7 @@ class CxTowerServer(models.Model):
         Returns:
             dict(): command running result if `log_record` is defined else None
         """
-        raise_on_error = kwargs.get("raise_on_error", False)
+        raise_on_error = kwargs.pop("raise_on_error", False)
         if not ssh_connection:
             ssh_connection = self._get_ssh_client(raise_on_error=raise_on_error)
 
@@ -1409,9 +1405,8 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Flight plan running error %(err)s", err=e)
                 ) from e
-            else:
-                status = GENERAL_ERROR
-                error = e
+            status = GENERAL_ERROR
+            error = e
         else:
             if plan_log_record.plan_status != 0:
                 status = plan_log_record.plan_status
@@ -1509,12 +1504,11 @@ class CxTowerServer(models.Model):
         if not client:
             if raise_on_error:
                 raise ValidationError(_("SSH Client is not defined."))
-            else:
-                return {
-                    "status": SSH_CONNECTION_ERROR,
-                    "response": False,
-                    "error": _("SSH Client is not defined."),
-                }
+            return {
+                "status": SSH_CONNECTION_ERROR,
+                "response": False,
+                "error": _("SSH Client is not defined."),
+            }
 
         # Parse inline secrets
         code_and_secrets = self.env["cx.tower.key"]._parse_code_and_return_key_values(
@@ -1558,10 +1552,9 @@ class CxTowerServer(models.Model):
             if raise_on_error:
                 _logger.error(f"SSH run command error: {e}")
                 raise ValidationError(_("SSH run command error %(err)s", err=e)) from e
-            else:
-                status = GENERAL_ERROR
-                response = []
-                error = [e]
+            status = GENERAL_ERROR
+            response = []
+            error = [e]
 
         result = self._parse_command_results(status, response, error, secrets, **kwargs)
         return result
