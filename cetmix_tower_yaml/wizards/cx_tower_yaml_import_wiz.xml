@@ -9,22 +9,15 @@
                 <group>
                     <field name="if_record_exists" />
                 </group>
-                <div
-                    class="alert alert-info"
-                    role="alert"
-                    attrs="{'invisible': [('secret_list', '=', False)]}"
-                >
+                <div class="alert alert-info" role="alert" invisible="not secret_list">
                     <field name="secret_list" nolabel="1" />
                 </div>
 
                 <group>
                     <field name="preview_code" widget="boolean_toggle" />
                 </group>
-                <group
-                    attrs="{'invisible': [
-                        ('manifest_name', '=', False),
-                    ]}"
-                >
+
+                <group invisible="not manifest_name">
                     <group string="Information">
                         <field name="manifest_name" string="Name" />
                         <field name="manifest_summary" string="Summary" />
@@ -52,10 +45,7 @@
                 </group>
 
                 <notebook>
-                    <page
-                        string="Description"
-                        attrs="{'invisible':[('manifest_description','=',False)]}"
-                    >
+                    <page string="Description" invisible="not manifest_description">
                         <field
                             name="manifest_description"
                             widget="text"
@@ -64,10 +54,7 @@
                         />
                     </page>
 
-                    <page
-                        string="License text"
-                        attrs="{'invisible':[('manifest_license_text','=',False)]}"
-                    >
+                    <page string="License text" invisible="not manifest_license_text">
                         <field
                             name="manifest_license_text"
                             widget="text"
@@ -76,10 +63,7 @@
                         />
                     </page>
 
-                    <page
-                        string="Code preview"
-                        attrs="{'invisible': [('preview_code', '=', False)]}"
-                    >
+                    <page string="Code preview" invisible="not preview_code">
                         <group>
                             <field
                                 name="yaml_code"
