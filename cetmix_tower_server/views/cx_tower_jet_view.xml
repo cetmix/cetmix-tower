@@ -167,7 +167,11 @@
                                 </form>
                             </field>
                         </page>
-                        <page string="Dependencies" name="dependencies">
+                        <page
+                            string="Dependencies"
+                            name="dependencies"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <group>
                                 <group name="requires" string="Depends on">
                                     <field name="jet_requires_ids" string=" ">
