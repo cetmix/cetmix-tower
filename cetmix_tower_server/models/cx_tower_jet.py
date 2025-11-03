@@ -75,13 +75,14 @@ class CxTowerJet(models.Model):
         help="Other jets this jet depends on",
         compute="_compute_jet_requires_ids",
         store=True,
-        precompute=True,
+        groups="cetmix_tower_server.group_manager",
     )
     jet_required_by_ids = fields.One2many(
         comodel_name="cx.tower.jet.dependency",
         inverse_name="jet_depends_on_id",
         string="Required By",
         help="Jets that depend on this jet",
+        groups="cetmix_tower_server.group_manager",
         # readonly=True,
     )
 
@@ -100,10 +101,12 @@ class CxTowerJet(models.Model):
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
         string="Currently Executing Action",
+        groups="cetmix_tower_server.group_manager",
     )
     current_command_log_id = fields.Many2one(
         comodel_name="cx.tower.command.log",
         string="Currently Executing Command Log",
+        groups="cetmix_tower_server.group_manager",
     )
 
     # Variables used for configuration
