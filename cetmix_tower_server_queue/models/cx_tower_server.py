@@ -57,11 +57,14 @@ class CxTowerServer(models.Model):
     ):
         # avoid executing command if plan was stopped
         log_record.invalidate_recordset(["plan_log_id"])
-        if log_record.plan_log_id:
-            log_record.plan_log_id.invalidate_recordset(["is_stopped"])
-        if log_record and log_record.plan_log_id and log_record.plan_log_id.is_stopped:
-            log_record.stop()
-            return
+        plan_log_id = log_record.plan_log_id
+        if plan_log_id:
+            plan_log_id.invalidate_recordset(["is_stopped"])
+
+            # If plan was stopped, stop the command
+            if plan_log_id.is_stopped:
+                log_record.stop()
+                return
 
         return self._command_runner(
             command=command,
