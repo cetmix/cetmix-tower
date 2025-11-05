@@ -1,3 +1,8 @@
+## 16.0.1.1.4 (2025-11-05)
+
+- Bugfixes: Finish multiple commands at once. (5062)
+
+
 ## 16.0.1.1.3 (2025-10-13)
 
 - Features: Terminate running flight plan manually (3410)
