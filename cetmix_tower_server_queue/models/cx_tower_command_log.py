@@ -3,6 +3,8 @@
 
 import logging
 
+from psycopg2.errors import LockNotAvailable
+
 from odoo import fields, models, tools
 
 from odoo.addons.cetmix_tower_server.models.constants import (
@@ -54,29 +56,35 @@ class CxTowerCommandLog(models.Model):
         if not command_logs_to_process:
             return
 
-        # Avoid finishing the command log multiple times at the same time
-        try:
-            with self.env.cr.savepoint(), tools.mute_logger("odoo.sql_db"):
-                self.env.cr.execute(
-                    f"SELECT command_status FROM {self._table} WHERE id IN %s FOR UPDATE NOWAIT",  # noqa: E501
-                    (tuple(command_logs_to_process.ids),),
+        # Lock and process each record individually
+        locked_logs = self.browse()
+        for command_log in command_logs_to_process:
+            try:
+                with self.env.cr.savepoint(), tools.mute_logger("odoo.sql_db"):
+                    self.env.cr.execute(
+                        f"SELECT command_status FROM {self._table} WHERE id = %s FOR UPDATE NOWAIT",  # noqa: E501
+                        (command_log.id,),
+                    )
+                    locked_logs |= command_log
+            except LockNotAvailable as e:
+                _logger.warning(
+                    "Could not acquire lock on command log %s, skipping: %s",
+                    command_log.id,
+                    e,
                 )
-        except Exception as e:
-            _logger.error(
-                "Could not acquire lock on command logs %s, skipping finish: %s",
-                command_logs_to_process.ids,
-                e,
-            )
+                continue
+
+        if not locked_logs:
             return
 
         # Update the related queue job state if the command timed out
         if status == COMMAND_TIMED_OUT:
-            for command_log in command_logs_to_process:
+            for command_log in locked_logs:
                 if command_log.queue_job_id:
                     command_log.queue_job_id.sudo()._change_job_state(
                         CANCELLED, result=error
                     )
 
-        return super(CxTowerCommandLog, command_logs_to_process).finish(
+        return super(CxTowerCommandLog, locked_logs).finish(
             finish_date, status, response, error, **kwargs
         )
