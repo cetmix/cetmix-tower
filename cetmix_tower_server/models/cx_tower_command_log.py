@@ -185,7 +185,8 @@ class CxTowerCommandLog(models.Model):
     def finish(
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
-        """Save final command result when command is finished
+        """Save final command result when command is finished.
+        This method can be called for multiple command logs at once.
 
         Args:
             log_record (cx.tower.command.log()): Log record
@@ -210,7 +211,8 @@ class CxTowerCommandLog(models.Model):
         self_with_sudo.write(vals)
 
         # Trigger post finish hook
-        self_with_sudo._command_finished()
+        for command_log in self_with_sudo:
+            command_log._command_finished()
 
     def record(
         self,
@@ -257,8 +259,78 @@ class CxTowerCommandLog(models.Model):
     def _command_finished(self):
         """Triggered when command is finished
         Inherit to implement your own hooks
+
+        Returns:
+            bool: True if event was handled
         """
-        # Trigger next flightplan line
-        for rec in self:
-            if rec.plan_log_id:  # type: ignore
-                rec.plan_log_id._plan_command_finished(rec)  # type: ignore
+
+        self.ensure_one()
+
+        # Do not notify if command is run from a Flight Plan.
+        if self.plan_log_id:  # type: ignore
+            self.plan_log_id._plan_command_finished(self)  # type: ignore
+            return True
+
+        # Check if notifications are enabled
+        ICP_sudo = self.env["ir.config_parameter"].sudo()
+        notification_type_success = ICP_sudo.get_param(
+            "cetmix_tower_server.notification_type_success"
+        )
+        notification_type_error = ICP_sudo.get_param(
+            "cetmix_tower_server.notification_type_error"
+        )
+
+        # Prepare notifications
+        if not notification_type_success and not notification_type_error:
+            return True
+
+        # Use context timestamp to avoid timezone issues
+        context_timestamp = fields.Datetime.context_timestamp(
+            self, fields.Datetime.now()
+        )
+
+        # Action for button
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_command_log"
+        )
+
+        context = self.env.context.copy()
+        params = dict(context.get("params") or {})
+        params["button_name"] = _("View Log")
+        context["params"] = params
+        action.update(
+            {
+                "views": [(False, "form")],
+                "context": context,
+                "res_id": self.id,
+            }
+        )
+
+        # Send notification
+        if self.command_status == 0 and notification_type_success:
+            # Success notification
+            self.create_uid.notify_success(
+                message=_(
+                    "%(timestamp)s<br/>" "Command '%(name)s' finished successfully",
+                    name=self.command_id.name,
+                    timestamp=context_timestamp,
+                ),
+                title=self.server_id.name,
+                sticky=notification_type_success == "sticky",
+                action=action,
+            )
+
+        # Error notification
+        if self.command_status != 0 and notification_type_error:
+            self.create_uid.notify_danger(
+                message=_(
+                    "%(timestamp)s<br/>" "Command '%(name)s' finished with error",
+                    name=self.command_id.name,
+                    timestamp=context_timestamp,
+                ),
+                title=self.server_id.name,
+                sticky=notification_type_error == "sticky",
+                action=action,
+            )
+
+        return True
