@@ -15,6 +15,27 @@ class ResConfigSettings(models.TransientModel):
         help="Timeout for commands in seconds after which"
         " the command will be terminated",
     )
+    cetmix_tower_notification_type_error = fields.Selection(
+        string="Error Notifications",
+        selection=lambda self: self._selection_notifications_type(),
+        config_parameter="cetmix_tower_server.notification_type_error",
+        help="Type of error notifications",
+    )
+    cetmix_tower_notification_type_success = fields.Selection(
+        string="Success Notifications",
+        selection=lambda self: self._selection_notifications_type(),
+        config_parameter="cetmix_tower_server.notification_type_success",
+        help="Type of success notifications",
+    )
+
+    def _selection_notifications_type(self):
+        """
+        Selection of notifications type
+        """
+        return [
+            ("sticky", _("Sticky")),
+            ("non_sticky", _("Non-sticky")),
+        ]
 
     def action_configure_cron_pull_files_from_server(self):
         """

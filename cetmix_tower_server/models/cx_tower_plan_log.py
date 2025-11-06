@@ -259,6 +259,8 @@ class CxTowerPlanLog(models.Model):
             "finish_date": fields.Datetime.now(),
         }
 
+        self.ensure_one()
+
         # Apply kwargs
         if kwargs:
             values.update(kwargs)
@@ -321,7 +323,82 @@ class CxTowerPlanLog(models.Model):
     def _plan_finished(self):
         """Triggered when flightplan in finished
         Inherit to implement your own hooks
+
+        Returns:
+            bool: True if event was handled
         """
+
+        self.ensure_one()
+
+        # Do not notify if a plan that was run from another plan has been executed
+        if self.parent_flight_plan_log_id:
+            return True
+
+        # Check if notifications are enabled
+        ICP_sudo = self.env["ir.config_parameter"].sudo()
+        notification_type_success = ICP_sudo.get_param(
+            "cetmix_tower_server.notification_type_success"
+        )
+        notification_type_error = ICP_sudo.get_param(
+            "cetmix_tower_server.notification_type_error"
+        )
+
+        # Prepare notifications
+        if not notification_type_success and not notification_type_error:
+            return True
+
+        # Use context timestamp to avoid timezone issues
+        context_timestamp = fields.Datetime.context_timestamp(
+            self, fields.Datetime.now()
+        )
+
+        # Action for button
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "cetmix_tower_server.action_cx_tower_plan_log"
+        )
+
+        context = self.env.context.copy()
+        params = dict(context.get("params") or {})
+        params["button_name"] = _("View Log")
+        context["params"] = params
+
+        # Add record id and context to the action
+        action.update(
+            {
+                "context": context,
+                "res_id": self.id,
+                "views": [(False, "form")],
+            }
+        )
+
+        # Send notification
+        if self.plan_status == 0 and notification_type_success:
+            # Success notification
+            self.create_uid.notify_success(
+                message=_(
+                    "%(timestamp)s<br/>" "Flight Plan '%(name)s' finished successfully",
+                    name=self.plan_id.name,
+                    timestamp=context_timestamp,
+                ),
+                title=self.server_id.name,
+                sticky=notification_type_success == "sticky",
+                action=action,
+            )
+
+        # Error notification
+        if self.plan_status != 0 and notification_type_error:
+            self.create_uid.notify_danger(
+                message=_(
+                    "%(timestamp)s<br/>"
+                    "Flight Plan '%(name)s'"
+                    " finished with error",
+                    name=self.plan_id.name,
+                    timestamp=context_timestamp,
+                ),
+                title=self.server_id.name,
+                sticky=notification_type_error == "sticky",
+                action=action,
+            )
         return True
 
     def _plan_command_finished(self, command_log):
