@@ -1245,6 +1245,13 @@ msgid "Custom secret values can be defined only for key type 'secret'"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
+msgid ""
+"Custom values will be available in the current flight plan context only. "
+"They can be used in Python commands and line conditions"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_custom_variable_value_mixin
 msgid "Custom variable values"
 msgstr ""
@@ -3924,6 +3931,10 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
+msgid "Set Custom Values"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Set Variable Values"
 msgstr ""
