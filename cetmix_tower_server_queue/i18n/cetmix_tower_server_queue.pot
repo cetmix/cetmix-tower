@@ -55,6 +55,8 @@ msgstr ""
 #. module: cetmix_tower_server_queue
 #. odoo-python
 #: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
 #, python-format
 msgid "Failure"
 msgstr ""
@@ -76,6 +78,20 @@ msgstr ""
 #: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
 #, python-format
 msgid "File uploaded!"
+msgstr ""
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "File(s) %(name)s download failed: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "File(s) %(name)s upload failed: %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_server_queue
