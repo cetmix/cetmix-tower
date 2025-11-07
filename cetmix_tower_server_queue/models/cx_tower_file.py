@@ -74,7 +74,7 @@ class CxTowerFile(models.Model):
 
     def _do_upload(self, raise_error=True):
         """
-        Uploads the file within a job context and notifies the user on success.
+        Uploads the files within a job context and notifies the user on success.
         Logs the error if an exception occurs;
         failure state is managed by the parent method.
         """
@@ -83,18 +83,28 @@ class CxTowerFile(models.Model):
                 result = super().upload(raise_error=raise_error)
                 single_msg = _("File uploaded!")
                 plural_msg = _("Files uploaded!")
-                self.env["bus.bus"].sudo()._sendone(
-                    self.env.user.partner_id,
-                    "simple_notification",
-                    {
-                        "message": single_msg if len(self) == 1 else plural_msg,
-                        "title": _("Success"),
-                        "type": "success",
-                    },
+                self.env.user.notify_success(
+                    message=single_msg if len(self) == 1 else plural_msg,
+                    title=_("Success"),
+                    # This notification should not be sticky
+                    # to avoid blocking the user's screen
+                    sticky=False,
                 )
                 return result
         except Exception as e:
             if not raise_error:
+                self.env.user.notify_danger(
+                    message=_(
+                        "File(s) %(name)s upload failed: %(error)s",
+                        name=", ".join(self.mapped("name")),
+                        error=str(e),
+                    ),
+                    title=_("Failure"),
+                    sticky=self.env["ir.config_parameter"]
+                    .sudo()
+                    .get_param("cetmix_tower_server.notification_type_error", "sticky")
+                    == "sticky",
+                )
                 _logger.error("File %s upload failed: %s", str(self), str(e))
             else:
                 raise
@@ -103,7 +113,7 @@ class CxTowerFile(models.Model):
 
     def _do_download(self, raise_error=True):
         """
-        Downloads the file within a job context and notifies the user on success.
+        Downloads the files within a job context and notifies the user on success.
         Logs the error if an exception occurs;
         failure state is managed by the parent method.
         """
@@ -112,18 +122,28 @@ class CxTowerFile(models.Model):
                 result = super().download(raise_error=raise_error)
                 single_msg = _("File downloaded!")
                 plural_msg = _("Files downloaded!")
-                self.env["bus.bus"].sudo()._sendone(
-                    self.env.user.partner_id,
-                    "simple_notification",
-                    {
-                        "message": single_msg if len(self) == 1 else plural_msg,
-                        "title": _("Success"),
-                        "type": "success",
-                    },
+                self.env.user.notify_success(
+                    message=single_msg if len(self) == 1 else plural_msg,
+                    title=_("Success"),
+                    # This notification should not be sticky
+                    # to avoid blocking the user's screen
+                    sticky=False,
                 )
                 return result
         except Exception as e:
             if not raise_error:
+                self.env.user.notify_danger(
+                    message=_(
+                        "File(s) %(name)s download failed: %(error)s",
+                        name=", ".join(self.mapped("name")),
+                        error=str(e),
+                    ),
+                    title=_("Failure"),
+                    sticky=self.env["ir.config_parameter"]
+                    .sudo()
+                    .get_param("cetmix_tower_server.notification_type_error", "sticky")
+                    == "sticky",
+                )
                 _logger.error("File %s download failed: %s", str(self), str(e))
             else:
                 raise
