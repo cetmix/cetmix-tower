@@ -15,7 +15,7 @@
                     data-key="cetmix_tower_server"
                     groups="cetmix_tower_server.group_root"
                 >
-                    <h2>Cetmix Tower Server</h2>
+                    <h2>System Settings</h2>
                     <div
                         class="row mt16 o_settings_container"
                         id="cetmix_tower_settings"
@@ -72,6 +72,42 @@
                                     class="oe_link"
                                     icon="fa-arrow-right"
                                 />
+                            </div>
+                        </div>
+                    </div>
+                    <h2>Notifications</h2>
+                    <div
+                        class="row mt16 o_settings_container"
+                        id="cetmix_tower_notifications_settings"
+                    >
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="cetmix_tower_notification_type_error">
+                                <label for="cetmix_tower_notification_type_error" />
+                                <div class="text-muted">
+                                    Show notifications for error events. Select "Sticky" to keep the notification visible until dismissed. Leave empty to disable notifications.
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field
+                                            name="cetmix_tower_notification_type_error"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="cetmix_tower_notification_type_success">
+                                <label for="cetmix_tower_notification_type_success" />
+                                <div class="text-muted">
+                                    Show notifications for success events. Select "Sticky" to keep the notification visible until dismissed. Leave empty to disable notifications.
+                                </div>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field
+                                            name="cetmix_tower_notification_type_success"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
