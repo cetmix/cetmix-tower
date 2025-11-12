@@ -1,3 +1,8 @@
+## 16.0.1.2.0 (2025-11-12)
+
+- Features: Use the 'web_notify' module to send user notifications. (5074)
+
+
 ## 16.0.1.1.4 (2025-11-05)
 
 - Bugfixes: Finish multiple commands at once. (5062)

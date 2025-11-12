@@ -1,3 +1,8 @@
+## 16.0.2.2.0 (2025-11-12)
+
+- Features: Integrate user notifications into the main module, drop the 'cetmix_tower_notify_backend' module. (5074)
+
+
 ## 16.0.2.0.6 (2025-10-27)
 
 - Features: Tag mixin and helper commands. (5039)
