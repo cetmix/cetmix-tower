@@ -1029,3 +1029,45 @@ class TestTowerServerTemplate(TestTowerCommon):
         # Manager1 should not be able to delete their record after being removed
         with self.assertRaises(AccessError):
             record3.with_user(self.manager1).unlink()
+
+    def test_server_template_reference_update(self):
+        """Test server template reference update cascades to dependent models"""
+        # 1. Add a variable value to server_template_sample
+        variable_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "Ubuntu 20.04",
+                "server_template_id": self.server_template_sample.id,
+            }
+        )
+
+        # Store original references for comparison
+        original_template_reference = self.server_template_sample.reference
+        original_variable_value_reference = variable_value.reference
+
+        # 2. Change the reference for server_template_sample to "super_template"
+        self.server_template_sample.write({"reference": "super_template"})
+
+        # 3. Verify that references are updated for dependent models
+        # Invalidate models to refresh all references
+        self.env["cx.tower.server.template"].invalidate_model(["reference"])
+        self.env["cx.tower.variable.value"].invalidate_model(["reference"])
+
+        # Check that server template reference was updated
+        self.assertEqual(self.server_template_sample.reference, "super_template")
+        self.assertNotEqual(
+            self.server_template_sample.reference, original_template_reference
+        )
+
+        # Check that variable value reference was updated
+        # to include the new template reference
+        self.assertIn("super_template", variable_value.reference)
+        self.assertNotEqual(variable_value.reference, original_variable_value_reference)
+
+        # Verify the reference pattern for variable value follows the expected format:
+        # <variable_reference>_<model_generic_reference>_<linked_model_generic_reference>_<linked_record_reference>  # noqa: E501
+        expected_variable_pattern = (
+            f"{self.variable_os.reference}_variable_value_server_template_"
+            f"{self.server_template_sample.reference}"
+        )
+        self.assertEqual(variable_value.reference, expected_variable_pattern)

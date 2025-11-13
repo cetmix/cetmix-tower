@@ -461,6 +461,12 @@ class TowerVariableValue(models.Model):
                 break
         return is_global
 
+    def _get_extra_vals_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+
+        # Use _used_in_models as a source of truth
+        return [fld_val[0] for fld_val in self._used_in_models().values()]
+
     def _pre_populate_references(self, model_name, field_name, vals_list):
         """
         Generate model-scoped references for variable values.
@@ -528,8 +534,8 @@ class TowerVariableValue(models.Model):
 
         return vals_list
 
-    # Check cx.tower.reference.mixin for the function documentation
     def _get_pre_populated_model_data(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
         res = super()._get_pre_populated_model_data()
         res.update({"cx.tower.variable.value": ["cx.tower.variable", "variable_id"]})
         return res

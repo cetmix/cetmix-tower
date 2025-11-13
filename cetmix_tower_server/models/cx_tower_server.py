@@ -526,7 +526,7 @@ class CxTowerServer(models.Model):
     # ---- Connectivity
     # ------------------------------
 
-    def _get_ssh_client(self, raise_on_error=True, timeout=5000, skip_host_key=False):
+    def _get_ssh_client(self, raise_on_error=False, timeout=5000, skip_host_key=False):
         """Create a new SSH client instance
 
         Args:
@@ -575,8 +575,7 @@ class CxTowerServer(models.Model):
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(_("SSH connection error %(err)s", err=e)) from e
-            else:
-                return False, e
+            return False, e
         return client
 
     def test_ssh_connection(
@@ -629,17 +628,18 @@ class CxTowerServer(models.Model):
                     raise ValidationError(
                         _("SSH connection error %(err)s", err=e)
                     ) from e
-                else:
-                    return {
-                        "status": SSH_CONNECTION_ERROR,
-                        "response": _("Connection failed."),
-                        "error": e,
-                    }
+                return {
+                    "status": SSH_CONNECTION_ERROR,
+                    "response": _("Connection failed."),
+                    "error": e,
+                }
 
         # Try command
         if try_command:
             command = self._get_connection_test_command()
-            test_result = self._run_command_using_ssh(client, command_code=command)
+            test_result = self._run_command_using_ssh(
+                client, command_code=command, **{"raise_on_error": raise_on_error}
+            )
             status = test_result.get("status", 0)
             response = test_result.get("response", "")
             error = test_result.get("error", "")
@@ -750,7 +750,7 @@ class CxTowerServer(models.Model):
         return ssh_key
 
     @ensure_ssh_disconnect
-    def _get_host_key_from_host(self, raise_on_error=True, timeout=60):
+    def _get_host_key_from_host(self, raise_on_error=False, timeout=60):
         """Get host key
 
         Args:
@@ -796,8 +796,6 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Error retrieving host key: %(err)s", err=e)
                 ) from e
-            else:
-                return None
 
     # ------------------------------
     # ---- Command execution
@@ -1340,19 +1338,21 @@ class CxTowerServer(models.Model):
                 Following keys are supported by default:
                     - "log": {values passed to logger}
                     - "key": {values passed to key parser}
+                    - "raise_on_error": Raise exception on error.
 
         Returns:
             dict(): command running result if `log_record` is defined else None
         """
+        raise_on_error = kwargs.pop("raise_on_error", False)
         if not ssh_connection:
-            ssh_connection = self._get_ssh_client(raise_on_error=True)
+            ssh_connection = self._get_ssh_client(raise_on_error=raise_on_error)
 
         # Run command
         command_result = self._run_command_using_ssh(
             client=ssh_connection,
             command_code=rendered_command_code,
             command_path=rendered_command_path,
-            raise_on_error=False,
+            raise_on_error=raise_on_error,
             sudo=sudo,
             **kwargs,
         )
@@ -1369,7 +1369,7 @@ class CxTowerServer(models.Model):
             return command_result
 
     def _command_runner_flight_plan(
-        self, log_record, flight_plan, raise_on_error=True, **kwargs
+        self, log_record, flight_plan, raise_on_error=False, **kwargs
     ):
         """
         Run Flight plan from command.
@@ -1405,9 +1405,8 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Flight plan running error %(err)s", err=e)
                 ) from e
-            else:
-                status = GENERAL_ERROR
-                error = e
+            status = GENERAL_ERROR
+            error = e
         else:
             if plan_log_record.plan_status != 0:
                 status = plan_log_record.plan_status
@@ -1472,7 +1471,7 @@ class CxTowerServer(models.Model):
         client,
         command_code,
         command_path=None,
-        raise_on_error=True,
+        raise_on_error=False,
         sudo=None,
         **kwargs,
     ):
@@ -1503,7 +1502,13 @@ class CxTowerServer(models.Model):
             }
         """
         if not client:
-            raise ValidationError(_("SSH Client is not defined."))
+            if raise_on_error:
+                raise ValidationError(_("SSH Client is not defined."))
+            return {
+                "status": SSH_CONNECTION_ERROR,
+                "response": False,
+                "error": _("SSH Client is not defined."),
+            }
 
         # Parse inline secrets
         code_and_secrets = self.env["cx.tower.key"]._parse_code_and_return_key_values(
@@ -1547,10 +1552,9 @@ class CxTowerServer(models.Model):
             if raise_on_error:
                 _logger.error(f"SSH run command error: {e}")
                 raise ValidationError(_("SSH run command error %(err)s", err=e)) from e
-            else:
-                status = GENERAL_ERROR
-                response = []
-                error = [e]
+            status = GENERAL_ERROR
+            response = []
+            error = [e]
 
         result = self._parse_command_results(status, response, error, secrets, **kwargs)
         return result
@@ -1558,7 +1562,7 @@ class CxTowerServer(models.Model):
     def _run_python_code(
         self,
         code,
-        raise_on_error=True,
+        raise_on_error=False,
         **kwargs,
     ):
         """
@@ -1960,3 +1964,8 @@ class CxTowerServer(models.Model):
                 "sticky": sticky,
             },
         }
+
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["variable_value_ids", "file_ids"]
