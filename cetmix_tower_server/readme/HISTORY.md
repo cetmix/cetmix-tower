@@ -1,3 +1,10 @@
+## 17.0.2.0.5 (2025-11-13)
+
+- Features: Auto update references for related records (5005)
+
+- Bugfixes: Flight plan command exception handling (4930)
+
+
 ## 17.0.2.0.4 (2025-10-30)
 
 - Features: Improve the extendability of the file upload command. (4759)
