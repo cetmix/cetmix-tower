@@ -368,6 +368,9 @@ class CxTowerJet(models.Model):
         target_state = action.state_to_id
 
         # Check if the jet is already in the target state
+        # TODO: handle the case when destination state
+        # is the same as the current state.
+        # Eg when a jet is restarted.
         if self.state_id == target_state:
             self.target_state_id = None
             self._finalize_transition(failed=False)
@@ -392,48 +395,39 @@ class CxTowerJet(models.Model):
             }
         )
 
-        # WARNING: Explicit commit!
-        # This commit is made **only** when to ensure that the state is set
+        # Savepoint to ensure that the state is set
         # even if the next action fails.
-        # Reason: Without this commit, the change would not be visible to other
-        # transactions until the end of the transaction, leading to a race
-        # condition and possible double execution.
-        # Explicit commits are strongly discouraged in Odoo business logic and
-        # should be used only with clear justification and in strictly controlled
-        # contexts (like this cron scenario). Never add this commit for general
-        # business flows!
-        self.env.cr.commit()  # pylint: disable=invalid-commit
+        with self.env.cr.savepoint():
+            # Execute the flight plan if defined
+            if action.plan_id:
+                # Run the flight plan
+                self.server_id.run_flight_plan(
+                    flight_plan=action.plan_id,
+                    jet=self,
+                )
+                # Flight plan will trigger the `_flight_plan_finished` function again
+                # if the flight plan is finished successfully.
+                # So we don't need continue the loop in this case.
+                return
 
-        # Execute the flight plan if defined
-        if action.plan_id:
-            # Run the flight plan
-            self.server_id.run_flight_plan(
-                flight_plan=action.plan_id,
-                jet=self,
-            )
-            # Flight plan will trigger the `_flight_plan_finished` function again
-            # if the flight plan is finished successfully.
-            # So we don't need continue the loop in this case.
-            return
+            # Set the state to the destination state if no plan is defined
+            final_vals = {
+                "state_id": target_state,
+                "current_action_id": False,
+            }
 
-        # Set the state to the destination state if no plan is defined
-        final_vals = {
-            "state_id": target_state,
-            "current_action_id": False,
-        }
+            # Reset the target state if the jet has reached the target state
+            if target_state == self.target_state_id:
+                final_vals["target_state_id"] = None
 
-        # Reset the target state if the jet has reached the target state
-        if target_state == self.target_state_id:
-            final_vals["target_state_id"] = None
+            self.write(final_vals)
 
-        self.write(final_vals)
+            # Continue the chain of actions if the final state is not reached yet
+            if self.target_state_id:
+                self._bring_to_state(self.target_state_id)
 
-        # Continue the chain of actions if the final state is not reached yet
-        if self.target_state_id:
-            self._bring_to_state(self.target_state_id)
-
-        # Trigger the transition finished event
-        self._finalize_transition(failed=False)
+            # Trigger the transition finished event
+            self._finalize_transition(failed=False)
 
     def _bring_to_state(self, state=None):
         """
@@ -735,6 +729,48 @@ class CxTowerJet(models.Model):
                 # Set current jet as the target jet for the request
                 remaining_request.write({"jet_id": self.id})  # pylint: disable=no-member
                 self._bring_to_state(remaining_request.state_requested_id)
+
+        # Send success notification when everything is done
+        # Use context timestamp to avoid timezone issues
+        context_timestamp = fields.Datetime.context_timestamp(
+            self, fields.Datetime.now()
+        )
+
+        # Check if notifications are enabled
+        ICP_sudo = self.env["ir.config_parameter"].sudo()
+        notification_type_success = ICP_sudo.get_param(
+            "cetmix_tower_server.notification_type_success"
+        )
+        if notification_type_success:
+            # Action for button
+            action = self.env["ir.actions.act_window"]._for_xml_id(
+                "cetmix_tower_server.cx_tower_jet_action"
+            )
+
+            context = self.env.context.copy()
+            params = dict(context.get("params") or {})
+            params["button_name"] = _("View Jet")
+            context["params"] = params
+
+            # Add record id and context to the action
+            action.update(
+                {
+                    "context": context,
+                    "res_id": self.id,
+                    "views": [(False, "form")],
+                }
+            )
+            # Send success notification
+            self.env.user.notify_success(
+                message=_(
+                    "%(timestamp)s<br/>" "Available in the '%(name)s' state",
+                    name=self.state_id.name if self.state_id else _("Undefined"),
+                    timestamp=context_timestamp,
+                ),
+                title=self.name,
+                sticky=notification_type_success == "sticky",
+                action=action,
+            )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Status and busyness

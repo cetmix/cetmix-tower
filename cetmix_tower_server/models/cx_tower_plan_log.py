@@ -310,10 +310,48 @@ class CxTowerPlanLog(models.Model):
             values.update(kwargs)
         self.sudo().write(values)
 
-        # Call hook
-        self._plan_finished()
+        # Savepoint to ensure that values are stored
+        # if something goes wrong.
+        with self.env.cr.savepoint():
+            # Call the plan finished hook
+            # We are calling it here to ensure that
+            # the plan finished hook is called if auxiliary actions
+            # will fail.
+            self._plan_finished()
 
-    def record(self, server, plan, status, start_date=None, finish_date=None, **kwargs):
+            # Check if we were deleting a server
+            if (
+                self.server_id._is_being_deleted()
+                and self.server_id.plan_delete_id == self.plan_id
+            ):
+                if plan_status == 0:
+                    # And finally delete the server
+                    self.with_context(server_force_delete=True).server_id.unlink()
+
+                else:
+                    # Set deletion error if flightplan failed
+                    self.server_id.status = "delete_error"
+                return
+
+            # Jet Template action: only if it's not a sub-plan
+            # NB: Jet Template is always set automatically even
+            # it's not provided explicitly when the plan is run.
+            if not self.jet_template_id or self.parent_flight_plan_log_id:
+                return
+
+            # Finish template install/uninstall
+            if self.jet_template_install_id:
+                self.jet_template_install_id._flight_plan_finished(
+                    plan_status=self.plan_status,
+                )
+
+            # Jet
+            if self.jet_id:
+                self.jet_id._flight_plan_finished(
+                    plan_status=self.plan_status,
+                )
+
+    def record(self, server, plan, status, **kwargs):
         """
         Record plan log without running it.
 
@@ -334,13 +372,10 @@ class CxTowerPlanLog(models.Model):
             cx.tower.plan.log(): New flightplan log record.
         """
 
-        default_date = fields.Datetime.now()
         vals = {
             "server_id": server.id,
             "plan_id": plan.id,
-            "start_date": start_date or default_date,
-            "finish_date": finish_date or default_date,
-            "plan_status": status,
+            "start_date": fields.Datetime.now(),
         }
 
         # Extract and apply plan log kwargs
@@ -349,7 +384,7 @@ class CxTowerPlanLog(models.Model):
             vals.update(plan_log_kwargs)
 
         plan_log = self.sudo().create(vals)
-        plan_log._plan_finished()
+        plan_log.finish(plan_status=status)
         return plan_log
 
     def _plan_finished(self):
@@ -359,8 +394,6 @@ class CxTowerPlanLog(models.Model):
         Returns:
             bool: True if event was handled
         """
-        self.ensure_one()
-
         self.ensure_one()
 
         # Do not notify if a plan that was run from another plan has been executed
@@ -404,8 +437,12 @@ class CxTowerPlanLog(models.Model):
             }
         )
 
-        # Send notification
-        if self.plan_status == 0 and notification_type_success:
+        # Send notification only if not a jet-related plan
+        if (
+            self.plan_status == 0
+            and notification_type_success
+            and not self.jet_template_id
+        ):
             # Success notification
             self.create_uid.notify_success(
                 message=_(
@@ -432,6 +469,7 @@ class CxTowerPlanLog(models.Model):
                 sticky=notification_type_error == "sticky",
                 action=action,
             )
+
         return True
 
     def _plan_command_finished(self, command_log):
