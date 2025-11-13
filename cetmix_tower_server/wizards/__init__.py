@@ -5,3 +5,4 @@ from . import cx_tower_server_host_key_wizard
 from . import cx_tower_jet_template_install_wizard
 from . import cx_tower_jet_state_wizard
 from . import cx_tower_jet_action_wizard
+from . import cx_tower_jet_create_wizard

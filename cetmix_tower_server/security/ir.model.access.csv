@@ -90,3 +90,5 @@ access_cx_tower_jet_dependency_manager,cx.tower.jet.dependency manager,model_cx_
 access_cx_tower_jet_dependency_root,cx.tower.jet.dependency root,model_cx_tower_jet_dependency,group_root,1,1,1,1
 access_cx_tower_jet_state_wizard_user,Jet State Wizard->User,model_cx_tower_jet_state_wizard,group_user,1,1,1,1
 access_cx_tower_jet_action_wizard_user,Jet Action Wizard->User,model_cx_tower_jet_action_wizard,group_user,1,1,1,1
+access_cx_tower_jet_create_wizard_user,Jet Create Wizard->User,model_cx_tower_jet_create_wizard,group_user,1,1,1,1
+access_cx_tower_jet_create_wizard_variable_line_user,Jet Create Wizard Variable Line->User,model_cx_tower_jet_create_wizard_variable_line,group_user,1,1,1,1

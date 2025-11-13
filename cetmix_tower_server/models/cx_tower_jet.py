@@ -21,10 +21,12 @@ class CxTowerJet(models.Model):
         "cx.tower.tag.mixin",
         "cx.tower.access.role.mixin",
     ]
+    _order = "sequence, name"
 
     active = fields.Boolean(default=True)
     url = fields.Char()
     color = fields.Integer(related="state_id.color", readonly=True)
+    sequence = fields.Integer(default=10, help="Used to sort jets in views")
 
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
@@ -663,8 +665,9 @@ class CxTowerJet(models.Model):
             state (cx.tower.jet.state()): The state jet is entering
         """
         self.ensure_one()
-        # TODO: Implement the logic to handle the entry of the jet into a state
-        pass
+
+        # Refresh the frontend views
+        self.env.user.reload_views(model="cx.tower.jet", rec_ids=[self.id])
 
     def _on_jet_request_completed(self, jet_request):
         """

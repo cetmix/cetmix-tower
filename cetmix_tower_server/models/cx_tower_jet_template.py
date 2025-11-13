@@ -54,6 +54,10 @@ class CxTowerJetTemplate(models.Model):
     jet_count = fields.Integer(
         compute="_compute_jet_count",
     )
+    show_in_wizard = fields.Boolean(
+        string="Show in Wizard",
+        help="If enabled, the template will be shown in the wizard to create a new jet",
+    )
 
     # Servers
     server_ids = fields.Many2many(
@@ -573,13 +577,19 @@ class CxTowerJetTemplate(models.Model):
     #   Jet creation
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    def create_jet(self, server, name=None):
+    def create_jet(self, server, name=None, **kwargs):
         """
         Create a new jet from this template on the given server.
 
         Args:
             server (cx.tower.server()): The server to use
             name (str): The name of the jet
+        Kwargs:
+            configuration_variables (dict): Custom configuration variables
+                Following format is used:
+                    `variable_reference`: `variable_value_char`
+                    eg:
+                    {'branch': 'prod', 'odoo_version': '16.0'}
         Returns:
             cx.tower.jet(): The new jet or False if the creation has failed
         """
@@ -612,15 +622,46 @@ class CxTowerJetTemplate(models.Model):
                 % MAX_JET_NAME_RETRIES
             )
 
-        # Create a new jet
-        jet = self.env["cx.tower.jet"].create(
-            {
-                "name": name,
-                "jet_template_id": self.id,  # pylint: disable=no-member
-                "server_id": server.id,
-            }
-        )
+        # Prepare the Jet values
+        vals = {
+            "name": name,
+            "jet_template_id": self.id,  # pylint: disable=no-member
+            "server_id": server.id,
+        }
 
+        # Parse kwargs
+        if kwargs:
+            # Parse configuration variables
+            configuration_variables = kwargs.get("configuration_variables", {})
+            if configuration_variables:
+                variable_obj = self.env["cx.tower.variable"]
+                variable_values = []
+                for (
+                    variable_reference,
+                    variable_value,
+                ) in configuration_variables.items():
+                    variable = variable_obj.get_by_reference(variable_reference)
+                    if variable:
+                        variable_values.append(
+                            (
+                                0,
+                                0,
+                                {
+                                    "variable_id": variable.id,
+                                    "value_char": variable_value,
+                                },
+                            )
+                        )
+
+                if variable_values:
+                    vals.update(
+                        {
+                            "variable_value_ids": variable_values,
+                        }
+                    )
+
+        # Create a new jet
+        jet = self.env["cx.tower.jet"].create(vals)
         return jet
 
     def _allow_jet_creation(self, server):

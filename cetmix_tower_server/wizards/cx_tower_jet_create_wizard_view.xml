@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="cx_tower_jet_create_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.create.wizard.view.form</field>
+        <field name="model">cx.tower.jet.create.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Jet">
+                <group>
+                    <field
+                        name="jet_template_id"
+                        string="I want a new"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
+                    <field
+                        name="server_id"
+                        string="on the server"
+                        attrs="{'invisible': [('jet_template_id', '=', False)]}"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
+                    <field
+                        name="state_id"
+                        string="in the state"
+                        attrs="{'invisible': ['|', ('jet_template_id', '=', False), ('server_id', '=', False)]}"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                        domain="state_domain"
+                    />
+                    <field name="state_domain" invisible="1" />
+                    <field
+                        name="name_type"
+                        widget="radio"
+                        string="with the name that"
+                        attrs="{'invisible':  [('state_id', '=', False)]}"
+                    />
+                    <field
+                        name="name"
+                        placeholder="put the name here"
+                        string="with the name"
+                        attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ('a', False))]}"
+                    />
+                    <field
+                        name="use_custom_variables"
+                        widget="radio"
+                        attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ['m', False]), ('name', '=', False)]}"
+                        string="that will use"
+                    />
+                </group>
+                <field
+                    name="line_ids"
+                    attrs="{'invisible': ['|', ('use_custom_variables', '=', 'n'), ('name_type', '=', 'm'), ('name', '=', False)]}"
+                >
+                    <tree editable="bottom">
+                        <field name="variable_id" />
+                        <field name="variable_type" invisible="1" />
+                        <field
+                            name="value_char"
+                            attrs="{'readonly': [('variable_type', '=', 'o')], 'required': [('variable_type', '=', 's')]}"
+                        />
+                        <field
+                            name="option_id"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                            attrs="{'readonly': [('variable_type', '=', 's')], 'required': [('variable_type', '=', 'o')]}"
+                        />
+                    </tree>
+                </field>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        confirm="New Jet will be created. Are you sure?"
+                        type="object"
+                        class="btn-primary"
+                        attrs="{'invisible': ['|', '|', ('jet_template_id', '=', False), ('server_id', '=', False), ('state_id', '=', False)]}"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <!-- Context Action for bringing jets to state -->
+    <record id="action_cx_tower_jet_create" model="ir.actions.act_window">
+        <field name="name">Launch New Jet</field>
+        <field name="res_model">cx.tower.jet.create.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
