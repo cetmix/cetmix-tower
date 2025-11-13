@@ -127,23 +127,21 @@ class CxTowerJetTemplateInstall(models.Model):
                 )
                 # WARNING: Explicit commit to ensure visibility across transactions
                 # This prevents race conditions in async flight plan callbacks
-                if not self.env.context.get("no_transaction_commit"):
-                    self.env.cr.commit()  # pylint: disable=invalid-commit
-
-                # Add the install record to the flight plan params
-                params = {
-                    "jet_template_install_id": self.id,  # pylint: disable=no-member
-                }
-                # Run the flight plan
-                self.server_id.run_flight_plan(
-                    flight_plan=flight_plan,
-                    jet_template=installation_task.jet_template_id,
-                    **{"plan_log": params},
-                )
-                # Flight plan will trigger the `_process_install` function again
-                # if the flight plan is finished successfully.
-                # So we don't need continue the loop in this case.
-                return
+                with self.env.cr.savepoint():
+                    # Add the install record to the flight plan params
+                    params = {
+                        "jet_template_install_id": self.id,  # pylint: disable=no-member
+                    }
+                    # Run the flight plan
+                    self.server_id.run_flight_plan(
+                        flight_plan=flight_plan,
+                        jet_template=installation_task.jet_template_id,
+                        **{"plan_log": params},
+                    )
+                    # Flight plan will trigger the `_process_install` function again
+                    # if the flight plan is finished successfully.
+                    # So we don't need continue the loop in this case.
+                    return
 
             # Mark the installation task as "Installed"
             # because nothing else is to be done here.
@@ -156,18 +154,6 @@ class CxTowerJetTemplateInstall(models.Model):
             installation_task.jet_template_id.write(
                 {"server_ids": [(4, self.server_id.id)]}
             )
-            # WARNING: Explicit commit!
-            # This commit is made **only** when to ensure that the state is set
-            # even if the next action fails.
-            # Reason: Without this commit, the change would not be visible to other
-            # transactions until the end of the transaction, leading to a race
-            # condition and possible double execution.
-            # Explicit commits are strongly discouraged in Odoo business logic and
-            # should be used only with clear justification and in strictly controlled
-            # contexts (like this cron scenario). Never add this commit for general
-            # business flows!
-            if not self.env.context.get("no_transaction_commit"):
-                self.env.cr.commit()  # pylint: disable=invalid-commit
 
         # Mark the installation as done
         self.write(
@@ -176,6 +162,11 @@ class CxTowerJetTemplateInstall(models.Model):
                 "date_done": fields.Datetime.now(),
             }
         )
+
+        # Savepoint to ensure that the installation is marked as done
+        # even if the next action fails.
+        with self.env.cr.savepoint():
+            return
 
     def _flight_plan_finished(self, plan_status):
         """
