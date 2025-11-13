@@ -46,11 +46,19 @@
     />
 
     <menuitem
+        id="menu_cx_tower_create_jet"
+        name="Launch New Jet"
+        parent="menu_cx_tower_jet_root"
+        action="action_cx_tower_jet_create"
+        sequence="10"
+    />
+
+    <menuitem
         id="menu_cx_tower_jet"
         name="Jets"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_action"
-        sequence="10"
+        sequence="20"
     />
 
     <menuitem
@@ -58,7 +66,7 @@
         name="Templates"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_template_action"
-        sequence="20"
+        sequence="30"
     />
 
     <menuitem
@@ -66,7 +74,7 @@
         name="States"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_state_action"
-        sequence="30"
+        sequence="40"
     />
 
     <!-- ========================= Logs ========================= -->

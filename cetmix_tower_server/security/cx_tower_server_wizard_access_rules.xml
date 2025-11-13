@@ -63,6 +63,26 @@
             <field name="domain_force">[('create_uid', '=', user.id)]</field>
         </record>
 
+        <!-- cx.tower.jet.create.wizard -->
+        <record id="rule_cx_tower_jet_create_wizard_creator_only" model="ir.rule">
+            <field name="name">Creator only</field>
+            <field name="model_id" ref="model_cx_tower_jet_create_wizard" />
+            <field name="global" eval="True" />
+            <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        </record>
 
+        <!-- cx.tower.jet.create.wizard.variable.line -->
+        <record
+        id="rule_cx_tower_jet_create_wizard_variable_line_creator_only"
+        model="ir.rule"
+    >
+            <field name="name">Creator only</field>
+            <field
+            name="model_id"
+            ref="model_cx_tower_jet_create_wizard_variable_line"
+        />
+            <field name="global" eval="True" />
+            <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        </record>
 
 </odoo>

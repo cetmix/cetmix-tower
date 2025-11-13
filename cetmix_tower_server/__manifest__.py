@@ -15,11 +15,7 @@
     "external_dependencies": {
         "python": ["paramiko<4", "tldextract", "dnspython", "ansi2html"],
     },
-    "depends": [
-        "mail",
-        "rpc_helper",
-        "web_notify",
-    ],
+    "depends": ["mail", "rpc_helper", "web_refresh_from_backend", "web_notify"],
     "data": [
         "security/cetmix_tower_server_groups.xml",
         "security/ir.model.access.csv",
@@ -62,6 +58,7 @@
         "wizards/cx_tower_jet_template_install_wizard_view.xml",
         "wizards/cx_tower_jet_state_wizard_view.xml",
         "wizards/cx_tower_jet_action_wizard_view.xml",
+        "wizards/cx_tower_jet_create_wizard_view.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",

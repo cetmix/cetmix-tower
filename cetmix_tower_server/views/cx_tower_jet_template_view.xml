@@ -65,6 +65,9 @@
                             placeholder="Tags"
                             options="{'color_field': 'color'}"
                         />
+                        <group>
+                            <field name="show_in_wizard" widget="boolean_toggle" />
+                        </group>
                     </div>
                     <notebook>
                         <page string="General Settings" name="general_settings">
@@ -270,6 +273,7 @@
                     options="{'color_field': 'color'}"
                     optional="show"
                 />
+                <field name="show_in_wizard" optional="show" widget="boolean_toggle" />
                 <field name="reference" optional="hide" />
                 <field name="access_level" optional="hide" />
             </tree>
@@ -285,6 +289,11 @@
                 <field name="name" />
                 <field name="reference" />
                 <field name="jet_count" />
+                <filter
+                    string="Available in Wizard"
+                    name="available_in_wizard"
+                    domain="[('show_in_wizard', '=', True)]"
+                />
                 <filter
                     string="User Access"
                     name="user_access"

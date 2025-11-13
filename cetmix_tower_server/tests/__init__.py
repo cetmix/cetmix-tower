@@ -32,3 +32,4 @@ from . import test_jet_template_install_line_access
 from . import test_jet_access
 from . import test_jet_dependency_access
 from . import test_jet_action_access
+from . import test_jet_create_wizard
