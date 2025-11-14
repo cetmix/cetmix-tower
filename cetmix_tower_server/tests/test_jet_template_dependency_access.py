@@ -85,7 +85,7 @@ class TestTowerJetTemplateDependencyAccess(TestTowerJetsCommon):
                 with_user=self.manager,
             )
 
-            # Create another required state to verify write below too
+            # Ensure dependency was created
             records = self.JetTemplateDependency.search([("id", "=", dependency.id)])
             self.assertIn(
                 dependency, records, "Manager should be able to create dependency"

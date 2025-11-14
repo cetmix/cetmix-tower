@@ -133,6 +133,17 @@ class CxTowerJet(models.Model):
     )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   SQL constraints
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    _sql_constraints = [
+        (
+            "unique_jet_name_per_server",
+            "UNIQUE(server_id, name)",
+            "Jet name must be unique per server",
+        )
+    ]
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Compute methods
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     @api.depends("server_id")
@@ -325,7 +336,7 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Jet actions, state transitions, jet requests
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def _trigger_action(self, action, **kwargs):
+    def _trigger_action(self, action, from_transition=False, **kwargs):
         """Trigger an action on the jet.
 
         The function flow is:
@@ -336,6 +347,11 @@ class CxTowerJet(models.Model):
 
         Args:
             action (cx.tower.jet.action()): The action to trigger
+            from_transition (bool): True if the action is triggered
+                from a transition.
+                This is used to distinguish between a user directly
+                triggering the action and a transition from one state
+                to another.
             **kwargs: Additional arguments:
                 - current_command_log_id: Optional command log ID to track execution
 
@@ -371,7 +387,7 @@ class CxTowerJet(models.Model):
         # TODO: handle the case when destination state
         # is the same as the current state.
         # Eg when a jet is restarted.
-        if self.state_id == target_state:
+        if self.state_id == target_state and from_transition:
             self.target_state_id = None
             self._finalize_transition(failed=False)
 
@@ -482,7 +498,7 @@ class CxTowerJet(models.Model):
             )
 
         # Trigger the first action in the path
-        self._trigger_action(path[0])
+        self._trigger_action(path[0], from_transition=True)
 
     def _flight_plan_finished(self, plan_status):
         """
