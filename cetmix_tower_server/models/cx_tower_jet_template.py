@@ -659,6 +659,12 @@ class CxTowerJetTemplate(models.Model):
                             "variable_value_ids": variable_values,
                         }
                     )
+                else:
+                    _logger.warning(
+                        "Variable reference '%s' not found when creating jet '%s'",
+                        variable_reference,
+                        name,
+                    )
 
         # Create a new jet
         jet = self.env["cx.tower.jet"].create(vals)

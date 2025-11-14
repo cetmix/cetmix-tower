@@ -59,7 +59,6 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
             template = self.JetTemplate.create(
                 {
                     "name": "Test Template",
-                    "reference": "test_template",
                     "access_level": "2",  # Default, doesn't affect Install Line access
                 }
             )

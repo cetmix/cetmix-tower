@@ -5,7 +5,7 @@ from odoo import api, fields, models
 
 
 class CxTowerJetCreateWizard(models.TransientModel):
-    """Create new server from template"""
+    """Create new jet from template"""
 
     _name = "cx.tower.jet.create.wizard"
     _description = "Create new jet"
