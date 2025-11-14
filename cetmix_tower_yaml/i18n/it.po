@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-09-04 16:14+0100\n"
+"PO-Revision-Date: 2025-11-14 09:22+0100\n"
 "Last-Translator: \n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_yaml/it/>\n"
 "MIME-Version: 1.0\n"
@@ -55,8 +55,10 @@ msgstr "'invalid_model' non è un modello valido"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "<strong>Important:</strong> To maintain data consistency, the following model records will always be updated if they exist in Odoo:"
-msgstr "<strong>Importante:</strong> per mantenere la consistenza dei dati, i recod del modello seguenti verranno sempre aggiornati se esistono in Odoo:"
+msgid ""
+"<strong>Important:</strong> To maintain data consistency, the following\n"
+"                        model records will always be updated if they exist in Odoo:"
+msgstr "<strong>Importante:</strong> per mantenere la consistenza dei dati, i recod                         del modello seguenti verranno sempre aggiornati se esistono in Odoo:"
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__add_manifest
@@ -72,13 +74,6 @@ msgstr "Aggiungere le definizioni di tutti i record figli allo YAML esportato. A
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
 msgid "Add prefix to the exported YAML file name when this template is selected"
 msgstr "Aggiungi prefisso al nome file YAML esportato quando è selezionato questo modello"
-
-#. module: cetmix_tower_yaml
-#. odoo-python
-#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
-msgid "After import, please check and provide secret values if needed for the following secrets: %(secrets)s"
-msgstr "Dopo l'importazione, controllare e fornire i valori segreti, se necessario, per i seguenti segreti: %(secrets)s"
 
 #. module: cetmix_tower_yaml
 #: model:res.groups,name:cetmix_tower_yaml.group_export
@@ -220,6 +215,11 @@ msgstr "Mixin compilazione YAML Cetmix Tower"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Close"
 msgstr "Chiudi"
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid "Code preview"
+msgstr "Anteprima codice"
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_author_string
@@ -397,6 +397,13 @@ msgid "File prefix"
 msgstr "Prefisso file"
 
 #. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+#, python-format
+msgid "Following secrets are used in the code:<br/>%(secrets)s"
+msgstr "I seguenti segreti vengono utilizzati nel codice:<br/>%(secrets)s"
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "Generate YAML file"
 msgstr "Genera file YAML"
@@ -533,8 +540,8 @@ msgstr "Elenco dei nomi degli autori da includere nel manifesto YAML."
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
-msgid "List of secrets present in the YAML file"
-msgstr "Elenco dei segreti presenti nel file YAML"
+msgid "List of secrets present in the YAML file (formatted as HTML list)"
+msgstr "Elenco dei segreti presenti nel file YAML (formattati come una elenco HTML)"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
@@ -634,7 +641,6 @@ msgstr "Anteprima codice"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Preview code"
 msgstr "Anteprima codice"
 
@@ -762,8 +768,15 @@ msgstr "Questo potrebbe sovrascrivere i record esistenti. Procedere?"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "To create new entities instead of updating existing ones, remove or modify the <code>reference</code> field in the YAML code for those entities."
-msgstr "Per creare nuove entità anziché aggiornare le esistenti, rimuovere o modificare il campo <code>reference</code> nel codice YAML per quelle entità."
+msgid ""
+"To create new entities instead of updating existing ones, remove or modify\n"
+"                        the <code>reference</code> field in the YAML code for those entities."
+msgstr "Per creare nuove entità anziché aggiornare le esistenti, rimuovere o modificare                         il campo <code>reference</code> nel codice YAML per quelle entità."
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
+msgid "Toggle to show or hide YAML code preview"
+msgstr "Azionare per visualizzare o nascondere l'anteprima del codice YAML"
 
 #. module: cetmix_tower_yaml
 #. odoo-python
@@ -996,6 +1009,13 @@ msgstr "Bisogna appartenere al gruppo \"YAML/Export\" per esportare dati in YAML
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "my_snippet.yaml"
 msgstr "my_snippet.yaml"
+
+#~ msgid ""
+#~ "After import, please check and provide secret values if needed for the "
+#~ "following secrets: %(secrets)s"
+#~ msgstr ""
+#~ "Dopo l'importazione, controllare e fornire i valori segreti, se "
+#~ "necessario, per i seguenti segreti: %(secrets)s"
 
 #~ msgid "Comment"
 #~ msgstr "Commento"

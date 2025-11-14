@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-09-04 16:11+0100\n"
+"PO-Revision-Date: 2025-11-14 09:18+0100\n"
 "Last-Translator: \n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_server/it/>\n"
 "MIME-Version: 1.0\n"
@@ -215,16 +215,18 @@ msgid ""
 "-302 if plan is empty, \n"
 "-303 if plan reference is missing, \n"
 "-304 if plan line reference is missing, \n"
-"-306 if plan is not compatible with server"
+"-306 if plan is not compatible with server,\n"
+"-308 if plan is stopped by user"
 msgstr ""
 "0 se il piano è completato correttamente.\n"
 "-301 se un'altra istanza di questo piano di volo è in esecuzione,\n"
 "-302 se il piano è vuoto,\n"
 "-303 se manca il riferimento al piano,\n"
 "-304 se manca il riferimento alla riga del piano\n"
-"-306 se il piano non è compatibile con il server"
+"-306 se il piano non è compatibile con il server-308 se il piano è fermato dall'utente"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "<b>AND</b>"
 msgstr "<b>E</b>"
@@ -288,6 +290,27 @@ msgstr "<strong>Partner:</strong>"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
 msgid "<strong>Servers:</strong>"
 msgstr "<strong>Server:</strong>"
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "A helper shortcut to <code>env['cx.tower.command']</code>"
+msgstr "Una scorciatoia a <code>env['cx.tower.command']</code>"
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "A helper shortcut to <code>env['cx.tower.plan']</code>"
+msgstr "Una scorciatoia a <code>env['cx.tower.plan']</code>"
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+#, python-format
+msgid "A helper shortcut to <code>env['cx.tower.server']</code>"
+msgstr "Una scorciatoia a <code>env['cx.tower.server']</code>"
 
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_action
@@ -521,6 +544,7 @@ msgstr "Conteggio allegati"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__auto_sync
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__auto_sync
 msgid "Auto Sync"
 msgstr "Sincronizzazione automatica"
 
@@ -771,6 +795,11 @@ msgid "Cetmix Tower Tag"
 msgstr "Etichetta Cetmix Tower"
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_tag_mixin
+msgid "Cetmix Tower Tag Mixin"
+msgstr "Mixin etichetta Cetmix Tower"
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable
 msgid "Cetmix Tower Variable"
 msgstr "Variabile Cetmix Tower"
@@ -784,6 +813,16 @@ msgstr "Opzioni variabile Cetmix Tower"
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_variable_value
 msgid "Cetmix Tower Variable Values"
 msgstr "Valori variabile Cetmix Tower"
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_vault
+msgid "Cetmix Tower Vault"
+msgstr "Valore Cetmix Tower"
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_vault_mixin
+msgid "Cetmix Tower Vault Mixin"
+msgstr "Mixin valore Cetmix Tower"
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_access_mixin
@@ -1024,6 +1063,7 @@ msgstr "Comandi usati in questo piano di volo"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__condition
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Condition"
 msgstr "Condizione"
 
@@ -1139,6 +1179,7 @@ msgstr "Crea nuovo server da variabili modello"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__create_uid
 msgid "Created by"
 msgstr "Creato da"
 
@@ -1171,6 +1212,7 @@ msgstr "Creato da"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__create_date
 msgid "Created on"
 msgstr "Creato il"
 
@@ -1254,6 +1296,11 @@ msgstr "Messaggio personalizzato da visualizzare quando il controllo del pattern
 #, python-format
 msgid "Custom secret values can be defined only for key type 'secret'"
 msgstr "I valori segreti personalizzati possono essere definiti solo per il tipo di chiave 'secret'"
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
+msgid "Custom values will be available in the current flight plan context only. They can be used in Python commands and line conditions"
+msgstr "I valori personalizzati saranno disponibili solo nel context del piano di volo attuale. Possono esse usati nei comenfdi Python e nelle righe di condizione."
 
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_custom_variable_value_mixin
@@ -1359,6 +1406,7 @@ msgstr "Disconneti dal modello"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__display_name
 msgid "Display Name"
 msgstr "Nome visualizzato"
 
@@ -1390,6 +1438,11 @@ msgstr "Durata"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__duration_current
 msgid "Duration, sec"
 msgstr "Durata, sec"
+
+#. module: cetmix_tower_server
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_vault_vault_unique_key
+msgid "Each secret (model, record, field) must be unique in the vault."
+msgstr "Ogni segreto (modello, record, campo) deve essere univoco nell'archivio."
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__server_dir
@@ -1485,6 +1538,11 @@ msgstr "Connessione fallita. Errore: %(err)s"
 #, python-format
 msgid "Failure"
 msgstr "Fallimento"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__field_name
+msgid "Field Name"
+msgstr "Nome campo"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__file_ids
@@ -1717,7 +1775,7 @@ msgid "Flight Plan"
 msgstr "Piano di volo"
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_line_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_run_line_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Flight Plan Lines"
@@ -1736,6 +1794,13 @@ msgid "Flight Plan Logs"
 msgstr "Registri piano di volo"
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "Flight Plan Stopped"
+msgstr "Piano di volo fermato"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids
 msgid "Flight Plan Used"
 msgstr "Piani di volo utilizzati"
@@ -1751,10 +1816,22 @@ msgid "Flight Plan line that is being currently executed"
 msgstr "Riga piano di volo attualmente inesecuzione"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+msgid "Flight Plan will be terminated after executing the current command. Continue?"
+msgstr "Il piano di volo verrà terminato dopo l'esecuzione di tale comando. Continuare?"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_plan
 msgid "Flight Plans"
 msgstr "Piani di volo"
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "Flight Plans Stopped"
+msgstr "Piani di volo fermati"
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
@@ -1794,6 +1871,11 @@ msgstr "Errore %(err)s esecuzione piano di volo"
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__flight_plan_used_ids_count
 msgid "Flight plan this command is used in"
 msgstr "Piano di volo questo comando viene utilizzato in"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__is_stopped
+msgid "Flight plan was stopped by user"
+msgstr "Il piano di volo è stato fermato dall'utente"
 
 #. module: cetmix_tower_server
 #. odoo-python
@@ -1991,8 +2073,14 @@ msgstr "Confermo che la chiave è corretta e voglio inserirla nelle impostazioni
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__id
 msgid "ID"
 msgstr "ID"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__res_id
+msgid "ID of the resource that uses this vault"
+msgstr "Id della risorsa che utilizza questo archivio"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__ip_v4_address
@@ -2055,6 +2143,11 @@ msgid "If enabled, do not split command on '&&' when using sudo.Prepend sudo onc
 msgstr "Se abilitata, non dividere il comando su '&&' quando si usa sudo. Anteporre sudo una volta all'intero comando."
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__auto_sync
+msgid "If enabled, files created from this template will have Auto Sync enabled by default. Used only with 'Tower' source."
+msgstr "Se abilitata, i file creati da questo modello avranno Auto Sync abilitato in modo predefinito. Usato solo con l'origine 'Tower'."
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__allow_parallel_run
 msgid ""
 "If enabled, multiple instances of the same command can be run on the same server at the same time.\n"
@@ -2075,6 +2168,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #, python-format
 msgid "If exit code"
@@ -2237,6 +2331,7 @@ msgstr "Data ultima esecuzione"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option____last_update
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value____last_update
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault____last_update
 msgid "Last Modified on"
 msgstr "Ultima modifica il"
 
@@ -2274,6 +2369,7 @@ msgstr "Ultima data sincronia"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__write_uid
 msgid "Last Updated by"
 msgstr "Ultimo aggiornamento di"
 
@@ -2306,6 +2402,7 @@ msgstr "Ultimo aggiornamento di"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__write_date
 msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
@@ -2459,6 +2556,11 @@ msgid "Missing Required Variables Message"
 msgstr "Messaggio variabili richieste mancanti"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__res_model
+msgid "Model name of the resource that uses this vault"
+msgstr "Nome modello della risorsa che utilizza questo archivio"
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Modify Code"
 msgstr "Modifica codice"
@@ -2507,6 +2609,11 @@ msgstr "Scadenza mia attività"
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Name"
 msgstr "Nome"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__field_name
+msgid "Name of the field that contains the secret value"
+msgstr "nome del campo che contiene il valore segreto"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__activity_date_deadline
@@ -3005,6 +3112,7 @@ msgid "Put your notes here"
 msgstr "Inserire qui le proprie note"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -3166,6 +3274,8 @@ msgstr "Codice riferimento"
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_rel_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_repo_owner_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_repo_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_value_reference_unique
@@ -3183,6 +3293,9 @@ msgstr "Codice riferimento"
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_authenticator_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_eval_mixin_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_reference_unique
 msgid "Reference must be unique"
 msgstr "Il riferimento deve essere univoco"
 
@@ -3260,6 +3373,16 @@ msgstr "Ripeti ogni x."
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__required
 msgid "Required"
 msgstr "Richiesto"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__res_id
+msgid "Resource ID"
+msgstr "ID risorsa"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__res_model
+msgid "Resource Model"
+msgstr "Modello risorsa"
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_response
@@ -3639,6 +3762,11 @@ msgid "Secret"
 msgstr "Segreto"
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_vault__data
+msgid "Secret Data"
+msgstr "Dato segreto"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__secret_value
 msgid "Secret Value"
 msgstr "Valore segreto"
@@ -3836,6 +3964,11 @@ msgstr ""
 "Se vuoto, il comando può essere eseguito su tutti i server"
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
+msgid "Set Custom Values"
+msgstr "Imposta valori personalizzati"
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Set Variable Values"
 msgstr "Imposta valori veriabile"
@@ -3961,6 +4094,30 @@ msgstr ""
 "Pianificato: attività future."
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+msgid "Stop"
+msgstr "Ferma"
+
+#. module: cetmix_tower_server
+#: model:ir.actions.server,name:cetmix_tower_server.action_stop_cx_tower_plan_log
+msgid "Stop Flight Plan"
+msgstr "Ferma piano di volo"
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__is_stopped
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+msgid "Stopped"
+msgstr "Fermato"
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
+#, python-format
+msgid "Stopped by user %(user)s"
+msgstr "Fermato dall'utente %(user)s"
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_variable__variable_type__s
 msgid "String"
 msgstr "Stringa"
@@ -4007,6 +4164,7 @@ msgstr "Etichettato"
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag_mixin__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
@@ -4097,6 +4255,11 @@ msgid "The file %(f_path)s not found."
 msgstr "File %(f_path)s non trovato."
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__data
+msgid "The secret data to be stored in the vault"
+msgstr "Il dato segreto da salmare nell'archivio"
+
+#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
 #, python-format
@@ -4104,6 +4267,7 @@ msgid "The selected task interval is too low in relation to the general system s
 msgstr "L'intervallo selezionato del lavoro è troppo piccolo in relazione alle impostazioni generali di sistema. Questo può portare a ritardi di esecuzione del lavoro."
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Then"
 msgstr "Quindi"
