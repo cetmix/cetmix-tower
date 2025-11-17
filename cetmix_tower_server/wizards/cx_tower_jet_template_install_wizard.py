@@ -66,4 +66,7 @@ class CxTowerJetTemplateInstallWizard(models.TransientModel):
         # Close the wizard
         return {
             "type": "ir.actions.act_window_close",
+            "params": {
+                "next": {"type": "ir.actions.client", "tag": "soft_reload"},
+            },
         }

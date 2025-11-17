@@ -411,39 +411,47 @@ class CxTowerJet(models.Model):
             }
         )
 
-        # Savepoint to ensure that the state is set
+        # WARNING: Explicit commit!
+        # This commit is made **only** when to ensure that the state is set
         # even if the next action fails.
-        with self.env.cr.savepoint():
-            # Execute the flight plan if defined
-            if action.plan_id:
-                # Run the flight plan
-                self.server_id.run_flight_plan(
-                    flight_plan=action.plan_id,
-                    jet=self,
-                )
-                # Flight plan will trigger the `_flight_plan_finished` function again
-                # if the flight plan is finished successfully.
-                # So we don't need continue the loop in this case.
-                return
+        # Reason: Without this commit, the change would not be visible to other
+        # transactions until the end of the transaction, leading to a race
+        # condition and possible double execution.
+        # Explicit commits are strongly discouraged in Odoo business logic and
+        # should be used only with clear justification and in strictly controlled
+        # contexts (like this cron scenario). Never add this commit for general
+        # business flows!
+        self.env.cr.commit()  # pylint: disable=invalid-commit
 
-            # Set the state to the destination state if no plan is defined
-            final_vals = {
-                "state_id": target_state,
-                "current_action_id": False,
-            }
+        if action.plan_id:
+            # Run the flight plan
+            self.server_id.run_flight_plan(
+                flight_plan=action.plan_id,
+                jet=self,
+            )
+            # Flight plan will trigger the `_flight_plan_finished` function again
+            # if the flight plan is finished successfully.
+            # So we don't need continue the loop in this case.
+            return
 
-            # Reset the target state if the jet has reached the target state
-            if target_state == self.target_state_id:
-                final_vals["target_state_id"] = None
+        # Set the state to the destination state if no plan is defined
+        final_vals = {
+            "state_id": target_state,
+            "current_action_id": False,
+        }
 
-            self.write(final_vals)
+        # Reset the target state if the jet has reached the target state
+        if target_state == self.target_state_id:
+            final_vals["target_state_id"] = None
 
-            # Continue the chain of actions if the final state is not reached yet
-            if self.target_state_id:
-                self._bring_to_state(self.target_state_id)
+        self.write(final_vals)
 
-            # Trigger the transition finished event
-            self._finalize_transition(failed=False)
+        # Continue the chain of actions if the final state is not reached yet
+        if self.target_state_id:
+            self._bring_to_state(self.target_state_id)
+
+        # Trigger the transition finished event
+        self._finalize_transition(failed=False)
 
     def _bring_to_state(self, state=None):
         """

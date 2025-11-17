@@ -1,8 +1,12 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
+
 from odoo import _, api, fields, models
 
 from .constants import PLAN_IS_EMPTY, PLAN_STOPPED
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerPlanLog(models.Model):
@@ -310,46 +314,49 @@ class CxTowerPlanLog(models.Model):
             values.update(kwargs)
         self.sudo().write(values)
 
-        # Savepoint to ensure that values are stored
-        # if something goes wrong.
-        with self.env.cr.savepoint():
-            # Call the plan finished hook
-            # We are calling it here to ensure that
-            # the plan finished hook is called if auxiliary actions
-            # will fail.
-            self._plan_finished()
+        # Call the plan finished hook
+        # Use try/except to ensure that the plan finished hook is called
+        try:
+            # Savepoint to ensure that values are stored
+            # if something goes wrong.
+            with self.env.cr.savepoint():
+                self._plan_finished()
+        except Exception as e:
+            _logger.warning(f"Post-finish hook failed: {e}")
 
-            # Check if we were deleting a server
-            if (
-                self.server_id._is_being_deleted()
-                and self.server_id.plan_delete_id == self.plan_id
-            ):
-                if plan_status == 0:
-                    # And finally delete the server
-                    self.with_context(server_force_delete=True).server_id.unlink()
+        # Continue with the rest of the logic
 
-                else:
-                    # Set deletion error if flightplan failed
-                    self.server_id.status = "delete_error"
-                return
+        # Check if we were deleting a server
+        if (
+            self.server_id._is_being_deleted()
+            and self.server_id.plan_delete_id == self.plan_id
+        ):
+            if plan_status == 0:
+                # And finally delete the server
+                self.with_context(server_force_delete=True).server_id.unlink()
 
-            # Jet Template action: only if it's not a sub-plan
-            # NB: Jet Template is always set automatically even
-            # it's not provided explicitly when the plan is run.
-            if not self.jet_template_id or self.parent_flight_plan_log_id:
-                return
+            else:
+                # Set deletion error if flightplan failed
+                self.server_id.status = "delete_error"
+            return
 
-            # Finish template install/uninstall
-            if self.jet_template_install_id:
-                self.jet_template_install_id._flight_plan_finished(
-                    plan_status=self.plan_status,
-                )
+        # Jet Template action: only if it's not a sub-plan
+        # NB: Jet Template is always set automatically even
+        # it's not provided explicitly when the plan is run.
+        if not self.jet_template_id or self.parent_flight_plan_log_id:
+            return
 
-            # Jet
-            if self.jet_id:
-                self.jet_id._flight_plan_finished(
-                    plan_status=self.plan_status,
-                )
+        # Finish template install/uninstall
+        if self.jet_template_install_id:
+            self.jet_template_install_id._flight_plan_finished(
+                plan_status=self.plan_status,
+            )
+
+        # Jet
+        if self.jet_id:
+            self.jet_id._flight_plan_finished(
+                plan_status=self.plan_status,
+            )
 
     def record(self, server, plan, status, **kwargs):
         """
@@ -456,6 +463,8 @@ class CxTowerPlanLog(models.Model):
             )
 
         # Error notification
+        # They are shown for jet-related plans and template installation/uninstallation
+        # as well to simplify the debugging process.
         if self.plan_status != 0 and notification_type_error:
             self.create_uid.notify_danger(
                 message=_(

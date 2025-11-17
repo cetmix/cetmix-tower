@@ -86,6 +86,37 @@ class CxTowerJetTemplateInstall(models.Model):
             }
         )
 
+        # Send notification
+        # Action for button
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_template_install_action"
+        )
+
+        context = self.env.context.copy()
+        params = dict(context.get("params") or {})
+        params["button_name"] = _("View Installation")
+        context["params"] = params
+
+        # Add record id and context to the action
+        action.update(
+            {
+                "context": context,
+                "res_id": install_record.id,
+                "views": [(False, "form")],
+            }
+        )
+
+        self.env.user.notify_info(
+            message=_(
+                "%(timestamp)s<br/>" "Installing template on server '%(server_name)s'",
+                server_name=self.server_id.name,
+                timestamp=fields.Datetime.now(),
+            ),
+            title=self.jet_template_id.name,  # pylint: disable=no-member
+            sticky=False,  # explicitly set to False to avoid blocking the user's screen
+            action=action,
+        )
+
         # Launch the installation
         install_record._process_install()
 
@@ -125,23 +156,26 @@ class CxTowerJetTemplateInstall(models.Model):
                         "current_line_id": installation_task.id,
                     }
                 )
+
                 # WARNING: Explicit commit to ensure visibility across transactions
                 # This prevents race conditions in async flight plan callbacks
-                with self.env.cr.savepoint():
-                    # Add the install record to the flight plan params
-                    params = {
-                        "jet_template_install_id": self.id,  # pylint: disable=no-member
-                    }
-                    # Run the flight plan
-                    self.server_id.run_flight_plan(
-                        flight_plan=flight_plan,
-                        jet_template=installation_task.jet_template_id,
-                        **{"plan_log": params},
-                    )
-                    # Flight plan will trigger the `_process_install` function again
-                    # if the flight plan is finished successfully.
-                    # So we don't need continue the loop in this case.
-                    return
+                if not self.env.context.get("no_transaction_commit"):
+                    self.env.cr.commit()  # pylint: disable=invalid-commit
+
+                # Add the install record to the flight plan params
+                params = {
+                    "jet_template_install_id": self.id,  # pylint: disable=no-member
+                }
+                # Run the flight plan
+                self.server_id.run_flight_plan(
+                    flight_plan=flight_plan,
+                    jet_template=installation_task.jet_template_id,
+                    **{"plan_log": params},
+                )
+                # Flight plan will trigger the `_process_install` function again
+                # if the flight plan is finished successfully.
+                # So we don't need continue the loop in this case.
+                return
 
             # Mark the installation task as "Installed"
             # because nothing else is to be done here.
@@ -155,18 +189,76 @@ class CxTowerJetTemplateInstall(models.Model):
                 {"server_ids": [(4, self.server_id.id)]}
             )
 
+            # WARNING: Explicit commit!
+            # This commit is made **only** when to ensure that the state is set
+            # even if the next action fails.
+            # Reason: Without this commit, the change would not be visible to other
+            # transactions until the end of the transaction, leading to a race
+            # condition and possible double execution.
+            # Explicit commits are strongly discouraged in Odoo business logic and
+            # should be used only with clear justification and in strictly controlled
+            # contexts (like this cron scenario). Never add this commit for general
+            # business flows!
+            if not self.env.context.get("no_transaction_commit"):
+                self.env.cr.commit()  # pylint: disable=invalid-commit
+
+            # Refresh the frontend views
+            self.env.user.reload_views(
+                model="cx.tower.jet.template.install",
+                rec_ids=[self.id],
+            )
+
         # Mark the installation as done
+        now = fields.Datetime.now()
         self.write(
             {
                 "state": "installed",
-                "date_done": fields.Datetime.now(),
+                "date_done": now,
             }
         )
 
-        # Savepoint to ensure that the installation is marked as done
-        # even if the next action fails.
-        with self.env.cr.savepoint():
-            return
+        # Refresh the frontend views
+        self.env.user.reload_views(
+            model="cx.tower.jet.template.install", rec_ids=[self.id]
+        )
+
+        # Check if notifications are enabled
+        ICP_sudo = self.env["ir.config_parameter"].sudo()
+        notification_type_success = ICP_sudo.get_param(
+            "cetmix_tower_server.notification_type_success"
+        )
+        # Send notification to the user
+        if notification_type_success:
+            # Action for button
+            action = self.env["ir.actions.act_window"]._for_xml_id(
+                "cetmix_tower_server.cx_tower_jet_template_install_action"
+            )
+
+            context = self.env.context.copy()
+            params = dict(context.get("params") or {})
+            params["button_name"] = _("View Installation")
+            context["params"] = params
+
+            # Add record id and context to the action
+            action.update(
+                {
+                    "context": context,
+                    "res_id": self.id,
+                    "views": [(False, "form")],
+                }
+            )
+            # Send success notification
+            self.env.user.notify_success(
+                message=_(
+                    "%(timestamp)s<br/>"
+                    "Installation completed on server '%(server_name)s'",
+                    server_name=self.server_id.name,
+                    timestamp=now,
+                ),
+                title=self.jet_template_id.name,  # pylint: disable=no-member
+                sticky=notification_type_success == "sticky",
+                action=action,
+            )
 
     def _flight_plan_finished(self, plan_status):
         """
@@ -206,6 +298,12 @@ class CxTowerJetTemplateInstall(models.Model):
 
             # Remove the link to the current line and continue
             self.write({"current_line_id": False})
+
+            # Refresh the frontend views
+            self.env.user.reload_views(
+                model="cx.tower.jet.template.install",
+                rec_ids=[self.id],
+            )
             self._process_install()
         else:
             # Mark current line as failed
@@ -222,6 +320,48 @@ class CxTowerJetTemplateInstall(models.Model):
                     "current_line_id": False,
                 }
             )
+            # Refresh the frontend views
+            self.env.user.reload_views(
+                model="cx.tower.jet.template.install",
+                rec_ids=[self.id],
+            )
+            # Send notification to the user
+            # Check if notifications are enabled
+            ICP_sudo = self.env["ir.config_parameter"].sudo()
+            notification_type_error = ICP_sudo.get_param(
+                "cetmix_tower_server.notification_type_error"
+            )
+            if notification_type_error:
+                # Action for button
+                action = self.env["ir.actions.act_window"]._for_xml_id(
+                    "cetmix_tower_server.cx_tower_jet_template_install_action"
+                )
+
+                context = self.env.context.copy()
+                params = dict(context.get("params") or {})
+                params["button_name"] = _("View Installation")
+                context["params"] = params
+
+                # Add record id and context to the action
+                action.update(
+                    {
+                        "context": context,
+                        "res_id": self.id,
+                        "views": [(False, "form")],
+                    }
+                )
+                # Send error notification
+                self.env.user.notify_danger(
+                    message=_(
+                        "%(timestamp)s<br/>"
+                        "Installation failed on server '%(server_name)s'",
+                        server_name=self.server_id.name,
+                        timestamp=fields.Datetime.now(),
+                    ),
+                    title=self.jet_template_id.name,
+                    sticky=notification_type_error == "sticky",
+                    action=action,
+                )
 
     def action_view_flight_plan_logs(self):
         """Open flight plan logs related to this installation"""

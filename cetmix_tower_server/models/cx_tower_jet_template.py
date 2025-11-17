@@ -493,7 +493,8 @@ class CxTowerJetTemplate(models.Model):
         if (
             server.id
             in self.install_ids.filtered(
-                lambda install: install.state in ["processing", "to_install"]
+                lambda install: install.jet_template_install_id.state
+                in ["processing", "to_install"]
             ).server_id.ids
         ):
             return False
@@ -512,6 +513,8 @@ class CxTowerJetTemplate(models.Model):
         self.ensure_one()
 
         template_install_obj = self.env["cx.tower.jet.template.install"]
+        now = fields.Datetime.now()
+        context_timestamp = fields.Datetime.to_string(now)
 
         for server in servers:
             # Check if installation is needed for this server
@@ -521,6 +524,22 @@ class CxTowerJetTemplate(models.Model):
                     " on the server '%s'",
                     self.name,  # pylint: disable=no-member
                     server.name,
+                )
+                # Refresh the frontend views
+                self.env.user.reload_views(
+                    model="cx.tower.jet.template", rec_ids=[self.id]
+                )
+                # Notify the user
+                self.env.user.notify_info(
+                    title=self.name,  # pylint: disable=no-member
+                    message=_(
+                        "%(timestamp)s<br/>Template is already installed "
+                        "or being installed"
+                        " on the server '%(server_name)s'",
+                        timestamp=context_timestamp,
+                        template_name=self.name,  # pylint: disable=no-member
+                        server_name=server.name,
+                    ),
                 )
                 continue
 
