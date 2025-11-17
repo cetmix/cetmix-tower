@@ -27,12 +27,6 @@ class CxTowerPlanLine(models.Model):
         auto_join=True,
         ondelete="cascade",
     )
-    plan_line_ids = fields.One2many(
-        comodel_name="cx.tower.plan.line",
-        related="command_id.flight_plan_id.line_ids",
-        string="Flight Plan Lines",
-        readonly=True,
-    )
     action = fields.Selection(
         selection=lambda self: self.command_id._selection_action(),
         compute="_compute_action",
@@ -60,7 +54,7 @@ class CxTowerPlanLine(models.Model):
         comodel_name="cx.tower.plan.line.action",
         inverse_name="line_id",
         auto_join=True,
-        copy=False,
+        copy=True,
         help="Actions trigger based on command result."
         " If empty next command will be executed",
     )
@@ -93,6 +87,12 @@ class CxTowerPlanLine(models.Model):
         related="command_id.flight_plan_id",
         readonly=True,
         string="Run Flight Plan",
+    )
+    plan_run_line_ids = fields.One2many(
+        comodel_name="cx.tower.plan.line",
+        related="command_id.flight_plan_id.line_ids",
+        string="Flight Plan Lines",
+        readonly=True,
     )
     file_template_id = fields.Many2one(
         comodel_name="cx.tower.file.template",
@@ -272,8 +272,13 @@ class CxTowerPlanLine(models.Model):
             **log_vals,
         )
 
-    # Check cx.tower.reference.mixin for the function documentation
+    def _get_dependent_model_relation_fields(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
+        res = super()._get_dependent_model_relation_fields()
+        return res + ["action_ids"]
+
     def _get_pre_populated_model_data(self):
+        """Check cx.tower.reference.mixin for the function documentation"""
         res = super()._get_pre_populated_model_data()
         res.update({"cx.tower.plan.line": ["cx.tower.plan", "plan_id"]})
         return res

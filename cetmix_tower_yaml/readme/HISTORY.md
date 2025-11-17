@@ -1,3 +1,8 @@
+## 17.0.2.0.1 (2025-11-13)
+
+- Features: Improve the way secrets are listed in the YAML import widget. (5010)
+
+
 ## 17.0.1.4.1 (2025-08-27)
 
 - Bugfixes: Make selection values lowercase to simplify their management. (4896)
