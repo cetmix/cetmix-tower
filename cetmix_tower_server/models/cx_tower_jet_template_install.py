@@ -320,6 +320,14 @@ class CxTowerJetTemplateInstall(models.Model):
                     "current_line_id": False,
                 }
             )
+
+            # Set all other 'to_install' lines as failed
+            self.line_ids.filtered(lambda line: line.state == "to_install").write(
+                {
+                    "state": "failed",
+                }
+            )
+
             # Refresh the frontend views
             self.env.user.reload_views(
                 model="cx.tower.jet.template.install",
