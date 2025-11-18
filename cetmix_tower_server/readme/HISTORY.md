@@ -1,3 +1,8 @@
+## 17.0.2.1.0 (2025-11-18)
+
+- Features: Integrate user notifications into the main module, drop the 'cetmix_tower_notify_backend' module. (5074)
+
+
 ## 17.0.2.0.5 (2025-11-13)
 
 - Features: Auto update references for related records (5005)
