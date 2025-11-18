@@ -14,10 +14,7 @@
                     name="cetmix_tower_server"
                     groups="cetmix_tower_server.group_root"
                 >
-                    <block
-                        name="cetmix_tower_server_settings"
-                        title="Cetmix Tower Server"
-                    >
+                    <block name="cetmix_tower_server_settings" title="System Settings">
                         <setting
                             id="cetmix_tower_command_timeout"
                             help="Command timeout in seconds after which the command will be terminated. Set to 0 to disable timeout."
@@ -76,6 +73,23 @@
                                     icon="fa-arrow-right"
                                 />
                             </div>
+                        </setting>
+                    </block>
+                    <block
+                        name="cetmix_tower_notifications_settings"
+                        title="Notifications"
+                    >
+                        <setting
+                            id="cetmix_tower_notification_type_error"
+                            help="Show notifications for error events. Select 'Sticky' to keep the notification visible until dismissed. Leave empty to disable notifications."
+                        >
+                            <field name="cetmix_tower_notification_type_error" />
+                        </setting>
+                        <setting
+                            id="cetmix_tower_notification_type_success"
+                            help="Show notifications for success events. Select 'Sticky' to keep the notification visible until dismissed. Leave empty to disable notifications."
+                        >
+                            <field name="cetmix_tower_notification_type_success" />
                         </setting>
                     </block>
                 </app>
