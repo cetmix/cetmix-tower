@@ -3595,3 +3595,422 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
             self.assertNotIn(
                 template, dependents, "Template should not depend on itself"
             )
+
+    def test_create_jet_with_server_logs(self):
+        """Test create_jet creates server logs correctly"""
+        # Create a file template for server logs
+        file_template = self.FileTemplate.create(
+            {
+                "name": "Test Log File Template",
+                "file_name": "test_log.txt",
+                "source": "tower",
+                "server_dir": "/var/log",
+                "code": "Test log content",
+            }
+        )
+
+        # Create server logs on the template
+        server_log_file = self.ServerLog.create(
+            {
+                "name": "Test File Log",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.jet_template_test.id,
+                "log_type": "file",
+                "file_template_id": file_template.id,
+                "access_level": "1",
+            }
+        )
+
+        server_log_command = self.ServerLog.create(
+            {
+                "name": "Test Command Log",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.jet_template_test.id,
+                "log_type": "command",
+                "command_id": self.command_list_dir.id,
+                "access_level": "1",
+            }
+        )
+
+        # Ensure template is installed on server
+        self.jet_template_test.write({"server_ids": [(4, self.server_test_1.id)]})
+
+        # Create jet from template
+        jet = self.jet_template_test.create_jet(
+            server=self.server_test_1, name="Test Jet with Logs"
+        )
+
+        # Verify jet was created
+        self.assertTrue(jet, "Jet should be created")
+        self.assertEqual(jet.name, "Test Jet with Logs")
+        self.assertEqual(jet.server_id, self.server_test_1)
+        self.assertEqual(jet.jet_template_id, self.jet_template_test)
+
+        # Verify server logs were created for the jet
+        jet_logs = self.ServerLog.search([("jet_id", "=", jet.id)])
+        self.assertEqual(
+            len(jet_logs),
+            2,
+            "Should create 2 server logs (one file, one command)",
+        )
+
+        # Verify file-type log
+        jet_log_file = jet_logs.filtered(lambda log: log.log_type == "file")
+        self.assertEqual(
+            len(jet_log_file),
+            1,
+            "Should have exactly one file-type log",
+        )
+        jet_log_file = jet_log_file[0]  # Get single record
+        self.assertEqual(
+            jet_log_file.jet_id,
+            jet,
+            "File log should be linked to the jet",
+        )
+        self.assertEqual(
+            jet_log_file.server_id,
+            self.server_test_1,
+            "File log should be linked to the server",
+        )
+        self.assertFalse(
+            jet_log_file.jet_template_id,
+            "File log should not be linked to template",
+        )
+        self.assertTrue(
+            jet_log_file.file_id,
+            "File log should have a file created",
+        )
+        self.assertEqual(
+            jet_log_file.file_template_id,
+            server_log_file.file_template_id,
+            "File log should reference the same file template as template log",
+        )
+        self.assertEqual(
+            jet_log_file.name,
+            server_log_file.name,
+            "File log should have the same name as template log",
+        )
+        self.assertEqual(
+            jet_log_file.file_id.jet_id,
+            jet,
+            "Created file should be linked to the jet",
+        )
+        self.assertEqual(
+            jet_log_file.file_id.server_id,
+            self.server_test_1,
+            "Created file should be linked to the server",
+        )
+
+        # Verify command-type log
+        jet_log_command = jet_logs.filtered(lambda log: log.log_type == "command")
+        self.assertEqual(
+            len(jet_log_command),
+            1,
+            "Should have exactly one command-type log",
+        )
+        jet_log_command = jet_log_command[0]  # Get single record
+        self.assertEqual(
+            jet_log_command.jet_id,
+            jet,
+            "Command log should be linked to the jet",
+        )
+        self.assertEqual(
+            jet_log_command.server_id,
+            self.server_test_1,
+            "Command log should be linked to the server",
+        )
+        self.assertFalse(
+            jet_log_command.jet_template_id,
+            "Command log should not be linked to template",
+        )
+        self.assertFalse(
+            jet_log_command.file_id,
+            "Command log should not have a file",
+        )
+        self.assertEqual(
+            jet_log_command.command_id,
+            server_log_command.command_id,
+            "Command log should reference the same command as template log",
+        )
+        self.assertEqual(
+            jet_log_command.name,
+            server_log_command.name,
+            "Command log should have the same name as template log",
+        )
+
+        # Verify original template logs are unchanged
+        template_logs = self.ServerLog.search(
+            [("jet_template_id", "=", self.jet_template_test.id)]
+        )
+        self.assertIn(
+            server_log_file,
+            template_logs,
+            "Template file log should still exist",
+        )
+        self.assertIn(
+            server_log_command,
+            template_logs,
+            "Template command log should still exist",
+        )
+        self.assertFalse(
+            server_log_file.jet_id,
+            "Template file log should not be linked to any jet",
+        )
+        self.assertFalse(
+            server_log_command.jet_id,
+            "Template command log should not be linked to any jet",
+        )
+
+    def test_create_jet_with_multiple_file_logs(self):
+        """Test create_jet creates multiple file logs correctly"""
+        # Create multiple file templates
+        file_template_1 = self.FileTemplate.create(
+            {
+                "name": "Log File Template 1",
+                "file_name": "log1.txt",
+                "source": "tower",
+                "server_dir": "/var/log",
+                "code": "Log 1 content",
+            }
+        )
+
+        file_template_2 = self.FileTemplate.create(
+            {
+                "name": "Log File Template 2",
+                "file_name": "log2.txt",
+                "source": "tower",
+                "server_dir": "/var/log",
+                "code": "Log 2 content",
+            }
+        )
+
+        # Create multiple server logs on the template
+        self.ServerLog.create(
+            {
+                "name": "File Log 1",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.jet_template_test.id,
+                "log_type": "file",
+                "file_template_id": file_template_1.id,
+                "access_level": "1",
+            }
+        )
+
+        self.ServerLog.create(
+            {
+                "name": "File Log 2",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.jet_template_test.id,
+                "log_type": "file",
+                "file_template_id": file_template_2.id,
+                "access_level": "2",
+            }
+        )
+
+        # Ensure template is installed on server
+        self.jet_template_test.write({"server_ids": [(4, self.server_test_1.id)]})
+
+        # Create jet from template
+        jet = self.jet_template_test.create_jet(
+            server=self.server_test_1, name="Test Jet Multiple Files"
+        )
+
+        # Verify all file logs were created
+        jet_logs = self.ServerLog.search([("jet_id", "=", jet.id)])
+        file_logs = jet_logs.filtered(lambda log: log.log_type == "file")
+        self.assertEqual(
+            len(file_logs),
+            2,
+            "Should create 2 file logs",
+        )
+
+        # Verify each file log has its own file
+        files = file_logs.mapped("file_id")
+        self.assertEqual(
+            len(files),
+            2,
+            "Should create 2 files",
+        )
+        self.assertEqual(
+            len(set(files.ids)),
+            2,
+            "Files should be different",
+        )
+
+        # Verify files are linked correctly
+        for log in file_logs:
+            self.assertTrue(log.file_id, "Each log should have a file")
+            self.assertEqual(
+                log.file_id.jet_id,
+                jet,
+                "File should be linked to the jet",
+            )
+            self.assertEqual(
+                log.file_id.server_id,
+                self.server_test_1,
+                "File should be linked to the server",
+            )
+
+    def test_create_jet_with_no_server_logs(self):
+        """Test create_jet works correctly when template has no server logs"""
+        # Ensure template has no server logs
+        self.jet_template_test.server_log_ids.unlink()
+
+        # Ensure template is installed on server
+        self.jet_template_test.write({"server_ids": [(4, self.server_test_1.id)]})
+
+        # Create jet from template
+        jet = self.jet_template_test.create_jet(
+            server=self.server_test_1, name="Test Jet No Logs"
+        )
+
+        # Verify jet was created
+        self.assertTrue(jet, "Jet should be created")
+
+        # Verify no server logs were created
+        jet_logs = self.ServerLog.search([("jet_id", "=", jet.id)])
+        self.assertEqual(
+            len(jet_logs),
+            0,
+            "Should not create any server logs when template has none",
+        )
+
+    def test_create_jet_server_logs_fields_copied(self):
+        """Test that server log fields are correctly copied from template"""
+        # Create a file template
+        file_template = self.FileTemplate.create(
+            {
+                "name": "Test Log File Template",
+                "file_name": "test_log.txt",
+                "source": "tower",
+                "server_dir": "/var/log",
+                "code": "Test log content",
+            }
+        )
+
+        # Create server log with various fields
+        server_log = self.ServerLog.create(
+            {
+                "name": "Test Log with Fields",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.jet_template_test.id,
+                "log_type": "file",
+                "file_template_id": file_template.id,
+                "access_level": "2",
+                "use_sudo": True,
+                "reference": "test_log_ref",
+            }
+        )
+
+        # Ensure template is installed on server
+        self.jet_template_test.write({"server_ids": [(4, self.server_test_1.id)]})
+
+        # Create jet from template
+        jet = self.jet_template_test.create_jet(
+            server=self.server_test_1, name="Test Jet Fields"
+        )
+
+        # Find the created log
+        jet_log = self.ServerLog.search([("jet_id", "=", jet.id)], limit=1)
+
+        # Verify fields are copied correctly
+        self.assertEqual(
+            jet_log.name,
+            server_log.name,
+            "Log name should be copied",
+        )
+        self.assertEqual(
+            jet_log.log_type,
+            server_log.log_type,
+            "Log type should be copied",
+        )
+        self.assertEqual(
+            jet_log.file_template_id,
+            server_log.file_template_id,
+            "File template should be copied",
+        )
+        self.assertEqual(
+            jet_log.access_level,
+            server_log.access_level,
+            "Access level should be copied",
+        )
+        self.assertEqual(
+            jet_log.use_sudo,
+            server_log.use_sudo,
+            "Use sudo should be copied",
+        )
+        # Reference should be different (due to reference mixin)
+        self.assertNotEqual(
+            jet_log.reference,
+            server_log.reference,
+            "Reference should be different (unique)",
+        )
+        # Verify file was created for file-type log
+        self.assertTrue(
+            jet_log.file_id,
+            "File should be created for file-type log",
+        )
+        self.assertEqual(
+            jet_log.file_id.jet_id,
+            jet,
+            "Created file should be linked to the jet",
+        )
+
+    def test_create_jet_different_servers(self):
+        """Test create_jet creates logs with correct server_id for different servers"""
+        # Create a file template
+        file_template = self.FileTemplate.create(
+            {
+                "name": "Test Log File Template",
+                "file_name": "test_log.txt",
+                "source": "tower",
+                "server_dir": "/var/log",
+                "code": "Test log content",
+            }
+        )
+
+        # Create server log on template (linked to server_test_1)
+        self.ServerLog.create(
+            {
+                "name": "Test Log",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.jet_template_test.id,
+                "log_type": "file",
+                "file_template_id": file_template.id,
+            }
+        )
+
+        # Ensure template is installed on both servers
+        self.jet_template_test.write(
+            {
+                "server_ids": [
+                    (4, self.server_test_1.id),
+                    (4, self.server_test_2.id),
+                ]
+            }
+        )
+
+        # Create jet on server_test_2
+        jet = self.jet_template_test.create_jet(
+            server=self.server_test_2, name="Test Jet Server 2"
+        )
+
+        # Verify jet was created on correct server
+        self.assertEqual(
+            jet.server_id,
+            self.server_test_2,
+            "Jet should be on server_test_2",
+        )
+
+        # Verify server log is linked to server_test_2
+        jet_log = self.ServerLog.search([("jet_id", "=", jet.id)], limit=1)
+        self.assertEqual(
+            jet_log.server_id,
+            self.server_test_2,
+            "Server log should be linked to server_test_2",
+        )
+        self.assertEqual(
+            jet_log.file_id.server_id,
+            self.server_test_2,
+            "File should be linked to server_test_2",
+        )

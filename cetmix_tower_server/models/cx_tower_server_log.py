@@ -64,6 +64,19 @@ class CxTowerServerLog(models.Model):
         " when server is created from a template",
     )
 
+    # -- Jet Template related
+    jet_template_id = fields.Many2one(
+        "cx.tower.jet.template",
+        ondelete="cascade",
+        help="This jet template will be used to create log files when jet is created",
+    )
+
+    # -- Jet related
+    jet_id = fields.Many2one(
+        "cx.tower.jet",
+        ondelete="cascade",
+    )
+
     def _selection_log_type(self):
         """Actions that can be run by a command.
 
@@ -182,7 +195,10 @@ class CxTowerServerLog(models.Model):
 
         use_sudo = self.use_sudo and self.server_id.use_sudo
         command_result = self.server_id.with_context(no_command_log=True).run_command(
-            self.command_id, sudo=use_sudo
+            self.command_id,
+            jet=self.jet_id,
+            jet_template=self.jet_template_id,
+            sudo=use_sudo,
         )
         log_text = self.NO_LOG_FETCHED_MESSAGE
         if command_result:
