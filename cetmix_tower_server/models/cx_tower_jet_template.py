@@ -107,6 +107,13 @@ class CxTowerJetTemplate(models.Model):
         copy=False,
     )
 
+    # Server logs
+    server_log_ids = fields.One2many(
+        comodel_name="cx.tower.server.log",
+        inverse_name="jet_template_id",
+        copy=True,
+    )
+
     # Configuration variables
     variable_value_ids = fields.One2many(
         inverse_name="jet_template_id",
@@ -618,6 +625,38 @@ class CxTowerJetTemplate(models.Model):
         if not self._allow_jet_creation(server):
             return False
 
+        # Prepare the jet values
+        vals = self._prepare_jet_values(server, name, **kwargs)
+
+        # Create a new jet
+        jet = self.env["cx.tower.jet"].create(vals)
+
+        # Create server logs
+        for server_log in self.server_log_ids:
+            jet_log = server_log.copy(
+                {
+                    "jet_id": jet.id,
+                    "server_id": server.id,
+                    "jet_template_id": False,
+                }
+            )
+            if server_log.log_type == "file":
+                jet_log.file_id = server_log.file_template_id.create_file(
+                    server=server, jet=jet, if_file_exists="skip"
+                ).id
+        return jet
+
+    def _prepare_jet_values(self, server, name=None, **kwargs):
+        """
+        Prepare the jet values to create a new jet based
+        on the given server and template.
+
+        Args:
+            server (cx.tower.server()): The server to create the jet on
+            **kwargs: Additional values to update in the final jet record.
+        """
+        self.ensure_one()
+
         # If no name is provided, generate a random one
         if not name:
             name = self._generate_jet_name()
@@ -684,10 +723,7 @@ class CxTowerJetTemplate(models.Model):
                         variable_reference,
                         name,
                     )
-
-        # Create a new jet
-        jet = self.env["cx.tower.jet"].create(vals)
-        return jet
+        return vals
 
     def _allow_jet_creation(self, server):
         """
@@ -1155,3 +1191,13 @@ class CxTowerJetTemplate(models.Model):
                 ET.SubElement(
                     svg, "text", {"x": str(x), "y": str(y + 5), "class": "text"}
                 ).text = display_name
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Access role mixin functions
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def _get_post_create_fields(self):
+        """
+        Add fields that should be populated after jet template creation
+        """
+        res = super()._get_post_create_fields()
+        return res + ["variable_value_ids", "server_log_ids"]

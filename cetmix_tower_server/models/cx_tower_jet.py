@@ -68,6 +68,11 @@ class CxTowerJet(models.Model):
         string="Files",
         help="Files of this jet",
     )
+    server_log_ids = fields.One2many(
+        comodel_name="cx.tower.server.log",
+        inverse_name="jet_id",
+        copy=False,
+    )
 
     # Dependencies
     jet_requires_ids = fields.One2many(
@@ -916,3 +921,13 @@ class CxTowerJet(models.Model):
         if jet_template:
             return self._get_dependent_jets_by_template(jet_template)
         return False
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Access role mixin functions
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def _get_post_create_fields(self):
+        """
+        Add fields that should be populated after jet template creation
+        """
+        res = super()._get_post_create_fields()
+        return res + ["variable_value_ids", "server_log_ids"]
