@@ -1,0 +1,806 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Errore esecuzione codie webhook: %(error)s\n"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/constants.py:0
+#, python-format
+msgid ""
+"\n"
+"<h3>Help for Webhook Authenticator Python Code</h3>\n"
+"<div style=\"margin-bottom: 10px;\">\n"
+"    <p>\n"
+"        The Python code for the webhook authenticator must return the <code>result</code> variable, which is a dictionary.<br>\n"
+"        <strong>Allowed keys:</strong>\n"
+"        <ul>\n"
+"            <li><code>allowed</code> (<b>bool</b>, required): Authentication result. <code>True</code> if allowed, <code>False</code> otherwise.</li>\n"
+"            <li><code>http_code</code> (<b>int</b>, optional): HTTP status code to return if authentication fails (default is 403).</li>\n"
+"            <li><code>message</code> (<b>str</b>, optional): Error message to show to the client.</li>\n"
+"        </ul>\n"
+"        <strong>Examples:</strong>\n"
+"        <pre style='background:#f7f7f7; padding:6px; border-radius:4px'>\n"
+"# Allow all requests\n"
+"result = {\"allowed\": True}\n"
+"\n"
+"# Deny with custom code and message\n"
+"result = {\"allowed\": False, \"http_code\": 401, \"message\": \"Unauthorized request\"}\n"
+"        </pre>\n"
+"    </p>\n"
+"    <strong>Available variables:</strong>\n"
+"</div>\n"
+msgstr ""
+"\n"
+"<h3>Aiuto per il codice Python di autenticazione webhook</h3>\n"
+"<div style=\"margin-bottom: 10px;\">\n"
+"    <p>\n"
+"        Il codice Python per l'autenticazione webhook deve restituire la variabile <code>result</code>, che è un dizionario.<br>\n"
+"        <strong>Chiavi consentite:</strong>\n"
+"        <ul>\n"
+"            <li><code>allowed</code> (<b>bool</b>, richiesto): risultato autenticazione. <code>True</code> se abilitato, <code>False</code> altrimenti.</li>\n"
+"            <li><code>http_code</code> (<b>int</b>, opzionale): codice stato HTTP da restituire se l'autenticazione fallisce (predefinito 403).</li>\n"
+"# Nega con codice e messaggio personalizzati\n"
+"# Nega con codice e messaggio personalizzati\n"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/constants.py:0
+#, python-format
+msgid ""
+"\n"
+"<h3>Help for Webhook Python Code</h3>\n"
+"<div style=\"margin-bottom: 10px;\">\n"
+"    <p>\n"
+"        The webhook Python code must set the <code>result</code> variable, which is a dictionary.<br>\n"
+"        <strong>Allowed keys:</strong>\n"
+"        <ul>\n"
+"            <li><code>exit_code</code> (<b>int</b>, optional, default=0): Exit code (0 means success, other values indicate failure).</li>\n"
+"            <li><code>message</code> (<b>str</b>, optional): Message to return in the HTTP response and log.</li>\n"
+"        </ul>\n"
+"        <strong>Example:</strong>\n"
+"        <pre style='background:#f7f7f7; padding:6px; border-radius:4px'>\n"
+"# Simple successful result\n"
+"result = {\"exit_code\": 0, \"message\": \"Webhook processed successfully\"}\n"
+"\n"
+"# Failure example\n"
+"result = {\"exit_code\": 1, \"message\": \"Something went wrong\"}\n"
+"        </pre>\n"
+"    </p>\n"
+"    <strong>Available variables:</strong>\n"
+"</div>\n"
+msgstr ""
+"\n"
+"<h3>Aiuto per codice Python webhook</h3>\n"
+"<div style=\"margin-bottom: 10px;\">\n"
+"    <p>\n"
+"        Il codice Python webhook deve impostare la variabile <code>result</code>, che è un dizionario.<br>\n"
+"        <strong>Chiavi consentite:</strong>\n"
+"        <ul>\n"
+"            <li><code>exit_code</code> (<b>int</b>, opzionale, predefinito=0): codice di uscita (0 significa successo, altri valori indicano fallimento).</li>\n"
+"            <li><code>message</code> (<b>str</b>, opzionale): messaggio da restituire nella risposta HTTP e nel log.</li>\n"
+"        </ul>\n"
+"        <strong>Esempio:</strong>\n"
+"        <pre style='background:#f7f7f7; padding:6px; border-radius:4px'>\n"
+"# Risultato successo semplice\n"
+"result = {\"exit_code\": 0, \"message\": \"Webhook elaborato con successo\"}\n"
+"\n"
+"# Esempio di fallimento\n"
+"result = {\"exit_code\": 1, \"message\": \"Qualcosa è andato storto\"}\n"
+"        </pre>\n"
+"    </p>\n"
+"    <strong>Variabili disponibili:</strong>\n"
+"</div>\n"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/constants.py:0
+#, python-format
+msgid ""
+"# Please refer to the 'Help' tab and documentation for more information.\n"
+"#\n"
+"# You can return authenticator result in the 'result' variable which is a dictionary:\n"
+"#   result = {\"allowed\": <bool, mandatory, default=False>, \"http_code\": <int, optional>, \"message\": <str, optional>}\n"
+"#   default value is {\"allowed\": False}\n"
+msgstr ""
+"# Fare riferimento alla scheda 'Help' e alla documentazione per informazioni aggiuntive.\n"
+"#\n"
+"# Si può restituire il risultato dell'autenticazione nella variabile 'result' che è un dizionario:\n"
+"#   result = {\"allowed\": <bool, mandatory, default=False>, \"http_code\": <int, optional>, \"message\": <str, optional>}\n"
+"#   il valore predefinito è {\"allowed\": False}\n"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/constants.py:0
+#, python-format
+msgid ""
+"# Please refer to the 'Help' tab and documentation for more information.\n"
+"#\n"
+"# You can return webhook result in the 'result' variable which is a dictionary:\n"
+"#   result = {\"exit_code\": <int, default=0>, \"message\": <string, default=None}\n"
+"#   default value is {\"exit_code\": 0, \"message\": None}\n"
+msgstr ""
+"# Fare riferimento alla scheda 'Help' e alla documentazione per informazioni aggiuntive.\n"
+"#\n"
+"# Si può restituire il risultato del webhook nella variabile 'result' che è un dizionario:\n"
+"#   result = {\"exit_code\": <int, default=0>, \"message\": <string, default=None}\n"
+"#   valore predefinoto {\"exit_code\": 0, \"message\": None}\n"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+msgid "10.0.0.1,192.168.1.0/24"
+msgstr "10.0.0.1,192.168.1.0/24"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.actions.act_window,help:cetmix_tower_webhook.cx_tower_webhook_action
+msgid "Add a new webhook"
+msgstr "Aggiungi un nuovo webhook"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.actions.act_window,help:cetmix_tower_webhook.cx_tower_webhook_authenticator_action
+msgid "Add a new webhook authenticator"
+msgstr "Aggiungi un nuovo autenticatore webhook"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "All"
+msgstr "Tutti"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__allowed_ip_addresses
+msgid "Allowed IPs"
+msgstr "IP consentiti"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "Auth Failed"
+msgstr "Autenticazione fallita"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "Auth Status"
+msgstr "Stato autenticazione"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__authentication_status
+msgid "Authentication Status"
+msgstr "Stato autenticazione"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
+#, python-format
+msgid "Authentication code error: %s"
+msgstr "Codice errore autenticazione: %s"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__authenticator_id
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__authenticator_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Authenticator"
+msgstr "Autenticatore"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__reference
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__reference
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__reference
+msgid "Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr "Può contenere lettere inglesi, numeri e '_'. Lasciare vuoto per generarlo automaticamente"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_variable
+msgid "Cetmix Tower Variable"
+msgstr "Variabile Cetmix Tower"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__code
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__code
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__code
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "Code"
+msgstr "Codice"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "Code Failed"
+msgstr "Codice fallito"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__code_help
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__code_help
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__code_help
+msgid "Code Help"
+msgstr "Aiuto codice"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "Code Status"
+msgstr "Stato codice"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__allowed_ip_addresses
+msgid "Comma-separated list of IP addresses and/or subnets (e.g. 192.168.1.10,192.168.2.0/24,10.0.0.1,2001:db8::/32,2a00:1450:4001:824::200e). Requests from other addresses will be denied."
+msgstr "Elenco indirizzi IP e/o sottoreti separati da virgola (es. 192.168.1.10,192.168.2.0/24,10.0.0.1,2001:db8::/32,2a00:1450:4001:824::200e). Richieste da altri indirizzi verranno rifiutate."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__trusted_proxy_ips
+msgid "Comma-separated list of trusted proxy IP addresses or CIDR ranges (e.g., 10.0.0.1,192.168.1.0/24). Only these proxies can set X-Forwarded-For headers."
+msgstr "Elenco di indirizzi IP affidabili o intervalli CIDR separati da virgola (es. 10.0.0.1,192.168.1.0/24). Solo questi proxies possono impostare header X-Forwarded-For."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_res_config_settings
+msgid "Config Settings"
+msgstr "Impostazioni configurazione"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Content Type"
+msgstr "Tipo contenuto"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__country_id
+msgid "Country"
+msgstr "Nazione"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__country_id
+msgid "Country of the client that made the request."
+msgstr "Nazione del client che ha fatto la richiesta."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
+#, python-format
+msgid "Dictionary containing the request payload (JSON for POST, params for GET)"
+msgstr "Dizionario che contiene le informazioni richieste (JSON per POST, parametri per GET)"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
+#, python-format
+msgid "Dictionary of request headers"
+msgstr "Dizionario degli header richiesti"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Disabled"
+msgstr "Disabilitato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__active
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Enabled"
+msgstr "Abilitato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__endpoint
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__endpoint
+msgid "Endpoint"
+msgstr "Endpoint"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.constraint,message:cetmix_tower_webhook.constraint_cx_tower_webhook_endpoint_method_uniq
+msgid "Endpoint and method must be unique!"
+msgstr "L'endpoint e il metodo devono essere univoci!"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
+#, python-format
+msgid "Endpoint must start and end with a letter or digit, and may contain underscores, dashes, and slashes in between"
+msgstr "L'endpoint deve iniziare e finire con una lettera o un numero e può contenere underscore, trattini e slash nel mezzo"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+msgid "Enter Python code here. Help about Python expression is available in the help tab of this document"
+msgstr "Inserire qui codice Python. L'aiuto per l'espressione Python è disponibile nella scheda di aiuto di questo documento"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "Enter Python code here. Help about Python expression is available in the help tab of this document."
+msgstr "Inserire qui codice Python. L'aiuto per l'espressione Python è disponibile nella scheda di aiuto di questo documento."
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_form
+msgid "Error"
+msgstr "Errore"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__error_message
+msgid "Error Message"
+msgstr "Messaggio di errore"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__error_message
+msgid "Error message in case of authentication or code failure."
+msgstr "Messaggio di errore nel caso di fallimento dell'autenticazione o del codice."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_webhook_eval_mixin
+msgid "Eval context/code helper for Cetmix Tower Webhook"
+msgstr "Aiuto per la valutazione del context/codice per il webhook Cetmix Tower"
+
+#. module: cetmix_tower_webhook
+#: model:ir.actions.act_window,name:cetmix_tower_webhook.action_cx_tower_webhook_authenticator_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_webhook.action_cx_tower_webhook_export_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "Export YAML"
+msgstr "Esporta YAML"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__authentication_status__failed
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__code_status__failed
+msgid "Failed"
+msgstr "Fallito"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook__content_type__form
+msgid "Form URL-Encoded"
+msgstr "Da URL codificato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__full_url
+msgid "Full URL of the webhook"
+msgstr "URL completo del webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__full_url
+msgid "Full Url"
+msgstr "URL completo"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook__method__get
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__request_method__get
+msgid "GET"
+msgstr "GET"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Group By"
+msgstr "Raggruppa per"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "HTTP 200"
+msgstr "HTTP 200"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__http_status
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "HTTP Status"
+msgstr "Stato HTTP"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__http_status
+msgid "HTTP status code returned to the client."
+msgstr "Codice stato HTTP restituito al client."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__request_headers
+msgid "Headers of the received HTTP request (JSON-encoded)."
+msgstr "Header della richiesta HTTP ricevuta (codificata JSON)."
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "Help"
+msgstr "Aiuto"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__content_type
+msgid "How the payload is expected to be sent to this webhook: as JSON body or as URL-encoded form data"
+msgstr "Come è previsto che vengano inviati i dati a questo webhook: come struttura JSON o come URL codificato dai dati"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__id
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__id
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__id
+msgid "ID"
+msgstr "ID"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__ip_address
+msgid "IP Address"
+msgstr "Indirizzo IP"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__ip_address
+msgid "IP address of the client that made the request."
+msgstr "Indirizzo IP del client che ha effettuato la richiesta."
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
+#, python-format
+msgid "Invalid allowed IP/CIDR entry: %s"
+msgstr "Valore IP/CIDR consentito non valido: %s"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
+#, python-format
+msgid "Invalid trusted proxy entry: %s"
+msgstr "Valore proxy validato non valido: %s"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook__content_type__json
+msgid "JSON"
+msgstr "JSON"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_res_config_settings__cetmix_tower_webhook_log_duration
+msgid "Keep Webhook Logs for (days)"
+msgstr "Mantenere i registri del webhook per (giorni)"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__write_uid
+msgid "Last Updated by"
+msgstr "Ultima modifica di"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento di"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__log_count
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__log_count
+msgid "Log Count"
+msgstr "Conteggio registro"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "Logs"
+msgstr "Registri"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__result_message
+msgid "Message returned by the webhook code or authenticator (if any)."
+msgstr "Messaggio restituito dal codice webhook o dall'autenticatore (se presente)."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__method
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Method"
+msgstr "Metodo"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__name
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__name
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__name
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_form
+msgid "Name"
+msgstr "nome"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.actions.act_window,help:cetmix_tower_webhook.cx_tower_webhook_log_action
+msgid "No webhook logs found"
+msgstr "Nessun registro webhook trovato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__authentication_status__not_required
+msgid "Not Required"
+msgstr "Non richiesto"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook__method__post
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__request_method__post
+msgid "POST"
+msgstr "POST"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__content_type
+msgid "Payload Type"
+msgstr "Tipo dati"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__request_payload
+msgid "Payload/body of the received HTTP request (JSON-encoded)."
+msgstr "Dati/corpo della richiesta HTTP ricevuta (codificata JSON)."
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
+#, python-format
+msgid "Raw body of the request (bytes)"
+msgstr "Corpo grezzo della richiesta (byte)"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__reference
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__reference
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__reference
+msgid "Reference"
+msgstr "Riferimento"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__request_headers
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_form
+msgid "Request Headers"
+msgstr "Header richiesta"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__request_method
+msgid "Request Method"
+msgstr "Metodo richiesta"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__request_payload
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_form
+msgid "Request Payload"
+msgstr "Dati richiesta"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_form
+msgid "Response Payload"
+msgstr "Dati risposta"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__result_message
+msgid "Result Message"
+msgstr "Messaggio risultato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__authentication_status
+msgid "Result of authentication for this webhook call."
+msgstr "Risultato dell'autenticazione di questa chiamata webhook."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__code_status
+msgid "Result of webhook code execution."
+msgstr "Risultato dell'esecuzione del codice webhook."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__user_id
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__user_id
+msgid "Run as User"
+msgstr "Esegui come utente"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_search
+msgid "Search Webhook Authenticators"
+msgstr "Cerca autenticatori webhook"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Search Webhooks"
+msgstr "Cerca webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__secret_ids
+msgid "Secrets"
+msgstr "Segreti"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__user_id
+msgid ""
+"Select a user to run the webhook from behalf of. If not set, the webhook will run as the current user.\n"
+"CAREFUL! You must realise and understand what you are doing including all the possible consequences when selecting a specific user"
+msgstr "Selezionare un utente per cui eseguire il webhook. Se non impostato, il webhook verrà eseguito per conto dell'utente corrente. ATTENZIONE! Bisogna essere consapevoli e comprendere cosa si sta facendo, comprese tutte le possibili conseguenze quando si seleziona un utente specifico."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__authenticator_id
+msgid "Select an Authenticator used for this webhook"
+msgstr "Selezionare un autenticatore per questo webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__method
+msgid "Select the HTTP method for this webhook"
+msgstr "Selezionare il metodo HTTP per questo webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__request_method
+msgid "Select the HTTP method for this webhook."
+msgstr "Selezionare il metodo HTTP per questo webhook."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_res_config_settings__cetmix_tower_webhook_log_duration
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.res_config_settings_view_form
+msgid "Set the number of days to keep webhook logs. Old logs will be deleted automatically."
+msgstr "Impostare il numero di giorni di mantenimento dei registri webhook."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__code_status__skipped
+msgid "Skipped"
+msgstr "Saltato"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__authentication_status__success
+#: model:ir.model.fields.selection,name:cetmix_tower_webhook.selection__cx_tower_webhook_log__code_status__success
+msgid "Success"
+msgstr "Successo"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__code
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__code
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__code
+msgid "This field will be rendered using variables"
+msgstr "Questo campo verrà visualizzato utilizzando le variabili"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__trusted_proxy_ips
+msgid "Trusted Proxy IPs"
+msgstr "IP proxy autorizzati"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "User"
+msgstr "Utente"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__user_id
+msgid "User as which the webhook code was executed (if set)."
+msgstr "Utente per conto del quale è stato eseguito il codice webhook (se impostato)."
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__variable_ids
+msgid "Variables"
+msgstr "Variabili"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_ids
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__webhook_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "Webhook"
+msgstr "Webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_webhook_authenticator
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_authenticator_ids
+msgid "Webhook Authenticator"
+msgstr "Autenticatore webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_authenticator_ids_count
+msgid "Webhook Authenticator Count"
+msgstr "Conteggio autenticatore webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.actions.act_window,name:cetmix_tower_webhook.cx_tower_webhook_authenticator_action
+#: model:ir.ui.menu,name:cetmix_tower_webhook.menu_cetmix_tower_webhook_authenticator
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_variable_view_form
+msgid "Webhook Authenticators"
+msgstr "Autenticatori webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model,name:cetmix_tower_webhook.model_cx_tower_webhook_log
+msgid "Webhook Call Log"
+msgstr "Registro chiamata webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.ui.menu,name:cetmix_tower_webhook.menu_cetmix_tower_webhook_log
+msgid "Webhook Calls"
+msgstr "Chiamate webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_log__code_status
+msgid "Webhook Code Status"
+msgstr "Stato codice webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_variable__webhook_ids_count
+msgid "Webhook Count"
+msgstr "Conteggio webhook"
+
+#. module: cetmix_tower_webhook
+#: model:ir.actions.act_window,name:cetmix_tower_webhook.cx_tower_webhook_log_action
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_log_view_search
+msgid "Webhook Logs"
+msgstr "Registri webhook"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
+#, python-format
+msgid "Webhook code execution error: %(error)s"
+msgstr "Errore esecuzione codice webhook: %(error)s"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook__endpoint
+msgid "Webhook endpoint. The complete URL will be <your_tower_url>/cetmix_tower_webhooks/<endpoint>"
+msgstr "Endpoint del webhook. L'URL completo sarà <your_tower_url>/cetmix_tower_webhooks/<endpoint>"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,help:cetmix_tower_webhook.field_cx_tower_webhook_log__webhook_id
+msgid "Webhook that received the call."
+msgstr "Webhook che ha ricevuto la chiamata"
+
+#. module: cetmix_tower_webhook
+#. odoo-python
+#: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_eval_mixin.py:0
+#, python-format
+msgid "Webhook/Authenticator code error: result is not a dict"
+msgstr "Errore codice webhook/autenticatore: il risultato non è un dizionario"
+
+#. module: cetmix_tower_webhook
+#: model:ir.actions.act_window,name:cetmix_tower_webhook.cx_tower_webhook_action
+#: model:ir.ui.menu,name:cetmix_tower_webhook.menu_cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_variable_view_form
+msgid "Webhooks"
+msgstr "Webhook"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "YAML"
+msgstr "YAML"
+
+#. module: cetmix_tower_webhook
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_authenticator__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_webhook.field_cx_tower_webhook_eval_mixin__yaml_code
+msgid "Yaml Code"
+msgstr "Codice YAML"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML"
+msgstr "Bisogna essere membro del gruppo \"YAML/Export\" per esportare i dati come YAML"
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_form
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
+msgstr "Bisogna essere membro del gruppo \"YAML/Export\" per esportare i dati come YAML."
+
+#. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
+msgid "e.g.: 192.168.1.10, 192.168.2.0/24, 2001:db8::/32, 2a00:1450:4001:824::200e"
+msgstr "es.: 192.168.1.10, 192.168.2.0/24, 2001:db8::/32, 2a00:1450:4001:824::200e"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
+
+#~ msgid ""
+#~ "Set the number of days to keep webhook logs. Old logs will be deleted "
+#~ "automatically.\n"
+#~ "                            <br/>"
+#~ msgstr ""
+#~ "Imposta il numero di giorni per cui conservare i registri dei webhook. I "
+#~ "vecchi registri verranno eliminati "
+#~ "automaticamente.                            <br/>"
