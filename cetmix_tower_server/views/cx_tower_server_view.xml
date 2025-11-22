@@ -144,10 +144,10 @@
                 <field
                     name="status"
                     widget="badge"
-                    decoration-danger="status == '2'"
-                    decoration-info="status == '1'"
-                    decoration-success="status == '4'"
-                    decoration-warning="status in ['3','5','6']"
+                    decoration-danger="status == 'stopped'"
+                    decoration-info="status in ['stopping','restarting','starting']"
+                    decoration-success="status == 'running'"
+                    decoration-warning="status in ['deleting','delete_error']"
                 />
             </tree>
         </field>
