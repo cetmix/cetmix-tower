@@ -254,6 +254,11 @@
             name="validation_message"
         >Must be lowercase and contain only letters and numbers!</field>
     </record>
+    <record id="variable_command_error" model="cx.tower.variable">
+        <field name="name">Command Error</field>
+        <field name="reference">command_error</field>
+        <field name="variable_type">s</field>
+    </record>
 
     <!-- ===============================================
     Variables Options for Odoo Version
@@ -450,6 +455,21 @@
         />
     </record>
 
+    <!-- Flight Plan #6 - Test skip command error -->
+    <record id="plan_test_skip_command_error" model="cx.tower.plan">
+        <field name="name">Test skip command error</field>
+        <field name="access_level">2</field>
+        <field name="on_error_action">e</field>
+        <field name="custom_exit_code">0</field>
+        <field name="note">
+This plan is used to test the skip command error flow.
+Expected result:
+- Command 4 skipped
+- Command 5 is run
+- Plan finishes with error
+        </field>
+    </record>
+
     <!-- ===============================================
     Commands
     ================================================ -->
@@ -563,6 +583,42 @@ else:
             name="tag_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
         />
+    </record>
+
+    <!-- Command #8 - Success -->
+    <record id="command__success" model="cx.tower.command">
+        <field name="name">Command -&gt; Success</field>
+        <field name="action">python_code</field>
+        <field name="code"># Juse return deafult values</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <!-- Command #9 - Error -->
+    <record id="command__error" model="cx.tower.command">
+        <field name="name">Command -&gt; Error</field>
+        <field name="action">python_code</field>
+        <field name="code">result = {"exit_code": -100, "message": "Error"}</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <!-- Command #10 - After failed -->
+    <record id="command___after_failed" model="cx.tower.command">
+        <field name="name">Command -&gt; After failed</field>
+        <field name="action">python_code</field>
+        <field name="code"># Update the server name
+name = server.name + " --after-failed-- "
+server.write({"name":name})</field>
+        <field name="access_level">2</field>
+    </record>
+
+    <!-- Command #11 - The last one -->
+    <record id="command___the_last_one" model="cx.tower.command">
+        <field name="name">Command -&gt; The last one</field>
+        <field name="action">python_code</field>
+        <field name="code"># Update the server name
+name = server.name + " --last-one-- "
+server.write({"name":name})</field>
+        <field name="access_level">2</field>
     </record>
 
     <!-- ===============================================
@@ -701,6 +757,81 @@ else:
         <field name="sequence">20</field>
         <field name="plan_id" ref="plan_demo_5" />
         <field name="command_id" ref="command_download_file" />
+    </record>
+
+    <!-- ===============================================
+    Flight Plan Test Skip Command Error Lines
+    ================================================ -->
+    <record id="plan_test_skip_command_error_line_1" model="cx.tower.plan.line">
+        <field name="sequence">10</field>
+        <field name="plan_id" ref="plan_test_skip_command_error" />
+        <field name="command_id" ref="command__success" />
+    </record>
+    <record id="plan_test_skip_command_error_line_2" model="cx.tower.plan.line">
+        <field name="sequence">11</field>
+        <field name="plan_id" ref="plan_test_skip_command_error" />
+        <field name="command_id" ref="command__success" />
+    </record>
+    <record id="plan_test_skip_command_error_line_3" model="cx.tower.plan.line">
+        <field name="sequence">12</field>
+        <field name="plan_id" ref="plan_test_skip_command_error" />
+        <field name="command_id" ref="command__error" />
+    </record>
+    <record id="plan_test_skip_command_error_line_4" model="cx.tower.plan.line">
+        <field name="sequence">13</field>
+        <field name="plan_id" ref="plan_test_skip_command_error" />
+        <field name="command_id" ref="command___after_failed" />
+        <field name="condition">not {{ command_error }}</field>
+        <field name="variable_ids" eval="[(4, ref('variable_command_error'))]" />
+    </record>
+    <record id="plan_test_skip_command_error_line_5" model="cx.tower.plan.line">
+        <field name="sequence">14</field>
+        <field name="plan_id" ref="plan_test_skip_command_error" />
+        <field name="command_id" ref="command___the_last_one" />
+        <field name="condition">{{ command_error }}</field>
+        <field name="variable_ids" eval="[(4, ref('variable_command_error'))]" />
+    </record>
+
+    <!-- ===============================================
+    Flight Plan Test Skip Command Error Line Actions
+    ================================================ -->
+    <record
+        id="plan_test_skip_command_error_line_3_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_test_skip_command_error_line_3" />
+        <field name="sequence">10</field>
+        <field name="condition">!=</field>
+        <field name="value_char">0</field>
+        <field name="action">n</field>
+        <field name="custom_exit_code">0</field>
+    </record>
+    <record
+        id="plan_test_skip_command_error_line_5_action_1"
+        model="cx.tower.plan.line.action"
+    >
+        <field name="line_id" ref="plan_test_skip_command_error_line_5" />
+        <field name="sequence">10</field>
+        <field name="condition">==</field>
+        <field name="value_char">0</field>
+        <field name="action">ec</field>
+        <field name="custom_exit_code">-1</field>
+    </record>
+
+    <!-- ===============================================
+    Flight Plan Test Skip Command Error Line Action Variable Values
+    ================================================ -->
+    <record
+        id="plan_test_skip_command_error_line_3_action_1_value_command_error"
+        model="cx.tower.variable.value"
+    >
+        <field name="variable_id" ref="variable_command_error" />
+        <field
+            name="plan_line_action_id"
+            ref="plan_test_skip_command_error_line_3_action_1"
+        />
+        <field name="sequence">10</field>
+        <field name="value_char">1</field>
     </record>
 
     <!-- ===============================================
