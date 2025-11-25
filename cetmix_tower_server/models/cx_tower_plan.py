@@ -23,6 +23,7 @@ class CxTowerPlan(models.Model):
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
         "cx.tower.access.role.mixin",
+        "cx.tower.tag.mixin",
     ]
     _order = "name asc"
 
@@ -37,8 +38,6 @@ class CxTowerPlan(models.Model):
     color = fields.Integer(help="For better visualization in views")
     server_ids = fields.Many2many(string="Servers", comodel_name="cx.tower.server")
     tag_ids = fields.Many2many(
-        string="Tags",
-        comodel_name="cx.tower.tag",
         relation="cx_tower_plan_tag_rel",
         column1="plan_id",
         column2="tag_id",

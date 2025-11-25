@@ -23,3 +23,4 @@ from . import test_shortcut
 from . import test_tools
 from . import test_partner_server_btn
 from . import test_vault_mixin
+from . import test_tag_mixin
