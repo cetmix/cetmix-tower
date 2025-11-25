@@ -1,3 +1,8 @@
+## 17.0.2.1.2 (2025-11-25)
+
+- Features: Tag mixin and helper commands. (5039)
+
+
 ## 17.0.2.1.0 (2025-11-18)
 
 - Features: Integrate user notifications into the main module, drop the 'cetmix_tower_notify_backend' module. (5074)
