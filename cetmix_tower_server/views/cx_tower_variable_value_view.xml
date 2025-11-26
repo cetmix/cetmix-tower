@@ -13,11 +13,11 @@
                     name="server_id"
                     readonly="server_template_id or plan_line_action_id"
                 />
-            <field
+                <field
                     name="server_template_id"
                     readonly="server_id or plan_line_action_id"
                 />
-            <field
+                <field
                     name="plan_line_action_id"
                     readonly="server_id or server_template_id"
                 />

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_variable_view_form" model="ir.ui.view">
         <field name="name">cx.tower.variable.view.form</field>
         <field name="model">cx.tower.variable</field>
@@ -176,18 +175,18 @@
                         </page>
                         <page name="value_modifier" string="Value Modifier">
                             <div class="alert alert-info" role="alert">
-                            <p>
+                                <p>
                                 Python code that is used to modify the variable values.
                                 <br />
                                 Available variables and functions:
                                 <ul>
                                     <li>value: variable value</li>
                                     <li
-                                        >result: final result that will be used as a variable value</li>
+                                    >result: final result that will be used as a variable value</li>
                                     <li
-                                        >general python functions (eg. lower(), replace(), etc.)</li>
+                                    >general python functions (eg. lower(), replace(), etc.)</li>
                                     <li
-                                        >re: regex operations (eg. re.sub, re.match, etc.)</li>
+                                    >re: regex operations (eg. re.sub, re.match, etc.)</li>
                                 </ul>
                                 Example:
                                 <br />
@@ -208,7 +207,6 @@
         </field>
     </record>
 
-
     <record id="cx_tower_variable_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.variable.view.tree</field>
         <field name="model">cx.tower.variable</field>
@@ -218,7 +216,6 @@
                 <field name="reference" optional="show" />
                 <field name="access_level" optional="show" />
                 <field name="value_ids_count" optional="show" />
-
             </tree>
         </field>
     </record>
@@ -243,5 +240,4 @@
         <field name="res_model">cx.tower.variable</field>
         <field name="view_mode">tree,form</field>
     </record>
-
 </odoo>

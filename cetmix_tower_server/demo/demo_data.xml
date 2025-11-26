@@ -189,7 +189,7 @@
         <field name="template_id" ref="cx_tower_file_template_demo_3" />
         <field name="server_id" ref="server_demo_2" />
     </record>
-        <record id="cx_tower_file_server_demo_logs" model="cx.tower.file">
+    <record id="cx_tower_file_server_demo_logs" model="cx.tower.file">
         <field name="name">server_demo_logs.txt</field>
         <field name="source">server</field>
         <field name="template_id" ref="cx_tower_file_template_demo_4" />
@@ -643,7 +643,9 @@ server.write({"name":name})</field>
     <record id="plan_demo_1_line_1_action_2" model="cx.tower.plan.line.action">
         <field name="line_id" ref="plan_demo_1_line_1" />
         <field name="sequence">2</field>
-        <field name="condition">&gt;</field>
+        <field name="condition">
+            &gt;
+        </field>
         <field name="value_char">0</field>
         <field name="action">ec</field>
         <field name="custom_exit_code">255</field>
@@ -1100,5 +1102,4 @@ server.write({"name":name})</field>
         <field name="interval_type">days</field>
         <field name="next_call" eval="(DateTime.now() - relativedelta(days=2))" />
     </record>
-
 </odoo>

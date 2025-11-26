@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="action_execute_cx_tower_command" model="ir.actions.server">
         <field name="name">Run Command</field>
         <field name="type">ir.actions.server</field>
@@ -43,5 +42,4 @@
         <field name="res_model">res.partner</field>
         <field name="view_mode">tree,form</field>
     </record>
-
 </odoo>

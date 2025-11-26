@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_server_view_kanban" model="ir.ui.view">
         <field name="name">cx.tower.server.view.kanban</field>
         <field name="model">cx.tower.server</field>
@@ -26,32 +25,28 @@
                                             name="action_run_command"
                                         >Run Command
                                         </a>
-                                        </div>
-                                        <div role="menuitem">
-                                            <a
+                                    </div>
+                                    <div role="menuitem">
+                                        <a
                                             role="menuitem"
                                             type="object"
                                             name="action_run_flight_plan"
                                         >Run Flight Plan
                                             </a>
-                                        </div>
                                     </div>
                                 </div>
-                                <div class="o_kanban_card_manage_settings row">
-                                    <div
-                                    role="menuitem"
-                                    aria-haspopup="true"
-                                    class="col-6"
-                                >
-                                        <ul
+                            </div>
+                            <div class="o_kanban_card_manage_settings row">
+                                <div role="menuitem" aria-haspopup="true" class="col-6">
+                                    <ul
                                         class="oe_kanban_colorpicker"
                                         data-field="color"
                                         role="popup"
                                     />
-                                    </div>
                                 </div>
                             </div>
-                        </t>
+                        </div>
+                    </t>
                     <t t-name="kanban-box">
                         <div
                             t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
@@ -69,9 +64,9 @@
                                         options="{'hide_label': False}"
                                     />
                                 </div>
-                                    <div t-if="record.url.raw_value">
-                                        <field name="url" widget="url" />
-                                    </div>
+                                <div t-if="record.url.raw_value">
+                                    <field name="url" widget="url" />
+                                </div>
                             </div>
                             <div class="oe_kanban_content">
                                 <div class="oe_kanban_global_click">
@@ -104,8 +99,7 @@
                                     </div>
                                 </div>
                                 <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                    </div>
+                                    <div class="oe_kanban_bottom_left" />
                                     <div class="oe_kanban_bottom_right">
                                         <div invisible="not tag_ids">
                                             <field name="color" invisible="1" />
@@ -240,13 +234,13 @@
                         />
                     </group>
                     <notebook>
-                    <page name="shortcuts" string="Shortcuts">
-                        <field name="shortcut_ids">
-                            <tree create="0" edit="0">
-                                <field name="sequence" widget="handle" />
-                                <field name="name" />
-                                <field name="action" optional="hide" />
-                                <button
+                        <page name="shortcuts" string="Shortcuts">
+                            <field name="shortcut_ids">
+                                <tree create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="action" optional="hide" />
+                                    <button
                                         type="object"
                                         name="run"
                                         class="fa fa-play oe_highlight"
@@ -254,12 +248,12 @@
                                         title="Trigger shortcut"
                                         confirm="Are you sure?"
                                     />
-                            </tree>
-                            <form>
-                                <field name="note" readonly="1" />
-                            </form>
-                        </field>
-                    </page>
+                                </tree>
+                                <form>
+                                    <field name="note" readonly="1" />
+                                </form>
+                            </field>
+                        </page>
                         <page name="General" string="General Settings">
                             <group name="root">
                                 <group name="main">
@@ -518,7 +512,6 @@
         </field>
     </record>
 
-
     <record id="action_cx_tower_server" model="ir.actions.act_window">
         <field name="name">Servers</field>
         <field name="type">ir.actions.act_window</field>
@@ -526,5 +519,4 @@
         <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="cx_tower_server_search_view" />
     </record>
-
 </odoo>

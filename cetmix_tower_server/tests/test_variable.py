@@ -630,9 +630,12 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Try to create a second variable value with the same variable and server
-        with mute_logger("odoo.sql_db"), self.assertRaises(
-            IntegrityError,
-            msg="A variable value cannot be assigned multiple times to the same server",
+        with (
+            mute_logger("odoo.sql_db"),
+            self.assertRaises(
+                IntegrityError,
+                msg="A variable value cannot be assigned multiple times to the same server",
+            ),
         ):
             self.env["cx.tower.variable.value"].create(
                 {

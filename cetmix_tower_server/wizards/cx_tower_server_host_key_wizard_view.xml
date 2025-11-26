@@ -10,7 +10,7 @@
                 <div class="alert alert-warning" role="status" invisible="is_error">
                     Check the key before inserting in the server settings. Do not insert the key if you have any doubts!
                 </div>
-                    <field name="host_key" readonly="1" invisible="is_error" />
+                <field name="host_key" readonly="1" invisible="is_error" />
                 <field
                     name="host_key"
                     readonly="1"

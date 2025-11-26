@@ -1,0 +1,4 @@
+# generated from manifests external_dependencies
+dnspython
+paramiko<4
+tldextract

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_plan_line_view_form" model="ir.ui.view">
         <field name="name">cx.tower.plan.line.view.form</field>
         <field name="model">cx.tower.plan.line</field>
@@ -107,7 +106,9 @@
                                             />
                                         </div>
                                     </group>
-                                    <p><b>AND</b></p>
+                                    <p>
+                                        <b>AND</b>
+                                    </p>
                                     <group>
                                         <field
                                             name="variable_value_ids"
@@ -167,5 +168,4 @@
             </form>
         </field>
     </record>
-
 </odoo>

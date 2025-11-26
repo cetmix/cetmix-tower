@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_file_view_form" model="ir.ui.view">
         <field name="name">cx.tower.file.view.form</field>
         <field name="model">cx.tower.file</field>
@@ -40,44 +39,44 @@
                                 readonly="id or source == 'server'"
                                 required="file_type == 'binary' and source != 'server'"
                             />
-                                <field
+                            <field
                                 name="template_id"
                                 domain="[('source', '=', source)]"
                             />
-                                <field name="server_id" required="1" />
-                                <field name="server_dir" widget="ace_tower" />
-                                <field name="full_server_path" />
-                            </group>
-                            <group>
-                                <field
+                            <field name="server_id" required="1" />
+                            <field name="server_dir" widget="ace_tower" />
+                            <field name="full_server_path" />
+                        </group>
+                        <group>
+                            <field
                                 name="keep_when_deleted"
                                 invisible="source != 'tower'"
                             />
-                                <field name="auto_sync" />
-                                <field
+                            <field name="auto_sync" />
+                            <field
                                 name="auto_sync_interval"
                                 invisible="not auto_sync or source != 'server'"
                                 required="auto_sync and source == 'server'"
                             />
-                                <field
+                            <field
                                 name="sync_date_next"
                                 invisible="not auto_sync or source != 'server'"
                             />
-                                <field name="sync_date_last" />
-                                <field
+                            <field name="sync_date_last" />
+                            <field
                                 name="variable_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                                 invisible="not variable_ids"
                             />
-                                <field
+                            <field
                                 name="secret_ids"
                                 widget="many2many_tags"
                                 groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                                 invisible="not secret_ids"
                             />
-                            </group>
                         </group>
+                    </group>
                     <notebook>
                         <page
                             name="code"
@@ -260,7 +259,7 @@
         <field name="domain">[]</field>
         <field name="context">{}</field>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
+            <p class="o_view_nocontent_smiling_face">
             Add a new file
           </p>
         </field>
@@ -296,5 +295,4 @@
         ]"
         />
     </record>
-
 </odoo>

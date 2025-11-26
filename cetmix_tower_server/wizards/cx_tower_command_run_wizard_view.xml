@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_command_run_wizard_view_form" model="ir.ui.view">
         <field name="name">cx.tower.command.run.wizard.view.form</field>
         <field name="model">cx.tower.command.run.wizard</field>
         <field name="arch" type="xml">
             <form string="Run Command">
-            <field name="has_missing_required_values" invisible="1" />
+                <field name="has_missing_required_values" invisible="1" />
                 <div
                     class="alert alert-warning"
                     role="alert"
@@ -58,7 +57,6 @@
                     </div>
                     <label for="command_id" invisible="result" />
                     <div class="o_row" invisible="result">
-
                         <field name="action" nolabel="1" />
                         <span invisible="action != 'ssh_command'">sudo</span>
                         <field name="use_sudo" invisible="action != 'ssh_command'" />
@@ -96,7 +94,6 @@
                             <span
                             >Fill in required configuration variables on the “Configuration Values” tab before you can run the command.</span>
                         </div>
-
                     </page>
                     <page
                         name="configuration_values"
@@ -203,5 +200,4 @@
         <field name="context">{'default_server_ids': [id]}</field>
         <field name="target">new</field>
     </record>
-
 </odoo>

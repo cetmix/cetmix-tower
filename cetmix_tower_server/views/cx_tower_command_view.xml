@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_command_view_form" model="ir.ui.view">
         <field name="name">cx.tower.command.view.form</field>
         <field name="model">cx.tower.command</field>
         <field name="arch" type="xml">
             <form>
-
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
@@ -16,12 +14,12 @@
                             invisible="flight_plan_used_ids_count == 0"
                             icon="fa-plane"
                         >
-                                <field
+                            <field
                                 name="flight_plan_used_ids_count"
                                 string="Used in Plans"
                                 widget="statinfo"
                             />
-                            </button>
+                        </button>
                         <button
                             name="action_open_command_logs"
                             type="object"
@@ -320,5 +318,4 @@
         <field name="res_model">cx.tower.command</field>
         <field name="view_mode">tree,form</field>
     </record>
-
 </odoo>

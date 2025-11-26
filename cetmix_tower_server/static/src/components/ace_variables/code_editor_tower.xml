@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <templates>
-
     <t t-name="cetmix_tower_server.CodeEditorTower">
         <div t-ref="editorRef" class="w-100" t-att-class="props.class" />
         <t t-if="state.showPopup">
@@ -14,5 +13,4 @@
             />
         </t>
     </t>
-
 </templates>

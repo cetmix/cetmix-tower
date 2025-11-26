@@ -91,9 +91,9 @@
                             string="Triggered Commands"
                             invisible="command_action != 'plan'"
                         >
-                                <field name="triggered_plan_command_log_ids">
-                                    <tree default_order="id asc" />
-                                </field>
+                            <field name="triggered_plan_command_log_ids">
+                                <tree default_order="id asc" />
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -216,5 +216,4 @@
         <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
     </record>
-
 </odoo>

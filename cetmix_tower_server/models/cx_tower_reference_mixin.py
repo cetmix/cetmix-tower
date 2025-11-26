@@ -469,9 +469,9 @@ class CxTowerReferenceMixin(models.AbstractModel):
             if record_id and parent_record_refs.get(record_id):
                 line_index_dict[record_id] += 1
                 line_index = line_index_dict[record_id]
-                vals[
-                    "reference"
-                ] = f"{parent_record_refs[record_id]}_{model_reference}_{line_index}"
+                vals["reference"] = (
+                    f"{parent_record_refs[record_id]}_{model_reference}_{line_index}"
+                )
             else:
                 # Handle cases where the field is not present
                 line_index_dict["no_record"] += 1

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- User Read Rules -->
     <record id="rule_cx_tower_variable_value_user_read_global" model="ir.rule">
         <field name="name">Variable Value: User Read Global Access</field>
@@ -253,5 +252,4 @@
         <field name="perm_create" eval="1" />
         <field name="perm_unlink" eval="1" />
     </record>
-
 </odoo>

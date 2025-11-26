@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_server_template_view_kanban" model="ir.ui.view">
         <field name="name">cx.tower.server.template.view.kanban</field>
         <field name="model">cx.tower.server.template</field>
@@ -13,67 +12,68 @@
                 <field name="color" />
                 <field name="server_count" />
                 <templates>
-                <t t-name="kanban-menu">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-8 o_kanban_card_manage_section">
-                                <div role="menuitem">
-                                    <a
+                    <t t-name="kanban-menu">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-8 o_kanban_card_manage_section">
+                                    <div role="menuitem">
+                                        <a
                                             role="menuitem"
                                             type="object"
                                             name="action_create_server"
                                         >Create Server
                                         </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="o_kanban_card_manage_settings row">
-                            <div role="menuitem" aria-haspopup="true" class="col-6">
-                                <ul
+                            <div class="o_kanban_card_manage_settings row">
+                                <div role="menuitem" aria-haspopup="true" class="col-6">
+                                    <ul
                                         class="oe_kanban_colorpicker"
                                         data-field="color"
                                         role="popup"
                                     />
                                 </div>
+                            </div>
                         </div>
-                    </div>
-                </t>
-                <t t-name="kanban-box">
-                    <div
+                    </t>
+                    <t t-name="kanban-box">
+                        <div
                             t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click"
                         >
-                        <div t-attf-class="o_kanban_card_header">
-                            <div
+                            <div t-attf-class="o_kanban_card_header">
+                                <div
                                     class="o_kanban_card_header_title d-flex justify-content-between mr-4"
                                 >
-                                <div class="o_primary">
-                                    <field name="name" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="oe_kanban_content">
-                            <div class="oe_kanban_global_click">
-                                <div class="col-12 pt8 o_kanban_primary_right">
-                                    <t t-if="record.server_count.value &gt; 0">
-                                        <div>
-                                            <strong>Servers: </strong>
-                                            <span>
-                                                <t t-esc="record.server_count.value" />
-                                            </span>
-                                        </div>
-                                    </t>
-                                    <t t-if="record.os_id.raw_value">
-                                        <div>
-                                            <strong>Operating System: </strong>
-                                            <field name="os_id" />
-                                        </div>
-                                    </t>
-                                </div>
-                            </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
+                                    <div class="o_primary">
+                                        <field name="name" />
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="oe_kanban_content">
+                                <div class="oe_kanban_global_click">
+                                    <div class="col-12 pt8 o_kanban_primary_right">
+                                        <t t-if="record.server_count.value &gt; 0">
+                                            <div>
+                                                <strong>Servers: </strong>
+                                                <span>
+                                                    <t
+                                                        t-esc="record.server_count.value"
+                                                    />
+                                                </span>
+                                            </div>
+                                        </t>
+                                        <t t-if="record.os_id.raw_value">
+                                            <div>
+                                                <strong>Operating System: </strong>
+                                                <field name="os_id" />
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left" />
                                     <div class="oe_kanban_bottom_right">
                                         <div invisible="not tag_ids">
                                             <field name="color" invisible="1" />
@@ -139,7 +139,7 @@
                             />
                         </button>
                     </div>
-                     <widget
+                    <widget
                         name="web_ribbon"
                         title="Archived"
                         bg_color="bg-danger"
@@ -181,7 +181,8 @@
                                     <field
                                         name="ssh_key_id"
                                         context="{'default_key_type': 'k', 'secrets_only': True}"
-                                    />                                </group>
+                                    />
+                                </group>
                                 <field name="note" placeholder="Put your notes here" />
                             </group>
                         </page>
@@ -358,7 +359,6 @@
         </field>
     </record>
 
-
     <record id="action_cx_tower_server_template" model="ir.actions.act_window">
         <field name="name">Server Templates</field>
         <field name="type">ir.actions.act_window</field>
@@ -366,5 +366,4 @@
         <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="cx_tower_server_template_search_view" />
     </record>
-
 </odoo>
