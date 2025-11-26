@@ -114,7 +114,7 @@ class CxTowerFileTemplate(models.Model):
         Override to update files related with the templates
         """
         result = super().write(vals)
-        if any([field_ in vals for field_ in TEMPLATE_FILE_FIELD_MAPPING]):
+        if any(field_ in vals for field_ in TEMPLATE_FILE_FIELD_MAPPING):
             for file in self.mapped("file_ids"):
                 file.write(file._get_file_values_from_related_template())
         return result

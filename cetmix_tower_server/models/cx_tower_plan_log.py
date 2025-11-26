@@ -29,6 +29,7 @@ class CxTowerPlanLog(models.Model):
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         readonly=True,
+        index=True,
         ondelete="cascade",
     )
     jet_template_install_id = fields.Many2one(
@@ -36,11 +37,13 @@ class CxTowerPlanLog(models.Model):
         comodel_name="cx.tower.jet.template.install",
         readonly=True,
         ondelete="cascade",
+        index=True,
         help="Jet Template Install/Uninstall record being run. ",
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
         readonly=True,
+        index=True,
         ondelete="cascade",
     )
 
@@ -341,7 +344,7 @@ class CxTowerPlanLog(models.Model):
             return
 
         # Jet Template action: only if it's not a sub-plan
-        # NB: Jet Template is always set automatically even
+        # NB: Jet Template is always set automatically even if
         # it's not provided explicitly when the plan is run.
         if not self.jet_template_id or self.parent_flight_plan_log_id:
             return

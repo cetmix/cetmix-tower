@@ -136,6 +136,14 @@ class CxTowerJetRequest(models.Model):
 
         # Step 1. Use the existing jet if provided explicitly
         if jet:
+            if jet.server_id != server:
+                raise ValidationError(
+                    _(
+                        "Jet %(jet)s is not on server %(server)s",
+                        jet=jet.name,
+                        server=server.name,
+                    )
+                )
             if jet.state_id == state and not jet._is_busy():
                 _logger.info(
                     "Jet %s is available and not busy, finalizing request", jet.name
