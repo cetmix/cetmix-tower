@@ -395,6 +395,7 @@ class CxTowerJet(models.Model):
         if self.state_id == target_state and from_transition:
             self.target_state_id = None
             self._finalize_transition(failed=False)
+            return
 
         # Set target state if not already set
         if not self.target_state_id:

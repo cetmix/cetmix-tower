@@ -449,7 +449,7 @@ class CxTowerFile(models.Model):
                 )
 
             # Calling `_process` directly to get server version of a `tower` file
-            res = self.with_context(is_server_code_version_process=True)._process(
+            res = file.with_context(is_server_code_version_process=True)._process(
                 "download"
             )
             # Type check because _process method could return
@@ -512,7 +512,7 @@ class CxTowerFile(models.Model):
         Check the values and reformat if necessary
         """
         if "server_dir" in values:
-            server_dir = values["server_dir"].strip()
+            server_dir = values.get("server_dir", "").strip()
             if server_dir.endswith("/") and server_dir != "/":
                 server_dir = server_dir[:-1]
             values.update(
@@ -740,7 +740,7 @@ class CxTowerFile(models.Model):
         """
         for file in self:
             vals = {}
-            if file.source == "server" and file.auto_sync:
+            if file.source == "server" and file.auto_sync and file.auto_sync_interval:
                 interval, interval_type = file.auto_sync_interval.split("-")
                 vals.update(
                     {

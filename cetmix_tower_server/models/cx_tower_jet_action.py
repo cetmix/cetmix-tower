@@ -18,6 +18,7 @@ class CxTowerJetAction(models.Model):
         comodel_name="cx.tower.jet.template",
         string="Jet Template",
         help="Jet template that this action belongs to",
+        ondelete="cascade",
     )
     color = fields.Integer(related="state_to_id.color", readonly=True)
     note = fields.Text()
@@ -27,6 +28,7 @@ class CxTowerJetAction(models.Model):
         comodel_name="cx.tower.jet.state",
         string="From State",
         help="Source state for this transition. Leave blank for an initial state",
+        ondelete="restrict",
     )
 
     state_transit_id = fields.Many2one(
@@ -34,18 +36,21 @@ class CxTowerJetAction(models.Model):
         string="Transit State",
         required=True,
         help="Intermediate state during the transition",
+        ondelete="restrict",
     )
 
     state_to_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
         string="To State",
         help="Destination state for this transition. Leave blank for a final state",
+        ondelete="restrict",
     )
 
     state_error_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
         string="Error State",
         help="State to transition to if an error occurs",
+        ondelete="restrict",
     )
 
     plan_id = fields.Many2one(
@@ -53,3 +58,5 @@ class CxTowerJetAction(models.Model):
         comodel_name="cx.tower.plan",
         help="Flight plan to execute when this action is triggered",
     )
+
+    # TODO: ensure that all actions belong to the same jet template

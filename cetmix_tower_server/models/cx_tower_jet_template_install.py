@@ -109,10 +109,10 @@ class CxTowerJetTemplateInstall(models.Model):
         self.env.user.notify_info(
             message=_(
                 "%(timestamp)s<br/>" "Installing template on server '%(server_name)s'",
-                server_name=self.server_id.name,
+                server_name=server.name,
                 timestamp=fields.Datetime.now(),
             ),
-            title=self.jet_template_id.name,  # pylint: disable=no-member
+            title=template.name,
             sticky=False,  # explicitly set to False to avoid blocking the user's screen
             action=action,
         )

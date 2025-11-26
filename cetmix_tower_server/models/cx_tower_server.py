@@ -193,7 +193,7 @@ class CxTowerServer(models.Model):
     )
     file_count = fields.Integer(
         "Total Files",
-        compute="_compute_file_count",
+        compute="_compute_counters",
     )
 
     # ---- Server logs
@@ -227,7 +227,7 @@ class CxTowerServer(models.Model):
         string="Installed Jet Templates",
     )
     jet_template_count = fields.Integer(
-        compute="_compute_jet_template_count",
+        compute="_compute_counters",
     )
     jet_ids = fields.One2many(
         comodel_name="cx.tower.jet",
@@ -235,7 +235,7 @@ class CxTowerServer(models.Model):
         string="Jets",
     )
     jet_count = fields.Integer(
-        compute="_compute_jet_count",
+        compute="_compute_counters",
     )
 
     # ---- Access. Add relation for mixin fields
@@ -299,20 +299,22 @@ class CxTowerServer(models.Model):
         ]
 
     # ---- Computed fields
-    def _compute_jet_template_count(self):
-        """Compute total jet templates installed on server"""
+    def _compute_counters(self):
+        """
+        Compute total jet templates installed on server
+        Note: as numbers depend on the records user has access to,
+        we don't store the values.
+        @depends is not needed because they are displayed in the views only
+        or computed when accessed explicitly.
+        """
         for server in self:
-            server.jet_template_count = len(server.jet_template_ids)
-
-    def _compute_jet_count(self):
-        """Compute total jets installed on server"""
-        for server in self:
-            server.jet_count = len(server.jet_ids)
-
-    def _compute_file_count(self):
-        """Compute total server files"""
-        for server in self:
-            server.file_count = len(server.file_ids)
+            server.update(
+                {
+                    "jet_template_count": len(server.jet_template_ids),
+                    "jet_count": len(server.jet_ids),
+                    "file_count": len(server.file_ids),
+                }
+            )
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
     def _constraint_ssh_settings(self):
@@ -478,6 +480,7 @@ class CxTowerServer(models.Model):
         """
         Open current server command log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_command_log"
         )
@@ -488,6 +491,7 @@ class CxTowerServer(models.Model):
         """
         Open current server flightplan log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_plan_log"
         )

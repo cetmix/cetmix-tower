@@ -54,3 +54,6 @@ class CxTowerJetActionWizard(models.TransientModel):
             if wizard.jet_ids and wizard.action_id:
                 for jet in wizard.jet_ids:
                     jet._trigger_action(wizard.action_id)
+        return {
+            "type": "ir.actions.act_window_close",
+        }

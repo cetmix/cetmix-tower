@@ -490,15 +490,15 @@ class TowerVariable(models.Model):
         if jet_template:
             return jet_template_value_char or server_value_char or global_value_char
 
-        # 2.3. Server
+        # 2.4. Server
         if server:
             return server_value_char or global_value_char
 
-        # 2.3. Plan Line Action
+        # 2.5. Plan Line Action
         if plan_line_action:
             return plan_line_action_value_char
 
-        # 2.4. Global
+        # 2.6. Global
         return global_value_char
 
     @api.model

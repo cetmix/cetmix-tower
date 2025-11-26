@@ -25,7 +25,13 @@ class CxTowerServerLog(models.Model):
     NO_LOG_FETCHED_MESSAGE = _("<log is empty>")
 
     active = fields.Boolean(default=True)
-    server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
+    server_id = fields.Many2one(
+        "cx.tower.server",
+        ondelete="cascade",
+        compute="_compute_server_id",
+        store=True,
+        readonly=False,
+    )
     log_type = fields.Selection(
         selection=lambda self: self._selection_log_type(),
         required=True,
@@ -76,6 +82,12 @@ class CxTowerServerLog(models.Model):
         "cx.tower.jet",
         ondelete="cascade",
     )
+
+    @api.depends("jet_id")
+    def _compute_server_id(self):
+        for record in self:
+            if not record.server_id and record.jet_id:
+                record.server_id = record.jet_id.server_id.id
 
     def _selection_log_type(self):
         """Actions that can be run by a command.
