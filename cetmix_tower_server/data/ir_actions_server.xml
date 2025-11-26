@@ -39,7 +39,8 @@
     <record id="action_cx_cetmix_tower_partner" model="ir.actions.act_window">
         <field name="name">Partners</field>
         <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_partners</field>
         <field name="res_model">res.partner</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

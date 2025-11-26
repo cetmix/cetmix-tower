@@ -25,7 +25,6 @@ class CxTowerReferenceMixin(models.AbstractModel):
     name = fields.Char(required=True, index="trigram")
     reference = fields.Char(
         index=True,
-        unaccent=False,
         help="Can contain English letters, digits and '_'. Leave blank to autogenerate",
     )
 

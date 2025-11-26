@@ -769,8 +769,7 @@ class CxTowerServer(models.Model):
 
         # Check access before getting host key
         # This is needed to avoid possible access violations
-        self.check_access_rights("read")
-        self.check_access_rule("read")
+        self.check_access("read")
 
         try:
             # Skip host key verification to obtain the server's real host key.
@@ -1019,15 +1018,7 @@ class CxTowerServer(models.Model):
             Bool: True if access is granted, False otherwise
         """
         # Check access rights first
-        has_write_access = self.check_access_rights(operation, raise_exception=False)
-
-        # Check access rule
-        if has_write_access:
-            try:
-                self.check_access_rule(operation)
-            except UserError:
-                has_write_access = False
-        return has_write_access
+        return self.has_access(operation)
 
     def run_flight_plan(self, flight_plan, **kwargs):
         """

@@ -39,7 +39,7 @@
                             invisible="key_type != 's'"
                         >
                             <field name="value_ids">
-                                <tree
+                                <list
                                     editable="bottom"
                                     decoration-info="is_global == True"
                                 >
@@ -47,7 +47,7 @@
                                     <field name="partner_id" />
                                     <field name="server_id" />
                                     <field name="secret_value" />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="is_global" />
@@ -66,9 +66,9 @@
                             invisible="key_type != 'k'"
                         >
                             <field name="server_ssh_ids">
-                                <tree>
+                                <list>
                                     <field name="name" />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="name" />
@@ -132,20 +132,21 @@
     </record>
 
     <record id="cx_tower_key_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.key.view.tree</field>
+        <field name="name">cx.tower.key.view.list</field>
         <field name="model">cx.tower.key</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="key_type" />
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_cx_tower_key" model="ir.actions.act_window">
         <field name="name">SSH Key / Secret</field>
         <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_keys</field>
         <field name="res_model">cx.tower.key</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

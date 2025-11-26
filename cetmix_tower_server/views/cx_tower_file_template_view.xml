@@ -96,10 +96,10 @@
     </record>
 
     <record id="cx_tower_file_template_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.file.template.view.tree</field>
+        <field name="name">cx.tower.file.template.view.list</field>
         <field name="model">cx.tower.file.template</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="reference" optional="hide" />
                 <field name="file_type" optional="show" />
@@ -112,7 +112,7 @@
                     options="{'color_field': 'color'}"
                     optional="show"
                 />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -154,7 +154,8 @@
     <record id="cx_tower_file_template_action" model="ir.actions.act_window">
         <field name="name">Templates</field>
         <field name="res_model">cx.tower.file.template</field>
-        <field name="view_mode">tree,form</field>
+        <field name="path">cetmix_tower_file_templates</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="cx_tower_file_template_view_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

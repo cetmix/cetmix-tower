@@ -27,14 +27,14 @@
                             groups="cetmix_tower_server.group_manager"
                         >
                             <field name="secret_ids" string="">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field
                                         name="key_id"
                                         context="{'default_key_type': 's', 'secrets_only': True}"
                                     />
                                     <field name="server_id" />
                                     <field name="secret_value" />
-                                </tree>
+                                </list>
                             </field>
                         </group>
                     </group>

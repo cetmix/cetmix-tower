@@ -122,7 +122,7 @@ class CxTowerPlanRunWizard(models.TransientModel):
                 "type": "ir.actions.act_window",
                 "name": _("Plan Log"),
                 "res_model": "cx.tower.plan.log",
-                "view_mode": "tree,form",
+                "view_mode": "list,form",
                 "target": "current",
                 "context": {"search_default_label": plan_label},
             }

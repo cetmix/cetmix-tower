@@ -33,7 +33,7 @@
                             string="Set Custom Values"
                             help="Custom values will be available in the current flight plan context only. They can be used in Python commands and line conditions"
                         >
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="sequence" widget="handle" />
                                 <field name="reference" optional="hide" />
                                 <field name="variable_reference" optional="hide" />
@@ -49,7 +49,7 @@
                                     readonly="variable_type == 's'"
                                 />
                                 <field name="access_level" optional="show" />
-                            </tree>
+                            </list>
                             <form>
                                 <group>
                                     <field name="variable_id" />

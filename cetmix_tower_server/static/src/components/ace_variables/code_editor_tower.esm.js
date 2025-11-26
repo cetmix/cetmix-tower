@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import {useEffect, useState} from "@odoo/owl";
+import {onWillDestroy, useEffect, useState} from "@odoo/owl";
 import {AutocompletePopup} from "./autocomplete_popup.esm";
 import {CodeEditor} from "@web/core/code_editor/code_editor";
 import {useService} from "@web/core/utils/hooks";
@@ -20,6 +20,7 @@ export class CodeEditorTower extends CodeEditor {
         this.inputListener = null;
         this.clickOutsideListener = null;
         this.inputTimeout = null;
+        this.clickOutsideTimeout = null;
         this.variables = [];
         this.secrets = [];
 
@@ -54,6 +55,19 @@ export class CodeEditorTower extends CodeEditor {
             },
             () => [this.editorRef.el]
         );
+
+        onWillDestroy(() => {
+            if (this.inputTimeout) {
+                clearTimeout(this.inputTimeout);
+            }
+            if (this.clickOutsideTimeout) {
+                clearTimeout(this.clickOutsideTimeout);
+            }
+            if (this.aceEditor && this.inputListener) {
+                this.aceEditor.getSession().off("change", this.inputListener);
+            }
+            this.hideAutocompletePopup();
+        });
     }
 
     async loadVariables() {
@@ -316,8 +330,13 @@ export class CodeEditorTower extends CodeEditor {
             }
         };
 
-        setTimeout(() => {
-            document.addEventListener("click", this.clickOutsideListener, true);
+        // Store timeout ID to prevent race condition
+        this.clickOutsideTimeout = setTimeout(() => {
+            // Guard against race condition: only register if popup is still shown
+            if (this.state.showPopup) {
+                document.addEventListener("click", this.clickOutsideListener, true);
+            }
+            this.clickOutsideTimeout = null;
         }, 0);
     }
 
@@ -325,6 +344,12 @@ export class CodeEditorTower extends CodeEditor {
      * Hide the autocomplete popup and clean up event listeners
      */
     hideAutocompletePopup() {
+        // Clear pending timeout to prevent race condition
+        if (this.clickOutsideTimeout) {
+            clearTimeout(this.clickOutsideTimeout);
+            this.clickOutsideTimeout = null;
+        }
+
         // Remove click outside listener
         if (this.clickOutsideListener) {
             document.removeEventListener("click", this.clickOutsideListener, true);
@@ -332,7 +357,7 @@ export class CodeEditorTower extends CodeEditor {
         }
 
         this.state.showPopup = false;
-        this.state.popupVariables = [];
+        this.state.popupItems = [];
         this.currentEditor = null;
         this.state.selectedIndex = 0;
 
@@ -485,19 +510,5 @@ export class CodeEditorTower extends CodeEditor {
 
         this.hideAutocompletePopup();
         editor.focus();
-    }
-
-    /**
-     * Clean up resources when component is destroyed
-     */
-    destroy() {
-        if (this.inputTimeout) {
-            clearTimeout(this.inputTimeout);
-        }
-        if (this.aceEditor && this.inputListener) {
-            this.aceEditor.getSession().off("change", this.inputListener);
-        }
-        this.hideAutocompletePopup();
-        super.destroy();
     }
 }

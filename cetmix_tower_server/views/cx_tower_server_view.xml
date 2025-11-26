@@ -14,7 +14,7 @@
                 <field name="ip_v6_address" />
                 <field name="color" />
                 <templates>
-                    <t t-name="kanban-menu">
+                    <t t-name="menu">
                         <div class="container">
                             <div class="row">
                                 <div class="col-8 o_kanban_card_manage_section">
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                     </t>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div
                             t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
                         >
@@ -120,10 +120,10 @@
     </record>
 
     <record id="cx_tower_server_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.server.view.tree</field>
+        <field name="name">cx.tower.server.view.list</field>
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="reference" optional="hide" />
                 <field name="partner_id" optional="show" />
@@ -142,7 +142,7 @@
                     decoration-success="status == '4'"
                     decoration-warning="status in ['3','5','6']"
                 />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -236,7 +236,7 @@
                     <notebook>
                         <page name="shortcuts" string="Shortcuts">
                             <field name="shortcut_ids">
-                                <tree create="0" edit="0">
+                                <list create="0" edit="0">
                                     <field name="sequence" widget="handle" />
                                     <field name="name" />
                                     <field name="action" optional="hide" />
@@ -248,7 +248,7 @@
                                         title="Trigger shortcut"
                                         confirm="Are you sure?"
                                     />
-                                </tree>
+                                </list>
                                 <form>
                                     <field name="note" readonly="1" />
                                 </form>
@@ -326,7 +326,7 @@
                         </page>
                         <page name="configuration" string="Configuration">
                             <field name="variable_value_ids" order="variable_reference">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field
                                         name="variable_reference"
@@ -346,7 +346,7 @@
                                     />
                                     <field name="access_level" optional="show" />
                                     <field name="required" optional="show" />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="variable_id" />
@@ -396,13 +396,13 @@
                             groups="cetmix_tower_server.group_manager"
                         >
                             <field name="secret_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field
                                         name="key_id"
                                         context="{'default_key_type': 's', 'secrets_only': True}"
                                     />
                                     <field name="secret_value" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page name="logs" string="Server Logs">
@@ -413,7 +413,7 @@
                                 class="oe_highlight"
                             />
                             <field name="server_log_ids">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <button
                                         type="object"
@@ -421,7 +421,7 @@
                                         name="action_open_log"
                                         title="Open full form"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page
@@ -430,7 +430,7 @@
                             groups="cetmix_tower_server.group_manager"
                         >
                             <field name="scheduled_task_ids">
-                                <tree create="0" edit="0">
+                                <list create="0" edit="0">
                                     <field name="sequence" widget="handle" />
                                     <field name="display_name" />
                                     <field name="action" />
@@ -444,16 +444,12 @@
                                         title="Run Manually"
                                         confirm="Are you sure?"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -515,8 +511,9 @@
     <record id="action_cx_tower_server" model="ir.actions.act_window">
         <field name="name">Servers</field>
         <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_servers</field>
         <field name="res_model">cx.tower.server</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="cx_tower_server_search_view" />
     </record>
 </odoo>

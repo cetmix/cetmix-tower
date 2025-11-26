@@ -131,20 +131,16 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
 
     <record id="cx_tower_file_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.file.view.tree</field>
+        <field name="name">cx.tower.file.view.list</field>
         <field name="model">cx.tower.file</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" optional="hide" />
                 <field name="rendered_name" optional="show" />
                 <field name="reference" optional="hide" />
@@ -160,7 +156,7 @@
                     groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     optional="hide"
                 />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -254,7 +250,8 @@
     <record id="cx_tower_file_action" model="ir.actions.act_window">
         <field name="name">Files</field>
         <field name="res_model">cx.tower.file</field>
-        <field name="view_mode">tree,form</field>
+        <field name="path">cetmix_tower_files</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="cx_tower_file_view_search" />
         <field name="domain">[]</field>
         <field name="context">{}</field>

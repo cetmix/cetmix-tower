@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import {Component, useEffect, useRef, useState} from "@odoo/owl";
+import {Component, onWillDestroy, useEffect, useRef, useState} from "@odoo/owl";
 
 class AutocompletePopup extends Component {
     /**
@@ -53,28 +53,11 @@ class AutocompletePopup extends Component {
             () => [this.props.position]
         );
 
-        // Cleanup effect to clear search timeout
-        useEffect(
-            () => {
-                return () => {
-                    if (this.searchTimeout) {
-                        clearTimeout(this.searchTimeout);
-                    }
-                };
-            },
-            () => []
-        );
-    }
-
-    /**
-     * Component destruction cleanup
-     * Clears any pending timeouts to prevent memory leaks
-     */
-    destroy() {
-        if (this.searchTimeout) {
-            clearTimeout(this.searchTimeout);
-        }
-        super.destroy();
+        onWillDestroy(() => {
+            if (this.searchTimeout) {
+                clearTimeout(this.searchTimeout);
+            }
+        });
     }
 
     /**
@@ -189,7 +172,6 @@ class AutocompletePopup extends Component {
             if (this.props.onSelectedIndexChange) {
                 this.props.onSelectedIndexChange(newIndex);
             }
-            this.scrollToSelected();
         } else if (ev.key === "ArrowUp") {
             ev.preventDefault();
             const len = this.filteredCommands.length;
@@ -199,7 +181,6 @@ class AutocompletePopup extends Component {
             if (this.props.onSelectedIndexChange) {
                 this.props.onSelectedIndexChange(newIndex);
             }
-            this.scrollToSelected();
         } else if (ev.key === "Enter") {
             ev.preventDefault();
             const idx = this.props.selectedIndex ?? -1;

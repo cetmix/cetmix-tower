@@ -354,7 +354,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             "type": "ir.actions.act_window",
             "name": _("Command Log"),
             "res_model": "cx.tower.command.log",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "target": "current",
             "context": {"search_default_label": log_label},
         }

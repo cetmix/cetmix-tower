@@ -41,7 +41,7 @@ class ResPartner(models.Model):
             "name": "Servers",
             "type": "ir.actions.act_window",
             "res_model": "cx.tower.server",
-            "view_mode": "kanban,tree,form",
+            "view_mode": "kanban,list,form",
             "domain": [("partner_id", "child_of", self.id)],
             "context": {"default_partner_id": self.id},
         }

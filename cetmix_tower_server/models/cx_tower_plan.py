@@ -199,8 +199,7 @@ class CxTowerPlan(models.Model):
 
         # Check plan access before running
         # This is needed to avoid possible access violations
-        self.check_access_rights("read")
-        self.check_access_rule("read")
+        self.check_access("read")
 
         # Access log as root to bypass access restrictions
         plan_log_obj = self.env["cx.tower.plan.log"].sudo()

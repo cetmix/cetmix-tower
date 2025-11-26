@@ -44,7 +44,7 @@
                         <field name="use_sudo" placeholder="No/Undefined" />
                     </group>
                     <field name="line_ids">
-                        <tree
+                        <list
                             editable="bottom"
                             decoration-danger="value_char == False and required == True"
                             decoration-info="value_char != False and required == True"
@@ -64,7 +64,7 @@
                                 required="variable_type == 'o' and required"
                             />
                             <field name="required" readonly="1" />
-                        </tree>
+                        </list>
                     </field>
                 </group>
                 <field

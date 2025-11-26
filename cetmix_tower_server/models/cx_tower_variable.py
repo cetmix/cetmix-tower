@@ -164,7 +164,7 @@ class TowerVariable(models.Model):
             "type": "ir.actions.act_window",
             "name": _("Variable Values"),
             "res_model": "cx.tower.variable.value",
-            "views": [[False, "tree"]],
+            "views": [[False, "list"]],
             "target": "current",
             "context": context,
             "domain": [("variable_id", "=", self.id)],
@@ -235,7 +235,7 @@ class TowerVariable(models.Model):
             "type": "ir.actions.act_window",
             "name": _("Variable Values"),
             "res_model": "cx.tower.variable.value",
-            "views": [[False, "tree"]],
+            "views": [[False, "list"]],
             "target": "current",
             "domain": [("variable_ids", "in", self.ids)],
         }

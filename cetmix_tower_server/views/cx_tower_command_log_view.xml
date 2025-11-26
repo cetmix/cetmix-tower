@@ -92,7 +92,7 @@
                             invisible="command_action != 'plan'"
                         >
                             <field name="triggered_plan_command_log_ids">
-                                <tree default_order="id asc" />
+                                <list default_order="id asc" />
                             </field>
                         </page>
                     </notebook>
@@ -102,10 +102,10 @@
     </record>
 
     <record id="cx_tower_command_log_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.command.log.view.tree</field>
+        <field name="name">cx.tower.command.log.view.list</field>
         <field name="model">cx.tower.command.log</field>
         <field name="arch" type="xml">
-            <tree
+            <list
                 decoration-danger="command_status not in [0, -205]"
                 decoration-info="is_running == True"
                 decoration-muted="command_status == -205"
@@ -118,7 +118,7 @@
                 <field name="command_action" optional="show" />
                 <field name="command_status" optional="show" />
                 <field name="is_running" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -212,8 +212,9 @@
     <record id="action_cx_tower_command_log" model="ir.actions.act_window">
         <field name="name">Command Log</field>
         <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_command_logs</field>
         <field name="res_model">cx.tower.command.log</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{}</field>
     </record>
 </odoo>

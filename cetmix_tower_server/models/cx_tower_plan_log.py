@@ -17,7 +17,6 @@ class CxTowerPlanLog(models.Model):
     label = fields.Char(
         help="Custom label. Can be used for search/tracking",
         index="trigram",
-        unaccent=False,
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server", required=True, index=True, ondelete="cascade"

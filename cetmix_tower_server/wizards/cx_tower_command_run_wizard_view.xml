@@ -124,7 +124,7 @@
                             options="{'no_create': True, 'no_open': True}"
                             readonly="not have_access_to_server"
                         >
-                            <tree create="0" delete="0" editable="bottom">
+                            <list create="0" delete="0" editable="bottom">
                                 <field name="variable_id" force_save="1" />
                                 <field name="variable_type" column_invisible="True" />
                                 <field
@@ -137,7 +137,7 @@
                                     options="{'no_create': True}"
                                 />
                                 <field name="required" readonly="1" />
-                            </tree>
+                            </list>
                         </field>
                         <div
                             class="alert alert-danger"

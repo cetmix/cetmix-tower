@@ -108,13 +108,13 @@
                     <notebook>
                         <page string="Options" invisible="variable_type == 's'">
                             <field name="option_ids" widget="one2many">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field name="reference" optional="hide" />
                                     <field name="name" />
                                     <field name="value_char" />
                                     <field name="access_level" optional="show" />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="name" />
@@ -134,7 +134,7 @@
                         </page>
                         <page string="Values">
                             <field name="value_ids">
-                                <tree editable="top" decoration-bf="is_global==True">
+                                <list editable="top" decoration-bf="is_global==True">
                                     <field name="variable_id" column_invisible="1" />
                                     <field name="variable_type" column_invisible="1" />
                                     <field name="is_global" widget="boolean_toggle" />
@@ -152,7 +152,7 @@
                                         readonly="variable_type == 's'"
                                     />
                                     <field name="required" optional="show" />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="server_id" column_invisible="1" />
@@ -208,15 +208,15 @@
     </record>
 
     <record id="cx_tower_variable_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.variable.view.tree</field>
+        <field name="name">cx.tower.variable.view.list</field>
         <field name="model">cx.tower.variable</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="reference" optional="show" />
                 <field name="access_level" optional="show" />
                 <field name="value_ids_count" optional="show" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -237,7 +237,8 @@
     <record id="action_cx_tower_variable" model="ir.actions.act_window">
         <field name="name">Variables</field>
         <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_variables</field>
         <field name="res_model">cx.tower.variable</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>
