@@ -36,18 +36,18 @@
                         name="name"
                         placeholder="put the name here"
                         string="with the name"
-                        attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ('a', False))]}"
+                        attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ('a', False))], 'required': [('name_type', '=', 'm')]}"
                     />
                     <field
                         name="use_custom_variables"
                         widget="radio"
-                        attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ['m', False]), ('name', '=', False)]}"
+                        attrs="{'invisible': [('state_id', '=', False)]}"
                         string="that will use"
                     />
                 </group>
                 <field
                     name="line_ids"
-                    attrs="{'invisible': ['|', ('use_custom_variables', '=', 'n'), ('name_type', '=', 'm'), ('name', '=', False)]}"
+                    attrs="{'invisible': [('use_custom_variables', '=', 'n')]}"
                 >
                     <tree editable="bottom">
                         <field name="variable_id" />
@@ -70,7 +70,13 @@
                         confirm="New Jet will be created. Are you sure?"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', '|', ('jet_template_id', '=', False), ('server_id', '=', False), ('state_id', '=', False)]}"
+                        attrs="{'invisible': ['|', '|', '|', '|', '|',
+                        ('jet_template_id', '=', False),
+                        ('server_id', '=', False),
+                        ('state_id', '=', False),
+                        ('use_custom_variables', '=', False),
+                        ('name_type', '=', False),
+                        ('name_type', '=', 'm'), ('name', '=', False)]}"
                     />
                     <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
