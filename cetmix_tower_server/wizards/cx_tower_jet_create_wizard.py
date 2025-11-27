@@ -12,7 +12,8 @@ class CxTowerJetCreateWizard(models.TransientModel):
 
     name = fields.Char(help="The name of the jet")
     name_type = fields.Selection(
-        selection=[("m", "I will put myself"), ("a", "will be auto-generated")],
+        selection=[("a", "will be auto-generated"), ("m", "I will put myself")],
+        default="a",
         required=True,
     )
     jet_template_id = fields.Many2one(
