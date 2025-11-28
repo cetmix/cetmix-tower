@@ -73,7 +73,6 @@
         <field name="repo_id" ref="repo_demo_odoo_enterprise" />
         <field name="head_type">branch</field>
         <field name="head">19.0</field>
-        <field name="is_private" eval="True" />
     </record>
     <!-- Sample Private Gitlab -->
     <record id="source_demo_gitlab_private" model="cx.tower.git.source">
