@@ -11,7 +11,7 @@
             <xpath expr="//field[@name='condition']" position="before">
                 <group invisible="action != 'file_using_template'">
                     <field name="git_project_id" />
-                    <field name="is_make_copy" />
+                    <field name="is_make_copy" invisible="not git_project_id" />
                 </group>
             </xpath>
         </field>

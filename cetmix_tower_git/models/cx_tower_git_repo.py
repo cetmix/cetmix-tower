@@ -130,7 +130,7 @@ class CxTowerGitRepo(models.Model):
         ]
 
     # -- Computes
-    @api.depends("host", "owner_id", "repo")
+    @api.depends("host", "owner_id", "owner_id.name", "repo")
     def _compute_name(self):
         """
         Compute name in format: host/owner/name.
@@ -265,7 +265,7 @@ class CxTowerGitRepo(models.Model):
                 # Parse URL and update vals
                 parsed_url_dict = self._parse_url(url=url, raise_if_invalid=True)
                 vals.update(parsed_url_dict)
-            # Otherwise, add to create list
+            # Add to create list (with or without URL)
             vals_list_to_create.append(vals)
         # Compose the result
         if vals_list_to_create:

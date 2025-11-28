@@ -59,7 +59,7 @@ class CxTowerGitRepoOwner(models.Model):
                 }
             )
 
-    @ormcache("self.env.uid", "self.env.su", "name")
+    @ormcache("self.env.uid", "self.env.su", "name", "create")
     def _get_owner_id_by_name(self, name, create=False):
         """Get owner id by name.
 

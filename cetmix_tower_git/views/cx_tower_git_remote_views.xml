@@ -6,7 +6,7 @@
         <field name="name">cx.tower.git.remote.tree</field>
         <field name="model">cx.tower.git.remote</field>
         <field name="arch" type="xml">
-            <tree decoration-info="is_private == True">
+            <tree decoration-info="is_private">
                 <field
                     name="repo_id"
                     placeholder="select or enter a link"
@@ -57,6 +57,7 @@
                         />
                         <field
                             name="head"
+                            invisible="not head_type"
                             placeholder="Branch/PR/commit number or link"
                         />
                         <field name="create_uid" />

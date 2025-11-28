@@ -70,7 +70,9 @@ class CxTowerGitSource(models.Model):
     def create(self, vals_list):
         res = super().create(vals_list)
         # Update name
-        res._compose_name()
+        no_name = res.filtered(lambda s: not s.name)
+        if no_name:
+            no_name._compose_name()
         # Update related files and templates on create
         res._update_related_files_and_templates()
         return res
@@ -88,16 +90,17 @@ class CxTowerGitSource(models.Model):
         """
         Override to update related files and templates on unlink
         """
-        related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
-        related_templates = self.mapped("git_project_id").mapped(
-            "git_project_file_template_rel_ids"
-        )
+        projects = self.git_project_id
         res = super().unlink()
+
         # Update related files and templates on unlink
-        if related_files:
-            related_files._save_to_file()
-        if related_templates:
-            related_templates._save_to_file_template()
+        if projects:
+            file_relations = projects.git_project_rel_ids  # type: ignore
+            if file_relations:
+                file_relations._save_to_file()
+            template_relations = projects.git_project_file_template_rel_ids  # type: ignore
+            if template_relations:
+                template_relations._save_to_file_template()
         return res
 
     def _compose_name(self):
@@ -111,6 +114,9 @@ class CxTowerGitSource(models.Model):
                 continue
 
             remote_repo = remote.repo_id
+            if not remote_repo or not remote_repo.owner_id:
+                source.name = _("Empty Source")
+                continue
             source.name = f"{remote_repo.owner_id.name}/{remote_repo.repo}"
 
     def _update_related_files_and_templates(self):
