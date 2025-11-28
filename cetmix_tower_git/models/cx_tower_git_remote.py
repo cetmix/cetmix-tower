@@ -146,17 +146,17 @@ class CxTowerGitRemote(models.Model):
         """
         Override to update related files and templates on unlink
         """
-        related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
-        related_templates = self.mapped("git_project_id").mapped(
-            "git_project_file_template_rel_ids"
-        )
+        projects = self.git_project_id
         res = super().unlink()
 
         # Update related files and templates on unlink
-        if related_files:
-            related_files._save_to_file()
-        if related_templates:
-            related_templates._save_to_file_template()
+        if projects:
+            file_relations = projects.git_project_rel_ids  # type: ignore
+            if file_relations:
+                file_relations._save_to_file()
+            template_relations = projects.git_project_file_template_rel_ids  # type: ignore
+            if template_relations:
+                template_relations._save_to_file_template()
         return res
 
     def _sanitize_head(self, head):
@@ -296,7 +296,7 @@ class CxTowerGitRemote(models.Model):
 
     def _git_aggregator_prepare_url_bitbucket(self, url):
         """Prepare url for git aggregator
-        for private Github repo using https protocol.
+        for private Bitbucket repo using https protocol.
 
         Args:
             url (Char): URL to prepare

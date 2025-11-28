@@ -63,7 +63,7 @@
                             <field name="remote_ids">
                                 <tree
                                     decoration-muted="not enabled"
-                                    decoration-info="is_private == True"
+                                    decoration-info="is_private"
                                 >
                                     <field name="sequence" widget="handle" />
                                     <field name="repo_id" />
