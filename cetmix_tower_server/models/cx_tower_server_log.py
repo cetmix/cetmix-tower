@@ -136,7 +136,8 @@ class CxTowerServerLog(models.Model):
         Returns:
             Text: formatted log text
         """
-        return log_text
+        # Remove the null bytes
+        return log_text.replace("\x00", "")
 
     def _get_log_from_file(self):
         """Get log from a file.
@@ -147,8 +148,10 @@ class CxTowerServerLog(models.Model):
         """
         self.ensure_one()
         if self.file_id.source == "server":
+            self.file_id.download(raise_error=False)
             return self.file_id.code
         if self.file_id.source == "tower":
+            self.file_id.action_get_current_server_code()
             return self.file_id.code_on_server
 
     def _get_log_from_command(self):
