@@ -151,7 +151,9 @@ class CxTowerServerLog(models.Model):
             self.file_id.download(raise_error=False)
             return self.file_id.code
         if self.file_id.source == "tower":
-            self.file_id.action_get_current_server_code()
+            result = self.file_id.action_get_current_server_code()
+            if isinstance(result, dict):
+                return
             return self.file_id.code_on_server
 
     def _get_log_from_command(self):
