@@ -2,15 +2,16 @@
 <odoo>
 
     <!-- User Read Access -->
-    <!-- Access level is "User" or user is added in "Users" -->
+    <!-- Access level is "User" or user is added in "Users" or user is added in "Users" of any Jets created from the template -->
     <record id="rule_cx_tower_jet_template_user_read" model="ir.rule">
         <field name="name">Jet Template: User Read Access</field>
         <field name="model_id" ref="model_cx_tower_jet_template" />
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
         <field name="domain_force">
-            ["|",
+            ["|","|",
                 ("access_level", "=", "1"),
-                ("user_ids", "in", [user.id])
+                ("user_ids", "in", [user.id]),
+                ("jet_ids.user_ids", "in", [user.id])
             ]
         </field>
         <field name="perm_read" eval="1" />

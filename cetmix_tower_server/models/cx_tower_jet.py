@@ -98,6 +98,12 @@ class CxTowerJet(models.Model):
         comodel_name="cx.tower.jet.state",
         string="Current State",
         tracking=True,
+        domain="[('id', 'in', jet_template_state_ids)]",
+    )
+    jet_template_state_ids = fields.One2many(
+        comodel_name="cx.tower.jet.state",
+        compute="_compute_available_states",
+        compute_sudo=True,
     )
     target_state_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
@@ -159,6 +165,17 @@ class CxTowerJet(models.Model):
                 [("server_ids", "in", [jet.server_id.id])] if jet.server_id else []
             )
 
+    @api.depends("jet_template_id", "jet_template_id.action_ids")
+    def _compute_available_states(self):
+        for jet in self:
+            actions = jet.jet_template_id.action_ids
+            if not actions:
+                jet.jet_template_state_ids = False
+                continue
+            jet.jet_template_state_ids = (
+                actions.state_from_id | actions.state_transit_id | actions.state_to_id
+            )
+
     @api.depends(
         "state_id",
         "jet_template_id",
@@ -178,7 +195,7 @@ class CxTowerJet(models.Model):
             actions = jet.jet_template_id.action_ids.filtered(
                 lambda a, state=jet.state_id: a.state_from_id == state
             )
-            jet.available_action_ids = actions
+            jet.update({"available_action_ids": actions})
 
     @api.depends("jet_template_id", "jet_template_id.template_requires_ids")
     def _compute_jet_requires_ids(self):
@@ -372,6 +389,9 @@ class CxTowerJet(models.Model):
 
         # TODO: put action in the queue if jet is busy
 
+        # Action properties must be accessible despite of the user group
+        action = action.sudo()
+
         # Ensure the action is available for this jet
         if action.id not in self.available_action_ids.ids:
             raise ValidationError(
@@ -393,13 +413,13 @@ class CxTowerJet(models.Model):
         # is the same as the current state.
         # Eg when a jet is restarted.
         if self.state_id == target_state and from_transition:
-            self.target_state_id = None
+            self.sudo().write({"target_state_id": None})
             self._finalize_transition(failed=False)
             return
 
         # Set target state if not already set
         if not self.target_state_id:
-            self.target_state_id = target_state
+            self.sudo().write({"target_state_id": target_state})
 
         # Check if all dependencies are satisfied
         # if starting from an undefined state.
@@ -409,7 +429,7 @@ class CxTowerJet(models.Model):
             # when the dependencies are satisfied
             return
 
-        self.write(
+        self.sudo().write(
             {
                 "state_id": transit_state,
                 "current_action_id": action.id,
@@ -431,7 +451,7 @@ class CxTowerJet(models.Model):
 
         if action.plan_id:
             # Run the flight plan
-            self.server_id.run_flight_plan(
+            self.server_id.sudo().run_flight_plan(
                 flight_plan=action.plan_id,
                 jet=self,
             )
@@ -450,7 +470,7 @@ class CxTowerJet(models.Model):
         if target_state == self.target_state_id:
             final_vals["target_state_id"] = None
 
-        self.write(final_vals)
+        self.sudo().write(final_vals)
 
         # Continue the chain of actions if the final state is not reached yet
         if self.target_state_id:
@@ -505,7 +525,7 @@ class CxTowerJet(models.Model):
 
         # Set the target state if not already set
         if not self.target_state_id:
-            self.write(
+            self.sudo().write(
                 {
                     "target_state_id": state,
                 }
@@ -565,7 +585,7 @@ class CxTowerJet(models.Model):
             )
             transition_failed = True
 
-        self.write(vals)
+        self.sudo().write(vals)
 
         # Continue the chain of actions if the final state is not reached yet
         if self.target_state_id:
@@ -592,7 +612,8 @@ class CxTowerJet(models.Model):
         command_log = self.current_command_log_id
         if command_log:
             # Reset the current command log id
-            self.current_command_log_id = False
+            # Using sudo to bypass write access rules
+            self.sudo().write({"current_command_log_id": False})
 
             # Prepare the command log finish values
             if failed:
@@ -631,7 +652,8 @@ class CxTowerJet(models.Model):
         self.ensure_one()
 
         # Save the request
-        self.served_jet_request_id = jet_request
+        # Using sudo to bypass write access rules
+        self.sudo().write({"served_jet_request_id": jet_request.id})
 
         # State is reached, finalize the request
         if self.state_id == jet_request.state_requested_id:
@@ -662,7 +684,8 @@ class CxTowerJet(models.Model):
                 self._bring_to_state(self.target_state_id)
         else:
             # Stop transition if the request failed
-            self.target_state_id = False
+            # Using sudo to bypass write access rules
+            self.sudo().write({"target_state_id": False})
             # Mark served jet request as failed
             if self.served_jet_request_id:
                 self.served_jet_request_id._finalize(failed=True)
