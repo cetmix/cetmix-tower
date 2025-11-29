@@ -148,6 +148,8 @@
         <search string="Search Flight Plan Log">
             <field name="plan_id" />
             <field name="server_id" />
+            <field name="jet_id" />
+            <field name="jet_template_id" />
             <field name="label" />
             <filter
                     string="Success"

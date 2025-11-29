@@ -7,15 +7,15 @@
         <field name="model">cx.tower.jet</field>
         <field name="arch" type="xml">
             <kanban
-                default_group_by="state_id"
                 class="o_kanban_small_column"
                 quick_create="false"
-                records_draggable="1"
+                records_draggable="0"
                 group_create="false"
             >
                 <field name="name" />
                 <field name="reference" />
                 <field name="jet_template_id" />
+                <field name="jet_template_state_ids" />
                 <field name="server_id" />
                 <field name="state_id" />
                 <field name="url" />
@@ -38,7 +38,10 @@
                             </div>
                             <!-- Main content -->
                             <div class="o_kanban_record_body">
-                                <div class="row">
+                                <div
+                                    class="row"
+                                    groups="cetmix_tower_server.group_manager"
+                                >
                                     <div class="col-6">
                                         <strong>Template:</strong>
                                     </div>
@@ -97,9 +100,14 @@
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="reference" optional="hide" />
-                <field name="jet_template_id" optional="show" />
+                <field
+                    name="jet_template_id"
+                    optional="show"
+                    groups="cetmix_tower_server.group_manager"
+                />
                 <field name="server_id" />
                 <field name="state_id" />
+                <field name="jet_template_state_ids" invisible="1" />
             </tree>
         </field>
     </record>
@@ -124,6 +132,7 @@
                         widget="statusbar"
                         options="{'clickable': '1'}"
                     />
+                    <field name="jet_template_state_ids" invisible="1" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -300,18 +309,18 @@
                                 <field
                                     name="user_ids"
                                     widget="many2many_tags"
-                                    placeholder="users who can access this server"
+                                    placeholder="users who can access this jet"
                                     options="{'no_create': True}"
                                 />
                                 <field
                                     name="manager_ids"
                                     widget="many2many_tags"
-                                    placeholder="managers who can modify this server"
+                                    placeholder="managers who can modify this jet"
                                     options="{'no_create': True}"
                                 />
                             </group>
                         </page>
-                        <page name="logs" string="Server Logs">
+                        <page name="logs" string="Jet Logs">
                             <field name="server_log_ids">
                                 <tree>
                                     <field name="name" />
@@ -377,7 +386,6 @@
         <field name="name">Jets</field>
         <field name="res_model">cx.tower.jet</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'group_by': 'state_id'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first Jet!

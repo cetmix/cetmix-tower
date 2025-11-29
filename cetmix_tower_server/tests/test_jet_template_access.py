@@ -37,8 +37,8 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "User Level Template",
                 "reference": "user_level_template",
                 "access_level": "1",  # User level
-                "user_ids": [(5, 0, 0)],  # No users initially
-                "manager_ids": [(5, 0, 0)],  # No managers initially
+                "user_ids": False,  # No users initially
+                "manager_ids": False,  # No managers initially
             }
         )
 
@@ -58,7 +58,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "reference": "user_added_template",
                 "access_level": "2",  # Manager level - normally not accessible
                 "user_ids": [(4, self.user.id)],  # User added
-                "manager_ids": [(5, 0, 0)],
+                "manager_ids": False,
             }
         )
 
@@ -70,25 +70,77 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
             "User should be able to read record when added to user_ids",
         )
 
+    def test_user_read_access_jet_user_ids(self):
+        """
+        Test User: Read access when user is added in "Users" of any Jets
+        created from the template
+        """
+        # Create template with Manager level - normally not accessible
+        # and user NOT in template's user_ids
+        template = self.JetTemplate.create(
+            {
+                "name": "Template with Jet Users",
+                "reference": "template_with_jet_users",
+                "access_level": "2",  # Manager level - normally not accessible
+                "user_ids": False,  # No users in template
+                "manager_ids": False,
+            }
+        )
+
+        # User should NOT be able to read initially
+        records = self.JetTemplate.with_user(self.user).search(
+            [("id", "=", template.id)]
+        )
+        self.assertEqual(
+            len(records),
+            0,
+            "User should not be able to read template without access",
+        )
+
+        # Create a Jet from this template
+        # Need to add server to template's server_ids for jet creation
+        template.write({"server_ids": [(4, self.server_test_1.id)]})
+        self._create_jet(
+            name="Test Jet from Template",
+            reference="test_jet_from_template",
+            template=template,
+            server=self.server_test_1,
+            user_ids=[(4, self.user.id)],  # Add user to Jet's user_ids
+        )
+
+        # User should now be able to read the template
+        records = self.JetTemplate.with_user(self.user).search(
+            [("id", "=", template.id)]
+        )
+        self.assertEqual(
+            len(records),
+            1,
+            "User should be able to read template when added to Jet's user_ids",
+        )
+
     def test_user_read_no_access(self):
         """
-        Test User: No read access when access_level is higher
-        and user not in user_ids
+        Test User: No read access when access_level is higher,
+        user not in template's user_ids, and user not in any Jet's user_ids
         """
         record = self.JetTemplate.create(
             {
                 "name": "Manager Level Template",
                 "reference": "manager_level_template",
                 "access_level": "2",  # Manager level
-                "user_ids": [(5, 0, 0)],  # No users
-                "manager_ids": [(5, 0, 0)],
+                "user_ids": False,  # No users
+                "manager_ids": False,
             }
         )
 
         # User should not be able to read
+        # (no access via access_level, template user_ids, or jet user_ids)
         records = self.JetTemplate.with_user(self.user).search([("id", "=", record.id)])
         self.assertEqual(
-            len(records), 0, "User should not see record with Manager level"
+            len(records),
+            0,
+            "User should not see record with Manager level "
+            "when not in user_ids or jet user_ids",
         )
 
     def test_user_write_forbidden(self):
@@ -127,8 +179,8 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "User Level for Manager",
                 "reference": "user_level_manager",
                 "access_level": "1",
-                "user_ids": [(5, 0, 0)],
-                "manager_ids": [(5, 0, 0)],
+                "user_ids": False,
+                "manager_ids": False,
             }
         )
 
@@ -144,8 +196,8 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "Manager Level",
                 "reference": "manager_level",
                 "access_level": "2",
-                "user_ids": [(5, 0, 0)],
-                "manager_ids": [(5, 0, 0)],
+                "user_ids": False,
+                "manager_ids": False,
             }
         )
 
@@ -162,7 +214,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "reference": "manager_in_users",
                 "access_level": "3",  # Root level - normally not accessible
                 "user_ids": [(4, self.manager.id)],  # Manager added as user
-                "manager_ids": [(5, 0, 0)],
+                "manager_ids": False,
             }
         )
 
@@ -178,8 +230,8 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "Root Level",
                 "reference": "root_level",
                 "access_level": "3",
-                "user_ids": [(5, 0, 0)],
-                "manager_ids": [(5, 0, 0)],
+                "user_ids": False,
+                "manager_ids": False,
             }
         )
 
@@ -199,7 +251,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "Manager Can Write",
                 "reference": "manager_can_write",
                 "access_level": "2",
-                "user_ids": [(5, 0, 0)],
+                "user_ids": False,
                 "manager_ids": [(4, self.manager.id)],  # Manager added
             }
         )
@@ -221,7 +273,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "User Level Manager Write",
                 "reference": "user_level_manager_write",
                 "access_level": "1",
-                "user_ids": [(5, 0, 0)],
+                "user_ids": False,
                 "manager_ids": [(4, self.manager.id)],
             }
         )
@@ -239,7 +291,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "reference": "no_write_access",
                 "access_level": "2",
                 "user_ids": [(4, self.manager.id)],  # Only in user_ids, not manager_ids
-                "manager_ids": [(5, 0, 0)],
+                "manager_ids": False,
             }
         )
 
@@ -270,7 +322,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                     "name": "Create Fail",
                     "reference": "create_fail",
                     "access_level": "2",
-                    "manager_ids": [(5, 0, 0)],  # Not in manager_ids
+                    "manager_ids": False,  # Not in manager_ids
                 }
             )
 
@@ -340,7 +392,7 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
         )
 
         # Remove from manager_ids
-        record.write({"manager_ids": [(5, 0, 0)]})
+        record.write({"manager_ids": False})
 
         # Cannot delete anymore
         with self.assertRaises(AccessError):
@@ -384,8 +436,8 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                     "name": f"Root Level {access_level}",
                     "reference": f"root_level_{access_level}",
                     "access_level": access_level,
-                    "user_ids": [(5, 0, 0)],
-                    "manager_ids": [(5, 0, 0)],
+                    "user_ids": False,
+                    "manager_ids": False,
                 }
             )
 
@@ -439,8 +491,8 @@ class TestTowerJetTemplateAccess(TestTowerJetsCommon):
                 "name": "Changing Level",
                 "reference": "changing_level",
                 "access_level": "1",
-                "user_ids": [(5, 0, 0)],
-                "manager_ids": [(5, 0, 0)],
+                "user_ids": False,
+                "manager_ids": False,
             }
         )
 

@@ -51,9 +51,7 @@ class CxTowerJetTemplate(models.Model):
         string="Jets",
         copy=False,
     )
-    jet_count = fields.Integer(
-        compute="_compute_jet_count",
-    )
+    jet_count = fields.Integer(compute="_compute_jet_count", store=False)
     show_in_wizard = fields.Boolean(
         string="Show in Wizard",
         help="If enabled, the template will be shown in the wizard to create a new jet",
@@ -158,6 +156,7 @@ class CxTowerJetTemplate(models.Model):
         help="Define other templates that must be in specific"
         " states for this template to function",
         copy=True,
+        groups="cetmix_tower_server.group_manager",
     )
     template_required_by_ids = fields.One2many(
         comodel_name="cx.tower.jet.template.dependency",
@@ -166,6 +165,7 @@ class CxTowerJetTemplate(models.Model):
         help="Define other templates that require this template"
         " to be in a specific"
         " state to function",
+        groups="cetmix_tower_server.group_manager",
     )
 
     # Installation
@@ -176,6 +176,7 @@ class CxTowerJetTemplate(models.Model):
         help="Installations of the template",
         auto_join=True,
         copy=False,
+        groups="cetmix_tower_server.group_manager",
     )
     # Dependency Graph
     # Odoo blocks SVG images in fields.Binary,

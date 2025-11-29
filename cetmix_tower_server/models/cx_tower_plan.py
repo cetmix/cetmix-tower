@@ -215,6 +215,14 @@ class CxTowerPlan(models.Model):
         self.check_access_rights("read")
         self.check_access_rule("read")
 
+        # Save jet template and jet in kwargs
+        plan_log_vals = kwargs.get("plan_log", {})
+        if jet_template:
+            plan_log_vals["jet_template_id"] = jet_template.id
+        if jet:
+            plan_log_vals["jet_id"] = jet.id
+        kwargs["plan_log"] = plan_log_vals
+
         # Access log as root to bypass access restrictions
         plan_log_obj = self.env["cx.tower.plan.log"].sudo()
 
@@ -239,26 +247,21 @@ class CxTowerPlan(models.Model):
         if not self.allow_parallel_run or self.env.context.get(
             "prevent_plan_recursion"
         ):
-            running_count = plan_log_obj.search_count(
-                [
-                    ("server_id", "=", server.id),
-                    ("plan_id", "=", self.id),  # pylint: disable=no-member
-                    ("is_running", "=", True),
-                ]
-            )
+            domain = [
+                ("server_id", "=", server.id),
+                ("plan_id", "=", self.id),  # type: ignore
+                ("is_running", "=", True),
+            ]
+            if jet_template:
+                domain.append(("jet_template_id", "=", jet_template.id))
+            if jet:
+                domain.append(("jet_id", "=", jet.id))
+            running_count = plan_log_obj.search_count(domain=domain)
             if running_count > 0:
                 plan_log = plan_log_obj.record(
                     server=server, plan=self, status=ANOTHER_PLAN_RUNNING, **kwargs
                 )
                 return plan_log
-
-        # Save jet template and jet in kwargs
-        plan_log_vals = kwargs.get("plan_log", {})
-        if jet_template:
-            plan_log_vals["jet_template_id"] = jet_template.id
-        if jet:
-            plan_log_vals["jet_id"] = jet.id
-        kwargs["plan_log"] = plan_log_vals
 
         # Start Flight Plan and return the log record
         return plan_log_obj.start(

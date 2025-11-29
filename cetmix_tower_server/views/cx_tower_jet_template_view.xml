@@ -13,6 +13,7 @@
                         type="object"
                         string="Install"
                         class="btn-primary"
+                        groups="cetmix_tower_server.group_manager"
                     />
                 </header>
                 <sheet>
@@ -70,7 +71,12 @@
                         </group>
                     </div>
                     <notebook>
-                        <page string="General Settings" name="general_settings">
+                        <field name="active" invisible="1" />
+                        <page
+                            string="General Settings"
+                            name="general_settings"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <group name="main">
                                 <group name="general">
                                     <field
@@ -78,7 +84,6 @@
                                         placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                                     />
                                     <field name="access_level" />
-                                    <field name="active" invisible="1" />
                                 </group>
                                 <group name="servers">
                                     <field name="plan_install_id" />
@@ -212,18 +217,22 @@
                                 <field
                                     name="user_ids"
                                     widget="many2many_tags"
-                                    placeholder="users who can access this server"
+                                    placeholder="users who can access this jet template"
                                     options="{'no_create': True}"
                                 />
                                 <field
                                     name="manager_ids"
                                     widget="many2many_tags"
-                                    placeholder="managers who can modify this server"
+                                    placeholder="managers who can modify this jet template"
                                     options="{'no_create': True}"
                                 />
                             </group>
                         </page>
-                        <page name="logs" string="Server Logs">
+                        <page
+                            name="logs"
+                            string="Jet Logs"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <field name="server_log_ids">
                                 <tree>
                                     <field name="name" />
@@ -262,7 +271,11 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="servers" string="Installed on Servers">
+                        <page
+                            name="servers"
+                            string="Installed on Servers"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <field name="server_ids">
                                 <tree>
                                     <field name="name" />
@@ -296,7 +309,11 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="installations" string="Installation Logs">
+                        <page
+                            name="installations"
+                            string="Installation Logs"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <field name="install_ids">
                                 <tree>
                                     <field name="create_date" />

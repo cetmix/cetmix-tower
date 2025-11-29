@@ -51,6 +51,7 @@
         parent="menu_cx_tower_jet_root"
         action="action_cx_tower_jet_create"
         sequence="10"
+        groups="cetmix_tower_server.group_manager"
     />
 
     <menuitem
@@ -74,6 +75,7 @@
         name="States"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_state_action"
+        groups="cetmix_tower_server.group_manager"
         sequence="40"
     />
 

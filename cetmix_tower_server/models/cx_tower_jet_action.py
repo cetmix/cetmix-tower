@@ -9,7 +9,7 @@ class CxTowerJetAction(models.Model):
 
     _name = "cx.tower.jet.action"
     _description = "Cetmix Tower Jet Action"
-    _inherit = ["cx.tower.reference.mixin"]
+    _inherit = ["cx.tower.reference.mixin", "cx.tower.access.mixin"]
     _order = "priority, id"
 
     active = fields.Boolean(related="jet_template_id.active", readonly=True)

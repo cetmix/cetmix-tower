@@ -997,15 +997,20 @@ class CxTowerServer(models.Model):
             return
 
         # Check if another instance of the same command is running
+        another_command_running_domain = [
+            ("server_id", "=", self.id),
+            ("command_id", "=", command.id),
+            ("is_running", "=", True),
+        ]
+        if jet_template:
+            another_command_running_domain.append(
+                ("jet_template_id", "=", jet_template.id)
+            )
+        if jet:
+            another_command_running_domain.append(("jet_id", "=", jet.id))
         another_command_running_block = (
             not command.allow_parallel_run
-            and log_obj.sudo().search_count(
-                [
-                    ("server_id", "=", self.id),  # pylint: disable=no-member
-                    ("command_id", "=", command.id),
-                    ("is_running", "=", True),
-                ]
-            )
+            and log_obj.sudo().search_count(domain=another_command_running_domain)
         )
         # Another command is running, return error
         if another_command_running_block:
