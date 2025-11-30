@@ -267,7 +267,6 @@ class CxTowerPlan(models.Model):
         return plan_log_obj.start(
             server=server,
             plan=self,
-            start_date=fields.Datetime.now(),
             **kwargs,
         )
 

@@ -1661,7 +1661,6 @@ class CxTowerServer(models.Model):
                 )
             )
 
-        # If no dependent jets, finish the command
         if dependent_jets:
             # Trigger the action for all dependent jets
             for jet in dependent_jets:
@@ -1669,6 +1668,7 @@ class CxTowerServer(models.Model):
                     action=log_record.command_id.jet_action_id,
                     current_command_log_id=log_record.id,
                 )
+        # If no dependent jets, finish the command
         else:
             status = JET_NOT_FOUND
             error = _(

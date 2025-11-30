@@ -325,23 +325,10 @@ class CxTowerPlanLog(models.Model):
             with self.env.cr.savepoint():
                 self._plan_finished()
         except Exception as e:
-            _logger.warning(f"Post-finish hook failed: {e}")
-
+            _logger.warning(
+                "Post-finish hook for plan '%s' failed: %s", self.plan_id.name, e
+            )
         # Continue with the rest of the logic
-
-        # Check if we were deleting a server
-        if (
-            self.server_id._is_being_deleted()
-            and self.server_id.plan_delete_id == self.plan_id
-        ):
-            if plan_status == 0:
-                # And finally delete the server
-                self.with_context(server_force_delete=True).server_id.unlink()
-
-            else:
-                # Set deletion error if flightplan failed
-                self.server_id.status = "delete_error"
-            return
 
         # Jet Template action: only if it's not a sub-plan
         # NB: Jet Template is always set automatically even if
