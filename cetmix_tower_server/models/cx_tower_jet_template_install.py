@@ -61,6 +61,9 @@ class CxTowerJetTemplateInstall(models.Model):
         Args:
             server (cx.tower.server()): The server to install the template on.
             template (cx.tower.jet.template()): The template to install.
+
+        Returns:
+            cx.tower.jet.template.install(): The installation record.
         """
 
         # Compose the list of templates to install
@@ -119,6 +122,9 @@ class CxTowerJetTemplateInstall(models.Model):
 
         # Launch the installation
         install_record._process_install()
+
+        # Return the installation record
+        return install_record
 
     def _process_install(self):
         """

@@ -367,6 +367,14 @@ class CxTowerJet(models.Model):
         2. Execute the flight plan if defined.
         3. Bring the jet into the target state.
 
+        Success:
+            The jet is brought into the target state.
+
+        Error:
+            The jet is brought into the error state if it is defined.
+            Otherwise, the jet is brought into the initial state.
+
+
         Args:
             action (cx.tower.jet.action()): The action to trigger
             from_transition (bool): True if the action is triggered
@@ -376,11 +384,6 @@ class CxTowerJet(models.Model):
                 to another.
             **kwargs: Additional arguments:
                 - current_command_log_id: Optional command log ID to track execution
-
-        Returns:
-            The jet is brought into the target state.
-            In case of an error, the jet is brought into the error state
-            if the latter is defined.
 
         Raises:
             ValidationError: If the action is not available for this jet.

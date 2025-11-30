@@ -711,6 +711,12 @@ class CxTowerJetTemplate(models.Model):
                                 },
                             )
                         )
+                        continue
+                    _logger.warning(
+                        "Variable reference '%s' not found while creating jet '%s'",
+                        variable_reference,
+                        self.name,  # pylint: disable=no-member
+                    )
 
                 if variable_values:
                     vals.update(
@@ -718,12 +724,7 @@ class CxTowerJetTemplate(models.Model):
                             "variable_value_ids": variable_values,
                         }
                     )
-                else:
-                    _logger.warning(
-                        "Variable reference '%s' not found when creating jet '%s'",
-                        variable_reference,
-                        name,
-                    )
+
         return vals
 
     def _allow_jet_creation(self, server):

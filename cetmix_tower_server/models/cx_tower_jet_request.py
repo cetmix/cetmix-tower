@@ -55,7 +55,6 @@ class CxTowerJetRequest(models.Model):
     )
     state_requested_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
-        required=True,
         ondelete="cascade",
         copy=False,
         help="State of the jet that is requested",
