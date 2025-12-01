@@ -17,7 +17,7 @@ Cetmix Tower YAML
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_yaml
+    :target: https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_yaml
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -50,67 +50,7 @@ instructions.
 Changelog
 =========
 
-17.0.2.0.1 (2025-11-13)
------------------------
 
-- Features: Improve the way secrets are listed in the YAML import
-  widget. (5010)
-
-17.0.1.4.1 (2025-08-27)
------------------------
-
-- Bugfixes: Make selection values lowercase to simplify their
-  management. (4896)
-
-17.0.1.3.1 (2025-08-09)
------------------------
-
-- Bugfixes: Error when uploading a YAML file while not being an Odoo
-  "Access Rights" group member (4899)
-
-17.0.1.3.0 (2025-08-01)
------------------------
-
-- Features: Optional behaviour when file uploaded by command already
-  exists on the server. (4740)
-
-17.0.1.1.3 (2025-07-14)
------------------------
-
-- Bugfixes: Fix missing model names in YAML exports when exporting
-  multiple commands with flight plans (4820)
-
-17.0.1.1.2 (2025-07-08)
------------------------
-
-- Bugfixes: Import servers with ``Password`` ssh authentication mode
-  (4812)
-
-17.0.1.1.1 (2025-07-04)
------------------------
-
-- Features: Export/import scheduled tasks to/from YAML. (4650)
-
-17.0.1.1.0 (2025-06-30)
------------------------
-
-- Features: Export/import secret values related to Server. (4696)
-- Features: YAML code optimisation (4728)
-
-17.0.1.0.2 (2025-05-20)
------------------------
-
-- Features: Export/import servers and files to/from YAML. (4670)
-
-17.0.1.0.1 (2025-05-05)
------------------------
-
-- Features: User groups are visible without developer mode. (4647)
-
-17.0.1.0.0
-----------
-
-Release for Odoo 17.0
 
 Bug Tracker
 ===========
@@ -118,7 +58,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_yaml%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_yaml%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -133,6 +73,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_yaml>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_yaml>`_ project on GitHub.
 
 You are welcome to contribute.
