@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_server_template_create_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.create.wizard.view.form</field>
+        <field name="model">cx.tower.server.template.create.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div class="oe_title">
+                    <h1 class="d-flex flex-grow justify-content-between">
+                        <field name="name" placeholder="new server name" />
+                    </h1>
+                    <div>
+                        <field name="color" widget="color_picker" />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="Tags"
+                            options="{'color_field': 'color'}"
+                        />
+                    </div>
+                </div>
+                <group name="main">
+                    <group name="general">
+                        <field name="partner_id" />
+                        <field name="os_id" />
+                        <field name="ip_v4_address" />
+                        <field name="ip_v6_address" />
+                        <field name="host_key" invisible="skip_host_key" />
+                        <field name="skip_host_key" />
+                    </group>
+                    <group name="ssh">
+                        <field name="ssh_auth_mode" />
+                        <field name="ssh_port" />
+                        <field
+                            name="ssh_username"
+                            placeholder="this can be changed later"
+                        />
+                        <field name="ssh_password" password="True" />
+                        <field
+                            name="ssh_key_id"
+                            invisible="ssh_auth_mode == 'p'"
+                            context="{'default_key_type': 'k', 'secrets_only': True}"
+                        />
+                        <field name="use_sudo" placeholder="No/Undefined" />
+                    </group>
+                    <field name="line_ids">
+                        <list
+                            editable="bottom"
+                            decoration-danger="value_char == False and required == True"
+                            decoration-info="value_char != False and required == True"
+                        >
+                            <field name="variable_reference" column_invisible="1" />
+                            <field name="variable_id" />
+                            <field name="variable_type" column_invisible="1" />
+                            <field
+                                name="value_char"
+                                readonly="variable_type == 'o'"
+                                required="variable_type == 's' and required"
+                            />
+                            <field
+                                name="option_id"
+                                options="{'no_create': True, 'no_create_edit': True}"
+                                readonly="variable_type == 's'"
+                                required="variable_type == 'o' and required"
+                            />
+                            <field name="required" readonly="1" />
+                        </list>
+                    </field>
+                </group>
+                <field
+                    name="missing_required_variables_message"
+                    nolabel="1"
+                    readonly="1"
+                    invisible="not has_missing_required_values"
+                    class="alert alert-warning"
+                    role="alert"
+                />
+                <field name="has_missing_required_values" invisible="1" />
+                <field name="missing_required_variables" invisible="1" />
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Confirm"
+                        confirm="Are you sure?"
+                        class="oe_highlight"
+                        invisible="has_missing_required_values"
+                    />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

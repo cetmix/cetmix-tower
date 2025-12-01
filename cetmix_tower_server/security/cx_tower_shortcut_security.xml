@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--
+    Access rule checks for User and Manager:
+    1. Shortcut access
+    2. Access to shortcut servers
+-->
+
+    <record id="cx_tower_shortcut_rule_group_user_visibility" model="ir.rule">
+        <field name="name">Tower Shortcut: user visibility rule</field>
+        <field name="model_id" ref="model_cx_tower_shortcut" />
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="domain_force">[
+            ('server_ids.user_ids', 'in', [user.id]),
+            ('access_level', '=', '1')
+        ]</field>
+    </record>
+
+    <record id="cx_tower_shortcut_rule_group_manager_visibility" model="ir.rule">
+        <field name="name">Tower shortcut: manager visibility rule</field>
+        <field name="model_id" ref="model_cx_tower_shortcut" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">[
+            ('access_level', '&lt;=', '2'),
+            '|', '|', '|',
+            ('server_ids.user_ids', 'in', [user.id]),
+            ('server_ids.manager_ids', 'in', [user.id]),
+            ('server_template_ids.user_ids', 'in', [user.id]),
+            ('server_template_ids.manager_ids', 'in', [user.id]),
+            ]
+        </field>
+    </record>
+
+    <record id="cx_tower_shortcut_rule_group_root_visibility" model="ir.rule">
+        <field name="name">Tower shortcut: root visibility rule</field>
+        <field name="model_id" ref="model_cx_tower_shortcut" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4,ref('cetmix_tower_server.group_root'))]" />
+    </record>
+</odoo>

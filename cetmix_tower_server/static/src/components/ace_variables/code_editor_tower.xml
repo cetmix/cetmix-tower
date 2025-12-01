@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates>
+    <t t-name="cetmix_tower_server.CodeEditorTower">
+        <div t-ref="editorRef" class="w-100" t-att-class="props.class" />
+        <t t-if="state.showPopup">
+            <AutocompletePopup
+                commands="state.popupItems"
+                position="state.popupPosition"
+                selectedIndex="state.selectedIndex"
+                type="state.popupType"
+                onSelectedIndexChange.bind="updateSelectedIndex"
+                onItemClick.bind="(command) => this.handleCommandSelection(command, this.currentEditor)"
+            />
+        </t>
+    </t>
+</templates>

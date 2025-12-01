@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_plan_run_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.run.wizard.view.form</field>
+        <field name="model">cx.tower.plan.run.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Run Plan">
+                <group>
+                    <field name="show_servers" invisible="1" />
+                    <field
+                        name="server_ids"
+                        widget="many2many_tags"
+                        required="1"
+                        string="Run on"
+                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    />
+                    <label for="applicability" string="Show Flight Plans" />
+                    <div class="o_row">
+                        <field
+                            name="applicability"
+                            widget="radio"
+                            options="{'horizontal': True}"
+                            readonly="show_servers"
+                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                        />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="with tags"
+                            options="{'no_create': True}"
+                        />
+                    </div>
+                    <label for="plan_id" />
+                    <div class="o_row">
+                        <field
+                            name="plan_id"
+                            domain="plan_domain"
+                            default_focus="1"
+                            options="{'no_create': True}"
+                        />
+                        <field name="plan_domain" invisible="1" />
+                    </div>
+                    <field name="note" readonly="1" invisible="not note" />
+                </group>
+                <notebook>
+                    <page name="commands" string="Commands" invisible="not plan_id">
+                        <field name="plan_line_ids" invisible="not plan_id">
+                            <list decoration-bf="action=='plan'">
+                                <field name="name" />
+                                <field name="action" optional="show" />
+                                <field
+                                    name="tag_ids"
+                                    optional="show"
+                                    groups="cetmix_tower_server.group_manager"
+                                    widget="many2many_tags"
+                                    options="{'color_field': 'color'}"
+                                />
+                            </list>
+                        </field>
+                    </page>
+                    <page
+                        name="configuration_values"
+                        string="Configuration Values"
+                        invisible="not plan_id"
+                    >
+                        <field name="custom_variable_value_ids">
+                            <list editable="bottom">
+                                <field name="variable_id" />
+                                <field name="variable_type" column_invisible="True" />
+                                <field
+                                    name="value_char"
+                                    readonly="variable_type != 's'"
+                                />
+                                <field
+                                    name="option_id"
+                                    readonly="variable_type != 'o'"
+                                    options="{'no_create': True}"
+                                />
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+                <footer>
+                    <button
+                        name="run_flight_plan"
+                        type="object"
+                        string="Run"
+                        class="oe_highlight"
+                    />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="cx_tower_plan_run_wizard_action" model="ir.actions.act_window">
+        <field name="name">Cetmix Tower Run Flight Plan</field>
+        <field name="res_model">cx.tower.plan.run.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cx_tower_plan_run_wizard_view_form" />
+        <field name="context">{'default_server_ids': [id]}</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

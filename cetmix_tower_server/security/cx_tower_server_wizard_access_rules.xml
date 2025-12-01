@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- cx.tower.command.run.wizard -->
+    <record id="rule_cx_tower_command_run_wizard_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_command_run_wizard" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- cx.tower.plan.run.wizard -->
+    <record id="rule_cx_tower_plan_run_wizard_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_plan_run_wizard" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- cx.tower.server.host.key.wizard -->
+    <record id="rule_cx_tower_server_host_key_wizard_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_server_host_key_wizard" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- cx.tower.server.template.create.wizard -->
+    <record
+        id="rule_cx_tower_server_template_create_wizard_creator_only"
+        model="ir.rule"
+    >
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_server_template_create_wizard" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+</odoo>

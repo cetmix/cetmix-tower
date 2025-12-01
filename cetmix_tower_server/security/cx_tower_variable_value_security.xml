@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User Read Rules -->
+    <record id="rule_cx_tower_variable_value_user_read_global" model="ir.rule">
+        <field name="name">Variable Value: User Read Global Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '=', '1'), ('is_global', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_user_read_server" model="ir.rule">
+        <field name="name">Variable Value: User Read Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '=', '1'), ('server_id.user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_user_read_plan" model="ir.rule">
+        <field name="name">Variable Value: User Read Plan Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '=', '1'), ('plan_line_action_id.plan_id.user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_user_read_plan_server" model="ir.rule">
+        <field name="name">Variable Value: User Read Plan Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '=', '1'), ('plan_line_action_id.plan_id.server_ids.user_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Read Rules -->
+    <record id="rule_cx_tower_variable_value_manager_read_global" model="ir.rule">
+        <field name="name">Variable Value: Manager Read Global Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('is_global', '=', True)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_manager_read_server" model="ir.rule">
+        <field name="name">Variable Value: Manager Read Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), '|', ('server_id.user_ids', 'in', [user.id]), ('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record
+        id="rule_cx_tower_variable_value_manager_read_server_template"
+        model="ir.rule"
+    >
+        <field name="name">Variable Value: Manager Read Server Template Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), '|', ('server_template_id.user_ids', 'in', [user.id]), ('server_template_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_manager_read_plan" model="ir.rule">
+        <field name="name">Variable Value: Manager Read Plan Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), '|', ('plan_line_action_id.plan_id.user_ids', 'in', [user.id]), ('plan_line_action_id.plan_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_manager_read_plan_server" model="ir.rule">
+        <field name="name">Variable Value: Manager Read Plan Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), '|', ('plan_line_action_id.plan_id.server_ids.user_ids', 'in', [user.id]), ('plan_line_action_id.plan_id.server_ids.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create Rules -->
+    <record id="rule_cx_tower_variable_value_manager_write_server" model="ir.rule">
+        <field name="name">Variable Value: Manager Write/Create Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record
+        id="rule_cx_tower_variable_value_manager_write_server_template"
+        model="ir.rule"
+    >
+        <field
+            name="name"
+        >Variable Value: Manager Write/Create Server Template Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('server_template_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_manager_write_plan" model="ir.rule">
+        <field name="name">Variable Value: Manager Write/Create Plan Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('plan_line_action_id.plan_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_manager_write_plan_action" model="ir.rule">
+        <field
+            name="name"
+        >Variable Value: Manager Write/Create Plan Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('plan_line_action_id.plan_id.server_ids.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Unlink Rules -->
+    <record id="rule_cx_tower_variable_value_manager_unlink_server" model="ir.rule">
+        <field name="name">Variable Value: Manager Unlink Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('create_uid', '=', user.id), ('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record
+        id="rule_cx_tower_variable_value_manager_unlink_server_template"
+        model="ir.rule"
+    >
+        <field name="name">Variable Value: Manager Unlink Server Template Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('create_uid', '=', user.id), ('server_template_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="rule_cx_tower_variable_value_manager_unlink_plan" model="ir.rule">
+        <field name="name">Variable Value: Manager Unlink Plan Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('create_uid', '=', user.id), ('plan_line_action_id.plan_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record
+        id="rule_cx_tower_variable_value_manager_unlink_plan_server"
+        model="ir.rule"
+    >
+        <field name="name">Variable Value: Manager Unlink Plan Server Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field
+            name="domain_force"
+        >[('access_level', '&lt;=', '2'), ('create_uid', '=', user.id), ('plan_line_action_id.plan_id.server_ids.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Access Rule -->
+    <record id="rule_cx_tower_variable_value_root" model="ir.rule">
+        <field name="name">Variable Value: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_variable_value" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_root'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>

@@ -1,0 +1,20 @@
+<odoo noupdate="1">
+    <record model="ir.config_parameter" id="cetmix_tower_server_command_timeout">
+        <field name="key">cetmix_tower_server.command_timeout</field>
+        <field name="value">900</field>
+    </record>
+    <record
+        model="ir.config_parameter"
+        id="cetmix_tower_server_notification_type_success"
+    >
+        <field name="key">cetmix_tower_server.notification_type_success</field>
+        <field name="value">sticky</field>
+    </record>
+    <record
+        model="ir.config_parameter"
+        id="cetmix_tower_server_notification_type_error"
+    >
+        <field name="key">cetmix_tower_server.notification_type_error</field>
+        <field name="value">sticky</field>
+    </record>
+</odoo>

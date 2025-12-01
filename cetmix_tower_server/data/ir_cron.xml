@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Check zombie commands -->
+    <record forcecreate="True" id="ir_cron_check_zombie_commands" model="ir.cron">
+        <field name="name">Cetmix Tower: Check zombie commands</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="state">code</field>
+        <field name="code">model._check_zombie_commands()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+    </record>
+
+    <!-- Auto pull files from server -->
+    <record forcecreate="True" id="ir_cron_auto_pull_files_from_server" model="ir.cron">
+        <field name="name">Cetmix Tower: Auto pull files from server</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">model._run_auto_pull_files()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
+
+    <!-- Run scheduled tasks  -->
+    <record forcecreate="True" id="ir_cron_run_scheduled_tasks" model="ir.cron">
+        <field name="name">Cetmix Tower: Run scheduled tasks</field>
+        <field name="model_id" ref="model_cx_tower_scheduled_task" />
+        <field name="state">code</field>
+        <field name="code">model._run_scheduled_tasks()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+    </record>
+</odoo>

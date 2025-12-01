@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_command_run_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.run.wizard.view.form</field>
+        <field name="model">cx.tower.command.run.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Run Command">
+                <field name="has_missing_required_values" invisible="1" />
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    invisible="action != 'python_code'"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        Remember: Python code is executed on the Tower server, not on the remote one.
+                    </p>
+                </div>
+                <field
+                    name="os_compatibility_warning"
+                    nolabel="1"
+                    readonly="1"
+                    invisible="not os_compatibility_warning"
+                    class="alert alert-warning"
+                    role="alert"
+                />
+                <group>
+                    <field name="show_servers" invisible="1" />
+                    <field
+                        name="server_ids"
+                        widget="many2many_tags"
+                        string="Run on"
+                        required="1"
+                        invisible="result"
+                    />
+                    <label
+                        for="applicability"
+                        string="Show Commands"
+                        invisible="result"
+                    />
+                    <div class="o_row" invisible="result">
+                        <field
+                            name="applicability"
+                            widget="radio"
+                            options="{'horizontal': True}"
+                            invisible="result"
+                            readonly="show_servers"
+                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                        />
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            invisible="result"
+                            placeholder="with tags"
+                            options="{'no_create': True}"
+                        />
+                    </div>
+                    <label for="command_id" invisible="result" />
+                    <div class="o_row" invisible="result">
+                        <field name="action" nolabel="1" />
+                        <span invisible="action != 'ssh_command'">sudo</span>
+                        <field name="use_sudo" invisible="action != 'ssh_command'" />
+                        <field
+                            name="command_id"
+                            domain="command_domain"
+                            default_focus="1"
+                            options="{'no_create': True}"
+                        />
+                        <field name="command_domain" invisible="1" />
+                    </div>
+                    <field
+                        name="path"
+                        widget="ace_tower"
+                        groups="cetmix_tower_server.group_manager"
+                        invisible="action == 'python_code' or result"
+                        placeholder="e.g. /home/user This field does NOT support variables"
+                    />
+                    <field name="note" readonly="1" invisible="not note" />
+                </group>
+                <field name="result" readonly="1" invisible="not result" />
+                <notebook invisible="result" groups="cetmix_tower_server.group_manager">
+                    <page name="code" string="Code">
+                        <field
+                            name="code"
+                            widget="ace_tower"
+                            options="{'mode': 'python'}"
+                            groups="cetmix_tower_server.group_manager"
+                        />
+                        <div
+                            class="alert alert-danger"
+                            role="alert"
+                            invisible="not has_missing_required_values"
+                        >
+                            <span
+                            >Fill in required configuration variables on the “Configuration Values” tab before you can run the command.</span>
+                        </div>
+                    </page>
+                    <page
+                        name="configuration_values"
+                        string="Configuration Values"
+                        invisible="not custom_variable_value_ids"
+                    >
+                        <field name="command_variable_ids" invisible="1" />
+                        <field name="have_access_to_server" invisible="1" />
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            invisible="have_access_to_server"
+                            style="margin-bottom:5px;"
+                        >
+                            You need 'Manager' access to the server to override the default configuration values.
+                            Without this access, the server's configured values will be used.
+                        </div>
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            style="margin-bottom:5px;"
+                        >
+                            Only values that the current user has access to are shown.
+                        </div>
+                        <field
+                            name="custom_variable_value_ids"
+                            force_save="1"
+                            options="{'no_create': True, 'no_open': True}"
+                            readonly="not have_access_to_server"
+                        >
+                            <list create="0" delete="0" editable="bottom">
+                                <field name="variable_id" force_save="1" />
+                                <field name="variable_type" column_invisible="True" />
+                                <field
+                                    name="value_char"
+                                    readonly="variable_type != 's'"
+                                />
+                                <field
+                                    name="option_id"
+                                    readonly="variable_type != 'o'"
+                                    options="{'no_create': True}"
+                                />
+                                <field name="required" readonly="1" />
+                            </list>
+                        </field>
+                        <div
+                            class="alert alert-danger"
+                            role="alert"
+                            invisible="not has_missing_required_values"
+                        >
+                            <field
+                                name="missing_required_variables_message"
+                                readonly="1"
+                                nolabel="1"
+                            />
+                        </div>
+                    </page>
+                    <page name="preview" string="Preview" invisible="show_servers">
+                        <field
+                            name="rendered_code"
+                            widget="ace"
+                            options="{'mode':'python'}"
+                            groups="cetmix_tower_server.group_manager"
+                        />
+                    </page>
+                </notebook>
+                <footer>
+                    <button
+                        name="run_command_on_server"
+                        type="object"
+                        string="Run"
+                        class="oe_highlight"
+                        help="Run code using server method and log result"
+                        invisible="result or not command_id or has_missing_required_values"
+                    />
+                    <button
+                        name="run_command_in_wizard"
+                        type="object"
+                        string="Run in wizard"
+                        help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
+                        class="oe_highlight"
+                        groups="cetmix_tower_server.group_manager"
+                        invisible="result or not code or show_servers or has_missing_required_values"
+                    />
+                    <button string="Cancel" special="cancel" />
+                    <button
+                        name="action_run_command"
+                        type="object"
+                        string="Run New Command"
+                        class="oe_highlight"
+                        invisible="not result"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_run_wizard_action" model="ir.actions.act_window">
+        <field name="name">Cetmix Tower Run Command</field>
+        <field name="res_model">cx.tower.command.run.wizard</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cx_tower_command_run_wizard_view_form" />
+        <field name="context">{'default_server_ids': [id]}</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User: read allowed if access_level == 1 and either command.user_ids or a related server grants access via user_ids -->
+    <record id="rule_cx_tower_command_group_user_read" model="ir.rule">
+        <field name="name">Command: User read</field>
+        <field name="model_id" ref="model_cx_tower_command" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">
+          ["&amp;",
+              ("access_level", "=", "1"),
+              "|",
+                ("user_ids", "in", [user.id]),
+                ("server_ids.user_ids", "in", [user.id])
+          ]
+      </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: read allowed if access_level <= 2 and   command or server grants access -->
+    <record id="rule_cx_tower_command_group_manager_read" model="ir.rule">
+        <field name="name">Command: Manager read</field>
+        <field name="model_id" ref="model_cx_tower_command" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+        ["&amp;",
+            ("access_level", "&lt;=", "2"),
+            "|",
+                "|", ("user_ids", "in", [user.id]), ("manager_ids", "in", [user.id]),
+                "|",
+                    ("server_ids", "=", False),
+                    "|",
+                        ("server_ids.user_ids", "in", [user.id]),
+                        ("server_ids.manager_ids", "in", [user.id])
+        ]
+      </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: write & create allowed if access_level <= 2 and in command.manager_ids -->
+    <record id="rule_cx_tower_command_group_manager_write" model="ir.rule">
+        <field name="name">Command: Manager write &amp; create</field>
+        <field name="model_id" ref="model_cx_tower_command" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+         [("access_level", "&lt;=", "2"), ("manager_ids", "in", [user.id])]
+      </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: unlink allowed if access_level <= 2, creator, and in manager_ids -->
+    <record id="rule_cx_tower_command_group_manager_unlink" model="ir.rule">
+        <field name="name">Command: Manager unlink</field>
+        <field name="model_id" ref="model_cx_tower_command" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+         [
+           ("access_level", "&lt;=", "2"),
+           ("create_uid", "=", user.id),
+           ("manager_ids", "in", [user.id])
+         ]
+      </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root: unrestricted access -->
+    <record id="rule_cx_tower_command_group_root_full" model="ir.rule">
+        <field name="name">Command: Root unrestricted access</field>
+        <field name="model_id" ref="model_cx_tower_command" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>
