@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="cx_tower_yaml_import_wiz_view_form" model="ir.ui.view">
         <field name="name">cx.tower.yaml.import.wiz.view.form</field>
         <field name="model">cx.tower.yaml.import.wiz</field>
@@ -85,7 +84,7 @@
                 >
                     <p>
                         <strong
-                        >Important:</strong> To maintain data consistency, the following
+                    >Important:</strong> To maintain data consistency, the following
                         model records will always be updated if they exist in Odoo:
                     </p>
                     <ul>
@@ -98,7 +97,7 @@
                     <p>
                         To create new entities instead of updating existing ones, remove or modify
                         the <code
-                        >reference</code> field in the YAML code for those entities.
+                    >reference</code> field in the YAML code for those entities.
                     </p>
                 </div>
                 <div
@@ -133,5 +132,4 @@
             </form>
         </field>
     </record>
-
 </odoo>

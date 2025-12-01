@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <record id="view_cx_tower_scheduled_task_view_form" model="ir.ui.view">
         <field name="name">cx.tower.scheduled.task.view.form</field>
         <field name="model">cx.tower.scheduled.task</field>
@@ -39,5 +38,4 @@
         <field name="binding_view_types">list</field>
         <field name="groups_id" eval="[(4, ref('cetmix_tower_yaml.group_export'))]" />
     </record>
-
 </odoo>

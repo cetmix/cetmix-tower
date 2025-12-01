@@ -4,6 +4,7 @@
 """
 Tests for cx.tower.server YAML export/import covering command_ids and plan_ids.
 """
+
 import yaml
 
 from odoo.tests import TransactionCase, tagged

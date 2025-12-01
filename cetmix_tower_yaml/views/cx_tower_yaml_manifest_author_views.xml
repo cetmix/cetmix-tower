@@ -29,5 +29,4 @@
         <field name="view_mode">tree,form</field>
         <field name="target">current</field>
     </record>
-
 </odoo>
