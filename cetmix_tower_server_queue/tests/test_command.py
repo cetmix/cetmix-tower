@@ -74,9 +74,9 @@ class TestTowerCommand(TestTowerCommon):
             "Zombie command log should have queue job",
         )
 
-        job = self.env["queue.job"].search(
-            [("id", "=", zombie_command_logs.queue_job_id.id)]
-        )
+        job = zombie_command_logs.queue_job_id
+        self.assertTrue(job.exists(), "Zombie command job should exist")
+
         self.assertEqual(job.state, "pending", "Zombie command job should be pending")
 
         # run process to kill zombie command

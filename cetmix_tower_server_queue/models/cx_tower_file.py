@@ -175,7 +175,7 @@ class CxTowerFile(models.Model):
                     "message": _(
                         "Unable to upload file '%(f)s'.\n"
                         "Upload operation is not supported for 'server' type files.",
-                        f=server_files[0].rendered_name,
+                        f=", ".join(server_files.mapped("rendered_name")),
                     ),
                     "sticky": False,
                 },
