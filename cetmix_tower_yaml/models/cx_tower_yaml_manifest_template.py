@@ -87,7 +87,7 @@ class CxTowerYamlManifestTemplate(models.Model):
         """
         semver = re.compile(r"^\d+\.\d+\.\d+$")
         for rec in self:
-            if not semver.match(rec.version):
+            if rec.version and not semver.match(rec.version):
                 raise ValidationError(
                     _("Version must be in the Major.Minor.Patch format, e.g. 1.2.3")
                 )
