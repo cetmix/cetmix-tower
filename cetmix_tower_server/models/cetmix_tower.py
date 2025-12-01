@@ -49,7 +49,7 @@ class CetmixTower(models.AbstractModel):
                 Defaults to True.
 
         Returns:
-            Dict: with who keys if `get_result` is True:
+            Dict: with the following keys if `get_result` is True else None:
             - exit_code (Int): Exit code of the command
             - message (Char): Message of the command
         """
@@ -120,7 +120,7 @@ class CetmixTower(models.AbstractModel):
             value (Char): Variable value
 
         Returns:
-            Dict: with who keys:
+            Dict: with the following keys:
             - exit_code (Char)
             - message (Char)
         """
@@ -194,8 +194,11 @@ class CetmixTower(models.AbstractModel):
         try_file=True,
     ):
         """Check if SSH connection to the server is available.
-        This method only checks if the connection is available,
-        it does not execute any commands to check if they are working.
+
+        This method checks SSH connectivity and can optionally run a simple command
+        and file operation for verification. By default, both checks are enabled
+        (try_command=True, try_file=True), but callers can disable them by passing
+        try_command=False and/or try_file=False to perform only a connection check.
 
         Args:
             server_reference (Char): Server reference.
@@ -203,10 +206,10 @@ class CetmixTower(models.AbstractModel):
                 Default is 5.
             wait_time (int): Wait time in seconds between connection attempts.
                 Default is 10 seconds.
-            try_command (bool): Try to execute a command.
-                Default is True.
-            try_file (bool): Try file operations.
-                Default is True.
+            try_command (bool): Try to execute a simple command for verification.
+                Default is True. Set to False to skip command execution.
+            try_file (bool): Try file operations for verification.
+                Default is True. Set to False to skip file operations.
         Raises:
             ValidationError:
                 If the provided server reference is invalid or
@@ -259,4 +262,5 @@ class CetmixTower(models.AbstractModel):
                         "exit_code": SSH_CONNECTION_ERROR,
                         "message": _("Failed to connect. Error: %(err)s", err=e),
                     }
-            time.sleep(wait_time)
+            if attempt < attempts:
+                time.sleep(wait_time)

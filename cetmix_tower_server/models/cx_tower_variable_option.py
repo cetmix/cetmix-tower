@@ -34,8 +34,8 @@ class TowerVariableOption(models.Model):
     )
     sequence = fields.Integer(default=10)
 
-    # Define a SQL constraint to ensure the combination of
-    # 'name' and 'variable_id' is unique
+    #  Define SQL constraints to ensure uniqueness of
+    # 'value_char' and 'name' per variable
     _sql_constraints = [
         (
             "unique_variable_option",

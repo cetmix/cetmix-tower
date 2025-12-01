@@ -111,10 +111,10 @@ class CxTowerKey(models.Model):
 
 
         Args:
-            key_type (_type_): _description_
+            key_type (Char): Key type
 
         Raises:
-            ValidationError: _description_
+            ValidationError: If key type is not valid
 
         Returns:
             Char: key prefix

@@ -7,7 +7,7 @@ from pytz import timezone
 
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError
-from odoo.tools import ormcache
+from odoo.tools import ormcache_context
 from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
@@ -142,7 +142,6 @@ class CxTowerCommand(models.Model):
         relation="cx_tower_command_flight_plan_used_id_rel",
         column1="command_id",
         column2="plan_id",
-        store=True,
         copy=False,
     )
     flight_plan_used_ids_count = fields.Integer(
@@ -287,8 +286,9 @@ class CxTowerCommand(models.Model):
 
     def action_open_command_logs(self):
         """
-        Open current current command log records
+        Open current command log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_command_log"
         )
@@ -317,7 +317,7 @@ class CxTowerCommand(models.Model):
         return not self.server_ids or server.id in self.server_ids.ids
 
     # -- Business logic
-    @ormcache()
+    @ormcache_context(keys=("lang",))
     @api.model
     def _get_python_command_libraries(self):
         """

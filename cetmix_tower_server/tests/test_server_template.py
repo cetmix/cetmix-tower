@@ -1,5 +1,5 @@
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests.common import Form
+from odoo.tests import Form
 
 from .common import TestTowerCommon
 

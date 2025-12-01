@@ -190,7 +190,7 @@ class CxTowerScheduledTask(models.Model):
                     elif task.action == "plan" and task.plan_id:
                         task._run_plan()
             except Exception as e:
-                _logger.exception(f"Scheduled task {task.id} failed: {e}")
+                _logger.exception("Scheduled task %s failed: %s", task.id, e)
 
                 task_error = _(
                     "Unable to run scheduled task '%(f)s'. Error: %(e)s",

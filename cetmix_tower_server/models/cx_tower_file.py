@@ -431,7 +431,7 @@ class CxTowerFile(models.Model):
                 )
 
             # Calling `_process` directly to get server version of a `tower` file
-            res = self.with_context(is_server_code_version_process=True)._process(
+            res = file.with_context(is_server_code_version_process=True)._process(
                 "download"
             )
             # Type check because _process method could return
@@ -494,7 +494,7 @@ class CxTowerFile(models.Model):
         Check the values and reformat if necessary
         """
         if "server_dir" in values:
-            server_dir = values["server_dir"].strip()
+            server_dir = values.get("server_dir", "").strip()
             if server_dir.endswith("/") and server_dir != "/":
                 server_dir = server_dir[:-1]
             values.update(
@@ -643,8 +643,7 @@ class CxTowerFile(models.Model):
 
             if action == "delete":
                 try:
-                    file.check_access_rights("unlink")
-                    file.check_access_rule("unlink")
+                    file.check_access("unlink")
                 except AccessError as e:
                     if raise_error:
                         raise AccessError(
@@ -683,7 +682,8 @@ class CxTowerFile(models.Model):
                 if raise_error:
                     raise ValidationError(
                         _(
-                            "Cannot pull %(f)s from server: %(err)s",
+                            "Cannot %(action)s %(f)s to/from server: %(err)s",
+                            action=action,
                             f=file.rendered_name,
                             err=exception_to_unicode(error),
                         )
@@ -722,7 +722,7 @@ class CxTowerFile(models.Model):
         """
         for file in self:
             vals = {}
-            if file.source == "server" and file.auto_sync:
+            if file.source == "server" and file.auto_sync and file.auto_sync_interval:
                 interval, interval_type = file.auto_sync_interval.split("-")
                 vals.update(
                     {

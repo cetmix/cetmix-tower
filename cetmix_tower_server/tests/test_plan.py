@@ -2457,7 +2457,7 @@ result = {
             {
                 "name": "Command -> Success",
                 "action": "python_code",
-                "code": "# Juse return deafult values",
+                "code": "# Just return default values",
             }
         )
         command_error = self.Command.create(

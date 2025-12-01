@@ -104,7 +104,7 @@ class CxTowerCommandLog(models.Model):
         help="Custom variable values passed to the command",
     )
 
-    @api.depends("name", "command_id.name")
+    @api.depends("server_id.name", "command_id.name")
     def _compute_name(self):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.command_id.name))  # type: ignore

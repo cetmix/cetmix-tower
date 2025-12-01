@@ -1,6 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class CxTowerAccessMixin(models.AbstractModel):
@@ -23,9 +23,9 @@ class CxTowerAccessMixin(models.AbstractModel):
             List of tuples: available options.
         """
         return [
-            ("1", "User"),
-            ("2", "Manager"),
-            ("3", "Root"),
+            ("1", _("User")),
+            ("2", _("Manager")),
+            ("3", _("Root")),
         ]
 
     def _default_access_level(self):

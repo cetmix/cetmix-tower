@@ -46,7 +46,7 @@ def ensure_ssh_disconnect(func):
         try:
             connection = self._get_ssh_client(raise_on_error=True)
         except Exception as e:
-            _logger.error(f"Error obtaining SSH connection: {e}")
+            _logger.error("Error obtaining SSH connection: %s", e)
             connection = None
 
         # Define a hook to disconnect the SSH connection using the obtained connection.
@@ -55,7 +55,7 @@ def ensure_ssh_disconnect(func):
                 try:
                     connection.disconnect()
                 except Exception as e:
-                    _logger.error(f"Error disconnecting SSH connection: {e}")
+                    _logger.error("Error disconnecting SSH connection: %s", e)
 
         # Register the disconnect hook for both commit and rollback events.
         self.env.cr.postcommit.add(disconnect_connection)
@@ -633,6 +633,9 @@ class CxTowerServer(models.Model):
                     "error": e,
                 }
 
+        # Initialize test_result to None - will be set by try_command or try_file
+        test_result = None
+
         # Try command
         if try_command:
             command = self._get_connection_test_command()
@@ -692,11 +695,19 @@ class CxTowerServer(models.Model):
                         )
                     )
 
-                # Replace command result with file test result
-                test_result = file_test_result
+            # Replace command result with file test result
+            test_result = file_test_result
 
         # Return notification
         if return_notification:
+            # Ensure test_result is set before accessing it
+            if test_result is None:
+                # Fallback: create a default success result
+                test_result = {
+                    "status": 0,
+                    "response": _("Connection test passed."),
+                    "error": "",
+                }
             response = test_result.get("response", "")
             return self._get_notification_action(
                 _(
@@ -707,6 +718,15 @@ class CxTowerServer(models.Model):
                 title=_("Success"),
                 sticky=False,
             )
+
+        # Ensure test_result is set before returning
+        if test_result is None:
+            # Fallback: create a default success result
+            test_result = {
+                "status": 0,
+                "response": _("Connection test passed."),
+                "error": "",
+            }
 
         return test_result
 
@@ -1536,13 +1556,13 @@ class CxTowerServer(models.Model):
 
             # Something weird ))
             else:
-                status = GENERAL_ERROR
+                status = [GENERAL_ERROR]
 
         except Exception as e:
             if raise_on_error:
-                _logger.error(f"SSH run command error: {e}")
+                _logger.error("SSH run command error: %s", e)
                 raise ValidationError(_("SSH run command error %(err)s", err=e)) from e
-            status = GENERAL_ERROR
+            status = [GENERAL_ERROR]
             response = []
             error = [e]
 
@@ -1736,7 +1756,7 @@ class CxTowerServer(models.Model):
         if isinstance(status, list):
             final_status = 0
             for st in status:
-                if st != 0 and st != status:
+                if st != 0:
                     final_status = st
 
             status = final_status

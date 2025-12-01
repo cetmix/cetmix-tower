@@ -34,7 +34,7 @@ class CxTowerKeyMixin(models.AbstractModel):
                 if record.secret_ids != new_secrets:
                     record.secret_ids = new_secrets
             else:
-                record.secret_ids = [(5, 0, 0)]
+                record.secret_ids = False
 
     @api.model
     def _extract_secret_ids(self, code):
@@ -45,7 +45,7 @@ class CxTowerKeyMixin(models.AbstractModel):
             code: Text containing potential secret references.
 
         Returns:
-            list: List of secret IDs corresponding to the references in `code`.
+            recordset: cx.tower.key recordset of secrets found in the code.
         """
         key_model = self.env["cx.tower.key"]
         key_strings = key_model._extract_key_strings(code)

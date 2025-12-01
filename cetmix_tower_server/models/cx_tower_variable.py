@@ -35,7 +35,7 @@ class TowerVariable(models.Model):
 
     _order = "name"
 
-    DEFAULT_VALIDATION_MESSAGE = _("Invalid value!")
+    DEFAULT_VALIDATION_MESSAGE = "Invalid value!"
 
     value_ids = fields.One2many(
         string="Values",

@@ -7,7 +7,7 @@ from psycopg2 import IntegrityError
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests.common import Form
+from odoo.tests import Form
 from odoo.tools.misc import mute_logger
 
 from .common import TestTowerCommon
@@ -31,7 +31,7 @@ class TestTowerVariable(TestTowerCommon):
 
         # Ensure correct number of records
         self.assertEqual(
-            len(variable_records), len_vals, msg="Must be %s records" % str(len_vals)
+            len(variable_records), len_vals, msg=f"Must be {str(len_vals)} records"
         )
 
         # Check variable values
@@ -634,7 +634,8 @@ class TestTowerVariable(TestTowerCommon):
             mute_logger("odoo.sql_db"),
             self.assertRaises(
                 IntegrityError,
-                msg="A variable value cannot be assigned multiple times to the same server",
+                msg="A variable value cannot be assigned "
+                "multiple times to the same server.",
             ),
         ):
             self.env["cx.tower.variable.value"].create(

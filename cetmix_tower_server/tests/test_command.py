@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Datetime
-from odoo.tests.common import Form
+from odoo.tests import Form
 from odoo.tools import mute_logger
 
 from ..models.constants import (
@@ -78,13 +78,7 @@ class TestTowerCommand(TestTowerCommon):
                 "name": "test rsa",
                 "reference": "test_rsa",
                 "secret_value": """-----BEGIN RSA PRIVATE KEY-----
-MIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu
-KUpRKfFLfRYC9AIKjbJTWit+CqvjWYzvQwECAwEAAQJAIJLixBy2qpFoS4DSmoEm
-o3qGy0t6z09AIJtH+5OeRV1be+N4cDYJKffGzDa88vQENZiRm0GRq6a+HPGQMd2k
-TQIhAKMSvzIBnni7ot/OSie2TmJLY4SwTQAevXysE2RbFDYdAiEBCUEaRQnMnbp7
-9mxDXDf6AU0cN/RPBjb9qSHDcWZHGzUCIG2Es59z8ugGrDY+pxLQnwfotadxd+Uy
-v/Ow5T0q5gIJAiEAyS4RaI9YG8EWx/2w0T67ZUVAw8eOMB6BIUg0Xcu+3okCIBOs
-/5OiPgoTdSy7bcF9IGpSE8ZgGKzgYQVZeN97YE00
+SuchMuchSecretKey
 -----END RSA PRIVATE KEY----- """,
                 "key_type": "s",
             }
@@ -103,9 +97,8 @@ if server_name and #!cxtower.secret.FOLDER!# == "secretFolder":
     command = "new command"
     result = {"exit_code": 0, "message": "New command was created"}
 else:
-    result = {"exit_code": %s, "message": "error"}
-    """
-                % GENERAL_ERROR,
+    result = {"exit_code": -100, "message": "error"}
+    """,
             }
         )
 
@@ -372,7 +365,7 @@ result = {
             }
         )
         try:
-            cmd1.unlink()
+            cmd1.with_user(self.manager).unlink()
         except AccessError:
             self.fail(
                 "Manager should be able to delete a command "
@@ -517,7 +510,7 @@ result = {
         )
 
     def test_ssh_command_prepare_method_with_path(self):
-        """Test command preparation in different modes without path"""
+        """Test command preparation in different modes with path"""
 
         server = self.server_test_1
 
@@ -1031,7 +1024,7 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(
             result_status,
-            result_status,
+            status,
             "Status in result must be the same as the initial one",
         )
         self.assertEqual(
@@ -1057,7 +1050,7 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(
             result_status,
-            result_status,
+            status,
             "Status in result must be the same as the initial one",
         )
         self.assertIsNone(result_response, "Response in response must be set to None")
@@ -1129,7 +1122,7 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(
             result_status,
-            result_status,
+            status,
             "Status in result must be the same as the initial one",
         )
         self.assertEqual(
@@ -1655,7 +1648,8 @@ else:
         )
 
         # Run the rendered Python code
-        # SSH keys are not parsed inline, so we should raise a validation error
+        # SSH keys are not parsed inline, so the command returns a successful
+        # placeholder response
         command_result = self.server_test_1._run_python_code(
             rendered_command["rendered_code"]
         )

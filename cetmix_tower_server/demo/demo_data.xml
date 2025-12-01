@@ -589,7 +589,7 @@ else:
     <record id="command__success" model="cx.tower.command">
         <field name="name">Command -&gt; Success</field>
         <field name="action">python_code</field>
-        <field name="code"># Juse return deafult values</field>
+        <field name="code"># Just return default values</field>
         <field name="access_level">2</field>
     </record>
 
@@ -643,9 +643,9 @@ server.write({"name":name})</field>
     <record id="plan_demo_1_line_1_action_2" model="cx.tower.plan.line.action">
         <field name="line_id" ref="plan_demo_1_line_1" />
         <field name="sequence">2</field>
-        <field name="condition">
-            &gt;
-        </field>
+        <!-- prettier-ignore-start -->
+        <field name="condition">&gt;</field>
+        <!-- prettier-ignore-end -->
         <field name="value_char">0</field>
         <field name="action">ec</field>
         <field name="custom_exit_code">255</field>
@@ -674,7 +674,7 @@ server.write({"name":name})</field>
         <field name="command_id" ref="command_list_dir" />
         <field
             name="condition"
-        >{{ tower.server.status }} == 'running' and {{ demo_demo_odoo_version }} == "17.0"</field>
+        >{{ tower.server.status }} == 'running' and {{ demo_odoo_version }} == "17.0"</field>
     </record>
 
     <!-- ===============================================

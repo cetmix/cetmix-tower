@@ -219,7 +219,7 @@ class TestTowerFile(TestTowerCommon):
         self.assertTrue(
             isinstance(res, dict) and res["tag"] == "display_notification",
             msg=(
-                "If file type is 'text', then the result must be a dict "
+                "If file type is 'binary', then the result must be a dict "
                 "representing the display_notification action."
             ),
         )

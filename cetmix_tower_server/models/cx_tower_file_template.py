@@ -113,7 +113,7 @@ class CxTowerFileTemplate(models.Model):
         Override to update files related with the templates
         """
         result = super().write(vals)
-        if any([field_ in vals for field_ in TEMPLATE_FILE_FIELD_MAPPING]):
+        if any(field_ in vals for field_ in TEMPLATE_FILE_FIELD_MAPPING):
             for file in self.mapped("file_ids"):
                 file.write(file._get_file_values_from_related_template())
         return result
@@ -159,8 +159,12 @@ class CxTowerFileTemplate(models.Model):
         valid_behaviors = {"skip", "raise", "overwrite"}
         if if_file_exists not in valid_behaviors:
             raise ValidationError(
-                f"Invalid if_file_exists value: {if_file_exists}. "
-                f"Expected one of {valid_behaviors}."
+                _(
+                    "Invalid if_file_exists value: %(if_file_exists)s. "
+                    "Expected one of %(valid_behaviors)s.",
+                    if_file_exists=if_file_exists,
+                    valid_behaviors=valid_behaviors,
+                )
             )
         file_model = self.env["cx.tower.file"]
         existing_files = file_model.search(

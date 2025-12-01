@@ -74,27 +74,24 @@ class CxTowerShortcut(models.Model):
         return self._notify_on_run(server)
 
     def _notify_on_run(self, server):
-        """Send notification when plan is triggered.
+        """Send notification when shortcut is triggered.
         Override to implement custom notifications.
 
         Args:
             server (cx.tower.server()): Server action was triggered for
 
         Returns:
-            `ir.action.client`: Web client notification.
+            Boolean: True if notification was sent.
         """
         self.ensure_one()
 
-        notification = {
-            "type": "ir.actions.client",
-            "tag": "display_notification",
-            "params": {
-                "title": _("%(shr)s triggered", shr=self.name),
-                "message": _(
-                    "Check %(t)s log for result",
-                    t="flight plan" if self.action == "plan" else "command",
-                ),
-                "sticky": False,
-            },
-        }
-        return notification
+        self.env.user.notify_info(
+            title=server.name,
+            message=_(
+                "Shortcut '%(shr)s' triggered. Check %(t)s log for result",
+                shr=self.name,
+                t="flight plan" if self.action == "plan" else "command",
+            ),
+            sticky=False,
+        )
+        return True

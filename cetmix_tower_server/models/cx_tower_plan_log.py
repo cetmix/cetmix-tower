@@ -89,7 +89,7 @@ class CxTowerPlanLog(models.Model):
         help="Custom variable values passed to the flight plan",
     )
 
-    @api.depends("server_id.name", "name")
+    @api.depends("server_id.name", "plan_id.name")
     def _compute_name(self):
         for rec in self:
             rec.name = ": ".join((rec.server_id.name, rec.plan_id.name))  # type: ignore
@@ -252,13 +252,13 @@ class CxTowerPlanLog(models.Model):
             plan_status (Integer) plan execution code
             **kwargs (dict): optional values
         """
+        self.ensure_one()
+
         values = {
             "is_running": False,
             "plan_status": plan_status,
             "finish_date": fields.Datetime.now(),
         }
-
-        self.ensure_one()
 
         # Apply kwargs
         if kwargs:

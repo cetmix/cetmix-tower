@@ -116,7 +116,7 @@ class CxTowerPlan(models.Model):
     def _compute_command_ids(self):
         """Compute command ids"""
         for plan in self:
-            plan.command_ids = [(6, 0, plan.line_ids.mapped("command_id").ids)]
+            plan.command_ids = plan.line_ids.command_id
 
     def action_open_plan_logs(self):
         """

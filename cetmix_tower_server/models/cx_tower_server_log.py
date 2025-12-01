@@ -14,7 +14,7 @@ class CxTowerServerLog(models.Model):
     _inherit = ["cx.tower.access.mixin", "cx.tower.reference.mixin"]
     _description = "Cetmix Tower Server Log"
 
-    NO_LOG_FETCHED_MESSAGE = _("<log is empty>")
+    NO_LOG_FETCHED_MESSAGE = "<log is empty>"
 
     active = fields.Boolean(default=True)
     server_id = fields.Many2one("cx.tower.server", ondelete="cascade")
@@ -174,4 +174,5 @@ class CxTowerServerLog(models.Model):
 
     def _get_copied_name(self, force_name=None):
         # Original name is preserved when log is duplicated
+        self.ensure_one()
         return force_name or self.name

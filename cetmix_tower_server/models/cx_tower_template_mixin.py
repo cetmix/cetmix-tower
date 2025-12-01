@@ -145,6 +145,8 @@ class CxTowerTemplateMixin(models.AbstractModel):
         Returns:
             variables (List) variables (eg ['var','var2',..])
         """
+        if not code:
+            return []
         env = Environment()
         try:
             ast = env.parse(code)
