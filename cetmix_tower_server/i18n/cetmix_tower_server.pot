@@ -3278,6 +3278,8 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_rel_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_repo_owner_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_repo_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_value_reference_unique
