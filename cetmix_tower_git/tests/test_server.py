@@ -9,6 +9,18 @@ from .common import CommonTest
 class TestServer(CommonTest):
     """Test setting git project to server from plan line."""
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.GitProjectRel.create(
+            {
+                "git_project_id": cls.git_project_1.id,
+                "server_id": cls.server_test_1.id,
+                "file_id": cls.server_1_file_1.id,
+            }
+        )
+
     def test_server_creation_running_flight_plan(self):
         """Test that server is created with git project from plan line."""
         git_project = self.GitProject.create(
@@ -142,3 +154,45 @@ class TestServer(CommonTest):
             git_project._default_project_format(),
             "Project format should match the default format",
         )
+
+    def test_server_get_servers_by_git_ref_success(self):
+        """Check the success case of server.get_servers_by_git_ref"""
+
+        # 1. URL only
+        servers = self.Server.get_servers_by_git_ref(
+            self.remote_github_https.repo_id.url
+        )
+        self.assertEqual(servers, self.server_test_1)
+
+        # 2. Specific URL with specific head
+        servers = self.Server.get_servers_by_git_ref(
+            self.remote_github_https.repo_id.url, "123"
+        )
+        self.assertEqual(servers, self.server_test_1)
+
+        # 2. Specific URL with specific head and head type
+        servers = self.Server.get_servers_by_git_ref(
+            self.remote_github_https.repo_id.url, "123", "pr"
+        )
+        self.assertEqual(servers, self.server_test_1)
+
+    def test_server_get_servers_by_git_ref_no_match(self):
+        """Check the no match case of server.get_servers_by_git_ref"""
+
+        # 1. Repo link does not exist
+        servers = self.Server.get_servers_by_git_ref(
+            "https://github.com/other-org/other-repo.git", "main", "branch"
+        )
+        self.assertFalse(servers)
+
+        # 2. Repo link exists, but remote does not exist
+        servers = self.Server.get_servers_by_git_ref(
+            self.repo_cetmix_tower.url, "3311", "pr"
+        )
+        self.assertFalse(servers)
+
+        # 3. Repo link exists, but remote type does not exist
+        servers = self.Server.get_servers_by_git_ref(
+            self.repo_cetmix_tower.url, "main", "commit"
+        )
+        self.assertFalse(servers)

@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import re
+import giturlparse
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -44,11 +44,35 @@ class CxTowerGitRemote(models.Model):
         store=True,
         readonly=True,
     )
-    url = fields.Char(
+    repo_id = fields.Many2one(
+        comodel_name="cx.tower.git.repo",
+        string="Repository",
         required=True,
-        string="URL",
-        help="Git remote URL. Eg 'https://github.com/cetmix/cetmix-tower.git'"
-        " or 'git@github.com:cetmix/cetmix-tower.git'",
+        ondelete="restrict",
+        help="If selected, the remote URL will be filled from the"
+        " repo settings based on the remote protocol",
+    )
+    repo_provider = fields.Selection(
+        related="repo_id.provider",
+        readonly=True,
+    )
+    # -- Repo related fields
+    url_protocol = fields.Selection(
+        string="Protocol",
+        selection=[
+            ("ssh", "SSH"),
+            ("https", "HTTPS"),
+            ("git", "GIT"),
+        ],
+        required=True,
+        default=lambda self: self._get_default_url_protocol(),
+    )
+    is_private = fields.Boolean(
+        string="Private",
+        help="Repository is private",
+        related="repo_id.is_private",
+        store=True,
+        readonly=True,
     )
     head_type = fields.Selection(
         selection=[
@@ -56,42 +80,21 @@ class CxTowerGitRemote(models.Model):
             ("pr", "Pull/Merge Request"),
             ("commit", "Commit"),
         ],
-        compute="_compute_head_type",
-        store=True,
-        readonly=False,
+        required=True,
     )
     head = fields.Char(
+        help="Git remote head. Link to branch, PR, commit or commit hash.",
         required=True,
-        help="Git remote head. Link to branch, PR, commit or commit hash."
-        " Leave blank to auto-detect",
+        index=True,
     )
-    is_private = fields.Boolean(help="Repository is private")
 
-    # -- Helper fields
-    url_protocol = fields.Selection(
-        string="URL Protocol",
-        selection=[
-            ("ssh", "SSH"),
-            ("https", "HTTPS"),
-            ("git", "GIT"),
-        ],
-        compute="_compute_repo_provider",
-        store=True,
-    )
-    repo_provider = fields.Selection(
-        string="Repository Provider",
-        selection=[
-            ("github", "GitHub"),
-            ("gitlab", "GitLab"),
-            ("bitbucket", "Bitbucket"),
-            ("other", "Other"),
-        ],
-        compute="_compute_repo_provider",
-        store=True,
-        readonly=False,
-        help="Will be tried to be determined from the URL."
-        " Please select manually if auto-detection fails.",
-    )
+    def _get_default_url_protocol(self):
+        """Default URL protocol for new remote.
+
+        Returns:
+            Char: Default URL protocol.
+        """
+        return "https"
 
     @api.depends("source_id", "sequence")
     def _compute_name(self):
@@ -106,60 +109,88 @@ class CxTowerGitRemote(models.Model):
                 for index, source_remote in enumerate(remote.source_id.remote_ids):
                     source_remote.name = f"remote_{index + 1}"
 
-    @api.depends("url")
-    def _compute_repo_provider(self):
-        for remote in self:
-            if remote.url:
-                remote.update(self._get_repo_protocol_and_provider_from_url(remote.url))
-
-    @api.depends("head")
-    def _compute_head_type(self):
-        for remote in self:
-            if remote.head:
-                remote.head_type = self._get_head_type_from_head(remote.head)
-
-    @api.constrains("url")
-    def _check_url(self):
-        """Check if the URL is valid.
-
-        Raises:
-            ValidationError: if the URL is not valid.
+    @api.onchange("head")
+    def onchange_head(self):
+        """
+        Extract head number from head url
+        and set it as head.
         """
         for remote in self:
-            if remote.url:
-                url = remote.url.lower()
-                if not url.endswith(".git"):
-                    raise ValidationError(
-                        _("Not a valid URL. URL must end with '.git'")
-                    )
-                if (
-                    not re.match(self.GIT_HTTPS_URL_PATTERN, url)
-                    and not re.match(self.GIT_SSH_URL_PATTERN, url)
-                    and not re.match(self.GIT_GIT_URL_PATTERN, url)
-                ):
-                    raise ValidationError(
-                        _(
-                            "Not a valid URL. URL must start with"
-                            " 'https://', 'git@', or 'git://'"
-                        )
-                    )
-
-    @api.onchange("url")
-    def _onchange_url(self):
-        self._check_url()
+            if remote.head and "/" in remote.head:
+                remote.head = self._sanitize_head(remote.head)
 
     @api.model_create_multi
     def create(self, vals_list):
+        # Sanitize head
+        for vals in vals_list:
+            head = vals.get("head")
+            if head and "/" in head:
+                vals["head"] = self._sanitize_head(head)
         res = super().create(vals_list)
         # Export project to related files and templates
         res._update_related_files_and_templates()
         return res
 
     def write(self, vals):
+        # Sanitize head
+        if "head" in vals:
+            head = vals["head"]
+            if head and "/" in head:
+                vals["head"] = self._sanitize_head(head)
         res = super().write(vals)
         # Update related files and templates on update
         self._update_related_files_and_templates()
         return res
+
+    def unlink(self):
+        """
+        Override to update related files and templates on unlink
+        """
+        projects = self.git_project_id
+        res = super().unlink()
+
+        # Update related files and templates on unlink
+        if projects:
+            file_relations = projects.git_project_rel_ids  # type: ignore
+            if file_relations:
+                file_relations._save_to_file()
+            template_relations = projects.git_project_file_template_rel_ids  # type: ignore
+            if template_relations:
+                template_relations._save_to_file_template()
+        return res
+
+    def _sanitize_head(self, head):
+        """Sanitize head.
+        Extract head number from head url
+        and set it as head.
+
+        Args:
+            head (Char): Head to sanitize
+
+        Returns:
+            Char: Sanitized head
+        """
+        if head and "/" in head:
+            return head.split("/")[-1].strip()
+        return head
+
+    @api.model
+    def get_head_data(self):
+        """
+        This method is used to get values for the dropdown dynamic widget.
+        It is designed for integrations with repo providers using APIs.
+
+        Returns:
+            List: List of tuples(selection, name)
+            eg [('18.0', '18.0'), ('main', 'main'), ('develop', 'develop')]
+        """
+        values = [
+            ("18.0", "18.0"),
+            ("main", "Main"),
+            ("develop", "Develop"),
+            ("17.0", "17.0"),
+        ]
+        return values
 
     def _update_related_files_and_templates(self):
         # Update related files on update
@@ -171,83 +202,6 @@ class CxTowerGitRemote(models.Model):
         )
         if related_templates:
             related_templates._save_to_file_template()
-
-    def _get_repo_protocol_and_provider_from_url(self, repo_url):
-        """Parse repository URL and return protocol and provider.
-
-        Args:
-            url (Char): Repository URL
-
-        Returns:
-            Dict: Protocol and provider
-                {
-                    "url_protocol": "ssh" | "https",
-                    "repo_provider": "github" | "gitlab" | "bitbucket" | "other",
-                }
-        """
-        # TODO: this is still not the best solution.
-        # To be replaced with https://github.com/nephila/giturlparse
-        # or similar when migrating to newer Odoo versions.
-        url = repo_url.lower()
-
-        # Determine repo protocol
-        if re.match(self.GIT_SSH_URL_PATTERN, url):
-            url_protocol = "ssh"
-            # git@github.com:cetmix/cetmix-tower.git
-            # -> github
-            hostname = url.split(":")[0].split("@")[1].split(".")[-2]
-        elif re.match(self.GIT_HTTPS_URL_PATTERN, url):
-            url_protocol = "https"
-            # https://github.com/cetmix/cetmix-tower.git
-            # -> github
-            hostname = url.replace("https://", "").split("/")[0].split(".")[-2]
-        elif re.match(self.GIT_GIT_URL_PATTERN, url):
-            url_protocol = "git"
-            # git://github.com/cetmix/cetmix-tower.git
-            # -> github
-            hostname = url.replace("git://", "").split("/")[0].split(".")[-2]
-        else:
-            url_protocol = None
-            hostname = None
-
-        # Determine repository provider by hostname
-        repo_provider = "other"
-        if hostname == "github":
-            repo_provider = "github"
-        elif hostname == "gitlab":
-            repo_provider = "gitlab"
-        elif hostname == "bitbucket":
-            repo_provider = "bitbucket"
-        else:
-            repo_provider = "other"
-
-        return {
-            "url_protocol": url_protocol,
-            "repo_provider": repo_provider,
-        }
-
-    def _get_head_type_from_head(self, head):
-        """Parse head and return head type.
-
-        Args:
-            head (Char): Head
-
-        Returns:
-            Char: head type
-        """
-        head_parts = head.lower().split("/")
-        if (
-            "pr" in head_parts
-            or "pull" in head_parts
-            or "merge_requests" in head_parts
-            or "pull-requests" in head_parts
-        ):
-            head_type = "pr"
-        elif "commit" in head_parts or "commits" in head_parts:
-            head_type = "commit"
-        else:
-            head_type = "branch"
-        return head_type
 
     # ------------------------------
     # Reference mixin methods
@@ -266,16 +220,12 @@ class CxTowerGitRemote(models.Model):
             "name",
             "enabled",
             "sequence",
-            "is_private",
-            "url",
-            "repo_provider",
+            "repo_id",
             "head",
             "head_type",
         ]
         return res
 
-    # ------------------------------
-    # YAML mixin methods
     # ------------------------------
     # Git Aggregator related methods
     # ------------------------------
@@ -287,26 +237,33 @@ class CxTowerGitRemote(models.Model):
         """
         self.ensure_one()
 
-        if not self.url:
-            raise ValidationError(_("URL is required"))
+        if not self.repo_id:
+            raise ValidationError(_("Repository is required"))
+        if not self.repo_id.url:
+            raise ValidationError(_("Repository URL is not set"))
 
-        # If repo is public or using SSH protocol return URL as is
-        if not self.is_private or self.url_protocol == "ssh":
-            return self.url
+        url = self.repo_id.url
+        prepared_url = giturlparse.parse(url).urls.get(self.url_protocol, url)
+
+        # If repo is public or is not using HTTPS protocol return URL as is
+        if not self.is_private or self.url_protocol != "https":
+            return prepared_url
 
         if self.repo_provider == "github":
-            url = self._git_aggregator_prepare_url_github()
+            prepared_url = self._git_aggregator_prepare_url_github(prepared_url)
         elif self.repo_provider == "gitlab":
-            url = self._git_aggregator_prepare_url_gitlab()
+            prepared_url = self._git_aggregator_prepare_url_gitlab(prepared_url)
         elif self.repo_provider == "bitbucket":
-            url = self._git_aggregator_prepare_url_bitbucket()
-        else:
-            url = self.url
-        return url
+            prepared_url = self._git_aggregator_prepare_url_bitbucket(prepared_url)
 
-    def _git_aggregator_prepare_url_github(self):
+        return prepared_url
+
+    def _git_aggregator_prepare_url_github(self, url):
         """Prepare url for git aggregator
         for private Github repo using https protocol.
+
+        Args:
+            url (Char): URL to prepare
 
         Returns:
             Char: Prepared url for git aggregator
@@ -315,13 +272,16 @@ class CxTowerGitRemote(models.Model):
 
         # This is how final url will look like
         # https://$GITHUB_TOKEN:x-oauth-basic@github.com/soem_org/some_private_repo.git
-        url_without_protocol = self.url.replace("https://", "")
+        url_without_protocol = url.replace("https://", "")
         url = f"https://$GITHUB_TOKEN:x-oauth-basic@{url_without_protocol}"
         return url
 
-    def _git_aggregator_prepare_url_gitlab(self):
+    def _git_aggregator_prepare_url_gitlab(self, url):
         """Prepare url for git aggregator
         for private GitLab repo using https protocol.
+
+        Args:
+            url (Char): URL to prepare
 
         Returns:
             Char: Prepared url for git aggregator
@@ -330,13 +290,16 @@ class CxTowerGitRemote(models.Model):
 
         # This is how final url will look like
         # https://<token-name>:<token-value>@<gitlaburl-repository>.git
-        url_without_protocol = self.url.replace("https://", "")
+        url_without_protocol = url.replace("https://", "")
         url = f"https://$GITLAB_TOKEN_NAME:$GITLAB_TOKEN@{url_without_protocol}"
         return url
 
-    def _git_aggregator_prepare_url_bitbucket(self):
+    def _git_aggregator_prepare_url_bitbucket(self, url):
         """Prepare url for git aggregator
-        for private Github repo using https protocol.
+        for private Bitbucket repo using https protocol.
+
+        Args:
+            url (Char): URL to prepare
 
         Returns:
             Char: Prepared url for git aggregator
@@ -346,8 +309,8 @@ class CxTowerGitRemote(models.Model):
         # This is how final url will look like
         # https://x-token-auth:{access_token}@bitbucket.org/user/repo.git
         # From https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
-        url_without_protocol = self.url.replace("https://", "")
-        url = f"https://x-oauth-basic:$BITBUCKET_TOKEN@{url_without_protocol}"
+        url_without_protocol = url.replace("https://", "")
+        url = f"https://x-token-auth:$BITBUCKET_TOKEN@{url_without_protocol}"
         return url
 
     def _git_aggregator_prepare_head(self):
@@ -439,7 +402,7 @@ class CxTowerGitRemote(models.Model):
                     "URL: %(url)s\n"
                     "Head: %(head)s",
                     src=self.source_id.name,
-                    url=self.url,
+                    url=self.repo_id.url,
                     head=self.head,
                 )
             )
