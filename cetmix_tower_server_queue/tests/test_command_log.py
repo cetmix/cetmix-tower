@@ -7,12 +7,6 @@ class TestTowerCommand(TestTowerCommon):
     Test cases for command log state on queue_job failure
     """
 
-    def setUp(self):
-        super().setUp()
-
-    # Should match models.queue_job.QUEUE_JOB_ERROR
-    QUEUE_JOB_ERROR = 601
-
     def test_command_log_state_on_job_fail(self):
         command = self.env["cx.tower.command"].create(
             {
@@ -38,6 +32,6 @@ class TestTowerCommand(TestTowerCommon):
         self.assertEqual(job.state, "failed", "Job should be in failed state")
         self.assertEqual(
             command_log.command_status,
-            self.QUEUE_JOB_ERROR,
+            self.env["queue.job"].QUEUE_JOB_ERROR,
             "Command log should be in failed state",
         )
