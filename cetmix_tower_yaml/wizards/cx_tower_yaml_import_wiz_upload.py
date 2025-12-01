@@ -43,7 +43,7 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
         }
 
     def _extract_yaml_data(self):
-        """Extract data form YAML file and validate them
+        """Extract data from YAML file and validate them
 
         Returns:
             decoded_file (Text): YAML code
@@ -59,12 +59,10 @@ class CxTowerYamlImportWizUpload(models.TransientModel):
             raw_bytes = b64decode(self.yaml_file or b"")
         except (TypeError, binascii.Error) as e:
             # Not a valid base-64 payload
-            raise ValidationError(
-                _("File contains non-unicode characters or is empty")
-            ) from e
+            raise ValidationError(_("File is not a valid base64-encoded file")) from e
 
         if not raw_bytes:
-            raise ValidationError(_("File contains non-unicode characters or is empty"))
+            raise ValidationError(_("File is empty"))
 
         try:
             decoded_file = raw_bytes.decode("utf-8")

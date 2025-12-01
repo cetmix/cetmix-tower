@@ -210,7 +210,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             self.yaml_upload_wizard._extract_yaml_data()
         self.assertEqual(
             str(e.exception),
-            _("File contains non-unicode characters or is empty"),
+            _("File is empty"),
             "Exception message does not match",
         )
 
