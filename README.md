@@ -18,7 +18,11 @@ Cetmix Tower
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[cetmix_tower_server](cetmix_tower_server/) | 18.0.1.0.0 |  | Manage servers and applications from Odoo
 
 [//]: # (end addons)
 
