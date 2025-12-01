@@ -17,7 +17,7 @@ Cetmix Tower Server Queue
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_server_queue
+    :target: https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_server_queue
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -53,38 +53,7 @@ instructions.
 Changelog
 =========
 
-17.0.1.3.0 (2025-11-18)
------------------------
 
-- Features: Use the 'web_notify' module to send user notifications.
-  (5074)
-
-17.0.1.2.3 (2025-11-12)
------------------------
-
-- Bugfixes: Finish multiple commands at once. (5062)
-
-17.0.1.2.2 (2025-10-25)
------------------------
-
-- Features: Terminate running flight plan manually (3410)
-
-17.0.1.1.0 (2025-07-30)
------------------------
-
-- Features: cetmix_tower_server_queue: Add async file upload/download
-  via job queue (3720)
-- Features: Terminate command with error if job has failed (4718)
-
-17.0.1.0.1 (2025-05-20)
------------------------
-
-- Features: 'sudo' parameter is not passed to command. (4678)
-
-17.0.1.0.0
-----------
-
-Release for Odoo 17.0
 
 Bug Tracker
 ===========
@@ -92,7 +61,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server_queue%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_server_queue%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -107,6 +76,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_server_queue>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_server_queue>`_ project on GitHub.
 
 You are welcome to contribute.
