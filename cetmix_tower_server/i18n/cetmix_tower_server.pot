@@ -48,122 +48,55 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
-#: code:addons/cetmix_tower_server/models/constants.py:0
-#, python-format
-msgid ""
-"\n"
-"<h3>Help with Python expressions</h3>\n"
-"<div style=\"margin-bottom: 10px;\">\n"
-"    <p>\n"
-"        Each Python code command returns the <code>result</code> value which is a dictionary.\n"
-"        <br>There are two keys in the dictionary:\n"
-"        <ul>\n"
-"    <li><code>exit_code</code>: Integer. Exit code of the command. \"0\" means success, any other value means failure. Default value is \"0\".</li>\n"
-"    <li><code>message</code>: String. Message to be logged. Default value is \"None\".</li>\n"
-"</ul>\n"
-"You can also access the <code>custom_values</code> dictionary that contains custom values provided to the command or flight plan.\n"
-"Custom values can be modified, thus can be used to pass data between commands in a flight plan.\n"
-"Please keep in mind that custom values are persistent only between commands in a flight plan and are not saved to the database.\n"
-"<br/>\n"
-"Here is an example of a python code command:\n"
-"\n"
-"<code style='white-space: pre-wrap'>\n"
-"    server_name = server.name\n"
-"    build_name = custom_values.get(\"build_name\")\n"
-"    if build_name:\n"
-"        result = {\"exit_code\": 0, \"message\": \"Build name for \" + server_name + \" is \" + build_name}\n"
-"    else:\n"
-"        result = {\"exit_code\": 0, \"message\": \"No build name provided for \" + server_name}\n"
-"    custom_values[\"build_name\"] = \"New build name\"\n"
-"</code>\n"
-"</p>\n"
-"<br>\n"
-"Please refer to the <a href=\"https://cetmix.com/tower/documentation/command/#python-code-commands\" target=\"_blank\">official documentation</a> for more information and examples.\n"
-"</div>\n"
-"<p\n"
-">Various fields may use Python code or Python expressions. The\n"
-"    following variables can be used:</p>\n"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
-#, python-format
 msgid "  - Empty values for variables: %(variables)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
-#, python-format
 msgid "  - Missing variables: %(variables)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
-#: code:addons/cetmix_tower_server/models/constants.py:0
-#, python-format
-msgid ""
-"# Please refer to the 'Help' tab and documentation for more information.\n"
-"#\n"
-"# You can return command result in the 'result' variable which is a dictionary:\n"
-"#   result = {\"exit_code\": 0, \"message\": \"Some message\"}\n"
-"#   default value is {\"exit_code\": 0, \"message\": None}\n"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
-#, python-format
 msgid "%(name)s (copy %(number)s)"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
-#, python-format
 msgid "%(name)s (copy)"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
-#: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
-#, python-format
-msgid "%(shr)s triggered"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
-#, python-format
 msgid "%(timestamp)s<br/>Command '%(name)s' finished successfully"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
-#, python-format
 msgid "%(timestamp)s<br/>Command '%(name)s' finished with error"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
-#, python-format
 msgid "%(timestamp)s<br/>Flight Plan '%(name)s' finished successfully"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
-#, python-format
 msgid "%(timestamp)s<br/>Flight Plan '%(name)s' finished with error"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
-#, python-format
 msgid "...save record to see the final expression or click the line to edit"
 msgstr ""
 
@@ -175,10 +108,12 @@ msgid ""
 "-101 not found,\n"
 "-201 another instance of this command is running,\n"
 "-202 no runner found for the command action,\n"
-"-203 Python code execution failed\n"
-"-205 plan line condition check failed\n"
-"503 if SSH connection error occurred\n"
-"601 if queue job failed"
+"-203 Python code execution failed,\n"
+"-205 plan line condition check failed,\n"
+"-206 command timed out,\n"
+"-207 command is not compatible with server,\n"
+"-208 command is stopped by user,\n"
+"503 if SSH connection error occurred"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -205,13 +140,6 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"Info\" title=\"Info\"/>\n"
 "                            <span>&amp;nbsp;</span>"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
-#: code:addons/cetmix_tower_server/models/cx_tower_server_log.py:0
-#, python-format
-msgid "<log is empty>"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -282,21 +210,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "A helper shortcut to <code>env['cx.tower.command']</code>"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "A helper shortcut to <code>env['cx.tower.plan']</code>"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "A helper shortcut to <code>env['cx.tower.server']</code>"
 msgstr ""
 
@@ -357,21 +282,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_option.py:0
-#, python-format
 msgid "Access level is not defined for '%(option)s'"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
-#, python-format
 msgid "Access level is not defined for '%(variable)s'"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-javascript
 #: code:addons/cetmix_tower_server/static/src/components/ace_variables/ace_variables.esm.js:0
-#, python-format
 msgid "Ace Tower Editor"
 msgstr ""
 
@@ -488,16 +410,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "An error occurred: %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "Another instance of the command is already running"
 msgstr ""
 
@@ -618,8 +537,13 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
+msgid "Cannot %(action)s %(f)s to/from server: %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
-#, python-format
 msgid ""
 "Cannot change 'global' status for '%(var)s' with value '%(val)s'.\n"
 "Try to assigns it to a record instead."
@@ -628,7 +552,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/test_variable.py:0
-#, python-format
 msgid ""
 "Cannot change 'global' status for 'meme' with value 'Pepe'.\n"
 "Try to assigns it to a record instead."
@@ -637,7 +560,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_tag.py:0
-#, python-format
 msgid ""
 "Cannot delete tag '%(tag_name)s' because it is used in related records."
 msgstr ""
@@ -645,7 +567,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid ""
 "Cannot download %(f)s from server: Binary content is not supported for "
 "'Text' file type"
@@ -653,15 +574,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
-#: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
-msgid "Cannot pull %(f)s from server: %(err)s"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid ""
 "Cannot remove test file using command.\n"
 " CODE: %(status)s. ERROR: %(err)s"
@@ -670,7 +583,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid ""
 "Cannot run command\n"
 ". CODE: %(status)s. RESULT: %(res)s. ERROR: %(err)s"
@@ -687,7 +599,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Cetmix Tower <a "
 "href='https://cetmix.com/tower/documentation/odoo_automation' "
@@ -860,13 +771,6 @@ msgid "Cetmix Tower: Run scheduled tasks"
 msgstr ""
 
 #. module: cetmix_tower_server
-#. odoo-python
-#: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
-#, python-format
-msgid "Check %(t)s log for result"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
 msgid ""
 "Check the key before inserting in the server settings. Do not insert the key"
@@ -882,7 +786,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
-#, python-format
 msgid "Close"
 msgstr ""
 
@@ -940,7 +843,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
-#, python-format
 msgid "Command %(command_name)s is not compatible with the server"
 msgstr ""
 
@@ -971,7 +873,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__command_log_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__command_log_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_command_log
-#, python-format
 msgid "Command Log"
 msgstr ""
 
@@ -1004,14 +905,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Command is not compatible with the server"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Command not found"
 msgstr ""
 
@@ -1020,13 +919,6 @@ msgstr ""
 msgid ""
 "Command that will be executed to get the log data.\n"
 "Be careful with commands that don't support parallel execution!"
-msgstr ""
-
-#. module: cetmix_tower_server
-#. odoo-python
-#: code:addons/cetmix_tower_server/models/constants.py:0
-#, python-format
-msgid "Command timed out and was terminated"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1100,7 +992,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Connection failed."
 msgstr ""
 
@@ -1108,17 +999,21 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Connection successful."
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid ""
 "Connection test passed! \n"
 "%(res)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+msgid "Connection test passed."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1131,7 +1026,6 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_kanban
-#, python-format
 msgid "Create Server"
 msgstr ""
 
@@ -1215,35 +1109,30 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/res_config_settings.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
-#, python-format
 msgid "Cron Job"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/res_config_settings.py:0
-#, python-format
 msgid "Cron job not found"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Current Cetmix Tower server this command is running on"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Current Odoo user"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Current Odoo user ID"
 msgstr ""
 
@@ -1288,7 +1177,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_key_value.py:0
-#, python-format
 msgid "Custom secret values can be defined only for key type 'secret'"
 msgstr ""
 
@@ -1420,7 +1308,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "Due to security restrictions you are not allowed to delete %(fp)s"
 msgstr ""
 
@@ -1474,7 +1361,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Error retrieving host key: %(err)s"
 msgstr ""
 
@@ -1519,24 +1405,19 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Failed to connect after %(attempts)s attempts. Error: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Failed to connect. Error: %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
-#, python-format
 msgid "Failure"
 msgstr ""
 
@@ -1555,7 +1436,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid ""
 "File %(f)s is not 'tower' type. This operation is supported for 'tower' "
 "files only"
@@ -1564,7 +1444,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid ""
 "File %(f)s shouldn't have the '%(src)s' source  for the '%(act)s' action"
 msgstr ""
@@ -1610,21 +1489,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "File already exists"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file_template.py:0
-#, python-format
 msgid "File already exists on server."
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "File already exists on server. Upload skipped"
 msgstr ""
 
@@ -1641,21 +1517,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "File created and uploaded successfully"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "File deleted!"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "File downloaded!"
 msgstr ""
 
@@ -1673,7 +1546,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "File source cannot be determined: '%(source)s'"
 msgstr ""
 
@@ -1685,7 +1557,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "File uploaded!"
 msgstr ""
 
@@ -1719,21 +1590,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "Files deleted!"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "Files downloaded!"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid "Files uploaded!"
 msgstr ""
 
@@ -1795,7 +1663,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
-#, python-format
 msgid "Flight Plan Stopped"
 msgstr ""
 
@@ -1830,7 +1697,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
-#, python-format
 msgid "Flight Plans Stopped"
 msgstr ""
 
@@ -1843,7 +1709,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
-#, python-format
 msgid "Flight plan is not compatible with the server"
 msgstr ""
 
@@ -1856,14 +1721,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Flight plan running error"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Flight plan running error %(err)s"
 msgstr ""
 
@@ -1881,7 +1744,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Float compare. Odoo helper function to compare floats."
 msgstr ""
 
@@ -1973,10 +1835,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/common.py:0
-#: code:addons/cetmix_tower_server/tests/common.py:0
-#: code:addons/cetmix_tower_server/tests/common.py:0
-#: code:addons/cetmix_tower_server/tests/common.py:0
-#, python-format
 msgid "Group reference %s not found!"
 msgstr ""
 
@@ -2016,7 +1874,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_host_key_wizard__host_key
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__host_key
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
-#, python-format
 msgid "Host Key"
 msgstr ""
 
@@ -2028,7 +1885,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Host key not found for server %(server)s"
 msgstr ""
 
@@ -2178,14 +2034,12 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_action_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
-#, python-format
 msgid "If exit code"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/test_plan.py:0
-#, python-format
 msgid "If exit code == 35 then Exit with command exit code"
 msgstr ""
 
@@ -2224,9 +2078,10 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
-#: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
-#, python-format
-msgid "Invalid value!"
+#: code:addons/cetmix_tower_server/models/cx_tower_file_template.py:0
+msgid ""
+"Invalid if_file_exists value: %(if_file_exists)s. Expected one of "
+"%(valid_behaviors)s."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2281,7 +2136,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_server_host_key_wizard.py:0
-#, python-format
 msgid "Key inserted successfully!"
 msgstr ""
 
@@ -2456,6 +2310,8 @@ msgid "Main plans"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_access_mixin.py:0
 #: model:res.groups,name:cetmix_tower_server.group_manager
 msgid "Manager"
 msgstr ""
@@ -2527,7 +2383,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-javascript
 #: code:addons/cetmix_tower_server/static/src/components/ace_variables/ace_variables.esm.js:0
-#, python-format
 msgid "Mode"
 msgstr ""
 
@@ -2650,7 +2505,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid ""
 "No output received. Please log in manually and check for any issues.\n"
 "===\n"
@@ -2660,28 +2514,24 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "No runner found for command action '%(cmd_action)s'"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-javascript
 #: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
-#, python-format
 msgid "No secrets found"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "No server found for the provided reference."
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-javascript
 #: code:addons/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml:0
-#, python-format
 msgid "No variables found"
 msgstr ""
 
@@ -2700,7 +2550,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/res_config_settings.py:0
-#, python-format
 msgid "Non-sticky"
 msgstr ""
 
@@ -2768,7 +2617,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid ""
 "OS %(os)s used by the server '%(srv)s' is not present in the command's OS "
 "compatibility list"
@@ -2782,7 +2630,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Odoo Environment"
 msgstr ""
 
@@ -2800,42 +2647,36 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_key_value.py:0
-#, python-format
 msgid "Only one global secret value can be defined for a key"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
-#, python-format
 msgid "Only one global value can be defined for variable '%(var)s'"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/test_variable.py:0
-#, python-format
 msgid "Only one global value can be defined for variable 'meme'"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_key_value.py:0
-#, python-format
 msgid "Only one secret value can be defined for a partner"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_key_value.py:0
-#, python-format
 msgid "Only one secret value can be defined for a server"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_key_value.py:0
-#, python-format
 msgid "Only one secret value can be defined for a server and partner"
 msgstr ""
 
@@ -2879,7 +2720,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
-#, python-format
 msgid "Option '%(val)s' is not available for variable '%(var)s'"
 msgstr ""
 
@@ -2961,7 +2801,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
-#, python-format
 msgid "Plan Lines"
 msgstr ""
 
@@ -2970,7 +2809,6 @@ msgstr ""
 #: code:addons/cetmix_tower_server/wizards/cx_tower_plan_run_wizard.py:0
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__plan_log_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__plan_log_ids
-#, python-format
 msgid "Plan Log"
 msgstr ""
 
@@ -2982,7 +2820,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
-#, python-format
 msgid "Plan line condition check failed."
 msgstr ""
 
@@ -2994,28 +2831,24 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Please provide IPv4 or IPv6 address for %(srv)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Please provide SSH Key for %(srv)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Please provide SSH password for %(srv)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_server_template_create_wizard.py:0
-#, python-format
 msgid ""
 "Please provide values for the following configuration variables: "
 "%(variables)s"
@@ -3024,7 +2857,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid ""
 "Please provide values for the following configuration variables: %(vars)s"
 msgstr ""
@@ -3032,14 +2864,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
-#, python-format
 msgid "Please resolve the following issues with configuration variables:"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "Please select a command to execute"
 msgstr ""
 
@@ -3110,21 +2940,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Python 'datetime' library"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Python 'dateutil' library"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'dnspython' library. <a href='https://dnspython.readthedocs.io' "
 "target='_blank'>Documentation</a>.<ul><li><code>dns.resolver</code>: wrapped"
@@ -3139,7 +2966,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'hashlib' library. <a "
 "href='https://docs.python.org/3/library/hashlib.html' "
@@ -3151,7 +2977,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'hmac' library. <a href='https://docs.python.org/3/library/hmac.html'"
 " target='_blank'>Documentation</a>. Use 'new' to create HMAC objects. "
@@ -3162,14 +2987,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Python 'json' library. Available methods: 'dumps'"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'requests' library. Available methods: 'post', 'get', 'delete', "
 "'request'"
@@ -3178,21 +3001,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Python 'time' library"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "Python 'timezone' library"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'tldextract' library. Use <code>tldextract.extract()</code> to parse "
 "domains. Check <a href='https://github.com/john-kurkowski/tldextract' "
@@ -3209,7 +3029,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "Python code running error: %(err)s"
 msgstr ""
 
@@ -3237,7 +3056,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line.py:0
-#, python-format
 msgid "Recursive plan call detected in plan %(name)s."
 msgstr ""
 
@@ -3275,10 +3093,6 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_command_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_file_template_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_project_rel_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_remote_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_git_source_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_key_value_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_os_reference_unique
@@ -3295,9 +3109,6 @@ msgstr ""
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_authenticator_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_eval_mixin_reference_unique
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_webhook_reference_unique
 msgid "Reference must be unique"
 msgstr ""
 
@@ -3408,6 +3219,8 @@ msgid "Result"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_access_mixin.py:0
 #: model:res.groups,name:cetmix_tower_server.group_root
 msgid "Root"
 msgstr ""
@@ -3425,7 +3238,6 @@ msgstr ""
 #: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
-#, python-format
 msgid "Run Command"
 msgstr ""
 
@@ -3442,7 +3254,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
-#, python-format
 msgid "Run Flight Plan"
 msgstr ""
 
@@ -3470,7 +3281,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "Run Result"
 msgstr ""
 
@@ -3560,8 +3370,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "SSH Client is not defined."
 msgstr ""
 
@@ -3613,8 +3421,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "SSH connection error %(err)s"
 msgstr ""
 
@@ -3628,7 +3434,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "SSH run command error %(err)s"
 msgstr ""
 
@@ -3663,7 +3468,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
-#, python-format
 msgid "Scheduled tasks run successfully."
 msgstr ""
 
@@ -3887,8 +3691,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Server not found"
 msgstr ""
 
@@ -3971,6 +3773,12 @@ msgid "Shortcut"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_shortcut.py:0
+msgid "Shortcut '%(shr)s' triggered. Check %(t)s log for result"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_shortcut
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__shortcut_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__shortcut_ids
@@ -4033,14 +3841,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "Some servers don't support this command"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
-#, python-format
 msgid ""
 "Some variable options are invalid:\n"
 "%(detailed_message)s"
@@ -4086,7 +3892,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/res_config_settings.py:0
-#, python-format
 msgid "Sticky"
 msgstr ""
 
@@ -4110,7 +3915,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
-#, python-format
 msgid "Stopped by user %(user)s"
 msgstr ""
 
@@ -4122,13 +3926,10 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
-#, python-format
 msgid "Success"
 msgstr ""
 
@@ -4216,7 +4017,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_option.py:0
-#, python-format
 msgid ""
 "The access level for Variable Option '%(value)s' cannot be lower than the access level of its Variable '%(variable)s'.\n"
 "Variable Access Level: %(var_level)s\n"
@@ -4226,7 +4026,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
-#, python-format
 msgid ""
 "The access level for Variable Value '%(value)s' cannot be lower than the access level of its Variable '%(variable)s'.\n"
 "Variable Access Level: %(var_level)s\n"
@@ -4236,7 +4035,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan.py:0
-#, python-format
 msgid ""
 "The access level of command(s) '%(command_names)s' included in the current "
 "Flight plan is higher than the access level of the Flight plan itself. "
@@ -4256,7 +4054,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#, python-format
 msgid "The file %(f_path)s not found."
 msgstr ""
 
@@ -4268,7 +4065,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
-#, python-format
 msgid ""
 "The selected task interval is too low in relation to the general system "
 "settings. This may lead to task execution delays."
@@ -4436,7 +4232,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid ""
 "Unable to delete file '%(f)s'.\n"
 "Delete operation is not supported for 'server' type files."
@@ -4445,14 +4240,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
-#, python-format
 msgid "Unable to run scheduled task '%(f)s'. Error: %(e)s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
-#, python-format
 msgid ""
 "Unable to upload file '%(f)s'.\n"
 "Upload operation is not supported for 'server' type files."
@@ -4506,6 +4299,8 @@ msgid "Used in Values"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_access_mixin.py:0
 #: model:res.groups,name:cetmix_tower_server.group_user
 msgid "User"
 msgstr ""
@@ -4513,7 +4308,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-#, python-format
 msgid "UserError. Helper to raise UserError."
 msgstr ""
 
@@ -4577,7 +4371,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_server_template_create_wizard.py:0
-#, python-format
 msgid "Value is invalid"
 msgstr ""
 
@@ -4603,7 +4396,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
-#, python-format
 msgid ""
 "Variable '%(var)s' can only be assigned to one of the models at a time: "
 "Server, Server Template, or Plan Line Action."
@@ -4632,7 +4424,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
-#: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_variable_value
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__variable_values
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__variable_value_ids
@@ -4641,7 +4432,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__variable_value_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_mixin__variable_value_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_variable_value
-#, python-format
 msgid "Variable Values"
 msgstr ""
 
@@ -4658,14 +4448,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Variable not found"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
-#, python-format
 msgid ""
 "Variable reference '%(var_ref)s' has an invalid option reference "
 "'%(opt_ref)s'."
@@ -4674,21 +4462,18 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_template_mixin.py:0
-#, python-format
 msgid "Variable syntax error: %s"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Variable value created"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cetmix_tower.py:0
-#, python-format
 msgid "Variable value updated"
 msgstr ""
 
@@ -4702,7 +4487,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable.py:0
-#, python-format
 msgid ""
 "Variable: %(var)s, Value: %(val)s\n"
 "%(msg)s"
@@ -4726,7 +4510,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
-#, python-format
 msgid "View Log"
 msgstr ""
 
@@ -4800,35 +4583,30 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
-#, python-format
 msgid "Wrong action"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "You are not allowed to execute commands in wizard"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_log.py:0
-#, python-format
 msgid "You are not allowed to modify the server log output."
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "You cannot execute an empty command"
 msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#, python-format
 msgid "You cannot run custom code on multiple servers at once."
 msgstr ""
 
@@ -4842,7 +4620,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/ir_actions_server.py:0
-#, python-format
 msgid ""
 "You need to have 'write' access to all servers you want to run this action "
 "on."
@@ -4866,8 +4643,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/common.py:0
-#: code:addons/cetmix_tower_server/tests/common.py:0
-#, python-format
 msgid "groups_ref must be string or list of strings!"
 msgstr ""
 
@@ -4913,7 +4688,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_line_action.py:0
-#, python-format
 msgid "then"
 msgstr ""
 
