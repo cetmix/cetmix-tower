@@ -5,6 +5,7 @@
 import logging
 
 import yaml
+from markupsafe import escape
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -84,7 +85,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 continue
 
             # Build deterministic HTML list of secrets
-            items = "".join(f"<li>{name}</li>" for name in sorted(secret_list))
+            items = "".join(f"<li>{escape(name)}</li>" for name in sorted(secret_list))
             secrets_html = f"<ul>{items}</ul>"
 
             record.secret_list = _(
@@ -133,7 +134,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
             raise ValidationError(_("YAML file doesn't contain any records"))
 
         # Cache models
-        models = {}
+        model_cache = {}
         odoo_record_ids = []
 
         # Process each record
@@ -148,12 +149,12 @@ class CxTowerYamlImportWiz(models.TransientModel):
                 )
 
             # Get model from cache or create new one
-            model = models.get(model_name)
+            model = model_cache.get(model_name)
             if not model:
                 model = self.env[
                     f"cx.tower.{model_name.replace('_', '.')}"
                 ].with_context(skip_ssh_settings_check=(model_name == "server"))
-                models[model_name] = model
+                model_cache[model_name] = model
 
             # Get existing record by reference
             # NOTE: we don't validate models here because they are
@@ -163,8 +164,9 @@ class CxTowerYamlImportWiz(models.TransientModel):
             # Skip
             if self.if_record_exists == "skip" and odoo_record:
                 _logger.info(
-                    f"Skipping record '{record_reference}' in model '{model_name}'"
-                    " because it already exists"
+                    "Skipping record '%s' in model '%s'" " because it already exists",
+                    record_reference,
+                    model_name,
                 )
                 continue
 
@@ -227,8 +229,8 @@ class CxTowerYamlImportWiz(models.TransientModel):
             }
 
         # All records from the same model
-        elif len(models) == 1:
-            model = list(models.values())[0]
+        elif len(model_cache) == 1:
+            model = list(model_cache.values())[0]
             action = {
                 "name": _("Import result: %(model)s", model=model._description),
                 "type": "ir.actions.act_window",
@@ -247,7 +249,7 @@ class CxTowerYamlImportWiz(models.TransientModel):
         # Records from different models
         else:
             model_names = ", ".join(
-                f"'{model._description}'" for model in models.values()
+                f"'{model._description}'" for model in model_cache.values()
             )
             action = {
                 "type": "ir.actions.client",

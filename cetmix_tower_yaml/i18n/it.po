@@ -388,8 +388,8 @@ msgstr "Nome file"
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
-msgid "File contains non-unicode characters or is empty"
-msgstr "Il file contiene caratteri non unicode o è vuoto"
+msgid "File is not a valid base64-encoded file"
+msgstr "Il file non è un file codificato in base64 valido"
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
