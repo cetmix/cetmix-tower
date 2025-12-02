@@ -917,6 +917,8 @@ class CxTowerServer(models.Model):
                 Pass to reuse existing connection.
                 This is useful in case you would like to speed up
                 the ssh command running.
+            jet_template (cx.tower.jet.template()) Jet Template record
+                Pass to run for specific jet template
             jet (cx.tower.jet()): Jet record
                 Pass to run for specific jet
             kwargs (dict):  extra arguments. Use to pass external values.

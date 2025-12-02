@@ -280,6 +280,25 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Odoo Actions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def action_run_command(self):
+        """
+        Returns wizard action to select command and run it
+        """
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_jet_ids": self.ids,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Run Command"),
+            "res_model": "cx.tower.command.run.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
     def action_open_command_logs(self):
         """
         Open current server command log records
@@ -354,6 +373,45 @@ class CxTowerJet(models.Model):
         )
         action["context"] = context
         return action
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #  General functions
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def run_command(
+        self,
+        command,
+        path=None,
+        sudo=None,
+        ssh_connection=None,
+        **kwargs,
+    ):
+        """Run command on selected Jet.
+        A helper function that calls the corresponding server function.
+
+        Args:
+            command (cx.tower.command()): Command record
+            path (Char): directory where command is run.
+                Provide in case you need to override default command value
+            sudo (Boolean): use sudo
+                Defaults to None
+            ssh_connection (SSH client instance, optional): SSH connection.
+                Pass to reuse existing connection.
+                This is useful in case you would like to speed up
+                the ssh command running.        Returns:
+
+        Returns:
+            dict(): command running result if `no_command_log`
+                context value == True else None
+        """
+        self.ensure_one()
+        return self.server_id.run_command(
+            command=command,
+            path=path,
+            sudo=sudo,
+            ssh_connection=ssh_connection,
+            jet=self,
+            **kwargs,
+        )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Jet actions, state transitions, jet requests

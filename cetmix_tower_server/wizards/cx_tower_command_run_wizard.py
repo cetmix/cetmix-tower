@@ -23,6 +23,14 @@ class CxTowerCommandRunWizard(models.TransientModel):
     server_ids = fields.Many2many(
         "cx.tower.server",
         string="Servers",
+        compute="_compute_server_ids",
+        readonly=False,
+        store=True,
+    )
+    jet_ids = fields.Many2many(
+        "cx.tower.jet",
+        string="Jets",
+        help="Jets to run the command on",
     )
     command_id = fields.Many2one(
         "cx.tower.command",
@@ -112,10 +120,20 @@ class CxTowerCommandRunWizard(models.TransientModel):
             res["applicability"] = "this"
         return res
 
-    @api.depends("server_ids")
+    @api.depends("jet_ids")
+    def _compute_server_ids(self):
+        for rec in self:
+            if rec.jet_ids:
+                rec.server_ids = rec.jet_ids.server_id
+
+    @api.depends("server_ids", "jet_ids")
     def _compute_show_servers(self):
         for rec in self:
-            rec.show_servers = bool(rec.server_ids and len(rec.server_ids) > 1)
+            rec.show_servers = (
+                bool(rec.server_ids and len(rec.server_ids) > 1)
+                and not rec.jet_ids
+                and not rec.result
+            )
 
     @api.depends("command_id", "server_ids", "action")
     def _compute_code(self):
@@ -141,7 +159,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
         for record in self:
             if record.server_ids and len(record.server_ids) == 1:
                 # Render code preview for the first server only.
-                server_id = record.server_ids[0]
+                if record.jet_ids:
+                    server_id = record.jet_ids[0].server_id
+                else:
+                    server_id = record.server_ids[0]
 
                 # Get variable list
                 variables = record.get_variables()
@@ -151,7 +172,8 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     "cx.tower.variable"
                 ]._get_variable_values_by_references(
                     variables.get(str(record.id)),
-                    server=server_id,
+                    server=server_id if not record.jet_ids else None,
+                    jet=record.jet_ids[0] if record.jet_ids else None,
                 )
                 if variable_values and record.custom_variable_value_ids:
                     custom_vals = {
@@ -261,13 +283,16 @@ class CxTowerCommandRunWizard(models.TransientModel):
     @api.onchange("command_variable_ids", "server_ids")
     def _onchange_command_variable_ids(self):
         """
-        Reset custom variable values after change code
+        Reset custom variable values after code change
         """
+
+        self.ensure_one()
         # Remove existing custom variable values
         self.custom_variable_value_ids = False
 
         if (
-            not self.command_variable_ids
+            self.jet_ids
+            or not self.command_variable_ids
             or not self.server_ids
             or len(self.server_ids) > 1
         ):
@@ -275,7 +300,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         # Add new custom variable values
         # Render values for the first server only.
-        server = self.server_ids
+        server = self.server_ids[0]
 
         # Get variable list
         variables = self.get_variables()
@@ -319,11 +344,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
         Return wizard action to select command and execute it
         """
         context = self.env.context.copy()
-        context.update(
-            {
-                "default_server_ids": self.server_ids.ids,
-            }
-        )
+        if self.jet_ids:
+            context["default_jet_ids"] = self.jet_ids.ids
+        else:
+            context["default_server_ids"] = self.server_ids.ids
         return {
             "type": "ir.actions.act_window",
             "name": _("Run Command"),
@@ -334,7 +358,9 @@ class CxTowerCommandRunWizard(models.TransientModel):
         }
 
     def run_command_on_server(self):
-        """Run command on selected servers"""
+        """Run command on selected servers or jets"""
+        self.ensure_one()
+
         # Check if all required values are set
         if self.has_missing_required_values:
             raise ValidationError(self.missing_required_variables_message)
@@ -354,13 +380,22 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 for value in self.custom_variable_value_ids
             },
         }
-        for server in self.server_ids:
-            server.run_command(
-                self.command_id,
-                sudo=self.use_sudo,
-                path=path_value,
-                **kwargs,
-            )
+        if self.jet_ids:
+            for jet in self.jet_ids:
+                jet.run_command(
+                    command=self.command_id,
+                    sudo=self.use_sudo,
+                    path=path_value,
+                    **kwargs,
+                )
+        else:
+            for server in self.server_ids:
+                server.run_command(
+                    command=self.command_id,
+                    sudo=self.use_sudo,
+                    path=path_value,
+                    **kwargs,
+                )
         return {
             "type": "ir.actions.act_window",
             "name": _("Command Log"),

@@ -411,7 +411,7 @@ class TowerVariable(models.Model):
             Char: The value of the variable or None if no value is found.
         """
         self.ensure_one()
-        value_ids = self.value_ids
+        values = self.value_ids
 
         # 0. Set server from Jet if Jetprovided
         if jet:
@@ -428,49 +428,86 @@ class TowerVariable(models.Model):
             plan_line_action_value_char
         ) = jet_template_value_char = jet_value_char = None
 
+        # Get origin id's in case we are dealing with onchange()
+        server_id = (
+            server._origin.id
+            if server and hasattr(server, "_origin")
+            else server.id
+            if server
+            else None
+        )
+        server_template_id = (
+            server_template._origin.id
+            if server_template and hasattr(server_template, "_origin")
+            else server_template.id
+            if server_template
+            else None
+        )
+        plan_line_action_id = (
+            plan_line_action._origin.id
+            if plan_line_action and hasattr(plan_line_action, "_origin")
+            else plan_line_action.id
+            if plan_line_action
+            else None
+        )
+        jet_template_id = (
+            jet_template._origin.id
+            if jet_template and hasattr(jet_template, "_origin")
+            else jet_template.id
+            if jet_template
+            else None
+        )
+        jet_id = (
+            jet._origin.id
+            if jet and hasattr(jet, "_origin")
+            else jet.id
+            if jet
+            else None
+        )
+
         # Check all values for the variable and assign them.
         # Note: we are not using filtered() to avoid multiple iterations
         # on the same recordset.
-        for variable_value_id in value_ids:
+        for variable_value in values:
             # Fetch the server value
             if (
                 server
                 and not server_value_char
-                and variable_value_id.server_id.id == server.id
+                and variable_value.server_id.id == server_id
             ):
-                server_value_char = variable_value_id.value_char
+                server_value_char = variable_value.value_char
                 continue
             # Fetch the server template value
             if (
                 server_template
                 and not server_template_value_char
-                and variable_value_id.server_template_id.id == server_template.id
+                and variable_value.server_template_id.id == server_template_id
             ):
-                server_template_value_char = variable_value_id.value_char
+                server_template_value_char = variable_value.value_char
                 continue
             # Fetch the plan line action value
             if (
                 plan_line_action
                 and not plan_line_action_value_char
-                and variable_value_id.plan_line_action_id.id == plan_line_action.id
+                and variable_value.plan_line_action_id.id == plan_line_action_id
             ):
-                plan_line_action_value_char = variable_value_id.value_char
+                plan_line_action_value_char = variable_value.value_char
                 continue
             # Fetch the jet template value
             if (
                 jet_template
                 and not jet_template_value_char
-                and variable_value_id.jet_template_id.id == jet_template.id
+                and variable_value.jet_template_id.id == jet_template_id
             ):
-                jet_template_value_char = variable_value_id.value_char
+                jet_template_value_char = variable_value.value_char
                 continue
             # Fetch the jet value
-            if jet and not jet_value_char and variable_value_id.jet_id.id == jet.id:
-                jet_value_char = variable_value_id.value_char
+            if jet and not jet_value_char and variable_value.jet_id.id == jet_id:
+                jet_value_char = variable_value.value_char
                 continue
             # Fetch the global value
-            if not global_value_char and variable_value_id.is_global:
-                global_value_char = variable_value_id.value_char
+            if not global_value_char and variable_value.is_global:
+                global_value_char = variable_value.value_char
 
         # 2. Compose the response
         # 2.1. Server Template
