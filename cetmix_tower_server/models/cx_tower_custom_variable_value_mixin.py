@@ -11,7 +11,6 @@ class CxTowerCustomVariableValueMixin(models.AbstractModel):
 
     variable_id = fields.Many2one(
         "cx.tower.variable",
-        readonly=True,
     )
     variable_type = fields.Selection(related="variable_id.variable_type", readonly=True)
     value_char = fields.Char(

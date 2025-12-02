@@ -147,8 +147,3 @@ class CxTowerPlanRunWizardVariableValue(models.TransientModel):
         "cx.tower.plan.run.wizard",
         string="Wizard",
     )
-    # Override from mixin to make variable_id editable
-    variable_id = fields.Many2one(
-        "cx.tower.variable",
-        readonly=False,
-    )
