@@ -110,11 +110,7 @@
                                 </list>
                             </field>
                         </page>
-                        <page
-                            name="configuration_values"
-                            string="Configuration Values"
-                            invisible="not custom_variable_value_ids"
-                        >
+                        <page name="configuration_values" string="Configuration Values">
                             <field name="custom_variable_value_ids">
                                 <list editable="bottom">
                                     <field name="variable_id" />
