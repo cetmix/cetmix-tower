@@ -26,13 +26,17 @@
                     role="alert"
                 />
                 <group>
+                    <field
+                        name="jet_ids"
+                        widget="many2many_tags"
+                        attrs="{'invisible': [('jet_ids', '=', [])]}"
+                    />
                     <field name="show_servers" invisible="1" />
                     <field
                         name="server_ids"
                         widget="many2many_tags"
-                        required="1"
                         string="Run on"
-                        attrs="{'invisible': [('result', '!=', False)]}"
+                        attrs="{'invisible': [('show_servers', '=', False)], 'required': [('jet_ids', '=', [])],'readonly': [('jet_ids', '=', [])] }"
                         groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     />
                     <label
