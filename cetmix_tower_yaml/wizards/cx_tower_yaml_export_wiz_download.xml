@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_yaml_export_wiz_download_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.yaml.export.wiz.download.view.form</field>
+        <field name="model">cx.tower.yaml.export.wiz.download</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="yaml_file" filename="yaml_file_name" />
+                    <field name="yaml_file_name" invisible="1" />
+                </group>
+                <footer>
+                    <button string="Close" special="cancel" class="oe_highlight" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

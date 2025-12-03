@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_yaml_import_wiz_upload_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.yaml.import.wiz.upload.view.form</field>
+        <field name="model">cx.tower.yaml.import.wiz.upload</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="file_name" invisible="1" />
+                    <field
+                        name="yaml_file"
+                        filename="file_name"
+                        options="{'accepted_file_extensions': '.yaml,.yml'}"
+                    />
+                </group>
+                <footer>
+                    <button
+                        string="Process"
+                        type="object"
+                        name="action_import_yaml"
+                        class="oe_highlight"
+                        invisible="not yaml_file"
+                    />
+                    <button string="Close" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_yaml_import_wiz_upload" model="ir.actions.act_window">
+        <field name="name">Import YAML</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.yaml.import.wiz.upload</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

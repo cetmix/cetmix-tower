@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_yaml_export_wiz_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.yaml.export.wiz.view.form</field>
+        <field name="model">cx.tower.yaml.export.wiz</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="yaml_file_name" placeholder="my_snippet.yaml" />
+                </group>
+                <group>
+                    <group>
+                        <field name="explode_child_records" />
+                        <field name="remove_empty_values" />
+                    </group>
+                    <group>
+                        <field name="add_manifest" />
+                        <field name="preview_code" />
+                    </group>
+                </group>
+
+                <group string="Manifest" invisible="not add_manifest">
+                    <field
+                        name="manifest_template_id"
+                        placeholder="Select a pre-defined template"
+                        help="Select a template to auto-populate manifest fields"
+                    />
+                    <group string="Information">
+                        <field name="manifest_name" required="add_manifest" />
+                        <field
+                            name="manifest_summary"
+                            required="manifest_name"
+                            placeholder="Short summary, 160 symbols max"
+                        />
+                        <field
+                            name="manifest_author_ids"
+                            widget="many2many_tags"
+                            required="manifest_name"
+                        />
+                        <field
+                            name="manifest_version"
+                            placeholder="Use the Major.Minor.Patch format, e.g. 1.2.3"
+                        />
+                        <field name="manifest_website" />
+                    </group>
+
+                    <group string="License and pricing">
+                        <field name="manifest_license" required="manifest_name" />
+                        <field
+                            name="manifest_price"
+                            invisible="manifest_license != 'custom'"
+                        />
+                        <field
+                            name="manifest_currency"
+                            invisible="manifest_price == 0"
+                        />
+                    </group>
+                </group>
+
+                <notebook>
+                    <page string="Description" invisible="not add_manifest">
+                        <field
+                            name="manifest_description"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                            placeholder="Detailed description (optional)"
+                        />
+                    </page>
+
+                    <page
+                        string="License text"
+                        invisible="manifest_license != 'custom'"
+                    >
+                        <field
+                            name="manifest_license_text"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                            placeholder="License text"
+                            required="manifest_license == 'custom'"
+                        />
+                    </page>
+
+                    <page string="Preview code" invisible="not preview_code">
+                        <field
+                            name="yaml_code"
+                            widget="ace"
+                            options="{'mode': 'yaml'}"
+                            force_save="1"
+                            nolabel="1"
+                            colspan="4"
+                            readonly="1"
+                        />
+                    </page>
+                </notebook>
+
+                <footer>
+                    <button
+                        string="Generate YAML file"
+                        type="object"
+                        name="action_generate_yaml_file"
+                        class="oe_highlight"
+                    />
+                    <button string="Close" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

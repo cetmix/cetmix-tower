@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_yaml_import_wiz_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.yaml.import.wiz.view.form</field>
+        <field name="model">cx.tower.yaml.import.wiz</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="if_record_exists" />
+                </group>
+                <div class="alert alert-info" role="alert" invisible="not secret_list">
+                    <field name="secret_list" nolabel="1" />
+                </div>
+
+                <group>
+                    <field name="preview_code" widget="boolean_toggle" />
+                </group>
+
+                <group invisible="not manifest_name">
+                    <group string="Information">
+                        <field name="manifest_name" string="Name" />
+                        <field name="manifest_summary" string="Summary" />
+                        <field name="manifest_author_string" string="Author" />
+                        <field name="manifest_version" string="Version" />
+                        <field
+                            name="manifest_website"
+                            string="Website"
+                            invisible="not manifest_website"
+                        />
+                    </group>
+                    <group string="License and pricing">
+                        <field name="manifest_license" string="License" />
+                        <field
+                            name="manifest_price"
+                            string="Price"
+                            invisible="not manifest_price"
+                        />
+                        <field
+                            name="manifest_currency"
+                            string="Currency"
+                            invisible="not manifest_currency"
+                        />
+                    </group>
+                </group>
+
+                <notebook>
+                    <page string="Description" invisible="not manifest_description">
+                        <field
+                            name="manifest_description"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                        />
+                    </page>
+
+                    <page string="License text" invisible="not manifest_license_text">
+                        <field
+                            name="manifest_license_text"
+                            widget="text"
+                            nolabel="1"
+                            colspan="4"
+                        />
+                    </page>
+
+                    <page string="Code preview" invisible="not preview_code">
+                        <group>
+                            <field
+                                name="yaml_code"
+                                widget="ace"
+                                options="{'mode': 'yaml'}"
+                                force_save="1"
+                                nolabel="1"
+                                colspan="4"
+                            />
+                        </group>
+                    </page>
+                </notebook>
+
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    invisible="if_record_exists != 'create'"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        <strong
+                    >Important:</strong> To maintain data consistency, the following
+                        model records will always be updated if they exist in Odoo:
+                    </p>
+                    <ul>
+                        <li>Variables</li>
+                        <li>Variable Options</li>
+                        <li>Key/Secrets</li>
+                        <li>Tags</li>
+                        <li>OSs</li>
+                    </ul>
+                    <p>
+                        To create new entities instead of updating existing ones, remove or modify
+                        the <code
+                    >reference</code> field in the YAML code for those entities.
+                    </p>
+                </div>
+                <div
+                    class="alert alert-warning"
+                    role="alert"
+                    invisible="if_record_exists != 'update'"
+                    style="margin-bottom:0px;"
+                >
+                    <p>
+                        Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.
+                        If any of those related records doesn't exist, it will be created automatically.
+                    </p>
+                </div>
+                <footer>
+                    <button
+                        string="Import"
+                        type="object"
+                        name="action_import_yaml"
+                        class="oe_highlight"
+                        invisible="if_record_exists != 'update'"
+                        confirm="This may overwrite existing records. Proceed?"
+                    />
+                    <button
+                        string="Import"
+                        type="object"
+                        name="action_import_yaml"
+                        class="oe_highlight"
+                        invisible="if_record_exists == 'update'"
+                    />
+                    <button string="Close" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
