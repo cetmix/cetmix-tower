@@ -25,6 +25,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         string="Servers",
         compute="_compute_server_ids",
         readonly=False,
+        required=True,
         store=True,
     )
     jet_ids = fields.Many2many(
@@ -88,6 +89,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
         compute="_compute_show_servers",
         compute_sudo=True,
     )
+    show_jets = fields.Boolean(
+        compute="_compute_show_jets",
+        compute_sudo=True,
+    )
     os_compatibility_warning = fields.Text(
         compute="_compute_os_compatibility_warning",
         compute_sudo=True,
@@ -134,6 +139,11 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 and not rec.jet_ids
                 and not rec.result
             )
+
+    @api.depends("jet_ids")
+    def _compute_show_jets(self):
+        for rec in self:
+            rec.show_jets = bool(rec.jet_ids and len(rec.jet_ids) > 1)
 
     @api.depends("command_id", "server_ids", "action")
     def _compute_code(self):

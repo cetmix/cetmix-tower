@@ -285,15 +285,26 @@ class CxTowerJet(models.Model):
         Returns wizard action to select command and run it
         """
         context = self.env.context.copy()
-        context.update(
-            {
-                "default_jet_ids": self.ids,
-            }
-        )
+        context["default_jet_ids"] = self.ids
         return {
             "type": "ir.actions.act_window",
             "name": _("Run Command"),
             "res_model": "cx.tower.command.run.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
+    def action_run_flight_plan(self):
+        """
+        Returns wizard action to select flightplan and run it
+        """
+        context = self.env.context.copy()
+        context["default_jet_ids"] = self.ids
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Run Flight Plan"),
+            "res_model": "cx.tower.plan.run.wizard",
             "view_mode": "form",
             "target": "new",
             "context": context,
@@ -409,6 +420,35 @@ class CxTowerJet(models.Model):
             path=path,
             sudo=sudo,
             ssh_connection=ssh_connection,
+            jet=self,
+            **kwargs,
+        )
+
+    def run_flight_plan(self, flight_plan, jet_template=None, jet=None, **kwargs):
+        """
+        Runs flight plan on the current server.
+
+        Args:
+            flight_plan (cx.tower.plan()): flight plan to run
+            jet_template (cx.tower.jet.template()): jet template
+                to run the flight plan on
+            jet (cx.tower.jet()): jet to run the flight plan on
+            kwargs (dict): Optional arguments
+                Following are supported but not limited to:
+                    - "plan_log": {values passed to flightplan logger}
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
+                    - "variable_values", dict(): custom variable values
+                        in the format of `{variable_reference: variable_value}`
+                        eg `{'odoo_version': '16.0'}`
+                        Will be applied only if user has write access to the server.
+        """
+
+        self.ensure_one()
+
+        return self.server_id.run_flight_plan(
+            flight_plan=flight_plan,
+            jet_template=jet_template,
             jet=self,
             **kwargs,
         )

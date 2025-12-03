@@ -134,6 +134,13 @@
                         string="Run command"
                         icon="fa-code"
                     />
+                    <button
+                        name="action_run_flight_plan"
+                        type="object"
+                        class="btn-primary"
+                        string="Run Flight Plan"
+                        icon="fa-plane"
+                    />
                     <field
                         name="state_id"
                         widget="statusbar"
