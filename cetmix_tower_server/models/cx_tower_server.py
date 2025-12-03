@@ -574,8 +574,7 @@ class CxTowerServer(models.Model):
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(_("SSH connection error %(err)s", err=e)) from e
-            else:
-                return False, e
+            return False, e
         return client
 
     def test_ssh_connection(
@@ -1508,12 +1507,23 @@ class CxTowerServer(models.Model):
         if not client:
             if raise_on_error:
                 raise ValidationError(_("SSH Client is not defined."))
-            else:
-                return {
-                    "status": SSH_CONNECTION_ERROR,
-                    "response": False,
-                    "error": _("SSH Client is not defined."),
-                }
+            return {
+                "status": SSH_CONNECTION_ERROR,
+                "response": False,
+                "error": _("SSH Client is not defined."),
+            }
+
+        # Client contains a result of _get_ssh_client()
+        # If it's a tuple, it means there was an error getting the client
+        if isinstance(client, tuple):
+            error = client[1]
+            if raise_on_error:
+                raise ValidationError(error)
+            return {
+                "status": SSH_CONNECTION_ERROR,
+                "response": False,
+                "error": error,
+            }
 
         # Parse inline secrets
         code_and_secrets = self.env["cx.tower.key"]._parse_code_and_return_key_values(
@@ -1557,10 +1567,9 @@ class CxTowerServer(models.Model):
             if raise_on_error:
                 _logger.error(f"SSH run command error: {e}")
                 raise ValidationError(_("SSH run command error %(err)s", err=e)) from e
-            else:
-                status = GENERAL_ERROR
-                response = []
-                error = [e]
+            status = GENERAL_ERROR
+            response = []
+            error = [e]
 
         result = self._parse_command_results(status, response, error, secrets, **kwargs)
         return result
