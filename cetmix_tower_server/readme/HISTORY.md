@@ -1,3 +1,8 @@
+## 16.0.2.2.3 (2025-12-03)
+
+- Bugfixes: Save correct error message in log when SSH connection fails. (5109)
+
+
 ## 16.0.2.2.2 (2025-12-03)
 
 - Bugfixes: Make variables selectable in scheduled tasks (5105)
