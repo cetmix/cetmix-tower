@@ -1,3 +1,8 @@
+## 16.0.2.2.2 (2025-12-03)
+
+- Bugfixes: Make variables selectable in scheduled tasks (5105)
+
+
 ## 16.0.2.2.0 (2025-11-12)
 
 - Features: Integrate user notifications into the main module, drop the 'cetmix_tower_notify_backend' module. (5074)
