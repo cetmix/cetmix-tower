@@ -32,14 +32,12 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "'%s' is not a valid model"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
-#, python-format
 msgid "'invalid_model' is not a valid model"
 msgstr ""
 
@@ -260,14 +258,12 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid "Currency is required when price is specified"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
-#, python-format
 msgid "Custom"
 msgstr ""
 
@@ -302,21 +298,18 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Error creating record '%(reference)s' in model '%(model)s': %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Error updating record %(reference)s: %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
-#, python-format
 msgid "Euro"
 msgstr ""
 
@@ -358,14 +351,12 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
-#, python-format
 msgid "Failed to convert dictionary to YAML: %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid ""
 "Failed to encode YAML content. Please ensure all characters are UTF-8 "
 "compatible."
@@ -380,8 +371,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+msgid "File is empty"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "File is not a valid base64-encoded file"
 msgstr ""
 
@@ -393,7 +388,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Following secrets are used in the code:<br/>%(secrets)s"
 msgstr ""
 
@@ -431,7 +425,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Import result: %(model)s"
 msgstr ""
 
@@ -444,7 +437,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "Invalid YAML file"
 msgstr ""
 
@@ -508,7 +500,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid "License text is required for a custom license"
 msgstr ""
 
@@ -550,14 +541,12 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "Model '%s' does not support YAML import"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
-#, python-format
 msgid "Model 'command_run_wizard' does not support YAML import"
 msgstr ""
 
@@ -586,14 +575,12 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid "No YAML code is present."
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid "No model or records selected"
 msgstr ""
 
@@ -601,14 +588,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "No records were created or updated"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid "No valid records selected"
 msgstr ""
 
@@ -643,17 +628,13 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
-#, python-format
 msgid "Provide Custom License Text when License is set to 'Custom'."
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
-#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Record Import"
 msgstr ""
 
@@ -661,21 +642,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "Record model is missing for record %s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Record reference is missing"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
-#, python-format
 msgid "Records of the following models were created or updated: %(models)s"
 msgstr ""
 
@@ -769,7 +747,6 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
-#, python-format
 msgid "US Dollar"
 msgstr ""
 
@@ -788,7 +765,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 #: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
-#, python-format
 msgid "Values must be a dictionary"
 msgstr ""
 
@@ -818,14 +794,12 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_export_wiz.py:0
-#, python-format
 msgid "Version must be in format Major.Minor.Patch, e.g. 1.2.3"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
-#, python-format
 msgid "Version must be in the Major.Minor.Patch format, e.g. 1.2.3"
 msgstr ""
 
@@ -851,7 +825,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 #: code:addons/cetmix_tower_yaml/tests/test_tower_yaml_mixin.py:0
-#, python-format
 msgid "Wrong value for 'access_level' key: %(acv)s"
 msgstr ""
 
@@ -910,7 +883,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "YAML file cannot be decoded properly"
 msgstr ""
 
@@ -919,7 +891,6 @@ msgstr ""
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "YAML file doesn't contain any records"
 msgstr ""
 
@@ -927,7 +898,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid ""
 "YAML version is higher than version supported by your Cetmix Tower instance."
 " %(code_version)s > %(tower_version)s"
@@ -973,14 +943,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
-#, python-format
 msgid "Yaml file doesn't contain valid data"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
-#, python-format
 msgid "You are not allowed to create records from YAML"
 msgstr ""
 
