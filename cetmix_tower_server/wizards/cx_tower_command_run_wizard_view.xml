@@ -26,10 +26,13 @@
                     role="alert"
                 />
                 <group>
+                    <field name="show_jets" invisible="1" />
                     <field
                         name="jet_ids"
+                        string="Run on"
                         widget="many2many_tags"
-                        attrs="{'invisible': [('jet_ids', '=', [])]}"
+                        attrs="{'invisible': [('show_jets', '=', False)]}"
+                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
                     />
                     <field name="show_servers" invisible="1" />
                     <field
