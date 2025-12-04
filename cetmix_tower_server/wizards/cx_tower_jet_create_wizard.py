@@ -21,6 +21,7 @@ class CxTowerJetCreateWizard(models.TransientModel):
         required=True,
         domain="[('show_in_wizard', '=', True)]",
     )
+    note = fields.Text(related="jet_template_id.note", readonly=True)
     server_id = fields.Many2one(
         "cx.tower.server",
         domain="[('jet_template_ids', 'in', jet_template_id)]",
