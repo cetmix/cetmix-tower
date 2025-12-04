@@ -15,7 +15,12 @@
     "external_dependencies": {
         "python": ["paramiko<4", "tldextract", "dnspython", "ansi2html"],
     },
-    "depends": ["mail", "rpc_helper", "web_notify", "web_refresh_from_backend"],
+    "depends": [
+        "mail",
+        "rpc_helper",
+        "web_notify",
+        "web_refresh_from_backend",
+    ],
     "data": [
         "security/cetmix_tower_server_groups.xml",
         "security/ir.model.access.csv",
