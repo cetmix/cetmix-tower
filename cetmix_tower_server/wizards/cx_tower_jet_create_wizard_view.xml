@@ -6,6 +6,7 @@
         <field name="model">cx.tower.jet.create.wizard</field>
         <field name="arch" type="xml">
             <form string="Create Jet">
+                <field name="note" attrs="{'invisible': [('note', '=', False)]}" />
                 <group>
                     <field
                         name="jet_template_id"
