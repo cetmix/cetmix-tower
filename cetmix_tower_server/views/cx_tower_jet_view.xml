@@ -128,6 +128,14 @@
                         attrs="{'invisible': [('target_state_id', '!=', False)]}"
                     />
                     <button
+                        name="action_open_action_wizard"
+                        type="object"
+                        string="Trigger Action"
+                        icon="fa-play"
+                        class="btn-primary"
+                        attrs="{'invisible': [('target_state_id', '!=', False)]}"
+                    />
+                    <button
                         name="action_run_command"
                         type="object"
                         class="btn-primary"
@@ -194,12 +202,6 @@
                             name="available_action_ids"
                             widget="many2many_tags"
                             options="{'color_field': 'color'}"
-                        />
-                        <button
-                            name="action_open_action_wizard"
-                            type="object"
-                            string="Trigger Action"
-                            icon="fa-play"
                         />
                     </div>
 
