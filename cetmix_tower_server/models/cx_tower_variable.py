@@ -413,9 +413,11 @@ class TowerVariable(models.Model):
         self.ensure_one()
         values = self.value_ids
 
-        # 0. Set server from Jet if Jetprovided
+        # 0. Set server and jet template from jet
+        # if jet is provided
         if jet:
             server = jet.server_id
+            jet_template = jet.jet_template_id
 
         # 1. Prepare the values
 
