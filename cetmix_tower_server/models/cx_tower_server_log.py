@@ -83,6 +83,13 @@ class CxTowerServerLog(models.Model):
         ondelete="cascade",
     )
 
+    @api.depends("log_text")
+    def _compute_log_html(self):
+        for record in self:
+            record.log_html = (
+                html_converter.convert(record.log_text) if record.log_text else False
+            )
+
     @api.depends("jet_id")
     def _compute_server_id(self):
         for record in self:
