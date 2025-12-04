@@ -523,23 +523,23 @@
                 <filter
                     string="Running"
                     name="running"
-                    domain="[('status', '=', '4')]"
+                    domain="[('status', '=', 'running')]"
                 />
                 <filter
                     string="Not Running"
                     name="not_running"
-                    domain="[('status', 'in', ['2', '3', '5', '6'])]"
+                    domain="[('status', '!=', 'running')]"
                 />
                 <separator />
                 <filter
-                    string="Has Jets"
-                    name="stopped"
+                    string="With Jets"
+                    name="with_jets"
                     domain="[('jet_ids', '!=', False)]"
                 />
                 <filter
-                    string="Not Running"
-                    name="not_running"
-                    domain="[('status', 'in', ['2', '3', '5', '6'])]"
+                    string="With Jet Templates"
+                    name="with_jet_templates"
+                    domain="[('jet_template_ids', '!=', False)]"
                 />
                 <group expand="0" string="Group By">
                     <filter

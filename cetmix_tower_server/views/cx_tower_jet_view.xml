@@ -38,6 +38,14 @@
                             </div>
                             <!-- Main content -->
                             <div class="o_kanban_record_body">
+                                <div t-if="record.state_id.raw_value" class="row">
+                                    <div class="col-6">
+                                        <strong>State:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <field name="state_id" />
+                                    </div>
+                                </div>
                                 <div
                                     class="row"
                                     groups="cetmix_tower_server.group_manager"
@@ -107,7 +115,7 @@
                 />
                 <field name="server_id" />
                 <field name="state_id" />
-                <field name="jet_template_state_ids" invisible="1" />
+                <field name="jet_template_state_ids" optional="hide" />
             </tree>
         </field>
     </record>
@@ -125,7 +133,7 @@
                         string="Set State"
                         class="btn-primary"
                         icon="fa-cog"
-                        attrs="{'invisible': [('target_state_id', '!=', False)]}"
+                        attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
                     <button
                         name="action_open_action_wizard"
@@ -133,7 +141,7 @@
                         string="Trigger Action"
                         icon="fa-play"
                         class="btn-primary"
-                        attrs="{'invisible': [('target_state_id', '!=', False)]}"
+                        attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
                     <button
                         name="action_run_command"
@@ -141,6 +149,7 @@
                         class="btn-primary"
                         string="Run command"
                         icon="fa-code"
+                        attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
                     <button
                         name="action_run_flight_plan"
@@ -148,6 +157,7 @@
                         class="btn-primary"
                         string="Run Flight Plan"
                         icon="fa-plane"
+                        attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
                     <field
                         name="state_id"
@@ -189,6 +199,11 @@
                         attrs="{'invisible': [('target_state_id', '=', False)]}"
                     >Transitioning to:
                         <field name="target_state_id" />
+                    </div>
+                    <div
+                        attrs="{'invisible': [('target_state_id', '=', False)]}"
+                    >Currently executing:
+                        <field name="current_action_id" />
                     </div>
                     <div
                         attrs="{'invisible': [('served_jet_request_id', '=', False)]}"

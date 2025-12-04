@@ -569,6 +569,11 @@ class TowerVariable(models.Model):
             dict {variable_reference: value}
         """
 
+        # 0. Update server and jet template from jet
+        if jet:
+            server = jet.server_id
+            jet_template = jet.jet_template_id
+
         # 1. Get system variable values
         variable_values = {}
         system_vars = self._get_system_variable_values(

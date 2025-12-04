@@ -46,6 +46,11 @@ class CxTowerPlanLog(models.Model):
         index=True,
         ondelete="cascade",
     )
+    jet_action_id = fields.Many2one(
+        comodel_name="cx.tower.jet.action",
+        readonly=True,
+        help="Used to track flight plans executed by jet actions",
+    )
 
     plan_id = fields.Many2one(
         string="Flight Plan",
@@ -343,7 +348,7 @@ class CxTowerPlanLog(models.Model):
             )
 
         # Jet
-        if self.jet_id:
+        if self.jet_id and self.jet_action_id:
             self.jet_id._flight_plan_finished(
                 plan_status=self.plan_status,
             )
