@@ -371,7 +371,7 @@ class CxTowerGitRemote(models.Model):
             return f"merge-requests/{head_number}/head"
 
         # Commit
-        # https://gitlab.com/cetmix/test/-/tree/17.0-test-branch?ref_type=heads
+        # https://gitlab.com/cetmix/test/-/list/17.0-test-branch?ref_type=heads
         if self.head_type in ["commit", "branch"]:
             head_parts = head_number.split("?")
             return f"{head_parts[0]}"

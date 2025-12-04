@@ -88,6 +88,7 @@ class TestServer(CommonTest):
                     "name": "Git Server",
                     "ip_v4_address": "192.168.1.10",
                     "server_template_id": server_template.id,
+                    "skip_host_key": True,
                 }
             )
         )

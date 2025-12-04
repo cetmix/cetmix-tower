@@ -380,7 +380,7 @@ class TestRemote(CommonTest):
         # GitHub + branch as link
         self.remote_github_https.write(
             {
-                "head": "https://github.com/cetmix-test/cetmix-tower/tree/14.0-demo-branch",
+                "head": "https://github.com/cetmix-test/cetmix-tower/list/14.0-demo-branch",
                 "head_type": "branch",
             }
         )
