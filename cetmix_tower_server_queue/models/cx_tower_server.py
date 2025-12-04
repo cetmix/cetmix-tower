@@ -22,13 +22,16 @@ class CxTowerServer(models.Model):
         # preserve the order of execution of commands with action “Run flight plan”.
         # Use runner only if command log record is provided.
         if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
+            # ssh_connection cannot be serialized for queue jobs and will cause
+            # a runtime error. The _queue_command_runner_wrapper will create
+            # its own connection if needed (see _command_runner_ssh).
             job = self.with_delay()._queue_command_runner_wrapper(
                 command=command,
                 log_record=log_record,
                 rendered_command_code=rendered_command_code,
                 sudo=sudo,
                 rendered_command_path=rendered_command_path,
-                ssh_connection=ssh_connection,
+                ssh_connection=None,  # Always None for queued jobs
                 **kwargs,
             )
             log_record.sudo().queue_job_id = job.db_record().id
