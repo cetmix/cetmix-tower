@@ -38,7 +38,7 @@ class CxTowerGitProjectFileTemplateRel(models.Model):
 
     _sql_constraints = [
         (
-            "project_server_file_format_uniq",
+            "project_server_file_template_format_uniq",
             "unique(git_project_id, file_template_id, project_format)",
             "File template is already related to the same project and format",
         ),
