@@ -1,7 +1,15 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
+import logging
+
+from ansi2html import Ansi2HTMLConverter
+
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
+
+_logger = logging.getLogger(__name__)
+
+html_converter = Ansi2HTMLConverter(inline=True)
 
 
 class CxTowerServerLog(models.Model):
@@ -44,6 +52,7 @@ class CxTowerServerLog(models.Model):
         help="File that will be executed to get the log data",
     )
     log_text = fields.Text(readonly=True, copy=False)
+    log_html = fields.Html(compute="_compute_log_html")
 
     # --- Server template related
     server_template_id = fields.Many2one("cx.tower.server.template", ondelete="cascade")
@@ -65,6 +74,19 @@ class CxTowerServerLog(models.Model):
             ("command", "Command"),
             ("file", "File"),
         ]
+
+    @api.depends("log_text")
+    def _compute_log_html(self):
+        for record in self:
+            if record.log_text:
+                try:
+                    record.log_html = html_converter.convert(record.log_text)
+                # We catch all exceptions to avoid breaking the log display
+                except Exception as e:
+                    _logger.error("Error converting log text to HTML: %s", e)
+                    record.log_html = False
+            else:
+                record.log_html = False
 
     def copy(self, default=None):
         return super(
