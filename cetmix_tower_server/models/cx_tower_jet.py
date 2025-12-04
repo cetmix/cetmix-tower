@@ -388,6 +388,30 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #  General functions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def get_variable_value(self, variable_reference, no_fallback=False):
+        """
+        Return the value of a variable for the current jet.
+        NB: this function follows the value application order.
+        Jet->Jet Template->Server->Global
+
+        Args:
+            variable_reference (Char): The reference of the variable
+                to get the value for
+            no_fallback (bool): If True, will return current record value
+                without checking fallback values.
+
+        Returns:
+            str: The value of the variable for the current record or None
+        """
+        self.ensure_one()
+        if no_fallback:
+            return super().get_variable_value(variable_reference, no_fallback)
+        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
+        if not variable:
+            return None
+        return variable._get_value(jet=self)
+
     def run_command(
         self,
         command,

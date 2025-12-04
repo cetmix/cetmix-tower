@@ -2148,6 +2148,21 @@ class CxTowerServer(models.Model):
     # ---- Auxiliary functions
     # ------------------------------
 
+    def get_variable_value(self, variable_reference):
+        """
+        Return the value of a variable for the current server.
+        NB: this function follows the value application order.
+        So it will return the global value if server value is not set.
+
+        Returns:
+            str: The value of the variable for the current record or None
+        """
+        self.ensure_one()
+        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
+        if not variable:
+            return None
+        return variable._get_value(server=self)
+
     def server_toggle_active(self, self_active):
         """
         Change active status of related records
