@@ -643,8 +643,8 @@ class CxTowerServer(models.Model):
                 client, command_code=command, **{"raise_on_error": raise_on_error}
             )
             status = test_result.get("status", 0)
-            response = test_result.get("response", "")
-            error = test_result.get("error", "")
+            response = test_result.get("response") or ""
+            error = test_result.get("error") or ""
 
             # Got an error
             if raise_on_error and (status != 0 or error):
@@ -681,7 +681,7 @@ class CxTowerServer(models.Model):
                 client, command_code="rm -rf /tmp/cetmix_tower_test_connection.txt"
             )
             file_status = file_test_result.get("status", 0)
-            file_error = file_test_result.get("error", "")
+            file_error = file_test_result.get("error") or ""
 
             # In case of an error, raise or replace command result with file test result
             if file_status != 0 or file_error:
@@ -708,7 +708,7 @@ class CxTowerServer(models.Model):
                     "response": _("Connection test passed."),
                     "error": "",
                 }
-            response = test_result.get("response", "")
+            response = test_result.get("response") or ""
             return self._get_notification_action(
                 _(
                     "Connection test passed! \n%(res)s",
