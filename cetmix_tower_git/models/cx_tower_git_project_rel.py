@@ -154,9 +154,9 @@ class CxTowerGitProjectRel(models.Model):
                             project_format=record.project_format,
                         )
                     )
-                code_generator_functions[
-                    record.project_format
-                ] = code_generator_function
+                code_generator_functions[record.project_format] = (
+                    code_generator_function
+                )
 
             # Generate code for current record
             code = code_generator_function(record)

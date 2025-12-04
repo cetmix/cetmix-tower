@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Tree View -->
     <record id="cx_tower_git_repo_view_tree" model="ir.ui.view">
         <field name="name">cx.tower.git.repo.tree</field>
@@ -141,5 +140,4 @@
             </p>
         </field>
     </record>
-
 </odoo>

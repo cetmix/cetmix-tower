@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
-
     <!-- Git Project -->
     <record id="git_project_demo" model="cx.tower.git.project">
         <field name="name">Demo Git Project</field>
