@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Tree View -->
+    <!-- List View -->
     <record id="cx_tower_git_remote_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.git.remote.tree</field>
+        <field name="name">cx.tower.git.remote.list</field>
         <field name="model">cx.tower.git.remote</field>
         <field name="arch" type="xml">
-            <tree decoration-info="is_private">
+            <list decoration-info="is_private">
                 <field
                     name="repo_id"
                     placeholder="select or enter a link"
@@ -17,7 +17,7 @@
                 <field name="enabled" widget="boolean_toggle" />
                 <field name="create_uid" optional="hide" />
                 <field name="reference" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -70,7 +70,7 @@
     <record id="action_cx_tower_git_remote" model="ir.actions.act_window">
         <field name="name">Git Remotes</field>
         <field name="res_model">cx.tower.git.remote</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first git remote!

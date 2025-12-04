@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Tree View -->
+    <!-- List View -->
     <record id="cx_tower_git_source_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.git.source.tree</field>
+        <field name="name">cx.tower.git.source.list</field>
         <field name="model">cx.tower.git.source</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="git_project_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -60,7 +60,7 @@
                             </div>
                             <field name="remote_count" invisible="1" />
                             <field name="remote_ids">
-                                <tree
+                                <list
                                     decoration-muted="not enabled"
                                     decoration-info="is_private"
                                 >
@@ -73,7 +73,7 @@
                                     <field name="is_private" optional="hide" />
                                     <field name="reference" optional="hide" />
                                     <field name="create_uid" optional="hide" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Tree View -->
+    <!-- List View -->
     <record id="cx_tower_git_repo_owner_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.git.repo.owner.tree</field>
+        <field name="name">cx.tower.git.repo.owner.list</field>
         <field name="model">cx.tower.git.repo.owner</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="display_name" />
                 <field name="name" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -31,12 +31,12 @@
                     <notebook>
                         <page string="Repositories" name="repositories">
                             <field name="repo_ids" readonly="True">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <field name="reference" optional="hide" />
                                     <field name="provider" />
                                     <field name="is_private" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -49,7 +49,8 @@
     <record id="action_cx_tower_git_repo_owner" model="ir.actions.act_window">
         <field name="name">Repository Owners</field>
         <field name="res_model">cx.tower.git.repo.owner</field>
-        <field name="view_mode">tree,form</field>
+        <field name="path">cetmix_tower_git_repo_owners</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first repository owner!
