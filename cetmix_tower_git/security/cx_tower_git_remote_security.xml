@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-
     <!-- Manager Read Rule -->
     <record id="rule_git_remote_manager_read" model="ir.rule">
         <field name="name">Git Remote: Manager Read Access</field>
@@ -68,6 +67,4 @@
         <field name="perm_create" eval="1" />
         <field name="perm_unlink" eval="1" />
     </record>
-
-
 </odoo>
