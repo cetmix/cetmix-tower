@@ -182,7 +182,10 @@ class CxTowerCommandRunWizard(models.TransientModel):
                     "cx.tower.variable"
                 ]._get_variable_values_by_references(
                     variables.get(str(record.id)),
-                    server=server_id if not record.jet_ids else None,
+                    server=server_id,
+                    jet_template=record.jet_ids[0].jet_template_id
+                    if record.jet_ids
+                    else None,
                     jet=record.jet_ids[0] if record.jet_ids else None,
                 )
                 if variable_values and record.custom_variable_value_ids:

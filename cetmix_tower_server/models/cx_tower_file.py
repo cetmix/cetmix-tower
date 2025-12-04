@@ -107,7 +107,13 @@ class CxTowerFile(models.Model):
         "Otherwise there will be a server error message logged.",
     )
     server_id = fields.Many2one(
-        comodel_name="cx.tower.server", required=False, index=True, ondelete="cascade"
+        comodel_name="cx.tower.server",
+        required=False,
+        index=True,
+        ondelete="cascade",
+        compute="_compute_server_id",
+        store=True,
+        readonly=False,
     )
     code_on_server = fields.Text(
         readonly=True,
@@ -142,6 +148,9 @@ class CxTowerFile(models.Model):
         comodel_name="cx.tower.jet.template",
         help="Jet template this file belongs to",
         index=True,
+        compute="_compute_server_id",
+        store=True,
+        readonly=False,
     )
     jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
@@ -207,6 +216,18 @@ class CxTowerFile(models.Model):
         return "text"
 
     # -- Computes
+
+    @api.depends("jet_id", "jet_id.server_id", "jet_id.jet_template_id")
+    def _compute_server_id(self):
+        for record in self:
+            if record.jet_id:
+                record.update(
+                    {
+                        "server_id": record.jet_id.server_id.id,
+                        "jet_template_id": record.jet_id.jet_template_id.id,
+                    }
+                )
+
     @api.depends("server_id", "template_id", "name", "server_dir", "code")
     def _compute_render(self):
         """
