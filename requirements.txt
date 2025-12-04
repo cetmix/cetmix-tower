@@ -1,4 +1,5 @@
 # generated from manifests external_dependencies
+ansi2html
 dnspython
 giturlparse==0.12.0
 paramiko<4
