@@ -57,7 +57,7 @@
                             groups="cetmix_tower_server.group_manager"
                         />
                     </group>
-                    <field name="log_text" />
+                    <field name="log_html" />
                 </sheet>
             </form>
         </field>

@@ -476,6 +476,9 @@ class CxTowerCommandRunWizardVariableValue(models.TransientModel):
     _name = "cx.tower.command.run.wizard.variable.value"
     _description = "Custom variable values for command run wizard"
 
+    variable_id = fields.Many2one(
+        readonly=True,
+    )
     wizard_id = fields.Many2one(
         "cx.tower.command.run.wizard",
         string="Wizard",
