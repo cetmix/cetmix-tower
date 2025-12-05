@@ -434,6 +434,16 @@ class CxTowerJet(models.Model):
                 context value == True else None
         """
         self.ensure_one()
+
+        # Raise an exception if jets is currently executing an action
+        if self.current_action_id:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' is currently executing an action",
+                    jet=self.display_name,
+                )
+            )
+
         return self.server_id.run_command(
             command=command,
             path=path,
@@ -464,6 +474,17 @@ class CxTowerJet(models.Model):
         """
 
         self.ensure_one()
+
+        # Raise an exception if jets is currently executing an action
+        # TODO: keep an eye on this method in case we use it
+        # directly in actions.
+        if self.current_action_id:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' is currently executing an action",
+                    jet=self.display_name,
+                )
+            )
 
         return self.server_id.run_flight_plan(
             flight_plan=flight_plan,
@@ -571,9 +592,15 @@ class CxTowerJet(models.Model):
 
         if action.plan_id:
             # Run the flight plan
+            kwargs = {
+                "plan_log": {
+                    "jet_action_id": action.id,
+                },
+            }
             self.server_id.sudo().run_flight_plan(
                 flight_plan=action.plan_id,
                 jet=self,
+                **kwargs,
             )
             # Flight plan will trigger the `_flight_plan_finished` function again
             # if the flight plan is finished successfully.

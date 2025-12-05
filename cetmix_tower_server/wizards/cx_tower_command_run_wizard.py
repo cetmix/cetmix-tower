@@ -422,10 +422,18 @@ class CxTowerCommandRunWizard(models.TransientModel):
         """
         Runs a given code as is in wizard
         """
+        self.ensure_one()
+
         # Check if multiple servers are selected
         if len(self.server_ids) > 1:
             raise ValidationError(
                 _("You cannot run custom code on multiple servers at once.")
+            )
+
+        # Check if multiple jets are selected
+        if len(self.jet_ids) > 1:
+            raise ValidationError(
+                _("You cannot run custom code on multiple jets at once.")
             )
 
         # Raise access error if non manager is trying to call this method
@@ -434,7 +442,14 @@ class CxTowerCommandRunWizard(models.TransientModel):
         ) and not self.env.user.has_group("cetmix_tower_server.group_root"):
             raise AccessError(_("You are not allowed to execute commands in wizard"))
 
-        self.ensure_one()
+        # Check if jet is currently executing an action
+        if self.jet_ids and self.jet_ids.current_action_id:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' is currently executing an action",
+                    jet=self.display_name,
+                )
+            )
 
         if not self.command_id.allow_parallel_run:
             running_count = (

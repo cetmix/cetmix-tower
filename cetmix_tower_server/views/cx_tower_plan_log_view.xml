@@ -52,6 +52,10 @@
                                 name="jet_id"
                                 attrs="{'invisible': [('jet_id', '=', False)]}"
                             />
+                            <field
+                                name="jet_action_id"
+                                attrs="{'invisible': [('jet_action_id', '=', False)]}"
+                            />
                             <field name="plan_id" />
                             <field
                                 name="scheduled_task_id"
