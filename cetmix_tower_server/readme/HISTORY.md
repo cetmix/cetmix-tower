@@ -1,3 +1,9 @@
+## 17.0.2.1.3 (2025-12-05)
+
+- Bugfixes: Make variables selectable in scheduled tasks (5105)
+- Bugfixes: Save correct error message in log when SSH connection fails. (5109)
+
+
 ## 17.0.2.1.2 (2025-11-25)
 
 - Features: Tag mixin and helper commands. (5039)
