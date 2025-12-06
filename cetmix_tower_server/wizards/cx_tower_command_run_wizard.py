@@ -436,6 +436,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 _("You cannot run custom code on multiple jets at once.")
             )
 
+        # From now we have one server or one jet selected
         # Raise access error if non manager is trying to call this method
         if not self.env.user.has_group(
             "cetmix_tower_server.group_manager"
@@ -447,7 +448,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
             raise ValidationError(
                 _(
                     "Jet '%(jet)s' is currently executing an action",
-                    jet=self.display_name,
+                    jet=self.jet_ids.display_name,
                 )
             )
 

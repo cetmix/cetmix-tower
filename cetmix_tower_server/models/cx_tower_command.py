@@ -1,6 +1,7 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from types import SimpleNamespace
+from urllib import parse
 
 from dns import exception, resolver, reversename
 from pytz import timezone
@@ -35,9 +36,49 @@ hashlib = wrap_module(
         "new",
     ],
 )
+re = wrap_module(
+    __import__("re"),
+    [
+        "match",
+        "fullmatch",
+        "search",
+        "sub",
+        "subn",
+        "split",
+        "findall",
+        "finditer",
+        "compile",
+        "template",
+        "escape",
+        "error",
+    ],
+)
 hmac = wrap_module(
     __import__("hmac"),
     ["new", "compare_digest"],
+)
+urllib_parse = wrap_module(
+    parse,
+    [
+        "urlparse",
+        "urljoin",
+        "urlunparse",
+        "urlencode",
+        "urlsplit",
+        "urlunsplit",
+        "parse_qs",
+        "parse_qsl",
+        "quote",
+        "quote_plus",
+        "quote_from_bytes",
+        "unquote",
+        "unquote_plus",
+        "unquote_to_bytes",
+        "splitquery",
+        "splittag",
+        "splituser",
+        "splitvalue",
+    ],
 )
 tldextract = wrap_module(__import__("tldextract"), ["extract"])
 dns_resolver = wrap_module(resolver, ["resolve", "query"])
@@ -346,6 +387,10 @@ class CxTowerCommand(models.Model):
                 }}
         """
         python_libraries = {
+            "re": {
+                "import": re,
+                "help": _("Python 're' library for regex operations"),
+            },
             "time": {
                 "import": tools.safe_eval.time,
                 "help": _("Python 'time' library"),
@@ -368,6 +413,10 @@ class CxTowerCommand(models.Model):
                     "Python 'requests' library. Available methods: 'post', 'get',"
                     " 'delete', 'request'"
                 ),
+            },
+            "urllib_parse": {
+                "import": urllib_parse,
+                "help": _("Python 'urllib.parse' library methods."),
             },
             "json": {
                 "import": json,
@@ -492,6 +541,10 @@ class CxTowerCommand(models.Model):
             "tower_servers": {
                 "import": self.env["cx.tower.server"],
                 "help": _("A helper shortcut to <code>env['cx.tower.server']</code>"),
+            },
+            "tower_jets": {
+                "import": self.env["cx.tower.jet"],
+                "help": _("A helper shortcut to <code>env['cx.tower.jet']</code>"),
             },
             "tower_commands": {
                 "import": self.env["cx.tower.command"],
