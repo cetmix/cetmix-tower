@@ -235,7 +235,7 @@ class CetmixTowerWebhookController(http.Controller):
             _logger.error("Failed to create log entry", exc_info=True)
 
         return Response(
-            status=kwargs.get("http_status"),
+            status=kwargs.get("http_status") or 200,
             response=json.dumps({"message": message or ""}),
             content_type="application/json",
         )

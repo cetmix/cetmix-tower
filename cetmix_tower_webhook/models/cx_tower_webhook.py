@@ -10,6 +10,8 @@ from .constants import DEFAULT_WEBHOOK_CODE, DEFAULT_WEBHOOK_CODE_HELP
 
 
 class CxTowerWebhook(models.Model):
+    """Webhook"""
+
     _name = "cx.tower.webhook"
     _inherit = [
         "cx.tower.webhook.eval.mixin",
@@ -126,13 +128,13 @@ class CxTowerWebhook(models.Model):
         """
         Returns the default code for the webhook.
         """
-        return DEFAULT_WEBHOOK_CODE
+        return _(DEFAULT_WEBHOOK_CODE)
 
     def _get_default_python_eval_code_help(self):
         """
         Returns the default code help for the webhook.
         """
-        return DEFAULT_WEBHOOK_CODE_HELP
+        return _(DEFAULT_WEBHOOK_CODE_HELP)
 
     def _get_python_eval_odoo_objects(self, **kwargs):
         """
