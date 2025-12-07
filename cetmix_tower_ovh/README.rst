@@ -17,7 +17,7 @@ Cetmix Tower OVH
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_ovh
+    :target: https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_ovh
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -225,17 +225,7 @@ Running the OVHcloud Instance Command
 Changelog
 =========
 
-14.0.1.3.0 (2025-07-15)
------------------------
 
-- Features: Improve the way Python libraries are added using custom
-  modules (4832)
-
-14.0.1.2.0 (2025-06-12)
------------------------
-
-- Features: Refactor the library import using the latest updates in the
-  cetmix_tower_server module. (4768)
 
 Bug Tracker
 ===========
@@ -243,7 +233,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_ovh%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_ovh%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -267,6 +257,6 @@ Current maintainer:
 
 |maintainer-GSLabIt| 
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_ovh>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_ovh>`_ project on GitHub.
 
 You are welcome to contribute.
