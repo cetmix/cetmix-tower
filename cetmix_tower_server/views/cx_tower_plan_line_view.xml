@@ -36,7 +36,6 @@
                         <field name="note" readonly="1" invisible="not note" />
                     </group>
                     <group>
-                        <label for="condition" string="Condition" />
                         <field name="condition" widget="ace_tower" />
                     </group>
                     <notebook>

@@ -105,6 +105,16 @@
                 decoration-danger="plan_status != 0"
                 decoration-info="is_running == True"
             >
+                <header>
+                    <button
+                        name="action_stop"
+                        string="Stop"
+                        type="object"
+                        class="oe_highlight"
+                        confirm="Flight Plan will be terminated after executing the current command. Continue?"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                </header>
                 <field name="start_date" />
                 <field name="finish_date" optional="hide" />
                 <field name="duration_current" optional="show" />
