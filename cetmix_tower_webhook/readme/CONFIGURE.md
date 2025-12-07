@@ -38,16 +38,16 @@ result = {"allowed": False, "http_code": 403, "message": "Sorry..."}
 - Name. Authenticator name
 - Reference. Unique reference. Leave this field blank to auto generate it
 - Authenticator. Select an Authenticator used for this webhook
-- Endpoint. Webhook andpoint. The complete webhook URL will be <your_tower_url>/cetmix_tower_webhooks/<endpoint>​
+- Endpoint. Webhook endpoint. The complete webhook URL will be <your_tower_url>/cetmix_tower_webhooks/<endpoint>​
 - Run as User. Select a user to run the webhook on behalf of. CAREFUL! You must realize and understand what you are doing, including all the possible consequences when selecting a specific user.
 - Code. Code that processes the request. You can use all Cetmix Tower Python command variables (except for the server) plus the following webhook-specific one:
-  - headers: dictionary that contains the request headers 
+  - headers: dictionary that contains the request headers
   - payload: dictionary that contains the JSON payload or the GET parameters of the request
 
 Webhook code returns a result using the Cetmix Tower Python command pattern:
 
 ```python
-result = {"exit_code": <int, default=0>, "message": <string, default=None}
+result = {"exit_code": <int, default=0>, "message": <string, default=None>}
 ```
 
 **To configure the time for which the webhook call logs are stored:**

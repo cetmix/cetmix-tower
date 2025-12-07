@@ -85,10 +85,10 @@
     </record>
 
     <record id="cx_tower_webhook_log_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.webhook.log.view.tree</field>
+        <field name="name">cx.tower.webhook.log.view.list</field>
         <field name="model">cx.tower.webhook.log</field>
         <field name="arch" type="xml">
-            <tree
+            <list
                 decoration-info="authentication_status == 'success' and code_status == 'success'"
                 decoration-danger="authentication_status == 'failed' or code_status == 'failed'"
                 decoration-warning="authentication_status == 'not_required' or code_status == 'skipped'"
@@ -101,7 +101,7 @@
                 <field name="authentication_status" />
                 <field name="code_status" />
                 <field name="user_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -172,7 +172,7 @@
     <record id="cx_tower_webhook_log_action" model="ir.actions.act_window">
         <field name="name">Webhook Logs</field>
         <field name="res_model">cx.tower.webhook.log</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="cx_tower_webhook_log_view_search" />
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

@@ -8,6 +8,8 @@ from odoo.http import request
 
 
 class CxTowerWebhookLog(models.Model):
+    """Webhook Call Log"""
+
     _name = "cx.tower.webhook.log"
     _description = "Webhook Call Log"
     _order = "create_date desc"

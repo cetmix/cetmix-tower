@@ -2,21 +2,17 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _
 
 # Default Python code used in Webhook Authenticator
-DEFAULT_WEBHOOK_AUTHENTICATOR_CODE = _(
-    """# Please refer to the 'Help' tab and documentation for more information.
+DEFAULT_WEBHOOK_AUTHENTICATOR_CODE = """# Please refer to the 'Help' tab and documentation for more information.
 #
 # You can return authenticator result in the 'result' variable which is a dictionary:
 #   result = {"allowed": <bool, mandatory, default=False>, "http_code": <int, optional>, "message": <str, optional>}
 #   default value is {"allowed": False}
 """
-)
 
 # Default Python code help used in Webhook Authenticator
-DEFAULT_WEBHOOK_AUTHENTICATOR_CODE_HELP = _(
-    """
+DEFAULT_WEBHOOK_AUTHENTICATOR_CODE_HELP = """
 <h3>Help for Webhook Authenticator Python Code</h3>
 <div style="margin-bottom: 10px;">
     <p>
@@ -39,22 +35,18 @@ result = {"allowed": False, "http_code": 401, "message": "Unauthorized request"}
     <strong>Available variables:</strong>
 </div>
 """
-)
 
 
 # Default Python code used in Webhook
-DEFAULT_WEBHOOK_CODE = _(
-    """# Please refer to the 'Help' tab and documentation for more information.
+DEFAULT_WEBHOOK_CODE = """# Please refer to the 'Help' tab and documentation for more information.
 #
 # You can return webhook result in the 'result' variable which is a dictionary:
-#   result = {"exit_code": <int, default=0>, "message": <string, default=None}
+#   result = {"exit_code": <int, default=0>, "message": <string, default=None>}
 #   default value is {"exit_code": 0, "message": None}
 """
-)
 
 # Default Python code help used in Webhook
-DEFAULT_WEBHOOK_CODE_HELP = _(
-    """
+DEFAULT_WEBHOOK_CODE_HELP = """
 <h3>Help for Webhook Python Code</h3>
 <div style="margin-bottom: 10px;">
     <p>
@@ -76,4 +68,3 @@ result = {"exit_code": 1, "message": "Something went wrong"}
     <strong>Available variables:</strong>
 </div>
 """
-)
