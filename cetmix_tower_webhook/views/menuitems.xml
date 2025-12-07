@@ -1,5 +1,4 @@
 <odoo>
-
     <menuitem
         id="menu_cetmix_tower_webhook_authenticator"
         name="Webhook Authenticators"
@@ -25,5 +24,4 @@
         parent="cetmix_tower_server.menu_cx_tower_log_root"
         sequence="150"
     />
-
 </odoo>
