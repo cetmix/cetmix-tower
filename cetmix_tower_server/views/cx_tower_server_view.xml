@@ -124,6 +124,22 @@
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
             <list>
+                <header>
+                    <button
+                        name="action_run_command"
+                        type="object"
+                        class="btn-primary"
+                        string="Run command"
+                        icon="fa-code"
+                    />
+                    <button
+                        name="action_run_flight_plan"
+                        type="object"
+                        class="btn-primary"
+                        string="Run Flight Plan"
+                        icon="fa-plane"
+                    />
+                </header>
                 <field name="name" />
                 <field name="reference" optional="hide" />
                 <field name="partner_id" optional="show" />
@@ -137,10 +153,10 @@
                 <field
                     name="status"
                     widget="badge"
-                    decoration-danger="status == '2'"
-                    decoration-info="status == '1'"
-                    decoration-success="status == '4'"
-                    decoration-warning="status in ['3','5','6']"
+                    decoration-danger="status == 'stopped'"
+                    decoration-info="status in ['stopping','restarting','starting']"
+                    decoration-success="status == 'running'"
+                    decoration-warning="status in ['deleting','delete_error']"
                 />
             </list>
         </field>
@@ -477,12 +493,12 @@
                 <filter
                     string="Running"
                     name="running"
-                    domain="[('status', '=', '4')]"
+                    domain="[('status', '=', 'running')]"
                 />
                 <filter
                     string="Not Running"
                     name="not_running"
-                    domain="[('status', 'in', ['2', '3', '5', '6'])]"
+                    domain="[('status', '!=', 'running')]"
                 />
                 <group expand="0" string="Group By">
                     <filter
@@ -515,5 +531,8 @@
         <field name="res_model">cx.tower.server</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="cx_tower_server_search_view" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a new server</p>
+        </field>
     </record>
 </odoo>
