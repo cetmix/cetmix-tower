@@ -28,7 +28,6 @@
     Variables
     ================================================ -->
 
-
     <record id="variable_ovh_endpoint" model="cx.tower.variable">
         <field name="name">OVH Endpoint</field>
         <field name="reference">ovh_endpoint</field>
@@ -106,7 +105,7 @@
     <record id="command_ovh_register_domain" model="cx.tower.command">
         <field name="name">Register OVH DNS Record</field>
         <field name="action">python_code</field>
-<field name="code">
+        <field name="code">
 # ----------------
 # Tower properties
 # ----------------
