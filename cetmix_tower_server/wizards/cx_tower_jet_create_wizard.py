@@ -16,6 +16,12 @@ class CxTowerJetCreateWizard(models.TransientModel):
         default="a",
         required=True,
     )
+    url = fields.Char(help="The URL of the jet")
+    url_type = fields.Selection(
+        selection=[("a", "will be auto-generated"), ("m", "I will put myself")],
+        default="a",
+        required=True,
+    )
     jet_template_id = fields.Many2one(
         "cx.tower.jet.template",
         required=True,
@@ -51,15 +57,25 @@ class CxTowerJetCreateWizard(models.TransientModel):
 
     def action_confirm(self):
         self.ensure_one()
+        kwargs = {}
+
+        # Add custom variables
         custom_variables = {}
         if self.line_ids:
             custom_variables = {
                 line.variable_id.reference: line.value_char for line in self.line_ids
             }
+        if custom_variables:
+            kwargs["configuration_variables"] = custom_variables
+
+        # Add url
+        if self.url_type == "m" and self.url:
+            kwargs["url"] = self.url
+
         jet = self.jet_template_id.create_jet(
             self.server_id,
             name=self.name,
-            **{"configuration_variables": custom_variables},
+            **kwargs,
         )
         if self.state_id:
             jet._bring_to_state(self.state_id)

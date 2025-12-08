@@ -21,6 +21,7 @@ from .constants import (
     FILE_CREATION_FAILED,
     GENERAL_ERROR,
     JET_NOT_FOUND,
+    JET_TEMPLATE_NOT_FOUND,
     NO_COMMAND_RUNNER_FOUND,
     PYTHON_COMMAND_ERROR,
     SSH_CONNECTION_ERROR,
@@ -1646,6 +1647,7 @@ class CxTowerServer(models.Model):
                 _("Command log is required for 'Jet Action' commands!")
             )
         jet_for_which_command_is_run = log_record.jet_id
+        requested_jet_template = log_record.command_id.jet_template_id
 
         # Initialize result values
         status = 0
@@ -1656,12 +1658,22 @@ class CxTowerServer(models.Model):
         if not jet_for_which_command_is_run:
             status = JET_NOT_FOUND
             error = _("Jet for which command is run is not found.")
+        elif not requested_jet_template:
+            status = JET_TEMPLATE_NOT_FOUND
+            error = _("Jet template is not found.")
         else:
-            dependent_jets = (
-                jet_for_which_command_is_run._get_dependent_jets_by_template(
-                    log_record.command_id.jet_template_id
+            # Trigger for the jet itself if the same jet template is used
+            # This is used when you want to trigger an action for
+            # the same jet for which the command is run.
+            if jet_for_which_command_is_run.jet_template_id == requested_jet_template:
+                dependent_jets = jet_for_which_command_is_run
+            else:
+                # Get dependent jets by template
+                dependent_jets = (
+                    jet_for_which_command_is_run._get_dependent_jets_by_template(
+                        requested_jet_template
+                    )
                 )
-            )
 
         if dependent_jets:
             # Trigger the action for all dependent jets
@@ -1676,7 +1688,7 @@ class CxTowerServer(models.Model):
             error = _(
                 "Jet %(jet)s has no dependent jets with template %(template)s.",
                 jet=jet_for_which_command_is_run.name,
-                template=log_record.command_id.jet_template_id.name,
+                template=requested_jet_template.name,
             )
 
             log_record.finish(

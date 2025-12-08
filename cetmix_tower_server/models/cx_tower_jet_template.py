@@ -639,7 +639,9 @@ class CxTowerJetTemplate(models.Model):
             server (cx.tower.server()): The server to use
             name (str): The name of the jet
         Kwargs:
-            configuration_variables (dict): Custom configuration variables
+            field values to populate in the new jet record.
+            NB: configuration variables are provided as follows:
+                (dict): Custom configuration variables
                 Following format is used:
                     `variable_reference`: `variable_value_char`
                     eg:
@@ -718,7 +720,7 @@ class CxTowerJetTemplate(models.Model):
         # Parse kwargs
         if kwargs:
             # Parse configuration variables
-            configuration_variables = kwargs.get("configuration_variables", {})
+            configuration_variables = kwargs.pop("configuration_variables", {})
             if configuration_variables:
                 variable_obj = self.env["cx.tower.variable"]
                 variable_values = []
@@ -752,7 +754,17 @@ class CxTowerJetTemplate(models.Model):
                         }
                     )
 
+        # Populate the allowed fields
+        for field in self._allowed_jet_fields():
+            if field in kwargs:
+                vals[field] = kwargs.pop(field)
+
         return vals
+
+    def _allowed_jet_fields(self):
+        """Return the allowed fields for the jet creation"""
+        self.ensure_one()
+        return ["name", "url", "reference", "sequence", "color"]
 
     def _allow_jet_creation(self, server):
         """

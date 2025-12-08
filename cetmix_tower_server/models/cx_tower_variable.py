@@ -814,7 +814,7 @@ class TowerVariable(models.Model):
                 "name": jet.name,
                 "reference": jet.reference,
                 "url": jet.url,
-                "state": jet.state_id.reference if jet.state_id else False,
+                "state": jet.state,
             }
         return values
 
