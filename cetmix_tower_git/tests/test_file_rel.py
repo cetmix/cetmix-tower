@@ -351,7 +351,7 @@ class TestFileRel(CommonTest):
 
         # Add as server manager - should succeed
         self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
-        self.file_1_rel.unlink()
+        self.file_1_rel.with_user(self.manager).unlink()
         self.assertFalse(self.file_1_rel.exists())
 
     def test_root_access(self):
