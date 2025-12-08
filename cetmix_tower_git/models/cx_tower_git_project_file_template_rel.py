@@ -93,7 +93,9 @@ class CxTowerGitProjectFileTemplateRel(models.Model):
             )
             if not code_generator_function:
                 code_generator_function = getattr(
-                    self.git_project_id, f"_generate_code_{record.project_format}", None
+                    record.git_project_id,
+                    f"_generate_code_{record.project_format}",
+                    None,
                 )
                 if not code_generator_function:
                     raise ValidationError(

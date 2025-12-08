@@ -45,3 +45,10 @@ class CxTowerFile(models.Model):
                         "server_id": git_project_relation.server_id,
                     }
                 )
+            else:
+                # Reset only git project id as file still belongs to the server
+                record.update(
+                    {
+                        "git_project_id": False,
+                    }
+                )

@@ -242,7 +242,9 @@ class CxTowerGitProject(models.Model):
         Returns:
             List: List of variables
         """
-        variables = re.findall(r"\$([A-Z0-9_]+)", text)
+        # This regex will find all variables where variables are denoted
+        # as $VAR or ${VAR}, e.g., $FOO or ${FOO_BAR123}
+        variables = re.findall(r"\$\{?([A-Z0-9_]+)\}?", text)
         return sorted(list(set(variables)))
 
     # ------------------------------

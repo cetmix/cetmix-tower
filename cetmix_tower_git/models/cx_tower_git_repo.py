@@ -1,11 +1,14 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
 
 import giturlparse
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import ormcache
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerGitRepo(models.Model):
@@ -158,8 +161,7 @@ class CxTowerGitRepo(models.Model):
     def _compute_git_project_ids(self):
         """Compute projects this repository is used in."""
         for repo in self:
-            projects = repo.remote_ids.mapped("git_project_id")
-            repo.git_project_ids = [(6, 0, projects.ids)]
+            repo.git_project_ids = repo.remote_ids.git_project_id
 
     @api.depends("remote_ids")
     def _compute_remote_count(self):
@@ -192,6 +194,11 @@ class CxTowerGitRepo(models.Model):
                         "url_git": parsed_urls["git"],
                     }
                 except Exception as e:  # noqa: F841 catch all errors
+                    _logger.error(
+                        "Failed to parse constructed URL '%s' for repo %s",
+                        https_url,
+                        repo.display_name,
+                    )
                     urls = {
                         "url": "",
                         "url_ssh": "",
@@ -297,7 +304,7 @@ class CxTowerGitRepo(models.Model):
 
         return repo_id, repo.display_name
 
-    @ormcache("self.env.uid", "self.env.su", "url")
+    @ormcache("self.env.uid", "self.env.su", "url", "create", "raise_if_invalid")
     def _get_repo_id_by_url(self, url, create=False, raise_if_invalid=False):
         """Get repository id by URL.
 

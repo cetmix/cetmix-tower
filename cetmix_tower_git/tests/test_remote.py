@@ -103,7 +103,7 @@ class TestRemote(CommonTest):
                 "name": "Manager Project",
             }
         )
-        source = self.GitSource.create(
+        source = self.GitSource.with_user(self.manager).create(
             {
                 "name": "Manager Source",
                 "git_project_id": project.id,

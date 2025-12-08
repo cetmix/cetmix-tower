@@ -21,11 +21,6 @@ class CxTowerGitRemote(models.Model):
     _description = "Cetmix Tower Git Remote"
     _order = "sequence, name"
 
-    # Used to detect git ssh urls
-    GIT_SSH_URL_PATTERN = r"^[\w\.-]+@[\w\.-]+:.*\.git$"
-    GIT_HTTPS_URL_PATTERN = r"^https://.*\.git$"
-    GIT_GIT_URL_PATTERN = r"^git://.*\.git$"
-
     active = fields.Boolean(related="source_id.active", store=True, readonly=True)
     enabled = fields.Boolean(
         default=True, help="Enable in configuration and exported to files"
@@ -174,24 +169,6 @@ class CxTowerGitRemote(models.Model):
             return head.split("/")[-1].strip()
         return head
 
-    @api.model
-    def get_head_data(self):
-        """
-        This method is used to get values for the dropdown dynamic widget.
-        It is designed for integrations with repo providers using APIs.
-
-        Returns:
-            List: List of tuples(selection, name)
-            eg [('18.0', '18.0'), ('main', 'main'), ('develop', 'develop')]
-        """
-        values = [
-            ("18.0", "18.0"),
-            ("main", "Main"),
-            ("develop", "Develop"),
-            ("17.0", "17.0"),
-        ]
-        return values
-
     def _update_related_files_and_templates(self):
         # Update related files on update
         related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
@@ -258,9 +235,23 @@ class CxTowerGitRemote(models.Model):
 
         return prepared_url
 
+    def _git_aggregator_prepare_authenticated_url(self, url, auth_token):
+        """Helper to inject authentication token into HTTPS URL.
+
+        Args:
+            url (Char): URL to prepare
+            auth_token (Char): Authentication token
+
+        Returns:
+            Char: Prepared url for git aggregator
+        """
+        url_without_protocol = url.replace("https://", "")
+        return f"https://{auth_token}@{url_without_protocol}"
+
     def _git_aggregator_prepare_url_github(self, url):
-        """Prepare url for git aggregator
-        for private Github repo using https protocol.
+        """
+        Prepare url for git aggregator for private Github repo
+        using https protocol.
 
         Args:
             url (Char): URL to prepare
@@ -269,16 +260,15 @@ class CxTowerGitRemote(models.Model):
             Char: Prepared url for git aggregator
         """
         self.ensure_one()
-
-        # This is how final url will look like
-        # https://$GITHUB_TOKEN:x-oauth-basic@github.com/soem_org/some_private_repo.git
-        url_without_protocol = url.replace("https://", "")
-        url = f"https://$GITHUB_TOKEN:x-oauth-basic@{url_without_protocol}"
-        return url
+        return self._git_aggregator_prepare_authenticated_url(
+            url,
+            "$GITHUB_TOKEN:x-oauth-basic",
+        )
 
     def _git_aggregator_prepare_url_gitlab(self, url):
-        """Prepare url for git aggregator
-        for private GitLab repo using https protocol.
+        """
+        Prepare url for git aggregator for private GitLab repo
+        using https protocol.
 
         Args:
             url (Char): URL to prepare
@@ -287,16 +277,14 @@ class CxTowerGitRemote(models.Model):
             Char: Prepared url for git aggregator
         """
         self.ensure_one()
-
-        # This is how final url will look like
-        # https://<token-name>:<token-value>@<gitlaburl-repository>.git
-        url_without_protocol = url.replace("https://", "")
-        url = f"https://$GITLAB_TOKEN_NAME:$GITLAB_TOKEN@{url_without_protocol}"
-        return url
+        return self._git_aggregator_prepare_authenticated_url(
+            url, "$GITLAB_TOKEN_NAME:$GITLAB_TOKEN"
+        )
 
     def _git_aggregator_prepare_url_bitbucket(self, url):
-        """Prepare url for git aggregator
-        for private Bitbucket repo using https protocol.
+        """
+        Prepare url for git aggregator for private Bitbucket repo
+        using https protocol.
 
         Args:
             url (Char): URL to prepare
@@ -305,13 +293,9 @@ class CxTowerGitRemote(models.Model):
             Char: Prepared url for git aggregator
         """
         self.ensure_one()
-
-        # This is how final url will look like
-        # https://x-token-auth:{access_token}@bitbucket.org/user/repo.git
-        # From https://support.atlassian.com/bitbucket-cloud/docs/use-oauth-on-bitbucket-cloud/
-        url_without_protocol = url.replace("https://", "")
-        url = f"https://x-token-auth:$BITBUCKET_TOKEN@{url_without_protocol}"
-        return url
+        return self._git_aggregator_prepare_authenticated_url(
+            url, "x-token-auth:$BITBUCKET_TOKEN"
+        )
 
     def _git_aggregator_prepare_head(self):
         """Prepare head for git aggregator
@@ -328,20 +312,33 @@ class CxTowerGitRemote(models.Model):
             return self._git_aggregator_prepare_head_bitbucket()
         return self.head
 
+    def _extract_head_number(self):
+        """
+        Extract the last component from head
+        (branch name, PR number, or commit hash).
+
+        Raises:
+            ValidationError: If head number is empty
+
+        Returns:
+            Char: Extracted head number
+        """
+        self.ensure_one()
+        head_number = self.head.split("/")[-1]
+        if not head_number:
+            raise ValidationError(
+                _("Git Aggregator: Head number is empty in %(head)s", head=self.head)
+            )
+        return head_number
+
     def _git_aggregator_prepare_head_github(self):
         """Prepare head for git aggregator for Github.
 
         Returns:
             Char: Prepared head for git aggregator
         """
-
-        # Extract branch name, PR/MR or commit number from head
-        head_number = self.head.split("/")[-1]
-        if not head_number:
-            raise ValidationError(
-                _("Git Aggregator: " "Head number is empty in %(head)s", head=self.head)
-            )
-
+        self.ensure_one()
+        head_number = self._extract_head_number()
         # PR/MR
         if self.head_type == "pr":
             return f"refs/pull/{head_number}/head"
@@ -359,13 +356,8 @@ class CxTowerGitRemote(models.Model):
         Returns:
             Char: Prepared head for git aggregator
         """
-        # Extract branch name, PR/MR or commit number from head
-        head_number = self.head.split("/")[-1]
-        if not head_number:
-            raise ValidationError(
-                _("Git Aggregator: " "Head number is empty in %(head)s", head=self.head)
-            )
-
+        self.ensure_one()
+        head_number = self._extract_head_number()
         # PR/MR
         if self.head_type == "pr":
             return f"merge-requests/{head_number}/head"
@@ -385,12 +377,7 @@ class CxTowerGitRemote(models.Model):
         Returns:
             Char: Prepared head for git aggregator
         """
-        # Extract branch name, PR/MR or commit number from head
-        head_number = self.head.split("/")[-1]
-        if not head_number:
-            raise ValidationError(
-                _("Git Aggregator: " "Head number is empty in %(head)s", head=self.head)
-            )
+        self.ensure_one()
         # PR/MR
         if self.head_type == "pr":
             raise ValidationError(
@@ -407,6 +394,7 @@ class CxTowerGitRemote(models.Model):
                 )
             )
 
+        head_number = self._extract_head_number()
         # Commit
         if self.head_type in ["commit", "branch"]:
             return f"{head_number}"

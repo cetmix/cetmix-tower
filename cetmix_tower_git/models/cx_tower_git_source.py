@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class CxTowerGitSource(models.Model):
@@ -110,12 +110,12 @@ class CxTowerGitSource(models.Model):
                 continue
             remote = fields.first(source.remote_ids)
             if not remote:
-                source.name = _("Empty Source")
+                source.name = "Empty Source"
                 continue
 
             remote_repo = remote.repo_id
             if not remote_repo or not remote_repo.owner_id:
-                source.name = _("Empty Source")
+                source.name = "Empty Source"
                 continue
             source.name = f"{remote_repo.owner_id.name}/{remote_repo.repo}"
 
