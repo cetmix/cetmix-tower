@@ -100,6 +100,15 @@ class CxTowerJet(models.Model):
         tracking=True,
         domain="[('id', 'in', jet_template_state_ids)]",
     )
+    state = fields.Char(
+        related="state_id.reference",
+        readonly=True,
+        store=True,
+        index=True,
+        help="Current state of the jet. "
+        "NB: this is "
+        "the reference of the state, not the name.",
+    )
     jet_template_state_ids = fields.One2many(
         comodel_name="cx.tower.jet.state",
         compute="_compute_available_states",

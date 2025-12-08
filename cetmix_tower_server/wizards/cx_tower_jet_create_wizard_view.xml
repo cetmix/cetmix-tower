@@ -40,6 +40,18 @@
                         attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ('a', False))], 'required': [('name_type', '=', 'm')]}"
                     />
                     <field
+                        name="url_type"
+                        widget="radio"
+                        string="with the URL that"
+                        attrs="{'invisible':  [('state_id', '=', False)]}"
+                    />
+                    <field
+                        name="url"
+                        placeholder="eg 'https://myjet.example.com'"
+                        string="with the URL"
+                        attrs="{'invisible': ['|', ('state_id', '=', False), ('url_type', 'in', ('a', False))], 'required': [('url_type', '=', 'm')]}"
+                    />
+                    <field
                         name="use_custom_variables"
                         widget="radio"
                         attrs="{'invisible': [('state_id', '=', False)]}"
