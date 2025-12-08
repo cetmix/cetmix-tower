@@ -223,6 +223,16 @@ msgid "Create a new record"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_author
+msgid "Create your first YAML manifest author!"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_template
+msgid "Create your first YAML manifest template!"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz_download__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__create_uid
@@ -874,6 +884,20 @@ msgstr ""
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 msgid "YAML file doesn't contain any records"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_author
+msgid ""
+"YAML manifest authors represent organizations or users who are authors of "
+"YAML manifests."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.actions.act_window,help:cetmix_tower_yaml.action_yaml_manifest_template
+msgid ""
+"YAML manifest templates represent pre-defined YAML manifests with their "
+"metadata and configuration."
 msgstr ""
 
 #. module: cetmix_tower_yaml
