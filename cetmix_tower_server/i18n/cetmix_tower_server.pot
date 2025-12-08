@@ -108,12 +108,10 @@ msgid ""
 "-101 not found,\n"
 "-201 another instance of this command is running,\n"
 "-202 no runner found for the command action,\n"
-"-203 Python code execution failed,\n"
-"-205 plan line condition check failed,\n"
-"-206 command timed out,\n"
-"-207 command is not compatible with server,\n"
-"-208 command is stopped by user,\n"
-"503 if SSH connection error occurred"
+"-203 Python code execution failed\n"
+"-205 plan line condition check failed\n"
+"503 if SSH connection error occurred\n"
+"601 if queue job failed"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -385,6 +383,21 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.actions.act_window,help:cetmix_tower_server.cx_tower_file_template_action
 msgid "Add a new file template"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.actions.act_window,help:cetmix_tower_server.action_cx_cetmix_tower_partner
+msgid "Add a new partner"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.actions.act_window,help:cetmix_tower_server.action_cx_tower_server
+msgid "Add a new server"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.actions.act_window,help:cetmix_tower_server.action_cx_tower_server_template
+msgid "Add a new server template"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -950,7 +963,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__condition
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__condition
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "Condition"
 msgstr ""
 
@@ -1683,6 +1695,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_tree
 msgid ""
 "Flight Plan will be terminated after executing the current command. "
 "Continue?"
@@ -3235,7 +3248,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 msgid "Run Command"
@@ -3249,11 +3261,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_plan
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_run_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_tree
 msgid "Run Flight Plan"
 msgstr ""
 
@@ -3303,6 +3315,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_tree
 msgid "Run command"
 msgstr ""
 
@@ -3897,12 +3910,8 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_view_tree
 msgid "Stop"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:ir.actions.server,name:cetmix_tower_server.action_stop_cx_tower_plan_log
-msgid "Stop Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_server
