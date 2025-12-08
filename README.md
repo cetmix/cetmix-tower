@@ -22,9 +22,9 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[cetmix_tower_server](cetmix_tower_server/) | 18.0.1.0.0 |  | Manage servers and applications from Odoo
+[cetmix_tower_server](cetmix_tower_server/) | 18.0.1.0.1 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 18.0.1.0.0 |  | Cetmix Tower asynchronous task execution using 'queue_job'
-[cetmix_tower_yaml](cetmix_tower_yaml/) | 18.0.1.0.0 |  | Cetmix Tower YAML export/import
+[cetmix_tower_yaml](cetmix_tower_yaml/) | 18.0.1.0.1 |  | Cetmix Tower YAML export/import
 
 [//]: # (end addons)
 
