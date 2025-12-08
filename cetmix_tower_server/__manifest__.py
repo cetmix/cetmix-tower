@@ -13,9 +13,13 @@
     "application": False,
     "installable": True,
     "external_dependencies": {
-        "python": ["paramiko<4", "tldextract", "dnspython"],
+        "python": ["paramiko<4", "tldextract", "dnspython", "ansi2html"],
     },
-    "depends": ["mail", "rpc_helper", "web_notify"],
+    "depends": [
+        "mail",
+        "rpc_helper",
+        "web_notify",
+    ],
     "data": [
         "security/cetmix_tower_server_groups.xml",
         "security/ir.model.access.csv",
