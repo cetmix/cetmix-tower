@@ -338,13 +338,6 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_tag_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_value_export_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.view_cx_tower_scheduled_task_view_form
 msgid "Export YAML"
 msgstr ""
 
@@ -829,17 +822,6 @@ msgid "Wrong value for 'access_level' key: %(acv)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.view_cx_tower_scheduled_task_view_form
-msgid "YAML"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml_export
 msgid "YAML Export"
 msgstr ""
@@ -950,17 +932,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 msgid "You are not allowed to create records from YAML"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_shortcut_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.view_cx_tower_scheduled_task_view_form
-msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
 msgstr ""
 
 #. module: cetmix_tower_yaml
