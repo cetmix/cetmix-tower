@@ -28,12 +28,10 @@ class CxTowerJet(models.Model):
     color = fields.Integer(related="state_id.color", readonly=True)
     sequence = fields.Integer(default=10, help="Used to sort jets in views")
 
-    # ---- Access. Add relation for mixin fields
-    user_ids = fields.Many2many(
-        relation="cx_tower_jet_user_rel",
-    )
-    manager_ids = fields.Many2many(
-        relation="cx_tower_jet_manager_rel",
+    cloned_from_jet_id = fields.Many2one(
+        comodel_name="cx.tower.jet",
+        help="Jet this jet was cloned from. "
+        "This field is set when the jet is cloned from another jet.",
     )
 
     jet_template_id = fields.Many2one(
@@ -45,10 +43,7 @@ class CxTowerJet(models.Model):
     jet_template_domain = fields.Binary(
         compute="_compute_jet_template_domain",
     )
-    served_jet_request_id = fields.Many2one(
-        comodel_name="cx.tower.jet.request",
-        help="Request this jet is currently serving",
-    )
+
     server_allowed_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         related="jet_template_id.server_ids",
@@ -74,7 +69,13 @@ class CxTowerJet(models.Model):
         copy=False,
     )
 
-    # Dependencies
+    # -- Jet Requests
+    served_jet_request_id = fields.Many2one(
+        comodel_name="cx.tower.jet.request",
+        help="Request this jet is currently serving",
+    )
+
+    # -- Dependencies
     jet_requires_ids = fields.One2many(
         comodel_name="cx.tower.jet.dependency",
         inverse_name="jet_id",
@@ -131,18 +132,19 @@ class CxTowerJet(models.Model):
         groups="cetmix_tower_server.group_manager",
     )
 
-    # Variables used for configuration
+    # -- Variables used for configuration
     variable_value_ids = fields.One2many(
         inverse_name="jet_id",
     )
 
-    # Available actions based on current state
+    # -- Available actions based on current state
     available_action_ids = fields.Many2many(
         comodel_name="cx.tower.jet.action",
         compute="_compute_available_actions",
         string="Available Actions",
     )
 
+    # -- Logs
     command_log_ids = fields.One2many(
         comodel_name="cx.tower.command.log",
         inverse_name="jet_id",
@@ -150,6 +152,14 @@ class CxTowerJet(models.Model):
     plan_log_ids = fields.One2many(
         comodel_name="cx.tower.plan.log",
         inverse_name="jet_id",
+    )
+
+    # -- Access. Add relation for mixin fields
+    user_ids = fields.Many2many(
+        relation="cx_tower_jet_user_rel",
+    )
+    manager_ids = fields.Many2many(
+        relation="cx_tower_jet_manager_rel",
     )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -462,7 +472,7 @@ class CxTowerJet(models.Model):
             **kwargs,
         )
 
-    def run_flight_plan(self, flight_plan, jet_template=None, jet=None, **kwargs):
+    def run_flight_plan(self, flight_plan, jet_template=None, **kwargs):
         """
         Runs flight plan on the current server.
 
@@ -470,7 +480,6 @@ class CxTowerJet(models.Model):
             flight_plan (cx.tower.plan()): flight plan to run
             jet_template (cx.tower.jet.template()): jet template
                 to run the flight plan on
-            jet (cx.tower.jet()): jet to run the flight plan on
             kwargs (dict): Optional arguments
                 Following are supported but not limited to:
                     - "plan_log": {values passed to flightplan logger}
@@ -501,6 +510,105 @@ class CxTowerJet(models.Model):
             jet=self,
             **kwargs,
         )
+
+    def clone(self, server=None, name=None, state=None, **kwargs):
+        """
+        Create a new jet from this template on the given server.
+
+        Following configuration variables will be available in the flight plan:
+        __original_jet__: The reference of the original jet
+        __requested_state__: The reference of the requested state
+            the new jet was requested to be in.
+
+        Use these variables in the flight plan to identify the original jet
+        and the requested state.
+
+        Args:
+            server (cx.tower.server()): The server to clone the jet on.
+                If not provided, the jet will be cloned on the same server.
+            name (str): The name of the new jet.
+                If not provided, a random name will be generated.
+            state (cx.tower.jet.state()): The state to bring the new jet to.
+
+        Kwargs:
+            field values to populate in the new jet record.
+            NB: configuration variables are provided as follows:
+                (dict): Custom configuration variables
+                Following format is used:
+                    `variable_reference`: `variable_value_char`
+                    eg:
+                    {'branch': 'prod', 'odoo_version': '16.0'}
+        Returns:
+            cx.tower.jet(): The new jet or False if the cloning has failed
+        """
+        self.ensure_one()
+
+        jet_template = self.jet_template_id
+        if not server:
+            server = self.server_id
+            same_server = True
+        else:
+            same_server = server.id == self.server_id.id
+
+        # Check if template allows cloning on the same server
+        if same_server and not jet_template.allow_clone_same_server:
+            raise ValidationError(
+                _(
+                    "Cloning on the same server is not allowed"
+                    " for template '%(template)s'",
+                    template=jet_template.name,
+                )
+            )
+        # Check if template allows cloning to a different server
+        if not same_server and not jet_template.allow_clone_different_server:
+            raise ValidationError(
+                _(
+                    "Cloning to a different server is not allowed"
+                    " for template '%(template)s'",
+                    template=jet_template.name,
+                )
+            )
+        # Check if the jet creation is allowed on the given server
+        if not jet_template._allow_jet_creation(server):
+            return False
+
+        # Set the cloned jet name
+
+        # Prepare the jet custom values
+        kwargs["cloned_from_jet_id"] = self.id
+
+        # Create a new jet
+        jet = jet_template.create_jet(
+            server, name=name or self._default_cloned_jet_name(), **kwargs
+        )
+
+        # NB: we are not passing the state as we need to run
+        # the clone flight plan first.
+        # The plan should take care of the state transition
+        # using the configuration variables.
+        # Update the custom values in the kwargs
+
+        variable_values = {
+            "__original_jet__": self.reference,
+            "__requested_jet_state__": state.reference if state else None,
+        }
+
+        if same_server and jet_template.plan_clone_same_server_id:
+            jet.run_flight_plan(
+                jet_template.plan_clone_same_server_id, variable_values=variable_values
+            )
+        elif not same_server and jet_template.plan_clone_different_server_id:
+            jet.run_flight_plan(
+                jet_template.plan_clone_different_server_id,
+                variable_values=variable_values,
+            )
+
+        return jet
+
+    def _default_cloned_jet_name(self):
+        """Return default cloned jet name"""
+        self.ensure_one()
+        return f"{self.name} (clone)"
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Jet actions, state transitions, jet requests

@@ -52,10 +52,6 @@ class CxTowerJetTemplate(models.Model):
         copy=False,
     )
     jet_count = fields.Integer(compute="_compute_jet_count", store=False)
-    show_in_wizard = fields.Boolean(
-        string="Show in Wizard",
-        help="If enabled, the template will be shown in the wizard to create a new jet",
-    )
 
     # Servers
     server_ids = fields.Many2many(
@@ -71,7 +67,7 @@ class CxTowerJetTemplate(models.Model):
     limit_per_server = fields.Integer(
         string="Limit per Server",
         help="Maximum number of Jets that can be launched on a server. "
-        "Set to 0 for unlimited.",
+        "Set to 0 for no limit.",
     )
     file_ids = fields.One2many(
         comodel_name="cx.tower.file",
@@ -81,16 +77,41 @@ class CxTowerJetTemplate(models.Model):
         copy=False,
     )
 
+    # Wizards
+    show_in_create_wizard = fields.Boolean(
+        string="Show in Wizard",
+        help="If enabled, the template will be shown "
+        "in the wizard to create a new jet",
+    )
+    allow_clone_same_server = fields.Boolean(
+        string="Same Server Cloning",
+        help="If enabled, the template will be allowed to be cloned "
+        "on the same server",
+    )
+    allow_clone_different_server = fields.Boolean(
+        string="Different Server Cloning",
+        help="If enabled, the template will be allowed to be cloned "
+        "to a different server",
+    )
+
     # Flight Plans
     plan_install_id = fields.Many2one(
         comodel_name="cx.tower.plan",
-        string="Flight Plan for Installation",
+        string="Installation Flight Plan",
         help="Flight plan used to install the template from a server",
     )
     plan_uninstall_id = fields.Many2one(
         comodel_name="cx.tower.plan",
-        string="Flight Plan for Uninstallation",
+        string="Uninstallation Flight Plan",
         help="Flight plan used to uninstall the template from a server",
+    )
+    plan_clone_same_server_id = fields.Many2one(
+        comodel_name="cx.tower.plan",
+        help="Flight plan used to clone the jet on the same server",
+    )
+    plan_clone_different_server_id = fields.Many2one(
+        comodel_name="cx.tower.plan",
+        help="Flight plan used to clone the jet to a different server",
     )
 
     # Logs
@@ -631,7 +652,7 @@ class CxTowerJetTemplate(models.Model):
     #   Jet creation
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    def create_jet(self, server, name=None, **kwargs):
+    def create_jet(self, server, name=None, state=None, **kwargs):
         """
         Create a new jet from this template on the given server.
 
@@ -641,11 +662,10 @@ class CxTowerJetTemplate(models.Model):
         Kwargs:
             field values to populate in the new jet record.
             NB: configuration variables are provided as follows:
-                (dict): Custom configuration variables
-                Following format is used:
-                    `variable_reference`: `variable_value_char`
-                    eg:
-                    {'branch': 'prod', 'odoo_version': '16.0'}
+            variable_values (dict): Custom configuration variables
+                in the format of `{variable_reference: variable_value}`
+                eg `{'odoo_version': '16.0'}`
+                Will be applied only if user has write access to the server.
         Returns:
             cx.tower.jet(): The new jet or False if the creation has failed
         """
@@ -674,6 +694,11 @@ class CxTowerJetTemplate(models.Model):
                 jet_log.file_id = server_log.file_template_id.create_file(
                     server=server, jet=jet, if_file_exists="skip"
                 ).id
+
+        # Set the state of the jet
+        if state:
+            jet._bring_to_state(state)
+
         return jet
 
     def _prepare_jet_values(self, server, name=None, **kwargs):
@@ -720,7 +745,7 @@ class CxTowerJetTemplate(models.Model):
         # Parse kwargs
         if kwargs:
             # Parse configuration variables
-            configuration_variables = kwargs.pop("configuration_variables", {})
+            configuration_variables = kwargs.pop("variable_values", {})
             if configuration_variables:
                 variable_obj = self.env["cx.tower.variable"]
                 variable_values = []

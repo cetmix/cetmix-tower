@@ -66,9 +66,6 @@
                             placeholder="Tags"
                             options="{'color_field': 'color'}"
                         />
-                        <group>
-                            <field name="show_in_wizard" widget="boolean_toggle" />
-                        </group>
                     </div>
                     <notebook>
                         <field name="active" invisible="1" />
@@ -78,17 +75,42 @@
                             groups="cetmix_tower_server.group_manager"
                         >
                             <group name="main">
-                                <group name="general">
+                                <group name="general" string="General Settings">
                                     <field
                                         name="reference"
                                         placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                                     />
                                     <field name="access_level" />
+                                    <field name="show_in_create_wizard" />
                                 </group>
-                                <group name="servers">
+                                <group name="servers" string="Installation">
                                     <field name="plan_install_id" />
                                     <field name="plan_uninstall_id" />
                                     <field name="limit_per_server" />
+                                </group>
+                                <group name="cloning" string="Cloning">
+                                    <label
+                                        string="Same Server"
+                                        for="allow_clone_same_server"
+                                    />
+                                    <div class="o_row">
+                                        <field name="allow_clone_same_server" />
+                                        <field
+                                            name="plan_clone_same_server_id"
+                                            attrs="{'invisible': [('allow_clone_same_server', '=', False)]}"
+                                        />
+                                    </div>
+                                    <label
+                                        string="Different Server"
+                                        for="allow_clone_different_server"
+                                    />
+                                    <div class="o_row">
+                                    <field name="allow_clone_different_server" />
+                                        <field
+                                            name="plan_clone_different_server_id"
+                                            attrs="{'invisible': [('allow_clone_different_server', '=', False)]}"
+                                        />
+                                    </div>
                                 </group>
                                 <field name="note" placeholder="Add notes here..." />
                             </group>
@@ -349,7 +371,11 @@
                     options="{'color_field': 'color'}"
                     optional="show"
                 />
-                <field name="show_in_wizard" optional="show" widget="boolean_toggle" />
+                <field
+                    name="show_in_create_wizard"
+                    optional="show"
+                    widget="boolean_toggle"
+                />
                 <field name="reference" optional="hide" />
                 <field name="access_level" optional="hide" />
             </tree>
@@ -366,9 +392,9 @@
                 <field name="reference" />
                 <field name="jet_count" />
                 <filter
-                    string="Available in Wizard"
-                    name="available_in_wizard"
-                    domain="[('show_in_wizard', '=', True)]"
+                    string="Create from Wizard"
+                    name="create_from_wizard"
+                    domain="[('show_in_create_wizard', '=', True)]"
                 />
                 <filter
                     string="User Access"

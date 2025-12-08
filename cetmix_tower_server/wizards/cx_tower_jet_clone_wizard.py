@@ -4,13 +4,32 @@
 from odoo import api, fields, models
 
 
-class CxTowerJetCreateWizard(models.TransientModel):
-    """Create new jet from template"""
+class CxTowerJetCloneWizard(models.TransientModel):
+    """Clone jet"""
 
-    _name = "cx.tower.jet.create.wizard"
-    _description = "Create new jet"
+    _name = "cx.tower.jet.clone.wizard"
+    _description = "Clone jet"
 
-    name = fields.Char(help="The name of the jet")
+    jet_id = fields.Many2one(
+        "cx.tower.jet",
+        required=True,
+        readonly=True,
+    )
+    jet_template_id = fields.Many2one(
+        "cx.tower.jet.template",
+        related="jet_id.jet_template_id",
+        readonly=True,
+    )
+    same_server = fields.Selection(
+        selection=[("y", "Yes"), ("n", "No")],
+        default="y",
+        required=True,
+    )
+    server_id = fields.Many2one(
+        "cx.tower.server",
+        domain="[('jet_template_ids', 'in', jet_template_id)]",
+    )
+    name = fields.Char(help="The name of the new jet")
     name_type = fields.Selection(
         selection=[("a", "will be auto-generated"), ("m", "I will put myself")],
         default="a",
@@ -22,16 +41,6 @@ class CxTowerJetCreateWizard(models.TransientModel):
         default="a",
         required=True,
     )
-    jet_template_id = fields.Many2one(
-        "cx.tower.jet.template",
-        required=True,
-        domain="[('show_in_create_wizard', '=', True)]",
-    )
-    note = fields.Text(related="jet_template_id.note", readonly=True)
-    server_id = fields.Many2one(
-        "cx.tower.server",
-        domain="[('jet_template_ids', 'in', jet_template_id)]",
-    )
     state_id = fields.Many2one("cx.tower.jet.state", help="Requested state of the jet")
     state_domain = fields.Binary(compute="_compute_state_domain")
     use_custom_variables = fields.Selection(
@@ -40,7 +49,7 @@ class CxTowerJetCreateWizard(models.TransientModel):
         required=True,
     )
     line_ids = fields.One2many(
-        "cx.tower.jet.create.wizard.variable.line",
+        "cx.tower.jet.clone.wizard.variable.line",
         "wizard_id",
         string="Variable Lines",
     )
@@ -48,7 +57,7 @@ class CxTowerJetCreateWizard(models.TransientModel):
     @api.depends("jet_template_id")
     def _compute_state_domain(self):
         for wizard in self:
-            if not wizard.jet_template_id:
+            if not wizard.jet_id:
                 wizard.state_domain = []
                 continue
             wizard.state_domain = [
@@ -60,25 +69,24 @@ class CxTowerJetCreateWizard(models.TransientModel):
         kwargs = {}
 
         # Add custom variables
-        variable_values = {}
+        custom_variables = {}
         if self.line_ids:
-            variable_values = {
+            custom_variables = {
                 line.variable_id.reference: line.value_char for line in self.line_ids
             }
-        if variable_values:
-            kwargs["variable_values"] = variable_values
+        if custom_variables:
+            kwargs["variable_values"] = custom_variables
 
         # Add url
         if self.url_type == "m" and self.url:
             kwargs["url"] = self.url
 
-        jet = self.jet_template_id.create_jet(
-            self.server_id,
+        jet = self.jet_id.clone(
+            server=self.server_id,
             name=self.name,
             state=self.state_id,
             **kwargs,
         )
-
         return {
             "type": "ir.actions.act_window",
             "res_model": "cx.tower.jet",
@@ -91,11 +99,11 @@ class CxTowerJetCreateWizard(models.TransientModel):
 class CxTowerJetCreateWizardVariableLine(models.TransientModel):
     """Custom variable values for jet create wizard"""
 
-    _name = "cx.tower.jet.create.wizard.variable.line"
+    _name = "cx.tower.jet.clone.wizard.variable.line"
     _inherit = "cx.tower.custom.variable.value.mixin"
     _description = "Variable lines"
 
-    wizard_id = fields.Many2one("cx.tower.jet.create.wizard")
+    wizard_id = fields.Many2one("cx.tower.jet.clone.wizard")
     # Override from mixin to make variable_id editable
     variable_id = fields.Many2one(
         readonly=False,

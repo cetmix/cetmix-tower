@@ -132,7 +132,7 @@
                     <button
                         name="action_open_state_wizard"
                         type="object"
-                        string="Set State"
+                        string="State"
                         class="btn-primary"
                         icon="fa-cog"
                         attrs="{'invisible': [('current_action_id', '!=', False)]}"
@@ -140,7 +140,7 @@
                     <button
                         name="action_open_action_wizard"
                         type="object"
-                        string="Trigger Action"
+                        string="Jet Action"
                         icon="fa-play"
                         class="btn-primary"
                         attrs="{'invisible': [('current_action_id', '!=', False)]}"
@@ -148,14 +148,14 @@
                     <button
                         name="action_run_command"
                         type="object"
-                        string="Run command"
+                        string="Command"
                         icon="fa-code"
                         attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
                     <button
                         name="action_run_flight_plan"
                         type="object"
-                        string="Run Flight Plan"
+                        string="Flight Plan"
                         icon="fa-plane"
                         attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
