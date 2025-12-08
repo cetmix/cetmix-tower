@@ -2291,6 +2291,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_html
+msgid "Log Html"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_text
 msgid "Log Text"
 msgstr ""
