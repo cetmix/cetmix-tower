@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Rule -->
+    <record id="rule_git_project_manager_read" model="ir.rule">
+        <field name="name">Git Project: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field
+            name="domain_force"
+        >['|', ('user_ids', 'in', [user.id]), ('manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Additional Manager Read Rule with Server Access -->
+    <record id="rule_git_project_manager_read_server" model="ir.rule">
+        <field name="name">Git Project: Manager Read Access via Server</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field name="domain_force">['|',
+            ('server_ids.user_ids', 'in', [user.id]),
+            ('server_ids.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create Rule -->
+    <record id="rule_git_project_manager_write" model="ir.rule">
+        <field name="name">Git Project: Manager Write Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field name="domain_force">[('manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Delete Rule -->
+    <record id="rule_git_project_manager_unlink" model="ir.rule">
+        <field name="name">Git Project: Manager Delete Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field
+            name="domain_force"
+        >[('manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Access Rule -->
+    <record id="rule_git_project_root" model="ir.rule">
+        <field name="name">Git Project: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+    </record>
+</odoo>

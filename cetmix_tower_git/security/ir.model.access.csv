@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_git_config_manager,Git Config Manager,model_cx_tower_git_project,cetmix_tower_server.group_manager,1,1,1,1
+access_git_config_root,Git Config Root,model_cx_tower_git_project,cetmix_tower_server.group_root,1,1,1,1
+access_git_source_manager,Git Source Manager,model_cx_tower_git_source,cetmix_tower_server.group_manager,1,1,1,1
+access_git_source_root,Git Source Root,model_cx_tower_git_source,cetmix_tower_server.group_root,1,1,1,1
+access_git_remote_manager,Git Remote Manager,model_cx_tower_git_remote,cetmix_tower_server.group_manager,1,1,1,1
+access_git_remote_root,Git Remote Root,model_cx_tower_git_remote,cetmix_tower_server.group_root,1,1,1,1
+access_git_repo_manager,Git Repository Manager,model_cx_tower_git_repo,cetmix_tower_server.group_manager,1,1,1,1
+access_git_repo_root,Git Repository Root,model_cx_tower_git_repo,cetmix_tower_server.group_root,1,1,1,1
+access_git_repo_owner_manager,Git Repository Owner Manager,model_cx_tower_git_repo_owner,cetmix_tower_server.group_manager,1,1,1,0
+access_git_repo_owner_root,Git Repository Owner Root,model_cx_tower_git_repo_owner,cetmix_tower_server.group_root,1,1,1,1
+access_git_project_server_file_rel,Git Project Server File Rel Manager,model_cx_tower_git_project_rel,cetmix_tower_server.group_manager,1,1,1,1
+access_git_project_server_file_rel_root,Git Project Server File Rel Root,model_cx_tower_git_project_rel,cetmix_tower_server.group_root,1,1,1,1
+access_git_project_file_template_rel,Git Project File Template Rel Manager,model_cx_tower_git_project_file_template_rel,cetmix_tower_server.group_manager,1,1,1,1
+access_git_project_file_template_rel_root,Git Project File Template Rel Root,model_cx_tower_git_project_file_template_rel,cetmix_tower_server.group_root,1,1,1,1

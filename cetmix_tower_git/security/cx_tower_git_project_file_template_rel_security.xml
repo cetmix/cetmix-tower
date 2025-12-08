@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Rule -->
+    <record id="rule_git_project_file_template_rel_manager_read" model="ir.rule">
+        <field
+            name="name"
+        >Git Project File Template Relation: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project_file_template_rel" />
+        <field name="domain_force">['&amp;',
+            '|',
+                ('git_project_id.user_ids', 'in', [user.id]),
+                ('git_project_id.manager_ids', 'in', [user.id]),
+            '|',
+                ('file_template_id.user_ids', 'in', [user.id]),
+                ('file_template_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create/Delete Rule -->
+    <record id="rule_git_project_file_template_rel_manager_write" model="ir.rule">
+        <field
+            name="name"
+        >Git Project File Template Relation: Manager Write Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project_file_template_rel" />
+        <field name="domain_force">[
+            ('git_project_id.manager_ids', 'in', [user.id]),
+            ('file_template_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Access Rule -->
+    <record id="rule_git_project_file_template_rel_root" model="ir.rule">
+        <field name="name">Git Project File Template Relation: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_git_project_file_template_rel" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+    </record>
+</odoo>

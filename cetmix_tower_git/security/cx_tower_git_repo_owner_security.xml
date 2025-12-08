@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Rule - View All Records - nothing to add as this is default -->
+
+    <!-- Manager Write/Create Rule -->
+    <record id="rule_git_repo_owner_manager_write" model="ir.rule">
+        <field name="name">Git Repository Owner: Manager Write/Create Access</field>
+        <field name="model_id" ref="model_cx_tower_git_repo_owner" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Root Access Rule -->
+    <record id="rule_git_repo_owner_root" model="ir.rule">
+        <field name="name">Git Repository Owner: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_git_repo_owner" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+    </record>
+</odoo>

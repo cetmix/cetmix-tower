@@ -1,0 +1,32 @@
+<odoo>
+    <!-- Git Projects -> Tools -->
+    <menuitem
+        id="menu_cx_tower_git_project"
+        name="Git Projects"
+        action="cx_tower_git_project_action"
+        sequence="30"
+        parent="cetmix_tower_server.menu_tools"
+    />
+
+    <!-- Git Projects Settings -> Settings -->
+    <menuitem
+        id="menu_cx_tower_git_project_settings"
+        name="Git Projects"
+        parent="cetmix_tower_server.menu_settings"
+        sequence="60"
+    />
+    <menuitem
+        id="menu_cx_tower_git_repositories"
+        name="Repositories"
+        parent="menu_cx_tower_git_project_settings"
+        action="action_cx_tower_git_repo"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_cx_tower_git_repository_owners"
+        name="Repository Owners"
+        parent="menu_cx_tower_git_project_settings"
+        action="action_cx_tower_git_repo_owner"
+        sequence="20"
+    />
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_file_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.form</field>
+        <field name="model">cx.tower.file</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_file_view_form" />
+        <field name="arch" type="xml">
+            <field name="auto_sync" position="before">
+                <field name="git_project_id" invisible="not git_project_id" />
+            </field>
+        </field>
+    </record>
+</odoo>

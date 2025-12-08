@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Git Project -->
+    <record id="git_project_demo" model="cx.tower.git.project">
+        <field name="name">Demo Git Project</field>
+        <field name="reference">demo_git_project</field>
+        <field name="note">This is a demo git project.</field>
+    </record>
+    <!-- Repositories -->
+    <record id="repo_demo_cetmix_tower" model="cx.tower.git.repo">
+        <field name="url">https://github.com/cetmix-demo/cetmix-tower-demo.git</field>
+    </record>
+    <record id="repo_demo_oca_web" model="cx.tower.git.repo">
+        <field name="url">https://github.com/oca-demo/web-demo.git</field>
+    </record>
+    <record id="repo_demo_odoo_enterprise" model="cx.tower.git.repo">
+        <field name="url">https://github.com/odoo-demo/enterprise-demo.git</field>
+        <field name="is_private" eval="True" />
+    </record>
+    <record id="repo_demo_gitlab_private" model="cx.tower.git.repo">
+        <field name="url">https://gitlab.com/cetmix-demo/cetmix-tower-demo.git</field>
+        <field name="is_private" eval="True" />
+    </record>
+    <record id="repo_demo_bitbucket_private" model="cx.tower.git.repo">
+        <field
+            name="url"
+        >https://bitbucket.com/cetmix-demo/cetmix-tower-demo-enterprise.git</field>
+        <field name="is_private" eval="True" />
+    </record>
+    <!-- Sources -->
+    <!-- Cetmix Tower -->
+    <record id="source_demo_cetmix_tower" model="cx.tower.git.source">
+        <field name="name">Cetmix Tower</field>
+        <field name="reference">cetmix_tower</field>
+        <field name="git_project_id" ref="git_project_demo" />
+    </record>
+    <!-- Remotes-->
+    <record id="remote_demo_cetmix_tower_14_0_dev" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_cetmix_tower" />
+        <field name="repo_id" ref="repo_demo_cetmix_tower" />
+        <field name="head_type">branch</field>
+        <field name="head">14.0</field>
+    </record>
+    <record id="remote_demo_cetmix_tower_pr_176" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_cetmix_tower" />
+        <field name="repo_id" ref="repo_demo_cetmix_tower" />
+        <field name="head_type">pr</field>
+        <field name="head">176</field>
+    </record>
+    <!-- OCA Web -->
+    <record id="source_demo_oca_web" model="cx.tower.git.source">
+        <field name="name">OCA Web</field>
+        <field name="reference">oca_web</field>
+        <field name="git_project_id" ref="git_project_demo" />
+    </record>
+    <!-- Remotes -->
+    <record id="remote_demo_oca_web_14_0" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_oca_web" />
+        <field name="repo_id" ref="repo_demo_oca_web" />
+        <field name="head_type">branch</field>
+        <field name="head">14.0</field>
+    </record>
+    <!-- Odoo Enterprise -->
+    <record id="source_demo_odoo_enterprise" model="cx.tower.git.source">
+        <field name="name">Odoo Enterprise (Private)</field>
+        <field name="reference">odoo_enterprise</field>
+        <field name="git_project_id" ref="git_project_demo" />
+    </record>
+    <!-- Remotes -->
+    <record id="remote_demo_odoo_enterprise" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_odoo_enterprise" />
+        <field name="repo_id" ref="repo_demo_odoo_enterprise" />
+        <field name="head_type">branch</field>
+        <field name="head">19.0</field>
+    </record>
+    <!-- Sample Private Gitlab -->
+    <record id="source_demo_gitlab_private" model="cx.tower.git.source">
+        <field name="name">Sample Semi Private Gitlab</field>
+        <field name="reference">gitlab_private</field>
+        <field name="git_project_id" ref="git_project_demo" />
+    </record>
+    <!-- Remotes -->
+    <record id="remote_demo_gitlab_private_main" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_gitlab_private" />
+        <field name="repo_id" ref="repo_demo_gitlab_private" />
+        <field name="head_type">branch</field>
+        <field name="head">main</field>
+    </record>
+    <record id="remote_demo_gitlab_private_mr_1234" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_gitlab_private" />
+        <field name="repo_id" ref="repo_demo_gitlab_private" />
+        <field name="head_type">pr</field>
+        <field name="head">1234</field>
+    </record>
+    <!-- Sample Private Bitbucket -->
+    <record id="source_demo_bitbucket_private" model="cx.tower.git.source">
+        <field name="name">Sample Private Bitbucket</field>
+        <field name="reference">bitbucket_private</field>
+        <field name="git_project_id" ref="git_project_demo" />
+    </record>
+    <!-- Remotes -->
+    <record id="remote_demo_bitbucket_private_main" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_bitbucket_private" />
+        <field name="repo_id" ref="repo_demo_bitbucket_private" />
+        <field name="head_type">branch</field>
+        <field name="head">dev</field>
+    </record>
+    <record id="remote_demo_bitbucket_private_feature" model="cx.tower.git.remote">
+        <field name="source_id" ref="source_demo_bitbucket_private" />
+        <field name="repo_id" ref="repo_demo_bitbucket_private" />
+        <field name="head_type">commit</field>
+        <field name="head">1234567890</field>
+    </record>
+
+    <!-- Files -->
+    <record id="file_demo_cetmix_tower_14_0_dev" model="cx.tower.file">
+        <field name="name">repos.yaml</field>
+        <field name="server_id" ref="cetmix_tower_server.server_demo_1" />
+        <field name="source">tower</field>
+        <field name="file_type">text</field>
+        <field name="server_dir">{{ instance_name }}/config</field>
+    </record>
+
+    <!-- Link file to git project -->
+    <record
+        id="git_project_rel_demo_cetmix_tower_14_0_dev"
+        model="cx.tower.git.project.rel"
+    >
+        <field name="git_project_id" ref="git_project_demo" />
+        <field name="server_id" ref="cetmix_tower_server.server_demo_1" />
+        <field name="file_id" ref="file_demo_cetmix_tower_14_0_dev" />
+        <field name="project_format">git_aggregator</field>
+    </record>
+
+    <!-- Demo variable for testing giturlparse -->
+    <record id="variable_demo_git_url" model="cx.tower.variable">
+        <field name="name">Demo Git URL</field>
+        <field name="reference">demo_git_url</field>
+    </record>
+
+    <!-- Demo command to test giturlparse -->
+    <record id="command_demo_git_url" model="cx.tower.command">
+        <field name="name">Parse Git URL</field>
+        <field name="action">python_code</field>
+        <field name="code">
+if {{ demo_git_url }}:
+    parsed_url = giturlparse.parse({{ demo_git_url }})
+    repo = parsed_url.repo
+    owner = parsed_url.owner
+    host = parsed_url.host
+    platform = parsed_url.platform
+    message = "Repo: " + repo + ", Owner: " + owner + ", Host: " + host + ", Platform: " + platform
+    result={"exit_code": 0, "message": message}
+else:
+    result={"exit_code": -100, "message": "Git URL is not defined!"}
+        </field>
+        <field name="access_level">1</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field name="note">Run Python Code: Check Branch</field>
+    </record>
+</odoo>
