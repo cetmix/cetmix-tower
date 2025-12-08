@@ -362,5 +362,8 @@
         <field name="path">cetmix_tower_server_templates</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="search_view_id" ref="cx_tower_server_template_search_view" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a new server template</p>
+        </field>
     </record>
 </odoo>
