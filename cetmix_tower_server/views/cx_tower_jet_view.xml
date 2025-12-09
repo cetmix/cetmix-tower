@@ -383,9 +383,15 @@
             <search string="Search Jets">
                 <field name="name" />
                 <field name="reference" />
+                <field name="url" />
                 <field name="jet_template_id" />
                 <field name="server_id" />
                 <field name="state_id" />
+                <filter
+                    string="With URL"
+                    name="with_url"
+                    domain="[('url', '!=', False)]"
+                />
                 <filter
                     string="Archived"
                     name="inactive"

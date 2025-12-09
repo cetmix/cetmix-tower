@@ -246,8 +246,10 @@ class CxTowerPlanLog(models.Model):
                     plan_log,
                     log={
                         "variable_values": dict(variable_values or {}),
-                        "jet_template_id": jet_template.id if jet_template else None,
-                        "jet_id": jet.id if jet else None,
+                        "jet_template_id": plan_log.jet_template_id.id
+                        if plan_log.jet_template_id
+                        else None,
+                        "jet_id": plan_log.jet_id.id if plan_log.jet_id else None,
                     },
                 )
                 break
