@@ -193,7 +193,11 @@ class CxTowerPlanLog(models.Model):
             else:
                 if self._context.get("no_command_log"):
                     continue
-                line._skip(server, plan_log)
+                line._skip(
+                    server,
+                    plan_log,
+                    log={"variable_values": dict(variable_values or {})},
+                )
                 break
         else:
             plan_log.finish(plan_status=PLAN_IS_EMPTY)
@@ -416,6 +420,7 @@ class CxTowerPlanLog(models.Model):
             return
 
         # Update plan log variable values from command log
+        # Overwrite with command log values (last command's values take precedence)
         self.variable_values = command_log.variable_values
 
         # Get next line to execute
