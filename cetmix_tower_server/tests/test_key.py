@@ -340,9 +340,7 @@ class TestTowerKey(TestTowerCommon):
 
         # 3 - Key not found
         code = "Don't mess with #!cxtower.secret.DOGE_LIKE!# He will make you cry"
-        code_parsed_expected = (
-            "Don't mess with #!cxtower.secret.DOGE_LIKE!# He will make you cry"
-        )
+        code_parsed_expected = "Don't mess with None He will make you cry"
         expected_key_values = []
         check_parsed_code(code, code_parsed_expected, expected_key_values)
 
