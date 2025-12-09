@@ -14,87 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: cetmix_tower_webhook
-#. odoo-python
-#: code:addons/cetmix_tower_webhook/models/constants.py:0
-#, python-format
-msgid ""
-"\n"
-"<h3>Help for Webhook Authenticator Python Code</h3>\n"
-"<div style=\"margin-bottom: 10px;\">\n"
-"    <p>\n"
-"        The Python code for the webhook authenticator must return the <code>result</code> variable, which is a dictionary.<br>\n"
-"        <strong>Allowed keys:</strong>\n"
-"        <ul>\n"
-"            <li><code>allowed</code> (<b>bool</b>, required): Authentication result. <code>True</code> if allowed, <code>False</code> otherwise.</li>\n"
-"            <li><code>http_code</code> (<b>int</b>, optional): HTTP status code to return if authentication fails (default is 403).</li>\n"
-"            <li><code>message</code> (<b>str</b>, optional): Error message to show to the client.</li>\n"
-"        </ul>\n"
-"        <strong>Examples:</strong>\n"
-"        <pre style='background:#f7f7f7; padding:6px; border-radius:4px'>\n"
-"# Allow all requests\n"
-"result = {\"allowed\": True}\n"
-"\n"
-"# Deny with custom code and message\n"
-"result = {\"allowed\": False, \"http_code\": 401, \"message\": \"Unauthorized request\"}\n"
-"        </pre>\n"
-"    </p>\n"
-"    <strong>Available variables:</strong>\n"
-"</div>\n"
-msgstr ""
-
-#. module: cetmix_tower_webhook
-#. odoo-python
-#: code:addons/cetmix_tower_webhook/models/constants.py:0
-#, python-format
-msgid ""
-"\n"
-"<h3>Help for Webhook Python Code</h3>\n"
-"<div style=\"margin-bottom: 10px;\">\n"
-"    <p>\n"
-"        The webhook Python code must set the <code>result</code> variable, which is a dictionary.<br>\n"
-"        <strong>Allowed keys:</strong>\n"
-"        <ul>\n"
-"            <li><code>exit_code</code> (<b>int</b>, optional, default=0): Exit code (0 means success, other values indicate failure).</li>\n"
-"            <li><code>message</code> (<b>str</b>, optional): Message to return in the HTTP response and log.</li>\n"
-"        </ul>\n"
-"        <strong>Example:</strong>\n"
-"        <pre style='background:#f7f7f7; padding:6px; border-radius:4px'>\n"
-"# Simple successful result\n"
-"result = {\"exit_code\": 0, \"message\": \"Webhook processed successfully\"}\n"
-"\n"
-"# Failure example\n"
-"result = {\"exit_code\": 1, \"message\": \"Something went wrong\"}\n"
-"        </pre>\n"
-"    </p>\n"
-"    <strong>Available variables:</strong>\n"
-"</div>\n"
-msgstr ""
-
-#. module: cetmix_tower_webhook
-#. odoo-python
-#: code:addons/cetmix_tower_webhook/models/constants.py:0
-#, python-format
-msgid ""
-"# Please refer to the 'Help' tab and documentation for more information.\n"
-"#\n"
-"# You can return authenticator result in the 'result' variable which is a dictionary:\n"
-"#   result = {\"allowed\": <bool, mandatory, default=False>, \"http_code\": <int, optional>, \"message\": <str, optional>}\n"
-"#   default value is {\"allowed\": False}\n"
-msgstr ""
-
-#. module: cetmix_tower_webhook
-#. odoo-python
-#: code:addons/cetmix_tower_webhook/models/constants.py:0
-#, python-format
-msgid ""
-"# Please refer to the 'Help' tab and documentation for more information.\n"
-"#\n"
-"# You can return webhook result in the 'result' variable which is a dictionary:\n"
-"#   result = {\"exit_code\": <int, default=0>, \"message\": <string, default=None}\n"
-"#   default value is {\"exit_code\": 0, \"message\": None}\n"
-msgstr ""
-
-#. module: cetmix_tower_webhook
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
 msgid "10.0.0.1,192.168.1.0/24"
 msgstr ""
@@ -137,7 +56,6 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
-#, python-format
 msgid "Authentication code error: %s"
 msgstr ""
 
@@ -241,7 +159,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
-#, python-format
 msgid ""
 "Dictionary containing the request payload (JSON for POST, params for GET)"
 msgstr ""
@@ -250,7 +167,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
-#, python-format
 msgid "Dictionary of request headers"
 msgstr ""
 
@@ -287,7 +203,6 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
-#, python-format
 msgid ""
 "Endpoint must start and end with a letter or digit, and may contain "
 "underscores, dashes, and slashes in between"
@@ -422,14 +337,12 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
-#, python-format
 msgid "Invalid allowed IP/CIDR entry: %s"
 msgstr ""
 
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
-#, python-format
 msgid "Invalid trusted proxy entry: %s"
 msgstr ""
 
@@ -518,7 +431,6 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_authenticator.py:0
-#, python-format
 msgid "Raw body of the request (bytes)"
 msgstr ""
 
@@ -715,7 +627,6 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook.py:0
-#, python-format
 msgid "Webhook code execution error: %(error)s"
 msgstr ""
 
@@ -734,7 +645,6 @@ msgstr ""
 #. module: cetmix_tower_webhook
 #. odoo-python
 #: code:addons/cetmix_tower_webhook/models/cx_tower_webhook_eval_mixin.py:0
-#, python-format
 msgid "Webhook/Authenticator code error: result is not a dict"
 msgstr ""
 
