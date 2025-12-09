@@ -1,0 +1,39 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_aws
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+"Language: it\n"
+
+#. module: cetmix_tower_aws
+#: model:ir.model,name:cetmix_tower_aws.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr "Comando Cetmix Tower"
+
+#. module: cetmix_tower_aws
+#. odoo-python
+#: code:addons/cetmix_tower_aws/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'boto3' library for AWS services. Available methods: 'client', 'resource', 'Session'<br/>Supports AWS services like EC2, S3, RDS, Lambda, CloudWatch, etc.<br/>Please check the <a href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html' target='_blank'>Boto3 Documentation</a> for the detailed information about the services and methods."
+msgstr "Libreria Python 'boto3' per servizi AWS. Metodi disponibili: 'client', 'resource', 'Session'<br/>Supporta servizi AWS come EC2, S3, RDS, Lambda, CloudWatch, ecc.<br/>Consultare la <a href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html' target='_blank'>documentazione Boto3</a> per informazioni dettagliate su servizi e metodi."
+
+#~ msgid ""
+#~ "#  - boto3: Python 'boto3' library for AWS services. Available methods: "
+#~ "'client', 'resource', 'Session'\n"
+#~ "#    Supports AWS services like EC2, S3, RDS, Lambda, CloudWatch, etc."
+#~ msgstr ""
+#~ "#  - boto3: libreria Python 'boto3' per servizi AWS. Metodi disponibili: "
+#~ "'client', 'resource', 'Session'\n"
+#~ "#    Supporta servizi AWS come EC2, S3, RDS, Lambda, CloudWatch, ecc."
