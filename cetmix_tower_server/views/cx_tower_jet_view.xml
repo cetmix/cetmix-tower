@@ -22,6 +22,7 @@
                 <field name="available_action_ids" />
                 <field name="color" />
                 <field name="sequence" />
+                <field name="partner_id" />
                 <templates>
                     <t t-name="kanban-box">
                         <div
@@ -63,6 +64,14 @@
                                     </div>
                                     <div class="col-6">
                                         <field name="server_id" />
+                                    </div>
+                                </div>
+                                <div class="row" t-if="record.partner_id.raw_value">
+                                    <div class="col-6">
+                                        <strong>Partner:</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <field name="partner_id" />
                                     </div>
                                 </div>
                                 <div t-if="record.url.raw_value" class="row mt-2">
@@ -115,7 +124,8 @@
                     optional="show"
                     groups="cetmix_tower_server.group_manager"
                 />
-                <field name="server_id" />
+                <field name="server_id" optional="show" />
+                <field name="partner_id" optional="show" />
                 <field name="state_id" />
                 <field name="jet_template_state_ids" optional="hide" />
             </tree>
@@ -233,6 +243,7 @@
                                         placeholder="Jet URL, eg 'https://meme.example.com'"
                                         widget="url"
                                     />
+                                    <field name="partner_id" />
                                 </group>
                                 <group>
                                     <field name="jet_template_domain" invisible="1" />
@@ -383,9 +394,15 @@
             <search string="Search Jets">
                 <field name="name" />
                 <field name="reference" />
+                <field name="url" />
                 <field name="jet_template_id" />
                 <field name="server_id" />
                 <field name="state_id" />
+                <filter
+                    string="With URL"
+                    name="with_url"
+                    domain="[('url', '!=', False)]"
+                />
                 <filter
                     string="Archived"
                     name="inactive"
@@ -408,6 +425,46 @@
                         context="{'group_by': 'state_id'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="state_id"
+                        string="State"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="jet_template_id"
+                        string="Template"
+                        icon="fa-plane"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="partner_id"
+                        string="Partner"
+                        icon="fa-user"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="server_id"
+                        string="Server"
+                        icon="fa-server"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="user_ids"
+                        string="Users"
+                        icon="fa-users"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="manager_ids"
+                        string="Managers"
+                        icon="fa-users"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

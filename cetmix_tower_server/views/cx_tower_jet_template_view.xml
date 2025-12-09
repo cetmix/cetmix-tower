@@ -423,6 +423,35 @@
                         context="{'group_by': 'access_level'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="server_ids"
+                        string="Servers"
+                        icon="fa-server"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="access_level"
+                        string="Access Level"
+                        icon="fa-shield"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="user_ids"
+                        string="Users"
+                        icon="fa-users"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="manager_ids"
+                        string="Managers"
+                        icon="fa-users"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

@@ -27,6 +27,10 @@ class CxTowerJet(models.Model):
     url = fields.Char()
     color = fields.Integer(related="state_id.color", readonly=True)
     sequence = fields.Integer(default=10, help="Used to sort jets in views")
+    partner_id = fields.Many2one(
+        comodel_name="res.partner",
+        help="Partner associated with this jet",
+    )
 
     cloned_from_jet_id = fields.Many2one(
         comodel_name="cx.tower.jet",
@@ -106,6 +110,7 @@ class CxTowerJet(models.Model):
         readonly=True,
         store=True,
         index=True,
+        string="State Reference",
         help="Current state of the jet. "
         "NB: this is "
         "the reference of the state, not the name.",
