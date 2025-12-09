@@ -21,7 +21,6 @@ msgstr ""
 #. module: cetmix_tower_aws
 #. odoo-python
 #: code:addons/cetmix_tower_aws/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'boto3' library for AWS services. Available methods: 'client', "
 "'resource', 'Session'<br/>Supports AWS services like EC2, S3, RDS, Lambda, "
