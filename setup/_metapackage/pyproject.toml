@@ -1,7 +1,8 @@
 [project]
 name = "odoo-addons-cetmix-cetmix-tower"
-version = "18.0.20251209.2"
+version = "18.0.20251209.3"
 dependencies = [
+    "odoo-addon-cetmix_tower==18.0.*",
     "odoo-addon-cetmix_tower_aws==18.0.*",
     "odoo-addon-cetmix_tower_git==18.0.*",
     "odoo-addon-cetmix_tower_ovh==18.0.*",
