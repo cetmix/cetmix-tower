@@ -21,7 +21,6 @@ msgstr ""
 #. module: cetmix_tower_ovh
 #. odoo-python
 #: code:addons/cetmix_tower_ovh/models/cx_tower_command.py:0
-#, python-format
 msgid ""
 "Python 'ovh' library for OVH services. Available methods: "
 "'Client'<br/>Supports OVH services<br/>Please check the <a "
