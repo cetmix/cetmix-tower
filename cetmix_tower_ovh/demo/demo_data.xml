@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- ===============================================
+    Keys
+    ================================================ -->
+    <record id="ovh_application_key" model="cx.tower.key">
+        <field name="name">OVH Application Key</field>
+        <field name="reference">ovh_application_key</field>
+        <field name="key_type">s</field>
+        <field name="secret_value" />
+    </record>
+
+    <record id="ovh_application_secret" model="cx.tower.key">
+        <field name="name">OVH Application Secret</field>
+        <field name="reference">ovh_application_secret</field>
+        <field name="key_type">s</field>
+        <field name="secret_value" />
+    </record>
+
+    <record id="ovh_consumer_key" model="cx.tower.key">
+        <field name="name">OVH Consumer Key</field>
+        <field name="reference">ovh_consumer_key</field>
+        <field name="key_type">s</field>
+        <field name="secret_value" />
+    </record>
+
+    <!-- ===============================================
+    Variables
+    ================================================ -->
+
+    <record id="variable_ovh_endpoint" model="cx.tower.variable">
+        <field name="name">OVH Endpoint</field>
+        <field name="reference">ovh_endpoint</field>
+        <field name="variable_type">o</field>
+    </record>
+
+    <record id="variable_ovh_zone_name" model="cx.tower.variable">
+        <field name="name">OVH Zone Name</field>
+        <field name="reference">ovh_zone_name</field>
+    </record>
+
+    <!-- ===============================================
+    Global Variable values
+    ================================================ -->
+
+    <record id="value_ovh_zone_name" model="cx.tower.variable.value">
+        <field name="variable_id" ref="variable_ovh_zone_name" />
+        <field name="value_char">your_zone.name</field>
+    </record>
+
+    <record id="option_ovh_endpoint_eu" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">ovh-eu</field>
+        <field name="reference">ovh-eu</field>
+        <field name="value_char">ovh-eu</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="option_ovh_endpoint_us" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">ovh-us</field>
+        <field name="reference">ovh-us</field>
+        <field name="value_char">ovh-us</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="option_ovh_endpoint_ca" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">ovh-ca</field>
+        <field name="reference">ovh-ca</field>
+        <field name="value_char">ovh-ca</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="option_ovh_endpoint_soyoustart_eu" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">soyoustart-eu</field>
+        <field name="reference">soyoustart-eu</field>
+        <field name="value_char">soyoustart-eu</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="option_ovh_endpoint_soyoustart_ca" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">soyoustart-ca</field>
+        <field name="reference">soyoustart-ca</field>
+        <field name="value_char">soyoustart-ca</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="option_ovh_endpoint_kimsufi_eu" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">kimsufi-eu</field>
+        <field name="reference">kimsufi-eu</field>
+        <field name="value_char">kimsufi-eu</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="option_ovh_endpoint_kimsufi_ca" model="cx.tower.variable.option">
+        <field name="variable_id" ref="variable_ovh_endpoint" />
+        <field name="name">kimsufi-ca</field>
+        <field name="reference">kimsufi-ca</field>
+        <field name="value_char">kimsufi-ca</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <!-- ===============================================
+    Commands
+    ================================================ -->
+    <!-- prettier-ignore-start -->
+    <record id="command_ovh_register_domain" model="cx.tower.command">
+        <field name="name">Register OVH DNS Record</field>
+        <field name="action">python_code</field>
+        <field name="code">
+# ----------------
+# Tower properties
+# ----------------
+cetmix_tower = env["cetmix.tower"]
+
+# Ensure the domain in your server URL matches your OVH DNS Zone name!
+# Example: If your DNS Zone is "example.com", your URL should be "*.example.com"
+
+instance_url = {{ tower.server.url }}
+ovh_endpoint = env["cx.tower.variable.option"].get_by_reference("option_ovh_endpoint_eu").value_char
+ovh_application_key = #!cxtower.secret.ovh_application_key!#
+ovh_application_secret = #!cxtower.secret.ovh_application_secret!#
+ovh_consumer_key = #!cxtower.secret.ovh_consumer_key!#
+ovh_zone_name = {{ ovh_zone_name }}
+# ----------------
+# Request settings
+# ----------------
+
+path = "/domain/zone/"+ovh_zone_name+"/record"
+
+# Subdomain extraction with tldextract:
+sub_domain = tldextract.extract(instance_url).subdomain
+
+# Send request to Ovh
+exit_code = 0
+message = ""
+
+try:
+    client = ovh.Client(
+        endpoint=ovh_endpoint,
+        application_key=ovh_application_key,
+        application_secret=ovh_application_secret,
+        consumer_key=ovh_consumer_key
+    )
+    records = client.get(path, subDomain=sub_domain, fieldType="A")
+    if not records:
+        records = client.post(
+            path,
+            fieldType="A",
+            subDomain=sub_domain,
+            target={{ tower.server.ipv4 }},
+            ttl=3600
+        )
+        client.post("/domain/zone/" + ovh_zone_name + "/refresh")
+        if records:
+            exit_code = 0
+            message = "subDomain " + sub_domain + " registered"
+    else:
+        exit_code = 0
+        message = "subDomain " + sub_domain + " already exists"
+except Exception as e:
+    exit_code = 500
+    message = str(e)
+
+result = {
+    "exit_code": exit_code,
+    "message": message,
+}
+</field>
+        <!-- prettier-ignore-end -->
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field
+            name="note"
+        >Register or check DNS A record for current server in OVH DNS zone</field>
+    </record>
+</odoo>
