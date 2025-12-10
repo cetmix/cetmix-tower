@@ -1,0 +1,1 @@
+Custom values in flight plan are lost in a skipped command and are not available after it.
