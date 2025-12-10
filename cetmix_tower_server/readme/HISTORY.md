@@ -1,3 +1,8 @@
+## 16.0.2.2.4 (2025-12-10)
+
+- Features: Parse empty or missing key values as 'None' instead of leaving key reference as is. (5134)
+
+
 ## 16.0.2.2.3 (2025-12-03)
 
 - Bugfixes: Save correct error message in log when SSH connection fails. (5109)
