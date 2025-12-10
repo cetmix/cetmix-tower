@@ -1,3 +1,8 @@
+## 16.0.2.2.5 (2025-12-10)
+
+- Bugfixes: Custom values in flight plan are lost in a skipped command and are not available after it. (5129)
+
+
 ## 16.0.2.2.4 (2025-12-10)
 
 - Features: Parse empty or missing key values as 'None' instead of leaving key reference as is. (5134)
