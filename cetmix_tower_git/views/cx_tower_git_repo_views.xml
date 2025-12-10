@@ -122,6 +122,20 @@
                         context="{'group_by': 'owner_id'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="provider"
+                        string="Provider"
+                        icon="fa-globe"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="owner_id"
+                        string="Org"
+                        icon="fa-building"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
