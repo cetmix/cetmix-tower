@@ -110,8 +110,11 @@
         <field name="model">cx.tower.webhook</field>
         <field name="arch" type="xml">
             <search string="Search Webhooks">
-                <field name="name" />
-                <field name="reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="endpoint" />
                 <filter
                     string="All"
@@ -150,6 +153,15 @@
                         context="{'group_by': 'content_type'}"
                     />
                 </group>
+                <searchpanel>
+                    <field name="method" string="Method" icon="fa-cog" />
+                    <field name="content_type" string="Content Type" icon="fa-file" />
+                    <field
+                        name="authenticator_id"
+                        string="Authenticator"
+                        icon="fa-shield"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
