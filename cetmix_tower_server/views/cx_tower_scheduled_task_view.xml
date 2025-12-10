@@ -160,6 +160,8 @@
                 <field name="command_id" />
                 <field name="plan_id" />
                 <field name="server_ids" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
                 <filter
                     string="All"
                     name="all"
@@ -171,16 +173,6 @@
                     domain="[('active', '=', False)]"
                 />
                 <separator />
-                <filter
-                    string="Command"
-                    name="command"
-                    domain="[('action', '=', 'command')]"
-                />
-                <filter
-                    string="Flight plan"
-                    name="plan"
-                    domain="[('action', '=', 'plan')]"
-                />
                 <filter
                     string="Running"
                     name="running"
@@ -194,6 +186,10 @@
                         context="{'group_by': 'action'}"
                     />
                 </group>
+                <searchpanel>
+                    <field name="action" string="Action" icon="fa-cog" />
+                    <field name="interval_type" string="Interval Type" icon="fa-cog" />
+                </searchpanel>
             </search>
         </field>
     </record>
