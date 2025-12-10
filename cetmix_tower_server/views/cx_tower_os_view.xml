@@ -43,7 +43,11 @@
         <field name="model">cx.tower.os</field>
         <field name="arch" type="xml">
             <search string="Search OS">
-                <field name="name" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="reference" />
                 <field name="parent_id" />
             </search>

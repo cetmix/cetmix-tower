@@ -122,9 +122,9 @@
     <field name="model">cx.tower.plan.log</field>
     <field name="arch" type="xml">
         <search string="Search Flight Plan Log">
-            <field name="label" />
-            <field name="server_id" />
             <field name="plan_id" />
+            <field name="server_id" />
+            <field name="label" />
             <filter
                     string="Success"
                     name="filter_success"

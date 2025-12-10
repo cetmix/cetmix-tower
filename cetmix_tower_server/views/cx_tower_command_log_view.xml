@@ -127,30 +127,9 @@
         <field name="model">cx.tower.command.log</field>
         <field name="arch" type="xml">
             <search string="Search Command Log">
-                <field name="label" />
-                <field name="server_id" />
                 <field name="command_id" />
-                <separator />
-                <filter
-                    string="SSH command"
-                    name="filter_action_ssh_command"
-                    domain="[('command_action', '=', 'ssh_command')]"
-                />
-                <filter
-                    string="Python code"
-                    name="filter_action_python_code"
-                    domain="[('command_action', '=', 'python_code')]"
-                />
-                <filter
-                    string="File from template"
-                    name="filter_file_action"
-                    domain="[('command_action', '=', 'file_using_template')]"
-                />
-                <filter
-                    string="Run a flight plan"
-                    name="filter_plan_action"
-                    domain="[('command_action', '=', 'plan')]"
-                />
+                <field name="server_id" />
+                <field name="label" />
                 <separator />
                 <filter
                     string="Success"
@@ -205,6 +184,9 @@
                         context="{'group_by': 'finish_date:day'}"
                     />
                 </group>
+                <searchpanel>
+                    <field name="command_action" string="Action" icon="fa-cog" />
+                </searchpanel>
             </search>
         </field>
     </record>

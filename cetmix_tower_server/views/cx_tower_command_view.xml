@@ -236,11 +236,14 @@
         <field name="model">cx.tower.command</field>
         <field name="arch" type="xml">
             <search string="Search Commands">
-                <field name="name" />
-                <field name="reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="code" />
-                <field name="server_ids" />
-                <field name="tag_ids" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
                 <filter
                     string="Global"
                     name="filter_global"
@@ -256,27 +259,6 @@
                     string="Allow Parallel Run"
                     name="filter_run_parallel"
                     domain="[('allow_parallel_run', '=', True)]"
-                />
-                <separator />
-                <filter
-                    string="SSH Command"
-                    name="filter_run_command"
-                    domain="[('action', '=', 'ssh_command')]"
-                />
-                <filter
-                    string="Python code"
-                    name="filter_python_command"
-                    domain="[('action', '=', 'python_code')]"
-                />
-                <filter
-                    string="File from template"
-                    name="file_from_template"
-                    domain="[('action', '=', 'file_using_template')]"
-                />
-                <filter
-                    string="Run Flight Plan"
-                    name="filter_flight_plan"
-                    domain="[('action', '=', 'plan')]"
                 />
                 <separator />
                 <filter
@@ -310,6 +292,41 @@
                         context="{'group_by': 'access_level'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="action"
+                        string="Action"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="access_level"
+                        string="Access Level"
+                        icon="fa-shield"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="tag_ids"
+                        string="Tags"
+                        icon="fa-tags"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="os_ids"
+                        string="OSes"
+                        icon="fa-server"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="server_ids"
+                        string="Servers"
+                        icon="fa-server"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

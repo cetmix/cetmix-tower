@@ -43,7 +43,11 @@
         <field name="model">cx.tower.tag</field>
         <field name="arch" type="xml">
             <search string="Search Tags">
-                <field name="name" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="reference" />
                 <field name="server_ids" />
             </search>
