@@ -111,18 +111,10 @@
         <field name="model">cx.tower.key</field>
         <field name="arch" type="xml">
             <search string="Search Keys/Secrets">
-                <field name="name" string="SSH Key / Secret" />
-                <field name="reference" string="Reference" />
-                <filter
-                    string="SSH Key"
-                    name="filter_ssh"
-                    domain="[('key_type', '=', 'k')]"
-                />
-                <filter
-                    string="Secret"
-                    name="filter_secret"
-                    domain="[('key_type', '=', 's')]"
-                />
+                <field name="name" string="Name/Reference" />
+                <field name="server_ssh_ids" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
                 <group expand="0" string="Group By">
                     <filter
                         string="Key Type"
@@ -131,6 +123,14 @@
                         context="{'group_by': 'key_type'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="key_type"
+                        string="Key Type"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                </searchpanel>
              </search>
         </field>
     </record>

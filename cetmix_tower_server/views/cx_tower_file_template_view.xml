@@ -125,20 +125,8 @@
         <field name="model">cx.tower.file.template</field>
         <field name="arch" type="xml">
             <search string="Search File Templates">
-                <field name="name" />
-                <field name="reference" />
+                <field name="name" string="Name/Reference" />
                 <field name="server_dir" />
-                <field name="tag_ids" />
-                <filter
-                    name="filter_binary"
-                    string="Binary"
-                    domain="[('file_type', '=', 'binary')]"
-                />
-                <filter
-                    name="filter_text"
-                    string="Text"
-                    domain="[('file_type', '=', 'text')]"
-                />
                 <filter
                     string="Archived"
                     name="archived"
@@ -151,6 +139,27 @@
                         context="{'group_by': 'file_type'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="source"
+                        string="Source"
+                        icon="fa-server"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="file_type"
+                        string="File Type"
+                        icon="fa-file"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="tag_ids"
+                        string="Tags"
+                        icon="fa-tags"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

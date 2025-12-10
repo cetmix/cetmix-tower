@@ -55,6 +55,14 @@
                     name="global"
                     domain="[('is_global', '=', True)]"
                 />
+                <searchpanel>
+                    <field
+                        name="access_level"
+                        string="Access Level"
+                        icon="fa-shield"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
