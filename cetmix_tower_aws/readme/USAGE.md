@@ -1,24 +1,33 @@
-Please check the official Boto3 Documentation https://boto3.amazonaws.com/v1/documentation/api/latest/index.html for the detailed information about the services and methods provided by the Boto3 library.
+Please check the [official Boto3 Documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) (https://boto3.amazonaws.com/v1/documentation/api/latest/index.html) for the detailed information about the services and methods provided by the Boto3 library.
 
 > **Disclaimer**: The following example demonstrates one of many possible commands you can create and run with this module. The boto3 library provides access to the full range of AWS services and methods - this is just a starting point to help you get familiar with the integration.
 
+## Example of Cetmix Tower Python Command to List EC2 Instances
 
-**Example of Cetmix Tower Python Command to List EC2 Instances**
+### Navigate to Command Creation
+- Go to `Cetmix Tower > Commands > Commands`
+- Click the `Create` button
 
-* **Navigate to Command Creation**
-   - Go to `Cetmix Tower > Commands > Commands`
-   - Create new command:
+### Configure Command Settings
+- Set a descriptive `Name` (e.g., "List AWS EC2 Instances")
+- Leave `Reference` blank to generate automatically (or set a custom reference)
+- Select `Action`: "Execute Python code"
+- Set `Access Level`: Choose appropriate level (e.g., "Manager")
+- Optional: Set `Default Path` if needed
+- Optional: Add `Tags` (e.g., "aws", "ec2") for better organization
 
-* **Configure Command Settings**
-   - Set a descriptive `Name` (e.g., "List AWS EC2 Instances")
-   - Leave `Reference` blank to generate automatically (or set a custom reference)
-   - Select `Action`: "Run Python code"
-   - Set `Access Level`: Choose appropriate level (e.g., "Manager")
-   - Optional: Add `Tags` (e.g., "aws", "ec2") for better organization
+### Add Required Variables
+- In the `Variables` tab, add the previously configured variable:
+  - `aws_region_name`
 
-* **Write Python Code**
-   - Go to the `Code` tab
-   - Enter the following Python code:
+### Add Required Secrets
+- In the `Secrets` field, add the previously configured secrets:
+  - `aws_access_key`
+  - `aws_secret_access_key`
+
+### Write Python Code
+- Go to the `Code` tab
+- Enter the following Python code:
 
     ```python
     # List EC2 instances using boto3
@@ -46,29 +55,29 @@ Please check the official Boto3 Documentation https://boto3.amazonaws.com/v1/doc
         result["message"] = "No EC2 instances found"
     ```
 
-* **Save the Command**
-   - Click the `Save` button to create the command
+### Save the Command
+- Click the `Save` button to create the command
 
-**Running the AWS EC2 Command**
+## Running the AWS EC2 Command
 
-* **Navigate to Server**
-   - Go to `Cetmix Tower > Servers > Servers`
-   - Open the server where you want to run the command
+### Navigate to Server
+- Go to `Cetmix Tower > Servers > Servers`
+- Open the server where you want to run the command
 
-* **Execute Command from Server**
-   - Click the `Run Command` button at the top of the server form
-   - In the popup dialog:
-     - Select your AWS EC2 command from the dropdown
-     - Verify the configuration values (if any need adjustment)
-     - Click `Run` to execute
+### Execute Command from Server
+- Click the `Command` button at the top of the server form
+- In the popup dialog:
+  - Select your AWS EC2 command from the dropdown
+  - Verify the variable values (if any need adjustment)
+  - Click `Run` to execute
 
-* **View Command Results**
-   - After execution, the command log will display showing:
-     - The command executed
-     - Execution status
-     - Output message containing EC2 instance details if successful
+### View Command Results
+- After execution, the command log will display showing:
+  - The command executed
+  - Execution status
+  - Output message containing EC2 instance details if successful
 
-**Example Output**
+## Example Output
 
 For a successful execution with EC2 instances:
 
@@ -85,7 +94,7 @@ For a successful execution with no EC2 instances:
 No EC2 instances found
 ```
 
-**Creating Additional AWS Commands**
+## Creating Additional AWS Commands
 
 The cetmix_tower_aws module provides access to the boto3 Python library for AWS service integration. Here are some common services you can use:
 
