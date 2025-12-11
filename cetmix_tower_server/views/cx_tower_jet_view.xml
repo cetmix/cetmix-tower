@@ -254,6 +254,10 @@
                                         domain="jet_template_domain"
                                     />
                                     <field
+                                        name="jet_cloned_from_id"
+                                        attrs="{'invisible': [('jet_cloned_from_id', '=', False)]}"
+                                    />
+                                    <field
                                         name="server_id"
                                         attrs="{'readonly': [('create_date', '!=', False)]}"
                                     />
@@ -395,9 +399,11 @@
                 <field name="name" />
                 <field name="reference" />
                 <field name="url" />
-                <field name="jet_template_id" />
+                <field name="partner_id" />
                 <field name="server_id" />
-                <field name="state_id" />
+                <field name="jet_template_id" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
                 <filter
                     string="With URL"
                     name="with_url"
@@ -439,29 +445,9 @@
                         enable_counters="1"
                     />
                     <field
-                        name="partner_id"
-                        string="Partner"
-                        icon="fa-user"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="server_id"
-                        string="Server"
-                        icon="fa-server"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="user_ids"
-                        string="Users"
-                        icon="fa-users"
-                        select="multi"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="manager_ids"
-                        string="Managers"
-                        icon="fa-users"
-                        select="multi"
+                        name="jet_cloned_from_id"
+                        string="Cloned from"
+                        icon="fa-clone"
                         enable_counters="1"
                     />
                 </searchpanel>

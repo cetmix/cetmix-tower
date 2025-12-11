@@ -114,6 +114,23 @@
                                 </group>
                                 <field name="note" placeholder="Add notes here..." />
                             </group>
+                            <div
+                                class="alert alert-warning"
+                                role="alert"
+                                attrs="{'invisible': [('allow_clone_same_server', '=', False), ('allow_clone_different_server', '=', False)]}"
+                                style="margin-bottom:0px;"
+                            >
+                                <p>
+                                    Flight plan is run on the cloned jet, not on the original one. Following variables are available in the flight plan:
+                                    <ul>
+                                        <li
+                                        >__original_jet__: The reference of the original jet</li>
+                                        <li
+                                        >__requested_jet_state__: The reference of the requested state of the new jet</li>
+                                    </ul>
+                                You can also use `jet.jet_cloned_from_id` to get the original jet in Python commands.
+                                </p>
+                        </div>
                         </page>
                         <page name="configuration" string="Configuration">
                             <field name="variable_value_ids" order="variable_reference">

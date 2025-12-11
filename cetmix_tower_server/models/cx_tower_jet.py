@@ -32,8 +32,11 @@ class CxTowerJet(models.Model):
         help="Partner associated with this jet",
     )
 
-    cloned_from_jet_id = fields.Many2one(
+    jet_cloned_from_id = fields.Many2one(
         comodel_name="cx.tower.jet",
+        string="Cloned from",
+        readonly=True,
+        copy=False,
         help="Jet this jet was cloned from. "
         "This field is set when the jet is cloned from another jet.",
     )
@@ -516,6 +519,35 @@ class CxTowerJet(models.Model):
             **kwargs,
         )
 
+    def bring_to_state(self, state_reference):
+        """
+        Bring the jet to a specific state.
+        This is a wrapper around the _bring_to_state method meant to be used
+        in various automatic actions.
+
+        Use `_bring_to_state` method directly if you want to provide a state
+        object instead of a reference.
+
+        Args:
+            state_reference (Char): The reference of the state to bring the jet to.
+
+        Returns:
+            The jet is brought into the target state.
+            In case of an error, the jet is brought into the error state
+            if the latter is defined.
+        """
+        self.ensure_one()
+        state = self.env["cx.tower.jet.state"].get_by_reference(state_reference)
+        if not state:
+            raise ValidationError(
+                _(
+                    "State '%(state)s' not found for jet '%(jet)s'",
+                    state=state_reference,
+                    jet=self.display_name,
+                )
+            )
+        self._bring_to_state(state)
+
     def clone(self, server=None, name=None, state=None, **kwargs):
         """
         Create a new jet from this template on the given server.
@@ -580,7 +612,7 @@ class CxTowerJet(models.Model):
         # Set the cloned jet name
 
         # Prepare the jet custom values
-        kwargs["cloned_from_jet_id"] = self.id
+        kwargs["jet_cloned_from_id"] = self.id
 
         # Create a new jet
         jet = jet_template.create_jet(
