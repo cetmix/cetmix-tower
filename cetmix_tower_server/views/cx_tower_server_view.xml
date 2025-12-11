@@ -165,14 +165,14 @@
                         name="action_run_command"
                         type="object"
                         class="btn-primary"
-                        string="Run command"
+                        string="Command"
                         icon="fa-code"
                     />
                     <button
                         name="action_run_flight_plan"
                         type="object"
                         class="btn-primary"
-                        string="Run Flight Plan"
+                        string="Flight Plan"
                         icon="fa-plane"
                     />
                     <button
@@ -475,15 +475,13 @@
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
             <search string="Search Servers">
-                <field name="name" />
-                <field name="reference" />
+                <field name="name" string="Name/Reference" />
                 <field name="url" />
                 <field name="partner_id" />
-                <field name="tag_ids" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
                 <field name="ip_v4_address" />
                 <field name="ip_v6_address" />
-                <field name="os_id" />
-                <field name="status" />
                 <filter
                     string="Archived"
                     name="archived"
@@ -502,11 +500,10 @@
                 />
                 <group expand="0" string="Group By">
                     <filter
-                        string="OS"
-                        name="group_by_os"
+                        string="Status"
+                        name="group_by_status"
                         domain="[]"
-                        context="{'group_by': 'os_id'}"
-                        groups="cetmix_tower_server.group_manager"
+                        context="{'group_by': 'status'}"
                     />
                     <filter
                         string="Partner"
@@ -515,11 +512,45 @@
                         context="{'group_by': 'partner_id'}"
                     />
                     <filter
-                        string="Status"
-                        name="group_by_status"
-                        context="{'group_by': 'status'}"
+                        string="Users"
+                        name="group_by_user_ids"
+                        domain="[]"
+                        context="{'group_by': 'user_ids'}"
+                    />
+                    <filter
+                        string="Managers"
+                        name="group_by_manager_ids"
+                        domain="[]"
+                        context="{'group_by': 'manager_ids'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="status"
+                        string="Status"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="tag_ids"
+                        string="Tags"
+                        icon="fa-tags"
+                        select="multi"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="os_id"
+                        string="OS"
+                        icon="fa-server"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="server_template_id"
+                        string="Server Template"
+                        icon="fa-server"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

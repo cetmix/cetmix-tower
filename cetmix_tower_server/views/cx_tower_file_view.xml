@@ -174,21 +174,9 @@
         <field name="model">cx.tower.file</field>
         <field name="arch" type="xml">
             <search string="Search Files">
-                <field name="name" />
-                <field name="reference" />
+                <field name="name" string="Name/Reference" />
                 <field name="server_id" />
                 <field name="server_dir" />
-                <filter
-                    string="Tower"
-                    name="filter_is_tower"
-                    domain="[('source', '=', 'tower')]"
-                />
-                <filter
-                    string="Server"
-                    name="filter_is_server"
-                    domain="[('source', '=', 'server')]"
-                />
-                <separator />
                 <filter
                     string="Has Template"
                     name="filter_has_template"
@@ -216,16 +204,6 @@
                     domain="[('server_response', 'not in', ['ok', False])]"
                 />
                 <separator />
-                <filter
-                    string="Text"
-                    name="filter_text"
-                    domain="[('file_type', '=', 'text')]"
-                />
-                <filter
-                    string="Binary"
-                    name="filter_binary"
-                    domain="[('file_type', '=', 'binary')]"
-                />
                 <group expand="0" string="Group By">
                     <filter
                         string="Source"
@@ -252,6 +230,26 @@
                         context="{'group_by': 'template_id'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="source"
+                        string="Source"
+                        icon="fa-server"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="file_type"
+                        string="File Type"
+                        icon="fa-file"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="template_id"
+                        string="Template"
+                        icon="fa-file-template"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
