@@ -1,3 +1,8 @@
+## 16.0.2.2.6 (2025-12-11)
+
+- Features: Improve search views, implement the search panel for selected views. (5139)
+
+
 ## 16.0.2.2.5 (2025-12-10)
 
 - Bugfixes: Custom values in flight plan are lost in a skipped command and are not available after it. (5129)
