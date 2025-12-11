@@ -53,8 +53,9 @@ To use the OVH integration with Cetmix Tower, you need to create OVH API
 credentials:
 
 - Follow the `official OVH
-  documentation <https://docs.ovh.com/gb/en/api/first-steps/>`__ for
-  creating an application and generating API keys
+  documentation <https://docs.ovh.com/gb/en/api/first-steps/>`__
+  (https://docs.ovh.com/gb/en/api/first-steps/) for creating an
+  application and generating API keys
 - It's recommended to create a dedicated application with appropriate
   permissions for Cetmix Tower
 - Store your Application Key, Application Secret, and Consumer Key
@@ -207,7 +208,7 @@ Running the OVHcloud Instance Command
 
 - **Execute Command from Server**
 
-  - Click the ``Run Command`` button at the top of the server form
+  - Click the ``Command`` button at the top of the server form
   - In the popup dialog:
 
     - Select your OVHcloud instance command from the dropdown

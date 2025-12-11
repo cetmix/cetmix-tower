@@ -5,7 +5,7 @@
 
 To use the OVH integration with Cetmix Tower, you need to create OVH API credentials:
 
-- Follow the [official OVH documentation](https://docs.ovh.com/gb/en/api/first-steps/) for creating an application and generating API keys
+- Follow the [official OVH documentation](https://docs.ovh.com/gb/en/api/first-steps/) (https://docs.ovh.com/gb/en/api/first-steps/) for creating an application and generating API keys
 - It's recommended to create a dedicated application with appropriate permissions for Cetmix Tower
 - Store your Application Key, Application Secret, and Consumer Key securely—you'll need them in the next step
 
