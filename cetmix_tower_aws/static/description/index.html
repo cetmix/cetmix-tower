@@ -383,15 +383,34 @@ Odoo interface. Not intended for direct use by end users.</blockquote>
 <ul class="simple">
 <li><a class="reference internal" href="#use-cases-context" id="toc-entry-1">Use Cases / Context</a></li>
 <li><a class="reference internal" href="#configuration" id="toc-entry-2">Configuration</a></li>
-<li><a class="reference internal" href="#usage" id="toc-entry-3">Usage</a></li>
-<li><a class="reference internal" href="#changelog" id="toc-entry-4">Changelog</a><ul>
-<li><a class="reference internal" href="#section-1" id="toc-entry-5">16.0.1.1.0 (2025-07-17)</a></li>
+<li><a class="reference internal" href="#usage" id="toc-entry-3">Usage</a><ul>
+<li><a class="reference internal" href="#example-of-cetmix-tower-python-command-to-list-ec2-instances" id="toc-entry-4">Example of Cetmix Tower Python Command to List EC2 Instances</a><ul>
+<li><a class="reference internal" href="#navigate-to-command-creation" id="toc-entry-5">Navigate to Command Creation</a></li>
+<li><a class="reference internal" href="#configure-command-settings" id="toc-entry-6">Configure Command Settings</a></li>
+<li><a class="reference internal" href="#add-required-variables" id="toc-entry-7">Add Required Variables</a></li>
+<li><a class="reference internal" href="#add-required-secrets" id="toc-entry-8">Add Required Secrets</a></li>
+<li><a class="reference internal" href="#write-python-code" id="toc-entry-9">Write Python Code</a></li>
+<li><a class="reference internal" href="#save-the-command" id="toc-entry-10">Save the Command</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-6">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-7">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-8">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-9">Maintainers</a></li>
+<li><a class="reference internal" href="#running-the-aws-ec2-command" id="toc-entry-11">Running the AWS EC2 Command</a><ul>
+<li><a class="reference internal" href="#navigate-to-server" id="toc-entry-12">Navigate to Server</a></li>
+<li><a class="reference internal" href="#execute-command-from-server" id="toc-entry-13">Execute Command from Server</a></li>
+<li><a class="reference internal" href="#view-command-results" id="toc-entry-14">View Command Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-output" id="toc-entry-15">Example Output</a></li>
+<li><a class="reference internal" href="#creating-additional-aws-commands" id="toc-entry-16">Creating Additional AWS Commands</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changelog" id="toc-entry-17">Changelog</a><ul>
+<li><a class="reference internal" href="#section-1" id="toc-entry-18">16.0.1.1.0 (2025-07-17)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-19">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-20">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-21">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-22">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -418,8 +437,9 @@ environment. Run <tt class="docutils literal">pip install boto3</tt> to install 
 <p>To use the AWS integration with Cetmix Tower, you need to create AWS
 access keys:</p>
 <ul class="simple">
-<li>Follow the official AWS documentation
-<a class="reference external" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html">https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html</a>
+<li>Follow the <a class="reference external" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html">official AWS
+documentation</a>
+(<a class="reference external" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html">https://docs.aws.amazon.com/IAM/latest/UserGuide/security-creds.html</a>)
 for creating IAM access keys</li>
 <li>It’s recommended to create a dedicated IAM user with appropriate
 permissions for Cetmix Tower</li>
@@ -471,8 +491,9 @@ value</li>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-3">Usage</a></h1>
-<p>Please check the official Boto3 Documentation
-<a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">https://boto3.amazonaws.com/v1/documentation/api/latest/index.html</a> for
+<p>Please check the <a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">official Boto3
+Documentation</a>
+(<a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">https://boto3.amazonaws.com/v1/documentation/api/latest/index.html</a>) for
 the detailed information about the services and methods provided by the
 Boto3 library.</p>
 <blockquote>
@@ -481,29 +502,52 @@ possible commands you can create and run with this module. The boto3
 library provides access to the full range of AWS services and methods
 - this is just a starting point to help you get familiar with the
 integration.</blockquote>
-<p><strong>Example of Cetmix Tower Python Command to List EC2 Instances</strong></p>
-<ul>
-<li><p class="first"><strong>Navigate to Command Creation</strong></p>
+<div class="section" id="example-of-cetmix-tower-python-command-to-list-ec2-instances">
+<h2><a class="toc-backref" href="#toc-entry-4">Example of Cetmix Tower Python Command to List EC2 Instances</a></h2>
+<div class="section" id="navigate-to-command-creation">
+<h3><a class="toc-backref" href="#toc-entry-5">Navigate to Command Creation</a></h3>
 <ul class="simple">
 <li>Go to <tt class="docutils literal">Cetmix Tower &gt; Commands &gt; Commands</tt></li>
-<li>Create new command:</li>
+<li>Click the <tt class="docutils literal">Create</tt> button</li>
 </ul>
-</li>
-<li><p class="first"><strong>Configure Command Settings</strong></p>
+</div>
+<div class="section" id="configure-command-settings">
+<h3><a class="toc-backref" href="#toc-entry-6">Configure Command Settings</a></h3>
 <ul class="simple">
 <li>Set a descriptive <tt class="docutils literal">Name</tt> (e.g., “List AWS EC2 Instances”)</li>
 <li>Leave <tt class="docutils literal">Reference</tt> blank to generate automatically (or set a custom
 reference)</li>
-<li>Select <tt class="docutils literal">Action</tt>: “Run Python code”</li>
+<li>Select <tt class="docutils literal">Action</tt>: “Execute Python code”</li>
 <li>Set <tt class="docutils literal">Access Level</tt>: Choose appropriate level (e.g., “Manager”)</li>
+<li>Optional: Set <tt class="docutils literal">Default Path</tt> if needed</li>
 <li>Optional: Add <tt class="docutils literal">Tags</tt> (e.g., “aws”, “ec2”) for better organization</li>
 </ul>
-</li>
-<li><p class="first"><strong>Write Python Code</strong></p>
+</div>
+<div class="section" id="add-required-variables">
+<h3><a class="toc-backref" href="#toc-entry-7">Add Required Variables</a></h3>
 <ul class="simple">
-<li>Go to the <tt class="docutils literal">Code</tt> tab</li>
-<li>Enter the following Python code:</li>
+<li>In the <tt class="docutils literal">Variables</tt> tab, add the previously configured variable:<ul>
+<li><tt class="docutils literal">aws_region_name</tt></li>
 </ul>
+</li>
+</ul>
+</div>
+<div class="section" id="add-required-secrets">
+<h3><a class="toc-backref" href="#toc-entry-8">Add Required Secrets</a></h3>
+<ul class="simple">
+<li>In the <tt class="docutils literal">Secrets</tt> field, add the previously configured secrets:<ul>
+<li><tt class="docutils literal">aws_access_key</tt></li>
+<li><tt class="docutils literal">aws_secret_access_key</tt></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="write-python-code">
+<h3><a class="toc-backref" href="#toc-entry-9">Write Python Code</a></h3>
+<ul>
+<li><p class="first">Go to the <tt class="docutils literal">Code</tt> tab</p>
+</li>
+<li><p class="first">Enter the following Python code:</p>
 <pre class="code python literal-block">
 <span class="c1"># List EC2 instances using boto3</span><span class="w">
 </span><span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;exit_code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span><span class="w">
@@ -530,30 +574,39 @@ reference)</li>
 </span>    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;No EC2 instances found&quot;</span>
 </pre>
 </li>
-<li><p class="first"><strong>Save the Command</strong></p>
+</ul>
+</div>
+<div class="section" id="save-the-command">
+<h3><a class="toc-backref" href="#toc-entry-10">Save the Command</a></h3>
 <ul class="simple">
 <li>Click the <tt class="docutils literal">Save</tt> button to create the command</li>
 </ul>
-</li>
-</ul>
-<p><strong>Running the AWS EC2 Command</strong></p>
+</div>
+</div>
+<div class="section" id="running-the-aws-ec2-command">
+<h2><a class="toc-backref" href="#toc-entry-11">Running the AWS EC2 Command</a></h2>
+<div class="section" id="navigate-to-server">
+<h3><a class="toc-backref" href="#toc-entry-12">Navigate to Server</a></h3>
 <ul class="simple">
-<li><strong>Navigate to Server</strong><ul>
 <li>Go to <tt class="docutils literal">Cetmix Tower &gt; Servers &gt; Servers</tt></li>
 <li>Open the server where you want to run the command</li>
 </ul>
-</li>
-<li><strong>Execute Command from Server</strong><ul>
-<li>Click the <tt class="docutils literal">Run Command</tt> button at the top of the server form</li>
+</div>
+<div class="section" id="execute-command-from-server">
+<h3><a class="toc-backref" href="#toc-entry-13">Execute Command from Server</a></h3>
+<ul class="simple">
+<li>Click the <tt class="docutils literal">Command</tt> button at the top of the server form</li>
 <li>In the popup dialog:<ul>
 <li>Select your AWS EC2 command from the dropdown</li>
-<li>Verify the configuration values (if any need adjustment)</li>
+<li>Verify the variable values (if any need adjustment)</li>
 <li>Click <tt class="docutils literal">Run</tt> to execute</li>
 </ul>
 </li>
 </ul>
-</li>
-<li><strong>View Command Results</strong><ul>
+</div>
+<div class="section" id="view-command-results">
+<h3><a class="toc-backref" href="#toc-entry-14">View Command Results</a></h3>
+<ul class="simple">
 <li>After execution, the command log will display showing:<ul>
 <li>The command executed</li>
 <li>Execution status</li>
@@ -561,9 +614,10 @@ reference)</li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-<p><strong>Example Output</strong></p>
+</div>
+</div>
+<div class="section" id="example-output">
+<h2><a class="toc-backref" href="#toc-entry-15">Example Output</a></h2>
 <p>For a successful execution with EC2 instances:</p>
 <pre class="code bash literal-block">
 Found<span class="w"> </span><span class="m">3</span><span class="w"> </span>EC2<span class="w"> </span>instances:<span class="w">
@@ -575,7 +629,9 @@ Found<span class="w"> </span><span class="m">3</span><span class="w"> </span>EC2
 <pre class="code bash literal-block">
 No<span class="w"> </span>EC2<span class="w"> </span>instances<span class="w"> </span>found
 </pre>
-<p><strong>Creating Additional AWS Commands</strong></p>
+</div>
+<div class="section" id="creating-additional-aws-commands">
+<h2><a class="toc-backref" href="#toc-entry-16">Creating Additional AWS Commands</a></h2>
 <p>The cetmix_tower_aws module provides access to the boto3 Python library
 for AWS service integration. Here are some common services you can use:</p>
 <pre class="code python literal-block">
@@ -600,10 +656,11 @@ for AWS service integration. Here are some common services you can use:</p>
 <p>For more details, see the <a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/index.html">AWS Boto3
 Documentation</a>.</p>
 </div>
+</div>
 <div class="section" id="changelog">
-<h1><a class="toc-backref" href="#toc-entry-4">Changelog</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-17">Changelog</a></h1>
 <div class="section" id="section-1">
-<h2><a class="toc-backref" href="#toc-entry-5">16.0.1.1.0 (2025-07-17)</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-18">16.0.1.1.0 (2025-07-17)</a></h2>
 <ul class="simple">
 <li>Features: Refactor the library import using the latest updates in the
 cetmix_tower_server module. (4839)</li>
@@ -611,7 +668,7 @@ cetmix_tower_server module. (4839)</li>
 </div>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-6">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-19">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -619,15 +676,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-7">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-20">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-8">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-21">Authors</a></h2>
 <ul class="simple">
 <li>Cetmix</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-9">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-22">Maintainers</a></h2>
 <p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/17.0/cetmix_tower_aws">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
