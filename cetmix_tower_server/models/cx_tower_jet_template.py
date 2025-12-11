@@ -789,7 +789,7 @@ class CxTowerJetTemplate(models.Model):
     def _allowed_jet_fields(self):
         """Return the allowed fields for the jet creation"""
         self.ensure_one()
-        return ["name", "url", "reference", "sequence", "color"]
+        return ["name", "url", "reference", "sequence", "color", "jet_cloned_from_id"]
 
     def _allow_jet_creation(self, server):
         """
