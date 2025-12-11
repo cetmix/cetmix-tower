@@ -54,8 +54,7 @@
                                                 role="menuitem"
                                                 type="action"
                                                 name="%(cetmix_tower_server.cx_tower_command_run_wizard_action)d"
-                                            >Run
-                                                Command
+                                            >Command
                                             </a>
                                         </div>
                                         <div>
@@ -63,8 +62,7 @@
                                                 role="menuitem"
                                                 type="action"
                                                 name="%(cetmix_tower_server.cx_tower_plan_run_wizard_action)d"
-                                            >Run
-                                                Flight Plan
+                                            >Flight Plan
                                             </a>
                                         </div>
                                     </div>
