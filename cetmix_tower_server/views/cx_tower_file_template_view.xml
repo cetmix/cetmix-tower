@@ -125,7 +125,11 @@
         <field name="model">cx.tower.file.template</field>
         <field name="arch" type="xml">
             <search string="Search File Templates">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="server_dir" />
                 <filter
                     string="Archived"

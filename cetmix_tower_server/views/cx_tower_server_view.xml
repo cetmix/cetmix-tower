@@ -475,7 +475,11 @@
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
             <search string="Search Servers">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="url" />
                 <field name="partner_id" />
                 <field name="user_ids" />
