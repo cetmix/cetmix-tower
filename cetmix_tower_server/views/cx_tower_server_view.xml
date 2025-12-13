@@ -533,24 +533,12 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
-                    <field
-                        name="tag_ids"
-                        string="Tags"
-                        icon="fa-tags"
-                        select="multi"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="os_id"
-                        string="OS"
-                        icon="fa-server"
-                        enable_counters="1"
-                    />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field name="os_id" string="OS" icon="fa-server" />
                     <field
                         name="server_template_id"
                         string="Server Template"
                         icon="fa-server"
-                        enable_counters="1"
                     />
                 </searchpanel>
             </search>
