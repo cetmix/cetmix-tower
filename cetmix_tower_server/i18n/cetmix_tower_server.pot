@@ -346,6 +346,9 @@ msgstr ""
 #: model:ir.module.category,name:cetmix_tower_server.ir_module_category_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_search_view
 msgid "Access Level"
 msgstr ""
 
@@ -566,12 +569,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_automation_root
 msgid "Automation"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
-msgid "Binary"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -921,6 +918,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_command
+#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__command_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__command_id
@@ -932,8 +930,8 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_shortcut__action__command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 msgid "Command"
 msgstr ""
 
@@ -1660,12 +1658,6 @@ msgid "File downloaded!"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
-msgid "File from template"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__name
 msgid "File name WITHOUT path. Eg 'test.txt'"
 msgstr ""
@@ -1759,6 +1751,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_plan
+#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_plan
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__flight_plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__plan_id
@@ -1770,6 +1763,8 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__action__plan
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_shortcut__action__plan
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 msgid "Flight Plan"
 msgstr ""
 
@@ -1832,12 +1827,6 @@ msgstr ""
 #: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
 #, python-format
 msgid "Flight Plans Stopped"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
-msgid "Flight plan"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2213,6 +2202,11 @@ msgid "Interval Number"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
+msgid "Interval Type"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__interval_type
 msgid "Interval Unit"
 msgstr ""
@@ -2424,6 +2418,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_html
+msgid "Log Html"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__log_text
 msgid "Log Text"
 msgstr ""
@@ -2469,6 +2468,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__manager_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__manager_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 msgid "Managers"
 msgstr ""
 
@@ -2589,6 +2590,21 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_vault__field_name
 msgid "Name of the field that contains the secret value"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_os_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_tag_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_search_view
+msgid "Name/Reference"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2776,6 +2792,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__os_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "OSes"
 msgstr ""
 
@@ -3201,8 +3218,6 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_run_wizard__action__python_code
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Python code"
 msgstr ""
 
@@ -3262,7 +3277,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_option__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__reference
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Reference"
 msgstr ""
 
@@ -3424,9 +3438,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #: code:addons/cetmix_tower_server/wizards/cx_tower_command_run_wizard.py:0
-#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_command
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 #, python-format
 msgid "Run Command"
 msgstr ""
@@ -3439,11 +3451,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
-#: model:ir.actions.server,name:cetmix_tower_server.action_execute_cx_tower_plan
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__plan_run_id
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_kanban
 #, python-format
 msgid "Run Flight Plan"
 msgstr ""
@@ -3477,11 +3485,6 @@ msgid "Run Result"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
-msgid "Run a flight plan"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 msgid ""
 "Run code as it appears in 'Rendered code' in wizard and return to wizard. "
@@ -3491,11 +3494,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 msgid "Run code using server method and log result"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
-msgid "Run command"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3568,19 +3566,12 @@ msgid "SSH Client is not defined."
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
-msgid "SSH Command"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key__key_type__k
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "SSH Key"
 msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_key
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "SSH Key / Secret"
 msgstr ""
 
@@ -3608,7 +3599,6 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_run_wizard__action__ssh_command
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
 msgid "SSH command"
 msgstr ""
 
@@ -3747,7 +3737,6 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key__key_type__s
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Secret"
 msgstr ""
 
@@ -3864,6 +3853,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__server_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__server_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__server_template_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 msgid "Server Template"
 msgstr ""
 
@@ -3931,9 +3921,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_res_users__server_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_server_root
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_filter
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_form_inherit_cetmix_tower
 msgid "Servers"
 msgstr ""
@@ -3965,11 +3958,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_settings
 msgid "Settings"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_shortcut_search_view
-msgid "Shortcut"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4051,6 +4039,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__source
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__source
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Source"
 msgstr ""
@@ -4177,7 +4166,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag_mixin__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Tags"
@@ -4207,12 +4201,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Test Connection"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
-msgid "Text"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4373,7 +4361,6 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file__source__tower
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_file_template__source__tower
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Tower"
 msgstr ""
 
@@ -4528,6 +4515,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__user_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__user_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 msgid "Users"
 msgstr ""
 
@@ -4614,6 +4603,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
 msgid "Variable Reference"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_search_view
+msgid "Variable Type"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4774,6 +4768,11 @@ msgstr ""
 msgid ""
 "Will use sudo based on server settings.If no sudo is configured will run "
 "without sudo"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_res_partner_filter
+msgid "With Servers"
 msgstr ""
 
 #. module: cetmix_tower_server
