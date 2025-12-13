@@ -1,3 +1,8 @@
+## 17.0.2.0.1 (2025-12-13)
+
+- Features: Improve search views, implement the search panel for selected views. (5139)
+
+
 ## 17.0.2.0.0 (2025-12-01)
 
 - Features: Major refactoring: implement Git repository entity. (4914)

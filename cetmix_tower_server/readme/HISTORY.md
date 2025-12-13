@@ -1,3 +1,11 @@
+## 17.0.2.1.4 (2025-12-13)
+
+- Features: Parse empty or missing key values as 'None' instead of leaving key reference as is. (5134)
+- Features: Improve search views, implement the search panel for selected views. (5139)
+
+- Bugfixes: Custom values in flight plan are lost in a skipped command and are not available after it. (5129)
+
+
 ## 17.0.2.1.3 (2025-12-05)
 
 - Bugfixes: Make variables selectable in scheduled tasks (5105)
