@@ -89,7 +89,11 @@
         <field name="model">cx.tower.git.repo</field>
         <field name="arch" type="xml">
             <search>
-                <field name="repo" string="Name" />
+                <field
+                    name="repo"
+                    string="Name/Reference"
+                    filter_domain="['|', ('repo', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="owner_id" string="Org" />
                 <field name="provider" />
 
@@ -122,6 +126,20 @@
                         context="{'group_by': 'owner_id'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="provider"
+                        string="Provider"
+                        icon="fa-globe"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="owner_id"
+                        string="Org"
+                        icon="fa-building"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>

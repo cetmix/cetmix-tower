@@ -73,7 +73,7 @@
         <field name="model">cx.tower.shortcut</field>
         <field name="arch" type="xml">
             <search string="Search Shortcuts">
-                <field name="name" string="Shortcut" />
+                <field name="name" string="Name/Reference" />
                 <field name="command_id" />
                 <field name="plan_id" />
                 <field name="server_ids" />
@@ -83,16 +83,6 @@
                     domain="[('active', '=', False)]"
                 />
                 <separator />
-                <filter
-                    string="Command"
-                    name="command"
-                    domain="[('action', '=', 'command')]"
-                />
-                <filter
-                    string="Flight plan"
-                    name="plan"
-                    domain="[('action', '=', 'plan')]"
-                />
                 <group expand="0" string="Group By">
                     <filter
                         string="Action"
@@ -101,6 +91,20 @@
                         context="{'group_by': 'action'}"
                     />
                 </group>
+                <searchpanel>
+                    <field
+                        name="action"
+                        string="Action"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="access_level"
+                        string="Access Level"
+                        icon="fa-shield"
+                        enable_counters="1"
+                    />
+                </searchpanel>
             </search>
         </field>
     </record>
