@@ -490,6 +490,11 @@ msgid "Name"
 msgstr ""
 
 #. module: cetmix_tower_webhook
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_view_search
+msgid "Name/Reference"
+msgstr ""
+
+#. module: cetmix_tower_webhook
 #: model_terms:ir.actions.act_window,help:cetmix_tower_webhook.cx_tower_webhook_log_action
 msgid "No webhook logs found"
 msgstr ""
