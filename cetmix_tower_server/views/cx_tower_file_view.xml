@@ -231,23 +231,12 @@
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="source"
-                        string="Source"
-                        icon="fa-server"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="file_type"
-                        string="File Type"
-                        icon="fa-file"
-                        enable_counters="1"
-                    />
+                    <field name="source" string="Source" icon="fa-server" />
+                    <field name="file_type" string="File Type" icon="fa-file" />
                     <field
                         name="template_id"
                         string="Template"
                         icon="fa-file-template"
-                        enable_counters="1"
                     />
                 </searchpanel>
             </search>

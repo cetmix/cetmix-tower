@@ -73,7 +73,11 @@
         <field name="model">cx.tower.shortcut</field>
         <field name="arch" type="xml">
             <search string="Search Shortcuts">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="command_id" />
                 <field name="plan_id" />
                 <field name="server_ids" />
@@ -98,12 +102,7 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
-                    <field
-                        name="access_level"
-                        string="Access Level"
-                        icon="fa-shield"
-                        enable_counters="1"
-                    />
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
                 </searchpanel>
             </search>
         </field>

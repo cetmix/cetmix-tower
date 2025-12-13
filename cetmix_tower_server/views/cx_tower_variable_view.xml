@@ -234,18 +234,8 @@
                     filter_domain="['|',('name', 'ilike', self), ('reference', 'ilike', self)]"
                 />
                 <searchpanel>
-                    <field
-                        name="variable_type"
-                        string="Variable Type"
-                        icon="fa-cog"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="access_level"
-                        string="Access Level"
-                        icon="fa-shield"
-                        enable_counters="1"
-                    />
+                    <field name="variable_type" string="Variable Type" icon="fa-cog" />
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
                 </searchpanel>
             </search>
         </field>
