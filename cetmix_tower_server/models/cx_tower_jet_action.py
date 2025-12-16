@@ -1,7 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerJetAction(models.Model):
@@ -60,3 +61,28 @@ class CxTowerJetAction(models.Model):
     )
 
     # TODO: ensure that all actions belong to the same jet template
+
+    def trigger(self, jet=None):
+        """Triggers related jet action
+
+        Args:
+            jet (cx.tower.jet): Jet to trigger the action.
+        """
+        self.ensure_one()
+
+        # Try to obtain jet from context if not provided as an argument
+        if jet is None:
+            jet_id = self.env.context.get("jet_id")
+
+            # Just return, no exceptions for now
+            if not jet_id:
+                return
+
+            jet = self.env["cx.tower.jet"].browse(jet_id)
+
+        # Ensure that the action is for a single jet
+        if not jet or len(jet) > 1:
+            raise ValidationError(_("Action can be triggered only for a single jet"))
+
+        # Trigger the action
+        jet._trigger_action(self)

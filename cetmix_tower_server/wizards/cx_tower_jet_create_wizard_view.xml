@@ -27,30 +27,40 @@
                         domain="state_domain"
                     />
                     <field name="state_domain" invisible="1" />
-                    <field
-                        name="name_type"
-                        widget="radio"
+                    <label
+                        for="name_type"
                         string="with the name that"
                         attrs="{'invisible':  [('state_id', '=', False)]}"
                     />
-                    <field
-                        name="name"
-                        placeholder="put the name here"
-                        string="with the name"
-                        attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ('a', False))], 'required': [('name_type', '=', 'm')]}"
-                    />
-                    <field
-                        name="url_type"
-                        widget="radio"
+                    <div class="o_row">
+                        <field
+                            name="name_type"
+                            widget="radio"
+                            attrs="{'invisible':  [('state_id', '=', False)]}"
+                        />
+                        <field
+                            name="name"
+                            placeholder="put the name here"
+                            attrs="{'invisible': ['|', ('state_id', '=', False), ('name_type', 'in', ('a', False))], 'required': [('name_type', '=', 'm')]}"
+                        />
+                    </div>
+                    <label
+                        for="url_type"
                         string="with the URL that"
                         attrs="{'invisible':  [('state_id', '=', False)]}"
                     />
+                    <div class="o_row">
+                        <field
+                            name="url_type"
+                            widget="radio"
+                            attrs="{'invisible':  [('state_id', '=', False)]}"
+                        />
                     <field
-                        name="url"
-                        placeholder="eg 'https://myjet.example.com'"
-                        string="with the URL"
-                        attrs="{'invisible': ['|', ('state_id', '=', False), ('url_type', 'in', ('a', False))], 'required': [('url_type', '=', 'm')]}"
-                    />
+                            name="url"
+                            placeholder="eg 'https://myjet.example.com'"
+                            attrs="{'invisible': ['|', ('state_id', '=', False), ('url_type', 'in', ('a', False))], 'required': [('url_type', '=', 'm')]}"
+                        />
+                    </div>
                     <field
                         name="use_custom_variables"
                         widget="radio"

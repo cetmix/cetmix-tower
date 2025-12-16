@@ -120,9 +120,15 @@ class CxTowerJet(models.Model):
     )
     jet_template_state_ids = fields.One2many(
         comodel_name="cx.tower.jet.state",
-        compute="_compute_available_states",
+        compute="_compute_state_available_ids",
         compute_sudo=True,
     )
+    state_available_ids = fields.One2many(
+        comodel_name="cx.tower.jet.state",
+        compute="_compute_state_available_ids",
+        compute_sudo=True,
+    )
+
     target_state_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
         string="Target State",
@@ -131,12 +137,12 @@ class CxTowerJet(models.Model):
     )
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
-        string="Currently Executing Action",
+        string="Executing Action",
         groups="cetmix_tower_server.group_manager",
     )
     current_command_log_id = fields.Many2one(
         comodel_name="cx.tower.command.log",
-        string="Currently Executing Command Log",
+        string="Executing Command Log",
         groups="cetmix_tower_server.group_manager",
     )
 
@@ -146,7 +152,7 @@ class CxTowerJet(models.Model):
     )
 
     # -- Available actions based on current state
-    available_action_ids = fields.Many2many(
+    action_available_ids = fields.Many2many(
         comodel_name="cx.tower.jet.action",
         compute="_compute_available_actions",
         string="Available Actions",
@@ -193,7 +199,7 @@ class CxTowerJet(models.Model):
             )
 
     @api.depends("jet_template_id", "jet_template_id.action_ids")
-    def _compute_available_states(self):
+    def _compute_state_available_ids(self):
         for jet in self:
             actions = jet.jet_template_id.action_ids
             if not actions:
@@ -202,6 +208,7 @@ class CxTowerJet(models.Model):
             jet.jet_template_state_ids = (
                 actions.state_from_id | actions.state_transit_id | actions.state_to_id
             )
+            jet.state_available_ids = actions.state_to_id - jet.state_id
 
     @api.depends(
         "state_id",
@@ -215,14 +222,14 @@ class CxTowerJet(models.Model):
         """Compute available actions based on current state and template"""
         for jet in self:
             if not jet.jet_template_id:
-                jet.available_action_ids = False
+                jet.action_available_ids = False
                 continue
 
             # Find actions in the template that start from the current state
             actions = jet.jet_template_id.action_ids.filtered(
                 lambda a, state=jet.state_id: a.state_from_id == state
             )
-            jet.update({"available_action_ids": actions})
+            jet.update({"action_available_ids": actions})
 
     @api.depends("jet_template_id", "jet_template_id.template_requires_ids")
     def _compute_jet_requires_ids(self):
@@ -688,7 +695,7 @@ class CxTowerJet(models.Model):
         action = action.sudo()
 
         # Ensure the action is available for this jet
-        if action.id not in self.available_action_ids.ids:
+        if action.id not in self.action_available_ids.ids:
             raise ValidationError(
                 _(
                     "Action '%(action)s' is not available for jet"
