@@ -612,7 +612,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__name
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_view_search
 msgid "Name"
 msgstr ""
 
@@ -624,6 +623,11 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_source_view_form
 msgid "Name. Leave blank to autogenerate"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_view_search
+msgid "Name/Reference"
 msgstr ""
 
 #. module: cetmix_tower_git
