@@ -89,7 +89,11 @@
         <field name="model">cx.tower.git.repo</field>
         <field name="arch" type="xml">
             <search>
-                <field name="repo" string="Name" />
+                <field
+                    name="repo"
+                    string="Name/Reference"
+                    filter_domain="['|', ('repo', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="owner_id" string="Org" />
                 <field name="provider" />
 

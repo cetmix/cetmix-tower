@@ -238,7 +238,11 @@
         <field name="model">cx.tower.command</field>
         <field name="arch" type="xml">
             <search string="Search Commands">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="code" />
                 <field name="user_ids" />
                 <field name="manager_ids" />
@@ -297,32 +301,19 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
-                    <field
-                        name="access_level"
-                        string="Access Level"
-                        icon="fa-shield"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="tag_ids"
-                        string="Tags"
-                        icon="fa-tags"
-                        select="multi"
-                        enable_counters="1"
-                    />
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
                     <field
                         name="os_ids"
                         string="OSes"
                         icon="fa-server"
                         select="multi"
-                        enable_counters="1"
                     />
                     <field
                         name="server_ids"
                         string="Servers"
                         icon="fa-server"
                         select="multi"
-                        enable_counters="1"
                     />
                 </searchpanel>
             </search>

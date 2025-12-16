@@ -334,7 +334,11 @@
         <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <search string="Search Server Templates">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="user_ids" />
                 <field name="manager_ids" />
                 <filter
@@ -362,19 +366,8 @@
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="tag_ids"
-                        string="Tags"
-                        icon="fa-tags"
-                        select="multi"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="os_id"
-                        string="OS"
-                        icon="fa-server"
-                        enable_counters="1"
-                    />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field name="os_id" string="OS" icon="fa-server" />
                 </searchpanel>
             </search>
         </field>

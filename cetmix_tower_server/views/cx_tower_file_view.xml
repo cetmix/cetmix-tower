@@ -174,7 +174,11 @@
         <field name="model">cx.tower.file</field>
         <field name="arch" type="xml">
             <search string="Search Files">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="server_id" />
                 <field name="server_dir" />
                 <filter
@@ -231,23 +235,12 @@
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="source"
-                        string="Source"
-                        icon="fa-server"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="file_type"
-                        string="File Type"
-                        icon="fa-file"
-                        enable_counters="1"
-                    />
+                    <field name="source" string="Source" icon="fa-server" />
+                    <field name="file_type" string="File Type" icon="fa-file" />
                     <field
                         name="template_id"
                         string="Template"
                         icon="fa-file-template"
-                        enable_counters="1"
                     />
                 </searchpanel>
             </search>

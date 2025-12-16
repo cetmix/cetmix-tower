@@ -151,7 +151,11 @@
         <field name="model">cx.tower.plan</field>
         <field name="arch" type="xml">
             <search string="Search Flight Plans">
-                <field name="name" string="Name/Reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="user_ids" />
                 <field name="manager_ids" />
                 <filter
@@ -185,25 +189,13 @@
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="access_level"
-                        string="Access Level"
-                        icon="fa-shield"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="tag_ids"
-                        string="Tags"
-                        icon="fa-tags"
-                        select="multi"
-                        enable_counters="1"
-                    />
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
                     <field
                         name="server_ids"
                         string="Servers"
                         icon="fa-server"
                         select="multi"
-                        enable_counters="1"
                     />
                 </searchpanel>
             </search>
