@@ -1,3 +1,10 @@
+## 16.0.2.2.7 (2025-12-16)
+
+- Features: Support for ANSI formatting in server logs. (5141)
+
+- Bugfixes: UI/UX fixed and improvements. (5141)
+
+
 ## 16.0.2.2.6 (2025-12-11)
 
 - Features: Improve search views, implement the search panel for selected views. (5139)
