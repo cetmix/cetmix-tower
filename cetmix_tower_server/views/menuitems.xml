@@ -30,17 +30,6 @@
     />
 
     <!-- ========================= Partners ========================= -->
-    <record id="action_cx_cetmix_tower_partner" model="ir.actions.act_window">
-        <field name="name">Partners</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="path">cetmix_tower_partners</field>
-        <field name="res_model">res.partner</field>
-        <field name="view_mode">kanban,list,form</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Add a new partner</p>
-        </field>
-    </record>
-
     <menuitem
         id="menu_cx_tower_partner"
         name="Partners"

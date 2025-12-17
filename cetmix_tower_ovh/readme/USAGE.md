@@ -73,7 +73,7 @@
   * Open the server where you want to run the command
 
 * **Execute Command from Server**
-  * Click the `Run Command` button at the top of the server form
+  * Click the `Command` button at the top of the server form
   * In the popup dialog:
     * Select your OVHcloud instance command from the dropdown
     * Verify the variable values (if any need adjustment)

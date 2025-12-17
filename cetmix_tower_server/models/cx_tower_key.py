@@ -161,21 +161,25 @@ class CxTowerKey(models.Model):
         for key_string in key_strings:
             # Replace key including key terminator
             key_value = self._parse_key_string(key_string, **kwargs)
-            if key_value:
-                if pythonic_mode:
-                    # save key value as string in pythonic mode
-                    key_value = f'"{key_value}"'
-                    # Escape newline characters to ensure the key value remains
-                    # a valid single-line string. This prevents syntax errors
-                    # when the string is used in contexts where unescaped
-                    # newlines would break Python syntax or evaluation logic.
-                    key_value = key_value.replace("\n", "\\n")
+            if pythonic_mode and key_value:
+                # save key value as string in pythonic mode
+                key_value = f'"{key_value}"'
+                # Escape newline characters to ensure the key value remains
+                # a valid single-line string. This prevents syntax errors
+                # when the string is used in contexts where unescaped
+                # newlines would break Python syntax or evaluation logic.
+                key_value = key_value.replace("\n", "\\n")
 
-                code = code.replace(key_string, key_value)
+            # Save key value if not saved yet
+            if key_value and key_value not in key_values:
+                key_values.append(key_value)
 
-                # Save key value if not saved yet
-                if key_value not in key_values:
-                    key_values.append(key_value)
+            # Handle False and None values
+            if not key_value:
+                key_value = str(key_value)
+
+            # Replace key with value
+            code = code.replace(key_string, key_value)
 
         return {"code": code, "key_values": key_values}
 

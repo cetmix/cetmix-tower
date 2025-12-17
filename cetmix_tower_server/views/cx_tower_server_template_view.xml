@@ -334,10 +334,13 @@
         <field name="model">cx.tower.server.template</field>
         <field name="arch" type="xml">
             <search string="Search Server Templates">
-                <field name="name" />
-                <field name="reference" />
-                <field name="os_id" />
-                <field name="tag_ids" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="user_ids" />
+                <field name="manager_ids" />
                 <filter
                     string="Archived"
                     name="archived"
@@ -350,7 +353,23 @@
                         domain="[]"
                         context="{'group_by': 'os_id'}"
                     />
+                    <filter
+                        string="Users"
+                        name="group_by_user_ids"
+                        domain="[]"
+                        context="{'group_by': 'user_ids'}"
+                    />
+                    <filter
+                        string="Managers"
+                        name="group_by_manager_ids"
+                        domain="[]"
+                        context="{'group_by': 'manager_ids'}"
+                    />
                 </group>
+                <searchpanel>
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field name="os_id" string="OS" icon="fa-server" />
+                </searchpanel>
             </search>
         </field>
     </record>
