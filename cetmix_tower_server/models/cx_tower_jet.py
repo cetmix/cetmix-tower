@@ -439,7 +439,10 @@ class CxTowerJet(models.Model):
         variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
         if not variable:
             return None
-        return variable._get_value(jet=self)
+        values = variable._get_variable_values_by_references(
+            variable_references=[variable_reference], jet=self
+        )
+        return values[variable_reference]
 
     def run_command(
         self,

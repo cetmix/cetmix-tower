@@ -2185,7 +2185,10 @@ class CxTowerServer(models.Model):
         variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
         if not variable:
             return None
-        return variable._get_value(server=self)
+        values = variable._get_variable_values_by_references(
+            variable_references=[variable_reference], server=self
+        )
+        return values[variable_reference]
 
     def server_toggle_active(self, self_active):
         """
