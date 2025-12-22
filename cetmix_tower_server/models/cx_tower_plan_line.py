@@ -1,11 +1,14 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 from .constants import PLAN_LINE_CONDITION_CHECK_FAILED
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerPlanLine(models.Model):
@@ -241,7 +244,21 @@ class CxTowerPlanLine(models.Model):
             # For evaluate a string that contains an expression that mostly uses
             # Python constants, arithmetic expressions and the objects directly provided
             # in context we need use `safe_eval`
-            return safe_eval(condition)
+            # We catch all exceptions and return False to avoid raising an exception
+            try:
+                result = safe_eval(condition)
+            except Exception as e:
+                _logger.error(
+                    "Error evaluating condition '%s' for plan line '%s' "
+                    "in plan '%s' for server '%s'. Line is skipped. Error: %s",
+                    condition,
+                    self.name,
+                    self.plan_id.name,
+                    server.name,
+                    str(e),
+                )
+                result = False
+            return result
 
         return True  # Assume the line can be executed if no condition is specified
 

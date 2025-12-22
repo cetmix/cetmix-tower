@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
+from odoo.tools.misc import mute_logger
 
 from ..models.constants import (
     ANOTHER_PLAN_RUNNING,
@@ -2457,7 +2458,7 @@ result = {
             {
                 "name": "Command -> Success",
                 "action": "python_code",
-                "code": "# Juse return deafult values",
+                "code": "# Just return default values",
             }
         )
         command_error = self.Command.create(
@@ -2594,3 +2595,45 @@ result = {
 
         # Final plan status must be custom exit code -1 from line 5 action
         self.assertEqual(plan_log.plan_status, -1)
+
+    def test_plan_line_condition_error(self):
+        """Test plan line condition error
+        First line is skipped because of condition error
+        Second line is executed successfully
+        """
+        # Create commands
+        command_success = self.Command.create(
+            {
+                "name": "Command -> Success",
+                "action": "python_code",
+                "code": "# Just return default values",
+            }
+        )
+
+        # Plan and lines
+        plan = self.Plan.create(
+            {
+                "name": "Test plan line condition error",
+            }
+        )
+
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": plan.id,
+                "command_id": command_success.id,
+                "condition": "=q",
+            },
+        )
+        self.plan_line.create(
+            {"sequence": 20, "plan_id": plan.id, "command_id": command_success.id}
+        )
+
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_plan_line"):
+            plan_log = self.server_test_1.run_flight_plan(plan)
+
+        # Must be 2 command logs
+        self.assertEqual(len(plan_log.command_log_ids), 2)
+        logs = plan_log.command_log_ids
+        self.assertTrue(logs[0].is_skipped)
+        self.assertTrue(logs[1].command_status == 0)
