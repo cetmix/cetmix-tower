@@ -15,7 +15,7 @@ class CxTowerJetActionWizard(models.TransientModel):
     action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
         required=True,
-        domain="[('id', 'in', available_action_ids)]",
+        domain="[('id', 'in', action_available_ids)]",
     )
 
     jet_ids = fields.Many2many(
@@ -23,7 +23,7 @@ class CxTowerJetActionWizard(models.TransientModel):
         readonly=True,
     )
 
-    available_action_ids = fields.Many2many(
+    action_available_ids = fields.Many2many(
         comodel_name="cx.tower.jet.action",
         compute="_compute_available_actions",
         help="Actions that are available for all selected jets",
@@ -34,19 +34,19 @@ class CxTowerJetActionWizard(models.TransientModel):
         """Compute available actions based on selected jets"""
         for wizard in self:
             if not wizard.jet_ids:
-                wizard.available_action_ids = False
+                wizard.action_available_ids = False
                 continue
 
             # Get actions that are available to ALL selected jets
             # Start with the first jet's available actions
             first_jet = wizard.jet_ids[0]
-            available_actions = first_jet.available_action_ids
+            available_actions = first_jet.action_available_ids
 
             # Intersect with actions available to all other jets
             for jet in wizard.jet_ids[1:]:
-                available_actions &= jet.available_action_ids
+                available_actions &= jet.action_available_ids
 
-            wizard.available_action_ids = available_actions
+            wizard.action_available_ids = available_actions
 
     def action_confirm(self):
         """Trigger the action for the selected jets"""

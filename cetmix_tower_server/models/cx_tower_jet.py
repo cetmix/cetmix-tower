@@ -201,14 +201,31 @@ class CxTowerJet(models.Model):
     @api.depends("jet_template_id", "jet_template_id.action_ids")
     def _compute_state_available_ids(self):
         for jet in self:
+            if not jet.jet_template_id:
+                jet.update(
+                    {
+                        "jet_template_state_ids": False,
+                        "state_available_ids": False,
+                    }
+                )
+                continue
             actions = jet.jet_template_id.action_ids
             if not actions:
-                jet.jet_template_state_ids = False
+                jet.update(
+                    {
+                        "jet_template_state_ids": False,
+                        "state_available_ids": False,
+                    }
+                )
                 continue
-            jet.jet_template_state_ids = (
-                actions.state_from_id | actions.state_transit_id | actions.state_to_id
+            jet.update(
+                {
+                    "jet_template_state_ids": actions.state_from_id
+                    | actions.state_transit_id
+                    | actions.state_to_id,
+                    "state_available_ids": actions.state_to_id - jet.state_id,
+                }
             )
-            jet.state_available_ids = actions.state_to_id - jet.state_id
 
     @api.depends(
         "state_id",

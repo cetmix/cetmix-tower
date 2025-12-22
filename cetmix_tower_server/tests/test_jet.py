@@ -22,14 +22,14 @@ class TestTowerJet(TestTowerJetsCommon):
         # Jet has template but no state
         self.jet_test.state_id = False
 
-        # available_action_ids should include only the create action
+        # action_available_ids should include only the create action
         self.assertEqual(
-            len(self.jet_test.available_action_ids),
+            len(self.jet_test.action_available_ids),
             1,
             "Available actions should include create action when jet has no state",
         )
         self.assertEqual(
-            self.jet_test.available_action_ids,
+            self.jet_test.action_available_ids,
             self.action_create,
             "Available action should be the create action",
         )
@@ -43,7 +43,7 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # Template has actions in common setup, so should have available actions
         self.assertEqual(
-            len(self.jet_test.available_action_ids),
+            len(self.jet_test.action_available_ids),
             3,  # running_to_stopped, running_to_error, and destroy
             "Should have available actions from common setup",
         )
@@ -53,7 +53,7 @@ class TestTowerJet(TestTowerJetsCommon):
             | self.action_destroy
         )
         self.assertEqual(
-            self.jet_test.available_action_ids,
+            self.jet_test.action_available_ids,
             expected_actions,
             "Should have all actions from running state",
         )
@@ -69,7 +69,7 @@ class TestTowerJet(TestTowerJetsCommon):
         # Create action should not be available (it has no state_from_id)
         # The common action_create has no state_from_id, so it won't be available
         self.assertEqual(
-            len(self.jet_test.available_action_ids),
+            len(self.jet_test.action_available_ids),
             3,  # running_to_stopped, running_to_error, and destroy
             "Create action should not be available (no state_from_id)",
         )
@@ -89,7 +89,7 @@ class TestTowerJet(TestTowerJetsCommon):
             | self.action_destroy
         )
         self.assertEqual(
-            self.jet_test.available_action_ids,
+            self.jet_test.action_available_ids,
             expected_actions,
             "Should return destroy action along with other actions from running state",
         )
@@ -117,7 +117,7 @@ class TestTowerJet(TestTowerJetsCommon):
 
         for state, expected_actions in test_cases:
             self.jet_test.state_id = state
-            actual_actions = self.jet_test.available_action_ids
+            actual_actions = self.jet_test.action_available_ids
             expected_actions_set = {action.id for action in expected_actions}
             actual_actions_set = {action.id for action in actual_actions}
 
@@ -143,7 +143,7 @@ class TestTowerJet(TestTowerJetsCommon):
             | self.action_destroy
         )
         self.assertEqual(
-            self.jet_test.available_action_ids,
+            self.jet_test.action_available_ids,
             expected_actions,
             "Should have all actions from running state initially",
         )
@@ -155,7 +155,7 @@ class TestTowerJet(TestTowerJetsCommon):
         # but should still have other actions from running state
         expected_remaining_actions = self.action_running_to_error | self.action_destroy
         self.assertEqual(
-            self.jet_test.available_action_ids,
+            self.jet_test.action_available_ids,
             expected_remaining_actions,
             "Should have remaining actions after changing one action's state_from_id",
         )
@@ -167,7 +167,7 @@ class TestTowerJet(TestTowerJetsCommon):
         # plus any other actions from stopped state
         expected_actions = action | self.action_stopped_to_running
         self.assertEqual(
-            self.jet_test.available_action_ids,
+            self.jet_test.action_available_ids,
             expected_actions,
             "Should have the modified action plus other actions from stopped state",
         )
@@ -208,12 +208,12 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # Each jet should only see its own template's actions
         self.assertEqual(
-            self.jet_odoo.available_action_ids,
+            self.jet_odoo.action_available_ids,
             odoo_action,
             "Odoo jet should only see Odoo actions",
         )
         self.assertEqual(
-            self.jet_wordpress.available_action_ids,
+            self.jet_wordpress.action_available_ids,
             wp_action,
             "WordPress jet should only see WordPress actions",
         )
@@ -221,13 +221,13 @@ class TestTowerJet(TestTowerJetsCommon):
         # Odoo jet should not see WordPress actions
         self.assertNotIn(
             wp_action,
-            self.jet_odoo.available_action_ids,
+            self.jet_odoo.action_available_ids,
             "Odoo jet should not see WordPress actions",
         )
         # WordPress jet should not see Odoo actions
         self.assertNotIn(
             odoo_action,
-            self.jet_wordpress.available_action_ids,
+            self.jet_wordpress.action_available_ids,
             "WordPress jet should not see Odoo actions",
         )
 
