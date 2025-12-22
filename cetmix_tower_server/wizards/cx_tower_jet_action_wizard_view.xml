@@ -11,9 +11,9 @@
                         name="action_id"
                         options="{'no_create': True}"
                         placeholder="Select an action..."
-                        domain="[('id', 'in', available_action_ids)]"
+                        domain="[('id', 'in', action_available_ids)]"
                     />
-                    <field name="available_action_ids" invisible="1" />
+                    <field name="action_available_ids" invisible="1" />
                     <field name="jet_ids" />
                 </group>
 
