@@ -1,3 +1,8 @@
+## 16.0.2.2.8 (2025-12-22)
+
+- Bugfixes: Handle malformed expressions in flight plan line conditions. (5154)
+
+
 ## 16.0.2.2.7 (2025-12-16)
 
 - Features: Support for ANSI formatting in server logs. (5141)
