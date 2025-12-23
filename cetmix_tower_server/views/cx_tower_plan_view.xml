@@ -190,25 +190,13 @@
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="access_level"
-                        string="Access Level"
-                        icon="fa-shield"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="tag_ids"
-                        string="Tags"
-                        icon="fa-tags"
-                        select="multi"
-                        enable_counters="1"
-                    />
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
                     <field
                         name="server_ids"
                         string="Servers"
                         icon="fa-server"
                         select="multi"
-                        enable_counters="1"
                     />
                 </searchpanel>
             </search>

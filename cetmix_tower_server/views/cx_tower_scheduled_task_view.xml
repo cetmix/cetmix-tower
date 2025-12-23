@@ -188,18 +188,8 @@
                     />
                 </group>
                 <searchpanel>
-                    <field
-                        name="action"
-                        string="Action"
-                        icon="fa-cog"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="interval_type"
-                        string="Interval Type"
-                        icon="fa-cog"
-                        enable_counters="1"
-                    />
+                    <field name="action" string="Action" icon="fa-cog" />
+                    <field name="interval_type" string="Interval Type" icon="fa-cog" />
                 </searchpanel>
             </search>
         </field>
