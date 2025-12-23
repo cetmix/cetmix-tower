@@ -1,3 +1,8 @@
+## 18.0.1.0.4 (2025-12-23)
+
+- Bugfixes: Handle malformed expressions in flight plan line conditions. (5154)
+
+
 ## 18.0.1.0.3 (2025-12-17)
 
 - Features: Parse empty or missing key values as 'None' instead of leaving key reference as is. (5134)
