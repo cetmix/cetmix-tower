@@ -713,7 +713,7 @@ class TowerVariable(models.Model):
                     mode="exec",
                     nocopy=True,
                 )
-                variable_values[variable_reference] = eval_context.get("result")
+                variable_values[variable_reference] = eval_context.get("result", value)
             except Exception as e:
                 _logger.error(
                     "Error evaluating applied expression for "

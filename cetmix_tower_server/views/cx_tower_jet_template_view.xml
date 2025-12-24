@@ -13,6 +13,16 @@
                         type="object"
                         string="Install"
                         class="btn-primary"
+                        icon="fa-plus-square"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                    <button
+                        name="action_new_jet"
+                        type="object"
+                        string="New Jet"
+                        class="btn-primary"
+                        icon="fa-plane"
+                        attrs="{'invisible': [('show_in_create_wizard', '=', False)]}"
                         groups="cetmix_tower_server.group_manager"
                     />
                 </header>
@@ -33,21 +43,21 @@
                             type="object"
                             string="Command Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-code"
                         />
                         <button
                             name="action_open_plan_logs"
                             type="object"
                             string="Flight Plan Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-paper-plane"
                         />
                         <button
                             name="action_open_files"
                             type="object"
                             string="Files"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-files-o"
                         />
                     </div>
                     <widget
@@ -381,13 +391,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="jet_count" />
-                <field
-                    name="server_ids"
-                    widget="many2many_tags"
-                    options="{'color_field': 'color'}"
-                    optional="show"
-                />
+                <field name="jet_count" string="Jets" />
                 <field
                     name="show_in_create_wizard"
                     optional="show"
