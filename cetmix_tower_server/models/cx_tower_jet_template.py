@@ -208,7 +208,7 @@ class CxTowerJetTemplate(models.Model):
         store=True,
         recursive=True,
         copy=False,
-        help="SVG image content of the dependency" " graph of the template",
+        help="SVG image content of the dependency graph of the template",
     )
     dependency_graph_image = fields.Binary(
         string="Dependency Graph",
@@ -409,6 +409,27 @@ class CxTowerJetTemplate(models.Model):
         action["domain"] = [("jet_template_id", "=", self.id)]  # pylint: disable=no-member
         action["context"] = context
         return action
+
+    def action_new_jet(self):
+        """
+        Returns wizard action to launch a jet
+        """
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_jet_template_id": self.id
+                if self.show_in_create_wizard
+                else False,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Launch New Jet"),
+            "res_model": "cx.tower.jet.create.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #  General functions

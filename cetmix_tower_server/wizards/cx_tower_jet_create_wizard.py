@@ -1,7 +1,7 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class CxTowerJetCreateWizard(models.TransientModel):
@@ -16,6 +16,7 @@ class CxTowerJetCreateWizard(models.TransientModel):
         default="a",
         required=True,
     )
+    note = fields.Text(related="jet_template_id.note", readonly=True)
     url = fields.Char(help="The URL of the jet")
     url_type = fields.Selection(
         selection=[("a", "will be auto-generated"), ("m", "I will put myself")],
@@ -25,12 +26,21 @@ class CxTowerJetCreateWizard(models.TransientModel):
     jet_template_id = fields.Many2one(
         "cx.tower.jet.template",
         required=True,
-        domain="[('show_in_create_wizard', '=', True)]",
     )
-    note = fields.Text(related="jet_template_id.note", readonly=True)
+    jet_template_domain = fields.Binary(
+        compute="_compute_jet_template_domain",
+        help="Domain for jet template",
+    )
+    jet_template_message = fields.Text(
+        compute="_compute_jet_template_domain",
+        help="Message for the user",
+    )
+    server_domain = fields.Binary(
+        compute="_compute_server_domain",
+        help="Domain for server",
+    )
     server_id = fields.Many2one(
         "cx.tower.server",
-        domain="[('jet_template_ids', 'in', jet_template_id)]",
     )
     state_id = fields.Many2one("cx.tower.jet.state", help="Requested state of the jet")
     state_domain = fields.Binary(compute="_compute_state_domain")
@@ -45,8 +55,63 @@ class CxTowerJetCreateWizard(models.TransientModel):
         string="Variable Lines",
     )
 
+    @api.depends("server_id")
+    def _compute_jet_template_domain(self):
+        """
+        Compute the domain and message for the jet templates
+        """
+        template_obj = self.env["cx.tower.jet.template"]
+        all_templates_domain = [("show_in_create_wizard", "=", True)]
+        all_templates = template_obj.search(all_templates_domain)
+        for wizard in self:
+            if not all_templates:
+                wizard.jet_template_message = _(
+                    "No jet templates are currently configured as 'Show in Wizard'."
+                    " Please check your jet template settings."
+                )
+                wizard.jet_template_domain = all_templates_domain
+                continue
+            if not wizard.server_id:
+                # All templates that can be shown in the create wizard
+                jet_template_message = False
+                jet_template_domain = all_templates_domain
+            else:
+                # All templates that can be shown in the create wizard and
+                # are installed on the selected server
+                jet_template_domain = [
+                    ("show_in_create_wizard", "=", True),
+                    ("server_ids", "in", wizard.server_id.ids),
+                ]
+                available_templates = all_templates.filtered_domain(jet_template_domain)
+                if not available_templates:
+                    jet_template_message = _(
+                        "No jet templates configured as 'Show in Wizard' are"
+                        " installed on the selected server."
+                        " Please check your jet template settings."
+                    )
+                else:
+                    jet_template_message = False
+
+            # Set the domain and message
+            wizard.jet_template_domain = jet_template_domain
+            wizard.jet_template_message = jet_template_message
+
+    @api.depends("jet_template_id")
+    def _compute_server_domain(self):
+        """
+        Compute the domain for the servers
+        """
+        for wizard in self:
+            if not wizard.jet_template_id:
+                wizard.server_domain = []
+                continue
+            wizard.server_domain = [("id", "in", wizard.jet_template_id.server_ids.ids)]
+
     @api.depends("jet_template_id")
     def _compute_state_domain(self):
+        """
+        Compute the domain for the states
+        """
         for wizard in self:
             if not wizard.jet_template_id:
                 wizard.state_domain = []
@@ -56,6 +121,9 @@ class CxTowerJetCreateWizard(models.TransientModel):
             ]
 
     def action_confirm(self):
+        """
+        Create a new jet
+        """
         self.ensure_one()
         kwargs = {}
 

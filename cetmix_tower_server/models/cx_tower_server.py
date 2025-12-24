@@ -302,7 +302,7 @@ class CxTowerServer(models.Model):
     # ---- Computed fields
     def _compute_counters(self):
         """
-        Compute total jet templates installed on server
+        Compute total jet template, jets and files installed on server
         Note: as numbers depend on the records user has access to,
         we don't store the values.
         @depends is not needed because they are displayed in the views only
@@ -532,6 +532,25 @@ class CxTowerServer(models.Model):
             "type": "ir.actions.act_window",
             "name": _("Run Flight Plan"),
             "res_model": "cx.tower.plan.run.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
+    def action_new_jet(self):
+        """
+        Returns wizard action to launch a jet
+        """
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_server_id": self.id,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Launch New Jet"),
+            "res_model": "cx.tower.jet.create.wizard",
             "view_mode": "form",
             "target": "new",
             "context": context,

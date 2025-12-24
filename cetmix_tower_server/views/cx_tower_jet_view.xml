@@ -158,7 +158,7 @@
                     <field
                         name="state_id"
                         widget="statusbar"
-                        options="{'clickable': '1'}"
+                        options="{'clickable': '0'}"
                     />
                     <field name="jet_template_state_ids" invisible="1" />
                 </header>
@@ -169,21 +169,21 @@
                             type="object"
                             string="Command Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-code"
                         />
                         <button
                             name="action_open_plan_logs"
                             type="object"
                             string="Flight Plan Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-plane"
                         />
                         <button
                             name="action_open_files"
                             type="object"
                             string="Files"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-file"
                         />
                     </div>
                     <div class="oe_title">
@@ -474,7 +474,11 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
-                    <field name="jet_template_id" string="Template" icon="fa-plane" />
+                    <field
+                        name="jet_template_id"
+                        string="Template"
+                        icon="fa-fighter-jet"
+                    />
                     <field
                         name="tag_ids"
                         string="Tags"
