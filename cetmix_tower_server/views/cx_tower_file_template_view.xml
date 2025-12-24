@@ -11,7 +11,7 @@
                             name="action_open_files"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-pencil-square-o"
+                            icon="fa-files-o"
                         >
                             <field name="file_count" widget="statinfo" string="Files" />
                         </button>

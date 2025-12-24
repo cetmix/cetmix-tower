@@ -12,7 +12,7 @@
                             type="object"
                             class="oe_stat_button"
                             invisible="flight_plan_used_ids_count == 0"
-                            icon="fa-plane"
+                            icon="fa-paper-plane"
                         >
                             <field
                                 name="flight_plan_used_ids_count"
@@ -25,7 +25,7 @@
                             type="object"
                             string="Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-code"
                         />
                     </div>
                     <widget

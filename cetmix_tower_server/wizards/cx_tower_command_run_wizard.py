@@ -1,9 +1,14 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from ansi2html import Ansi2HTMLConverter
+
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
 from ..models.tools import generate_random_id
+
+html_converter = Ansi2HTMLConverter(inline=True)
 
 
 class CxTowerCommandRunWizard(models.TransientModel):
@@ -70,7 +75,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         compute="_compute_rendered_code",
         compute_sudo=True,
     )
-    result = fields.Text()
+    result = fields.Html()
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
         store=True,
@@ -450,7 +455,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 result = f"{result}\n"
 
         if result:
-            self.result = result
+            self.result = html_converter.convert(result)
             return {
                 "type": "ir.actions.act_window",
                 "name": _("Run Result"),

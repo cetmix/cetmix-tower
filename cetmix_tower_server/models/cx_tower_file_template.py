@@ -19,6 +19,7 @@ class CxTowerFileTemplate(models.Model):
         "cx.tower.tag.mixin",
     ]
     _description = "Cetmix Tower File Template"
+    _order = "name"
 
     active = fields.Boolean(default=True)
     file_name = fields.Char(
