@@ -74,10 +74,9 @@
                             invisible="command_action == 'plan'"
                         >
                             <field
-                                name="command_response"
-                                invisible="not command_response"
+                                invisible="not command_result_html"
+                                name="command_result_html"
                             />
-                            <field name="command_error" invisible="not command_error" />
                         </page>
                         <page
                             name="code"

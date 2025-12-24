@@ -175,6 +175,7 @@
                     string="Name/Reference"
                     filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
                 />
+                <field name="code" />
                 <field name="server_id" />
                 <field name="server_dir" />
                 <filter
@@ -233,11 +234,7 @@
                 <searchpanel>
                     <field name="source" string="Source" icon="fa-server" />
                     <field name="file_type" string="File Type" icon="fa-file" />
-                    <field
-                        name="template_id"
-                        string="Template"
-                        icon="fa-file-template"
-                    />
+                    <field name="template_id" string="Template" icon="fa-file" />
                 </searchpanel>
             </search>
         </field>

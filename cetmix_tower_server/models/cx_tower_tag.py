@@ -15,6 +15,7 @@ class CxTowerTag(models.Model):
         "cx.tower.reference.mixin",
     ]
     _description = "Cetmix Tower Tag"
+    _order = "name"
 
     color = fields.Integer(help="For better visualization in views")
 

@@ -38,8 +38,8 @@
                             name="action_open_plan_lines"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-plane"
                             invisible="plan_line_ids_count == 0"
+                            icon="fa-paper-plane"
                         >
                             <field
                                 name="plan_line_ids_count"
@@ -51,8 +51,8 @@
                             name="action_open_files"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-bars"
                             invisible="file_ids_count == 0"
+                            icon="fa-files-o"
                         >
                             <field
                                 name="file_ids_count"
@@ -64,8 +64,8 @@
                             name="action_open_file_templates"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-list-alt"
                             invisible="file_template_ids_count == 0"
+                            icon="fa-file"
                         >
                             <field
                                 name="file_template_ids_count"
@@ -93,6 +93,11 @@
                             <field name="reference" />
                             <field name="access_level" />
                             <field name="variable_type" />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
                         </group>
                         <group name="variable_validation">
                             <field
@@ -146,6 +151,7 @@
                                         name="value_char"
                                         placeholder="undefined"
                                         readonly="variable_type == 'o'"
+                                        widget="ace_tower"
                                     />
                                     <field
                                         name="option_id"
@@ -216,6 +222,12 @@
             <tree>
                 <field name="name" />
                 <field name="reference" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
                 <field name="access_level" optional="show" />
                 <field name="value_ids_count" optional="show" />
 
@@ -236,6 +248,7 @@
                 <searchpanel>
                     <field name="variable_type" string="Variable Type" icon="fa-cog" />
                     <field name="access_level" string="Access Level" icon="fa-shield" />
+                    <field name="tag_ids" string="Tags" select="multi" icon="fa-tags" />
                 </searchpanel>
             </search>
         </field>

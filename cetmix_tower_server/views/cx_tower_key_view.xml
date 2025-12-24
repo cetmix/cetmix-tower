@@ -113,7 +113,7 @@
                     string="Name/Reference"
                     filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
                 />
-                <field name="server_ssh_ids" />
+                <field name="server_ssh_ids" string="Servers (SSH)" />
                 <field name="user_ids" />
                 <field name="manager_ids" />
                 <group expand="0" string="Group By">

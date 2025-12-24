@@ -198,6 +198,7 @@
                                     <field
                                         name="value_char"
                                         readonly="variable_type == 'o'"
+                                        widget="ace_tower"
                                     />
                                     <field
                                         name="option_id"
