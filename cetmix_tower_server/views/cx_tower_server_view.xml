@@ -171,11 +171,12 @@
                         type="object"
                         class="btn-primary"
                         string="Flight Plan"
-                        icon="fa-plane"
+                        icon="fa-paper-plane"
                     />
                     <button
                         name="test_ssh_connection"
                         type="object"
+                        icon="fa-check-square-o"
                         string="Test Connection"
                         groups="cetmix_tower_server.group_manager"
                     />
@@ -187,20 +188,20 @@
                             type="object"
                             string="Command Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-code"
                         />
                         <button
                             name="action_open_plan_logs"
                             type="object"
                             string="Flight Plan Logs"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-paper-plane"
                         />
                         <button
                             name="action_open_files"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-pencil-square-o"
+                            icon="fa-files-o"
                         >
                             <field name="file_count" widget="statinfo" string="Files" />
                         </button>

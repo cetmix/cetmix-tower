@@ -90,12 +90,8 @@
                             attrs="{'invisible': [('command_action', '=', 'plan')]}"
                         >
                             <field
-                                name="command_response"
-                                attrs="{'invisible': [('command_response', '=', False)]}"
-                            />
-                            <field
-                                name="command_error"
-                                attrs="{'invisible': [('command_error', '=', False)]}"
+                                name="command_result_html"
+                                attrs="{'invisible': [('command_result_html', '=', False)]}"
                             />
                         </page>
                         <page
