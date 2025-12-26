@@ -563,9 +563,6 @@ class CxTowerJet(models.Model):
 
         Args:
             state_reference (Char): The reference of the state to bring the jet to.
-            check_access (Bool): If True, will check if the user
-            has access to the state. If False, will not check access.
-                Defaults to True.
         Returns:
             The jet is brought into the target state.
             In case of an error, the jet is brought into the error state

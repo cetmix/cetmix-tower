@@ -786,25 +786,6 @@ class TestTowerJet(TestTowerJetsCommon):
             "Root should be able to access manager-level state",
         )
 
-    def test_bring_to_state_check_access_false_bypasses_check(self):
-        """
-        Test bring_to_state with check_access=False bypasses access check.
-        User (level 1) can access root-level state (level 3) when check_access=False.
-        """
-        # Use existing state and set it to Root access level (3)
-        self.state_error.access_level = "3"
-
-        # Set jet to running state (which has action to error)
-        self.jet_test.state_id = self.state_running
-
-        # User should be able to bring jet to root-level state when check_access=False
-        self.jet_test.with_user(self.user).bring_to_state("error", check_access=False)
-        self.assertEqual(
-            self.jet_test.state_id,
-            self.state_error,
-            "Jet should be brought to root-level state when check_access=False",
-        )
-
     def test_bring_to_state_invalid_reference(self):
         """
         Test bring_to_state raises ValidationError when state reference is invalid.
