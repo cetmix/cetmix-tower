@@ -1,6 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo.exceptions import AccessError, ValidationError
+
 from .common_jets import TestTowerJetsCommon
 
 
@@ -604,3 +606,223 @@ class TestTowerJet(TestTowerJetsCommon):
                     "Jet dependencies should match template"
                     f" dependencies for {template.name}",
                 )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   bring_to_state Tests
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def test_bring_to_state_success_user_level(self):
+        """
+        Test bring_to_state succeeds when user has sufficient access level.
+        User (level 1) can access state with level 1.
+        """
+        # Use existing state and set it to User access level (1)
+        self.state_running.access_level = "1"
+
+        # Set jet to initial state
+        self.jet_test.state_id = self.state_initial
+
+        # User should be able to bring jet to user-level state
+        self.jet_test.with_user(self.user).bring_to_state("running")
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_running,
+            "Jet should be brought to user-level state by user",
+        )
+
+    def test_bring_to_state_success_manager_level(self):
+        """
+        Test bring_to_state succeeds when manager has sufficient access level.
+        Manager (level 2) can access state with level 2.
+        """
+        # Use existing state and set it to Manager access level (2)
+        self.state_stopped.access_level = "2"
+
+        # Set jet to running state (which has action to stopped)
+        self.jet_test.state_id = self.state_running
+
+        # Manager should be able to bring jet to manager-level state
+        self.jet_test.with_user(self.manager).bring_to_state("stopped")
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_stopped,
+            "Jet should be brought to manager-level state by manager",
+        )
+
+    def test_bring_to_state_success_root_level(self):
+        """
+        Test bring_to_state succeeds when root has sufficient access level.
+        Root (level 3) can access state with level 3.
+        """
+        # Use existing state and set it to Root access level (3)
+        self.state_error.access_level = "3"
+
+        # Set jet to running state (which has action to error)
+        self.jet_test.state_id = self.state_running
+
+        # Root should be able to bring jet to root-level state
+        self.jet_test.with_user(self.root).bring_to_state("error")
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_error,
+            "Jet should be brought to root-level state by root",
+        )
+
+    def test_bring_to_state_access_error_user_to_manager(self):
+        """
+        Test bring_to_state raises AccessError when user (level 1)
+        tries to access manager-level state (level 2).
+        """
+        # Use existing state and set it to Manager access level (2)
+        self.state_stopped.access_level = "2"
+
+        # Set jet to running state (which has action to stopped)
+        self.jet_test.state_id = self.state_running
+
+        # User should not be able to bring jet to manager-level state
+        with self.assertRaises(AccessError) as context:
+            self.jet_test.with_user(self.user).bring_to_state("stopped")
+
+        self.assertIn(
+            "You are not allowed to set the",
+            str(context.exception),
+            "Should raise AccessError with appropriate message",
+        )
+        self.assertIn(
+            self.state_stopped.name,
+            str(context.exception),
+            "Error message should include state name",
+        )
+
+    def test_bring_to_state_access_error_user_to_root(self):
+        """
+        Test bring_to_state raises AccessError when user (level 1)
+        tries to access root-level state (level 3).
+        """
+        # Use existing state and set it to Root access level (3)
+        self.state_error.access_level = "3"
+
+        # Set jet to running state (which has action to error)
+        self.jet_test.state_id = self.state_running
+
+        # User should not be able to bring jet to root-level state
+        with self.assertRaises(AccessError) as context:
+            self.jet_test.with_user(self.user).bring_to_state("error")
+
+        self.assertIn(
+            "You are not allowed to set the",
+            str(context.exception),
+            "Should raise AccessError with appropriate message",
+        )
+        self.assertIn(
+            self.state_error.name,
+            str(context.exception),
+            "Error message should include state name",
+        )
+
+    def test_bring_to_state_access_error_manager_to_root(self):
+        """
+        Test bring_to_state raises AccessError when manager (level 2)
+        tries to access root-level state (level 3).
+        """
+        # Use existing state and set it to Root access level (3)
+        self.state_error.access_level = "3"
+
+        # Set jet to running state (which has action to error)
+        self.jet_test.state_id = self.state_running
+
+        # Manager should not be able to bring jet to root-level state
+        with self.assertRaises(AccessError) as context:
+            self.jet_test.with_user(self.manager).bring_to_state("error")
+
+        self.assertIn(
+            "You are not allowed to set the",
+            str(context.exception),
+            "Should raise AccessError with appropriate message",
+        )
+        self.assertIn(
+            self.state_error.name,
+            str(context.exception),
+            "Error message should include state name",
+        )
+
+    def test_bring_to_state_manager_can_access_user_level(self):
+        """
+        Test bring_to_state succeeds when manager (level 2)
+        accesses user-level state (level 1).
+        Higher access levels can access lower level states.
+        """
+        # Use existing state and set it to User access level (1)
+        self.state_running.access_level = "1"
+
+        # Set jet to initial state
+        self.jet_test.state_id = self.state_initial
+
+        # Manager should be able to bring jet to user-level state
+        self.jet_test.with_user(self.manager).bring_to_state("running")
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_running,
+            "Manager should be able to access user-level state",
+        )
+
+    def test_bring_to_state_root_can_access_manager_level(self):
+        """
+        Test bring_to_state succeeds when root (level 3)
+        accesses manager-level state (level 2).
+        Higher access levels can access lower level states.
+        """
+        # Use existing state and set it to Manager access level (2)
+        self.state_stopped.access_level = "2"
+
+        # Set jet to running state (which has action to stopped)
+        self.jet_test.state_id = self.state_running
+
+        # Root should be able to bring jet to manager-level state
+        self.jet_test.with_user(self.root).bring_to_state("stopped")
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_stopped,
+            "Root should be able to access manager-level state",
+        )
+
+    def test_bring_to_state_check_access_false_bypasses_check(self):
+        """
+        Test bring_to_state with check_access=False bypasses access check.
+        User (level 1) can access root-level state (level 3) when check_access=False.
+        """
+        # Use existing state and set it to Root access level (3)
+        self.state_error.access_level = "3"
+
+        # Set jet to running state (which has action to error)
+        self.jet_test.state_id = self.state_running
+
+        # User should be able to bring jet to root-level state when check_access=False
+        self.jet_test.with_user(self.user).bring_to_state("error", check_access=False)
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_error,
+            "Jet should be brought to root-level state when check_access=False",
+        )
+
+    def test_bring_to_state_invalid_reference(self):
+        """
+        Test bring_to_state raises ValidationError when state reference is invalid.
+        """
+        # Set jet to initial state
+        self.jet_test.state_id = self.state_initial
+
+        # Should raise ValidationError for invalid state reference
+        with self.assertRaises(ValidationError) as context:
+            self.jet_test.bring_to_state("invalid_state_reference")
+
+        self.assertIn(
+            "State 'invalid_state_reference' not found",
+            str(context.exception),
+            "Should raise ValidationError with appropriate message",
+        )
+        self.assertIn(
+            self.jet_test.display_name,
+            str(context.exception),
+            "Error message should include jet display name",
+        )

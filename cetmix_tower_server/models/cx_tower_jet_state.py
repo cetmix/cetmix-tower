@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class CxTowerJetState(models.Model):
@@ -10,13 +10,16 @@ class CxTowerJetState(models.Model):
 
     _name = "cx.tower.jet.state"
     _description = "Cetmix Tower Jet State"
-    _inherit = ["cx.tower.reference.mixin"]
+    _inherit = ["cx.tower.reference.mixin", "cx.tower.access.mixin"]
     _order = "sequence, id"
 
     sequence = fields.Integer(default=10, required=True)
     active = fields.Boolean(default=True)
     color = fields.Integer()
     note = fields.Text()
+
+    # Set default access level to User
+    access_level = fields.Selection(default="1")
 
     def set_state(self, jet=None):
         """Sets the state of the jet
@@ -25,6 +28,13 @@ class CxTowerJetState(models.Model):
             jet (cx.tower.jet): Jet to set the state.
         """
         self.ensure_one()
+
+        # Check if user access level is equal or greater
+        # than the state access level
+        if self.access_level > self.env.user._cetmix_tower_access_level():
+            raise AccessError(
+                _("You are not allowed to set the '%(state)s' state!", state=self.name)
+            )
 
         # Try to obtain jet from context if not provided as an argument
         if jet is None:

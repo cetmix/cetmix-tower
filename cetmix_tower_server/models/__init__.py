@@ -35,6 +35,7 @@ from . import cx_tower_variable_option
 from . import ir_actions_server
 from . import res_config_settings
 from . import res_partner
+from . import res_users
 
 # Jets
 from . import cx_tower_jet_template_dependency

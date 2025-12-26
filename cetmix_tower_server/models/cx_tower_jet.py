@@ -3,7 +3,7 @@
 import ast
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 from .constants import JET_STATE_ERROR
 
@@ -138,7 +138,6 @@ class CxTowerJet(models.Model):
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
         string="Executing Action",
-        groups="cetmix_tower_server.group_manager",
     )
     current_command_log_id = fields.Many2one(
         comodel_name="cx.tower.command.log",
@@ -200,6 +199,8 @@ class CxTowerJet(models.Model):
 
     @api.depends("jet_template_id", "jet_template_id.action_ids")
     def _compute_state_available_ids(self):
+        """Compute the available states for the jet"""
+        user_access_level = self.env.user._cetmix_tower_access_level()
         for jet in self:
             if not jet.jet_template_id:
                 jet.update(
@@ -223,7 +224,12 @@ class CxTowerJet(models.Model):
                     "jet_template_state_ids": actions.state_from_id
                     | actions.state_transit_id
                     | actions.state_to_id,
-                    "state_available_ids": actions.state_to_id - jet.state_id,
+                    "state_available_ids": (
+                        actions.state_to_id - jet.state_id
+                    ).filtered(
+                        lambda s, access_level=user_access_level: s.access_level
+                        <= access_level
+                    ),
                 }
             )
 
@@ -557,7 +563,9 @@ class CxTowerJet(models.Model):
 
         Args:
             state_reference (Char): The reference of the state to bring the jet to.
-
+            check_access (Bool): If True, will check if the user
+            has access to the state. If False, will not check access.
+                Defaults to True.
         Returns:
             The jet is brought into the target state.
             In case of an error, the jet is brought into the error state
@@ -573,6 +581,12 @@ class CxTowerJet(models.Model):
                     jet=self.display_name,
                 )
             )
+
+        if state.access_level > self.env.user._cetmix_tower_access_level():
+            raise AccessError(
+                _("You are not allowed to set the '%(state)s' state!", state=state.name)
+            )
+
         self._bring_to_state(state)
 
     def clone(self, server=None, name=None, state=None, **kwargs):
