@@ -18,5 +18,6 @@ class CxTowerVariable(models.Model):
             "validation_pattern",
             "validation_message",
             "note",
+            "tag_ids",
         ]
         return res

@@ -26,8 +26,8 @@ access_key_root,Key->Root,model_cx_tower_key,group_root,1,1,1,1
 access_key_value_manager,Key Value->Manager,model_cx_tower_key_value,group_manager,1,1,1,1
 access_key_value_root,Key Value->Root,model_cx_tower_key_value,group_root,1,1,1,1
 access_command_log_user,Command Log->User,model_cx_tower_command_log,group_user,1,0,0,0
-access_command_log_manager,Command Log->Manager,model_cx_tower_command_log,group_user,1,0,0,0
-access_command_log_root,Command Log->User,model_cx_tower_command_log,group_root,1,0,0,0
+access_command_log_manager,Command Log->Manager,model_cx_tower_command_log,group_manager,1,0,0,0
+access_command_log_root,Command Log->Root,model_cx_tower_command_log,group_root,1,0,0,0
 access_plan_user,Plan->User,model_cx_tower_plan,group_user,1,0,0,0
 access_plan_manager,Plan->Manager,model_cx_tower_plan,group_manager,1,1,1,1
 access_plan_root,Plan->Root,model_cx_tower_plan,group_root,1,1,1,1
@@ -39,7 +39,7 @@ access_plan_line_action_manager,Plan Line Action->Manager,model_cx_tower_plan_li
 access_plan_line_action_root,Plan Line Action->Root,model_cx_tower_plan_line_action,group_root,1,1,1,1
 access_plan_log_user,Plan Log->User,model_cx_tower_plan_log,group_user,1,0,0,0
 access_plan_log_manager,Plan Log->Manager,model_cx_tower_plan_log,group_manager,1,0,0,0
-access_plan_log_root,Plan Log->User,model_cx_tower_plan_log,group_root,1,0,0,0
+access_plan_log_root,Plan Log->Root,model_cx_tower_plan_log,group_root,1,0,0,0
 access_file_user,File->User,model_cx_tower_file,group_user,1,0,0,0
 access_file_manager,File->Manager,model_cx_tower_file,group_manager,1,1,1,1
 access_file_root,File->Root,model_cx_tower_file,group_root,1,1,1,1
@@ -54,6 +54,7 @@ access_create_server_from_template_manager,Create Server From Template->Manager,
 access_create_server_from_template_line_manager,Create Server From Template Line->Manager,model_cx_tower_server_template_create_wizard_line,group_manager,1,1,1,1
 access_cx_tower_variable_option_user,Variable Option->User,model_cx_tower_variable_option,group_user,1,0,0,0
 access_cx_tower_variable_option_manager,Variable Option->Manager,model_cx_tower_variable_option,group_manager,1,1,1,1
+access_cx_tower_variable_option_root,Variable Option->Root,model_cx_tower_variable_option,group_root,1,1,1,1
 access_cx_tower_vault_no_access,cx.tower.vault no access,model_cx_tower_vault,group_user,0,0,0,0
 access_cx_tower_server_host_key_wizard_manager,Show Host Key->Manager,model_cx_tower_server_host_key_wizard,group_manager,1,1,1,1
 access_cx_tower_server_host_key_wizard_root,Show Host Key->Root,model_cx_tower_server_host_key_wizard,group_root,1,1,1,1

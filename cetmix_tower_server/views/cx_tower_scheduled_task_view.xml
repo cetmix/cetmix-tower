@@ -53,7 +53,7 @@
                             string="Command Logs"
                             attrs="{'invisible': [('action', '!=', 'command')]}"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-code"
                         />
                         <button
                             name="action_open_plan_logs"
@@ -61,7 +61,7 @@
                             string="Flight Plan Logs"
                             attrs="{'invisible': [('action', '!=', 'plan')]}"
                             class="oe_stat_button"
-                            icon="fa-bars"
+                            icon="fa-paper-plane"
                         />
                     </div>
                     <div
