@@ -19,32 +19,32 @@ class TestTowerJetsCommon(TestTowerCommon):
         # Create jet states for testing
         cls.state_initial = cls.JetState.create(
             {
-                "name": "Initial",
-                "reference": "initial",
+                "name": "Test Initial",
+                "reference": "test_initial",
                 "sequence": 10,
                 "color": 1,
             }
         )
         cls.state_running = cls.JetState.create(
             {
-                "name": "Running",
-                "reference": "running",
+                "name": "Test Running",
+                "reference": "test_running",
                 "sequence": 20,
                 "color": 2,
             }
         )
         cls.state_stopped = cls.JetState.create(
             {
-                "name": "Stopped",
-                "reference": "stopped",
+                "name": "Test Stopped",
+                "reference": "test_stopped",
                 "sequence": 30,
                 "color": 3,
             }
         )
         cls.state_error = cls.JetState.create(
             {
-                "name": "Error",
-                "reference": "error",
+                "name": "Test Error",
+                "reference": "test_error",
                 "sequence": 40,
                 "color": 4,
             }
@@ -53,16 +53,16 @@ class TestTowerJetsCommon(TestTowerCommon):
         # Create transit states
         cls.state_starting = cls.JetState.create(
             {
-                "name": "Starting",
-                "reference": "starting",
+                "name": "Test Starting",
+                "reference": "test_starting",
                 "sequence": 15,
                 "color": 5,
             }
         )
         cls.state_stopping = cls.JetState.create(
             {
-                "name": "Stopping",
-                "reference": "stopping",
+                "name": "Test Stopping",
+                "reference": "test_stopping",
                 "sequence": 25,
                 "color": 6,
             }
@@ -71,29 +71,29 @@ class TestTowerJetsCommon(TestTowerCommon):
         # Create test states for pathfinding and adjacency tests
         cls.state_a = cls.JetState.create(
             {
-                "name": "State A",
-                "reference": "state_a",
+                "name": "Test State A",
+                "reference": "test_state_a",
                 "sequence": 30,
             }
         )
         cls.state_b = cls.JetState.create(
             {
-                "name": "State B",
-                "reference": "state_b",
+                "name": "Test State B",
+                "reference": "test_state_b",
                 "sequence": 31,
             }
         )
         cls.state_c = cls.JetState.create(
             {
-                "name": "State C",
-                "reference": "state_c",
+                "name": "Test State C",
+                "reference": "test_state_c",
                 "sequence": 32,
             }
         )
         cls.state_d = cls.JetState.create(
             {
-                "name": "State D",
-                "reference": "state_d",
+                "name": "Test State D",
+                "reference": "test_state_d",
                 "sequence": 33,
             }
         )

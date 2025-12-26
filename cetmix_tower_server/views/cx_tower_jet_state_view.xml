@@ -48,6 +48,7 @@
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="reference" optional="hide" />
+                <field name="access_level" optional="show" />
                 <field name="color" widget="color_picker" />
             </tree>
         </field>

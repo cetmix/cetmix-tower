@@ -1343,9 +1343,9 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
         # Use existing server from common.py
         server = self.server_test_1
 
-        # Call install method directly with no_transaction_commit context
+        # Call install method directly with cetmix_tower_no_commit context
         self.jet_template_test.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify installation record was created
@@ -1370,7 +1370,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method - should skip since already installed
         self.jet_template_test.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify no new installation record was created
@@ -1412,7 +1412,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method - should skip since installation in progress
         self.jet_template_test.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify no additional installation record was created
@@ -1436,7 +1436,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method directly
         self.jet_template_odoo.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify installation record was created
@@ -1462,7 +1462,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method directly
         self.jet_template_postgres.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify installation record was created
@@ -1488,7 +1488,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method directly
         self.jet_template_test.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers([server1, server2])
 
         # Verify installation record was created only for server2
@@ -1524,7 +1524,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method directly
         self.jet_template_odoo.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify installation record was created
@@ -1543,7 +1543,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
         # pylint: disable=protected-access
         # Call install method with empty list
         self.jet_template_test.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers([])
 
         # Verify no installation record was created
@@ -1586,7 +1586,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install method directly
         self.jet_template_test.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers([server1, server2, server3])
 
         # Verify installation record was created only for server3
@@ -1608,7 +1608,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install for Odoo template
         self.jet_template_odoo.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify installation log is created
@@ -1896,7 +1896,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
         self.assertEqual(dep_info["template_name"], "Tower Core")
         self.assertEqual(dep_info["template_reference"], "tower_core")
         self.assertEqual(dep_info["required_state_id"], self.state_running.id)
-        self.assertEqual(dep_info["required_state_name"], "Running")
+        self.assertEqual(dep_info["required_state_name"], "Test Running")
 
     def test_build_dependency_graph_complex_hierarchy(self):
         """Test _build_dependency_graph with complex dependency hierarchy"""
@@ -2690,7 +2690,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
 
         # Call install for WooCommerce with Odoo template
         self.jet_template_woocommerce_odoo.with_context(
-            no_transaction_commit=True
+            cetmix_tower_no_commit=True
         ).install_on_servers(server)
 
         # Verify installation log is created

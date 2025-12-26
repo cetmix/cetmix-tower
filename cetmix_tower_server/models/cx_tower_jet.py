@@ -3,7 +3,7 @@
 import ast
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 from .constants import JET_STATE_ERROR
 
@@ -138,7 +138,6 @@ class CxTowerJet(models.Model):
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
         string="Executing Action",
-        groups="cetmix_tower_server.group_manager",
     )
     current_command_log_id = fields.Many2one(
         comodel_name="cx.tower.command.log",
@@ -200,6 +199,7 @@ class CxTowerJet(models.Model):
 
     @api.depends("jet_template_id", "jet_template_id.action_ids")
     def _compute_state_available_ids(self):
+        """Compute the available states for the jet"""
         for jet in self:
             if not jet.jet_template_id:
                 jet.update(
@@ -218,12 +218,20 @@ class CxTowerJet(models.Model):
                     }
                 )
                 continue
+            # Compute effective access level for the user
+            effective_user_access_level = jet._get_user_effective_access_level()
             jet.update(
                 {
                     "jet_template_state_ids": actions.state_from_id
                     | actions.state_transit_id
                     | actions.state_to_id,
-                    "state_available_ids": actions.state_to_id - jet.state_id,
+                    "state_available_ids": (
+                        actions.state_to_id - jet.state_id
+                    ).filtered(
+                        lambda s,
+                        access_level=effective_user_access_level: s.access_level
+                        <= access_level
+                    ),
                 }
             )
 
@@ -434,6 +442,20 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #  General functions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def _get_user_effective_access_level(self):
+        """
+        Get the effective access level for the current user.
+        If user is manager but is not added as a manager to the jet,
+        his access level is considered as user.
+        Returns:
+            str: The effective access level for the current user.
+                see _selection_access_level() in cx.tower.access.mixin
+        """
+        self.ensure_one()
+        user_access_level = self.env.user._cetmix_tower_access_level()
+        if user_access_level == "2" and self.env.user not in self.manager_ids:
+            return "1"
+        return user_access_level
 
     def get_variable_value(self, variable_reference, no_fallback=False):
         """
@@ -557,7 +579,6 @@ class CxTowerJet(models.Model):
 
         Args:
             state_reference (Char): The reference of the state to bring the jet to.
-
         Returns:
             The jet is brought into the target state.
             In case of an error, the jet is brought into the error state
@@ -573,6 +594,12 @@ class CxTowerJet(models.Model):
                     jet=self.display_name,
                 )
             )
+
+        if state.access_level > self._get_user_effective_access_level():
+            raise AccessError(
+                _("You are not allowed to set the '%(state)s' state!", state=state.name)
+            )
+
         self._bring_to_state(state)
 
     def clone(self, server=None, name=None, state=None, **kwargs):
@@ -769,11 +796,12 @@ class CxTowerJet(models.Model):
         # should be used only with clear justification and in strictly controlled
         # contexts (like this cron scenario). Never add this commit for general
         # business flows!
-        self.env.cr.commit()  # pylint: disable=invalid-commit
+        if not self.env.context.get("cetmix_tower_no_commit"):
+            self.env.cr.commit()  # pylint: disable=invalid-commit
 
         if action.plan_id:
             # Run the flight plan
-            kwargs = {
+            plan_kwargs = {
                 "plan_log": {
                     "jet_action_id": action.id,
                 },
@@ -781,7 +809,7 @@ class CxTowerJet(models.Model):
             self.server_id.sudo().run_flight_plan(
                 flight_plan=action.plan_id,
                 jet=self,
-                **kwargs,
+                **plan_kwargs,
             )
             # Flight plan will trigger the `_flight_plan_finished` function again
             # if the flight plan is finished successfully.
@@ -1058,7 +1086,7 @@ class CxTowerJet(models.Model):
         """
 
         # Process pending requests
-        jet_request_obj = self.env["cx.tower.jet.request"]
+        jet_request_obj = self.env["cx.tower.jet.request"].sudo()
 
         # 1. Requests where the jet is requested explicitly
         explicit_requests = jet_request_obj.search(
