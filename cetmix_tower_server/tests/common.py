@@ -20,6 +20,8 @@ class TestTowerCommon(BaseCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Disable transaction commit to avoid race conditions
+        cls.env = cls.env["base"].with_context(cetmix_tower_no_commit=True).env
 
         # ----------------------------------------------
         # -- Create core elements invoked in the tests

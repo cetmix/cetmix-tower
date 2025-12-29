@@ -618,12 +618,18 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to User access level (1)
         self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to initial state
-        self.jet_test.state_id = self.state_initial
+        self.jet_test.write({"state_id": self.state_initial.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # User should be able to bring jet to user-level state
-        self.jet_test.with_user(self.user).bring_to_state("running")
+        self.jet_test.with_user(self.user).bring_to_state("test_running")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
@@ -637,12 +643,18 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to Manager access level (2)
         self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
 
         # Set jet to running state (which has action to stopped)
-        self.jet_test.state_id = self.state_running
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # Manager should be able to bring jet to manager-level state
-        self.jet_test.with_user(self.manager).bring_to_state("stopped")
+        self.jet_test.with_user(self.manager).bring_to_state("test_stopped")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_stopped,
@@ -656,12 +668,18 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to Root access level (3)
         self.state_error.access_level = "3"
+        self.state_error.invalidate_recordset(["access_level"])
+
+        # Root has full access, but ensure access for consistency
+        self.jet_test.write({"manager_ids": [(4, self.root.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.root.id)]})
 
         # Set jet to running state (which has action to error)
-        self.jet_test.state_id = self.state_running
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # Root should be able to bring jet to root-level state
-        self.jet_test.with_user(self.root).bring_to_state("error")
+        self.jet_test.with_user(self.root).bring_to_state("test_error")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_error,
@@ -675,13 +693,19 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to Manager access level (2)
         self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet (for the access check to work)
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to running state (which has action to stopped)
-        self.jet_test.state_id = self.state_running
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # User should not be able to bring jet to manager-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.user).bring_to_state("stopped")
+            self.jet_test.with_user(self.user).bring_to_state("test_stopped")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -701,13 +725,19 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to Root access level (3)
         self.state_error.access_level = "3"
+        self.state_error.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet (for the access check to work)
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to running state (which has action to error)
-        self.jet_test.state_id = self.state_running
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # User should not be able to bring jet to root-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.user).bring_to_state("error")
+            self.jet_test.with_user(self.user).bring_to_state("test_error")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -727,13 +757,19 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to Root access level (3)
         self.state_error.access_level = "3"
+        self.state_error.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet (for the access check to work)
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
 
         # Set jet to running state (which has action to error)
-        self.jet_test.state_id = self.state_running
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # Manager should not be able to bring jet to root-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.manager).bring_to_state("error")
+            self.jet_test.with_user(self.manager).bring_to_state("test_error")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -748,22 +784,95 @@ class TestTowerJet(TestTowerJetsCommon):
 
     def test_bring_to_state_manager_can_access_user_level(self):
         """
-        Test bring_to_state succeeds when manager (level 2)
+        Test bring_to_state succeeds when manager (level 2) who IS in manager_ids
         accesses user-level state (level 1).
         Higher access levels can access lower level states.
         """
         # Use existing state and set it to User access level (1)
         self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet
+        # Manager IS in manager_ids, so they keep their manager access level (2)
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
 
         # Set jet to initial state
-        self.jet_test.state_id = self.state_initial
+        self.jet_test.write({"state_id": self.state_initial.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # Manager should be able to bring jet to user-level state
-        self.jet_test.with_user(self.manager).bring_to_state("running")
+        self.jet_test.with_user(self.manager).bring_to_state("test_running")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
             "Manager should be able to access user-level state",
+        )
+
+    def test_bring_to_state_manager_not_in_manager_ids_treated_as_user(self):
+        """
+        Test bring_to_state treats manager (level 2) who is NOT in manager_ids
+        as user (level 1).
+        Manager should be able to set user-level state but not manager-level state.
+        """
+        # Use existing state and set it to User access level (1)
+        self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet via user_ids but NOT via manager_ids
+        self.jet_test.write({"user_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+        # Explicitly ensure manager is NOT in manager_ids
+        self.jet_test.write({"manager_ids": [(5, 0, 0)]})
+
+        # Set jet to initial state
+        self.jet_test.write({"state_id": self.state_initial.id})
+        self.jet_test.invalidate_recordset(["state_id"])
+
+        # Manager (treated as user) should be able to bring jet to user-level state
+        self.jet_test.with_user(self.manager).bring_to_state("test_running")
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_running,
+            "Manager not in manager_ids should be able to access user-level state",
+        )
+
+    def test_bring_to_state_manager_not_in_manager_ids_cannot_access_manager_level(
+        self
+    ):
+        """
+        Test bring_to_state raises AccessError when manager (level 2) who is NOT
+        in manager_ids tries to access manager-level state (level 2).
+        Manager should be treated as user (level 1) and cannot access level 2.
+        """
+        # Use existing state and set it to Manager access level (2)
+        self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet via user_ids but NOT via manager_ids
+        self.jet_test.write({"user_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+        # Explicitly ensure manager is NOT in manager_ids
+        self.jet_test.write({"manager_ids": [(5, 0, 0)]})
+
+        # Set jet to running state (which has action to stopped)
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
+
+        # Manager (treated as user) should not be able to bring jet
+        # to manager-level state
+        with self.assertRaises(AccessError) as context:
+            self.jet_test.with_user(self.manager).bring_to_state("test_stopped")
+
+        self.assertIn(
+            "You are not allowed to set the",
+            str(context.exception),
+            "Should raise AccessError with appropriate message",
+        )
+        self.assertIn(
+            self.state_stopped.name,
+            str(context.exception),
+            "Error message should include state name",
         )
 
     def test_bring_to_state_root_can_access_manager_level(self):
@@ -774,12 +883,18 @@ class TestTowerJet(TestTowerJetsCommon):
         """
         # Use existing state and set it to Manager access level (2)
         self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Root has full access, but ensure access for consistency
+        self.jet_test.write({"manager_ids": [(4, self.root.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.root.id)]})
 
         # Set jet to running state (which has action to stopped)
-        self.jet_test.state_id = self.state_running
+        self.jet_test.write({"state_id": self.state_running.id})
+        self.jet_test.invalidate_recordset(["state_id"])
 
         # Root should be able to bring jet to manager-level state
-        self.jet_test.with_user(self.root).bring_to_state("stopped")
+        self.jet_test.with_user(self.root).bring_to_state("test_stopped")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_stopped,
@@ -806,4 +921,77 @@ class TestTowerJet(TestTowerJetsCommon):
             self.jet_test.display_name,
             str(context.exception),
             "Error message should include jet display name",
+        )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   _get_user_effective_access_level Tests
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def test_get_user_effective_access_level_user(self):
+        """
+        Test _get_user_effective_access_level returns "1" for user.
+        """
+        # Ensure user has access to the jet
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+
+        # User should have effective access level "1"
+        effective_level = self.jet_test.with_user(
+            self.user
+        )._get_user_effective_access_level()
+        self.assertEqual(
+            effective_level,
+            "1",
+            "User should have effective access level 1",
+        )
+
+    def test_get_user_effective_access_level_manager_in_manager_ids(self):
+        """
+        Test _get_user_effective_access_level returns "2" for manager
+        who IS in manager_ids.
+        """
+        # Ensure manager has access to the jet and IS in manager_ids
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+
+        # Manager in manager_ids should have effective access level "2"
+        effective_level = self.jet_test.with_user(
+            self.manager
+        )._get_user_effective_access_level()
+        self.assertEqual(
+            effective_level,
+            "2",
+            "Manager in manager_ids should have effective access level 2",
+        )
+
+    def test_get_user_effective_access_level_manager_not_in_manager_ids(self):
+        """
+        Test _get_user_effective_access_level returns "1" for manager
+        who is NOT in manager_ids (downgraded to user level).
+        """
+        # Ensure manager has access to the jet via user_ids but NOT via manager_ids
+        self.jet_test.write({"user_ids": [(4, self.manager.id)]})
+        # Explicitly ensure manager is NOT in manager_ids
+        self.jet_test.write({"manager_ids": [(5, 0, 0)]})
+
+        # Manager not in manager_ids should have effective access level "1"
+        effective_level = self.jet_test.with_user(
+            self.manager
+        )._get_user_effective_access_level()
+        self.assertEqual(
+            effective_level,
+            "1",
+            "Manager not in manager_ids should have effective access level 1",
+        )
+
+    def test_get_user_effective_access_level_root(self):
+        """
+        Test _get_user_effective_access_level returns "3" for root.
+        """
+        # Root should have effective access level "3" regardless of manager_ids
+        effective_level = self.jet_test.with_user(
+            self.root
+        )._get_user_effective_access_level()
+        self.assertEqual(
+            effective_level,
+            "3",
+            "Root should have effective access level 3",
         )

@@ -165,7 +165,7 @@ class CxTowerJetTemplateInstall(models.Model):
 
                 # WARNING: Explicit commit to ensure visibility across transactions
                 # This prevents race conditions in async flight plan callbacks
-                if not self.env.context.get("no_transaction_commit"):
+                if not self.env.context.get("cetmix_tower_no_commit"):
                     self.env.cr.commit()  # pylint: disable=invalid-commit
 
                 # Add the install record to the flight plan params
@@ -205,7 +205,7 @@ class CxTowerJetTemplateInstall(models.Model):
             # should be used only with clear justification and in strictly controlled
             # contexts (like this cron scenario). Never add this commit for general
             # business flows!
-            if not self.env.context.get("no_transaction_commit"):
+            if not self.env.context.get("cetmix_tower_no_commit"):
                 self.env.cr.commit()  # pylint: disable=invalid-commit
 
             # Refresh the frontend views

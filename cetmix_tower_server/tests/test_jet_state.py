@@ -22,12 +22,19 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to User access level (1)
         self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet and server
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to initial state
         self.jet_test.state_id = self.state_initial
 
         # User should be able to set state
-        self.state_running.with_user(self.user).set_state(self.jet_test)
+        self.state_running.with_user(self.user).with_context(
+            cetmix_tower_no_commit=True
+        ).set_state(self.jet_test)
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
@@ -41,12 +48,19 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to Manager access level (2)
         self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet and server
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
 
         # Set jet to running state (which has action to stopped)
         self.jet_test.state_id = self.state_running
 
         # Manager should be able to set state
-        self.state_stopped.with_user(self.manager).set_state(self.jet_test)
+        self.state_stopped.with_user(self.manager).with_context(
+            cetmix_tower_no_commit=True
+        ).set_state(self.jet_test)
         self.assertEqual(
             self.jet_test.state_id,
             self.state_stopped,
@@ -60,12 +74,15 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to Root access level (3)
         self.state_error.access_level = "3"
+        self.state_error.invalidate_recordset(["access_level"])
 
         # Set jet to running state (which has action to error)
         self.jet_test.state_id = self.state_running
 
         # Root should be able to set state
-        self.state_error.with_user(self.root).set_state(self.jet_test)
+        self.state_error.with_user(self.root).with_context(
+            cetmix_tower_no_commit=True
+        ).set_state(self.jet_test)
         self.assertEqual(
             self.jet_test.state_id,
             self.state_error,
@@ -79,13 +96,20 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to Manager access level (2)
         self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet and server (for the access check to work)
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to running state (which has action to stopped)
         self.jet_test.state_id = self.state_running
 
         # User should not be able to set manager-level state
         with self.assertRaises(AccessError) as context:
-            self.state_stopped.with_user(self.user).set_state(self.jet_test)
+            self.state_stopped.with_user(self.user).with_context(
+                cetmix_tower_no_commit=True
+            ).set_state(self.jet_test)
 
         self.assertIn(
             "You are not allowed to set the",
@@ -105,13 +129,20 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to Root access level (3)
         self.state_error.access_level = "3"
+        self.state_error.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet and server (for the access check to work)
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to running state (which has action to error)
         self.jet_test.state_id = self.state_running
 
         # User should not be able to set root-level state
         with self.assertRaises(AccessError) as context:
-            self.state_error.with_user(self.user).set_state(self.jet_test)
+            self.state_error.with_user(self.user).with_context(
+                cetmix_tower_no_commit=True
+            ).set_state(self.jet_test)
 
         self.assertIn(
             "You are not allowed to set the",
@@ -131,13 +162,20 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to Root access level (3)
         self.state_error.access_level = "3"
+        self.state_error.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet and server (for the access check to work)
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
 
         # Set jet to running state (which has action to error)
         self.jet_test.state_id = self.state_running
 
         # Manager should not be able to set root-level state
         with self.assertRaises(AccessError) as context:
-            self.state_error.with_user(self.manager).set_state(self.jet_test)
+            self.state_error.with_user(self.manager).with_context(
+                cetmix_tower_no_commit=True
+            ).set_state(self.jet_test)
 
         self.assertIn(
             "You are not allowed to set the",
@@ -152,22 +190,97 @@ class TestTowerJetState(TestTowerJetsCommon):
 
     def test_set_state_manager_can_access_user_level(self):
         """
-        Test set_state succeeds when manager (level 2)
+        Test set_state succeeds when manager (level 2) who IS in manager_ids
         accesses user-level state (level 1).
         Higher access levels can access lower level states.
         """
         # Use existing state and set it to User access level (1)
         self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet and server
+        # Manager IS in manager_ids, so they keep their manager access level (2)
+        self.jet_test.write({"manager_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
 
         # Set jet to initial state
         self.jet_test.state_id = self.state_initial
 
         # Manager should be able to set user-level state
-        self.state_running.with_user(self.manager).set_state(self.jet_test)
+        self.state_running.with_user(self.manager).with_context(
+            cetmix_tower_no_commit=True
+        ).set_state(self.jet_test)
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
             "Manager should be able to set user-level state",
+        )
+
+    def test_set_state_manager_not_in_manager_ids_treated_as_user(self):
+        """
+        Test set_state treats manager (level 2) who is NOT in manager_ids
+        as user (level 1).
+        Manager should be able to set user-level state but not manager-level state.
+        """
+        # Use existing state and set it to User access level (1)
+        self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet and server via user_ids
+        # but NOT via manager_ids
+        self.jet_test.write({"user_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+        # Explicitly ensure manager is NOT in manager_ids
+        self.jet_test.write({"manager_ids": [(5, 0, 0)]})
+
+        # Set jet to initial state
+        self.jet_test.state_id = self.state_initial
+
+        # Manager (treated as user) should be able to set user-level state
+        self.state_running.with_user(self.manager).with_context(
+            cetmix_tower_no_commit=True
+        ).set_state(self.jet_test)
+        self.assertEqual(
+            self.jet_test.state_id,
+            self.state_running,
+            "Manager not in manager_ids should be able to set user-level state",
+        )
+
+    def test_set_state_manager_not_in_manager_ids_cannot_access_manager_level(self):
+        """
+        Test set_state raises AccessError when manager (level 2) who is NOT
+        in manager_ids tries to set manager-level state (level 2).
+        Manager should be treated as user (level 1) and cannot access level 2.
+        """
+        # Use existing state and set it to Manager access level (2)
+        self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
+
+        # Ensure manager has access to the jet and server via user_ids
+        # but NOT via manager_ids
+        self.jet_test.write({"user_ids": [(4, self.manager.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+        # Explicitly ensure manager is NOT in manager_ids
+        self.jet_test.write({"manager_ids": [(5, 0, 0)]})
+
+        # Set jet to running state (which has action to stopped)
+        self.jet_test.state_id = self.state_running
+
+        # Manager (treated as user) should not be able to set manager-level state
+        with self.assertRaises(AccessError) as context:
+            self.state_stopped.with_user(self.manager).with_context(
+                cetmix_tower_no_commit=True
+            ).set_state(self.jet_test)
+
+        self.assertIn(
+            "You are not allowed to set the",
+            str(context.exception),
+            "Should raise AccessError with appropriate message",
+        )
+        self.assertIn(
+            self.state_stopped.name,
+            str(context.exception),
+            "Error message should include state name",
         )
 
     def test_set_state_root_can_access_manager_level(self):
@@ -178,12 +291,15 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to Manager access level (2)
         self.state_stopped.access_level = "2"
+        self.state_stopped.invalidate_recordset(["access_level"])
 
         # Set jet to running state (which has action to stopped)
         self.jet_test.state_id = self.state_running
 
         # Root should be able to set manager-level state
-        self.state_stopped.with_user(self.root).set_state(self.jet_test)
+        self.state_stopped.with_user(self.root).with_context(
+            cetmix_tower_no_commit=True
+        ).set_state(self.jet_test)
         self.assertEqual(
             self.jet_test.state_id,
             self.state_stopped,
@@ -196,13 +312,19 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state and set it to User access level (1)
         self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
+
+        # Ensure user has access to the jet and server
+        self.jet_test.write({"user_ids": [(4, self.user.id)]})
+        self.server_test_1.write({"user_ids": [(4, self.user.id)]})
 
         # Set jet to initial state
         self.jet_test.state_id = self.state_initial
 
         # Set state using context instead of direct parameter
         self.state_running.with_user(self.user).with_context(
-            jet_id=self.jet_test.id
+            jet_id=self.jet_test.id,
+            cetmix_tower_no_commit=True,
         ).set_state()
         self.assertEqual(
             self.jet_test.state_id,
@@ -217,8 +339,13 @@ class TestTowerJetState(TestTowerJetsCommon):
         """
         # Use existing state
         self.state_running.access_level = "1"
+        self.state_running.invalidate_recordset(["access_level"])
 
         # Call set_state without jet parameter and without context
         # Should return silently without raising exception
-        result = self.state_running.with_user(self.user).set_state()
+        result = (
+            self.state_running.with_user(self.user)
+            .with_context(cetmix_tower_no_commit=True)
+            .set_state()
+        )
         self.assertIsNone(result, "Should return None when no jet in context")

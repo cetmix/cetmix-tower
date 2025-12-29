@@ -29,13 +29,6 @@ class CxTowerJetState(models.Model):
         """
         self.ensure_one()
 
-        # Check if user access level is equal or greater
-        # than the state access level
-        if self.access_level > self.env.user._cetmix_tower_access_level():
-            raise AccessError(
-                _("You are not allowed to set the '%(state)s' state!", state=self.name)
-            )
-
         # Try to obtain jet from context if not provided as an argument
         if jet is None:
             jet_id = self.env.context.get("jet_id")
@@ -49,6 +42,25 @@ class CxTowerJetState(models.Model):
         # Ensure that the state is set for a single jet
         if not jet or len(jet) > 1:
             raise ValidationError(_("State can be set only for a single jet"))
+
+        # Check access to the jet
+        jet.check_access_rights("read")
+        jet.check_access_rule("write")
+
+        # Get user access level
+        user_access_level = self.env.user._cetmix_tower_access_level()
+
+        # If user is manager but is not added as a manager to the jet,
+        # his access level is considered as user.
+        # NB: record access is already checked above.
+        if user_access_level == "2" and self.env.user not in jet.manager_ids:
+            user_access_level = "1"
+
+        # Check if user access level is equal or greater
+        if self.access_level > user_access_level:
+            raise AccessError(
+                _("You are not allowed to set the '%(state)s' state!", state=self.name)
+            )
 
         # Bring the jet to the state
         jet._bring_to_state(self)
