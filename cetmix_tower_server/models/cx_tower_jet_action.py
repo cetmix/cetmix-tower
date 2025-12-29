@@ -86,3 +86,13 @@ class CxTowerJetAction(models.Model):
 
         # Trigger the action
         jet._trigger_action(self)
+
+    # ------------------------------
+    # Reference mixin methods
+    # ------------------------------
+    def _get_pre_populated_model_data(self):
+        res = super()._get_pre_populated_model_data()
+        res.update(
+            {"cx.tower.jet.action": ["cx.tower.jet.template", "jet_template_id"]}
+        )
+        return res

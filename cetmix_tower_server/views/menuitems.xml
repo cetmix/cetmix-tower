@@ -46,20 +46,11 @@
     />
 
     <menuitem
-        id="menu_cx_tower_create_jet"
-        name="Launch New Jet"
-        parent="menu_cx_tower_jet_root"
-        action="action_cx_tower_jet_create"
-        sequence="10"
-        groups="cetmix_tower_server.group_manager"
-    />
-
-    <menuitem
         id="menu_cx_tower_jet"
         name="Jets"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_action"
-        sequence="20"
+        sequence="10"
     />
 
     <menuitem
@@ -67,17 +58,18 @@
         name="Templates"
         parent="menu_cx_tower_jet_root"
         action="cx_tower_jet_template_action"
-        sequence="30"
+        sequence="20"
     />
 
     <menuitem
-        id="menu_cx_tower_jet_state"
-        name="States"
+        id="menu_cx_tower_create_jet"
+        name="Launch New Jet"
         parent="menu_cx_tower_jet_root"
-        action="cx_tower_jet_state_action"
+        action="action_cx_tower_jet_create"
+        sequence="30"
         groups="cetmix_tower_server.group_manager"
-        sequence="40"
     />
+
 
     <!-- ========================= Logs ========================= -->
     <menuitem
@@ -216,6 +208,21 @@
         action="action_cx_tower_key"
         parent="menu_cx_tower_key_root"
         sequence="1"
+    />
+    <!-- Jets -->
+    <menuitem
+        id="menu_cx_tower_jet_settings_root"
+        name="Jets"
+        parent="menu_settings"
+        sequence="25"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_state"
+        name="States"
+        parent="menu_cx_tower_jet_settings_root"
+        action="cx_tower_jet_state_action"
+        groups="cetmix_tower_server.group_manager"
+        sequence="10"
     />
     <!-- Automation -->
     <menuitem
