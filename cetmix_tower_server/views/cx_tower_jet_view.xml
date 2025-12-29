@@ -13,6 +13,7 @@
                 group_create="false"
             >
                 <field name="name" />
+                <field name="tag_ids" />
                 <field name="reference" />
                 <field name="jet_template_id" />
                 <field name="jet_template_state_ids" />
@@ -35,6 +36,11 @@
                                 </strong>
                                 <div class="o_kanban_record_subtitle">
                                     <field name="reference" />
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
                                 </div>
                             </div>
                             <!-- Main content -->
@@ -474,11 +480,7 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
-                    <field
-                        name="jet_template_id"
-                        string="Template"
-                        icon="fa-fighter-jet"
-                    />
+                    <field name="jet_template_id" string="Template" icon="fa-plane" />
                     <field
                         name="tag_ids"
                         string="Tags"
