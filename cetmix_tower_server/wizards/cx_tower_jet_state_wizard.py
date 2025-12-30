@@ -76,4 +76,4 @@ class CxTowerJetStateWizard(models.TransientModel):
         for wizard in self:
             if wizard.jet_ids and wizard.state_id:
                 for jet in wizard.jet_ids:
-                    jet._bring_to_state(wizard.state_id)
+                    jet.bring_to_state(wizard.state_id.reference)

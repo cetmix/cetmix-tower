@@ -161,11 +161,7 @@
                         icon="fa-plane"
                         attrs="{'invisible': [('current_action_id', '!=', False)]}"
                     />
-                    <field
-                        name="state_id"
-                        widget="statusbar"
-                        options="{'clickable': '0'}"
-                    />
+                    <field name="state_id" widget="statusbar" />
                     <field name="jet_template_state_ids" invisible="1" />
                 </header>
                 <sheet>
@@ -438,9 +434,11 @@
         <field name="model">cx.tower.jet</field>
         <field name="arch" type="xml">
             <search string="Search Jets">
-                <field name="name" />
-                <field name="reference" />
-                <field name="url" />
+                <field
+                    name="name"
+                    string="Name/Reference/URL"
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('reference', 'ilike', self), ('url', 'ilike', self)]"
+                />
                 <field name="partner_id" />
                 <field name="server_id" />
                 <field name="jet_template_id" />

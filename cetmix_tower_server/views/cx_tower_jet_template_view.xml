@@ -435,8 +435,11 @@
         <field name="model">cx.tower.jet.template</field>
         <field name="arch" type="xml">
             <search string="Search Jet Templates">
-                <field name="name" />
-                <field name="reference" />
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
                 <field name="jet_count" />
                 <filter
                     string="Create from Wizard"

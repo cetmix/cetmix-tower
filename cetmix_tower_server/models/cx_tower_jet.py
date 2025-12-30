@@ -55,6 +55,7 @@ class CxTowerJet(models.Model):
         comodel_name="cx.tower.server",
         related="jet_template_id.server_ids",
         readonly=True,
+        copy=False,
         help="Servers where this jet template is installed",
     )
     server_id = fields.Many2one(
@@ -80,6 +81,8 @@ class CxTowerJet(models.Model):
     served_jet_request_id = fields.Many2one(
         comodel_name="cx.tower.jet.request",
         help="Request this jet is currently serving",
+        readonly=True,
+        copy=False,
     )
 
     # -- Dependencies
@@ -91,6 +94,7 @@ class CxTowerJet(models.Model):
         compute="_compute_jet_requires_ids",
         store=True,
         groups="cetmix_tower_server.group_manager",
+        copy=False,
     )
     jet_required_by_ids = fields.One2many(
         comodel_name="cx.tower.jet.dependency",
@@ -98,7 +102,8 @@ class CxTowerJet(models.Model):
         string="Required By",
         help="Jets that depend on this jet",
         groups="cetmix_tower_server.group_manager",
-        # readonly=True,
+        copy=False,
+        readonly=True,
     )
 
     # -- States and actions
@@ -107,6 +112,7 @@ class CxTowerJet(models.Model):
         string="Current State",
         tracking=True,
         domain="[('id', 'in', jet_template_state_ids)]",
+        copy=False,
     )
     state = fields.Char(
         related="state_id.reference",
@@ -121,28 +127,31 @@ class CxTowerJet(models.Model):
     jet_template_state_ids = fields.One2many(
         comodel_name="cx.tower.jet.state",
         compute="_compute_state_available_ids",
-        compute_sudo=True,
     )
     state_available_ids = fields.One2many(
         comodel_name="cx.tower.jet.state",
         compute="_compute_state_available_ids",
-        compute_sudo=True,
     )
 
     target_state_id = fields.Many2one(
         comodel_name="cx.tower.jet.state",
         string="Target State",
-        # readonly=True,
+        readonly=True,
+        copy=False,
         help="Destination state to which the jet is currently transitioning",
     )
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
         string="Executing Action",
+        readonly=True,
+        copy=False,
     )
     current_command_log_id = fields.Many2one(
         comodel_name="cx.tower.command.log",
         string="Executing Command Log",
         groups="cetmix_tower_server.group_manager",
+        readonly=True,
+        copy=False,
     )
 
     # -- Variables used for configuration
@@ -161,10 +170,12 @@ class CxTowerJet(models.Model):
     command_log_ids = fields.One2many(
         comodel_name="cx.tower.command.log",
         inverse_name="jet_id",
+        copy=False,
     )
     plan_log_ids = fields.One2many(
         comodel_name="cx.tower.plan.log",
         inverse_name="jet_id",
+        copy=False,
     )
 
     # -- Access. Add relation for mixin fields
@@ -574,6 +585,11 @@ class CxTowerJet(models.Model):
         This is a wrapper around the _bring_to_state method meant to be used
         in various automatic actions.
 
+        IMPORTANT: alway prefer using this method over the _bring_to_state method
+        in automation (eg Python commands) because it will check the access level
+        of the user to the state and raise an exception if the user is not allowed
+        to set the state.
+
         Use `_bring_to_state` method directly if you want to provide a state
         object instead of a reference.
 
@@ -583,6 +599,10 @@ class CxTowerJet(models.Model):
             The jet is brought into the target state.
             In case of an error, the jet is brought into the error state
             if the latter is defined.
+
+        Raises:
+            ValidationError: If the state is not found.
+            AccessError: If the user is not allowed to set the state.
         """
         self.ensure_one()
         state = self.env["cx.tower.jet.state"].get_by_reference(state_reference)
@@ -848,6 +868,17 @@ class CxTowerJet(models.Model):
             This will trigger a chain of actions until the jet is brought
             into the target state.
 
+        IMPORTANT: this method uses sudo() to bypass access rules.
+        This means that this method must be used with caution and only in cases
+        where the access level is not important.
+        For external automation including Python commands always prefer using
+        the bring_to_state() method instead.
+        For example:
+        ```python
+        jet = self.env["cx.tower.jet"].browse(jet_id)
+        jet.bring_to_state(state_reference)
+        ```
+
         Args:
             state (cx.tower.jet.state()): The state to bring the jet to
 
@@ -857,10 +888,12 @@ class CxTowerJet(models.Model):
             if the latter is defined.
 
         Raises:
-            ValidationError: If the state is not defined.
             ValidationError: If the path is not found.
         """
         self.ensure_one()
+
+        # Use sudo to bypass access rules
+        self = self.sudo()
 
         # Exit if jet is already in the target state
         if self.state_id == state:
@@ -875,13 +908,13 @@ class CxTowerJet(models.Model):
                 _(
                     "No path found to bring the jet %(jet)s to the state '%(state)s'",
                     jet=self.name,  # pylint: disable=no-member
-                    state=state.name,  # type: ignore
+                    state=state.name if state else "Undefined",
                 )
             )
 
         # Set the target state if not already set
         if not self.target_state_id:
-            self.sudo().write(
+            self.write(
                 {
                     "target_state_id": state,
                 }
