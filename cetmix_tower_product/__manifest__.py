@@ -5,7 +5,7 @@
     "summary": "Link Cetmix Tower variables to Odoo product attributes",
     "version": "16.0.1.0.0",
     "category": "Product",
-    "website": "https://cetmix.com",
+    "website": "https://tower.cetmix.com",
     "author": "Cetmix",
     "license": "AGPL-3",
     "installable": True,
