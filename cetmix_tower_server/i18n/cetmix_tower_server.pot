@@ -141,6 +141,13 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command_log.py:0
+msgid ""
+"<p><strong>Error converting command response to HTML: %(error)s</strong></p>"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "<span invisible=\"action != 'ssh_command'\">sudo</span>"
@@ -891,6 +898,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
 msgid "Command Logs"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_result_html
+msgid "Command Result Html"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3255,6 +3267,11 @@ msgid "Result"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__command_result_html
+msgid "Result converted to HTML. Used for SSH commands."
+msgstr ""
+
+#. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_access_mixin.py:0
 #: model:res.groups,name:cetmix_tower_server.group_root
@@ -3754,6 +3771,11 @@ msgid "Servers"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
+msgid "Servers (SSH)"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__server_ids
 msgid ""
 "Servers on which the command will be run.\n"
@@ -3982,6 +4004,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__tag_ids
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_tag_mixin__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_tag
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
@@ -3991,6 +4014,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_search_view
 msgid "Tags"
 msgstr ""
 
