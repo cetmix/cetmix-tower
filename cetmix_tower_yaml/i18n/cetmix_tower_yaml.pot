@@ -380,6 +380,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
+#, python-format
+msgid "File is empty"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
 msgid "File is not a valid base64-encoded file"
