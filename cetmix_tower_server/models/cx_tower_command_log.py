@@ -1,8 +1,16 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+import logging
+
+from ansi2html import Ansi2HTMLConverter
+
 from odoo import _, api, fields, models
 
 from .constants import COMMAND_STOPPED, GENERAL_ERROR
+
+html_converter = Ansi2HTMLConverter(inline=True)
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerCommandLog(models.Model):
@@ -71,6 +79,10 @@ class CxTowerCommandLog(models.Model):
     )
     command_response = fields.Text(string="Response")
     command_error = fields.Text(string="Error")
+    command_result_html = fields.Html(
+        compute="_compute_command_result_html",
+        help="Result converted to HTML. Used for SSH commands.",
+    )
     use_sudo = fields.Selection(
         string="Use sudo",
         selection=[("n", "Without password"), ("p", "With password")],
@@ -142,6 +154,25 @@ class CxTowerCommandLog(models.Model):
             else:
                 command_log.duration_current = command_log.duration
 
+    @api.depends("command_response", "command_error")
+    def _compute_command_result_html(self):
+        for command_log in self:
+            command_result = command_log.command_response or command_log.command_error
+            if command_result:
+                try:
+                    command_log.command_result_html = html_converter.convert(
+                        command_result
+                    )
+                except Exception as e:
+                    _logger.error("Error converting command response to HTML: %s", e)
+                    command_log.command_result_html = _(
+                        "<p><strong>Error converting command"
+                        " response to HTML: %(error)s</strong></p>",
+                        error=e,
+                    )
+            else:
+                command_log.command_result_html = False
+
     def start(self, server_id, command_id, start_date=None, **kwargs):
         """Creates initial log record when command is started
 
@@ -188,8 +219,10 @@ class CxTowerCommandLog(models.Model):
         This method can be called for multiple command logs at once.
 
         Args:
-            log_record (cx.tower.command.log()): Log record
-            finish_date (Datetime): command finish date time.
+            finish_date (datetime) command finish date time.
+            status (int, optional): command execution status. Defaults to None.
+            response (Char, optional): Command response. Defaults to None.
+            error (Char, optional): Command error. Defaults to None.
             **kwargs (dict): optional values
         """
         self_with_sudo = self.sudo()
