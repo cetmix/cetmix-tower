@@ -268,8 +268,8 @@ msgstr "Naziv datoteke"
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz_upload.py:0
 #, python-format
-msgid "File contains non-unicode characters or is empty"
-msgstr "Datoteka sadrži ne-unicode znakove ili je prazna"
+msgid "File is not a valid base64-encoded file"
+msgstr "Datoteka nije ispravno base64 kodirana"
 
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
