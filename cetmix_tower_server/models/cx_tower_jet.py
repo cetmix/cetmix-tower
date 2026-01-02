@@ -76,6 +76,13 @@ class CxTowerJet(models.Model):
         inverse_name="jet_id",
         copy=False,
     )
+    scheduled_task_ids = fields.Many2many(
+        comodel_name="cx.tower.scheduled.task",
+        relation="cx_tower_scheduled_task_jet_rel",
+        column1="jet_id",
+        column2="scheduled_task_id",
+        string="Scheduled Tasks",
+    )
 
     # -- Jet Requests
     served_jet_request_id = fields.Many2one(
@@ -557,6 +564,8 @@ class CxTowerJet(models.Model):
                         in the format of `{variable_reference: variable_value}`
                         eg `{'odoo_version': '16.0'}`
                         Will be applied only if user has write access to the server.
+        Returns:
+            log_record (cx.tower.plan.log()): plan log record
         """
 
         self.ensure_one()
@@ -683,10 +692,14 @@ class CxTowerJet(models.Model):
         if not jet_template._allow_jet_creation(server):
             return False
 
-        # Set the cloned jet name
-
         # Prepare the jet custom values
-        kwargs["jet_cloned_from_id"] = self.id
+        kwargs.update(
+            {
+                "jet_cloned_from_id": self.id,
+                "server_log_ids": self.server_log_ids,
+                "scheduled_task_ids": self.scheduled_task_ids,
+            }
+        )
 
         # Create a new jet
         jet = jet_template.create_jet(
