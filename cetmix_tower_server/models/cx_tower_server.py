@@ -1212,6 +1212,8 @@ class CxTowerServer(models.Model):
                         in the format of `{variable_reference: variable_value}`
                         eg `{'odoo_version': '16.0'}`
                         Will be applied only if user has write access to the server.
+        Returns:
+            log_record (cx.tower.plan.log()): plan log record
         """
 
         self.ensure_one()

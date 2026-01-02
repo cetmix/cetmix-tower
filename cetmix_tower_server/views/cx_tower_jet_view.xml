@@ -417,6 +417,30 @@
                                 </tree>
                             </field>
                         </page>
+                        <page
+                            name="scheduled_tasks"
+                            string="Scheduled Tasks"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <field name="scheduled_task_ids">
+                                <tree create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="display_name" />
+                                    <field name="action" />
+                                    <field name="is_running" optional="hide" />
+                                    <field name="next_call" optional="hide" />
+                                    <field name="last_call" optional="hide" />
+                                    <button
+                                        type="object"
+                                        name="action_run"
+                                        class="fa fa-play oe_highlight"
+                                        title="Run Manually"
+                                        confirm="Are you sure?"
+                                    />
+                                </tree>
+                            </field>
+                        </page>
+
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

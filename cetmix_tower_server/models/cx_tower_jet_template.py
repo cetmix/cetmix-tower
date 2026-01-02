@@ -132,6 +132,14 @@ class CxTowerJetTemplate(models.Model):
         inverse_name="jet_template_id",
         copy=True,
     )
+    # Scheduled Tasks
+    scheduled_task_ids = fields.Many2many(
+        comodel_name="cx.tower.scheduled.task",
+        relation="cx_tower_jet_template_scheduled_task_rel",
+        column1="jet_template_id",
+        column2="scheduled_task_id",
+        string="Scheduled Tasks",
+    )
 
     # Configuration variables
     variable_value_ids = fields.One2many(
@@ -705,19 +713,24 @@ class CxTowerJetTemplate(models.Model):
         # Create a new jet
         jet = self.env["cx.tower.jet"].create(vals)
 
-        # Create server logs
-        for server_log in self.server_log_ids:
-            jet_log = server_log.copy(
-                {
-                    "jet_id": jet.id,
-                    "server_id": server.id,
-                    "jet_template_id": False,
-                }
-            )
-            if server_log.log_type == "file":
-                jet_log.file_id = server_log.file_template_id.create_file(
-                    server=server, jet=jet, if_file_exists="skip"
-                ).id
+        # Create server logs if not provided in kwargs
+        if not kwargs.get("server_log_ids", []):
+            for server_log in self.server_log_ids:
+                jet_log = server_log.copy(
+                    {
+                        "jet_id": jet.id,
+                        "server_id": server.id,
+                        "jet_template_id": False,
+                    }
+                )
+                if server_log.log_type == "file":
+                    jet_log.file_id = server_log.file_template_id.create_file(
+                        server=server, jet=jet, if_file_exists="skip"
+                    ).id
+
+        # Create scheduled tasks if not provided in kwargs
+        if not kwargs.get("scheduled_task_ids", []) and self.scheduled_task_ids:
+            jet.scheduled_task_ids = self.scheduled_task_ids
 
         # Set the state of the jet
         if state:
@@ -755,8 +768,10 @@ class CxTowerJetTemplate(models.Model):
         else:
             # Loop exhausted without finding unique name
             raise ValidationError(
-                _("Failed to generate unique jet name after %d attempts")
-                % MAX_JET_NAME_RETRIES
+                _(
+                    "Failed to generate unique jet name after %(attempts)d attempts",
+                    attempts=MAX_JET_NAME_RETRIES,
+                )
             )
 
         # Prepare the Jet values
@@ -813,7 +828,17 @@ class CxTowerJetTemplate(models.Model):
     def _allowed_jet_fields(self):
         """Return the allowed fields for the jet creation"""
         self.ensure_one()
-        return ["name", "url", "reference", "sequence", "color", "jet_cloned_from_id"]
+        return [
+            "name",
+            "url",
+            "reference",
+            "sequence",
+            "color",
+            "partner_id",
+            "jet_cloned_from_id",
+            "server_log_ids",
+            "scheduled_task_ids",
+        ]
 
     def _allow_jet_creation(self, server):
         """
