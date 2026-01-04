@@ -546,5 +546,5 @@ class CxTowerCommand(models.Model):
         imports.update(self._get_python_command_libraries())
         eval_context = {key: value["import"] for key, value in imports.items()}
 
-        eval_context["custom_values"] = kwargs.get("variable_values", {})
+        eval_context["custom_values"] = kwargs.get("variable_values") or {}
         return eval_context
