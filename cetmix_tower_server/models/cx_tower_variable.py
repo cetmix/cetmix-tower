@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 import uuid
+from urllib.parse import urlparse
 
 from odoo import _, api, fields, models
 from odoo.tools.safe_eval import safe_eval, wrap_module
@@ -778,6 +779,15 @@ class TowerVariable(models.Model):
                 "os": server.os_id.name if server.os_id else False,
                 "url": server.url,
             }
+            if server.url:
+                url_parts = urlparse(server.url)
+                values.update(
+                    {
+                        "hostname": url_parts.hostname,
+                        "netloc": url_parts.netloc,
+                        "port": url_parts.port,
+                    }
+                )
         return values
 
     def _parse_system_variable_jet_template(self, jet_template=None):
@@ -816,6 +826,15 @@ class TowerVariable(models.Model):
                 "url": jet.url,
                 "state": jet.state,
             }
+            if jet.url:
+                url_parts = urlparse(jet.url)
+                values.update(
+                    {
+                        "hostname": url_parts.hostname,
+                        "netloc": url_parts.netloc,
+                        "port": url_parts.port,
+                    }
+                )
         return values
 
     def _parse_system_variable_tools(self):
