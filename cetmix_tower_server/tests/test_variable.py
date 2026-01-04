@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
@@ -404,6 +405,21 @@ class TestTowerVariable(TestTowerCommon):
         self.assertEqual(
             variable_values["tower"]["server"]["url"],
             self.server_test_1.url,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["hostname"],
+            urlparse(self.server_test_1.url).hostname,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["netloc"],
+            urlparse(self.server_test_1.url).netloc,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["port"],
+            urlparse(self.server_test_1.url).port,
             "System variable doesn't match server property",
         )
 
