@@ -21,13 +21,27 @@
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field name="jet_template_domain" invisible="1" />
-                    <field
-                        name="server_id"
+                    <label
+                        for="server_id"
                         string="on the server"
-                        domain="server_domain"
                         attrs="{'invisible': [('jet_template_id', '=', False)]}"
-                        options="{'no_create': True, 'no_create_edit': True}"
                     />
+                    <div
+                        class="o_row"
+                        attrs="{'invisible': [('jet_template_id', '=', False)]}"
+                    >
+                        <field
+                            name="server_id"
+                            string="on the server"
+                            domain="server_domain"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                        <span class="o_form_label">for</span>
+                        <field
+                            name="partner_id"
+                            placeholder="select a partner if required"
+                        />
+                    </div>
                     <field name="server_domain" invisible="1" />
                     <field
                         name="state_id"

@@ -179,6 +179,8 @@
                         class="btn-primary"
                         string="New Jet"
                         icon="fa-plane"
+                        groups="cetmix_tower_server.group_manager"
+                        attrs="{'invisible': [('jet_template_ids', '=', False)]}"
                     />
                     <button
                         name="test_ssh_connection"

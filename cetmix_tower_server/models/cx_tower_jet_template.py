@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from .tools import generate_random_id
+from .tools import generate_random_id, is_valid_url
 
 _logger = logging.getLogger(__name__)
 
@@ -714,7 +714,7 @@ class CxTowerJetTemplate(models.Model):
         jet = self.env["cx.tower.jet"].create(vals)
 
         # Create server logs if not provided in kwargs
-        if not kwargs.get("server_log_ids", []):
+        if not kwargs.get("server_log_ids"):
             for server_log in self.server_log_ids:
                 jet_log = server_log.copy(
                     {
@@ -749,6 +749,17 @@ class CxTowerJetTemplate(models.Model):
         """
         self.ensure_one()
 
+        # Check if the URL is valid
+        url = kwargs.pop("url", None)
+        if url and not is_valid_url(url, no_scheme_check=True):
+            raise ValidationError(
+                _(
+                    "Invalid URL: '%(url)s'. URL must contain a protocol and "
+                    "a proper domain or IP, eg 'https://my_tower_jet.example.com'",
+                    url=url,
+                )
+            )
+
         # If no name is provided, generate a random one
         if not name:
             name = self._generate_jet_name()
@@ -779,9 +790,10 @@ class CxTowerJetTemplate(models.Model):
             "name": name,
             "jet_template_id": self.id,  # pylint: disable=no-member
             "server_id": server.id,
+            "url": url,
         }
 
-        # Parse kwargs
+        # Parse specific fields from kwargs
         if kwargs:
             # Parse configuration variables
             configuration_variables = kwargs.pop("variable_values", {})
@@ -830,14 +842,14 @@ class CxTowerJetTemplate(models.Model):
         self.ensure_one()
         return [
             "name",
-            "url",
             "reference",
             "sequence",
             "color",
+            "tag_ids",
             "partner_id",
             "jet_cloned_from_id",
-            "server_log_ids",
             "scheduled_task_ids",
+            "server_log_ids",
         ]
 
     def _allow_jet_creation(self, server):

@@ -178,14 +178,14 @@
                             type="object"
                             string="Flight Plan Logs"
                             class="oe_stat_button"
-                            icon="fa-plane"
+                            icon="fa-paper-plane"
                         />
                         <button
                             name="action_open_files"
                             type="object"
                             string="Files"
                             class="oe_stat_button"
-                            icon="fa-file"
+                            icon="fa-files-o"
                         />
                     </div>
                     <div class="oe_title">
