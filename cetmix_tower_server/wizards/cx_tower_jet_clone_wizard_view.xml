@@ -7,11 +7,15 @@
         <field name="arch" type="xml">
             <form string="Clone Jet">
                 <group>
-                    <field
-                        name="jet_id"
-                        string="Clone"
-                        options="{'no_create': True, 'no_create_edit': True}"
-                    />
+                    <label for="jet_id" string="Clone" />
+                    <div class="o_row">
+                        <field name="jet_id" />
+                        <span class="o_form_label">for</span>
+                        <field
+                            name="partner_id"
+                            placeholder="select a partner if required"
+                        />
+                    </div>
                     <field name="jet_template_id" invisible="1" />
                     <field
                         name="same_server"

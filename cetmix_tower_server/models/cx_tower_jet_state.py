@@ -21,6 +21,31 @@ class CxTowerJetState(models.Model):
     # Set default access level to User
     access_level = fields.Selection(default="1")
 
+    def unlink(self):
+        """
+        Do not allow to unlink a state
+        if it is used in any action
+        """
+        actions = self.env["cx.tower.jet.action"].search(
+            [
+                "|",
+                "|",
+                ("state_from_id", "in", self.ids),
+                ("state_to_id", "in", self.ids),
+                ("state_transit_id", "in", self.ids),
+            ]
+        )
+        if actions:
+            raise ValidationError(
+                _(
+                    "Some states are still used in the following actions: %(actions)s"
+                    "\nJet templates: %(templates)s",
+                    actions=", ".join(set(actions.mapped("name"))),
+                    templates=", ".join(set(actions.mapped("jet_template_id.name"))),
+                )
+            )
+        return super().unlink()
+
     def set_state(self, jet=None):
         """Sets the state of the jet
 

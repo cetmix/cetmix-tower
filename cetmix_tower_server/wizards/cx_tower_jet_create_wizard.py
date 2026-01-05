@@ -23,6 +23,13 @@ class CxTowerJetCreateWizard(models.TransientModel):
         default="a",
         required=True,
     )
+    partner_id = fields.Many2one(
+        "res.partner",
+        compute="_compute_partner_id",
+        store=True,
+        readonly=False,
+        help="Partner associated with the jet",
+    )
     jet_template_id = fields.Many2one(
         "cx.tower.jet.template",
         required=True,
@@ -54,6 +61,19 @@ class CxTowerJetCreateWizard(models.TransientModel):
         "wizard_id",
         string="Variable Lines",
     )
+
+    @api.depends("server_id")
+    def _compute_partner_id(self):
+        """
+        Compute the partner associated with the jet
+        """
+        for wizard in self:
+            # Do not modify partner if it is already set
+            if wizard.partner_id:
+                continue
+            # Set partner from server
+            if wizard.server_id and wizard.server_id.partner_id:
+                wizard.partner_id = wizard.server_id.partner_id.id
 
     @api.depends("server_id")
     def _compute_jet_template_domain(self):
@@ -135,6 +155,10 @@ class CxTowerJetCreateWizard(models.TransientModel):
             }
         if variable_values:
             kwargs["variable_values"] = variable_values
+
+        # Add partner
+        if self.partner_id:
+            kwargs["partner_id"] = self.partner_id.id
 
         # Add url
         if self.url_type == "m" and self.url:

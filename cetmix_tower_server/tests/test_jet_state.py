@@ -1,7 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common_jets import TestTowerJetsCommon
 
@@ -349,3 +349,174 @@ class TestTowerJetState(TestTowerJetsCommon):
             .set_state()
         )
         self.assertIsNone(result, "Should return None when no jet in context")
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   unlink Tests
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def test_unlink_success_when_not_used_in_action(self):
+        """
+        Test unlink succeeds when state is not used in any action.
+        """
+        # Create a state that is not used in any action
+        unused_state = self.JetState.create(
+            {
+                "name": "Unused State",
+                "reference": "unused_state",
+                "sequence": 100,
+            }
+        )
+        state_id = unused_state.id
+
+        # Unlink should succeed
+        unused_state.unlink()
+
+        # Verify state is deleted
+        self.assertFalse(
+            self.JetState.search([("id", "=", state_id)]),
+            "State should be deleted when not used in any action",
+        )
+
+    def test_unlink_fails_when_used_as_state_from(self):
+        """
+        Test unlink raises ValidationError when state is used as state_from_id
+        in an action.
+        """
+        # state_running is used as state_from_id in action_running_to_stopped
+        with self.assertRaises(ValidationError) as context:
+            self.state_running.unlink()
+
+        error_message = str(context.exception)
+        self.assertIn(
+            "Some states are still used in the following actions",
+            error_message,
+            "Should raise ValidationError with appropriate message",
+        )
+        self.assertIn(
+            self.action_running_to_stopped.name,
+            error_message,
+            "Error message should include action name",
+        )
+        self.assertIn(
+            self.jet_template_test.name,
+            error_message,
+            "Error message should include template name",
+        )
+
+    def test_unlink_fails_when_used_as_state_to(self):
+        """
+        Test unlink raises ValidationError when state is used as state_to_id
+        in an action.
+        """
+        # state_stopped is used as state_to_id in action_running_to_stopped
+        with self.assertRaises(ValidationError) as context:
+            self.state_stopped.unlink()
+
+        error_message = str(context.exception)
+        self.assertIn(
+            "Some states are still used in the following actions",
+            error_message,
+            "Should raise ValidationError with appropriate message",
+        )
+        self.assertIn(
+            self.action_running_to_stopped.name,
+            error_message,
+            "Error message should include action name",
+        )
+        self.assertIn(
+            self.jet_template_test.name,
+            error_message,
+            "Error message should include template name",
+        )
+
+    def test_unlink_fails_when_used_as_state_transit(self):
+        """
+        Test unlink raises ValidationError when state is used as state_transit_id
+        in an action.
+        """
+        # state_stopping is used as state_transit_id in action_running_to_stopped
+        with self.assertRaises(ValidationError) as context:
+            self.state_stopping.unlink()
+
+        error_message = str(context.exception)
+        self.assertIn(
+            "Some states are still used in the following actions",
+            error_message,
+            "Should raise ValidationError with appropriate message",
+        )
+        self.assertIn(
+            self.action_running_to_stopped.name,
+            error_message,
+            "Error message should include action name",
+        )
+        self.assertIn(
+            self.jet_template_test.name,
+            error_message,
+            "Error message should include template name",
+        )
+
+    def test_unlink_fails_with_multiple_actions(self):
+        """
+        Test unlink raises ValidationError with multiple actions when state
+        is used in multiple actions.
+        """
+        # state_running is used in multiple actions:
+        # - action_running_to_stopped (state_from_id)
+        # - action_stopped_to_running (state_to_id)
+        # - action_running_to_error (state_from_id)
+        # - action_initial_to_running (state_to_id)
+        with self.assertRaises(ValidationError) as context:
+            self.state_running.unlink()
+
+        error_message = str(context.exception)
+        self.assertIn(
+            "Some states are still used in the following actions",
+            error_message,
+            "Should raise ValidationError with appropriate message",
+        )
+        # Verify multiple actions are mentioned
+        self.assertIn(
+            self.action_running_to_stopped.name,
+            error_message,
+            "Error message should include first action name",
+        )
+        self.assertIn(
+            self.jet_template_test.name,
+            error_message,
+            "Error message should include template name",
+        )
+
+    def test_unlink_fails_with_multiple_states(self):
+        """
+        Test unlink raises ValidationError when trying to unlink multiple states
+        where at least one is used in an action.
+        """
+        # Create an unused state
+        unused_state = self.JetState.create(
+            {
+                "name": "Another Unused State",
+                "reference": "another_unused_state",
+                "sequence": 101,
+            }
+        )
+
+        # Try to unlink both unused_state and state_running (which is used)
+        states_to_unlink = unused_state | self.state_running
+        with self.assertRaises(ValidationError) as context:
+            states_to_unlink.unlink()
+
+        error_message = str(context.exception)
+        self.assertIn(
+            "Some states are still used in the following actions",
+            error_message,
+            "Should raise ValidationError with appropriate message",
+        )
+        # Verify that neither state was deleted
+        self.assertTrue(
+            unused_state.exists(),
+            "Unused state should not be deleted when another state fails",
+        )
+        self.assertTrue(
+            self.state_running.exists(),
+            "Used state should not be deleted",
+        )

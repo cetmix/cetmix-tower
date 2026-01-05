@@ -696,10 +696,16 @@ class CxTowerJet(models.Model):
         kwargs.update(
             {
                 "jet_cloned_from_id": self.id,
-                "server_log_ids": self.server_log_ids,
-                "scheduled_task_ids": self.scheduled_task_ids,
             }
         )
+        # Scheduled tasks
+        if self.scheduled_task_ids:
+            kwargs["scheduled_task_ids"] = self.scheduled_task_ids.ids
+        # Server logs
+        if self.server_log_ids:
+            kwargs["server_log_ids"] = [
+                log.copy({"jet_id": False}).id for log in self.server_log_ids
+            ]
 
         # Create a new jet
         jet = jet_template.create_jet(
@@ -714,6 +720,7 @@ class CxTowerJet(models.Model):
 
         variable_values = {
             "__original_jet__": self.reference,
+            "__original_server__": self.server_id.reference,
             "__requested_jet_state__": state.reference if state else None,
         }
 

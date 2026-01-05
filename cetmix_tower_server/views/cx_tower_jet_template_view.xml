@@ -136,6 +136,8 @@
                                         <li
                                         >__original_jet__: The reference of the original jet</li>
                                         <li
+                                        >__original_server__: The reference of the original server</li>
+                                        <li
                                         >__requested_jet_state__: The reference of the requested state of the new jet</li>
                                     </ul>
                                 You can also use `jet.jet_cloned_from_id` to get the original jet in Python commands.
