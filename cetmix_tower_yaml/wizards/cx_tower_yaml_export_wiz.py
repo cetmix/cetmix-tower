@@ -349,7 +349,6 @@ class CxTowerYamlExportWiz(models.TransientModel):
             "res_id": download_wizard.id,
             "target": "new",
             "view_mode": "form",
-            "view_type": "form",
         }
 
     def _get_model_record(self):
