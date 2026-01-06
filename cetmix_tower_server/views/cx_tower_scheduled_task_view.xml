@@ -106,6 +106,30 @@
                                 attrs="{'invisible': [('is_running', '=', True)]}"
                             />
                             <field name="next_call" />
+                            <label
+                                for="monday"
+                                string="Days of Week"
+                                attrs="{'invisible': [('interval_type', '!=', 'dow')]}"
+                            />
+                            <div
+                                class="o_row"
+                                attrs="{'invisible': [('interval_type', '!=', 'dow')]}"
+                            >
+                                <span class="o_form_label">Mo</span>
+                                <field name="monday" />
+                                <span class="o_form_label">Tu</span>
+                                <field name="tuesday" />
+                                <span class="o_form_label">We</span>
+                                <field name="wednesday" />
+                                <span class="o_form_label">Th</span>
+                                <field name="thursday" />
+                                <span class="o_form_label">Fr</span>
+                                <field name="friday" />
+                                <span class="o_form_label">Sa</span>
+                                <field name="saturday" />
+                                <span class="o_form_label">Su</span>
+                                <field name="sunday" />
+                            </div>
                         </group>
                     </group>
                     <notebook>
