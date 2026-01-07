@@ -30,10 +30,10 @@ class CxTowerJetTemplateInstallLine(models.Model):
     )
     state = fields.Selection(
         selection=[
-            ("to_install", "To Install"),
+            ("to_process", "To Process"),
             ("processing", "Processing"),
-            ("installed", "Installed"),
+            ("done", "Done"),
             ("failed", "Failed"),
         ],
-        default="to_install",
+        default="to_process",
     )

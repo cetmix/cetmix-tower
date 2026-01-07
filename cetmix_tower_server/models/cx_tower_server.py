@@ -226,6 +226,8 @@ class CxTowerServer(models.Model):
         column1="server_id",
         column2="jet_template_id",
         string="Installed Jet Templates",
+        readonly=True,
+        copy=False,
     )
     jet_template_count = fields.Integer(
         compute="_compute_counters",
@@ -234,6 +236,7 @@ class CxTowerServer(models.Model):
         comodel_name="cx.tower.jet",
         inverse_name="server_id",
         string="Jets",
+        copy=False,
     )
     jet_count = fields.Integer(
         compute="_compute_counters",
@@ -624,13 +627,11 @@ class CxTowerServer(models.Model):
         Uninstall jet template from the current server
         """
         self.ensure_one()
-        params = self.env.context.get("params", {})
-        if params.get("cx.tower.jet.template", "") == "cx.tower.jet.template":
-            jet_template_id = params.get("id")
-            if jet_template_id:
-                self.env["cx.tower.jet.template"].browse(
-                    jet_template_id
-                ).uninstall_from_servers(self)
+        jet_template_id = self.env.context.get("jet_template_id")
+        if jet_template_id and jet_template_id in self.jet_template_ids.ids:
+            jet_template = self.env["cx.tower.jet.template"].browse(jet_template_id)
+            if jet_template:
+                jet_template.uninstall_from_servers(self)
 
     # ------------------------------
     # ---- Connectivity

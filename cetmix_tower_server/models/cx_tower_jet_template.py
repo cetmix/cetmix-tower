@@ -6,7 +6,7 @@ import logging
 import xml.etree.ElementTree as ET
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import ValidationError
 
 from .tools import generate_random_id, is_valid_url
 
@@ -60,7 +60,7 @@ class CxTowerJetTemplate(models.Model):
         column1="jet_template_id",
         column2="server_id",
         string="Installed on Servers",
-        readonly=False,
+        readonly=True,
         help="These servers have this jet template installed",
         copy=False,
     )
@@ -206,6 +206,7 @@ class CxTowerJetTemplate(models.Model):
         auto_join=True,
         copy=False,
         groups="cetmix_tower_server.group_manager",
+        readonly=True,
     )
     # Dependency Graph
     # Odoo blocks SVG images in fields.Binary,
@@ -308,6 +309,28 @@ class CxTowerJetTemplate(models.Model):
         """
         Unlink all related files
         """
+
+        # Don't allow to unlink a template if it has any jets
+        # or is installed on any server
+        templates_with_jets = self.filtered(lambda t: t.jet_ids)
+        if templates_with_jets:
+            raise ValidationError(
+                _(
+                    "Following templates cannot be deleted "
+                    "as they still have jets: %s",
+                    templates_with_jets.mapped("display_name"),
+                )
+            )
+        templates_with_installed_servers = self.filtered(lambda t: t.server_ids)
+        if templates_with_installed_servers:
+            raise ValidationError(
+                _(
+                    "Following templates cannot be deleted "
+                    "as they are installed on servers: %s",
+                    templates_with_installed_servers.mapped("display_name"),
+                )
+            )
+
         files = self.file_ids
         res = super().unlink()
 
@@ -342,10 +365,11 @@ class CxTowerJetTemplate(models.Model):
         self.ensure_one()
         # Open the wizard to uninstall the template from the selected servers
         if not server:
-            server_id = self.env.context.get("default_server_id")
+            server_id = self.env.context.get("server_id")
             server = self.env["cx.tower.server"].browse(server_id)
         if not server:
             raise ValidationError(_("No server selected"))
+        return self.uninstall_from_servers(servers=server)
 
     def action_open_command_logs(self):
         """
@@ -582,7 +606,7 @@ class CxTowerJetTemplate(models.Model):
             server.id
             in self.install_ids.filtered(
                 lambda install: install.jet_template_install_id.state
-                in ["processing", "to_install"]
+                in ["processing", "to_process"]
             ).server_id.ids
         ):
             return False
@@ -613,10 +637,6 @@ class CxTowerJetTemplate(models.Model):
                     self.name,  # pylint: disable=no-member
                     server.name,
                 )
-                # Refresh the frontend views
-                self.env.user.reload_views(
-                    model="cx.tower.jet.template", rec_ids=[self.id]
-                )
                 # Notify the user
                 self.env.user.notify_info(
                     title=self.name,  # pylint: disable=no-member
@@ -636,21 +656,68 @@ class CxTowerJetTemplate(models.Model):
                 server=server,
             )
 
-    def uninstall_from_servers(self, servers):
+        # Refresh the frontend views
+        self.env.user.reload_views(model="cx.tower.jet.template", rec_ids=[self.id])
+
+    def uninstall_from_servers(self, servers, raise_if_not_possible=True):
         """Uninstall the Jet Template from the selected servers.
 
         Args:
             servers (cx.tower.server()): Servers to uninstall"
             " the Jet Template from
+            raise_if_not_possible (bool):
+            If True, will raise an error if the uninstallation is not possible.
         """
         self.ensure_one()
-        # TODO: Implement the uninstallation
-        raise UserError(
-            _(
-                "Uninstallation is not implemented yet. "
-                "Please remove the template from the servers manually."
+        template_install_obj = self.env["cx.tower.jet.template.install"]
+
+        for server in servers:
+            # Check if installation is possible for this server
+            warning_message = None
+            # Template is not installed on the server
+            if server.id not in self.server_ids.ids:
+                warning_message = _(
+                    "Template '%(template_name)s' is not installed "
+                    "on the server '%(server_name)s'",
+                    template_name=self.name,  # pylint: disable=no-member
+                    server_name=server.name,
+                )
+            # There are still jets on the server
+            elif server.jet_ids.filtered(lambda jet: jet.jet_template_id == self):
+                warning_message = _(
+                    "There are still jets of template '%(template_name)s' "
+                    "on the server '%(server_name)s'",
+                    template_name=self.name,  # pylint: disable=no-member
+                    server_name=server.name,
+                )
+            # There are other templates that depend on this template
+            # installed on the server
+            elif server.jet_template_ids.filtered(
+                lambda template: template.template_requires_ids.filtered(
+                    lambda dependency: dependency.template_required_id == self
+                )
+            ):
+                warning_message = _(
+                    "There are other templates that depend "
+                    "on template '%(template_name)s' "
+                    "that are installed on the server '%(server_name)s'",
+                    template_name=self.name,  # pylint: disable=no-member
+                    server_name=server.name,
+                )
+
+            if warning_message:
+                if raise_if_not_possible:
+                    raise ValidationError(warning_message)
+                self.env.user.notify_warning(
+                    message=warning_message,
+                    title=self.name,  # pylint: disable=no-member
+                )
+                continue
+
+            template_install_obj.uninstall(
+                template=self,
+                server=server,
             )
-        )
 
     def _get_system_variable_value(self, variable_reference):
         """Return the jet template variable values
