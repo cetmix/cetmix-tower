@@ -476,7 +476,11 @@
                                 </tree>
                             </field>
                         </page>
-                        <page name="jet_templates" string="Jet Templates">
+                        <page
+                            name="jet_templates"
+                            string="Jet Templates"
+                            groups="cetmix_tower_server.group_manager"
+                        >
                             <button
                                 name="action_install_jet_template"
                                 string="Install Jet Template"

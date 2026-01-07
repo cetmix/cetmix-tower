@@ -295,7 +295,7 @@ class CxTowerJetTemplate(models.Model):
                     f"Error generating dependency graph "
                     f"for template {template.name}: {e}"
                 )
-                template.dependency_graph_image = False
+                template.dependency_graph_svg = False
 
     @api.depends("dependency_graph_svg")
     def _compute_dependency_graph_image(self):
@@ -327,7 +327,7 @@ class CxTowerJetTemplate(models.Model):
                 _(
                     "Following templates cannot be deleted "
                     "as they are installed on servers: %s",
-                    templates_with_installed_servers.mapped("display_name"),
+                    ",".join(templates_with_installed_servers.mapped("display_name")),
                 )
             )
 
@@ -351,7 +351,7 @@ class CxTowerJetTemplate(models.Model):
         # Open the wizard to install the template on the selected servers
         return {
             "type": "ir.actions.act_window",
-            "name": "Install on Servers",
+            "name": _("Install on Servers"),
             "res_model": "cx.tower.jet.template.install.wiz",
             "view_mode": "form",
             "target": "new",
@@ -605,8 +605,7 @@ class CxTowerJetTemplate(models.Model):
         if (
             server.id
             in self.install_ids.filtered(
-                lambda install: install.jet_template_install_id.state
-                in ["processing", "to_process"]
+                lambda install: install.jet_template_install_id.state == "processing"
             ).server_id.ids
         ):
             return False
@@ -618,9 +617,6 @@ class CxTowerJetTemplate(models.Model):
 
         Args:
             servers (cx.tower.server()): Servers to install the Jet Template on
-            installed_by_template (cx.tower.jet.template()): Template that is
-                installing this one. This happens when a template is installing
-                its dependencies.
         """
         self.ensure_one()
 
@@ -645,7 +641,6 @@ class CxTowerJetTemplate(models.Model):
                         "or being installed"
                         " on the server '%(server_name)s'",
                         timestamp=context_timestamp,
-                        template_name=self.name,  # pylint: disable=no-member
                         server_name=server.name,
                     ),
                 )
