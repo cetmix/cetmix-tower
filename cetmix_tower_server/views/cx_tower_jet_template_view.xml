@@ -401,6 +401,8 @@
                                         type="object"
                                         string="Uninstall"
                                         class="btn-danger"
+                                        confirm="Jet template will be uninstalled from the server. Are you sure?"
+                                        context="{'jet_template_id': parent.id}"
                                     />
                                 </tree>
                             </field>

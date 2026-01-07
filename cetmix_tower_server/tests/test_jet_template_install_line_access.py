@@ -257,7 +257,7 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
 
         # Manager should not be able to write
         with self.assertRaises(AccessError):
-            install_line_record.with_user(self.manager).write({"state": "installed"})
+            install_line_record.with_user(self.manager).write({"state": "done"})
 
         # Manager should not be able to create
         template = self.JetTemplate.create(
@@ -307,10 +307,10 @@ class TestTowerJetTemplateInstallLineAccess(TestTowerJetsCommon):
 
         # Root should be able to write
         try:
-            install_line_record.with_user(self.root).write({"state": "installed"})
+            install_line_record.with_user(self.root).write({"state": "done"})
             install_line_record.invalidate_recordset()
             self.assertEqual(
-                install_line_record.state, "installed", "Root should be able to update"
+                install_line_record.state, "done", "Root should be able to update"
             )
         except AccessError:
             self.fail("Root should be able to update any record")

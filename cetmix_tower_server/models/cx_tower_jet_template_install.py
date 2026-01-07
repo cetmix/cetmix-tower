@@ -47,7 +47,7 @@ class CxTowerJetTemplateInstall(models.Model):
     state = fields.Selection(
         selection=[
             ("processing", "Processing"),
-            ("installed", "Installed"),
+            ("done", "Done"),
             ("failed", "Failed"),
         ],
         default="processing",
@@ -67,15 +67,15 @@ class CxTowerJetTemplateInstall(models.Model):
         """
 
         # Compose the list of templates to install
-        template_to_install = [template] + template._check_dependency_satisfaction(
+        template_to_process = [template] + template._check_dependency_satisfaction(
             server
         )
 
         # Prepare the template install lines
-        template_to_install_lines = []
+        template_to_process_lines = []
         order = 0
-        for t in template_to_install:
-            template_to_install_lines.append(
+        for t in template_to_process:
+            template_to_process_lines.append(
                 (0, 0, {"jet_template_id": t.id, "order": order})
             )
             order += 1
@@ -85,7 +85,7 @@ class CxTowerJetTemplateInstall(models.Model):
             {
                 "jet_template_id": template.id,
                 "server_id": server.id,
-                "line_ids": template_to_install_lines,
+                "line_ids": template_to_process_lines,
             }
         )
 
@@ -126,9 +126,67 @@ class CxTowerJetTemplateInstall(models.Model):
         # Return the installation record
         return install_record
 
+    @api.model
+    def uninstall(self, server, template):
+        """Uninstall the template from the server.
+        NB: only one template can be uninstalled at a time.
+
+        Args:
+            server (cx.tower.server()): The server to uninstall the template from.
+            template (cx.tower.jet.template()): The template to uninstall.
+        """
+
+        # Create a new install record
+        install_record = self.create(
+            {
+                "jet_template_id": template.id,
+                "server_id": server.id,
+                "line_ids": [(0, 0, {"jet_template_id": template.id, "order": 0})],
+                "action": "uninstall",
+            }
+        )
+
+        # Send notification
+        # Action for button
+        action = self.env["ir.actions.act_window"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_template_install_action"
+        )
+
+        context = self.env.context.copy()
+        params = dict(context.get("params") or {})
+        params["button_name"] = _("View Installation")
+        context["params"] = params
+
+        # Add record id and context to the action
+        action.update(
+            {
+                "context": context,
+                "res_id": install_record.id,
+                "views": [(False, "form")],
+            }
+        )
+
+        self.env.user.notify_info(
+            message=_(
+                "%(timestamp)s<br/>"
+                "Uninstalling template on server '%(server_name)s'",
+                server_name=server.name,
+                timestamp=fields.Datetime.now(),
+            ),
+            title=template.name,
+            sticky=False,  # explicitly set to False to avoid blocking the user's screen
+            action=action,
+        )
+
+        # Launch the installation
+        install_record._process_install()
+
+        # Return the installation record
+        return install_record
+
     def _process_install(self):
         """
-        Process the installation of the template.
+        Process the installation or uninstallation of the template.
         """
         self.ensure_one()
 
@@ -147,12 +205,15 @@ class CxTowerJetTemplateInstall(models.Model):
         # Get the template to install
         installation_tasks = self.line_ids.sorted("order", reverse=True)
         for installation_task in installation_tasks:
-            # Pick the templates only in the "To Install" state
-            if installation_task.state != "to_install":
+            # Pick the templates only in the "To Process" state
+            if installation_task.state != "to_process":
                 continue
 
             # Get the flight plan to install the template
-            flight_plan = installation_task.jet_template_id.plan_install_id  # pylint: disable=no-member
+            if self.action == "install":
+                flight_plan = installation_task.jet_template_id.plan_install_id  # pylint: disable=no-member
+            else:
+                flight_plan = installation_task.jet_template_id.plan_uninstall_id  # pylint: disable=no-member
 
             # Run the corresponding flight plan
             if flight_plan:
@@ -183,17 +244,22 @@ class CxTowerJetTemplateInstall(models.Model):
                 # So we don't need continue the loop in this case.
                 return
 
-            # Mark the installation task as "Installed"
+            # Mark the installation task as "Done"
             # because nothing else is to be done here.
             installation_task.write(
                 {
-                    "state": "installed",
+                    "state": "done",
                 }
             )
             # Add to the list of installed templates
-            installation_task.jet_template_id.write(
-                {"server_ids": [(4, self.server_id.id)]}
-            )
+            if self.action == "install":
+                installation_task.jet_template_id.write(
+                    {"server_ids": [(4, self.server_id.id)]}
+                )
+            else:
+                installation_task.jet_template_id.write(
+                    {"server_ids": [(3, self.server_id.id)]}
+                )
 
             # WARNING: Explicit commit!
             # This commit is made **only** when to ensure that the state is set
@@ -218,7 +284,7 @@ class CxTowerJetTemplateInstall(models.Model):
         now = fields.Datetime.now()
         self.write(
             {
-                "state": "installed",
+                "state": "done",
                 "date_done": now,
             }
         )
@@ -226,6 +292,14 @@ class CxTowerJetTemplateInstall(models.Model):
         # Refresh the frontend views
         self.env.user.reload_views(
             model="cx.tower.jet.template.install", rec_ids=[self.id]
+        )
+        self.env.user.reload_views(
+            model="cx.tower.server", view_types=["form"], rec_ids=[self.server_id.id]
+        )
+        self.env.user.reload_views(
+            model="cx.tower.jet.template",
+            view_types=["form"],
+            rec_ids=[self.jet_template_id.id],
         )
 
         # Check if notifications are enabled
@@ -257,7 +331,10 @@ class CxTowerJetTemplateInstall(models.Model):
             self.env.user.notify_success(
                 message=_(
                     "%(timestamp)s<br/>"
-                    "Installation completed on server '%(server_name)s'",
+                    "%(action)s completed on server '%(server_name)s'",
+                    action=_("Installation")
+                    if self.action == "install"
+                    else _("Uninstallation"),
                     server_name=self.server_id.name,
                     timestamp=now,
                 ),
@@ -294,13 +371,19 @@ class CxTowerJetTemplateInstall(models.Model):
             # Mark current line as done
             self.current_line_id.write(  # pylint: disable=no-member
                 {
-                    "state": "installed",
+                    "state": "done",
                 }
             )
             # Add template to the list of installed templates
-            self.current_line_id.jet_template_id.write(  # pylint: disable=no-member
-                {"server_ids": [(4, self.server_id.id)]}
-            )
+            # or remove it from the list if it is being uninstalled
+            if self.action == "install":
+                self.current_line_id.jet_template_id.write(  # pylint: disable=no-member
+                    {"server_ids": [(4, self.server_id.id)]}
+                )
+            else:
+                self.current_line_id.jet_template_id.write(  # pylint: disable=no-member
+                    {"server_ids": [(3, self.server_id.id)]}
+                )
 
             # Remove the link to the current line and continue
             self.write({"current_line_id": False})
@@ -327,8 +410,8 @@ class CxTowerJetTemplateInstall(models.Model):
                 }
             )
 
-            # Set all other 'to_install' lines as failed
-            self.line_ids.filtered(lambda line: line.state == "to_install").write(
+            # Set all other 'to_process' lines as failed
+            self.line_ids.filtered(lambda line: line.state == "to_process").write(
                 {
                     "state": "failed",
                 }

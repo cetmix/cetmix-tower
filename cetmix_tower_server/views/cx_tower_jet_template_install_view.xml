@@ -37,7 +37,7 @@
                 <sheet>
                     <widget
                         name="web_ribbon"
-                        title="Installed"
+                        title="Done"
                         attrs="{'invisible': [('state', '!=', 'installed')]}"
                     />
                     <widget
@@ -103,8 +103,8 @@
                     domain="[('state', '=', 'processing')]"
                 />
                 <filter
-                    string="Installed"
-                    name="installed"
+                    string="Done"
+                    name="done"
                     domain="[('state', '=', 'installed')]"
                 />
                 <filter
