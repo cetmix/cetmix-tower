@@ -27,6 +27,8 @@ class CxTowerJetTemplateInstallLine(models.Model):
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         related="jet_template_install_id.server_id",
+        readonly=True,
+        store=True,
     )
     state = fields.Selection(
         selection=[

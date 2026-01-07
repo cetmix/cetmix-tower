@@ -85,6 +85,7 @@
                                         <a
                                             t-att-href="record.url.raw_value"
                                             target="_blank"
+                                            rel="noopener noreferrer"
                                         >
                                             <i
                                                 class="fa fa-external-link"
@@ -188,6 +189,16 @@
                             icon="fa-files-o"
                         />
                     </div>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        attrs="{'invisible': [('deletable', '=', False)]}"
+                        style="margin-bottom:0px;"
+                    >
+                        <p>
+                            This jet can be deleted.
+                        </p>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="e.g. Production Odoo" />
@@ -203,7 +214,7 @@
                         <group>
                             <field
                                 name="reference"
-                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                                placeholder="leave blank to autogenerate"
                             />
                             <field
                                 name="url"
@@ -229,6 +240,7 @@
                                 attrs="{'readonly': [('create_date', '!=', False)]}"
                             />
                             <field name="server_allowed_ids" invisible="1" />
+                            <field name="deletable" />
                         </group>
                     </group>
                     <notebook>
@@ -477,6 +489,17 @@
                     string="Archived"
                     name="inactive"
                     domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Deletable"
+                    name="deletable"
+                    domain="[('deletable', '=', True)]"
+                />
+                <filter
+                    string="Not Deletable"
+                    name="not_deletable"
+                    domain="[('deletable', '=', False)]"
                 />
                 <group expand="0" string="Group By">
                     <filter

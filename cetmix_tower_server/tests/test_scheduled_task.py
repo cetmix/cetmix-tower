@@ -623,7 +623,7 @@ class TestTowerScheduledTask(TestTowerCommon):
             "Next call from Monday (only day selected) should be"
             " next Monday at the same time.",
         )
-        
+
     def test_scheduled_task_cv_manager_read_access(self):
         """Manager: can read scheduled task CV if in scheduled task's
         manager_ids/user_ids or via server's manager_ids/user_ids."""

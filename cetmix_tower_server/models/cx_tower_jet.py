@@ -24,6 +24,12 @@ class CxTowerJet(models.Model):
     _order = "sequence, name"
 
     active = fields.Boolean(default=True)
+    deletable = fields.Boolean(
+        readonly=True,
+        default=True,
+        help="This field is set by by the jet actions. "
+        "If enabled, the jet can be deleted",
+    )
     url = fields.Char()
     color = fields.Integer(related="state_id.color", readonly=True)
     sequence = fields.Integer(default=10, help="Used to sort jets in views")
@@ -344,6 +350,16 @@ class CxTowerJet(models.Model):
         """
         Unlink all related files
         """
+
+        # Check if the jet is deletable
+        not_deletable_jets = self.filtered(lambda j: not j.deletable)
+        if not_deletable_jets:
+            raise ValidationError(
+                _(
+                    "Following jets cannot be deleted as they are not deletable: %s",
+                    not_deletable_jets.mapped("display_name"),
+                )
+            )
         files = self.file_ids
         res = super().unlink()
 
@@ -789,7 +805,7 @@ class CxTowerJet(models.Model):
                     " '%(jet)s' in state '%(state)s'",
                     action=action.name,
                     jet=self.name,  # pylint: disable=no-member
-                    state=self.state_id.name,
+                    state=self.state_id.name if self.state_id else _("Undefined"),
                 )
             )
 
@@ -928,7 +944,7 @@ class CxTowerJet(models.Model):
                 _(
                     "No path found to bring the jet %(jet)s to the state '%(state)s'",
                     jet=self.name,  # pylint: disable=no-member
-                    state=state.name if state else "Undefined",
+                    state=state.name if state else _("Undefined"),
                 )
             )
 
@@ -1036,7 +1052,7 @@ class CxTowerJet(models.Model):
                 response = _(
                     "Jet %(jet)s was moved to the '%(state)s' state.",
                     jet=self.name,  # pylint: disable=no-member
-                    state=self.state_id.name,
+                    state=self.state_id.name if self.state_id else _("Undefined"),
                 )
                 status = 0
                 error = None

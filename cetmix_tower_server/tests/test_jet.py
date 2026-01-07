@@ -995,3 +995,194 @@ class TestTowerJet(TestTowerJetsCommon):
             "3",
             "Root should have effective access level 3",
         )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   unlink Tests
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def test_unlink_deletable_jet_with_files(self):
+        """
+        Test unlink succeeds when jet is deletable and has files.
+        Files should be unlinked after the jet is deleted.
+        """
+        # Create a deletable jet (deletable defaults to True)
+        jet = self._create_jet(
+            "Deletable Jet",
+            "deletable_jet",
+        )
+
+        # Create files linked to the jet
+        file1 = self.File.create(
+            {
+                "name": "test_file_1.txt",
+                "source": "tower",
+                "server_id": self.server_test_1.id,
+                "server_dir": "/tmp",
+                "jet_id": jet.id,
+                "file_type": "text",
+            }
+        )
+        file2 = self.File.create(
+            {
+                "name": "test_file_2.txt",
+                "source": "tower",
+                "server_id": self.server_test_1.id,
+                "server_dir": "/tmp",
+                "jet_id": jet.id,
+                "file_type": "text",
+            }
+        )
+
+        # Verify files exist
+        self.assertEqual(len(jet.file_ids), 2, "Jet should have 2 files")
+        self.assertIn(file1, jet.file_ids, "File 1 should be linked to jet")
+        self.assertIn(file2, jet.file_ids, "File 2 should be linked to jet")
+
+        # Store file IDs before deletion
+        file_ids = {file1.id, file2.id}
+
+        # Unlink the jet
+        jet.unlink()
+
+        # Verify jet is deleted
+        self.assertFalse(jet.exists(), "Jet should be deleted")
+
+        # Verify files are also deleted
+        remaining_files = self.File.browse(list(file_ids))
+        self.assertFalse(
+            remaining_files.exists(),
+            "Files should be unlinked after jet deletion",
+        )
+
+    def test_unlink_deletable_jet_without_files(self):
+        """
+        Test unlink succeeds when jet is deletable but has no files.
+        """
+        # Create a deletable jet without files (deletable defaults to True)
+        jet = self._create_jet(
+            "Deletable Jet No Files",
+            "deletable_jet_no_files",
+        )
+
+        # Verify jet has no files
+        self.assertEqual(len(jet.file_ids), 0, "Jet should have no files")
+
+        # Unlink the jet
+        jet.unlink()
+
+        # Verify jet is deleted
+        self.assertFalse(jet.exists(), "Jet should be deleted")
+
+    def test_unlink_not_deletable_jet_raises_error(self):
+        """
+        Test unlink raises ValidationError when jet is not deletable.
+        """
+        # Create a non-deletable jet
+        jet = self._create_jet(
+            "Not Deletable Jet",
+            "not_deletable_jet",
+        )
+        jet.write({"deletable": False})
+
+        # Attempt to unlink should raise ValidationError
+        with self.assertRaises(ValidationError) as context:
+            jet.unlink()
+
+        # Verify error message contains jet display name
+        self.assertIn(
+            "cannot be deleted",
+            str(context.exception),
+            "Error message should mention deletion restriction",
+        )
+        self.assertIn(
+            jet.display_name,
+            str(context.exception),
+            "Error message should include jet display name",
+        )
+
+        # Verify jet still exists
+        self.assertTrue(jet.exists(), "Jet should not be deleted")
+
+    def test_unlink_multiple_jets_mixed_deletable(self):
+        """
+        Test unlink with multiple jets where some are deletable and some are not.
+        Should raise ValidationError listing non-deletable jets.
+        """
+        # Create deletable jet (deletable defaults to True)
+        deletable_jet = self._create_jet(
+            "Deletable Jet",
+            "deletable_jet_multi",
+        )
+
+        # Create non-deletable jet
+        not_deletable_jet = self._create_jet(
+            "Not Deletable Jet",
+            "not_deletable_jet_multi",
+        )
+        not_deletable_jet.write({"deletable": False})
+
+        # Attempt to unlink both should raise ValidationError
+        jets = deletable_jet | not_deletable_jet
+        with self.assertRaises(ValidationError) as context:
+            jets.unlink()
+
+        # Verify error message contains non-deletable jet display name
+        self.assertIn(
+            "cannot be deleted",
+            str(context.exception),
+            "Error message should mention deletion restriction",
+        )
+        self.assertIn(
+            not_deletable_jet.display_name,
+            str(context.exception),
+            "Error message should include non-deletable jet display name",
+        )
+
+        # Verify both jets still exist
+        self.assertTrue(deletable_jet.exists(), "Deletable jet should not be deleted")
+        self.assertTrue(
+            not_deletable_jet.exists(), "Non-deletable jet should not be deleted"
+        )
+
+    def test_unlink_files_unlinked_after_jet_deletion(self):
+        """
+        Test that files are unlinked only after jet record is successfully deleted.
+        This ensures files are not deleted if unlink fails.
+        """
+        # Create a deletable jet with files (deletable defaults to True)
+        jet = self._create_jet(
+            "Deletable Jet Files",
+            "deletable_jet_files",
+        )
+
+        # Create files linked to the jet
+        file1 = self.File.create(
+            {
+                "name": "test_file_before.txt",
+                "source": "tower",
+                "server_id": self.server_test_1.id,
+                "server_dir": "/tmp",
+                "jet_id": jet.id,
+                "file_type": "text",
+            }
+        )
+
+        # Verify file exists before deletion
+        self.assertTrue(file1.exists(), "File should exist before jet deletion")
+        self.assertEqual(len(jet.file_ids), 1, "Jet should have 1 file")
+
+        # Store file ID
+        file_id = file1.id
+
+        # Unlink the jet
+        jet.unlink()
+
+        # Verify jet is deleted
+        self.assertFalse(jet.exists(), "Jet should be deleted")
+
+        # Verify file is also deleted (after jet deletion)
+        remaining_file = self.File.browse(file_id)
+        self.assertFalse(
+            remaining_file.exists(),
+            "File should be unlinked after jet deletion",
+        )

@@ -114,6 +114,7 @@ class TestTowerJetAccess(TestTowerJetsCommon):
             )
 
         # User should not be able to delete
+        # Jet is deletable by default, so this tests access control
         with self.assertRaises(AccessError):
             jet.with_user(self.user).unlink()
 
@@ -339,7 +340,7 @@ class TestTowerJetAccess(TestTowerJetsCommon):
             server_user_ids=[(4, self.manager.id)],
             with_user=self.manager,
         )
-
+        # Jet is deletable by default, so manager can delete it
         try:
             jet.with_user(self.manager).unlink()
             records = self.Jet.search([("id", "=", jet.id)])
@@ -360,6 +361,7 @@ class TestTowerJetAccess(TestTowerJetsCommon):
         )
 
         # Manager1 cannot delete Manager2's record
+        # Jet is deletable by default, so this tests access control
         with self.assertRaises(AccessError):
             jet.with_user(self.manager).unlink()
 
@@ -376,6 +378,7 @@ class TestTowerJetAccess(TestTowerJetsCommon):
         jet.write({"manager_ids": [(5, 0, 0)]})
 
         # Cannot delete anymore
+        # Jet is deletable by default, so this tests access control
         with self.assertRaises(AccessError):
             jet.with_user(self.manager).unlink()
 
@@ -392,6 +395,7 @@ class TestTowerJetAccess(TestTowerJetsCommon):
         self.server_test_1.write({"user_ids": [(5, 0, 0)], "manager_ids": [(5, 0, 0)]})
 
         # Cannot delete anymore
+        # Jet is deletable by default, so this tests access control
         with self.assertRaises(AccessError):
             jet.with_user(self.manager).unlink()
 
@@ -430,6 +434,7 @@ class TestTowerJetAccess(TestTowerJetsCommon):
             server_user_ids=[(4, self.manager.id)],
             with_user=self.manager,
         )
+        # Jet is deletable by default, so root can delete it
         manager_jet.unlink()
         records = self.Jet.search([("id", "=", manager_jet.id)])
         self.assertEqual(

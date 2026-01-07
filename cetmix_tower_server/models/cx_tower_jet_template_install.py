@@ -336,7 +336,7 @@ class CxTowerJetTemplateInstall(models.Model):
                     if self.action == "install"
                     else _("Uninstallation"),
                     server_name=self.server_id.name,
-                    timestamp=now,
+                    timestamp=fields.Datetime.context_timestamp(self, now),
                 ),
                 title=self.jet_template_id.name,  # pylint: disable=no-member
                 sticky=notification_type_success == "sticky",
@@ -451,9 +451,14 @@ class CxTowerJetTemplateInstall(models.Model):
                 self.env.user.notify_danger(
                     message=_(
                         "%(timestamp)s<br/>"
-                        "Installation failed on server '%(server_name)s'",
+                        "%(action)s failed on server '%(server_name)s'",
+                        action=_("Installation")
+                        if self.action == "install"
+                        else _("Uninstallation"),
                         server_name=self.server_id.name,
-                        timestamp=fields.Datetime.now(),
+                        timestamp=fields.Datetime.context_timestamp(
+                            self, fields.Datetime.now()
+                        ),
                     ),
                     title=self.jet_template_id.name,
                     sticky=notification_type_error == "sticky",
