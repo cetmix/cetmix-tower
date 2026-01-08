@@ -77,7 +77,7 @@ addon | version | maintainers | summary
 [cetmix_tower_aws](cetmix_tower_aws/) | 16.0.1.1.1 |  | Cetmix Tower AWS EC2 API integration
 [cetmix_tower_git](cetmix_tower_git/) | 16.0.2.0.2 |  | Cetmix Tower Git Management Tools
 [cetmix_tower_ovh](cetmix_tower_ovh/) | 16.0.1.0.1 | <a href='https://github.com/GSLabIt'><img src='https://github.com/GSLabIt.png' width='32' height='32' style='border-radius:50%;' alt='GSLabIt'/></a> | Cetmix Tower OVH API integration
-[cetmix_tower_server](cetmix_tower_server/) | 16.0.2.2.9 |  | Manage servers and applications from Odoo
+[cetmix_tower_server](cetmix_tower_server/) | 16.0.2.2.10 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 16.0.1.2.2 |  | Cetmix Tower asynchronous task execution using 'queue_job'
 [cetmix_tower_webhook](cetmix_tower_webhook/) | 16.0.1.0.5 |  | Webhook implementation for Cetmix Tower
 [cetmix_tower_yaml](cetmix_tower_yaml/) | 16.0.2.0.3 |  | Cetmix Tower YAML export/import

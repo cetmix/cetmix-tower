@@ -1,3 +1,8 @@
+## 16.0.2.2.10 (2026-01-08)
+
+- Features: Scheduled tasks: allow to select specific days of week. (5190)
+
+
 ## 16.0.2.2.8 (2025-12-22)
 
 - Bugfixes: Handle malformed expressions in flight plan line conditions. (5154)
