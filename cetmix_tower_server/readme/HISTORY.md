@@ -1,3 +1,8 @@
+## 16.0.2.2.11 (2026-01-08)
+
+- Bugfixes: Ensure custom values can be updated even if not provided initially. (5175)
+
+
 ## 16.0.2.2.10 (2026-01-08)
 
 - Features: Scheduled tasks: allow to select specific days of week. (5190)
