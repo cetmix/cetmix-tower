@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerJetCreateWizard(models.TransientModel):
@@ -170,6 +171,13 @@ class CxTowerJetCreateWizard(models.TransientModel):
             state=self.state_id,
             **kwargs,
         )
+        if not jet:
+            raise ValidationError(
+                _(
+                    "Failed to create jet. "
+                    "Please check the server and template settings."
+                )
+            )
 
         return {
             "type": "ir.actions.act_window",

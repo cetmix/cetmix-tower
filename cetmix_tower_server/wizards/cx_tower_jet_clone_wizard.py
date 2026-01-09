@@ -124,7 +124,7 @@ class CxTowerJetCloneWizard(models.TransientModel):
         }
 
 
-class CxTowerJetCreateWizardVariableLine(models.TransientModel):
+class CxTowerJetCloneWizardVariableLine(models.TransientModel):
     """Custom variable values for jet create wizard"""
 
     _name = "cx.tower.jet.clone.wizard.variable.line"

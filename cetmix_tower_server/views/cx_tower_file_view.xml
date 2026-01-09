@@ -68,8 +68,7 @@
                         <group>
                             <field
                                 name="server_id"
-                                required="1"
-                                attrs="{'readonly': [('jet_id', '!=', False)]}"
+                                attrs="{'readonly': [('jet_id', '!=', False)], 'required': [('jet_id', '=', False)]}"
                             />
                             <field
                                 name="jet_template_id"
@@ -77,7 +76,7 @@
                             />
                             <field
                                 name="jet_id"
-                                attrs="{'invisible': [('jet_template_id', '=', False)]}"
+                                attrs="{'invisible': [('jet_id', '=', False)]}"
                             />
                             <field name="server_dir" widget="ace_tower" />
                             <field name="full_server_path" />
