@@ -1,7 +1,11 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import logging
+
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerServer(models.Model):
@@ -119,20 +123,45 @@ class CxTowerServer(models.Model):
 
     def _command_runner_file_using_template_create_file(
         self,
-        file_template_id,
+        log_record,
         server_dir,
-        plan_line,
-        if_file_exists,
         **kwargs,
     ):
         """Override to create git project relation
         when creating a file using a template.
         """
         file = super()._command_runner_file_using_template_create_file(
-            file_template_id, server_dir, plan_line, if_file_exists, **kwargs
+            log_record, server_dir, **kwargs
         )
-        if file and plan_line:
-            git_project = plan_line.git_project_id
+        if file:
+            # Get the flight plan line from log record
+            plan_line = log_record.plan_log_id.plan_line_executed_id
+            # Try to get git project from custom values
+            custom_values = log_record.variable_values
+            git_project_reference = custom_values and custom_values.get(
+                "__git_project__"
+            )
+            if git_project_reference:
+                git_project = self.env["cx.tower.git.project"].get_by_reference(
+                    git_project_reference
+                )
+                if not git_project:
+                    _logger.warning(
+                        "Git project '%s' provided with the `__git_project__` "
+                        "custom value not found for server '%s' "
+                        "in flight plan line '%s' "
+                        "of the flight plan '%s'. "
+                        "No project was linked to the file '%s'.",
+                        git_project_reference,
+                        self.name,
+                        plan_line.name,
+                        log_record.plan_log_id.plan_id.name,
+                        file.name,
+                    )
+
+            # Try to get git project set explicitly in the flight plan line
+            else:
+                git_project = plan_line.git_project_id
             if not git_project:
                 return file
 
@@ -143,7 +172,9 @@ class CxTowerServer(models.Model):
                 # pairs of values are created through SQL query
                 # in the method write_real and it does not take into account
                 # that in this case we are creating a copy of the git project
-                git_project = git_project.with_context(default_server_ids=False).copy()
+                git_project = git_project.with_context(default_server_ids=False).copy(
+                    {"name": git_project._compose_copy_name(server=self)}
+                )
 
             self.env["cx.tower.git.project.rel"].create(
                 {

@@ -228,6 +228,9 @@ class CxTowerGitProject(models.Model):
         self._update_related_files_and_templates()
         return res
 
+    # ------------------------------
+    # Helper methods
+    # ------------------------------
     def _update_related_files_and_templates(self):
         # Update related files and templates
         if self.git_project_rel_ids:
@@ -239,11 +242,29 @@ class CxTowerGitProject(models.Model):
         """Extract environment variables from text.
         Helper method for file content generation.
 
+        Args:
+            text (str): Text to extract variables from
         Returns:
             List: List of variables
         """
         variables = re.findall(r"\$([A-Z0-9_]+)", text)
         return sorted(list(set(variables)))
+
+    def _compose_copy_name(self, server=False):
+        """
+        Compose copy name of a git project copy.
+        Helper method used when creating a copy of a git project.
+
+        Args:
+            server (cx.tower.server): Server to get the copy name for.
+
+        Returns:
+            Char: Copy name
+        """
+        self.ensure_one()
+        if server:
+            return server.name
+        return _("%(name)s (copy)", name=self.name)
 
     # ------------------------------
     # YAML mixin methods

@@ -8,11 +8,28 @@
             ref="cetmix_tower_server.cx_tower_plan_line_view_form"
         />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='condition']" position="before">
-                <group invisible="action != 'file_using_template'">
+            <xpath expr="//group[@name='main']" position="after">
+                <group invisible="not file_template_id">
                     <field name="git_project_id" />
                     <field name="is_make_copy" invisible="not git_project_id" />
                 </group>
+                <div
+                    class="alert alert-info"
+                    role="alert"
+                    invisible="not file_template_id"
+                >
+                    <p>
+                        You can also provide a Git Project reference using the <code
+                        >__git_project__</code> variable in the flight plan custom values.<br
+                        />
+                        Python command code example:
+                        <code>
+custom_values['__git_project__'] = 'my_git_project'
+                        </code>
+                        <br />
+                        Important: if defined, this variable value overrides the Git Project selected in the form.
+                    </p>
+                </div>
             </xpath>
         </field>
     </record>
