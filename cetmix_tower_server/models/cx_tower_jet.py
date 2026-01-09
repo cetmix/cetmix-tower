@@ -469,7 +469,12 @@ class CxTowerJet(models.Model):
 
         # Remove group_by from context
         context.pop("group_by", None)
-        context["default_jet_id"] = self.id  # pylint: disable=no-member
+        context.update(
+            {
+                "default_jet_id": self.id,
+                "default_server_id": self.server_id.id,
+            }
+        )
         action["context"] = context
         return action
 

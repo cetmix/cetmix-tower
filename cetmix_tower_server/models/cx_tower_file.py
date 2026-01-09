@@ -108,7 +108,6 @@ class CxTowerFile(models.Model):
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
-        required=False,
         index=True,
         ondelete="cascade",
         compute="_compute_server_id",
@@ -223,10 +222,14 @@ class CxTowerFile(models.Model):
             if record.jet_id:
                 record.update(
                     {
-                        "server_id": record.jet_id.server_id.id,
-                        "jet_template_id": record.jet_id.jet_template_id.id,
+                        "server_id": record.jet_id.server_id,
+                        "jet_template_id": record.jet_id.jet_template_id,
                     }
                 )
+            else:
+                # Reset the jet template id if the jet is removed
+                if record.jet_template_id:
+                    record.jet_template_id = False
 
     @api.depends("server_id", "template_id", "name", "server_dir", "code")
     def _compute_render(self):
