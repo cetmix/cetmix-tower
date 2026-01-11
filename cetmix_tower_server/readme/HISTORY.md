@@ -1,3 +1,8 @@
+## 16.0.2.2.12 (2026-01-11)
+
+- Features: Improve the 'File using template' command flow, fix the flight plan line view layout. (5197)
+
+
 ## 16.0.2.2.11 (2026-01-08)
 
 - Bugfixes: Ensure custom values can be updated even if not provided initially. (5175)

@@ -1,3 +1,8 @@
+## 16.0.2.0.3 (2026-01-11)
+
+- Features: Provide git project name using the `__git_project__` custom value when creating a project in flight plan. Improve the UI and UX of Git Projects. (5197)
+
+
 ## 16.0.2.0.1 (2025-12-11)
 
 - Features: Improve search views, implement the search panel for selected views. (5139)
