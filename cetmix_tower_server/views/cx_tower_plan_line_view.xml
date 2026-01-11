@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <group>
+                    <group name="main">
                         <field name="sequence" />
                         <field
                             name="reference"
@@ -37,7 +37,7 @@
                         <field
                             name="file_template_id"
                             string="File Template"
-                            attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                            attrs="{'invisible': [('file_template_id', '=', False)]}"
                         />
                         <field
                             name="note"
@@ -45,8 +45,7 @@
                             attrs="{'invisible': [('note', '=', False)]}"
                         />
                     </group>
-                    <group>
-                        <label for="condition" string="Condition" />
+                    <group name="condition">
                         <field name="condition" widget="ace_tower" />
                     </group>
                     <notebook>

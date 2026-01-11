@@ -38,11 +38,12 @@
                                 name="reference"
                                 placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
                                 attrs="{'invisible': [('reference', '=', False)]}"
+                                groups="base.group_no_one"
                             />
                         </h3>
                     </div>
                     <group>
-                        <field name="sequence" />
+                        <field name="sequence" groups="base.group_no_one" />
                         <field name="enabled" />
                         <field name="active" invisible="1" />
                     </group>
@@ -72,8 +73,16 @@
                                     <field name="url_protocol" />
                                     <field name="enabled" widget="boolean_toggle" />
                                     <field name="is_private" optional="hide" />
-                                    <field name="reference" optional="hide" />
-                                    <field name="create_uid" optional="hide" />
+                                    <field
+                                        name="reference"
+                                        optional="hide"
+                                        groups="base.group_no_one"
+                                    />
+                                    <field
+                                        name="create_uid"
+                                        optional="hide"
+                                        groups="base.group_no_one"
+                                    />
                                 </tree>
                             </field>
                         </page>
