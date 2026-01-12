@@ -31,8 +31,8 @@ class TestTowerJet(TestTowerJetsCommon):
             "Available actions should include create action when jet has no state",
         )
         self.assertEqual(
-            self.jet_test.action_available_ids,
-            self.action_create,
+            {action.id for action in self.jet_test.action_available_ids},
+            {self.action_create.id},
             "Available action should be the create action",
         )
 
@@ -55,8 +55,8 @@ class TestTowerJet(TestTowerJetsCommon):
             | self.action_destroy
         )
         self.assertEqual(
-            self.jet_test.action_available_ids,
-            expected_actions,
+            {action.id for action in self.jet_test.action_available_ids},
+            {action.id for action in expected_actions},
             "Should have all actions from running state",
         )
 
@@ -91,8 +91,8 @@ class TestTowerJet(TestTowerJetsCommon):
             | self.action_destroy
         )
         self.assertEqual(
-            self.jet_test.action_available_ids,
-            expected_actions,
+            {action.id for action in self.jet_test.action_available_ids},
+            {action.id for action in expected_actions},
             "Should return destroy action along with other actions from running state",
         )
 
@@ -145,8 +145,8 @@ class TestTowerJet(TestTowerJetsCommon):
             | self.action_destroy
         )
         self.assertEqual(
-            self.jet_test.action_available_ids,
-            expected_actions,
+            {action.id for action in self.jet_test.action_available_ids},
+            {action.id for action in expected_actions},
             "Should have all actions from running state initially",
         )
 
@@ -157,8 +157,8 @@ class TestTowerJet(TestTowerJetsCommon):
         # but should still have other actions from running state
         expected_remaining_actions = self.action_running_to_error | self.action_destroy
         self.assertEqual(
-            self.jet_test.action_available_ids,
-            expected_remaining_actions,
+            {action.id for action in self.jet_test.action_available_ids},
+            {action.id for action in expected_remaining_actions},
             "Should have remaining actions after changing one action's state_from_id",
         )
 
@@ -169,8 +169,8 @@ class TestTowerJet(TestTowerJetsCommon):
         # plus any other actions from stopped state
         expected_actions = action | self.action_stopped_to_running
         self.assertEqual(
-            self.jet_test.action_available_ids,
-            expected_actions,
+            {action.id for action in self.jet_test.action_available_ids},
+            {action.id for action in expected_actions},
             "Should have the modified action plus other actions from stopped state",
         )
 
@@ -210,26 +210,26 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # Each jet should only see its own template's actions
         self.assertEqual(
-            self.jet_odoo.action_available_ids,
-            odoo_action,
+            {action.id for action in self.jet_odoo.action_available_ids},
+            {odoo_action.id},
             "Odoo jet should only see Odoo actions",
         )
         self.assertEqual(
-            self.jet_wordpress.action_available_ids,
-            wp_action,
+            {action.id for action in self.jet_wordpress.action_available_ids},
+            {wp_action.id},
             "WordPress jet should only see WordPress actions",
         )
 
         # Odoo jet should not see WordPress actions
         self.assertNotIn(
-            wp_action,
-            self.jet_odoo.action_available_ids,
+            wp_action.id,
+            {action.id for action in self.jet_odoo.action_available_ids},
             "Odoo jet should not see WordPress actions",
         )
         # WordPress jet should not see Odoo actions
         self.assertNotIn(
-            odoo_action,
-            self.jet_wordpress.action_available_ids,
+            odoo_action.id,
+            {action.id for action in self.jet_wordpress.action_available_ids},
             "WordPress jet should not see Odoo actions",
         )
 
@@ -629,7 +629,9 @@ class TestTowerJet(TestTowerJetsCommon):
         self.jet_test.invalidate_recordset(["state_id"])
 
         # User should be able to bring jet to user-level state
-        self.jet_test.with_user(self.user).bring_to_state("test_running")
+        self.jet_test.with_user(self.user).with_context(
+            cetmix_tower_no_commit=True
+        ).bring_to_state("test_running")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
@@ -654,7 +656,9 @@ class TestTowerJet(TestTowerJetsCommon):
         self.jet_test.invalidate_recordset(["state_id"])
 
         # Manager should be able to bring jet to manager-level state
-        self.jet_test.with_user(self.manager).bring_to_state("test_stopped")
+        self.jet_test.with_user(self.manager).with_context(
+            cetmix_tower_no_commit=True
+        ).bring_to_state("test_stopped")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_stopped,
@@ -679,7 +683,9 @@ class TestTowerJet(TestTowerJetsCommon):
         self.jet_test.invalidate_recordset(["state_id"])
 
         # Root should be able to bring jet to root-level state
-        self.jet_test.with_user(self.root).bring_to_state("test_error")
+        self.jet_test.with_user(self.root).with_context(
+            cetmix_tower_no_commit=True
+        ).bring_to_state("test_error")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_error,
@@ -705,7 +711,9 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # User should not be able to bring jet to manager-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.user).bring_to_state("test_stopped")
+            self.jet_test.with_user(self.user).with_context(
+                cetmix_tower_no_commit=True
+            ).bring_to_state("test_stopped")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -737,7 +745,9 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # User should not be able to bring jet to root-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.user).bring_to_state("test_error")
+            self.jet_test.with_user(self.user).with_context(
+                cetmix_tower_no_commit=True
+            ).bring_to_state("test_error")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -769,7 +779,9 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # Manager should not be able to bring jet to root-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.manager).bring_to_state("test_error")
+            self.jet_test.with_user(self.manager).with_context(
+                cetmix_tower_no_commit=True
+            ).bring_to_state("test_error")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -802,7 +814,9 @@ class TestTowerJet(TestTowerJetsCommon):
         self.jet_test.invalidate_recordset(["state_id"])
 
         # Manager should be able to bring jet to user-level state
-        self.jet_test.with_user(self.manager).bring_to_state("test_running")
+        self.jet_test.with_user(self.manager).with_context(
+            cetmix_tower_no_commit=True
+        ).bring_to_state("test_running")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
@@ -830,7 +844,9 @@ class TestTowerJet(TestTowerJetsCommon):
         self.jet_test.invalidate_recordset(["state_id"])
 
         # Manager (treated as user) should be able to bring jet to user-level state
-        self.jet_test.with_user(self.manager).bring_to_state("test_running")
+        self.jet_test.with_user(self.manager).with_context(
+            cetmix_tower_no_commit=True
+        ).bring_to_state("test_running")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_running,
@@ -862,7 +878,9 @@ class TestTowerJet(TestTowerJetsCommon):
         # Manager (treated as user) should not be able to bring jet
         # to manager-level state
         with self.assertRaises(AccessError) as context:
-            self.jet_test.with_user(self.manager).bring_to_state("test_stopped")
+            self.jet_test.with_user(self.manager).with_context(
+                cetmix_tower_no_commit=True
+            ).bring_to_state("test_stopped")
 
         self.assertIn(
             "You are not allowed to set the",
@@ -894,7 +912,9 @@ class TestTowerJet(TestTowerJetsCommon):
         self.jet_test.invalidate_recordset(["state_id"])
 
         # Root should be able to bring jet to manager-level state
-        self.jet_test.with_user(self.root).bring_to_state("test_stopped")
+        self.jet_test.with_user(self.root).with_context(
+            cetmix_tower_no_commit=True
+        ).bring_to_state("test_stopped")
         self.assertEqual(
             self.jet_test.state_id,
             self.state_stopped,
@@ -910,7 +930,9 @@ class TestTowerJet(TestTowerJetsCommon):
 
         # Should raise ValidationError for invalid state reference
         with self.assertRaises(ValidationError) as context:
-            self.jet_test.bring_to_state("invalid_state_reference")
+            self.jet_test.with_context(cetmix_tower_no_commit=True).bring_to_state(
+                "invalid_state_reference"
+            )
 
         self.assertIn(
             "State 'invalid_state_reference' not found",

@@ -906,7 +906,6 @@ class CxTowerJetTemplate(models.Model):
             "name",
             "reference",
             "sequence",
-            "color",
             "tag_ids",
             "partner_id",
             "jet_cloned_from_id",
