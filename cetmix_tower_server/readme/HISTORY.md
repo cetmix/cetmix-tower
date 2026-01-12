@@ -1,3 +1,8 @@
+## 16.0.2.2.13 (2026-01-12)
+
+- Bugfixes: Last flight plan line post-run action was not triggered correctly. (5120)
+
+
 ## 16.0.2.2.12 (2026-01-11)
 
 - Features: Improve the 'File using template' command flow, fix the flight plan line view layout. (5197)
