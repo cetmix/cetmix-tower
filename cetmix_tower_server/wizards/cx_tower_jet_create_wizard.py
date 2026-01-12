@@ -146,15 +146,19 @@ class CxTowerJetCreateWizard(models.TransientModel):
         Create a new jet
         """
         self.ensure_one()
+
+        # Check if server is selected
+        if not self.server_id:
+            raise ValidationError(_("Please select a server to create a jet."))
+
         kwargs = {}
 
         # Add custom variables
         variable_values = {}
-        if self.line_ids:
+        if self.use_custom_variables == "y" and self.line_ids:
             variable_values = {
                 line.variable_id.reference: line.value_char for line in self.line_ids
             }
-        if variable_values:
             kwargs["variable_values"] = variable_values
 
         # Add partner
