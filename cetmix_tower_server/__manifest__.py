@@ -86,6 +86,7 @@
         "views/res_partner_view.xml",
         "views/res_config_settings.xml",
         "views/cx_tower_jet_view.xml",
+        "views/cx_tower_jet_action_view.xml",
         "views/cx_tower_jet_state_view.xml",
         "views/cx_tower_jet_template_view.xml",
         "views/cx_tower_jet_template_install_view.xml",
