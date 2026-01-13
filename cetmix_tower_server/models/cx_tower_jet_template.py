@@ -139,6 +139,7 @@ class CxTowerJetTemplate(models.Model):
         column1="jet_template_id",
         column2="scheduled_task_id",
         string="Scheduled Tasks",
+        copy=True,
     )
 
     # Configuration variables

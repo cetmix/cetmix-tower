@@ -133,14 +133,15 @@
                                 <p>
                                     Flight plan is run on the cloned jet, not on the original one. Following variables are available in the flight plan:
                                     <ul>
-                                        <li
-                                        >__original_jet__: The reference of the original jet</li>
-                                        <li
-                                        >__original_server__: The reference of the original server</li>
-                                        <li
-                                        >__requested_jet_state__: The reference of the requested state of the new jet</li>
+                                        <li><code
+                                            >__original_jet__</code> The reference of the original jet</li>
+                                        <li><code
+                                            >__original_server__</code> The reference of the original server</li>
+                                        <li><code
+                                            >__requested_jet_state__</code> The reference of the requested state of the new jet</li>
                                     </ul>
-                                You can also use `jet.jet_cloned_from_id` to get the original jet in Python commands.
+                                You can also use <code
+                                    >jet.jet_cloned_from_id</code> to get the original jet in Python commands.
                                 </p>
                         </div>
                         </page>
@@ -208,33 +209,6 @@
                                     <field name="plan_id" />
                                     <field name="reference" optional="hide" />
                                 </tree>
-                                <form>
-                                    <div class="oe_title">
-                                        <h1>
-                                            <field
-                                                name="name"
-                                                placeholder="action name, e.g. 'Start'"
-                                            />
-                                        </h1>
-                                    </div>
-                                    <group name="action_form_main">
-                                        <group name="action_form_general">
-                                            <field
-                                                name="reference"
-                                                placeholder="leave blank to autogenerate"
-                                            />
-                                            <field name="priority" />
-                                            <field name="access_level" />
-                                            <field name="plan_id" />
-                                        </group>
-                                        <group name="action_form_states">
-                                            <field name="state_from_id" />
-                                            <field name="state_transit_id" />
-                                            <field name="state_to_id" />
-                                            <field name="state_error_id" />
-                                        </group>
-                                    </group>
-                                </form>
                             </field>
                             <p
                                 id="message_actions"

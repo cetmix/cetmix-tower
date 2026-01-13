@@ -122,7 +122,7 @@
         <field name="name">cx.tower.jet.tree</field>
         <field name="model">cx.tower.jet</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree duplicate="false">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="reference" optional="hide" />
@@ -144,7 +144,7 @@
         <field name="name">cx.tower.jet.form</field>
         <field name="model">cx.tower.jet</field>
         <field name="arch" type="xml">
-            <form string="Jet">
+            <form string="Jet" duplicate="false">
                 <header>
                     <button
                         name="action_run_command"
@@ -240,7 +240,7 @@
                                 attrs="{'readonly': [('create_date', '!=', False)]}"
                             />
                             <field name="server_allowed_ids" invisible="1" />
-                            <field name="deletable" />
+                            <field name="deletable" invisible="1" />
                         </group>
                     </group>
                     <notebook>
@@ -309,7 +309,14 @@
                                             />
                                         </tree>
                                         <form>
-                                            <field name="name" />
+                                            <field
+                                                name="note"
+                                                attrs="{'invisible': [('note', '=', False)]}"
+                                            />
+                                            <field
+                                                name="name"
+                                                attrs="{'invisible': [('note', '!=', False)]}"
+                                            />
                                         </form>
                                     </field>
                                 </group>
