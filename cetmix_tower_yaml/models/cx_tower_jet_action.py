@@ -16,6 +16,7 @@ class CxTowerJetAction(models.Model):
             "name",
             "note",
             "priority",
+            "access_level",
             "state_from_id",
             "state_transit_id",
             "state_to_id",

@@ -15,6 +15,7 @@ class CxTowerJetState(models.Model):
         res += [
             "name",
             "sequence",
+            "access_level",
             "color",
             "note",
         ]

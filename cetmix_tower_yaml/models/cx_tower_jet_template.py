@@ -17,12 +17,17 @@ class CxTowerJetTemplate(models.Model):
             "note",
             "tag_ids",
             "limit_per_server",
+            "show_in_create_wizard",
             "plan_install_id",
             "plan_uninstall_id",
+            "plan_clone_same_server_id",
+            "plan_clone_different_server_id",
             "variable_value_ids",
             "action_ids",
             # "action_create_id",  # TODO
             # "action_destroy_id",
+            "server_log_ids",
             "template_requires_ids",
+            "scheduled_task_ids",
         ]
         return res
