@@ -93,7 +93,10 @@ class CxTowerJetTemplateDependency(models.Model):
 
     def write(self, vals):
         """Do not allow modifications after creation"""
-        if "template_id" in vals or "template_required_id" in vals:
+        # Allow modifications in install mode only to load demo data
+        if ("template_id" in vals or "template_required_id" in vals) and not (
+            self._context.get("install_mode") and self._context.get("install_xmlid")
+        ):
             raise ValidationError(
                 _(
                     "You cannot modify an existing template dependency! "
