@@ -329,7 +329,10 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def write(self, vals):
         """Handle the entry into the new state"""
-        if "jet_template_id" in vals or "server_id" in vals:
+        # Allow modifications in install mode only to load demo data
+        if ("jet_template_id" in vals or "server_id" in vals) and not (
+            self._context.get("install_mode") and self._context.get("install_xmlid")
+        ):
             raise ValidationError(
                 _(
                     "Jet template and server cannot be changed"

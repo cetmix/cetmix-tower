@@ -95,6 +95,7 @@
     ],
     "demo": [
         "demo/demo_data.xml",
+        "demo/demo_jets.xml",
     ],
     "assets": {
         "web.assets_backend": [
