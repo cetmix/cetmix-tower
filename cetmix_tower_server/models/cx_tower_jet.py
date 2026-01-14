@@ -695,7 +695,7 @@ class CxTowerJet(models.Model):
             same_server = server.id == self.server_id.id
 
         # Check if template allows cloning on the same server
-        if same_server and not jet_template.allow_clone_same_server:
+        if same_server and not jet_template.plan_clone_same_server_id:
             raise ValidationError(
                 _(
                     "Cloning on the same server is not allowed"
@@ -704,7 +704,7 @@ class CxTowerJet(models.Model):
                 )
             )
         # Check if template allows cloning to a different server
-        if not same_server and not jet_template.allow_clone_different_server:
+        if not same_server and not jet_template.plan_clone_different_server_id:
             raise ValidationError(
                 _(
                     "Cloning to a different server is not allowed"

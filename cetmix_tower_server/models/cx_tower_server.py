@@ -544,6 +544,7 @@ class CxTowerServer(models.Model):
         """
         Returns wizard action to launch a jet
         """
+        self.ensure_one()
         context = self.env.context.copy()
         context.update(
             {

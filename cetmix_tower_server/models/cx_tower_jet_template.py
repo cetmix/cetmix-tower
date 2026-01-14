@@ -83,16 +83,6 @@ class CxTowerJetTemplate(models.Model):
         help="If enabled, the template will be shown "
         "in the wizard to create a new jet",
     )
-    allow_clone_same_server = fields.Boolean(
-        string="Same Server Cloning",
-        help="If enabled, the template will be allowed to be cloned "
-        "on the same server",
-    )
-    allow_clone_different_server = fields.Boolean(
-        string="Different Server Cloning",
-        help="If enabled, the template will be allowed to be cloned "
-        "to a different server",
-    )
 
     # Flight Plans
     plan_install_id = fields.Many2one(
@@ -251,8 +241,8 @@ class CxTowerJetTemplate(models.Model):
                 # Has no initial state and has a final state
                 suitable_actions = template.action_ids.filtered(
                     lambda a: not a.state_from_id and a.state_to_id
-                )
-                # Take the first one
+                ).sorted("priority")
+                # Take the first one (lowest priority = highest priority)
                 if suitable_actions:
                     template.action_create_id = suitable_actions[0]
 
@@ -269,8 +259,8 @@ class CxTowerJetTemplate(models.Model):
                 # Has no final state
                 suitable_actions = template.action_ids.filtered(
                     lambda a: not a.state_to_id
-                )
-                # Take the first one
+                ).sorted("priority")
+                # Take the first one (lowest priority = highest priority)
                 if suitable_actions:
                     template.action_destroy_id = suitable_actions[0]
 

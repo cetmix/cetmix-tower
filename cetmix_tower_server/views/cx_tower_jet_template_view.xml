@@ -98,36 +98,22 @@
                                     <field name="plan_uninstall_id" />
                                     <field name="limit_per_server" />
                                 </group>
-                                <group name="cloning" string="Cloning">
-                                    <label
-                                        string="Same Server"
-                                        for="allow_clone_same_server"
-                                    />
-                                    <div class="o_row">
-                                        <field name="allow_clone_same_server" />
-                                        <field
-                                            name="plan_clone_same_server_id"
-                                            attrs="{'invisible': [('allow_clone_same_server', '=', False)]}"
-                                        />
-                                    </div>
-                                    <label
-                                        string="Different Server"
-                                        for="allow_clone_different_server"
-                                    />
-                                    <div class="o_row">
-                                    <field name="allow_clone_different_server" />
-                                        <field
-                                            name="plan_clone_different_server_id"
-                                            attrs="{'invisible': [('allow_clone_different_server', '=', False)]}"
-                                        />
-                                    </div>
-                                </group>
                                 <field name="note" placeholder="Add notes here..." />
+                                <group name="cloning" string="Cloning">
+                                    <field
+                                        name="plan_clone_same_server_id"
+                                        string="Same Server"
+                                    />
+                                    <field
+                                        name="plan_clone_different_server_id"
+                                        string="Different Server"
+                                    />
+                                </group>
                             </group>
                             <div
                                 class="alert alert-warning"
                                 role="alert"
-                                attrs="{'invisible': [('allow_clone_same_server', '=', False), ('allow_clone_different_server', '=', False)]}"
+                                attrs="{'invisible': [('plan_clone_same_server_id', '=', False), ('plan_clone_different_server_id', '=', False)]}"
                                 style="margin-bottom:0px;"
                             >
                                 <p>

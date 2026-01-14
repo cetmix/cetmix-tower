@@ -38,12 +38,7 @@
     />
 
     <!-- ========================= Jets ========================= -->
-    <menuitem
-        id="menu_cx_tower_jet_root"
-        name="Jets (beta)"
-        parent="menu_root"
-        sequence="5"
-    />
+    <menuitem id="menu_cx_tower_jet_root" name="Jets" parent="menu_root" sequence="5" />
 
     <menuitem
         id="menu_cx_tower_jet"
