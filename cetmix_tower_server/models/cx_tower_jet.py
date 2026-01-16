@@ -768,7 +768,9 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Jet actions, state transitions, jet requests
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    def _trigger_action(self, action, from_transition=False, **kwargs):
+    def _trigger_action(
+        self, action, from_transition=False, raise_if_not_available=True, **kwargs
+    ):
         """Trigger an action on the jet.
 
         The function flow is:
@@ -792,6 +794,9 @@ class CxTowerJet(models.Model):
                 This is used to distinguish between a user directly
                 triggering the action and a transition from one state
                 to another.
+            raise_if_not_available (bool):
+                True if the function should raise an exception
+                if the action is not available for this jet.
             **kwargs: Additional arguments:
                 - current_command_log_id: Optional command log ID to track execution
 
@@ -807,15 +812,17 @@ class CxTowerJet(models.Model):
 
         # Ensure the action is available for this jet
         if action.id not in self.action_available_ids.ids:
-            raise ValidationError(
-                _(
-                    "Action '%(action)s' is not available for jet"
-                    " '%(jet)s' in state '%(state)s'",
-                    action=action.name,
-                    jet=self.name,  # pylint: disable=no-member
-                    state=self.state_id.name if self.state_id else _("Undefined"),
+            if raise_if_not_available:
+                raise ValidationError(
+                    _(
+                        "Action '%(action)s' is not available for jet"
+                        " '%(jet)s' in state '%(state)s'",
+                        action=action.name,
+                        jet=self.name,  # pylint: disable=no-member
+                        state=self.state_id.name if self.state_id else _("Undefined"),
+                    )
                 )
-            )
+            return
 
         # Update the jet state
         transit_state = action.state_transit_id
