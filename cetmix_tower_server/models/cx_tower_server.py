@@ -1703,6 +1703,7 @@ class CxTowerServer(models.Model):
             for jet in dependent_jets:
                 jet._trigger_action(
                     action=log_record.command_id.jet_action_id,
+                    raise_if_not_available=False,
                     current_command_log_id=log_record.id,
                 )
         # If no dependent jets, finish the command
