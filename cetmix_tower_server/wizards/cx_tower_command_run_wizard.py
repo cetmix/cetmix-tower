@@ -438,9 +438,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         # From now we have one server or one jet selected
         # Raise access error if non manager is trying to call this method
-        if not self.env.user.has_group(
-            "cetmix_tower_server.group_manager"
-        ) and not self.env.user.has_group("cetmix_tower_server.group_root"):
+        if not self._is_privileged_user():
             raise AccessError(_("You are not allowed to execute commands in wizard"))
 
         # Check if jet is currently executing an action
@@ -485,10 +483,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         result = ""
 
         # Set the "no_split_for_sudo" property
-        if self.command_id and self.command_id.no_split_for_sudo:
-            no_split_for_sudo = True
-        else:
-            no_split_for_sudo = False
+        no_split_for_sudo = bool(self.command_id and self.command_id.no_split_for_sudo)
 
         for server in self.server_ids:
             server_name = server.name
@@ -501,6 +496,15 @@ class CxTowerCommandRunWizard(models.TransientModel):
             kwargs = {
                 "key": key_vals,
                 "no_split_for_sudo": no_split_for_sudo,
+                "log": {
+                    "jet_id": self.jet_ids and self.jet_ids[0].id
+                    if self.jet_ids
+                    else None,
+                    "jet_template_id": self.jet_ids
+                    and self.jet_ids[0].jet_template_id.id
+                    if self.jet_ids
+                    else None,
+                },
             }
 
             if self.action == "python_code":
