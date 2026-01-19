@@ -6,6 +6,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
 from .constants import JET_STATE_ERROR
+from .tools import generate_random_id
 
 
 class CxTowerJet(models.Model):
@@ -333,6 +334,21 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   ORM methods
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Create jets
+        - Generate jet reference if not provided
+        """
+
+        for vals in vals_list:
+            if not vals.get("reference"):
+                vals["reference"] = generate_random_id(
+                    sections=3, population=4, separator="_"
+                )
+        jets = super().create(vals_list)
+        return jets
+
     def write(self, vals):
         """Handle the entry into the new state"""
         # Allow modifications in install mode only to load demo data
