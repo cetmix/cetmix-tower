@@ -213,6 +213,12 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Compute methods
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    @api.depends("name", "state_id")
+    def _compute_display_name(self):
+        """Compute the display name of the jet"""
+        for jet in self:
+            jet.display_name = f"{jet.name} ({jet.state})" if jet.state else jet.name
+
     @api.depends("server_id")
     def _compute_jet_template_domain(self):
         """Compute the domain of the jet template"""
@@ -479,6 +485,28 @@ class CxTowerJet(models.Model):
             }
         )
         action["context"] = context
+        return action
+
+    def action_open_requires_jets(self):
+        """
+        Open required jets of the current jet
+        """
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_action"
+        )
+        action["domain"] = [("jet_required_by_ids.jet_id", "=", self.id)]  # pylint: disable=no-member
+        return action
+
+    def action_open_required_by_jets(self):
+        """
+        Open dependant jets of the current jet
+        """
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_action"
+        )
+        action["domain"] = [("jet_requires_ids.jet_depends_on_id", "=", self.id)]  # pylint: disable=no-member
         return action
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
