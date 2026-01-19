@@ -1,12 +1,15 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import ast
+import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
 from .constants import JET_STATE_ERROR
 from .tools import generate_random_id
+
+_logger = logging.getLogger(__name__)
 
 
 class CxTowerJet(models.Model):
@@ -166,6 +169,26 @@ class CxTowerJet(models.Model):
         groups="cetmix_tower_server.group_manager",
         readonly=True,
         copy=False,
+    )
+
+    # -- Waypoints
+    is_waypoints_available = fields.Boolean(
+        compute="_compute_is_waypoints_available",
+        readonly=True,
+    )
+    waypoint_ids = fields.One2many(
+        comodel_name="cx.tower.jet.waypoint",
+        inverse_name="jet_id",
+        string="Waypoints",
+        help="Waypoints of the jet",
+        copy=False,
+    )
+    waypoint_id = fields.Many2one(
+        comodel_name="cx.tower.jet.waypoint",
+        help="Current waypoint of the jet",
+        readonly=True,
+        copy=False,
+        tracking=True,
     )
 
     # -- Variables used for configuration
@@ -330,6 +353,12 @@ class CxTowerJet(models.Model):
                     )
             if final_vals:
                 jet.jet_requires_ids = final_vals
+
+    @api.depends("jet_template_id", "jet_template_id.waypoint_template_ids")
+    def _compute_is_waypoints_available(self):
+        """Compute if waypoints are available for the jet"""
+        for jet in self:
+            jet.is_waypoints_available = bool(jet.jet_template_id.waypoint_template_ids)
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   ORM methods
@@ -580,6 +609,10 @@ class CxTowerJet(models.Model):
         """Run command on selected Jet.
         A helper function that calls the corresponding server function.
 
+        Important: this method raises an exception if the jet
+        is currently executing an action.
+        You should handle this exception in your code.
+
         Args:
             command (cx.tower.command()): Command record
             path (Char): directory where command is run.
@@ -617,7 +650,11 @@ class CxTowerJet(models.Model):
 
     def run_flight_plan(self, flight_plan, jet_template=None, **kwargs):
         """
-        Runs flight plan on the current server.
+        Runs flight plan on the current jet.
+
+        Important: this method raises an exception if the jet
+        is currently executing an action.
+        You should handle this exception in your code.
 
         Args:
             flight_plan (cx.tower.plan()): flight plan to run
@@ -632,6 +669,8 @@ class CxTowerJet(models.Model):
                         in the format of `{variable_reference: variable_value}`
                         eg `{'odoo_version': '16.0'}`
                         Will be applied only if user has write access to the server.
+        Raises:
+            ValidationError: If the jet is currently executing an action.
         Returns:
             log_record (cx.tower.plan.log()): plan log record
         """
@@ -921,6 +960,12 @@ class CxTowerJet(models.Model):
                     "jet_action_id": action.id,
                 },
             }
+            # Populate custom variable values from current command log
+            current_command_log = self.current_command_log_id
+            if current_command_log and current_command_log.variable_values:
+                plan_kwargs["variable_values"] = current_command_log.variable_values
+
+            # Run the flight plan
             self.server_id.sudo().run_flight_plan(
                 flight_plan=action.plan_id,
                 jet=self,
@@ -1173,6 +1218,99 @@ class CxTowerJet(models.Model):
             # Mark served jet request as failed
             if self.served_jet_request_id:
                 self.served_jet_request_id._finalize(failed=True)
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Waypoints
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    def create_waypoint(
+        self,
+        waypoint_template,
+        name=None,
+        fly_here=False,
+        ignore_busy=False,
+        **metadata,
+    ):
+        """Create a new waypoint for the jet
+
+        Args:
+            waypoint_template_id (cx.tower.jet.waypoint.template or Char):
+                The waypoint template or reference to create the waypoint from
+            name (Char, optional): The name of the waypoint.
+                Defaults to None.
+            fly_here (bool, optional): Whether to fly to the waypoint after creation.
+                Defaults to False.
+            ignore_busy (bool, optional): Whether to ignore the busy state
+                and create the waypoint anyway.
+                Useful when creating waypoints from jet actions.
+                Defaults to False.
+            **metadata: Additional metadata to pass to the waypoint.
+        Returns:
+            cx.tower.jet.waypoint: The created waypoint or False if failed
+        """
+        self.ensure_one()
+
+        # Check if the jet is busy
+        if self._is_busy() and not ignore_busy:
+            _logger.error(
+                "Cannot create waypoint for jet %s because it is busy", self.name
+            )
+            return False
+
+        # Resolve the waypoint template
+        if isinstance(waypoint_template, str):
+            waypoint_reference = waypoint_template
+            waypoint_template = self.env[
+                "cx.tower.jet.waypoint.template"
+            ].get_by_reference(waypoint_reference)
+            if not waypoint_template:
+                _logger.error("Waypoint template %s not found", waypoint_reference)
+                return False
+
+        # Check if the waypoint template belongs to the jet template
+        if waypoint_template.jet_template_id != self.jet_template_id:
+            _logger.error(
+                "Waypoint template %s does not belong to the jet template %s",
+                waypoint_template.name,
+                self.jet_template_id.name,
+            )
+            return False
+
+        # Prepare the waypoint values
+        waypoint_values = self._prepare_waypoint_values(
+            waypoint_template=waypoint_template,
+            name=name,
+            fly_here=fly_here,
+            **metadata,
+        )
+
+        # Create the waypoint
+        waypoint = self.env["cx.tower.jet.waypoint"].create(waypoint_values)
+        waypoint.prepare()
+        return waypoint
+
+    def _prepare_waypoint_values(
+        self, waypoint_template, name=None, fly_here=False, **metadata
+    ):
+        """Prepare the waypoint values
+
+        Args:
+            waypoint_template (cx.tower.jet.waypoint.template): The waypoint template
+            name (Char, optional): The name of the waypoint.
+            fly_here (bool, optional): Whether to fly to the waypoint after creation.
+        """
+        self.ensure_one()
+
+        # Prepare the waypoint values
+        vals = {
+            "waypoint_template_id": waypoint_template.id,
+            "name": name if name else _("Auto-generated waypoint"),
+            "jet_id": self.id,
+            "is_destination": fly_here,
+        }
+        if metadata:
+            vals["metadata"] = metadata
+
+        return vals
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Event handling

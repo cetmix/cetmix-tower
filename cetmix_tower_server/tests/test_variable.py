@@ -9,6 +9,7 @@ from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import Form
 
 from .common import TestTowerCommon
+from .common_jets import TestTowerJetsCommon
 
 
 class TestTowerVariable(TestTowerCommon):
@@ -1086,3 +1087,103 @@ class TestVariableReferenceRename(TestTowerCommon):
             f"{self.server_test_1.reference}"
         )
         self.assertEqual(variable_value.reference, expected_variable_pattern)
+
+
+class TestTowerVariableJet(TestTowerJetsCommon):
+    """Testing jet system variables with waypoint data."""
+
+    def test_system_variable_jet_type_values_with_waypoint(self):
+        """Test system variables of `jet` type with waypoint data"""
+        # Set waypoint as current waypoint for the jet
+        self.jet_test.waypoint_id = self.waypoint.id
+
+        # Set waypoint metadata
+        self.waypoint.metadata = {"key1": "value1", "key2": "value2"}
+
+        # Get system variable values
+        variable_values = self.Variable._get_system_variable_values(jet=self.jet_test)
+
+        # Check waypoint data is included
+        self.assertIn(
+            "waypoint", variable_values["jet"], "Waypoint data should be included"
+        )
+        waypoint_data = variable_values["jet"]["waypoint"]
+
+        # Check waypoint reference and type
+        self.assertEqual(
+            waypoint_data["reference"],
+            self.waypoint.reference,
+            "Waypoint reference should match",
+        )
+        self.assertEqual(
+            waypoint_data["type"],
+            self.waypoint_template.reference,
+            "Waypoint type should match template reference",
+        )
+
+        # Check metadata is included
+        self.assertEqual(
+            waypoint_data["key1"],
+            "value1",
+            "Waypoint metadata key1 should match",
+        )
+        self.assertEqual(
+            waypoint_data["key2"],
+            "value2",
+            "Waypoint metadata key2 should match",
+        )
+
+    def test_system_variable_jet_type_values_without_waypoint(self):
+        """Test system variables of `jet` type without waypoint"""
+        # Ensure jet has no waypoint
+        self.jet_test.waypoint_id = False
+
+        # Get system variable values
+        variable_values = self.Variable._get_system_variable_values(jet=self.jet_test)
+
+        # Check waypoint data is included but with False values
+        self.assertIn(
+            "waypoint",
+            variable_values["jet"],
+            "Waypoint data should be included even when jet has no waypoint",
+        )
+        waypoint_data = variable_values["jet"]["waypoint"]
+
+        # Check waypoint reference and type are False
+        self.assertFalse(
+            waypoint_data["reference"],
+            "Waypoint reference should be False when jet has no waypoint",
+        )
+        self.assertFalse(
+            waypoint_data["type"],
+            "Waypoint type should be False when jet has no waypoint",
+        )
+
+    def test_system_variable_jet_type_values_with_waypoint_empty_metadata(self):
+        """Test system variables of `jet` type with waypoint but empty metadata"""
+        # Set waypoint as current waypoint for the jet
+        self.jet_test.waypoint_id = self.waypoint.id
+
+        # Set waypoint metadata to empty dict
+        self.waypoint.metadata = {}
+
+        # Get system variable values
+        variable_values = self.Variable._get_system_variable_values(jet=self.jet_test)
+
+        # Check waypoint data is included
+        self.assertIn(
+            "waypoint", variable_values["jet"], "Waypoint data should be included"
+        )
+        waypoint_data = variable_values["jet"]["waypoint"]
+
+        # Check that only reference and type are present (no metadata keys)
+        self.assertEqual(
+            len(waypoint_data),
+            2,
+            "Waypoint data should only contain reference"
+            " and type when metadata is empty",
+        )
+        self.assertIn(
+            "reference", waypoint_data, "Waypoint reference should be present"
+        )
+        self.assertIn("type", waypoint_data, "Waypoint type should be present")

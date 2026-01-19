@@ -94,3 +94,7 @@ access_cx_tower_jet_create_wizard_user,Jet Create Wizard->User,model_cx_tower_je
 access_cx_tower_jet_create_wizard_variable_line_user,Jet Create Wizard Variable Line->User,model_cx_tower_jet_create_wizard_variable_line,group_user,1,1,1,1
 access_cx_tower_jet_clone_wizard_user,Jet Clone Wizard->User,model_cx_tower_jet_clone_wizard,group_user,1,1,1,1
 access_cx_tower_jet_clone_wizard_variable_line_user,Jet Clone Wizard Variable Line->User,model_cx_tower_jet_clone_wizard_variable_line,group_user,1,1,1,1
+access_cx_tower_jet_waypoint_template_manager,Jet Waypoint Template->Manager,model_cx_tower_jet_waypoint_template,group_manager,1,1,1,1
+access_cx_tower_jet_waypoint_template_root,Jet Waypoint Template->Root,model_cx_tower_jet_waypoint_template,group_root,1,1,1,1
+access_cx_tower_jet_waypoint_manager,Jet Waypoint->Manager,model_cx_tower_jet_waypoint,group_manager,1,1,1,1
+access_cx_tower_jet_waypoint_root,Jet Waypoint->Root,model_cx_tower_jet_waypoint,group_root,1,1,1,1

@@ -47,3 +47,5 @@ from . import cx_tower_jet_template_install
 from . import cx_tower_jet_template_install_line
 from . import cx_tower_jet
 from . import cx_tower_jet_request
+from . import cx_tower_jet_waypoint_template
+from . import cx_tower_jet_waypoint

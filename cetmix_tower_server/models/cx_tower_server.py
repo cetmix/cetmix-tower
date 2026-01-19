@@ -1840,9 +1840,9 @@ class CxTowerServer(models.Model):
             code (Text): python code
             raise_on_error (bool, optional): raise error on error
             kwargs (dict):  extra arguments. Use to pass external values.
-                    Following keys are supported by default:
-                        - "log": {values passed to logger}
-                        - "key": {values passed to key parser}
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
 
         Raises:
             ValidationError: python code running error

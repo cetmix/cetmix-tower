@@ -56,6 +56,9 @@ class TowerVariableMixin(models.AbstractModel):
             lambda v: v.variable_reference == variable_reference
         )
         if variable_value:
+            # Do nothing if the value is the same
+            if variable_value.value_char == value:
+                return
             variable_value.value_char = value
             return
 

@@ -8,12 +8,22 @@
     <record id="jet_template_test_demo" model="cx.tower.jet.template">
         <field name="name">Test Jet Template Demo</field>
         <field name="reference">test_jet_template_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/test.png"
+        />
     </record>
 
     <!-- Level 1: Base dependencies -->
     <record id="jet_template_tower_core_demo" model="cx.tower.jet.template">
         <field name="name">Tower Core Demo</field>
         <field name="reference">tower_core_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/tower.png"
+        />
         <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
@@ -24,6 +34,11 @@
     <record id="jet_template_docker_demo" model="cx.tower.jet.template">
         <field name="name">Docker Demo</field>
         <field name="reference">docker_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/docker.png"
+        />
         <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
@@ -36,6 +51,11 @@
         <field name="name">Nginx Demo</field>
         <field name="reference">nginx_demo</field>
         <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/nginx.png"
+        />
+        <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
         />
@@ -44,6 +64,11 @@
     <record id="jet_template_postgres_demo" model="cx.tower.jet.template">
         <field name="name">Postgres Demo</field>
         <field name="reference">postgres_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/postgres.png"
+        />
         <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
@@ -54,6 +79,11 @@
         <field name="name">MariaDB Demo</field>
         <field name="reference">mariadb_demo</field>
         <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/mariadb.png"
+        />
+        <field
             name="server_ids"
             eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
         />
@@ -63,6 +93,11 @@
     <record id="jet_template_odoo_demo" model="cx.tower.jet.template">
         <field name="name">Odoo Demo</field>
         <field name="reference">odoo_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/odoo.png"
+        />
         <field name="show_in_create_wizard" eval="True" />
         <field name="plan_install_id" ref="plan_install_odoo" />
         <field name="plan_uninstall_id" ref="plan_uninstall_odoo" />
@@ -90,6 +125,11 @@
     <record id="jet_template_wordpress_demo" model="cx.tower.jet.template">
         <field name="name">WordPress Demo</field>
         <field name="reference">wordpress_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/wordpress.png"
+        />
         <field name="show_in_create_wizard" eval="True" />
         <field name="plan_install_id" ref="plan_install_wordpress" />
         <field name="plan_uninstall_id" ref="plan_uninstall_wordpress" />
@@ -120,6 +160,11 @@
     <record id="jet_template_woocommerce_odoo_demo" model="cx.tower.jet.template">
         <field name="name">WooCommerce with Odoo Demo</field>
         <field name="reference">woocommerce_odoo_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/woocommerce.png"
+        />
         <field name="show_in_create_wizard" eval="True" />
         <field name="plan_install_id" ref="plan_install_woocommerce" />
         <field name="plan_uninstall_id" ref="plan_uninstall_woocommerce" />
@@ -147,22 +192,99 @@
         <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
     </record>
 
+    <!-- ===============================================
+    Jet Waypoint Templates
+    ================================================ -->
+
+    <!-- Odoo Waypoint Templates -->
+    <record
+        id="jet_waypoint_template_odoo_build_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Build</field>
+        <field name="reference">odoo_build_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="sequence">10</field>
+        <field name="plan_create_id" ref="plan_demo_1" />
+        <field name="plan_arrive_id" ref="plan_install_odoo" />
+        <field name="plan_leave_id" ref="plan_demo_2" />
+        <field name="plan_delete_id" ref="plan_uninstall_odoo" />
+    </record>
+
+    <record
+        id="jet_waypoint_template_odoo_snapshot_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Snapshot</field>
+        <field name="reference">odoo_snapshot_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="sequence">20</field>
+        <field name="plan_create_id" ref="plan_demo_3" />
+        <field name="plan_arrive_id" ref="plan_demo_4" />
+        <field name="plan_leave_id" ref="plan_demo_5" />
+        <field name="plan_delete_id" ref="plan_demo_1" />
+    </record>
+
+    <!-- WooCommerce Waypoint Templates -->
+    <record
+        id="jet_waypoint_template_woocommerce_build_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Build</field>
+        <field name="reference">woocommerce_build_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="sequence">10</field>
+        <field name="plan_create_id" ref="plan_demo_1" />
+        <field name="plan_arrive_id" ref="plan_install_woocommerce" />
+        <field name="plan_leave_id" ref="plan_demo_2" />
+        <field name="plan_delete_id" ref="plan_uninstall_woocommerce" />
+    </record>
+
+    <record
+        id="jet_waypoint_template_woocommerce_snapshot_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Snapshot</field>
+        <field name="reference">woocommerce_snapshot_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="sequence">20</field>
+        <field name="plan_create_id" ref="plan_demo_3" />
+        <field name="plan_arrive_id" ref="plan_demo_4" />
+        <field name="plan_leave_id" ref="plan_demo_5" />
+        <field name="plan_delete_id" ref="plan_demo_1" />
+    </record>
+
     <!-- Monitoring Template -->
     <record id="jet_template_monitoring_demo" model="cx.tower.jet.template">
         <field name="name">Monitoring Demo</field>
         <field name="reference">monitoring_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/monitoring.png"
+        />
     </record>
 
     <!-- Backup Template -->
     <record id="jet_template_backup_demo" model="cx.tower.jet.template">
         <field name="name">Backup Demo</field>
         <field name="reference">backup_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/backup.png"
+        />
     </record>
 
     <!-- Clean Template -->
     <record id="jet_template_clean_demo" model="cx.tower.jet.template">
         <field name="name">Clean Template Demo</field>
         <field name="reference">clean_template_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/clean.png"
+        />
     </record>
 
     <!-- ===============================================
