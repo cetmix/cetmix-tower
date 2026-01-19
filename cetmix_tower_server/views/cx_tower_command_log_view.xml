@@ -43,6 +43,10 @@
                                 name="jet_template_id"
                                 attrs="{'invisible': [('jet_template_id', '=', False)]}"
                             />
+                            <field
+                                name="waypoint_id"
+                                attrs="{'invisible': [('waypoint_id', '=', False)]}"
+                            />
                             <field name="command_id" />
                             <field name="command_action" invisible="1" />
                             <field

@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo.exceptions import AccessError, ValidationError
+from odoo.tools import mute_logger
 
 from .common_jets import TestTowerJetsCommon
 
@@ -1207,4 +1208,185 @@ class TestTowerJet(TestTowerJetsCommon):
         self.assertFalse(
             remaining_file.exists(),
             "File should be unlinked after jet deletion",
+        )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   create_waypoint Tests
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def test_create_waypoint_with_record_template(self):
+        """
+        Test create_waypoint with waypoint template record
+        """
+        # Get the default name from the helper function
+        default_vals = self.jet_test._prepare_waypoint_values(
+            self.waypoint_template, name=None
+        )
+        expected_default_name = default_vals["name"]
+
+        # Create waypoint using template record
+        waypoint = self.jet_test.create_waypoint(self.waypoint_template)
+
+        # Should return a waypoint record
+        self.assertTrue(waypoint, "Should return a waypoint record")
+        self.assertTrue(waypoint.exists(), "Waypoint should exist")
+        self.assertEqual(
+            waypoint.jet_id.id,
+            self.jet_test.id,
+            "Waypoint should belong to the jet",
+        )
+        self.assertEqual(
+            waypoint.waypoint_template_id.id,
+            self.waypoint_template.id,
+            "Waypoint should use the correct template",
+        )
+        self.assertEqual(
+            waypoint.name,
+            expected_default_name,
+            "Waypoint should have default name from helper function",
+        )
+        # Reference is auto-generated, so just verify it exists and is not empty
+        self.assertTrue(
+            waypoint.reference,
+            "Waypoint should have an auto-generated reference",
+        )
+
+    def test_create_waypoint_with_string_reference(self):
+        """
+        Test create_waypoint with waypoint template string reference
+        """
+        # Use the template's reference (mandatory field, always present)
+        template_reference = self.waypoint_template.reference
+
+        # Create waypoint using string reference
+        waypoint = self.jet_test.create_waypoint(template_reference)
+
+        # Should return a waypoint record
+        self.assertTrue(waypoint, "Should return a waypoint record")
+        self.assertTrue(waypoint.exists(), "Waypoint should exist")
+        self.assertEqual(
+            waypoint.waypoint_template_id.id,
+            self.waypoint_template.id,
+            "Waypoint should use the correct template from reference",
+        )
+        # Reference is auto-generated, so just verify it exists and is not empty
+        self.assertTrue(
+            waypoint.reference,
+            "Waypoint should have an auto-generated reference",
+        )
+
+    def test_create_waypoint_with_name(self):
+        """
+        Test create_waypoint with custom name
+        """
+        # Create waypoint with custom name
+        waypoint = self.jet_test.create_waypoint(
+            self.waypoint_template, name="Custom Waypoint Name"
+        )
+
+        # Should return a waypoint record with custom name
+        self.assertTrue(waypoint, "Should return a waypoint record")
+        self.assertEqual(
+            waypoint.name,
+            "Custom Waypoint Name",
+            "Waypoint should have the custom name",
+        )
+        # Reference is auto-generated, so just verify it exists and is not empty
+        self.assertTrue(
+            waypoint.reference,
+            "Waypoint should have an auto-generated reference",
+        )
+
+    def test_create_waypoint_with_fly_here(self):
+        """
+        Test create_waypoint with fly_here parameter
+        Note: fly_here should set is_destination=True, and after prepare()
+        the waypoint should automatically fly to if is_destination is True
+        """
+        # Create waypoint with fly_here=True
+        waypoint = self.jet_test.create_waypoint(self.waypoint_template, fly_here=True)
+
+        # Should return a waypoint record
+        self.assertTrue(waypoint, "Should return a waypoint record")
+        self.assertTrue(waypoint.exists(), "Waypoint should exist")
+
+        # Prepare the waypoint
+        # (this is when fly_to should happen if is_destination=True)
+        # Since waypoint_template has no plan_create_id, prepare()
+        # will set state to "ready"
+        # and if is_destination=True, it will call fly_to()
+        # In tests, plans run synchronously, so if there's no plan_arrive_id,
+        # the waypoint will immediately become "current"
+        waypoint.prepare()
+
+        # Verify that the waypoint flew to
+        # (state should be "current" in synchronous tests)
+        self.assertEqual(
+            waypoint.state,
+            "current",
+            "Waypoint should have flown to and "
+            "become current (tests run synchronously)",
+        )
+
+        # Verify jet's waypoint_id was updated
+        self.assertEqual(
+            self.jet_test.waypoint_id.id,
+            waypoint.id,
+            "Jet's waypoint_id should be updated to the flown-to waypoint",
+        )
+
+    def test_create_waypoint_jet_busy(self):
+        """
+        Test create_waypoint when jet is busy (has target_state_id)
+        """
+        # Set jet to busy state (has target_state_id)
+        self.jet_test.target_state_id = self.state_running
+
+        # Mute logger error for this test
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_jet"):
+            # Try to create waypoint
+            result = self.jet_test.create_waypoint(self.waypoint_template)
+
+        # Should return False
+        self.assertFalse(result, "Should return False when jet is busy")
+
+    def test_create_waypoint_template_not_found(self):
+        """
+        Test create_waypoint with non-existent template reference
+        """
+        # Mute logger error for this test
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_jet"):
+            # Try to create waypoint with non-existent reference
+            result = self.jet_test.create_waypoint("non_existent_reference")
+
+        # Should return False
+        self.assertFalse(result, "Should return False when template not found")
+
+    def test_create_waypoint_template_wrong_jet_template(self):
+        """
+        Test create_waypoint with template from different jet template
+        """
+        # Create a waypoint template for a different jet template
+        other_jet_template = self.JetTemplate.create(
+            {
+                "name": "Other Jet Template",
+                "reference": "other_jet_template",
+            }
+        )
+        other_waypoint_template = self.JetWaypointTemplate.create(
+            {
+                "name": "Other Waypoint Template",
+                "jet_template_id": other_jet_template.id,
+            }
+        )
+
+        # Mute logger error for this test
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_jet"):
+            # Try to create waypoint with template from different jet template
+            result = self.jet_test.create_waypoint(other_waypoint_template)
+
+        # Should return False
+        self.assertFalse(
+            result,
+            "Should return False when template doesn't belong to jet template",
         )

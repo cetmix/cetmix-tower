@@ -239,6 +239,10 @@
                                 name="server_id"
                                 attrs="{'readonly': [('create_date', '!=', False)]}"
                             />
+                            <field
+                                name="waypoint_id"
+                                attrs="{'invisible': [('waypoint_id', '=', False)]}"
+                            />
                             <field name="server_allowed_ids" invisible="1" />
                             <field name="deletable" invisible="1" />
                         </group>
@@ -365,6 +369,56 @@
                                         placeholder="Put your notes here..."
                                     />
                                 </form>
+                            </field>
+                        </page>
+                        <page
+                            name="waypoints"
+                            groups="cetmix_tower_server.group_manager"
+                            string="Waypoints"
+                            attrs="{'invisible': [('is_waypoints_available', '=', False)]}"
+                        >
+                            <field name="is_waypoints_available" invisible="1" />
+                            <field name="waypoint_ids">
+                                <tree
+                                    delete="0"
+                                    decoration-success="state == 'current'"
+                                >
+                                    <field name="create_date" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="access_level" optional="hide" />
+                                    <field name="waypoint_template_id" />
+                                    <field name="jet_template_id" invisible="1" />
+                                    <field name="can_fly_to" invisible="1" />
+                                    <field name="state" />
+                                    <button
+                                        type="object"
+                                        name="prepare"
+                                        icon="fa-check"
+                                        string="Prepare"
+                                        title="Prepare Waypoint"
+                                        confirm="Do you want to prepare this waypoint?"
+                                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                                    />
+                                    <button
+                                        type="object"
+                                        name="fly_to"
+                                        icon="fa-plane"
+                                        string="Fly here"
+                                        title="Fly to this waypoint"
+                                        confirm="Do you want to fly to this waypoint?"
+                                        attrs="{'invisible': [('can_fly_to', '=', False)]}"
+                                    />
+                                    <button
+                                        type="object"
+                                        name="unlink"
+                                        icon="fa-trash"
+                                        string="Delete"
+                                        title="Delete the Waypoint"
+                                        confirm="Do you want to delete this waypoint? This action cannot be undone."
+                                        attrs="{'invisible': [('state', 'not in', [False, 'draft', 'deleted', 'ready', 'error'])]}"
+                                    />
+                                </tree>
                             </field>
                         </page>
                         <page

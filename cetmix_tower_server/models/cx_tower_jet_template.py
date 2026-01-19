@@ -199,6 +199,16 @@ class CxTowerJetTemplate(models.Model):
         groups="cetmix_tower_server.group_manager",
         readonly=True,
     )
+
+    # Waypoints
+    waypoint_template_ids = fields.One2many(
+        comodel_name="cx.tower.jet.waypoint.template",
+        inverse_name="jet_template_id",
+        string="Waypoints",
+        help="Waypoints of the template",
+        copy=True,
+    )
+
     # Dependency Graph
     # Odoo blocks SVG images in fields.Binary,
     # so we use fields.Char to store the SVG content

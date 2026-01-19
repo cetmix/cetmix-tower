@@ -46,6 +46,11 @@ class CxTowerCommandLog(models.Model):
         store=True,
         readonly=False,
     )
+    waypoint_id = fields.Many2one(
+        comodel_name="cx.tower.jet.waypoint",
+        related="plan_log_id.waypoint_id",
+        readonly=True,
+    )
 
     # -- Time
     start_date = fields.Datetime(string="Started")

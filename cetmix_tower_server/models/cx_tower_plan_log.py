@@ -51,6 +51,10 @@ class CxTowerPlanLog(models.Model):
         readonly=True,
         help="Used to track flight plans executed by jet actions",
     )
+    waypoint_id = fields.Many2one(
+        comodel_name="cx.tower.jet.waypoint",
+        help="Waypoint this plan log belongs to",
+    )
 
     plan_id = fields.Many2one(
         string="Flight Plan",
@@ -342,6 +346,10 @@ class CxTowerPlanLog(models.Model):
         # it's not provided explicitly when the plan is run.
         if not self.jet_template_id or self.parent_flight_plan_log_id:
             return
+
+        # Waypoint action: only if it's not a sub-plan
+        if self.waypoint_id:
+            self.waypoint_id._plan_finished(self)
 
         # Finish template install/uninstall
         if self.jet_template_install_id:

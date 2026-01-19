@@ -37,6 +37,8 @@
         "security/cx_tower_jet_template_dependency_security.xml",
         "security/cx_tower_jet_template_install_security.xml",
         "security/cx_tower_jet_template_install_line_security.xml",
+        "security/cx_tower_jet_waypoint_template_security.xml",
+        "security/cx_tower_jet_waypoint_security.xml",
         "security/cx_tower_jet_dependency_security.xml",
         "security/cx_tower_jet_security.xml",
         "security/cx_tower_jet_action_security.xml",
@@ -91,6 +93,8 @@
         "views/cx_tower_jet_template_view.xml",
         "views/cx_tower_jet_template_install_view.xml",
         "views/cx_tower_jet_request_view.xml",
+        "views/cx_tower_jet_waypoint_template_view.xml",
+        "views/cx_tower_jet_waypoint_view.xml",
         "views/menuitems.xml",
     ],
     "demo": [

@@ -246,6 +246,20 @@
                             </group>
                         </page>
                         <page
+                            name="waypoints"
+                            string="Waypoints"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <field name="waypoint_template_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="access_level" optional="hide" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page
                             name="access"
                             string="Access"
                             groups="cetmix_tower_server.group_manager"
