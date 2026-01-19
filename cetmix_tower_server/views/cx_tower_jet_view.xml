@@ -374,6 +374,14 @@
                         >
                             <group>
                                 <group name="requires" string="Depends on">
+                                    <div class="o_form_label" />
+                                    <button
+                                        name="action_open_requires_jets"
+                                        type="object"
+                                        string="Open"
+                                        title="Open jets that this jet depends on"
+                                        icon="fa-external-link"
+                                    />
                                     <field name="jet_requires_ids" string=" ">
                                         <tree>
                                             <field
@@ -382,12 +390,20 @@
                                             />
                                             <field
                                                 name="jet_template_dependency_id"
-                                                optional="show"
+                                                optional="hide"
                                             />
                                         </tree>
                                     </field>
                                 </group>
                                 <group name="required_by" string="Serves dependencies">
+                                    <div class="o_form_label" />
+                                    <button
+                                        name="action_open_required_by_jets"
+                                        type="object"
+                                        string="Open"
+                                        title="Open jets that depend on this jet"
+                                        icon="fa-external-link"
+                                    />
                                     <field name="jet_required_by_ids" string=" ">
                                         <tree>
                                             <field
@@ -396,7 +412,7 @@
                                             />
                                             <field
                                                 name="jet_template_dependency_id"
-                                                optional="show"
+                                                optional="hide"
                                             />
                                         </tree>
                                     </field>
