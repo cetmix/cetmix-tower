@@ -546,12 +546,7 @@ class TowerVariable(models.Model):
         self,
         variable_references,
         apply_modifiers=True,
-        server=None,
-        server_template=None,
-        plan_line_action=None,
-        jet_template=None,
-        jet=None,
-        _depth=0,
+        **kwargs,
     ):
         """Get variable values for multiple references.
         This method is designed to be used for template rendering.
@@ -560,15 +555,23 @@ class TowerVariable(models.Model):
         Args:
             variable_references (list of Char): variable names
             apply_modifiers (bool): apply Python modifiers to the values
-            server (cx.tower.server): Server
-            server_template (cx.tower.server.template): Server Template
-            plan_line_action (cx.tower.plan.line.action): Plan Line Action
-            jet_template (cx.tower.jet.template): Jet Template
-            jet (cx.tower.jet): Jet
-            _depth (int): Depth of the recursion
+            **kwargs: keyword arguments to pass to the _get_value method
+            - server (cx.tower.server): Server
+            - server_template (cx.tower.server.template): Server Template
+            - plan_line_action (cx.tower.plan.line.action): Plan Line Action
+            - jet_template (cx.tower.jet.template): Jet Template
+            - jet (cx.tower.jet): Jet
+            - _depth (int): Depth of the recursion
         Returns:
             dict {variable_reference: value}
         """
+        # 0. Get keyword arguments
+        server = kwargs.get("server")
+        server_template = kwargs.get("server_template")
+        plan_line_action = kwargs.get("plan_line_action")
+        jet_template = kwargs.get("jet_template")
+        jet = kwargs.get("jet")
+        _depth = kwargs.get("_depth", 0)
 
         # 0. Update server and jet template from jet
         if jet:
@@ -630,9 +633,7 @@ class TowerVariable(models.Model):
 
         return variable_values
 
-    def _render_variable_values(
-        self, variable_values, server=None, jet_template=None, jet=None, _depth=0
-    ):
+    def _render_variable_values(self, variable_values, **kwargs):
         """Renders variable values using other variable values.
         For example we have the following values:
             "server_root": "/opt/server"
@@ -643,11 +644,19 @@ class TowerVariable(models.Model):
 
         Args:
             variable_values (dict): variable values to complete
-            server (cx.tower.server): Server
-            jet_template (cx.tower.jet.template): Jet Template
-            jet (cx.tower.jet): Jet
-            _depth (int): Depth of the recursion
+            **kwargs: keyword arguments to pass to the _get_value method
+            - server (cx.tower.server): Server
+            - server_template (cx.tower.server.template): Server Template
+            - plan_line_action (cx.tower.plan.line.action): Plan Line Action
+            - jet_template (cx.tower.jet.template): Jet Template
+            - jet (cx.tower.jet): Jet
+            - _depth (int): Depth of the recursion
         """
+        # 0. Get keyword arguments
+        server = kwargs.get("server")
+        jet_template = kwargs.get("jet_template")
+        jet = kwargs.get("jet")
+        _depth = kwargs.get("_depth", 0)
 
         # Control recursion depth
         _depth += 1
