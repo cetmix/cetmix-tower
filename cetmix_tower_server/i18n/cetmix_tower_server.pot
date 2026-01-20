@@ -48,6 +48,56 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/constants.py:0
+msgid ""
+"\n"
+"# Please refer to the 'Help' tab and documentation for more information.\n"
+"#\n"
+"# You can return command result in the 'result' variable which is a dictionary:\n"
+"#   result = {\"exit_code\": 0, \"message\": \"Some message\"}\n"
+"#   default value is {\"exit_code\": 0, \"message\": None}\n"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/constants.py:0
+msgid ""
+"\n"
+"<h3>Help with Python expressions</h3>\n"
+"<div style=\"margin-bottom: 10px;\">\n"
+"    <p>\n"
+"        Each Python code command returns the <code>result</code> value which is a dictionary.\n"
+"        <br>There are two keys in the dictionary:\n"
+"        <ul>\n"
+"    <li><code>exit_code</code>: Integer. Exit code of the command. \"0\" means success, any other value means failure. Default value is \"0\".</li>\n"
+"    <li><code>message</code>: String. Message to be logged. Default value is \"None\".</li>\n"
+"</ul>\n"
+"You can also access the <code>custom_values</code> dictionary that contains custom values provided to the command or flight plan.\n"
+"Custom values can be modified, thus can be used to pass data between commands in a flight plan.\n"
+"Please keep in mind that custom values are persistent only between commands in a flight plan and are not saved to the database.\n"
+"<br/>\n"
+"Here is an example of a python code command:\n"
+"\n"
+"<code style='white-space: pre-wrap'>\n"
+"    server_name = server.name\n"
+"    build_name = custom_values.get(\"build_name\")\n"
+"    if build_name:\n"
+"        result = {\"exit_code\": 0, \"message\": \"Build name for \" + server_name + \" is \" + build_name}\n"
+"    else:\n"
+"        result = {\"exit_code\": 0, \"message\": \"No build name provided for \" + server_name}\n"
+"    custom_values[\"build_name\"] = \"New build name\"\n"
+"</code>\n"
+"</p>\n"
+"<br>\n"
+"Please refer to the <a href=\"https://cetmix.com/tower/documentation/command/#python-code-commands\" target=\"_blank\">official documentation</a> for more information and examples.\n"
+"</div>\n"
+"<p\n"
+">Various fields may use Python code or Python expressions. The\n"
+"    following variables can be used:</p>\n"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server_template.py:0
 msgid "  - Empty values for variables: %(variables)s"
 msgstr ""
@@ -942,6 +992,12 @@ msgstr ""
 msgid ""
 "Command that will be executed to get the log data.\n"
 "Be careful with commands that don't support parallel execution!"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/constants.py:0
+msgid "Command timed out and was terminated"
 msgstr ""
 
 #. module: cetmix_tower_server
