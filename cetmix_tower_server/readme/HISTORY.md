@@ -1,3 +1,8 @@
+## 18.0.1.0.6 (2026-01-20)
+
+- Bugfixes: Make pre-defined messages and command help translatable again. (5174)
+
+
 ## 18.0.1.0.4 (2025-12-23)
 
 - Bugfixes: Handle malformed expressions in flight plan line conditions. (5154)
