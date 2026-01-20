@@ -1857,7 +1857,7 @@ else:
         )
         self.assertEqual(
             zombie_python_log.command_error,
-            COMMAND_TIMED_OUT_MESSAGE,
+            str(COMMAND_TIMED_OUT_MESSAGE),
             "Zombie Python command should have timeout error message",
         )
 

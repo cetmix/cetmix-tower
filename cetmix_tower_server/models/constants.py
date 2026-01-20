@@ -1,3 +1,7 @@
+from odoo.tools import LazyTranslate
+
+_lt = LazyTranslate(__name__, default_lang="en_US")
+
 # ***
 # This file is used to define commonly used constants
 # ***
@@ -30,7 +34,7 @@ PLAN_LINE_CONDITION_CHECK_FAILED = -205
 
 # Returned when the command timed out
 COMMAND_TIMED_OUT = -206
-COMMAND_TIMED_OUT_MESSAGE = "Command timed out and was terminated"
+COMMAND_TIMED_OUT_MESSAGE = _lt("Command timed out and was terminated")
 
 # Returned when the command is not compatible with the server
 COMMAND_NOT_COMPATIBLE_WITH_SERVER = -207
@@ -75,17 +79,17 @@ FILE_DOWNLOAD_FAILED = -402
 # -- Default values
 
 # Default Python code used in Python code command
-DEFAULT_PYTHON_CODE = """
+DEFAULT_PYTHON_CODE = _lt("""
 # Please refer to the 'Help' tab and documentation for more information.
 #
 # You can return command result in the 'result' variable which is a dictionary:
 #   result = {"exit_code": 0, "message": "Some message"}
 #   default value is {"exit_code": 0, "message": None}
-"""  # noqa: E501
+""")  # noqa: E501
 
 
 # Default Python code help displayed in the "Help" tab
-DEFAULT_PYTHON_CODE_HELP = """
+DEFAULT_PYTHON_CODE_HELP = _lt("""
 <h3>Help with Python expressions</h3>
 <div style="margin-bottom: 10px;">
     <p>
@@ -117,4 +121,4 @@ Please refer to the <a href="https://cetmix.com/tower/documentation/command/#pyt
 <p
 >Various fields may use Python code or Python expressions. The
     following variables can be used:</p>
-"""  # noqa: E501
+""")  # noqa: E501
