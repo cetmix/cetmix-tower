@@ -34,6 +34,13 @@ class CxTowerJetTemplate(models.Model):
     _order = "name asc"
 
     active = fields.Boolean(default=True)
+    icon = fields.Image(
+        string="Icon image",
+        max_width=128,
+        max_height=128,
+        help="Icon of the related product to make navigation easier. "
+        "E.g. Docker logo for the Docker jet template.",
+    )
     note = fields.Text()
 
     # ---- Access. Add relation for mixin fields
