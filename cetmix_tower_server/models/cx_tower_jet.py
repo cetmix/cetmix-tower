@@ -36,6 +36,13 @@ class CxTowerJet(models.Model):
     )
     url = fields.Char()
     color = fields.Integer(related="state_id.color", readonly=True)
+    icon = fields.Image(
+        string="Icon image",
+        related="jet_template_id.icon",
+        readonly=True,
+        store=False,
+        help="Jet icon, computed from the template by default",
+    )
     sequence = fields.Integer(default=10, help="Used to sort jets in views")
     partner_id = fields.Many2one(
         comodel_name="res.partner",

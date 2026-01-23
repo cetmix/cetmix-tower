@@ -66,6 +66,12 @@
                         bg_color="bg-danger"
                         attrs="{'invisible': [('active', '=', True)]}"
                     />
+                    <field
+                        name="icon"
+                        widget="image"
+                        class="oe_avatar"
+                        options="{'preview_image': 'icon'}"
+                    />
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="e.g. Odoo Instance" />
@@ -478,11 +484,97 @@
         </field>
     </record>
 
+    <!-- Template Kanban View -->
+    <record id="cx_tower_jet_template_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.kanban</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field name="arch" type="xml">
+            <kanban class="o_res_partner_kanban" sample="1">
+                <field name="id" />
+                <field name="name" />
+                <field name="reference" />
+                <field name="tag_ids" />
+                <field name="icon" />
+                <field name="jet_count" />
+                <field name="show_in_create_wizard" />
+                <field name="active" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+                            class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban"
+                        >
+                            <div
+                                class="o_kanban_image_fill_left o_kanban_image_full"
+                                t-attf-style="background-image: url(#{kanban_image('cx.tower.jet.template', 'icon', record.id.raw_value)})"
+                                role="img"
+                            />
+                            <div
+                                class="ribbon ribbon-top-right"
+                                attrs="{'invisible': [('active', '=', True)]}"
+                            >
+                                <span class="bg-danger">Archived</span>
+                            </div>
+                            <div class="oe_kanban_details d-flex flex-column">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name" />
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle">
+                                            <field name="reference" />
+                                        </div>
+                                        <div class="o_kanban_tags_section">
+                                            <field
+                                                name="tag_ids"
+                                                widget="many2many_tags"
+                                                options="{'color_field': 'color'}"
+                                            />
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="float-end text-end"
+                                        t-if="record.jet_count.raw_value"
+                                    >
+                                        <a
+                                            type="object"
+                                            name="action_open_jets"
+                                            class="oe_kanban_action oe_kanban_action_a"
+                                            title="Open jets"
+                                        >
+                                            <i class="fa fa-plane me-1" />
+                                            <field name="jet_count" />
+                                        </a>
+                                    </span>
+                                </div>
+                                <div
+                                    class="d-flex flex-column justify-content-center flex-grow-1"
+                                >
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left" />
+                                    <div class="oe_kanban_bottom_right">
+                                        <span title="Show in create wizard">
+                                            <i class="fa fa-magic me-1" />
+                                            <field
+                                                name="show_in_create_wizard"
+                                                widget="boolean_toggle"
+                                            />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <!-- Template Action -->
     <record id="cx_tower_jet_template_action" model="ir.actions.act_window">
         <field name="name">Jet Templates</field>
         <field name="res_model">cx.tower.jet.template</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first Jet Template!
