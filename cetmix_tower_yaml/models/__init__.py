@@ -23,3 +23,4 @@ from . import cx_tower_jet_template
 from . import cx_tower_jet_template_dependency
 from . import cx_tower_jet_state
 from . import cx_tower_jet_action
+from . import cx_tower_jet_waypoint_template

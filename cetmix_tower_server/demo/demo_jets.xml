@@ -287,6 +287,66 @@
         />
     </record>
 
+    <!-- Kubernetes Template -->
+    <record id="jet_template_kubernetes_demo" model="cx.tower.jet.template">
+        <field name="name">Kubernetes Demo</field>
+        <field name="reference">kubernetes_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/kubernetes.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- Proxmox Template -->
+    <record id="jet_template_proxmox_demo" model="cx.tower.jet.template">
+        <field name="name">Proxmox Demo</field>
+        <field name="reference">proxmox_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/proxmox.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- OwnCloud Template -->
+    <record id="jet_template_owncloud_demo" model="cx.tower.jet.template">
+        <field name="name">OwnCloud Demo</field>
+        <field name="reference">owncloud_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/owncloud.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- Traefik Template -->
+    <record id="jet_template_traefik_demo" model="cx.tower.jet.template">
+        <field name="name">Traefik Demo</field>
+        <field name="reference">traefik_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/traefik.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
     <!-- ===============================================
     Jet Template Dependencies
     ================================================ -->
@@ -1450,6 +1510,54 @@
             eval="[(6, 0, [ref('cetmix_tower_server.tag_staging'), ref('cetmix_tower_server.tag_custom')])]"
         />
         <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+    </record>
+
+    <!-- Kubernetes Jet -->
+    <record id="jet_kubernetes_demo" model="cx.tower.jet">
+        <field name="name">Kubernetes Jet Demo</field>
+        <field name="reference">kubernetes_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_kubernetes_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://kubernetes.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- Proxmox Jet -->
+    <record id="jet_proxmox_demo" model="cx.tower.jet">
+        <field name="name">Proxmox Jet Demo</field>
+        <field name="reference">proxmox_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_proxmox_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://proxmox.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- OwnCloud Jet -->
+    <record id="jet_owncloud_demo" model="cx.tower.jet">
+        <field name="name">OwnCloud Jet Demo</field>
+        <field name="reference">owncloud_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_owncloud_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://owncloud.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
     </record>
 
     <!-- ===============================================
