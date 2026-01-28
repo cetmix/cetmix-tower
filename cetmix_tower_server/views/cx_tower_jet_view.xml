@@ -264,13 +264,14 @@
                             />
                             <field
                                 name="server_id"
+                                domain="server_allowed_domain"
                                 attrs="{'readonly': [('create_date', '!=', False)]}"
                             />
                             <field
                                 name="waypoint_id"
                                 attrs="{'invisible': [('waypoint_id', '=', False)]}"
                             />
-                            <field name="server_allowed_ids" invisible="1" />
+                            <field name="server_allowed_domain" invisible="1" />
                             <field name="deletable" invisible="1" />
                         </group>
                     </group>

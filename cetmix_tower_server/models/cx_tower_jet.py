@@ -67,20 +67,14 @@ class CxTowerJet(models.Model):
     jet_template_domain = fields.Binary(
         compute="_compute_jet_template_domain",
     )
-
-    server_allowed_ids = fields.Many2many(
-        comodel_name="cx.tower.server",
-        related="jet_template_id.server_ids",
-        readonly=True,
-        copy=False,
-        help="Servers where this jet template is installed",
-    )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         required=True,
         ondelete="restrict",
-        domain="[('id', 'in', server_allowed_ids)]",
         help="Server where this jet is running",
+    )
+    server_allowed_domain = fields.Binary(
+        compute="_compute_jet_template_domain",
     )
     file_ids = fields.One2many(
         comodel_name="cx.tower.file",
@@ -265,6 +259,11 @@ class CxTowerJet(models.Model):
         for jet in self:
             jet.jet_template_domain = (
                 [("server_ids", "in", [jet.server_id.id])] if jet.server_id else []
+            )
+            jet.server_allowed_domain = (
+                [("id", "in", jet.jet_template_id.server_ids.ids)]
+                if jet.jet_template_id
+                else []
             )
 
     @api.depends("jet_template_id", "jet_template_id.action_ids")
