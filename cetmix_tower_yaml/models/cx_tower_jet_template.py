@@ -24,10 +24,9 @@ class CxTowerJetTemplate(models.Model):
             "plan_clone_different_server_id",
             "variable_value_ids",
             "action_ids",
-            # "action_create_id",  # TODO
-            # "action_destroy_id",
-            "server_log_ids",
             "template_requires_ids",
+            "waypoint_template_ids",
+            "server_log_ids",
             "scheduled_task_ids",
         ]
         return res
