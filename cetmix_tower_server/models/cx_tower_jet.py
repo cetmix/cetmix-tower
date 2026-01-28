@@ -155,6 +155,9 @@ class CxTowerJet(models.Model):
     state_available_ids = fields.One2many(
         comodel_name="cx.tower.jet.state",
         compute="_compute_state_available_ids",
+        help="Available states for the jet. "
+        "Click on the button to transition to the state.",
+        copy=False,
     )
 
     target_state_id = fields.Many2one(
@@ -163,6 +166,19 @@ class CxTowerJet(models.Model):
         readonly=True,
         copy=False,
         help="Destination state to which the jet is currently transitioning",
+    )
+    show_available_states = fields.Boolean(
+        help="Show available states in the jet view",
+        compute="_compute_show_available_states",
+        inverse="_inverse_show_available_states",
+        groups="cetmix_tower_server.group_manager",
+    )
+    action_available_ids = fields.Many2many(
+        comodel_name="cx.tower.jet.action",
+        compute="_compute_available_actions",
+        string="Available Actions",
+        help="Available actions for the jet. "
+        "Click on the button to trigger the action.",
     )
     current_action_id = fields.Many2one(
         comodel_name="cx.tower.jet.action",
@@ -201,13 +217,6 @@ class CxTowerJet(models.Model):
     # -- Variables used for configuration
     variable_value_ids = fields.One2many(
         inverse_name="jet_id",
-    )
-
-    # -- Available actions based on current state
-    action_available_ids = fields.Many2many(
-        comodel_name="cx.tower.jet.action",
-        compute="_compute_available_actions",
-        string="Available Actions",
     )
 
     # -- Logs
@@ -360,6 +369,22 @@ class CxTowerJet(models.Model):
                     )
             if final_vals:
                 jet.jet_requires_ids = final_vals
+
+    @api.depends_context("uid")
+    def _compute_show_available_states(self):
+        """Compute if available states should be shown for the jet"""
+        # Set all records at once to avoid multiple writes
+        self.show_available_states = (
+            self.env.user.cetmix_tower_show_jet_available_states
+        )
+
+    def _inverse_show_available_states(self):
+        """Inverse the show available states for the jet"""
+        for jet in self:
+            if jet.show_available_states is not None:
+                jet.env.user.cetmix_tower_show_jet_available_states = (
+                    jet.show_available_states
+                )
 
     @api.depends("jet_template_id", "jet_template_id.waypoint_template_ids")
     def _compute_is_waypoints_available(self):

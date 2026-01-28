@@ -278,6 +278,11 @@
                         <page name="state" string="States and Actions">
                             <group name="stats">
                                 <field
+                                    name="show_available_states"
+                                    widget="boolean_toggle"
+                                    attrs="{'invisible': [('current_action_id', '!=', False)]}"
+                                />
+                                <field
                                     name="current_action_id"
                                     attrs="{'invisible': [('target_state_id', '=', False)]}"
                                 />
@@ -290,35 +295,7 @@
                                     attrs="{'invisible': [('served_jet_request_id', '=', False)]}"
                                 />
                             </group>
-                            <group name="main">
-                                <group
-                                    name="available_states"
-                                    string="Available States"
-                                >
-                                    <field
-                                        name="state_available_ids"
-                                        string=" "
-                                        attrs="{'invisible': [('current_action_id', '!=', False)]}"
-                                    >
-                                        <tree>
-                                            <field name="name" />
-                                            <button
-                                                type="object"
-                                                name="set_state"
-                                                class="fa fa-check oe_highlight"
-                                                context="{'jet_id': parent.id}"
-                                                title="Set state"
-                                                confirm="Do you want to set this state?"
-                                            />
-                                        </tree>
-                                        <form>
-                                            <field
-                                                name="note"
-                                                attrs="{'invisible': [('note', '=', False)]}"
-                                            />
-                                        </form>
-                                    </field>
-                                </group>
+                            <group name="states_and_actions">
                                 <group
                                     name="available_actions"
                                     string="Available Actions"
@@ -347,6 +324,36 @@
                                             <field
                                                 name="name"
                                                 attrs="{'invisible': [('note', '!=', False)]}"
+                                            />
+                                        </form>
+                                    </field>
+                                </group>
+                                <group
+                                    name="available_states"
+                                    string="Available States"
+                                    attrs="{'invisible': [('show_available_states', '=', False)]}"
+                                    groups="cetmix_tower_server.group_manager"
+                                >
+                                    <field
+                                        name="state_available_ids"
+                                        string=" "
+                                        attrs="{'invisible': [('current_action_id', '!=', False)]}"
+                                    >
+                                        <tree>
+                                            <field name="name" />
+                                            <button
+                                                type="object"
+                                                name="set_state"
+                                                class="fa fa-check oe_highlight"
+                                                context="{'jet_id': parent.id}"
+                                                title="Set state"
+                                                confirm="Do you want to set this state?"
+                                            />
+                                        </tree>
+                                        <form>
+                                            <field
+                                                name="note"
+                                                attrs="{'invisible': [('note', '=', False)]}"
                                             />
                                         </form>
                                     </field>
