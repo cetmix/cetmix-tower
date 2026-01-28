@@ -48,7 +48,9 @@ class CxTowerJetCloneWizard(models.TransientModel):
         default="a",
         required=True,
     )
-    state_id = fields.Many2one("cx.tower.jet.state", help="Requested state of the jet")
+    state_id = fields.Many2one(
+        "cx.tower.jet.state", required=True, help="Requested state of the jet"
+    )
     state_domain = fields.Binary(compute="_compute_state_domain")
     use_custom_variables = fields.Selection(
         selection=[("n", "default settings"), ("y", "custom settings")],
