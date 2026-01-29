@@ -671,7 +671,7 @@ class TowerVariable(models.Model):
                 continue
 
             # Render only if template is found
-            if "{{ " in var_value:
+            if "{{" in var_value and "}}" in var_value:
                 # Get variables used in value
                 value_vars = TemplateMixin.get_variables_from_code(var_value)
 

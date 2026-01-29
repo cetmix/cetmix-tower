@@ -65,8 +65,12 @@ class CxTowerJetTemplateInstall(models.Model):
         Returns:
             cx.tower.jet.template.install(): The installation record.
         """
+        server.ensure_one()
+        template.ensure_one()
 
         # Compose the list of templates to install
+        # NB: templates will be installed later in reverse order
+        # to ensure that dependencies are satisfied
         template_to_process = [template] + template._check_dependency_satisfaction(
             server
         )
@@ -113,7 +117,9 @@ class CxTowerJetTemplateInstall(models.Model):
             message=_(
                 "%(timestamp)s<br/>" "Installing template on server '%(server_name)s'",
                 server_name=server.name,
-                timestamp=fields.Datetime.now(),
+                timestamp=fields.Datetime.context_timestamp(
+                    self, fields.Datetime.now()
+                ),
             ),
             title=template.name,
             sticky=False,  # explicitly set to False to avoid blocking the user's screen
@@ -135,6 +141,8 @@ class CxTowerJetTemplateInstall(models.Model):
             server (cx.tower.server()): The server to uninstall the template from.
             template (cx.tower.jet.template()): The template to uninstall.
         """
+        server.ensure_one()
+        template.ensure_one()
 
         # Create a new install record
         install_record = self.create(
@@ -171,7 +179,9 @@ class CxTowerJetTemplateInstall(models.Model):
                 "%(timestamp)s<br/>"
                 "Uninstalling template on server '%(server_name)s'",
                 server_name=server.name,
-                timestamp=fields.Datetime.now(),
+                timestamp=fields.Datetime.context_timestamp(
+                    self, fields.Datetime.now()
+                ),
             ),
             title=template.name,
             sticky=False,  # explicitly set to False to avoid blocking the user's screen

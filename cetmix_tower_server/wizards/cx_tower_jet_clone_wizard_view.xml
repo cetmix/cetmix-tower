@@ -89,8 +89,9 @@
                         confirm="Jet will be cloned. Are you sure?"
                         type="object"
                         class="btn-primary"
-                        attrs="{'invisible': ['|', '|',
+                        attrs="{'invisible': ['|', '|', '|',
                         ('jet_id', '=', False),
+                        ('state_id', '=', False),
                         ('use_custom_variables', '=', False),
                         ('name_type', '=', False)]}"
                     />

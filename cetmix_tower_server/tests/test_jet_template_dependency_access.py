@@ -101,6 +101,7 @@ class TestTowerJetTemplateDependencyAccess(TestTowerJetsCommon):
                 {
                     "template_id": self.jet_template_test.id,
                     "template_required_id": self.jet_template_tower_core.id,
+                    "state_required_id": self.state_running.id,
                 }
             ),
         )
@@ -169,6 +170,7 @@ class TestTowerJetTemplateDependencyAccess(TestTowerJetsCommon):
             template_reference="root_template",
             access_level="3",
             template_required=self.jet_template_tower_core,
+            state_required_id=self.state_running.id,
             with_user=self.root,
         )
 

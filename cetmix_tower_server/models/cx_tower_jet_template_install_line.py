@@ -8,7 +8,7 @@ class CxTowerJetTemplateInstallLine(models.Model):
 
     _name = "cx.tower.jet.template.install.line"
     _description = "Jet Template Install/Uninstall Line"
-    _order = "create_date desc"
+    _order = "order"
     _rec_name = "jet_template_id"
 
     order = fields.Integer(required=True, default=10)

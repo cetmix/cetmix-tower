@@ -614,7 +614,7 @@ class CxTowerServer(models.Model):
         # Open the wizard to install the template on the selected servers
         return {
             "type": "ir.actions.act_window",
-            "name": "Install Jet Template",
+            "name": _("Install Jet Template"),
             "res_model": "cx.tower.jet.template.install.wiz",
             "view_mode": "form",
             "target": "new",
@@ -1585,9 +1585,8 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Flight plan running error %(err)s", err=e)
                 ) from e
-            else:
-                status = GENERAL_ERROR
-                error = e
+            status = GENERAL_ERROR
+            error = e
         else:
             if plan_log_record.plan_status != 0:
                 status = plan_log_record.plan_status
@@ -1602,8 +1601,7 @@ class CxTowerServer(models.Model):
                 error=result["error"],
                 variable_values=plan_log_record.variable_values,
             )
-        else:
-            return result
+        return result
 
     def _command_runner_python_code(
         self,
@@ -1681,22 +1679,34 @@ class CxTowerServer(models.Model):
         if not jet_for_which_command_is_run:
             status = JET_NOT_FOUND
             error = _("Jet for which command is run is not found.")
-        elif not requested_jet_template:
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+        if not requested_jet_template:
             status = JET_TEMPLATE_NOT_FOUND
             error = _("Jet template is not found.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        # Trigger for the jet itself if the same jet template is used
+        # This is used when you want to trigger an action for
+        # the same jet for which the command is run.
+        if jet_for_which_command_is_run.jet_template_id == requested_jet_template:
+            dependent_jets = jet_for_which_command_is_run
         else:
-            # Trigger for the jet itself if the same jet template is used
-            # This is used when you want to trigger an action for
-            # the same jet for which the command is run.
-            if jet_for_which_command_is_run.jet_template_id == requested_jet_template:
-                dependent_jets = jet_for_which_command_is_run
-            else:
-                # Get dependent jets by template
-                dependent_jets = (
-                    jet_for_which_command_is_run._get_dependent_jets_by_template(
-                        requested_jet_template
-                    )
+            # Get dependent jets by template
+            dependent_jets = (
+                jet_for_which_command_is_run._get_dependent_jets_by_template(
+                    requested_jet_template
                 )
+            )
 
         if dependent_jets:
             # Trigger the action for all dependent jets
@@ -1704,7 +1714,7 @@ class CxTowerServer(models.Model):
                 jet._trigger_action(
                     action=log_record.command_id.jet_action_id,
                     raise_if_not_available=False,
-                    current_command_log_id=log_record.id,
+                    current_command_log=log_record,
                 )
         # If no dependent jets, finish the command
         else:
@@ -1720,6 +1730,8 @@ class CxTowerServer(models.Model):
                 response=response,
                 error=error,
             )
+        # Return result
+        return {"status": status, "response": response, "error": error}
 
     @ensure_ssh_disconnect
     def _run_command_using_ssh(

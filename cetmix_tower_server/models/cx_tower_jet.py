@@ -6,7 +6,11 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
-from .constants import JET_STATE_ERROR
+from .constants import (
+    JET_ACTION_NOT_AVAILABLE,
+    JET_DEPENDENCIES_NOT_SATISFIED,
+    JET_STATE_ERROR,
+)
 from .tools import generate_random_id
 
 _logger = logging.getLogger(__name__)
@@ -912,7 +916,7 @@ class CxTowerJet(models.Model):
                 True if the function should raise an exception
                 if the action is not available for this jet.
             **kwargs: Additional arguments:
-                - current_command_log_id: Optional command log ID to track execution
+                - current_command_log: Optional command log record to track execution
 
         Raises:
             ValidationError: If the action is not available for this jet.
@@ -924,19 +928,26 @@ class CxTowerJet(models.Model):
         # Action properties must be accessible despite of the user group
         action = action.sudo()
 
+        # Get current command log
+        current_command_log = kwargs.get("current_command_log")
+
         # Ensure the action is available for this jet
         if action.id not in self.action_available_ids.ids:
+            error = _(
+                "Action '%(action)s' is not available for jet"
+                " '%(jet)s' in state '%(state)s'",
+                action=action.name,
+                jet=self.name,  # pylint: disable=no-member
+                state=self.state_id.name if self.state_id else _("Undefined"),
+            )
             if raise_if_not_available:
-                raise ValidationError(
-                    _(
-                        "Action '%(action)s' is not available for jet"
-                        " '%(jet)s' in state '%(state)s'",
-                        action=action.name,
-                        jet=self.name,  # pylint: disable=no-member
-                        state=self.state_id.name if self.state_id else _("Undefined"),
-                    )
+                raise ValidationError(error)
+            if current_command_log:
+                current_command_log.finish(
+                    status=JET_ACTION_NOT_AVAILABLE,
+                    error=error,
                 )
-            return
+                return {"status": JET_ACTION_NOT_AVAILABLE, "error": error}
 
         # Update the jet state
         transit_state = action.state_transit_id
@@ -961,13 +972,20 @@ class CxTowerJet(models.Model):
         if not self.state_id and not self._control_dependencies():
             # The process will be resumed
             # when the dependencies are satisfied
+            if current_command_log:
+                current_command_log.finish(
+                    status=JET_DEPENDENCIES_NOT_SATISFIED,
+                    error=_("Jet dependencies are not satisfied"),
+                )
             return
 
         self.sudo().write(
             {
                 "state_id": transit_state,
                 "current_action_id": action.id,
-                "current_command_log_id": kwargs.get("current_command_log_id"),
+                "current_command_log_id": current_command_log.id
+                if current_command_log
+                else False,
             }
         )
 

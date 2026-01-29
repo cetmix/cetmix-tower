@@ -29,6 +29,7 @@ class CxTowerServerLog(models.Model):
         "cx.tower.server",
         ondelete="cascade",
         compute="_compute_server_id",
+        index=True,
         store=True,
         readonly=False,
     )
@@ -74,6 +75,7 @@ class CxTowerServerLog(models.Model):
     jet_template_id = fields.Many2one(
         "cx.tower.jet.template",
         ondelete="cascade",
+        index=True,
         help="This jet template will be used to create log files when jet is created",
     )
 
@@ -81,6 +83,7 @@ class CxTowerServerLog(models.Model):
     jet_id = fields.Many2one(
         "cx.tower.jet",
         ondelete="cascade",
+        index=True,
     )
 
     @api.depends("jet_id")

@@ -378,11 +378,12 @@ class TestCetmixTower(TestTowerCommon):
         self.assertEqual(value, "Jet Template Specific Value")
 
         # -- 4 -- Test with non-existent server
-        value = self.CetmixTower.jet_template_get_variable_value(
-            server_reference="non_existent_server",
-            jet_template_reference=self.jet_template_sample.reference,
-            variable_reference=variable_test.reference,
-        )
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower"):
+            value = self.CetmixTower.jet_template_get_variable_value(
+                server_reference="non_existent_server",
+                jet_template_reference=self.jet_template_sample.reference,
+                variable_reference=variable_test.reference,
+            )
         self.assertIsNone(value, "Should return None for non-existent server")
 
         # -- 5 -- Test with non-existent jet template

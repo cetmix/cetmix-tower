@@ -89,6 +89,12 @@ JET_NOT_FOUND = -503
 # Returned when a jet state error occurs
 JET_STATE_ERROR = -504
 
+# Returned when the jet action is not available
+JET_ACTION_NOT_AVAILABLE = -505
+
+# Returned when the jet dependencies are not satisfied
+JET_DEPENDENCIES_NOT_SATISFIED = -506
+
 
 # -- Default values
 

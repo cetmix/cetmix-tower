@@ -74,10 +74,6 @@ urllib_parse = wrap_module(
         "unquote",
         "unquote_plus",
         "unquote_to_bytes",
-        "splitquery",
-        "splittag",
-        "splituser",
-        "splitvalue",
     ],
 )
 tldextract = wrap_module(__import__("tldextract"), ["extract"])

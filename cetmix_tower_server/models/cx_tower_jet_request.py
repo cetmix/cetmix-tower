@@ -156,12 +156,12 @@ class CxTowerJetRequest(models.Model):
                 )
                 jet._serve_jet_request(jet_request=request)
             else:
-                jet._serve_jet_request(jet_request=request)
                 _logger.info(
                     "Jet %s is not available or busy, triggering jet to "
                     "bring itself to the required state",
                     jet.name,
                 )
+                jet._serve_jet_request(jet_request=request)
             return request
 
         # Step 2. Try to pick any of the existing jets from the template
@@ -197,13 +197,16 @@ class CxTowerJetRequest(models.Model):
         # Step 4. Jet is available, and is not busy, but not in the required state
         not_busy_jets = available_jets.filtered(lambda j: not j._is_busy())
         if not_busy_jets:
+            # Pick the first available jet
+            not_busy_jet = not_busy_jets[0]
             _logger.info(
                 "Jet %s is available and not busy, but not in the required state,"
                 " triggering jet to bring itself to the required state",
-                not_busy_jets[0].name,
+                not_busy_jet.name,
             )
             # Trigger the jet to bring itself to the required state
-            not_busy_jets[0]._serve_jet_request(jet_request=request)
+            request.jet_id = not_busy_jet
+            not_busy_jet._serve_jet_request(jet_request=request)
             return request
 
         # Step 5. Jet is not available, or is busy and not transitioning
@@ -224,6 +227,7 @@ class CxTowerJetRequest(models.Model):
                 _logger.error(
                     "Failed to create new jet using template %s", jet_template.name
                 )
+                request._finalize(failed=True)
 
         _logger.info("Jet request creation finished")
         return request

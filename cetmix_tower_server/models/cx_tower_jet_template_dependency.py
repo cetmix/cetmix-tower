@@ -34,6 +34,7 @@ class CxTowerJetTemplateDependency(models.Model):
     state_required_id = fields.Many2one(
         string="Required State",
         comodel_name="cx.tower.jet.state",
+        required=True,
         ondelete="restrict",
         help="The state of the required Jet",
     )

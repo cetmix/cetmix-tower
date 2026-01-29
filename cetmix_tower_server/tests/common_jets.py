@@ -716,9 +716,10 @@ class TestTowerJetsCommon(TestTowerCommon):
             "template_required_id": required_template.id
             if hasattr(required_template, "id")
             else required_template,
+            "state_required_id": state_required_id
+            if state_required_id is not None
+            else cls.state_running.id,
         }
-        if state_required_id:
-            dependency_vals["state_required_id"] = state_required_id
         dependency_model = (
             cls.JetTemplateDependency.with_user(with_user)
             if with_user

@@ -442,6 +442,7 @@ class TestTowerJet(TestTowerJetsCommon):
             {
                 "template_id": self.jet_template_tower_core.id,
                 "template_required_id": self.jet_template_test.id,
+                "state_required_id": self.state_running.id,
             }
         )
 

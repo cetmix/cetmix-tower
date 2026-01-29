@@ -1071,12 +1071,14 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
             {
                 "template_id": template_a.id,
                 "template_required_id": template_b.id,
+                "state_required_id": self.state_running.id,
             }
         )
         self.JetTemplateDependency.create(
             {
                 "template_id": template_b.id,
                 "template_required_id": template_c.id,
+                "state_required_id": self.state_running.id,
             }
         )
 
@@ -1086,6 +1088,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
                 {
                     "template_id": template_c.id,
                     "template_required_id": template_a.id,
+                    "state_required_id": self.state_running.id,
                 }
             )
 
@@ -1167,18 +1170,21 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
             {
                 "template_id": template_e.id,
                 "template_required_id": template_d.id,
+                "state_required_id": self.state_running.id,
             }
         )
         self.JetTemplateDependency.create(
             {
                 "template_id": template_a.id,
                 "template_required_id": template_b.id,
+                "state_required_id": self.state_running.id,
             }
         )
         self.JetTemplateDependency.create(
             {
                 "template_id": template_b.id,
                 "template_required_id": template_c.id,
+                "state_required_id": self.state_running.id,
             }
         )
 
@@ -1254,6 +1260,7 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
                 {
                     "template_id": template_self.id,
                     "template_required_id": template_self.id,
+                    "state_required_id": self.state_running.id,
                 }
             )
 

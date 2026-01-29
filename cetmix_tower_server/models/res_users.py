@@ -10,7 +10,8 @@ class ResUsers(models.Model):
 
     def _cetmix_tower_access_level(self):
         """
-        Returns the access level of the user.
+        Returns the access level of the current logged-in user
+        Not the record user!
 
         Returns:
             str: The access level of the user.

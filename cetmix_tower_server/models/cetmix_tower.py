@@ -214,6 +214,10 @@ class CetmixTower(models.AbstractModel):
         # Get server by reference
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
+            _logger.warning(
+                "jet_template_get_variable_value: Server not found for reference '%s'",
+                server_reference,
+            )
             return None
         jet_template = self.env["cx.tower.jet.template"].get_by_reference(
             jet_template_reference
