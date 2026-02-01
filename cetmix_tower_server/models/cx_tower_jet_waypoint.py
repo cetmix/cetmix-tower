@@ -15,7 +15,11 @@ class CxTowerJetWaypoint(models.Model):
 
     _name = "cx.tower.jet.waypoint"
     _description = "Cetmix Tower Jet Waypoint"
-    _inherit = ["cx.tower.reference.mixin", "cx.tower.access.mixin"]
+    _inherit = [
+        "cx.tower.reference.mixin",
+        "cx.tower.access.mixin",
+        "cx.tower.metadata.mixin",
+    ]
     _order = "create_date desc"
 
     name = fields.Char(required=True)
@@ -70,15 +74,7 @@ class CxTowerJetWaypoint(models.Model):
     )
     variable_values_text = fields.Text(
         help="Custom variable values for this waypoint",
-        compute="_compute_json_values_text",
-    )
-    metadata = fields.Json(
-        help="Additional metadata for this waypoint",
-        readonly=True,
-    )
-    metadata_text = fields.Text(
-        help="Additional metadata for this waypoint",
-        compute="_compute_json_values_text",
+        compute="_compute_variable_values_text",
     )
 
     # ------------------------------------
@@ -124,13 +120,14 @@ class CxTowerJetWaypoint(models.Model):
             )
 
     @api.depends("variable_values")
-    def _compute_json_values_text(self):
+    def _compute_variable_values_text(self):
         """
         Compute the variable values text for the waypoint
         """
         for waypoint in self:
-            waypoint.variable_values_text = str(waypoint.variable_values)
-            waypoint.metadata_text = str(waypoint.metadata)
+            waypoint.variable_values_text = (
+                str(waypoint.variable_values) if waypoint.variable_values else False
+            )
 
     # ------------------------------------
     # --------- CRUD Methods -------------
