@@ -95,14 +95,17 @@ class CxTowerJetWaypoint(models.Model):
     # ------------------------------------
     # --------- Computed Fields ---------
     # ------------------------------------
-    @api.depends("waypoint_template_id")
-    def _compute_access_level(self):
+    @api.depends("name", "create_date")
+    def _compute_display_name(self):
         """
-        Compute the access level of the waypoint
-        NB: it doesn't change if the waypoint template access level changes
+        Compute the display name of the waypoint
         """
         for waypoint in self:
-            waypoint.access_level = waypoint.waypoint_template_id.access_level
+            timestamp = fields.Datetime.context_timestamp(
+                waypoint, waypoint.create_date
+            )
+            formatted_date = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            waypoint.display_name = f"{waypoint.name} ({formatted_date})"
 
     @api.depends("jet_id.waypoint_ids", "jet_id.waypoint_ids.state")
     def _compute_can_fly_to(self):

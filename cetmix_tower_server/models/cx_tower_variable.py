@@ -834,6 +834,9 @@ class TowerVariable(models.Model):
                 "reference": jet.reference,
                 "url": jet.url,
                 "state": jet.state,
+                "cloned_from": jet.jet_cloned_from_id.reference
+                if jet.jet_cloned_from_id
+                else False,
             }
             # Add URL parts if URL is set
             if jet.url:
