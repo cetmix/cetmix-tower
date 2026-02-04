@@ -223,6 +223,41 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">Fr</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">Mo</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">Sa</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">Su</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">Th</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">Tu</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "<span class=\"o_form_label\">We</span>"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "<span invisible=\"action != 'ssh_command'\">sudo</span>"
@@ -544,6 +579,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Are you sure?"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_scheduled_task.py:0
+#, python-format
+msgid "At least one day of week must be selected for the task '%s'."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1356,6 +1399,12 @@ msgid "Days"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_scheduled_task__interval_type__dow
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_scheduled_task_view_form
+msgid "Days of Week"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__path
 msgid "Default Path"
 msgstr ""
@@ -1928,6 +1977,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command_run_wizard__applicability__this
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_plan_run_wizard__applicability__this
 msgid "For selected server(s)"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__friday
+msgid "Friday"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2553,6 +2607,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_form
 msgid "Modify Code"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__monday
+msgid "Monday"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3643,6 +3702,11 @@ msgid "SSH run command error %(err)s"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__saturday
+msgid "Saturday"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_scheduled_task
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__scheduled_task_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__scheduled_task_id
@@ -4152,6 +4216,11 @@ msgid "Success Notifications"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__sunday
+msgid "Sunday"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 msgid "Sync Error"
 msgstr ""
@@ -4362,6 +4431,11 @@ msgid "This value is applicable to all servers and partners"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__thursday
+msgid "Thursday"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_log__duration
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__duration
 msgid "Time consumed for execution, seconds"
@@ -4412,6 +4486,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__triggered_plan_log_id
 msgid "Triggered Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__tuesday
+msgid "Tuesday"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4759,6 +4838,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command_run_wizard__os_compatibility_warning
 msgid "Warning about OS compatibility of the command"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__wednesday
+msgid "Wednesday"
 msgstr ""
 
 #. module: cetmix_tower_server
