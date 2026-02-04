@@ -1,12 +1,14 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from datetime import datetime
+
 from odoo import fields
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from .common import TestTowerCommon
 
 
-class TestCxTowerScheduledTask(TestTowerCommon):
+class TestTowerScheduledTask(TestTowerCommon):
     """Test the cx.tower.scheduled.task model."""
 
     @classmethod
@@ -286,3 +288,152 @@ class TestCxTowerScheduledTask(TestTowerCommon):
             task.with_user(self.root).unlink()
         except AccessError:
             self.fail("Root should be able to write/unlink any scheduled task.")
+
+    def test_get_next_call_dow_wednesday(self):
+        """Test _get_next_call_dow when today is Wednesday.
+        Task runs Monday, Wednesday, Friday -> should return Friday."""
+        # Create task with Monday, Wednesday, Friday selected
+        task = self.ScheduledTask.create(
+            {
+                "name": "Test DOW Task",
+                "action": "command",
+                "command_id": self.command_list_dir.id,
+                "interval_type": "dow",
+                "monday": True,
+                "wednesday": True,
+                "friday": True,
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+            }
+        )
+
+        # Create a Wednesday datetime (2024-01-03 is a Wednesday)
+        # Set time to 10:30:45
+        wednesday_date = datetime(2024, 1, 3, 10, 30, 45)
+
+        # Calculate next call
+        next_call = task._get_next_call_dow(task, wednesday_date)
+
+        # Should be Friday (2 days ahead) at the same time
+        expected_friday = datetime(2024, 1, 5, 10, 30, 45)
+        self.assertEqual(
+            next_call,
+            expected_friday,
+            "Next call from Wednesday should be Friday at the same time.",
+        )
+
+    def test_get_next_call_dow_friday(self):
+        """Test _get_next_call_dow when today is Friday.
+        Task runs Monday, Wednesday, Friday -> should return Monday (next week)."""
+        # Create task with Monday, Wednesday, Friday selected
+        task = self.ScheduledTask.create(
+            {
+                "name": "Test DOW Task",
+                "action": "command",
+                "command_id": self.command_list_dir.id,
+                "interval_type": "dow",
+                "monday": True,
+                "wednesday": True,
+                "friday": True,
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+            }
+        )
+
+        # Create a Friday datetime (2024-01-05 is a Friday)
+        # Set time to 14:15:30
+        friday_date = datetime(2024, 1, 5, 14, 15, 30)
+
+        # Calculate next call
+        next_call = task._get_next_call_dow(task, friday_date)
+
+        # Should be Monday next week (3 days ahead) at the same time
+        expected_monday = datetime(2024, 1, 8, 14, 15, 30)
+        self.assertEqual(
+            next_call,
+            expected_monday,
+            "Next call from Friday should be Monday next week at the same time.",
+        )
+
+    def test_check_days_of_week_constraint(self):
+        """
+        Test _check_days_of_week constraint:
+        no days selected should raise ValidationError.
+        """
+        # Try to create a task with interval_type="dow" but no days selected
+        with self.assertRaises(ValidationError) as context:
+            self.ScheduledTask.create(
+                {
+                    "name": "Test DOW Task No Days",
+                    "action": "command",
+                    "command_id": self.command_list_dir.id,
+                    "interval_type": "dow",
+                    "monday": False,
+                    "tuesday": False,
+                    "wednesday": False,
+                    "thursday": False,
+                    "friday": False,
+                    "saturday": False,
+                    "sunday": False,
+                    "server_ids": [(6, 0, [self.server_test_1.id])],
+                }
+            )
+        self.assertIn(
+            "At least one day of week must be selected",
+            str(context.exception),
+            "ValidationError should mention that at " "least one day must be selected.",
+        )
+
+        # Try to update an existing task to have no days selected
+        task = self.ScheduledTask.create(
+            {
+                "name": "Test DOW Task",
+                "action": "command",
+                "command_id": self.command_list_dir.id,
+                "interval_type": "dow",
+                "monday": True,
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+            }
+        )
+        with self.assertRaises(ValidationError):
+            task.write(
+                {
+                    "monday": False,
+                    "tuesday": False,
+                    "wednesday": False,
+                    "thursday": False,
+                    "friday": False,
+                    "saturday": False,
+                    "sunday": False,
+                }
+            )
+
+    def test_get_next_call_dow_single_day_monday(self):
+        """Test _get_next_call_dow edge case: only Monday selected,
+        current day is Monday.
+        Should wrap to next week's Monday."""
+        # Create task with only Monday selected
+        task = self.ScheduledTask.create(
+            {
+                "name": "Test DOW Task Single Day",
+                "action": "command",
+                "command_id": self.command_list_dir.id,
+                "interval_type": "dow",
+                "monday": True,
+                "server_ids": [(6, 0, [self.server_test_1.id])],
+            }
+        )
+
+        # Create a Monday datetime (2024-01-01 is a Monday)
+        # Set time to 09:00:00
+        monday_date = datetime(2024, 1, 1, 9, 0, 0)
+
+        # Calculate next call
+        next_call = task._get_next_call_dow(task, monday_date)
+
+        # Should be Monday next week (7 days ahead) at the same time
+        expected_next_monday = datetime(2024, 1, 8, 9, 0, 0)
+        self.assertEqual(
+            next_call,
+            expected_next_monday,
+            "Next call from Monday (only day selected) should be"
+            " next Monday at the same time.",
+        )

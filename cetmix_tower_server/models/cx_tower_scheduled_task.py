@@ -4,6 +4,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ class CxTowerScheduledTask(models.Model):
             ("minutes", "Minutes"),
             ("hours", "Hours"),
             ("days", "Days"),
+            ("dow", "Days of Week"),
             ("weeks", "Weeks"),
             ("months", "Months"),
         ],
@@ -57,6 +59,15 @@ class CxTowerScheduledTask(models.Model):
     last_call = fields.Datetime(
         string="Last Execution Date", help="Previous time the task ran successfully."
     )
+    # Days of week
+    monday = fields.Boolean()
+    tuesday = fields.Boolean()
+    wednesday = fields.Boolean()
+    thursday = fields.Boolean()
+    friday = fields.Boolean()
+    saturday = fields.Boolean()
+    sunday = fields.Boolean()
+
     custom_variable_value_ids = fields.One2many(
         "cx.tower.scheduled.task.cv",
         "scheduled_task_id",
@@ -82,6 +93,39 @@ class CxTowerScheduledTask(models.Model):
         ),
     ]
 
+    @api.constrains(
+        "interval_type",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+    )
+    def _check_days_of_week(self):
+        """
+        Check if at least one day of week is selected
+        """
+        for task in self:
+            if task.interval_type == "dow" and not any(
+                [
+                    task.monday,
+                    task.tuesday,
+                    task.wednesday,
+                    task.thursday,
+                    task.friday,
+                    task.saturday,
+                    task.sunday,
+                ]
+            ):
+                raise ValidationError(
+                    _(
+                        "At least one day of week must be selected for the task '%s'.",
+                        task.display_name,
+                    )
+                )
+
     @api.depends("interval_number", "interval_type")
     def _compute_warning_message(self):
         """
@@ -105,6 +149,9 @@ class CxTowerScheduledTask(models.Model):
         cron_next = self._get_next_call(cron, now)
 
         for task in self:
+            if task.interval_type == "dow":
+                task.warning_message = False
+                continue
             task_next = self._get_next_call(task, now)
             if task_next < cron_next:
                 task.warning_message = _(
@@ -205,7 +252,7 @@ class CxTowerScheduledTask(models.Model):
                 task.write(
                     {
                         "last_call": finished_at,
-                        "next_call": self._get_next_call(task, finished_at),
+                        "next_call": self._get_next_call(task, task.next_call),
                         "is_running": False,
                     }
                 )
@@ -232,7 +279,13 @@ class CxTowerScheduledTask(models.Model):
     def _get_next_call(self, task, from_date):
         """
         Calculate next_call datetime
+
+        task: cx.tower.scheduled.task
+        from_date: datetime
         """
+        if task.interval_type == "dow":
+            return self._get_next_call_dow(task, from_date)
+
         num = task.interval_number or 1
         intervals = {
             "minutes": timedelta(minutes=num),
@@ -242,6 +295,73 @@ class CxTowerScheduledTask(models.Model):
             "months": relativedelta(months=num),
         }
         return from_date + intervals.get(task.interval_type, timedelta())
+
+    def _get_task_selected_days(self, task):
+        """
+        Get list of selected weekday numbers for a task
+
+        task: cx.tower.scheduled.task
+        Returns: list of weekday numbers (0=Monday, 6=Sunday)
+        """
+        selected_days = []
+        if task.monday:
+            selected_days.append(0)
+        if task.tuesday:
+            selected_days.append(1)
+        if task.wednesday:
+            selected_days.append(2)
+        if task.thursday:
+            selected_days.append(3)
+        if task.friday:
+            selected_days.append(4)
+        if task.saturday:
+            selected_days.append(5)
+        if task.sunday:
+            selected_days.append(6)
+        return selected_days
+
+    def _get_next_call_dow(self, task, from_date):
+        """
+        Calculate next_call datetime for days of week interval type
+
+        task: cx.tower.scheduled.task
+        from_date: datetime
+        """
+        # Days of week: find next selected day at the same time
+        # weekday() returns 0=Monday, 6=Sunday
+        selected_days = self._get_task_selected_days(task)
+        if not selected_days:
+            raise ValidationError(
+                _(
+                    "At least one day of week must be selected for the task '%s'.",
+                    task.display_name,
+                )
+            )
+        current_weekday = from_date.weekday()
+
+        # Find next selected day (starting from tomorrow to get next occurrence)
+        # Check days in current week first (after today)
+        next_day = None
+        for day in selected_days:
+            if day > current_weekday:
+                next_day = day
+                break
+
+        # If no day found in current week, take first day of next week
+        if next_day is None:
+            next_day = min(selected_days)
+            days_ahead = (7 - current_weekday) + next_day
+        else:
+            days_ahead = next_day - current_weekday
+
+        # Create new datetime with same time, on the next selected day
+        next_date = from_date + timedelta(days=days_ahead)
+        return next_date.replace(
+            hour=from_date.hour,
+            minute=from_date.minute,
+            second=from_date.second,
+            microsecond=from_date.microsecond,
+        )
 
     def _run_command(self):
         """Run command on selected servers."""
