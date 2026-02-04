@@ -1,3 +1,10 @@
+## 17.0.2.1.7 (2026-02-04)
+
+- Features: Scheduled tasks: allow to select specific days of week. (5190)
+
+- Bugfixes: Ensure custom values can be updated even if not provided initially. (5175)
+
+
 ## 17.0.2.1.5 (2025-12-23)
 
 - Bugfixes: Handle malformed expressions in flight plan line conditions. (5154)
