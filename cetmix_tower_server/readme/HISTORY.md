@@ -1,3 +1,10 @@
+## 18.0.1.0.7 (2026-02-05)
+
+- Features: Scheduled tasks: allow to select specific days of week. (5190)
+
+- Bugfixes: Ensure custom values can be updated even if not provided initially. (5175)
+
+
 ## 18.0.1.0.6 (2026-01-20)
 
 - Bugfixes: Make pre-defined messages and command help translatable again. (5174)

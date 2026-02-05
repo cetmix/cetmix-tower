@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Server",
     "summary": "Manage servers and applications from Odoo",
-    "version": "18.0.1.0.6",
+    "version": "18.0.1.0.7",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
     "live_test_url": "https://tower.cetmix.com/download",
