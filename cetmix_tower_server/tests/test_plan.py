@@ -2637,3 +2637,57 @@ result = {
         logs = plan_log.command_log_ids
         self.assertTrue(logs[0].is_skipped)
         self.assertTrue(logs[1].command_status == 0)
+
+    def test_custom_values_not_defined_but_updated(self):
+        """Test custom values not defined but updated
+        First command is executed successfully
+        Second command is executed successfully and updates custom values
+        """
+        # Create commands
+        command_1 = self.Command.create(
+            {
+                "name": "Command -> Success",
+                "action": "python_code",
+                "code": "# Just return default values",
+            }
+        )
+        command_2 = self.Command.create(
+            {
+                "name": "Command -> Success",
+                "action": "python_code",
+                "code": "custom_values.update({'some_value': '1'})",
+            }
+        )
+
+        # Plan and lines
+        plan = self.Plan.create(
+            {
+                "name": "Test custom values not defined but updated",
+            }
+        )
+
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": plan.id,
+                "command_id": command_1.id,
+            },
+        )
+
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": plan.id,
+                "command_id": command_2.id,
+            },
+        )
+        plan_log = self.server_test_1.run_flight_plan(plan)
+
+        # Must be 2 command logs
+        self.assertEqual(len(plan_log.command_log_ids), 2)
+        logs = plan_log.command_log_ids
+        # Both commands should be successful
+        self.assertEqual(logs[0].command_status, 0)
+        self.assertEqual(logs[1].command_status, 0)
+        # Custom values should be updated
+        self.assertEqual(plan_log.variable_values, {"some_value": "1"})
