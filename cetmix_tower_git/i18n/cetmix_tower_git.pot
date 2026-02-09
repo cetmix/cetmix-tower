@@ -35,6 +35,13 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+#, python-format
+msgid "%(name)s (copy)"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 msgid "* Sources where all remotes are private"
 msgstr ""
@@ -78,11 +85,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__active
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__active
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__active
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
 msgid "Active"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
 msgid "Archived"
 msgstr ""
 
@@ -503,6 +512,11 @@ msgid "Has Private Remotes"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
+msgid "Has Servers"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head
 msgid "Head"
 msgstr ""
@@ -616,8 +630,14 @@ msgid "Name. Leave blank to autogenerate"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_view_search
 msgid "Name/Reference"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
+msgid "No Servers"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -967,6 +987,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__yaml_code
 msgid "Yaml Code"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_plan_line_view_form
+msgid ""
+"You can also provide a Git Project reference using the <code>__git_project__</code> variable in the flight plan custom values.<br/>\n"
+"                        Python command code example:\n"
+"                        <code>\n"
+"custom_values['__git_project__'] = 'my_git_project'\n"
+"                        </code>\n"
+"                        <br/>\n"
+"                        Important: if defined, this variable value overrides the Git Project selected in the form."
 msgstr ""
 
 #. module: cetmix_tower_git
