@@ -1,3 +1,8 @@
+## 17.0.2.1.8 (2026-02-09)
+
+- Features: Improve the 'File using template' command flow, fix the flight plan line view layout. (5197)
+
+
 ## 17.0.2.1.7 (2026-02-04)
 
 - Features: Scheduled tasks: allow to select specific days of week. (5190)
