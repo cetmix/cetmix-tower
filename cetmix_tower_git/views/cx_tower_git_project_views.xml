@@ -222,6 +222,43 @@
         </field>
     </record>
 
+    <!-- Search View -->
+    <record id="cx_tower_git_project_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.git.project.view.search</field>
+        <field name="model">cx.tower.git.project</field>
+        <field name="arch" type="xml">
+            <search>
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="server_ids" />
+                <filter
+                    string="Active"
+                    name="active"
+                    domain="[('active', '=', True)]"
+                />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Has Servers"
+                    name="has_servers"
+                    domain="[('server_ids', '!=', False)]"
+                />
+                <filter
+                    string="No Servers"
+                    name="no_servers"
+                    domain="[('server_ids', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+
     <!-- Action -->
     <record id="cx_tower_git_project_action" model="ir.actions.act_window">
         <field name="name">Git Projects</field>

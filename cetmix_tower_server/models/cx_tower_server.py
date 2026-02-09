@@ -1185,7 +1185,7 @@ class CxTowerServer(models.Model):
             raise ValidationError(error_message)
 
     def _command_runner_file_using_template_create_file(
-        self, file_template_id, server_dir, plan_line, if_file_exists, **kwargs
+        self, log_record, server_dir, **kwargs
     ):
         """
         Creates a file on the server using the specified file template.
@@ -1193,22 +1193,19 @@ class CxTowerServer(models.Model):
         This method is intended to allow overriding the file creation logic
         and provides access to the created file object.
         Args:
-            file_template_id (recordset): The file template to use for creating
-                the new file.
+            log_record (recordset): Command log record.
             server_dir (str): The directory on the server where the file should be
                 created.
-            plan_line (recordset): The plan line to use for creating
-                the new file.
-            if_file_exists (str): The action to take if the file already exists.
             **kwargs: Additional keyword arguments.
 
         Returns:
             record: The created file record.
         """
+        file_template_id = log_record.command_id.file_template_id
         return file_template_id.create_file(
             server=self,
             server_dir=server_dir,
-            if_file_exists=if_file_exists,
+            if_file_exists=log_record.command_id.if_file_exists,
         )
 
     def _command_runner_file_using_template(
@@ -1243,13 +1240,9 @@ class CxTowerServer(models.Model):
         """
         try:
             # Attempt to create a new file using the template for the current server
-            plan_line = log_record.plan_log_id.plan_line_executed_id
-            file_template_id = log_record.command_id.file_template_id
             file = self._command_runner_file_using_template_create_file(
-                file_template_id=file_template_id,
-                if_file_exists=log_record.command_id.if_file_exists,
+                log_record=log_record,
                 server_dir=server_dir,
-                plan_line=plan_line,
             )
 
             # If file creation failed, log the failure and exit
