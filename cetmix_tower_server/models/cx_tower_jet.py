@@ -238,17 +238,6 @@ class CxTowerJet(models.Model):
     )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    #   SQL constraints
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    _sql_constraints = [
-        (
-            "unique_jet_name_per_server",
-            "UNIQUE(server_id, name)",
-            "Jet name must be unique per server",
-        )
-    ]
-
-    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Compute methods
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     @api.depends("name", "state_id")
