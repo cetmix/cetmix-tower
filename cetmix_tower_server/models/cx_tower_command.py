@@ -487,7 +487,7 @@ class CxTowerCommand(models.Model):
         return python_libraries
 
     def _get_python_command_odoo_objects(
-        self, server=None, jet_template=None, jet=None
+        self, server=None, jet_template=None, jet=None, waypoint=None
     ):
         """
         This method is used to import Odoo objects.
@@ -500,6 +500,7 @@ class CxTowerCommand(models.Model):
             server: Server to get the Odoo objects for.
             jet_template: Jet template to get the Odoo objects for.
             jet: Jet to get the Odoo objects for.
+            waypoint: Waypoint to get the Odoo objects for.
 
         Returns:
             dict: Available Odoo objects:
@@ -526,6 +527,12 @@ class CxTowerCommand(models.Model):
                 "import": jet,
                 "help": _("Current Cetmix Tower jet this command is running on"),
             },
+            "waypoint": {
+                "import": waypoint,
+                "help": _(
+                    "Current Cetmix Tower Jet waypoint this command is running on"
+                ),
+            },
             "tower": {
                 "import": self.env["cetmix.tower"],
                 "help": _(
@@ -549,6 +556,12 @@ class CxTowerCommand(models.Model):
             "tower_plans": {
                 "import": self.env["cx.tower.plan"],
                 "help": _("A helper shortcut to <code>env['cx.tower.plan']</code>"),
+            },
+            "tower_waypoints": {
+                "import": self.env["cx.tower.jet.waypoint"],
+                "help": _(
+                    "A helper shortcut to <code>env['cx.tower.jet.waypoint']</code>"
+                ),
             },
         }
 
@@ -601,24 +614,29 @@ class CxTowerCommand(models.Model):
         """
         return {}
 
-    def _get_python_command_eval_context(
-        self, server=None, jet_template=None, jet=None, **kwargs
-    ):
+    def _get_python_command_eval_context(self, server=None, **kwargs):
         """
         Get the evaluation context for the python command.
         This method is used to get the evaluation context for the python command.
 
         Args:
             server: Server to get the evaluation context for.
-            jet_template: Jet template to get the evaluation context for.
-            jet: Jet to get the evaluation context for.
+            **kwargs: Additional keyword arguments.
         Returns:
             dict: Evaluation context for the python command.
         """
 
+        # Get the jet template, jet and waypoint from kwargs
+        jet_template = kwargs.get("jet_template")
+        jet = kwargs.get("jet")
+        waypoint = kwargs.get("waypoint")
+
         # Get the Odoo objects first
         imports = self._get_python_command_odoo_objects(
-            server=server, jet_template=jet_template, jet=jet
+            server=server,
+            jet_template=jet_template,
+            jet=jet,
+            waypoint=waypoint,
         )
 
         # Update with the libraries

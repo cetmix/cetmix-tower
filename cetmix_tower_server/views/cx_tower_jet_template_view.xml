@@ -336,15 +336,14 @@
                             <field name="scheduled_task_ids">
                                 <tree create="0" edit="0">
                                     <field name="sequence" widget="handle" />
-                                    <field name="name" />
-                                    <field name="action" optional="hide" />
+                                    <field name="display_name" />
+                                    <field name="action" />
+                                    <field name="interval_type" />
+                                    <field name="interval_number" optional="hide" />
+                                    <field name="is_running" optional="hide" />
+                                    <field name="next_call" optional="hide" />
+                                    <field name="last_call" optional="hide" />
                                 </tree>
-                                <form>
-                                    <group>
-                                        <field name="name" />
-                                        <field name="action" />
-                                    </group>
-                                </form>
                             </field>
                         </page>
                         <page

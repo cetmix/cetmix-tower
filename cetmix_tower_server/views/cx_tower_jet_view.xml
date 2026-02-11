@@ -153,6 +153,12 @@
                 />
                 <field name="server_id" optional="show" />
                 <field name="partner_id" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
                 <field name="state_id" />
                 <field name="jet_template_state_ids" optional="hide" />
             </tree>
@@ -551,16 +557,11 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="display_name" />
                                     <field name="action" />
+                                    <field name="interval_type" />
+                                    <field name="interval_number" optional="hide" />
                                     <field name="is_running" optional="hide" />
                                     <field name="next_call" optional="hide" />
                                     <field name="last_call" optional="hide" />
-                                    <button
-                                        type="object"
-                                        name="action_run"
-                                        class="fa fa-play oe_highlight"
-                                        title="Run Manually"
-                                        confirm="Are you sure?"
-                                    />
                                 </tree>
                             </field>
                         </page>

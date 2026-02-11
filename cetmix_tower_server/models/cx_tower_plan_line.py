@@ -205,6 +205,8 @@ class CxTowerPlanLine(models.Model):
 
         # Set path
         path = self.path or command_as_root.path
+        if plan_log_record.waypoint_id:
+            kwargs["waypoint"] = plan_log_record.waypoint_id
         server.run_command(
             command=command_as_root,
             path=path,

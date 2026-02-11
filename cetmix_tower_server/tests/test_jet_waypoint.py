@@ -52,6 +52,16 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
                 "code": "result = {'exit_code': -100, 'message': 'Error'}",
             }
         )
+        cls.command_waypoint_check = cls.Command.create(
+            {
+                "name": "Command -> Waypoint Check",
+                "action": "python_code",
+                "code": (
+                    "result = {'exit_code': waypoint.id if waypoint else -1, "
+                    "'message': 'waypoint check'}"
+                ),
+            }
+        )
 
         # Create flight plans
         cls.plan_success = cls.Plan.create(
@@ -77,6 +87,19 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
                 "sequence": 10,
                 "plan_id": cls.plan_error.id,
                 "command_id": cls.command_error.id,
+            }
+        )
+
+        cls.plan_waypoint_check = cls.Plan.create(
+            {
+                "name": "Waypoint Check Plan",
+            }
+        )
+        cls.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": cls.plan_waypoint_check.id,
+                "command_id": cls.command_waypoint_check.id,
             }
         )
 
@@ -598,6 +621,84 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
             self.jet_test.waypoint_id.id if self.jet_test.waypoint_id else False,
             waypoint.id,
             "Waypoint should not be set as current waypoint after preparing",
+        )
+
+    def test_waypoint_variable_in_python_command_prepare(self):
+        """
+        Test that 'waypoint' variable is available in Python commands
+        run for a waypoint plan (plan_create) and its id is used as exit code
+        """
+        # Set template to use waypoint check plan
+        self.waypoint_template.plan_create_id = self.plan_waypoint_check.id
+
+        # Create waypoint in draft state
+        waypoint = self.JetWaypoint.create(
+            {
+                "name": "Test Waypoint For Variable Check",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+                "state": "draft",
+            }
+        )
+
+        # Call prepare - plan executes synchronously in tests
+        waypoint.prepare()
+
+        # Find the plan log created by prepare
+        plan_log = self.PlanLog.search(
+            [("waypoint_id", "=", waypoint.id)],
+            order="create_date desc",
+            limit=1,
+        )
+        self.assertTrue(plan_log, "Plan log should be created")
+
+        # Plan exit code (plan_status) must equal waypoint id
+        self.assertEqual(
+            plan_log.plan_status,
+            waypoint.id,
+            "Plan status must equal waypoint id (from waypoint variable)",
+        )
+
+    def test_waypoint_variable_in_python_command_arrive(self):
+        """
+        Test that 'waypoint' variable is available in Python commands
+        run for a waypoint arrive plan and its id is used as exit code
+        """
+        # Create waypoint template with plan_arrive_id
+        waypoint_template = self.JetWaypointTemplate.create(
+            {
+                "name": "Waypoint Template For Arrive Check",
+                "jet_template_id": self.jet_template_test.id,
+                "plan_arrive_id": self.plan_waypoint_check.id,
+            }
+        )
+
+        # Create waypoint in arriving state (no previous waypoint)
+        waypoint = self.JetWaypoint.create(
+            {
+                "name": "Test Waypoint For Arrive Variable Check",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": waypoint_template.id,
+                "state": "arriving",
+            }
+        )
+
+        # Call arrive - plan executes synchronously in tests
+        waypoint.arrive()
+
+        # Find the plan log created by arrive
+        plan_log = self.PlanLog.search(
+            [("waypoint_id", "=", waypoint.id)],
+            order="create_date desc",
+            limit=1,
+        )
+        self.assertTrue(plan_log, "Plan log should be created")
+
+        # Plan exit code (plan_status) must equal waypoint id
+        self.assertEqual(
+            plan_log.plan_status,
+            waypoint.id,
+            "Plan status must equal waypoint id (from waypoint variable)",
         )
 
     def test_prepare_with_flight_plan_error(self):

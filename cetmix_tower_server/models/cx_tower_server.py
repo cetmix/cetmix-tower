@@ -945,6 +945,8 @@ class CxTowerServer(models.Model):
                 Pass to run for specific jet
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
+                    - "waypoint", cx.tower.jet.waypoint(): waypoint record
+                        when running for a waypoint (e.g. from waypoint plan)
                     - "log", dict(): values passed to logger
                     - "key", dict(): values passed to key parser
                     - "variable_values", dict(): custom variable values
@@ -996,7 +998,6 @@ class CxTowerServer(models.Model):
                 "jet_id": jet.id if jet else None,
             }
         )
-
         # Check if no log record should be created
         no_command_log = self._context.get("no_command_log")
 
@@ -1566,6 +1567,7 @@ class CxTowerServer(models.Model):
         response = None
         error = None
         status = 0
+        plan_log_record = None
         try:
             # Generate custom label and add values for log
             kwargs["plan_log"] = {
@@ -1580,7 +1582,7 @@ class CxTowerServer(models.Model):
                 jet=log_record.jet_id,
                 **kwargs,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             if raise_on_error:
                 raise ValidationError(
                     _("Flight plan running error %(err)s", err=e)
@@ -1599,7 +1601,9 @@ class CxTowerServer(models.Model):
                 status=result["status"],
                 response=result["response"],
                 error=result["error"],
-                variable_values=plan_log_record.variable_values,
+                variable_values=plan_log_record.variable_values
+                if plan_log_record
+                else None,
             )
         return result
 
@@ -1898,7 +1902,7 @@ class CxTowerServer(models.Model):
                             banned_keyword=banned_keyword,
                         )
                     )
-            # Get jet template and jet from kwargs or log
+            # Get jet template, jet and waypoint from kwargs or log
             log_vals = kwargs.get("log", {})
             if log_vals:
                 jet_template_id = log_vals.get("jet_template_id")
@@ -1906,6 +1910,7 @@ class CxTowerServer(models.Model):
             else:
                 jet_template_id = kwargs.get("jet_template_id")
                 jet_id = kwargs.get("jet_id")
+            waypoint = kwargs.get("waypoint")
 
             jet_template = (
                 self.env["cx.tower.jet.template"].browse(jet_template_id)
@@ -1921,6 +1926,7 @@ class CxTowerServer(models.Model):
                 server=self,
                 jet_template=jet_template,
                 jet=jet,
+                waypoint=waypoint,
                 variable_values=kwargs.get("variable_values", {}),
             )
 
@@ -1939,7 +1945,7 @@ class CxTowerServer(models.Model):
                 else:
                     error = [result.get("message")]
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             if raise_on_error:
                 raise ValidationError(
                     _("Python code running error: %(err)s", err=e)

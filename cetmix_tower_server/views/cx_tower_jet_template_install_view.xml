@@ -153,18 +153,6 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
-                    <field
-                        name="jet_template_id"
-                        string="Template"
-                        icon="fa-plane"
-                        enable_counters="1"
-                    />
-                    <field
-                        name="server_id"
-                        string="Server"
-                        icon="fa-server"
-                        enable_counters="1"
-                    />
                 </searchpanel>
             </search>
         </field>

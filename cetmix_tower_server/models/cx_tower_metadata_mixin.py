@@ -25,3 +25,18 @@ class CxTowerMetadataMixin(models.AbstractModel):
         """
         for record in self:
             record.metadata_text = str(record.metadata) if record.metadata else False
+
+    def update_metadata(self, metadata):
+        """
+        Updates the metadata for the record.
+        Preserves the existing metadata.
+
+        Args:
+            metadata (dict): The metadata to update the record with
+
+        Returns:
+            bool: True if the metadata was updated, False otherwise
+        """
+        self.ensure_one()
+        # Preserve the existing data in self.metadata.
+        self.write({"metadata": {**(self.metadata or {}), **metadata}})
