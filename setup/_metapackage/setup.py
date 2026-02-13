@@ -16,6 +16,7 @@ setuptools.setup(
         'odoo-addon-cetmix_tower_server_queue>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_webhook>=16.0dev,<16.1dev',
         'odoo-addon-cetmix_tower_yaml>=16.0dev,<16.1dev',
+        'odoo-addon-cx_web_refresh_from_backend>=16.0dev,<16.1dev',
     ],
     classifiers=[
         'Programming Language :: Python',
