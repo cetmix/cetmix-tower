@@ -19,7 +19,7 @@
         "mail",
         "rpc_helper",
         "web_notify",
-        "web_refresh_from_backend",
+        "cx_web_refresh_from_backend",
     ],
     "data": [
         "security/cetmix_tower_server_groups.xml",

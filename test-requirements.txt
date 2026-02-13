@@ -1,1 +1,0 @@
-odoo-addon-web_refresh_from_backend @ git+https://github.com/oca/web.git@refs/pull/3363/head#subdirectory=setup/web_refresh_from_backend
