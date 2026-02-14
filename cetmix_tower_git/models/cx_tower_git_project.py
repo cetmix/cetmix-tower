@@ -34,15 +34,14 @@ class CxTowerGitProject(models.Model):
     # IMPORTANT: This field may contain duplicates because of the relation nature!
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
-        relation="cx_tower_git_project_rel",
-        column1="git_project_id",
-        column2="server_id",
-        string="Servers",
+        relation="cx_tower_git_project_server_rel",
         readonly=True,
         copy=False,
-        help="Servers are added automatically based on the files linked to the project."
-        "\nIMPORTANT: This field may contain duplicates"
-        " because of the relation nature!",
+        compute="_compute_server_ids",
+        store=True,
+        context={"active_test": False},
+        help="Servers are added automatically based on the files"
+        " linked to the project.",
     )
     source_ids = fields.One2many(
         comodel_name="cx.tower.git.source",
@@ -151,6 +150,22 @@ class CxTowerGitProject(models.Model):
         Default project format.
         """
         return "git_aggregator"
+
+    @api.depends("git_project_rel_ids", "git_project_rel_ids.server_id")
+    def _compute_server_ids(self):
+        """Compute server ids for git projects.
+
+        Why? Because a git project can be linked to multiple files
+        on the same server.
+        So we need to use a set to avoid duplicates so every server
+        is listed only once.
+        """
+        for project in self:
+            project.server_ids = (
+                list(set(project.git_project_rel_ids.server_id.ids))
+                if project.git_project_rel_ids
+                else False
+            )
 
     @api.depends(
         "git_project_rel_ids.server_id",

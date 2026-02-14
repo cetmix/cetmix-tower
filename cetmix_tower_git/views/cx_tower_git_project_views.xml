@@ -8,7 +8,11 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name" />
-                <field name="server_ids" widget="many2many_tags" />
+                <field
+                    name="server_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                />
                 <field name="active" widget="boolean_toggle" />
             </tree>
         </field>
@@ -44,6 +48,7 @@
                             <field
                                 name="server_ids"
                                 widget="many2many_tags"
+                                options="{'color_field': 'color'}"
                                 attrs="{'invisible': [('server_ids', '=', [])]}"
                             />
                             <field
