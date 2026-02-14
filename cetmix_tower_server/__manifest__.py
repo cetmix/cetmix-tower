@@ -13,7 +13,7 @@
     "application": False,
     "installable": True,
     "external_dependencies": {
-        "python": ["paramiko<4", "tldextract", "dnspython", "ansi2html"],
+        "python": ["paramiko<4.0.0", "tldextract", "dnspython", "ansi2html"],
     },
     "depends": [
         "mail",
