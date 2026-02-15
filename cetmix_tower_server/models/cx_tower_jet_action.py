@@ -63,7 +63,9 @@ class CxTowerJetAction(models.Model):
     # TODO: ensure that all actions belong to the same jet template
 
     def trigger(self, jet=None):
-        """Triggers related jet action
+        """Trigger jet action on a given jet.
+        If jet is not provided, the action will be triggered on the jet
+        in the context key "jet_id".
 
         Args:
             jet (cx.tower.jet): Jet to trigger the action.

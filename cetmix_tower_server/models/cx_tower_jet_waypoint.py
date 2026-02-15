@@ -242,7 +242,7 @@ class CxTowerJetWaypoint(models.Model):
     # ------------------------------------
     def prepare(self):
         """
-        Handle the waypoint creation event
+        Prepare the newly created waypoint.
 
         Returns:
             bool: True if event was handled else False
@@ -282,6 +282,9 @@ class CxTowerJetWaypoint(models.Model):
     def fly_to(self):
         """
         Fly to the waypoint
+
+        Returns:
+            bool: True if event was handled else False
         """
         self.ensure_one()
         if self.state != "ready":
@@ -298,9 +301,9 @@ class CxTowerJetWaypoint(models.Model):
         previous_waypoint = self.jet_id.waypoint_id
         if not previous_waypoint:
             # No previous waypoint, set state to arriving
-            # Variable values will be restored in arrive()
+            # Variable values will be restored in _arrive()
             self.write({"state": "arriving", "is_destination": True})
-            self.arrive()
+            self._arrive()
             return True
 
         # Don't go to the waypoint if it is already the current waypoint
@@ -315,16 +318,16 @@ class CxTowerJetWaypoint(models.Model):
         # Mark this waypoint as destination
         self.write({"state": "arriving", "is_destination": True})
         # Leave the previous waypoint (this will save its variable values)
-        previous_waypoint.leave()
+        previous_waypoint._leave()
         # If leaving completed immediately (no plan_leave_id),
         # arrive at the new waypoint (which will restore variable values)
         if previous_waypoint.state in ["ready", "current"]:
-            self.arrive()
+            self._arrive()
         return True
 
-    def leave(self):
+    def _leave(self):
         """
-        Leave the waypoint
+        Leave the waypoint.
 
         Returns:
             bool: True if event was handled else False
@@ -355,9 +358,9 @@ class CxTowerJetWaypoint(models.Model):
             self._save_variable_values()
         return True
 
-    def arrive(self):
+    def _arrive(self):
         """
-        Arrive at the waypoint
+        Arrive at the waypoint.
 
         Returns:
             bool: True if event was handled else False
@@ -423,7 +426,7 @@ class CxTowerJetWaypoint(models.Model):
                         lambda w: w.state == "arriving"
                     )
                     if destination_waypoint:
-                        destination_waypoint.arrive()
+                        destination_waypoint._arrive()
 
                 # Set the waypoint state to ready after leaving or preparing
                 prepared = self.state == "preparing"

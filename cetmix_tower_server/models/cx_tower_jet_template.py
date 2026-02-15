@@ -760,14 +760,18 @@ class CxTowerJetTemplate(models.Model):
 
         Args:
             server (cx.tower.server()): The server to use
-            name (str): The name of the jet
+            name (str): The name of the jet.
+                If not provided, a random name will be generated.
+                Defaults to None.
+            state (cx.tower.jet.state()): The state to set the jet to.
+                If not provided, the jet will be created in the initial state.
+                Defaults to None.
         Kwargs:
             field values to populate in the new jet record.
             NB: configuration variables are provided as follows:
             variable_values (dict): Custom configuration variables
                 in the format of `{variable_reference: variable_value}`
                 eg `{'odoo_version': '16.0'}`
-                Will be applied only if user has write access to the server.
         Returns:
             cx.tower.jet(): The new jet or False if the creation has failed
         """

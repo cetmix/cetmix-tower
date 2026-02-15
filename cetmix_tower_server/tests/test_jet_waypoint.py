@@ -567,11 +567,11 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         self.assertTrue(result, "Should return True")
         # State should be set to current (because fly_to() was called)
         # Since there's no previous waypoint and no plan_arrive_id,
-        # fly_to() sets state to arriving and calls arrive() which sets it to current
+        # fly_to() sets state to arriving and calls _arrive() which sets it to current
         self.assertEqual(
             waypoint.state,
             "current",
-            "State should be set to current after fly_to() and arrive()",
+            "State should be set to current after fly_to() and _arrive()",
         )
         # Waypoint should be set as current waypoint
         self.assertEqual(
@@ -684,7 +684,7 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
 
         # Call arrive - plan executes synchronously in tests
-        waypoint.arrive()
+        waypoint._arrive()
 
         # Find the plan log created by arrive
         plan_log = self.PlanLog.search(
@@ -838,11 +838,11 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         self.assertTrue(result, "Should return True")
         # State should be set to arriving (because fly_to() was called)
         # Since there's no previous waypoint and no plan_arrive_id,
-        # fly_to() sets state to arriving and calls arrive() which sets it to current
+        # fly_to() sets state to arriving and calls _arrive() which sets it to current
         self.assertEqual(
             waypoint.state,
             "current",
-            "State should be set to current after fly_to() and arrive()",
+            "State should be set to current after fly_to() and _arrive()",
         )
         # Waypoint should be set as current waypoint
         self.assertEqual(
@@ -947,14 +947,14 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
             "ready",
             "Leaving waypoint state should be set to ready",
         )
-        # Destination waypoint should have arrive() called
+        # Destination waypoint should have _arrive() called
         # (state should be current if no plan_arrive_id)
         # Since waypoint_template has no plan_arrive_id by default,
-        # arrive() sets state to current
+        # _arrive() sets state to current
         self.assertEqual(
             destination_waypoint.state,
             "current",
-            "Destination waypoint should have arrive() called",
+            "Destination waypoint should have _arrive() called",
         )
         # Destination waypoint should be set as current waypoint
         self.assertEqual(
@@ -1283,7 +1283,7 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
 
     def test_leave_from_current_state(self):
         """
-        Test leave() when waypoint is in current state
+        Test _leave() when waypoint is in current state
         """
         # Create waypoint in current state
         waypoint = self.JetWaypoint.create(
@@ -1296,13 +1296,13 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
         self.jet_test.waypoint_id = waypoint.id
 
-        # Call leave
-        result = waypoint.leave()
+        # Call _leave
+        result = waypoint._leave()
 
         # Should return True
         self.assertTrue(result, "Should return True")
         # State should be set to ready
-        # (leave() completes immediately when no plan_leave_id in tests)
+        # (_leave() completes immediately when no plan_leave_id in tests)
         self.assertEqual(
             waypoint.state,
             "ready",
@@ -1340,14 +1340,14 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         # Should return True
         self.assertTrue(result, "Should return True")
         # Current waypoint should be in ready state
-        # (leave() completes immediately when no plan_leave_id in tests)
+        # (_leave() completes immediately when no plan_leave_id in tests)
         self.assertEqual(
             current_waypoint.state,
             "ready",
             "Current waypoint should be in ready state after leaving completes",
         )
         # Destination waypoint should be in current state
-        # (arrive() completes immediately when no plan_arrive_id in tests)
+        # (_arrive() completes immediately when no plan_arrive_id in tests)
         self.assertEqual(
             destination_waypoint.state,
             "current",
@@ -1509,7 +1509,7 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
 
     def test_leave_saves_variable_values(self):
         """
-        Test that leave() saves variable values when state changes to ready
+        Test that _leave() saves variable values when state changes to ready
         """
         # Set some variable values on the jet
         self.jet_test.set_variable_value("test_var_1", "value1")
@@ -1529,8 +1529,8 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         # Ensure waypoint has no plan_leave_id (so it goes directly to ready)
         waypoint.waypoint_template_id.plan_leave_id = False
 
-        # Call leave
-        waypoint.leave()
+        # Call _leave
+        waypoint._leave()
 
         # Variable values should be saved in waypoint
         variable_values = waypoint.variable_values or {}
@@ -1547,7 +1547,7 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
 
     def test_leave_with_plan_saves_variable_values(self):
         """
-        Test that leave() saves variable values when plan completes
+        Test that _leave() saves variable values when plan completes
         """
         # Set some variable values on the jet
         self.jet_test.set_variable_value("test_var_1", "value1")
@@ -1573,8 +1573,8 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
         self.jet_test.waypoint_id = waypoint.id
 
-        # Call leave (plan executes synchronously in tests)
-        waypoint.leave()
+        # Call _leave (plan executes synchronously in tests)
+        waypoint._leave()
 
         # Variable values should be saved in waypoint after plan completes
         variable_values = waypoint.variable_values or {}

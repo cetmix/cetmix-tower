@@ -2234,7 +2234,13 @@ class CxTowerServer(models.Model):
 
     def server_toggle_active(self, self_active):
         """
-        Change active status of related records
+        Change active status of related records:
+        - files
+        - commands
+        - plans
+        - variable values
+        Add custom logic to your model if you want to change
+        the active status of other records.
 
         Args:
             self_active (bool): active status of the record
@@ -2247,7 +2253,7 @@ class CxTowerServer(models.Model):
         ).toggle_active()
 
     def toggle_active(self):
-        """Archiving related server"""
+        """Archive or unarchive related server"""
         res = super().toggle_active()
         server_active = self.with_context(active_test=False).filtered(
             lambda x: x.active

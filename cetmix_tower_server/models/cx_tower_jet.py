@@ -767,8 +767,8 @@ class CxTowerJet(models.Model):
         Create a new jet from this template on the given server.
 
         Following configuration variables will be available in the flight plan:
-        __original_jet__: The reference of the original jet
-        __requested_state__: The reference of the requested state
+        `__original_jet__`: The reference of the original jet
+        `__requested_state__`: The reference of the requested state
             the new jet was requested to be in.
 
         Use these variables in the flight plan to identify the original jet
@@ -1271,7 +1271,7 @@ class CxTowerJet(models.Model):
         """Create a new waypoint for the jet
 
         Args:
-            waypoint_template_id (cx.tower.jet.waypoint.template or Char):
+            waypoint_template (cx.tower.jet.waypoint.template or Char):
                 The waypoint template or reference to create the waypoint from
             name (Char, optional): The name of the waypoint.
                 Defaults to None.
@@ -1587,17 +1587,18 @@ class CxTowerJet(models.Model):
         # TODO: check the entire dependency tree
         return l1_jets | l2_jets
 
-    def _get_dependent_jets_by_template_reference(self, jet_template_reference):
+    def get_dependent_jets_by_template_reference(self, jet_template_reference):
         """
         A wrapper for _get_dependent_jets_by_template that allows
         to use the reference of the jet template instead of the record.
-        Designed to be used in the Python commands
+        Designed to be used in the Python commands.
 
         Args:
             jet_template_reference (str): The reference of the jet template
 
         Returns:
-            cx.tower.jet(): Recordset of jets
+            cx.tower.jet(): Recordset of jets with the given template
+            that depend on the current jet.
         """
         self.ensure_one()
 
