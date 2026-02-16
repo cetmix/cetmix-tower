@@ -504,3 +504,31 @@ class TestVaultMixin(TestTowerCommon):
             all_secret_values,
             "Server 3 should not be in secret values since it has no secret fields",
         )
+
+    def test_is_secret_value_set(self):
+        """Test _is_secret_value_set returns True/False for host_key correctly."""
+        server = self.Server.create(
+            {
+                "name": "Is Secret Set Test Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+                "host_key": "test_host_key_value",
+                "skip_host_key": False,
+            }
+        )
+
+        self.assertTrue(
+            server._is_secret_value_set("host_key"),
+            "host_key should be considered set when value exists in vault",
+        )
+
+        server.write({"host_key": False})
+        server = self.Server.browse(server.id)
+
+        self.assertFalse(
+            server._is_secret_value_set("host_key"),
+            "host_key should be considered not set when cleared",
+        )

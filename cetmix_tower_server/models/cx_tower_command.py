@@ -527,6 +527,7 @@ class CxTowerCommand(models.Model):
         """
         return {}
 
+    @api.model
     def _get_python_command_eval_context(self, server=None, **kwargs):
         """
         Get the evaluation context for the python command.
@@ -548,3 +549,13 @@ class CxTowerCommand(models.Model):
 
         eval_context["custom_values"] = kwargs.get("variable_values") or {}
         return eval_context
+
+    def _get_banned_python_code_keywords(self):
+        """
+        Get the banned python code keywords for the python command.
+        Extend this method to add banned keywords to the list.
+
+        Returns:
+            list: Banned python code keywords.
+        """
+        return ["_set_secret_values(", "_get_secret_value(", "_get_secret_values("]

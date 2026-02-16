@@ -1482,6 +1482,27 @@ else:
             "The error response must be contain text - error",
         )
 
+    def test_run_python_code_banned_keywords(self):
+        """
+        Test that _run_python_code raises ValidationError when code contains
+        banned keywords (e.g. _set_secret_values, _get_secret_value,
+        _get_secret_values).
+        """
+        banned_keywords = self.Command._get_banned_python_code_keywords()
+        for banned_keyword in banned_keywords:
+            with self.subTest(banned_keyword=banned_keyword):
+                code = f"""
+result = {{"exit_code": 0, "message": "ok"}}
+# Banned: {banned_keyword}
+"""
+                with self.assertRaises(ValidationError) as cm:
+                    self.server_test_1._run_python_code(code, raise_on_error=True)
+                self.assertIn(
+                    banned_keyword,
+                    str(cm.exception),
+                    "ValidationError must mention the banned keyword",
+                )
+
     def test_run_python_code(self):
         """
         Test python execution code
