@@ -406,3 +406,17 @@ class CxTowerVaultMixin(models.AbstractModel):
         set_clause = ", ".join(f"{field} = NULL" for field in self.SECRET_FIELDS)
         query = f"UPDATE {self._table} SET {set_clause} WHERE id in %s"
         self.env.cr.execute(query, (tuple(self.ids),))
+
+    def _is_secret_value_set(self, field_name):
+        """
+        Check if a secret value is set for a specific field for a single record.
+        This method is preferable to _get_secret_value because it doesn't require
+        because it doesn't expose the secret value to the caller.
+
+        Args:
+            field_name (str): Name of the secret field to check
+
+        Returns:
+            bool: True if the secret value is set, False otherwise
+        """
+        return self._get_secret_value(field_name) is not None

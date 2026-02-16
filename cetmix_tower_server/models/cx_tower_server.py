@@ -1613,6 +1613,20 @@ class CxTowerServer(models.Model):
                 command_code, pythonic_mode=True, **kwargs.get("key", {})
             )
 
+            # Check if code contains banned keywords
+            banned_keywords = self.env[
+                "cx.tower.command"
+            ]._get_banned_python_code_keywords()
+            for banned_keyword in banned_keywords:
+                if banned_keyword in code:
+                    raise ValidationError(
+                        _(
+                            "Following keyword is not allowed in Python code:"
+                            " '%(banned_keyword)s'",
+                            banned_keyword=banned_keyword,
+                        )
+                    )
+
             # Get the evaluation context for the python command
             eval_context = self.env[
                 "cx.tower.command"
@@ -1640,9 +1654,8 @@ class CxTowerServer(models.Model):
                 raise ValidationError(
                     _("Python code running error: %(err)s", err=e)
                 ) from e
-            else:
-                status = PYTHON_COMMAND_ERROR
-                error = [e]
+            status = PYTHON_COMMAND_ERROR
+            error = [e]
 
         result = self._parse_command_results(status, response, error, secrets, **kwargs)
         result["variable_values"] = kwargs.get("variable_values", {})
