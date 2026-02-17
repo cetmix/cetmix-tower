@@ -1931,6 +1931,13 @@ msgid "Followers (Partners)"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Following keyword is not allowed in Python code: '%(banned_keyword)s'"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__activity_type_icon
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__activity_type_icon
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__activity_type_icon
