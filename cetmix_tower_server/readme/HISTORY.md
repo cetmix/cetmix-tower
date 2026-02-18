@@ -1,3 +1,8 @@
+## 17.0.2.1.9 (2026-02-18)
+
+- Features: Blacklist filter for Python commands, value checker for Vault. (5253)
+
+
 ## 17.0.2.1.8 (2026-02-09)
 
 - Features: Improve the 'File using template' command flow, fix the flight plan line view layout. (5197)
