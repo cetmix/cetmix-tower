@@ -12,10 +12,12 @@ class CxTowerMetadataMixin(models.AbstractModel):
     metadata = fields.Json(
         help="Additional metadata for this record",
         readonly=True,
+        groups="cetmix_tower_server.group_manager",
     )
     metadata_text = fields.Text(
         help="Additional metadata for this record",
         compute="_compute_metadata_text",
+        groups="cetmix_tower_server.group_manager",
     )
 
     @api.depends("metadata")

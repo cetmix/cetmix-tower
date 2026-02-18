@@ -8,6 +8,7 @@ from . import cx_tower_reference_mixin
 from . import cx_tower_tag_mixin
 from . import cx_tower_key_mixin
 from . import cx_tower_vault_mixin
+from . import cx_tower_metadata_mixin
 from . import cx_tower_vault
 from . import cx_tower_variable
 from . import cx_tower_variable_value
@@ -30,7 +31,6 @@ from . import cx_tower_server_template
 from . import cx_tower_shortcut
 from . import cx_tower_scheduled_task
 from . import cx_tower_scheduled_task_cv
-from . import cx_tower_metadata_mixin
 from . import cetmix_tower
 from . import cx_tower_variable_option
 from . import ir_actions_server

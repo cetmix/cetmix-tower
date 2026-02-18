@@ -83,6 +83,7 @@ class CxTowerServer(models.Model):
         "cx.tower.access.role.mixin",
         "cx.tower.variable.mixin",
         "cx.tower.reference.mixin",
+        "cx.tower.metadata.mixin",
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.vault.mixin",

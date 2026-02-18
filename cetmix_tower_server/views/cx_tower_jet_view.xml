@@ -565,7 +565,20 @@
                                 </tree>
                             </field>
                         </page>
-
+                        <page
+                            name="metadata"
+                            string="Metadata"
+                            groups="base.group_no_one"
+                        >
+                            <group>
+                                <field name="metadata" invisible="1" />
+                                <field
+                                    name="metadata_text"
+                                    string="Metadata"
+                                    readonly="1"
+                                />
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

@@ -24,6 +24,7 @@ class CxTowerJet(models.Model):
     _inherit = [
         "cx.tower.reference.mixin",
         "cx.tower.variable.mixin",
+        "cx.tower.metadata.mixin",
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.tag.mixin",
