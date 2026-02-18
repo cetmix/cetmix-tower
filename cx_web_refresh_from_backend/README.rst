@@ -40,24 +40,24 @@ model.
 **Arguments**
 ~~~~~~~~~~~~~
 
-+----------------+--------------------------+--------------------------+
-| Argument       | Type                     | Description              |
-+================+==========================+==========================+
-| **model**      | ``Char``                 | Model name, e.g.         |
-|                |                          | ``'res.partner'``        |
-+----------------+--------------------------+--------------------------+
-| **view_types** | ``List of Char``         | View types to reload,    |
-|                | *(optional)*             | e.g.                     |
-|                |                          | ``["form", "kanban"]``.  |
-|                |                          | Leave blank to reload    |
-|                |                          | all views.               |
-+----------------+--------------------------+--------------------------+
-| **rec_ids**    | ``List of Integer``      | The view will be         |
-|                | *(optional)*             | reloaded only if a       |
-|                |                          | record with an ID from   |
-|                |                          | this list is present in  |
-|                |                          | the view.                |
-+----------------+--------------------------+--------------------------+
++----------------+-------------------------+-------------------------+
+| Argument       | Type                    | Description             |
++================+=========================+=========================+
+| **model**      | ``Char``                | Model name, e.g.        |
+|                |                         | ``'res.partner'``       |
++----------------+-------------------------+-------------------------+
+| **view_types** | ``List of Char``        | View types to reload,   |
+|                | *(optional)*            | e.g.                    |
+|                |                         | ``["form", "kanban"]``. |
+|                |                         | Leave blank to reload   |
+|                |                         | all views.              |
++----------------+-------------------------+-------------------------+
+| **rec_ids**    | ``List of Integer``     | The view will be        |
+|                | *(optional)*            | reloaded only if a      |
+|                |                         | record with an ID from  |
+|                |                         | this list is present in |
+|                |                         | the view.               |
++----------------+-------------------------+-------------------------+
 
 --------------
 
