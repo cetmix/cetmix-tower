@@ -12,6 +12,7 @@
     "license": "LGPL-3",
     "author": "Cetmix",
     "website": "https://tower.cetmix.com",
+    "images": ["static/description/banner.png"],
     "depends": ["mail"],
     "assets": {
         "web.assets_backend": [
