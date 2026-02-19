@@ -1,3 +1,8 @@
+## 18.0.1.0.9 (2026-02-19)
+
+- Features: Blacklist filter for Python commands, value checker for Vault. (5253)
+
+
 ## 18.0.1.0.7 (2026-02-05)
 
 - Features: Scheduled tasks: allow to select specific days of week. (5190)
