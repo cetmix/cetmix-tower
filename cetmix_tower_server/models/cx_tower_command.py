@@ -1,5 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
 from types import SimpleNamespace
 from urllib import parse
 
@@ -13,6 +14,8 @@ from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
 from .constants import DEFAULT_PYTHON_CODE, DEFAULT_PYTHON_CODE_HELP
+
+_logger = logging.getLogger(__name__)
 
 requests = wrap_module(__import__("requests"), ["post", "get", "delete", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
@@ -383,6 +386,12 @@ class CxTowerCommand(models.Model):
                 }}
         """
         python_libraries = {
+            "_logger": {
+                "import": _logger,
+                "help": _(
+                    "Logger object. Use with caution! Only for debugging purposes."
+                ),
+            },
             "re": {
                 "import": re,
                 "help": _("Python 're' library for regex operations"),
