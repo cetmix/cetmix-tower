@@ -1311,15 +1311,6 @@ class TestTowerJet(TestTowerJetsCommon):
         self.assertTrue(waypoint, "Should return a waypoint record")
         self.assertTrue(waypoint.exists(), "Waypoint should exist")
 
-        # Prepare the waypoint
-        # (this is when fly_to should happen if is_destination=True)
-        # Since waypoint_template has no plan_create_id, prepare()
-        # will set state to "ready"
-        # and if is_destination=True, it will call fly_to()
-        # In tests, plans run synchronously, so if there's no plan_arrive_id,
-        # the waypoint will immediately become "current"
-        waypoint.prepare()
-
         # Verify that the waypoint flew to
         # (state should be "current" in synchronous tests)
         self.assertEqual(

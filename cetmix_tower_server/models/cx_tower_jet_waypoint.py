@@ -248,24 +248,34 @@ class CxTowerJetWaypoint(models.Model):
             bool: True if event was handled else False
         """
         self.ensure_one()
+        _logger.info(
+            _(
+                "Preparing waypoint %(waypoint)s on jet %(jet)s",
+                waypoint=self.name,
+                jet=self.jet_id.name,
+            )
+        )
         if not self.state == "draft":
+            _logger.error(
+                _(
+                    "Cannot prepare waypoint %(waypoint)s on jet %(jet)s because"
+                    " it is not in the 'draft' state",
+                    waypoint=self.name,
+                    jet=self.jet_id.name,
+                )
+            )
             return False
         if self.waypoint_template_id.plan_create_id:
             self.state = "preparing"
-            # Warning! Explicit commit!
-            # This is needed to ensure that the waypoint state is changed
-            # before the create plan is run.
-            # This is also needed to avoid race conditions with other transactions.
-            if not self.env.context.get("cetmix_tower_no_commit"):
-                self.env.cr.commit()  # pylint: disable=invalid-commit
-            self.jet_id.server_id.sudo().run_flight_plan(
-                flight_plan=self.waypoint_template_id.plan_create_id,
-                jet=self.jet_id,
-                plan_log={
-                    "waypoint_id": self.id,
-                },
-                variable_values=self._get_custom_variable_values(),
-            )
+            with self.env.cr.savepoint():
+                self.jet_id.server_id.sudo().run_flight_plan(
+                    flight_plan=self.waypoint_template_id.plan_create_id,
+                    jet=self.jet_id,
+                    plan_log={
+                        "waypoint_id": self.id,
+                    },
+                    variable_values=self._get_custom_variable_values(),
+                )
         else:
             self.state = "ready"
             # Save jet variable values when state changes to ready
@@ -277,6 +287,13 @@ class CxTowerJetWaypoint(models.Model):
             # Fly to this waypoint if set as destination
             if self.is_destination:
                 self.fly_to()
+        _logger.info(
+            _(
+                "Successfully prepared waypoint %(waypoint)s on jet %(jet)s",
+                waypoint=self.name,
+                jet=self.jet_id.name,
+            )
+        )
         return True
 
     def fly_to(self):
@@ -287,7 +304,22 @@ class CxTowerJetWaypoint(models.Model):
             bool: True if event was handled else False
         """
         self.ensure_one()
+        _logger.info(
+            _(
+                "Flying to waypoint %(waypoint)s on jet %(jet)s",
+                waypoint=self.name,
+                jet=self.jet_id.name,
+            )
+        )
         if self.state != "ready":
+            _logger.error(
+                _(
+                    "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
+                    " it is not in the 'ready' state",
+                    waypoint=self.name,
+                    jet=self.jet_id.name,
+                )
+            )
             return False
 
         # Cannot fly to waypoint if there is another waypoint
@@ -295,6 +327,15 @@ class CxTowerJetWaypoint(models.Model):
         if self.jet_id.waypoint_ids.filtered(
             lambda w: w.state in ["arriving", "leaving"]
         ):
+            _logger.error(
+                _(
+                    "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
+                    " there is another waypoint %(other_waypoint)s "
+                    "in the 'arriving' or 'leaving' state",
+                    waypoint=self.name,
+                    jet=self.jet_id.name,
+                )
+            )
             return False
 
         # Leave the previous waypoint
@@ -323,6 +364,13 @@ class CxTowerJetWaypoint(models.Model):
         # arrive at the new waypoint (which will restore variable values)
         if previous_waypoint.state in ["ready", "current"]:
             self._arrive()
+        _logger.info(
+            _(
+                "Successfully flew to waypoint %(waypoint)s on jet %(jet)s",
+                waypoint=self.name,
+                jet=self.jet_id.name,
+            )
+        )
         return True
 
     def _leave(self):
@@ -336,22 +384,17 @@ class CxTowerJetWaypoint(models.Model):
         if self.state not in ["ready", "current"]:
             return False
         self.state = "leaving"
-        # Warning! Explicit commit!
-        # This is needed to ensure that the waypoint state is changed
-        # before the leave plan is run.
-        # This is also needed to avoid race conditions with other transactions.
-        if not self.env.context.get("cetmix_tower_no_commit"):
-            self.env.cr.commit()  # pylint: disable=invalid-commit
         plan_leave = self.waypoint_template_id.plan_leave_id
         if plan_leave:
-            self.jet_id.server_id.sudo().run_flight_plan(
-                jet=self.jet_id,
-                flight_plan=plan_leave,
-                plan_log={
-                    "waypoint_id": self.id,
-                },
-                variable_values=self._get_custom_variable_values(),
-            )
+            with self.env.cr.savepoint():
+                self.jet_id.server_id.sudo().run_flight_plan(
+                    jet=self.jet_id,
+                    flight_plan=plan_leave,
+                    plan_log={
+                        "waypoint_id": self.id,
+                    },
+                    variable_values=self._get_custom_variable_values(),
+                )
         else:
             self.state = "ready"
             # Save jet variable values
@@ -412,9 +455,25 @@ class CxTowerJetWaypoint(models.Model):
                 self.jet_id.waypoint_id = self.id
                 # Clear destination flag when successfully arrived
                 self.write({"state": "current", "is_destination": False})
+                _logger.info(
+                    _(
+                        "Successfully arrived at waypoint %(waypoint)s on jet %(jet)s",
+                        waypoint=self.name,
+                        jet=self.jet_id.name,
+                    )
+                )
             elif self.state == "deleting":
                 self.state = "deleted"
+                waypoint_name = self.name
+                jet_name = self.jet_id.name
                 self.unlink()
+                _logger.info(
+                    _(
+                        "Successfully deleted waypoint %(waypoint)s on jet %(jet)s",
+                        waypoint=waypoint_name,
+                        jet=jet_name,
+                    )
+                )
             elif self.state in ["leaving", "preparing"]:
                 # Save jet variable values
                 self._save_variable_values()

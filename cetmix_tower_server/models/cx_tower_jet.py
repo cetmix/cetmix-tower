@@ -978,20 +978,6 @@ class CxTowerJet(models.Model):
                 else False,
             }
         )
-
-        # WARNING: Explicit commit!
-        # This commit is made **only** when to ensure that the state is set
-        # even if the next action fails.
-        # Reason: Without this commit, the change would not be visible to other
-        # transactions until the end of the transaction, leading to a race
-        # condition and possible double execution.
-        # Explicit commits are strongly discouraged in Odoo business logic and
-        # should be used only with clear justification and in strictly controlled
-        # contexts (like this cron scenario). Never add this commit for general
-        # business flows!
-        if not self.env.context.get("cetmix_tower_no_commit"):
-            self.env.cr.commit()  # pylint: disable=invalid-commit
-
         if action.plan_id:
             # Run the flight plan
             plan_kwargs = {
@@ -1005,15 +991,16 @@ class CxTowerJet(models.Model):
                 plan_kwargs["variable_values"] = current_command_log.variable_values
 
             # Run the flight plan
-            self.server_id.sudo().run_flight_plan(
-                flight_plan=action.plan_id,
-                jet=self,
-                **plan_kwargs,
-            )
-            # Flight plan will trigger the `_flight_plan_finished` function again
-            # if the flight plan is finished successfully.
-            # So we don't need continue the loop in this case.
-            return
+            with self.env.cr.savepoint():
+                self.server_id.sudo().run_flight_plan(
+                    flight_plan=action.plan_id,
+                    jet=self,
+                    **plan_kwargs,
+                )
+                # Flight plan will trigger the `_flight_plan_finished` function again
+                # if the flight plan is finished successfully.
+                # So we don't need continue the loop in this case.
+                return
 
         # Set the state to the destination state if no plan is defined
         final_vals = {

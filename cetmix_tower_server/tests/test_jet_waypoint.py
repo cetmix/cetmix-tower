@@ -719,7 +719,10 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
 
         # Call prepare - plan executes synchronously in tests
-        result = waypoint.prepare()
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
+        ):
+            result = waypoint.prepare()
 
         # Should return True
         self.assertTrue(result, "Should return True")
@@ -752,8 +755,11 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
             }
         )
 
-        # Call prepare
-        result = waypoint.prepare()
+        # Call prepare. This will log and error because waypoint is not in draft state
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
+        ):
+            result = waypoint.prepare()
 
         # Should return False and not change state
         self.assertFalse(result, "Should return False when not in draft state")
@@ -1102,7 +1108,10 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
 
         # Call _plan_finished
-        result = waypoint._plan_finished(plan_log)
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
+        ):
+            result = waypoint._plan_finished(plan_log)
 
         # Should return True
         self.assertTrue(result, "Should return True")
@@ -1149,7 +1158,10 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
 
         # Call _plan_finished
-        result = waypoint._plan_finished(plan_log)
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
+        ):
+            result = waypoint._plan_finished(plan_log)
 
         # Should return True
         self.assertTrue(result, "Should return True")
@@ -1376,6 +1388,7 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         self.jet_test.waypoint_id = waypoint.id
 
         # Should raise ValidationError when trying to delete
+
         with self.assertRaises(ValidationError) as context:
             waypoint.unlink()
 
@@ -1730,7 +1743,10 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         )
 
         # Call _plan_finished with error
-        arriving_waypoint._plan_finished(plan_log)
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
+        ):
+            arriving_waypoint._plan_finished(plan_log)
 
         # Variable values should be restored from current waypoint
         self.assertEqual(
