@@ -168,6 +168,16 @@ class CxTowerJetWaypoint(models.Model):
                             waypoint=waypoint.name,
                         )
                     )
+        # Invalidate the state field
+        fields_to_invalidate = []
+        if "state" in vals:
+            fields_to_invalidate.append("state")
+        if "variable_values" in vals:
+            fields_to_invalidate.append("variable_values")
+        if "is_destination" in vals:
+            fields_to_invalidate.append("is_destination")
+        if fields_to_invalidate:
+            self.invalidate_recordset(fields_to_invalidate)
         return super().write(vals)
 
     def unlink(self):
@@ -228,7 +238,7 @@ class CxTowerJetWaypoint(models.Model):
             result = True
 
         for waypoint in waypoints_to_run_delete_plan:
-            waypoint.state = "deleting"
+            waypoint.write({"state": "deleting"})
             waypoint.jet_id.server_id.sudo().run_flight_plan(
                 jet=waypoint.jet_id,
                 flight_plan=waypoint.waypoint_template_id.plan_delete_id,
@@ -266,7 +276,7 @@ class CxTowerJetWaypoint(models.Model):
             )
             return False
         if self.waypoint_template_id.plan_create_id:
-            self.state = "preparing"
+            self.write({"state": "preparing"})
             with self.env.cr.savepoint():
                 self.jet_id.server_id.sudo().run_flight_plan(
                     flight_plan=self.waypoint_template_id.plan_create_id,
@@ -277,7 +287,7 @@ class CxTowerJetWaypoint(models.Model):
                     variable_values=self._get_custom_variable_values(),
                 )
         else:
-            self.state = "ready"
+            self.write({"state": "ready"})
             # Save jet variable values when state changes to ready
             self._save_variable_values()
 
@@ -383,7 +393,7 @@ class CxTowerJetWaypoint(models.Model):
         self.ensure_one()
         if self.state not in ["ready", "current"]:
             return False
-        self.state = "leaving"
+        self.write({"state": "leaving"})
         plan_leave = self.waypoint_template_id.plan_leave_id
         if plan_leave:
             with self.env.cr.savepoint():
@@ -396,7 +406,7 @@ class CxTowerJetWaypoint(models.Model):
                     variable_values=self._get_custom_variable_values(),
                 )
         else:
-            self.state = "ready"
+            self.write({"state": "ready"})
             # Save jet variable values
             self._save_variable_values()
         return True
@@ -426,7 +436,8 @@ class CxTowerJetWaypoint(models.Model):
         else:
             # Clear destination flag when arriving without plan
             self.write({"is_destination": False, "state": "current"})
-            self.jet_id.waypoint_id = self.id
+            self.jet_id.write({"waypoint_id": self.id})
+            self.jet_id.invalidate_recordset(["waypoint_id"])
             # Refresh the frontend views
             self.env.user.reload_views(model="cx.tower.jet", rec_ids=[self.jet_id.id])
         return True
@@ -452,7 +463,8 @@ class CxTowerJetWaypoint(models.Model):
             if self.state == "arriving":
                 # Set the waypoint as the current waypoint
                 # when successfully arriving
-                self.jet_id.waypoint_id = self.id
+                self.jet_id.write({"waypoint_id": self.id})
+                self.jet_id.invalidate_recordset(["waypoint_id"])
                 # Clear destination flag when successfully arrived
                 self.write({"state": "current", "is_destination": False})
                 _logger.info(
@@ -463,7 +475,7 @@ class CxTowerJetWaypoint(models.Model):
                     )
                 )
             elif self.state == "deleting":
-                self.state = "deleted"
+                self.write({"state": "deleted"})
                 waypoint_name = self.name
                 jet_name = self.jet_id.name
                 self.unlink()
@@ -489,7 +501,7 @@ class CxTowerJetWaypoint(models.Model):
 
                 # Set the waypoint state to ready after leaving or preparing
                 prepared = self.state == "preparing"
-                self.state = "ready"
+                self.write({"state": "ready"})
                 # Fly to this waypoint if set as destination
                 if self.is_destination and prepared:
                     self.fly_to()
@@ -507,11 +519,11 @@ class CxTowerJetWaypoint(models.Model):
             if current_waypoint:
                 current_waypoint._restore_variable_values()
                 # Set current waypoint state to "current"
-                current_waypoint.state = "current"
+                current_waypoint.write({"state": "current"})
             # Clear destination flag when arriving fails
             self.write({"is_destination": False, "state": "error"})
         else:
-            self.state = "error"
+            self.write({"state": "error"})
 
         # Refresh the frontend views
         self.env.user.reload_views(model="cx.tower.jet", rec_ids=[self.jet_id.id])
@@ -544,6 +556,7 @@ class CxTowerJetWaypoint(models.Model):
 
         # Save to waypoint's variable_values field
         self.write({"variable_values": variable_values_dict})
+        self.invalidate_recordset(["variable_values"])
         return True
 
     def _restore_variable_values(self):
