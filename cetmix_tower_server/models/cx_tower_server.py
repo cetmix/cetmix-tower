@@ -71,11 +71,10 @@ def ensure_ssh_disconnect(func):
 
 
 class CxTowerServer(models.Model):
-    """Represents a server entity
+    """Represents a server entity.
 
     Keeps information required to connect and perform routine operations
-    such as configuration, file management etc"
-
+    such as configuration, file management etc.
     """
 
     _name = "cx.tower.server"

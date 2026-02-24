@@ -586,31 +586,9 @@ class CxTowerCommand(models.Model):
 
         <module_name> Odoo module technical name.
         <library_name> is the name of the library how it will be used in the code.
-        <library_import> is the library to import.
-        <library_help_html> is the help text for the library shown in the "Help" tab.
 
-        Example:
-
-        ```python
-        # Custom module extending Cetmix Tower
-        custom_python_libraries = super()._custom_python_libraries()
-        custom_python_libraries.update({
-            "cetmix_tower_aws": {
-                "boto3": {
-                    "import": boto3,
-                    "help": "Python 'boto3' library. "
-                    "<a href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html'"
-                    " target='_blank'>Documentation</a>."
-                },
-                "custom_library_name": {
-                    "import": custom_library_import,
-                    "help": "Custom library help text"
-                }
-            }
-        })
-        return custom_python_libraries
-
-        ```
+            <library_import>: The library object to expose.
+            <library_help_html>: Help text (HTML) shown in the "Help" tab.
         """
         return {}
 

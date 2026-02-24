@@ -666,8 +666,7 @@ class CxTowerJetTemplate(models.Model):
         """Uninstall the Jet Template from the selected servers.
 
         Args:
-            servers (cx.tower.server()): Servers to uninstall"
-            " the Jet Template from
+            servers (cx.tower.server()): Servers to uninstall the Jet Template from
             raise_if_not_possible (bool):
             If True, will raise an error if the uninstallation is not possible.
         """

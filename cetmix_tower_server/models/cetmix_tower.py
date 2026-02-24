@@ -15,13 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class CetmixTower(models.AbstractModel):
     """Generic model used to simplify Odoo automation.
-
     Used to keep main integration function in a single place.
-
-    For example when writing automated actions one can use
-    `env["cetmix.tower"].create_server_from_template(..)`
-    instead of
-    `env["cx.tower.server.template"].create_server_from_template(..)
     """
 
     _name = "cetmix.tower"
