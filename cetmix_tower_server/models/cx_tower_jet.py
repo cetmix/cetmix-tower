@@ -11,6 +11,7 @@ from .constants import (
     JET_DEPENDENCIES_NOT_SATISFIED,
     JET_STATE_ERROR,
 )
+from .cx_tower_state_storage_mixin import StateStorageChar
 from .tools import generate_random_id
 
 _logger = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class CxTowerJet(models.Model):
         "mail.activity.mixin",
         "cx.tower.tag.mixin",
         "cx.tower.access.role.mixin",
+        "cx.tower.state.storage.mixin",
     ]
     _order = "sequence, name"
 
@@ -137,7 +139,7 @@ class CxTowerJet(models.Model):
         domain="[('id', 'in', jet_template_state_ids)]",
         copy=False,
     )
-    state = fields.Char(
+    state = StateStorageChar(
         related="state_id.reference",
         readonly=True,
         store=True,

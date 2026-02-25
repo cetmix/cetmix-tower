@@ -518,10 +518,29 @@ class CxTowerCommand(models.Model):
                     "help": <object_help_html>
                 }}
         """
+        env = self.with_context(read_from_state_storage=True).env
+        server_obj = env["cx.tower.server"]
+        server = (
+            server.with_context(read_from_state_storage=True) if server else server_obj
+        )
+        jet_template_obj = env["cx.tower.jet.template"]
+        jet_template = (
+            jet_template.with_context(read_from_state_storage=True)
+            if jet_template
+            else jet_template_obj
+        )
+        jet_obj = env["cx.tower.jet"]
+        jet = jet.with_context(read_from_state_storage=True) if jet else jet_obj
+        waypoint_obj = env["cx.tower.jet.waypoint"]
+        waypoint = (
+            waypoint.with_context(read_from_state_storage=True)
+            if waypoint is not None
+            else waypoint_obj
+        )
         return {
             "uid": {"import": self._uid, "help": _("Current Odoo user ID")},
-            "user": {"import": self.env.user, "help": _("Current Odoo user")},
-            "env": {"import": self.env, "help": _("Odoo Environment")},
+            "user": {"import": env.user, "help": _("Current Odoo user")},
+            "env": {"import": env, "help": _("Odoo Environment")},
             "server": {
                 "import": server,
                 "help": _("Current Cetmix Tower server this command is running on"),
@@ -543,7 +562,7 @@ class CxTowerCommand(models.Model):
                 ),
             },
             "tower": {
-                "import": self.env["cetmix.tower"],
+                "import": env["cetmix.tower"],
                 "help": _(
                     "Cetmix Tower "
                     "<a href='https://cetmix.com/tower/documentation/odoo_automation'"
@@ -551,23 +570,23 @@ class CxTowerCommand(models.Model):
                 ),
             },
             "tower_servers": {
-                "import": self.env["cx.tower.server"],
+                "import": server_obj,
                 "help": _("A helper shortcut to <code>env['cx.tower.server']</code>"),
             },
             "tower_jets": {
-                "import": self.env["cx.tower.jet"],
+                "import": jet_obj,
                 "help": _("A helper shortcut to <code>env['cx.tower.jet']</code>"),
             },
             "tower_commands": {
-                "import": self.env["cx.tower.command"],
+                "import": env["cx.tower.command"],
                 "help": _("A helper shortcut to <code>env['cx.tower.command']</code>"),
             },
             "tower_plans": {
-                "import": self.env["cx.tower.plan"],
+                "import": env["cx.tower.plan"],
                 "help": _("A helper shortcut to <code>env['cx.tower.plan']</code>"),
             },
             "tower_waypoints": {
-                "import": self.env["cx.tower.jet.waypoint"],
+                "import": waypoint_obj,
                 "help": _(
                     "A helper shortcut to <code>env['cx.tower.jet.waypoint']</code>"
                 ),

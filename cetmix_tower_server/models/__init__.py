@@ -8,6 +8,7 @@ from . import cx_tower_reference_mixin
 from . import cx_tower_tag_mixin
 from . import cx_tower_key_mixin
 from . import cx_tower_vault_mixin
+from . import cx_tower_state_storage_mixin
 from . import cx_tower_metadata_mixin
 from . import cx_tower_vault
 from . import cx_tower_variable

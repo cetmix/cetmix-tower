@@ -5,6 +5,7 @@ import logging
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .cx_tower_state_storage_mixin import StateStorageSelection
 from .tools import generate_random_id
 
 _logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ class CxTowerJetWaypoint(models.Model):
         "cx.tower.reference.mixin",
         "cx.tower.access.mixin",
         "cx.tower.metadata.mixin",
+        "cx.tower.state.storage.mixin",
     ]
     _order = "create_date desc"
 
@@ -26,7 +28,7 @@ class CxTowerJetWaypoint(models.Model):
     access_level = fields.Selection(
         compute="_compute_access_level", readonly=False, store=True
     )
-    state = fields.Selection(
+    state = StateStorageSelection(
         selection=[
             ("draft", "Draft"),
             ("preparing", "Preparing"),
