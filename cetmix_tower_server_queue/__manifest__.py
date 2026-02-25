@@ -16,4 +16,7 @@
         "views/cx_tower_command_log_view.xml",
         "views/cx_tower_file_view.xml",
     ],
+    "demo": [
+        "demo/demo_data.xml",
+    ],
 }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Wait for waypoint activation (uses NOTIFY/LISTEN via waypoint.wait_for from queue mixin) -->
+    <record id="command_wait_waypoint_activation" model="cx.tower.command">
+        <field name="name">Wait for Waypoint Activation</field>
+        <field name="action">python_code</field>
+        <field
+            name="code"
+        ><![CDATA[reference = custom_values.get("_pending_waypoint_reference")
+
+if not reference:
+    result = {
+        "exit_code": -1,
+        "message": "No waypoint reference in flight plan context."
+    }
+else:
+    waypoint = tower_waypoints.get_by_reference(reference)
+
+    if not waypoint:
+        result = {
+            "exit_code": -2,
+            "message": "Waypoint not found."
+        }
+    else:
+        if waypoint.state == "error":
+            result = {
+                "exit_code": -3,
+                "message": "Waypoint entered error state."
+            }
+        elif waypoint.state == "current":
+            result = {
+                "exit_code": 0,
+                "message": "Waypoint '%s' activated" % reference
+            }
+        else:
+            if waypoint.wait_for("state", "current", timeout=100):
+                result = {
+                    "exit_code": 0,
+                    "message": "Waypoint '%s' activated" % reference
+                }
+            else:
+                waypoint.invalidate_recordset()
+                if waypoint.exists() and waypoint.state == "error":
+                    result = {
+                        "exit_code": -3,
+                        "message": "Waypoint entered error state."
+                    }
+                else:
+                    result = {
+                        "exit_code": -4,
+                        "message": "Timeout waiting for activation."
+                    }
+]]></field>
+        <field name="access_level">1</field>
+        <field
+            name="note"
+        >Wait until the waypoint identified by _pending_waypoint_reference in custom_values reaches state "current", or fail on "error" / timeout. Uses waypoint.wait_for (NOTIFY/LISTEN).</field>
+    </record>
+</odoo>
