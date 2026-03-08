@@ -1,5 +1,5 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.7.0-302-gf81ee9c
+_commit: v1.7.0-331-g6517d72
 _src_path: https://github.com/cetmix/cetmix-addons-repo-template.git
 additional_ruff_rules: []
 ci: GitHub
@@ -8,7 +8,7 @@ enable_checklog_odoo: true
 generate_requirements_txt: true
 github_check_license: true
 github_ci_extra_env: {}
-github_enable_codecov: true
+github_enable_codecov: false
 github_enable_makepot: true
 github_enable_stale_action: true
 github_enforce_dev_status_compatibility: true

@@ -1,4 +1,6 @@
 
+
+# Odoo bases server management tool
 <!-- /!\ Non OCA Context : Set here the badge of your runbot / runboat instance. -->
 [![Runboat](https://img.shields.io/badge/runboat-Try%20me-875A7B.png)](https://testit.cetmix.com/webui/builds.html?repo=cetmix/cetmix-tower&target_branch=17.0)
 [![Pre-commit Status](https://github.com/cetmix/cetmix-tower/actions/workflows/pre-commit.yml/badge.svg?branch=17.0)](https://github.com/cetmix/cetmix-tower/actions/workflows/pre-commit.yml?query=branch%3A17.0)
@@ -7,8 +9,6 @@
 <!-- /!\ Non OCA Context : Set here the badge of your translation instance. -->
 
 <!-- /!\ do not modify above this line -->
-
-# Odoo bases server management tool
 
 Cetmix Tower
 

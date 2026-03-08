@@ -43,7 +43,7 @@ repos:
     hooks:
       - id: whool-init
   - repo: https://github.com/cetmix/cetmix-maintainer-tools
-    rev: 26f0bffd939600c255e4a1ff356a84c16ea124ca
+    rev: 368f7e9536481387aed6797e321a3f5e5ac080c7
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
