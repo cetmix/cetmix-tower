@@ -1,3 +1,8 @@
+## 17.0.2.0.3 (2026-03-09)
+
+- Bugfixes: Link server to git project only once. (5214)
+
+
 ## 17.0.2.0.2 (2026-02-09)
 
 - Features: Provide git project name using the `__git_project__` custom value when creating a project in flight plan. Improve the UI and UX of Git Projects. (5197)

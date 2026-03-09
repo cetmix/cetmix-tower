@@ -24,7 +24,7 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [cetmix_tower](cetmix_tower/) | 17.0.2.1.0 |  | Odoo SAAS Server Application Management
 [cetmix_tower_aws](cetmix_tower_aws/) | 17.0.1.0.1 |  | Cetmix Tower AWS EC2 API integration
-[cetmix_tower_git](cetmix_tower_git/) | 17.0.2.0.2 |  | Cetmix Tower Git Management Tools
+[cetmix_tower_git](cetmix_tower_git/) | 17.0.2.0.3 |  | Cetmix Tower Git Management Tools
 [cetmix_tower_ovh](cetmix_tower_ovh/) | 17.0.1.0.1 | <a href='https://github.com/GSLabIt'><img src='https://github.com/GSLabIt.png' width='32' height='32' style='border-radius:50%;' alt='GSLabIt'/></a> | Cetmix Tower OVH API integration
 [cetmix_tower_server](cetmix_tower_server/) | 17.0.2.1.9 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 17.0.1.3.1 |  | Cetmix Tower asynchronous task execution using 'queue_job'
