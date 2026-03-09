@@ -1,3 +1,8 @@
+## 17.0.2.1.10 (2026-03-09)
+
+- Bugfixes: Last flight plan line post-run action was not triggered correctly. (5120)
+
+
 ## 17.0.2.1.9 (2026-02-18)
 
 - Features: Blacklist filter for Python commands, value checker for Vault. (5253)
