@@ -1,5 +1,5 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.7.0-311-g31fc855
+_commit: v1.7.0-331-g6517d72
 _src_path: https://github.com/cetmix/cetmix-addons-repo-template.git
 additional_ruff_rules: []
 ci: GitHub
