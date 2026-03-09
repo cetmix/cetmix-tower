@@ -2691,3 +2691,58 @@ result = {
         self.assertEqual(logs[1].command_status, 0)
         # Custom values should be updated
         self.assertEqual(plan_log.variable_values, {"some_value": "1"})
+
+    def test_last_flight_plan_line_post_run_action_is_executed(self):
+        """
+        Test last flight plan line post run action is executed
+        """
+        # Create commands
+        command_error = self.Command.create(
+            {
+                "name": "Command -> Error",
+                "action": "python_code",
+                "code": "result = {'exit_code': -100, 'message': 'Error'}",
+            }
+        )
+
+        # Plan and lines
+        plan = self.Plan.create(
+            {
+                "name": "Test post run action",
+                "on_error_action": "e",
+                "custom_exit_code": 0,
+            }
+        )
+
+        line1 = self.plan_line.create(
+            {"sequence": 10, "plan_id": plan.id, "command_id": command_error.id}
+        )
+        self.plan_line_action.create(
+            {
+                "line_id": line1.id,
+                "sequence": 10,
+                "condition": "!=",
+                "value_char": "0",
+                "action": "n",
+            }
+        )
+        line2 = self.plan_line.create(
+            {"sequence": 20, "plan_id": plan.id, "command_id": command_error.id}
+        )
+        self.plan_line_action.create(
+            {
+                "line_id": line2.id,
+                "sequence": 10,
+                "condition": "!=",
+                "value_char": "0",
+                "action": "ec",
+                "custom_exit_code": 0,
+            }
+        )
+
+        plan_log = self.server_test_1.run_flight_plan(plan)
+
+        self.assertEqual(len(plan_log.command_log_ids), 2)
+
+        # Final plan status must be custom exit code 0
+        self.assertEqual(plan_log.plan_status, 0)
