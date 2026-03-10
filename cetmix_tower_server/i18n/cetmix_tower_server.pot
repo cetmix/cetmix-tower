@@ -1588,7 +1588,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__file_template_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable__file_template_ids
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 msgid "File Template"
 msgstr ""
 
