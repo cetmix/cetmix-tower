@@ -291,7 +291,7 @@ class CxTowerPlan(models.Model):
             if expr_eval(conditional_expression):
                 action = action_line.action
                 # Use custom exit code if action requires it
-                if action == "ec" and action_line.custom_exit_code:
+                if action == "ec" and action_line.custom_exit_code is not None:
                     exit_code = action_line.custom_exit_code
 
                 # Apply action-defined values into the variable values context
@@ -314,6 +314,14 @@ class CxTowerPlan(models.Model):
     def _get_next_action_state(self, action, exit_code, current_line):
         """
         Determine the next action, exit code, and next line based on the current state.
+
+        Args:
+            action (Selection): Action to proceed
+            exit_code (Integer): Exit code
+            current_line (cx.tower.plan.line()): Current line
+
+        Returns:
+            action, exit_code, next_line (Selection, Integer, cx.tower.plan.line())
         """
         lines = current_line.plan_id.line_ids
         is_last_line = current_line == lines[-1]
@@ -331,7 +339,8 @@ class CxTowerPlan(models.Model):
         if action == "n" and not is_last_line:
             next_line = lines[indexOf(lines, current_line) + 1]
 
-        if is_last_line:
+        # Exit with command code if not exiting with custom code
+        if is_last_line and action != "ec":
             action = "e"
 
         return action, exit_code, next_line
