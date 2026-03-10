@@ -1,3 +1,8 @@
+## 18.0.1.0.11 (2026-03-10)
+
+- Bugfixes: Last flight plan line post-run action was not triggered correctly. (5120)
+
+
 ## 18.0.1.0.10 (2026-03-10)
 
 - Features: Improve the 'File using template' command flow, fix the flight plan line view layout. (5197)
