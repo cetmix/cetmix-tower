@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <group>
+                    <group name="main">
                         <field name="sequence" />
                         <field
                             name="reference"
@@ -30,12 +30,11 @@
                         <field name="plan_run_id" invisible="action != 'plan'" />
                         <field
                             name="file_template_id"
-                            string="File Template"
                             invisible="action != 'file_using_template'"
                         />
                         <field name="note" readonly="1" invisible="not note" />
                     </group>
-                    <group>
+                    <group name="condition">
                         <field name="condition" widget="ace_tower" />
                     </group>
                     <notebook>

@@ -31,18 +31,16 @@ class CxTowerGitProject(models.Model):
         ]
 
     active = fields.Boolean(default=True)
-    # IMPORTANT: This field may contain duplicates because of the relation nature!
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
-        relation="cx_tower_git_project_rel",
-        column1="git_project_id",
-        column2="server_id",
-        string="Servers",
+        relation="cx_tower_git_project_server_rel",
         readonly=True,
         copy=False,
-        help="Servers are added automatically based on the files linked to the project."
-        "\nIMPORTANT: This field may contain duplicates"
-        " because of the relation nature!",
+        compute="_compute_server_ids",
+        store=True,
+        context={"active_test": False},
+        help="Servers are added automatically based on the files"
+        " linked to the project.",
     )
     source_ids = fields.One2many(
         comodel_name="cx.tower.git.source",
@@ -149,6 +147,22 @@ class CxTowerGitProject(models.Model):
         """
         return "git_aggregator"
 
+    @api.depends("git_project_rel_ids", "git_project_rel_ids.server_id")
+    def _compute_server_ids(self):
+        """Compute server ids for git projects.
+
+        Why? Because a git project can be linked to multiple files
+        on the same server.
+        So we need to use a set to avoid duplicates so every server
+        is listed only once.
+        """
+        for project in self:
+            project.server_ids = (
+                list(set(project.git_project_rel_ids.server_id.ids))
+                if project.git_project_rel_ids
+                else False
+            )
+
     @api.depends(
         "git_project_rel_ids.server_id",
         "git_project_rel_ids.server_id.user_ids",
@@ -228,6 +242,9 @@ class CxTowerGitProject(models.Model):
         self._update_related_files_and_templates()
         return res
 
+    # ------------------------------
+    # Helper methods
+    # ------------------------------
     def _update_related_files_and_templates(self):
         # Update related files and templates
         if self.git_project_rel_ids:
@@ -239,6 +256,8 @@ class CxTowerGitProject(models.Model):
         """Extract environment variables from text.
         Helper method for file content generation.
 
+        Args:
+            text (str): Text to extract variables from
         Returns:
             List: List of variables
         """
@@ -246,6 +265,22 @@ class CxTowerGitProject(models.Model):
         # as $VAR or ${VAR}, e.g., $FOO or ${FOO_BAR123}
         variables = re.findall(r"\$\{?([A-Z0-9_]+)\}?", text)
         return sorted(list(set(variables)))
+
+    def _compose_copy_name(self, server=False):
+        """
+        Compose copy name of a git project copy.
+        Helper method used when creating a copy of a git project.
+
+        Args:
+            server (cx.tower.server): Server to get the copy name for.
+
+        Returns:
+            Char: Copy name
+        """
+        self.ensure_one()
+        if server:
+            return server.name
+        return _("%(name)s (copy)", name=self.name)
 
     # ------------------------------
     # YAML mixin methods

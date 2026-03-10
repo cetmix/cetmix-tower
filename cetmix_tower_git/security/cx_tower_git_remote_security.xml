@@ -19,8 +19,8 @@
         <field name="name">Git Remote: Manager Read Access via Server</field>
         <field name="model_id" ref="model_cx_tower_git_remote" />
         <field name="domain_force">['|',
-            ('git_project_id.server_ids.user_ids', 'in', [user.id]),
-            ('git_project_id.server_ids.manager_ids', 'in', [user.id])]</field>
+            ('git_project_id.git_project_rel_ids.server_id.user_ids', 'in', [user.id]),
+            ('git_project_id.git_project_rel_ids.server_id.manager_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />

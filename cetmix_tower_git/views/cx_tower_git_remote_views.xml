@@ -15,8 +15,8 @@
                 <field name="head_type" />
                 <field name="head" />
                 <field name="enabled" widget="boolean_toggle" />
-                <field name="create_uid" optional="hide" />
-                <field name="reference" optional="hide" />
+                <field name="create_uid" optional="hide" groups="base.group_no_one" />
+                <field name="reference" optional="hide" groups="base.group_no_one" />
             </list>
         </field>
     </record>
@@ -35,7 +35,7 @@
                         invisible="enabled"
                     />
                     <group>
-                        <field name="sequence" />
+                        <field name="sequence" groups="base.group_no_one" />
                         <field name="enabled" />
                         <field name="active" invisible="1" />
                         <field
@@ -59,7 +59,7 @@
                             invisible="not head_type"
                             placeholder="Branch/PR/commit number or link"
                         />
-                        <field name="create_uid" />
+                        <field name="create_uid" groups="base.group_no_one" />
                     </group>
                 </sheet>
             </form>
