@@ -13,7 +13,8 @@ class ResUsers(models.Model):
 
         This method allows to reload specific views from the backend.
         Be aware that when reloading form views, if a user is currently
-        doing some updates, those updates may be lost.
+        doing some updates, those updates may be lost when the form reloads
+        (no confirmation dialog on the client).
 
         :param model: str, Model name (e.g., 'res.partner')
         :param view_types: list of str, optional, View types to reload

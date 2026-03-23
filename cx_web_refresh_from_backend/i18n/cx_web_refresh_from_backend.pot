@@ -15,24 +15,9 @@ msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
-#: code:addons/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js:0
-#, python-format
-msgid "All unsaved changes will be lost! Continue?"
-msgstr ""
-
-#. module: cx_web_refresh_from_backend
-#. odoo-javascript
-#: code:addons/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js:0
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
 #, python-format
 msgid "Cancel"
-msgstr ""
-
-#. module: cx_web_refresh_from_backend
-#. odoo-javascript
-#: code:addons/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js:0
-#, python-format
-msgid "Continue"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
@@ -61,13 +46,6 @@ msgstr ""
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
 #, python-format
 msgid "Could not save record. "
-msgstr ""
-
-#. module: cx_web_refresh_from_backend
-#. odoo-javascript
-#: code:addons/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js:0
-#, python-format
-msgid "Form is being refreshed from backend"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
