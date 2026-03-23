@@ -122,6 +122,31 @@ msgid "Cetmix Tower Flight Plan Line Action"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_action
+msgid "Cetmix Tower Jet Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_state
+msgid "Cetmix Tower Jet State"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_template
+msgid "Cetmix Tower Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_template_dependency
+msgid "Cetmix Tower Jet Template Dependency"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_waypoint_template
+msgid "Cetmix Tower Jet Waypoint Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_key
 msgid "Cetmix Tower Key/Secret Storage"
 msgstr ""
@@ -335,6 +360,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_jet_template_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
@@ -347,6 +373,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_value_export_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
@@ -874,6 +901,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
@@ -953,6 +981,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
@@ -1003,6 +1036,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_command_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_file_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_plan_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_server_view_form
