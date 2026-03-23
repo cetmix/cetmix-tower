@@ -27,16 +27,20 @@ os_ids: false
 tag_ids: false
 path: false
 file_template_id: false
+if_file_exists: skip
+disconnect_file: false
 flight_plan_id: false
+jet_template_id: false
+jet_action_id: false
+waypoint_template_id: false
+fly_here: false
 code: |-
   cd /home/{{ tower.server.ssh_username }} \\
   && ls -lha
+no_split_for_sudo: false
 server_status: false
 variable_ids: false
 secret_ids: false
-no_split_for_sudo: false
-if_file_exists: skip
-disconnect_file: false
 """
 
         # YAML content translated into Python dict
@@ -265,14 +269,18 @@ os_ids: false
 tag_ids: false
 path: false
 file_template_id: my_custom_test_template
+if_file_exists: skip
+disconnect_file: false
 flight_plan_id: false
+jet_template_id: false
+jet_action_id: false
+waypoint_template_id: false
+fly_here: false
 code: false
+no_split_for_sudo: false
 server_status: false
 variable_ids: false
 secret_ids: false
-no_split_for_sudo: false
-if_file_exists: skip
-disconnect_file: false
 """
         # Add file template
         file_template = self.env["cx.tower.file.template"].create(
@@ -330,14 +338,18 @@ file_template_id:
   code: false
   variable_ids: false
   secret_ids: false
+if_file_exists: skip
+disconnect_file: false
 flight_plan_id: false
+jet_template_id: false
+jet_action_id: false
+waypoint_template_id: false
+fly_here: false
 code: false
+no_split_for_sudo: false
 server_status: false
 variable_ids: false
 secret_ids: false
-no_split_for_sudo: false
-if_file_exists: skip
-disconnect_file: false
 """
         command_with_template.invalidate_recordset(["yaml_code"])
         self.assertEqual(

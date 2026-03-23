@@ -14,9 +14,30 @@ class TestTowerYamlMixin(TransactionCase):
         super().setUpClass(*args, **kwargs)
         cls.Users = cls.env["res.users"].with_context(no_reset_password=True)
         cls.YamlMixin = cls.env["cx.tower.yaml.mixin"]
+        cls.Command = cls.env["cx.tower.command"]
+        cls.JetTemplate = cls.env["cx.tower.jet.template"]
+        cls.ScheduledTask = cls.env["cx.tower.scheduled.task"]
         TowerTag = cls.env["cx.tower.tag"]
         cls.tag_doge = TowerTag.create({"name": "Doge", "reference": "doge"})
         cls.tag_pepe = TowerTag.create({"name": "Pepe", "reference": "pepe"})
+        cls.jet_state_running = cls.env["cx.tower.jet.state"].get_by_reference(
+            "running"
+        )
+        cls.command_for_schedule = cls.Command.create(
+            {"name": "Command for schedule", "action": "ssh_command"}
+        )
+        cls.jet_template_existing = cls.env["cx.tower.jet.template"].create(
+            {"name": "Existing Jet Template", "reference": "existing_jet_template"}
+        )
+        cls.waypoint_template_existing = cls.env[
+            "cx.tower.jet.waypoint.template"
+        ].create(
+            {
+                "name": "Existing Waypoint Template",
+                "reference": "existing_waypoint_template",
+                "jet_template_id": cls.jet_template_existing.id,
+            }
+        )
 
     def test_convert_dict_to_yaml(self):
         # -- 1 --
@@ -184,6 +205,227 @@ class TestTowerYamlMixin(TransactionCase):
                 ),
                 "Exception message doesn't match",
             )
+
+    def test_post_process_yaml_dict_values_defers_command_template_links(self):
+        """Reference-only unresolved command template links must be deferred."""
+        deferred_queue = []
+        values = {
+            "reference": "command_deferred_links",
+            "name": "Command Deferred Links",
+            "action": "jet_action",
+            "jet_template_id": "future_jet_template",
+            "waypoint_template_id": {"reference": "future_waypoint_template"},
+        }
+
+        result_values = self.Command.with_context(
+            yaml_deferred_m2o_queue=deferred_queue
+        )._post_process_yaml_dict_values(values)
+
+        self.assertNotIn(
+            "jet_template_id",
+            result_values,
+            "Deferred jet template link must be omitted from first-pass values",
+        )
+        self.assertNotIn(
+            "waypoint_template_id",
+            result_values,
+            "Deferred waypoint template link must be omitted from first-pass values",
+        )
+        self.assertEqual(len(deferred_queue), 2, "Two deferred items must be queued")
+        self.assertEqual(
+            deferred_queue[0]["record_reference"],
+            values["reference"],
+            "Deferred queue must preserve command reference",
+        )
+        self.assertEqual(
+            deferred_queue[0]["field_name"],
+            "jet_template_id",
+            "Deferred queue must preserve the deferred field name",
+        )
+        self.assertEqual(
+            deferred_queue[1]["field_name"],
+            "waypoint_template_id",
+            "Deferred queue must preserve each deferred field separately",
+        )
+
+    def test_post_process_yaml_dict_values_resolves_existing_command_template_links(
+        self
+    ):
+        """Already existing command template links must be resolved immediately."""
+        deferred_queue = []
+        values = {
+            "reference": "command_immediate_links",
+            "name": "Command Immediate Links",
+            "action": "create_waypoint",
+            "jet_template_id": self.jet_template_existing.reference,
+            "waypoint_template_id": {
+                "reference": self.waypoint_template_existing.reference
+            },
+        }
+
+        result_values = self.Command.with_context(
+            yaml_deferred_m2o_queue=deferred_queue
+        )._post_process_yaml_dict_values(values)
+
+        self.assertEqual(
+            result_values["jet_template_id"],
+            self.jet_template_existing.id,
+            "Existing jet template must resolve during the first import pass",
+        )
+        self.assertEqual(
+            result_values["waypoint_template_id"],
+            self.waypoint_template_existing.id,
+            "Existing waypoint template must resolve during the first import pass",
+        )
+        self.assertFalse(
+            deferred_queue,
+            "No deferred items must be queued when targets already exist",
+        )
+
+    def test_post_process_yaml_dict_values_defers_template_dependency_children(self):
+        """Unresolved template dependency children must be deferred."""
+        deferred_queue = []
+        values = {
+            "reference": "owner_template_deferred_dependency",
+            "name": "Owner Template Deferred Dependency",
+            "template_requires_ids": [
+                {
+                    "reference": False,
+                    "template_required_id": {
+                        "reference": "future_template_dependency_target"
+                    },
+                    "state_required_id": {
+                        "reference": self.jet_state_running.reference
+                    },
+                }
+            ],
+        }
+
+        result_values = self.JetTemplate.with_context(
+            yaml_deferred_x2m_queue=deferred_queue
+        )._post_process_yaml_dict_values(values)
+
+        self.assertEqual(
+            result_values.get("template_requires_ids"),
+            [],
+            "Deferred dependency child must be removed from first-pass create values",
+        )
+        self.assertEqual(
+            len(deferred_queue),
+            1,
+            "One dependency child must be queued for deferred creation",
+        )
+        self.assertEqual(
+            deferred_queue[0]["field_name"],
+            "template_requires_ids",
+            "Deferred queue must preserve the parent x2m field name",
+        )
+        self.assertEqual(
+            deferred_queue[0]["target_reference"],
+            "future_template_dependency_target",
+            "Deferred queue must preserve the missing dependency target reference",
+        )
+
+    def test_post_process_yaml_dict_values_skips_empty_scheduled_task_custom_values(
+        self
+    ):
+        """Placeholder scheduled-task custom values must be skipped."""
+        deferred_queue = []
+        scheduled_task_values = {
+            "reference": "scheduled_task_skip_empty_child",
+            "name": "Scheduled Task Skip Empty Child",
+            "action": "command",
+            "command_id": self.command_for_schedule.reference,
+            "interval_number": 1,
+            "interval_type": "days",
+            "next_call": "2026-03-27 00:00:00",
+            "custom_variable_value_ids": [{"reference": False}],
+        }
+
+        result_values = self.ScheduledTask.with_context(
+            yaml_deferred_x2m_queue=deferred_queue
+        )._post_process_yaml_dict_values(scheduled_task_values)
+
+        self.assertEqual(
+            result_values.get("custom_variable_value_ids"),
+            [],
+            "Placeholder child rows must be removed from scheduled task import values",
+        )
+        self.assertFalse(
+            deferred_queue,
+            "Empty placeholder rows must be skipped rather than deferred",
+        )
+
+    def test_post_process_yaml_dict_values_defers_scheduled_task_custom_values(self):
+        """Unresolved scheduled-task custom values must be deferred."""
+        deferred_queue = []
+        scheduled_task_values = {
+            "reference": "scheduled_task_deferred_custom_value",
+            "name": "Scheduled Task Deferred Custom Value",
+            "action": "command",
+            "command_id": self.command_for_schedule.reference,
+            "interval_number": 1,
+            "interval_type": "days",
+            "next_call": "2026-03-27 00:00:00",
+            "custom_variable_value_ids": [
+                {
+                    "reference": False,
+                    "variable_value_id": {"reference": "future_variable_value_ref"},
+                }
+            ],
+        }
+
+        result_values = self.ScheduledTask.with_context(
+            yaml_deferred_x2m_queue=deferred_queue
+        )._post_process_yaml_dict_values(scheduled_task_values)
+
+        self.assertEqual(
+            result_values.get("custom_variable_value_ids"),
+            [],
+            "Deferred scheduled-task child rows must be removed from first-pass values",
+        )
+        self.assertEqual(
+            len(deferred_queue),
+            1,
+            "One scheduled-task custom value row must be queued for deferred creation",
+        )
+        self.assertEqual(
+            deferred_queue[0]["field_name"],
+            "custom_variable_value_ids",
+            "Deferred queue must preserve the scheduled-task child field name",
+        )
+        self.assertEqual(
+            deferred_queue[0]["target_reference"],
+            "future_variable_value_ref",
+            "Deferred queue must preserve the missing variable value reference",
+        )
+
+    def test_process_relation_field_value_reference_only_dict_no_placeholder_create(
+        self
+    ):
+        """Reference-only dict must not create placeholder m2o records."""
+        command = self.Command.create(
+            {
+                "name": "Command reference-only dict",
+                "action": "file_using_template",
+            }
+        )
+        missing_reference = "missing_file_template_reference_only"
+
+        result = command._process_relation_field_value(
+            field="file_template_id",
+            value={"reference": missing_reference},
+            record_mode=False,
+        )
+
+        self.assertFalse(
+            result,
+            "Reference-only dict must stay unresolved instead of creating a record",
+        )
+        self.assertFalse(
+            self.env["cx.tower.file.template"].get_by_reference(missing_reference),
+            "Reference-only dict must not create a placeholder related record",
+        )
 
     def test_process_relation_field_value_no_explode(self):
         """Test non exploded related field values.
