@@ -1,25 +1,28 @@
 /** @odoo-module **/
 
+import {
+    getLoadedRecordIds,
+    hasAnyLoadedIdInRecIds,
+} from "../utils/get_loaded_record_ids.esm";
+import {ConfirmationDialog} from "@web/core/confirmation_dialog/confirmation_dialog";
 import {ListController} from "@web/views/list/list_controller";
+import {onWillUnmount} from "@odoo/owl";
 import {patch} from "@web/core/utils/patch";
 import {useService} from "@web/core/utils/hooks";
-import {onWillUnmount} from "@odoo/owl";
-import {ConfirmationDialog} from "@web/core/confirmation_dialog/confirmation_dialog";
+import {_t} from "@web/core/l10n/translation";
 
-patch(ListController.prototype, "cx_web_refresh_from_backend.ListController", {
+patch(ListController.prototype, {
     setup() {
-        this._super(...arguments);
-        this.busService = useService("bus_service");
-        this.dialogService = useService("dialog");
+        super.setup(...arguments);
+        // Bus_service is async; useService("bus_service") breaks (SERVICES_METADATA).
+        this.busService = this.env.services.bus_service;
         this.notificationService = useService("notification");
+        this._isRefreshInFlight = false;
+        this._hasRefreshQueued = false;
 
-        // Bind the handler to keep reference for cleanup
         this._boundBusHandler = this._onBusNotification.bind(this);
-
-        // Subscribe to bus notifications
         this.busService.addEventListener("notification", this._boundBusHandler);
 
-        // Cleanup on unmount
         onWillUnmount(() => {
             if (this.busService && this._boundBusHandler) {
                 this.busService.removeEventListener(
@@ -31,54 +34,71 @@ patch(ListController.prototype, "cx_web_refresh_from_backend.ListController", {
     },
 
     /**
-     * Handle bus notification for view refresh
+     * Handle bus notification batch for view refresh.
+     * Coalesces the batch: if any notification matches, refreshes once.
+     *
      * @param {Event} event - Bus notification event
      */
     async _onBusNotification({detail: notifications}) {
-        // Check if component is still alive
         if (!this.model || !this.model.root) {
             return;
         }
+        const shouldRefresh = notifications.some(
+            ({type, payload}) =>
+                type === "web.refresh_view" && this._shouldRefreshView(payload)
+        );
+        if (shouldRefresh) {
+            await this._queueRefresh("refreshList");
+        }
+    },
 
-        for (const {payload, type} of notifications) {
-            if (type === "web.refresh_view") {
-                await this._handleViewRefresh(payload);
-            }
+    async _queueRefresh(methodName) {
+        if (this._isRefreshInFlight) {
+            this._hasRefreshQueued = true;
+            return;
+        }
+        this._isRefreshInFlight = true;
+        try {
+            do {
+                this._hasRefreshQueued = false;
+                await this[methodName]();
+            } while (this._hasRefreshQueued);
+        } finally {
+            this._isRefreshInFlight = false;
         }
     },
 
     /**
-     * Handle view refresh notification
-     * @param {Object} notification - Notification payload
+     * Check whether a refresh notification is relevant to this list.
+     *
+     * Returns true when all of the following hold:
+     *  - model matches current list model
+     *  - requested view types include "list" or "tree" (or none specified)
+     *  - at least one loaded record id is in rec_ids (or none specified)
+     *
+     * @param {Object} payload - Notification payload
+     * @returns {Boolean}
      */
-    async _handleViewRefresh(notification) {
-        const {model, view_types = [], rec_ids = []} = notification;
+    _shouldRefreshView(payload) {
+        const {model, view_types = [], rec_ids = []} = payload;
 
-        // Check if the model matches
         if (this.props.resModel !== model) {
-            return;
+            return false;
         }
-
-        // Check if view_type matches (if specified)
         if (
             view_types.length > 0 &&
             !view_types.includes("list") &&
             !view_types.includes("tree")
         ) {
-            return;
+            return false;
         }
-
-        // Check if record ID matches (if rec_ids is specified)
         if (rec_ids.length > 0) {
-            const loadedIds = this.getLoadedRecordIds();
-            const shouldReload = loadedIds.some((id) => rec_ids.includes(id));
-
-            if (!shouldReload) {
-                return;
+            const loadedIds = getLoadedRecordIds(this.model.root);
+            if (!hasAnyLoadedIdInRecIds(loadedIds, rec_ids)) {
+                return false;
             }
         }
-
-        await this.refreshList();
+        return true;
     },
 
     /**
@@ -88,7 +108,6 @@ patch(ListController.prototype, "cx_web_refresh_from_backend.ListController", {
      * @returns {Promise<void>}
      */
     async refreshList() {
-        // Safety check: component might be destroyed
         if (!this.model || !this.model.root) {
             return;
         }
@@ -96,82 +115,53 @@ patch(ListController.prototype, "cx_web_refresh_from_backend.ListController", {
         const list = this.model.root;
 
         if (list.editedRecord) {
-            const confirmed = await new Promise((resolve) => {
-                this.dialogService.add(ConfirmationDialog, {
-                    title: this.env._t("List is being refreshed from backend"),
-                    body: this.env._t(
-                        "You have unsaved edits. Save them before refreshing?"
-                    ),
-                    confirm: () => resolve(true),
-                    cancel: () => resolve(false),
-                    confirmLabel: this.env._t("Save & Refresh"),
-                    cancelLabel: this.env._t("Cancel"),
-                });
-            });
+            const confirmed = await this._confirmListRefresh();
 
             if (!confirmed) {
+                // User declined: drop coalesced refreshes queued during the dialog.
+                this._hasRefreshQueued = false;
                 return;
             }
             try {
                 await list.editedRecord.save();
             } catch (error) {
-                const message =
-                    (error && error.data && error.data.message) ||
-                    (error && error.message) ||
-                    String(error);
-                this.notificationService.add(
-                    this.env._t("Could not save record. ") + message,
-                    {type: "danger"}
-                );
+                this._notifyRefreshError(_t("Could not save record. "), error);
                 return;
             }
         }
 
-        // Reload data from server
         try {
             await list.load();
         } catch (error) {
-            const message =
-                (error && error.data && error.data.message) ||
-                (error && error.message) ||
-                String(error);
-            this.notificationService.add(
-                this.env._t("Could not reload list. ") + message,
-                {type: "danger"}
-            );
+            this._notifyRefreshError(_t("Could not reload list. "), error);
             return;
         }
 
-        // Update the view (only if component is still mounted)
         if (this.model && this.model.root) {
             this.render(true);
         }
     },
 
-    /**
-     * Get IDs of all loaded records on the current page
-     * @returns {Array<Number>} Array of record IDs
-     */
-    getLoadedRecordIds() {
-        const list = this.model.root;
+    async _confirmListRefresh() {
+        return await new Promise((resolve) => {
+            this.dialogService.add(ConfirmationDialog, {
+                title: _t("List is being refreshed from backend"),
+                body: _t("You have unsaved edits. Save them before refreshing?"),
+                confirm: () => resolve(true),
+                cancel: () => resolve(false),
+                confirmLabel: _t("Save & Refresh"),
+                cancelLabel: _t("Cancel"),
+            });
+        });
+    },
 
-        if (list.isGrouped) {
-            // For grouped list, collect IDs from all groups
-            const recordIds = [];
-            const collectIds = (groups) => {
-                for (const group of groups) {
-                    if (group.list && group.list.records) {
-                        recordIds.push(...group.list.records.map((r) => r.resId));
-                    }
-                    if (group.groups) {
-                        collectIds(group.groups);
-                    }
-                }
-            };
-            collectIds(list.groups);
-            return recordIds;
-        }
-        // For regular list, return IDs of all records
-        return list.records.map((record) => record.resId);
+    _notifyRefreshError(messagePrefix, error) {
+        const message =
+            (error && error.data && error.data.message) ||
+            (error && error.message) ||
+            String(error);
+        this.notificationService.add(messagePrefix + message, {
+            type: "danger",
+        });
     },
 });

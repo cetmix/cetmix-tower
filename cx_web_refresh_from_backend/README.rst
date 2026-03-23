@@ -17,7 +17,7 @@ Web Refresh From Backend
     :target: http://www.gnu.org/licenses/lgpl-3.0-standalone.html
     :alt: License: LGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github
-    :target: https://github.com/cetmix/cetmix-tower/tree/16.0/cx_web_refresh_from_backend
+    :target: https://github.com/cetmix/cetmix-tower/tree/17.0/cx_web_refresh_from_backend
     :alt: cetmix/cetmix-tower
 
 |badge1| |badge2| |badge3|
@@ -40,24 +40,24 @@ model.
 **Arguments**
 ~~~~~~~~~~~~~
 
-+----------------+--------------------------+--------------------------+
-| Argument       | Type                     | Description              |
-+================+==========================+==========================+
-| **model**      | ``Char``                 | Model name, e.g.         |
-|                |                          | ``'res.partner'``        |
-+----------------+--------------------------+--------------------------+
-| **view_types** | ``List of Char``         | View types to reload,    |
-|                | *(optional)*             | e.g.                     |
-|                |                          | ``["form", "kanban"]``.  |
-|                |                          | Leave blank to reload    |
-|                |                          | all views.               |
-+----------------+--------------------------+--------------------------+
-| **rec_ids**    | ``List of Integer``      | The view will be         |
-|                | *(optional)*             | reloaded only if a       |
-|                |                          | record with an ID from   |
-|                |                          | this list is present in  |
-|                |                          | the view.                |
-+----------------+--------------------------+--------------------------+
++----------------+-------------------------+-------------------------+
+| Argument       | Type                    | Description             |
++================+=========================+=========================+
+| **model**      | ``Char``                | Model name, e.g.        |
+|                |                         | ``'res.partner'``       |
++----------------+-------------------------+-------------------------+
+| **view_types** | ``List of Char``        | View types to reload,   |
+|                | *(optional)*            | e.g.                    |
+|                |                         | ``["form", "kanban"]``. |
+|                |                         | Leave blank to reload   |
+|                |                         | all views.              |
++----------------+-------------------------+-------------------------+
+| **rec_ids**    | ``List of Integer``     | The view will be        |
+|                | *(optional)*            | reloaded only if a      |
+|                |                         | record with an ID from  |
+|                |                         | this list is present in |
+|                |                         | the view.               |
++----------------+-------------------------+-------------------------+
 
 --------------
 
@@ -102,7 +102,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/cetmix/cetmix-tower/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cx_web_refresh_from_backend%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cx_web_refresh_from_backend%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -114,14 +114,9 @@ Authors
 
 * Cetmix
 
-Contributors
-------------
-
-- Cetmix
-
 Maintainers
 -----------
 
-This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/16.0/cx_web_refresh_from_backend>`_ project on GitHub.
+This module is part of the `cetmix/cetmix-tower <https://github.com/cetmix/cetmix-tower/tree/17.0/cx_web_refresh_from_backend>`_ project on GitHub.
 
 You are welcome to contribute.
