@@ -28,6 +28,7 @@
         "views/cx_tower_shortcut_view.xml",
         "views/cx_tower_scheduled_task_view.xml",
         "views/cx_tower_key_view.xml",
+        "views/cx_tower_jet_template_view.xml",
         "views/cx_tower_yaml_manifest_template_views.xml",
         "views/cx_tower_yaml_manifest_author_views.xml",
         "wizards/cx_tower_yaml_export_wiz.xml",
