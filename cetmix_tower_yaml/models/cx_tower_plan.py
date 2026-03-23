@@ -21,3 +21,20 @@ class CxTowerPlan(models.Model):
             "line_ids",
         ]
         return res
+
+    def _get_deferred_x2m_import_fields(self):
+        """Defer plan lines whose command is not resolvable during nested import.
+
+        Deep YAML (e.g. a command's waypoint inlines a jet template whose plans
+        reference that same command) creates a forward reference: plan lines are
+        prepared before the command exists in the database. Queue those lines
+        and create them after the main import pass when ``command_id`` can be
+        resolved.
+        """
+        return {
+            "line_ids": {
+                "child_model": "cx.tower.plan.line",
+                "deferred_field": "command_id",
+                "target_model": "cx.tower.command",
+            }
+        }
