@@ -39,11 +39,11 @@
                     <div
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('action', 'not in', ['file_using_template', 'python_code', 'plan'])]}"
+                        attrs="{'invisible': [('action', 'not in', ['file_using_template', 'python_code', 'plan', 'jet_action', 'create_waypoint'])]}"
                         style="margin-bottom:0px;"
                     >
                         <p
-                            attrs="{'invisible': [('action', 'not in', ['file_using_template', 'plan'])]}"
+                            attrs="{'invisible': [('action', 'not in', ['file_using_template', 'plan', 'jet_action', 'create_waypoint'])]}"
                         >
                             This command can be used only in Flight Plans.
                         </p>
@@ -82,6 +82,22 @@
                             <field
                                 name="disconnect_file"
                                 attrs="{'invisible': [('action', '!=', 'file_using_template')]}"
+                            />
+                            <field
+                                name="jet_template_id"
+                                attrs="{'invisible': [('action', '!=', 'jet_action')], 'required': [('action', '=', 'jet_action')]}"
+                            />
+                            <field
+                                name="jet_action_id"
+                                attrs="{'invisible': [('action', '!=', 'jet_action')], 'required': [('action', '=', 'jet_action')]}"
+                            />
+                            <field
+                                name="waypoint_template_id"
+                                attrs="{'invisible': [('action', '!=', 'create_waypoint')], 'required': [('action', '=', 'create_waypoint')]}"
+                            />
+                            <field
+                                name="fly_here"
+                                attrs="{'invisible': [('action', '!=', 'create_waypoint')]}"
                             />
                             <field name="allow_parallel_run" />
                             <field
@@ -127,7 +143,7 @@
                         <page
                             name="code"
                             string="Code"
-                            attrs="{'invisible': ['|',  ('action', '=', 'file_using_template'), ('action', '=', 'plan')]}"
+                            attrs="{'invisible': [('action', 'not in', ['ssh_command', 'python_code'])]}"
                         >
                             <field
                                 name="code"

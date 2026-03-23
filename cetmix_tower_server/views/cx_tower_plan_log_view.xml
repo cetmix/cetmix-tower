@@ -44,6 +44,22 @@
                         <group>
                             <field name="create_uid" />
                             <field name="server_id" />
+                            <field
+                                name="jet_template_id"
+                                attrs="{'invisible': ['|', ('jet_template_id', '=', False), ('jet_id', '!=', False)]}"
+                            />
+                            <field
+                                name="jet_id"
+                                attrs="{'invisible': [('jet_id', '=', False)]}"
+                            />
+                            <field
+                                name="jet_action_id"
+                                attrs="{'invisible': [('jet_action_id', '=', False)]}"
+                            />
+                            <field
+                                name="waypoint_id"
+                                attrs="{'invisible': [('waypoint_id', '=', False)]}"
+                            />
                             <field name="plan_id" />
                             <field
                                 name="scheduled_task_id"
@@ -72,6 +88,10 @@
                             <field
                                 name="custom_message"
                                 attrs="{'invisible': [('custom_message', '=', False)]}"
+                            />
+                            <field
+                                name="jet_template_install_id"
+                                attrs="{'invisible': [('jet_template_install_id', '=', False)]}"
                             />
                         </group>
                         <group>
@@ -136,6 +156,8 @@
         <search string="Search Flight Plan Log">
             <field name="plan_id" />
             <field name="server_id" />
+            <field name="jet_id" />
+            <field name="jet_template_id" />
             <field name="label" />
             <filter
                     string="Success"

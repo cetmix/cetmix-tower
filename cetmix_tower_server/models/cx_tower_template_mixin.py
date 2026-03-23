@@ -113,6 +113,12 @@ class CxTowerTemplateMixin(models.AbstractModel):
             rendered_code (text): The resulting string after rendering the template with
                                   the provided variables.
         """
+
+        # Return the original code if it's empty.
+        # So if it's False then we preserve the original 'False' value.
+        if not code:
+            return code
+
         try:
             if pythonic_mode:
                 kwargs = {

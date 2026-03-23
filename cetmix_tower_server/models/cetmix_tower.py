@@ -2,10 +2,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import logging
 import time
+import warnings
 
 from odoo import _, api, models
 from odoo.exceptions import ValidationError
 
+from . import tools
 from .constants import NOT_FOUND, SSH_CONNECTION_ERROR
 
 _logger = logging.getLogger(__name__)
@@ -13,13 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class CetmixTower(models.AbstractModel):
     """Generic model used to simplify Odoo automation.
-
     Used to keep main integration function in a single place.
-
-    For example when writing automated actions one can use
-    `env["cetmix.tower"].create_server_from_template(..)`
-    instead of
-    `env["cx.tower.server.template"].create_server_from_template(..)
     """
 
     _name = "cetmix.tower"
@@ -27,10 +23,14 @@ class CetmixTower(models.AbstractModel):
 
     @api.model
     def server_create_from_template(self, template_reference, server_name, **kwargs):
-        """Shortcut for the same method of the 'cx.tower.server.template' model.
-
-        Important! Add dedicated tests for this function if modified later.
         """
+        THIS METHOD IS DEPRECATED. USE THE 'cx.tower.server.template' MODEL DIRECTLY.
+        """
+        _logger.warning(
+            "server_create_from_template: This method is deprecated "
+            "and will be removed in the future. "
+            "Use the 'cx.tower.server.template' model directly instead."
+        )
         return self.env["cx.tower.server.template"].create_server_from_template(
             template_reference=template_reference, server_name=server_name, **kwargs
         )
@@ -39,26 +39,15 @@ class CetmixTower(models.AbstractModel):
     def server_run_command(
         self, server_reference, command_reference, get_result=True, **variable_values
     ):
-        """Run command on selected server.
-
-        Args:
-            server_reference (Char): Server reference
-            command_reference (Char): Command reference
-            get_result (bool, optional): Get the result of the command.
-                If False, the result will be saved to the log.
-                Defaults to True.
-
-        **variable_values:
-            Dict: with variable values.
-            The keys are the variable references and the values are the variable values.
-            eg `{'odoo_version': '16.0'}`
-
-        Returns:
-            Dict: with two keys if `get_result` is True:
-            - exit_code (Int): Exit code of the command
-            - message (Char): Message of the command
+        """
+        THIS METHOD IS DEPRECATED. USE THE 'cx.tower.server' MODEL DIRECTLY.
         """
 
+        _logger.warning(
+            "server_run_command: This method is deprecated and "
+            "will be removed in the future. "
+            "Use the 'cx.tower.server' model directly instead."
+        )
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
             return {"exit_code": NOT_FOUND, "message": _("Server not found")}
@@ -85,20 +74,12 @@ class CetmixTower(models.AbstractModel):
     def server_run_flight_plan(
         self, server_reference, flight_plan_reference, **variable_values
     ):
-        """Run flight plan on selected server.
-
-        Args:
-            server_reference (Char): Server reference
-            flight_plan_reference (Char): Flight plan reference
-
-        **variable_values:
-            Dict: with variable values.
-            The keys are the variable references and the values are the variable values.
-            eg `{'odoo_version': '16.0'}`
-
-        Returns:
-            cx.tower.plan.log(): flight plan log record or False if error
-        """
+        """THIS METHOD IS DEPRECATED. USE THE 'cx.tower.server' MODEL DIRECTLY."""
+        _logger.warning(
+            "server_run_flight_plan: This method is deprecated and "
+            "will be removed in the future. "
+            "Use the 'cx.tower.server' model directly instead."
+        )
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
             # This is not the best way to handle this, but it's the only way to
@@ -116,20 +97,12 @@ class CetmixTower(models.AbstractModel):
 
     @api.model
     def server_set_variable_value(self, server_reference, variable_reference, value):
-        """Set variable value for selected server.
-        Modifies existing variable value or creates a new one.
-
-        Args:
-            server_reference (Char): Server reference
-            variable_reference (Char): Variable reference
-            value (Char): Variable value
-
-        Returns:
-            Dict: with who keys:
-            - exit_code (Char)
-            - message (Char)
-        """
-
+        """THIS METHOD IS DEPRECATED. USE THE 'cx.tower.server' MODEL DIRECTLY."""
+        _logger.warning(
+            "server_set_variable_value: This method is deprecated and "
+            "will be removed in the future. "
+            "Use the 'cx.tower.server' model directly instead."
+        )
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
             return {"exit_code": NOT_FOUND, "message": _("Server not found")}
@@ -160,34 +133,36 @@ class CetmixTower(models.AbstractModel):
     def server_get_variable_value(
         self, server_reference, variable_reference, check_global=True
     ):
-        """Get variable value for selected server.
-
-        Args:
-            server_reference (Char): Server reference
-            variable_reference (Char): Variable reference
-            check_global (bool, optional): Check for global value if variable
-                is not defined for selected server. Defaults to True.
-        Returns:
-            Char: variable value or None
-        """
+        """THIS METHOD IS DEPRECATED. USE THE 'cx.tower.server' MODEL DIRECTLY."""
+        _logger.warning(
+            "server_get_variable_value: This method is deprecated and "
+            "will be removed in the future. "
+            "Use the 'cx.tower.server' model directly instead."
+        )
+        if not check_global:
+            warnings.warn(
+                "server_get_variable_value: 'check_global' is deprecated and "
+                "will be removed in the future. "
+                "Global values are always checked.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         # Get server by reference
         server = self.env["cx.tower.server"].get_by_reference(server_reference)
         if not server:
+            _logger.warning(
+                "server_get_variable_value: Server not found for reference '%s'",
+                server_reference,
+            )
             return None
-        result = self.env["cx.tower.variable.value"].get_by_variable_reference(
-            variable_reference=variable_reference,
-            server_id=server.id,
-            check_global=check_global,
+        return (
+            self.env["cx.tower.variable"]
+            ._get_variable_values_by_references(
+                variable_references=[variable_reference], server=server
+            )
+            .get(variable_reference)
         )
-
-        # Get server defined value first
-        value = result.get("server")
-
-        # Get global value if value is not set
-        if not value and check_global:
-            value = result.get("global")
-        return value
 
     @api.model
     def server_check_ssh_connection(
@@ -198,9 +173,13 @@ class CetmixTower(models.AbstractModel):
         try_command=True,
         try_file=True,
     ):
-        """Check if SSH connection to the server is available.
-        This method only checks if the connection is available,
-        it does not execute any commands to check if they are working.
+        """
+        Check if SSH connection to the server is available.
+        This method uses the `test_ssh_connection` method
+        of the 'cx.tower.server' model.
+        It tries to connect to the server multiple times
+        and is designed to be used in the Python commands or
+        Odoo automated actions.
 
         Args:
             server_reference (Char): Server reference.
@@ -271,7 +250,7 @@ class CetmixTower(models.AbstractModel):
         self, secret_value, secret_reference, server_reference=None
     ):
         """
-        Validate the provided secret value against the actual secret.
+        Validates the provided secret value against the actual secret.
 
         Accepts either a full inline reference (e.g. #!cxtower.secret.<REFERENCE>!#)
         or just a <REFERENCE>.
@@ -298,3 +277,37 @@ class CetmixTower(models.AbstractModel):
             secret_reference, server_id=server.id
         )
         return value == secret_value
+
+    @api.model
+    def generate_random_id(self, sections=1, population=4, separator="-"):
+        """
+        Helper method that allows to generate a random id
+        with customizable sections and population.
+        Such ids are more human readable and less likely to collide.
+
+
+        Args:
+            sections (int): Number of sections to generate.
+            population (int): Population of the sections.
+            separator (str): Separator between sections.
+        Returns:
+            str: Random id
+        """
+        return tools.generate_random_id(
+            sections=sections, population=population, separator=separator
+        )
+
+    @api.model
+    def is_valid_url(self, url, no_scheme_check=False):
+        """
+        Check if the provided URL is a valid URL.
+        The `urlparse` function from the `urllib.parse` module is used.
+
+        Args:
+            url (str): URL to check
+            no_scheme_check (bool): If True, the scheme check will be skipped.
+                Defaults to False.
+        Returns:
+            bool: True if the URL is valid, False otherwise
+        """
+        return tools.is_valid_url(url=url, no_scheme_check=no_scheme_check)

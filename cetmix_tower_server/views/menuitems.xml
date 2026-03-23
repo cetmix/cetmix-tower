@@ -37,6 +37,35 @@
         sequence="15"
     />
 
+    <!-- ========================= Jets ========================= -->
+    <menuitem id="menu_cx_tower_jet_root" name="Jets" parent="menu_root" sequence="5" />
+
+    <menuitem
+        id="menu_cx_tower_jet"
+        name="Jets"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_action"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_cx_tower_jet_template"
+        name="Templates"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_template_action"
+        sequence="20"
+    />
+
+    <menuitem
+        id="menu_cx_tower_create_jet"
+        name="Launch New Jet"
+        parent="menu_cx_tower_jet_root"
+        action="action_cx_tower_jet_create"
+        sequence="30"
+        groups="cetmix_tower_server.group_manager"
+    />
+
+
     <!-- ========================= Logs ========================= -->
     <menuitem
         id="menu_cx_tower_log_root"
@@ -56,8 +85,23 @@
         name="Flight Plan Log"
         action="action_cx_tower_plan_log"
         parent="menu_cx_tower_log_root"
-        sequence="2"
+        sequence="20"
     />
+    <menuitem
+        id="menu_cx_tower_jet_request"
+        name="Jet Requests"
+        action="action_cx_tower_jet_request"
+        parent="menu_cx_tower_log_root"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_template_install"
+        name="Jet Template Installations"
+        parent="menu_cx_tower_log_root"
+        action="cx_tower_jet_template_install_action"
+        sequence="35"
+    />
+
 
     <!-- ========================= Commands ========================= -->
     <menuitem
@@ -159,6 +203,21 @@
         action="action_cx_tower_key"
         parent="menu_cx_tower_key_root"
         sequence="1"
+    />
+    <!-- Jets -->
+    <menuitem
+        id="menu_cx_tower_jet_settings_root"
+        name="Jets"
+        parent="menu_settings"
+        sequence="25"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_state"
+        name="States"
+        parent="menu_cx_tower_jet_settings_root"
+        action="cx_tower_jet_state_action"
+        groups="cetmix_tower_server.group_manager"
+        sequence="10"
     />
     <!-- Automation -->
     <menuitem
