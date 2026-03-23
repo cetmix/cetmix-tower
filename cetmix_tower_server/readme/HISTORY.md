@@ -1,3 +1,8 @@
+## 16.0.3.0.0 (2026-03-23)
+
+- Features: Jets! (4700)
+
+
 ## 16.0.2.2.14 (2026-02-17)
 
 - Features: Blacklist filter for Python commands, value checker for Vault. (5253)
