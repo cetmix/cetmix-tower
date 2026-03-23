@@ -16,7 +16,6 @@ class CxTowerJetWaypointTemplate(models.Model):
     sequence = fields.Integer(default=10, help="Used to sort waypoints in views")
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
-        required=True,
         ondelete="cascade",
         help="Jet template this waypoint template belongs to",
     )

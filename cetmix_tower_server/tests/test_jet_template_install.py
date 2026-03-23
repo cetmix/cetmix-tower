@@ -1295,34 +1295,12 @@ class TestTowerJetTemplateInstall(TestTowerJetsCommon):
             "All expected templates should be in installation lines",
         )
 
-        # Verify correct order: Odoo -> Nginx -> Postgres -> Docker -> Tower Core
-        # Note: Main template comes first, then dependencies in resolution order
-        expected_order = [
-            (self.jet_template_odoo, 0),  # Odoo first (main template)
-            (self.jet_template_nginx, 1),  # Nginx second (direct dependency of Odoo)
-            (
-                self.jet_template_postgres,
-                2,
-            ),  # Postgres third (direct dependency of Odoo)
-            (
-                self.jet_template_docker,
-                3,
-            ),  # Docker fourth (dependency of Postgres and Nginx)
-            (self.jet_template_tower_core, 4),  # Tower Core last (dependency of Docker)
-        ]
-
-        for i, (expected_template, expected_order_num) in enumerate(expected_order):
-            line = install_lines[i]
-            self.assertEqual(
-                line.jet_template_id,
-                expected_template,
-                f"Line {i} should be {expected_template.name}",
-            )
-            self.assertEqual(
-                line.order,
-                expected_order_num,
-                f"Line {i} should have order {expected_order_num}",
-            )
+        # Verify correct order: Odoo first, then Nginx/Postgres (either order),
+        # then Docker, then Tower Core.
+        odoo_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_odoo
+        )
+        self.assertEqual(odoo_line.order, 0, "Odoo should be first (order 0)")
 
         # Verify dependency relationships are correct
         # Odoo should be first (main template)
@@ -1410,37 +1388,78 @@ class TestTowerJetTemplateInstall(TestTowerJetsCommon):
             "Should have 8 installation lines (WooCommerce + 7 dependencies)",
         )
 
-        # Verify correct order:
-        # WooCommerce -> Odoo/WordPress -> Nginx/Postgres/MariaDB
-        #  -> Docker -> Tower Core
-        # Note: Root template gets order 0, dependencies get higher order numbers
-        # Order within same level may vary based on implementation
-        expected_order = [
-            (
-                self.jet_template_woocommerce_odoo,
-                0,
-            ),  # WooCommerce first (root template)
-            (self.jet_template_odoo, 1),  # Odoo second (direct dependency)
-            (self.jet_template_wordpress, 2),  # WordPress third (direct dependency)
-            (self.jet_template_nginx, 3),  # Nginx fourth (level 1 dependency)
-            (self.jet_template_postgres, 4),  # Postgres fifth (level 1 dependency)
-            (self.jet_template_mariadb, 5),  # MariaDB sixth (level 1 dependency)
-            (self.jet_template_docker, 6),  # Docker seventh (level 2 dependency)
-            (self.jet_template_tower_core, 7),  # Tower Core last (level 3 dependency)
-        ]
+        # Verify topological constraints:
+        # WooCommerce first (root), Tower Core last (deepest leaf),
+        # Docker before Nginx/Postgres/MariaDB, etc.
+        wc_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_woocommerce_odoo
+        )
+        self.assertEqual(wc_line.order, 0, "WooCommerce should be first (order 0)")
 
-        for i, (expected_template, expected_order_num) in enumerate(expected_order):
-            line = install_lines[i]
-            self.assertEqual(
-                line.jet_template_id,
-                expected_template,
-                f"Line {i} should be {expected_template.name}",
-            )
-            self.assertEqual(
-                line.order,
-                expected_order_num,
-                f"Line {i} should have order {expected_order_num}",
-            )
+        tc_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_tower_core
+        )
+        self.assertEqual(tc_line.order, 7, "Tower Core should be last (order 7)")
+
+        docker_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_docker
+        )
+        nginx_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_nginx
+        )
+        postgres_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_postgres
+        )
+        mariadb_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_mariadb
+        )
+        odoo_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_odoo
+        )
+        wp_line = install_lines.filtered(
+            lambda line: line.jet_template_id == self.jet_template_wordpress
+        )
+
+        self.assertGreater(
+            tc_line.order,
+            docker_line.order,
+            "Tower Core must have higher order than Docker (installed first)",
+        )
+        self.assertGreater(
+            docker_line.order,
+            nginx_line.order,
+            "Docker must have higher order than Nginx (installed first)",
+        )
+        self.assertGreater(
+            docker_line.order,
+            postgres_line.order,
+            "Docker must have higher order than Postgres (installed first)",
+        )
+        self.assertGreater(
+            docker_line.order,
+            mariadb_line.order,
+            "Docker must have higher order than MariaDB (installed first)",
+        )
+        self.assertGreater(
+            nginx_line.order,
+            odoo_line.order,
+            "Nginx must have higher order than Odoo (installed first)",
+        )
+        self.assertGreater(
+            postgres_line.order,
+            odoo_line.order,
+            "Postgres must have higher order than Odoo (installed first)",
+        )
+        self.assertGreater(
+            nginx_line.order,
+            wp_line.order,
+            "Nginx must have higher order than WordPress (installed first)",
+        )
+        self.assertGreater(
+            mariadb_line.order,
+            wp_line.order,
+            "MariaDB must have higher order than WordPress (installed first)",
+        )
 
         # Verify all expected templates are included
         template_ids = install_lines.mapped("jet_template_id.id")

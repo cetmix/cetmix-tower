@@ -349,19 +349,43 @@ class CxTowerPlanLog(models.Model):
 
         # Waypoint action: only if it's not a sub-plan
         if self.waypoint_id:
-            self.waypoint_id._plan_finished(self)
+            try:
+                with self.env.cr.savepoint():
+                    self.waypoint_id._plan_finished(self)
+            except Exception as e:
+                _logger.warning(
+                    "Post-finish hook for waypoint '%s' failed: %s",
+                    self.waypoint_id.name,
+                    e,
+                )
 
         # Finish template install/uninstall
         if self.jet_template_install_id:
-            self.jet_template_install_id._flight_plan_finished(
-                plan_status=self.plan_status,
-            )
+            try:
+                with self.env.cr.savepoint():
+                    self.jet_template_install_id._flight_plan_finished(
+                        plan_status=self.plan_status,
+                    )
+            except Exception as e:
+                _logger.warning(
+                    "Post-finish hook for template install/uninstall "
+                    "'%s'"
+                    " failed: %s",
+                    self.jet_template_install_id.name,
+                    e,
+                )
 
         # Jet
         if self.jet_id and self.jet_action_id:
-            self.jet_id._flight_plan_finished(
-                plan_status=self.plan_status,
-            )
+            try:
+                with self.env.cr.savepoint():
+                    self.jet_id._flight_plan_finished(
+                        plan_status=self.plan_status,
+                    )
+            except Exception as e:
+                _logger.warning(
+                    "Post-finish hook for jet '%s' failed: %s", self.jet_id.name, e
+                )
 
     def record(self, server, plan, status, **kwargs):
         """

@@ -32,6 +32,7 @@ class CxTowerServerLog(models.Model):
         index=True,
         store=True,
         readonly=False,
+        copy=False,
     )
     log_type = fields.Selection(
         selection=lambda self: self._selection_log_type(),
@@ -57,6 +58,7 @@ class CxTowerServerLog(models.Model):
         domain="[('server_id', '=', server_id)]",
         groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
         help="File that will be executed to get the log data",
+        copy=False,
     )
     log_text = fields.Text(readonly=True, copy=False)
     log_html = fields.Html(compute="_compute_log_html")

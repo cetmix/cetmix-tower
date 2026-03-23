@@ -29,9 +29,11 @@
         <field name="domain_force">
             ["|",
                 ("access_level", "&lt;=", "2"),
-                "|",
+                "|", "|",
                     ("user_ids", "in", [user.id]),
-                    ("manager_ids", "in", [user.id])
+                    ("manager_ids", "in", [user.id]),
+                    ("jet_ids.manager_ids", "in", [user.id])
+
             ]
         </field>
         <field name="perm_read" eval="1" />

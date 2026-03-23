@@ -22,13 +22,13 @@ class ResUsers(models.Model):
             - "1": User
             - "2": Manager
             - "3": Root
+            False: No access
         """
 
         if self.env.user.has_group("cetmix_tower_server.group_root"):
             return self.ROOT_ACCESS_LEVEL
-        elif self.env.user.has_group("cetmix_tower_server.group_manager"):
+        if self.env.user.has_group("cetmix_tower_server.group_manager"):
             return self.MANAGER_ACCESS_LEVEL
-        elif self.env.user.has_group("cetmix_tower_server.group_user"):
+        if self.env.user.has_group("cetmix_tower_server.group_user"):
             return self.USER_ACCESS_LEVEL
-        else:
-            return False
+        return False

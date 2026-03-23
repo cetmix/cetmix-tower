@@ -37,7 +37,7 @@ class CxTowerJet(models.Model):
     deletable = fields.Boolean(
         readonly=True,
         default=True,
-        help="This field is set by by the jet actions. "
+        help="This field is set by the jet actions. "
         "If enabled, the jet can be deleted",
     )
     url = fields.Char(string="URL", help="Jet URL, eg 'https://meme.example.com'")
@@ -450,8 +450,8 @@ class CxTowerJet(models.Model):
                         server=jet.server_id, jet=jet, if_file_exists="skip"
                     ).id
 
-                # Scheduled tasks
-                jet.scheduled_task_ids = jet.jet_template_id.scheduled_task_ids
+            # Scheduled tasks
+            jet.scheduled_task_ids = jet.jet_template_id.scheduled_task_ids
 
         return jets
 
@@ -882,19 +882,33 @@ class CxTowerJet(models.Model):
                 "jet_cloned_from_id": self.id,
             }
         )
-        # Scheduled tasks
-        if self.scheduled_task_ids:
-            kwargs["scheduled_task_ids"] = self.scheduled_task_ids.ids
-        # Server logs
-        if self.server_log_ids:
-            kwargs["server_log_ids"] = [
-                log.copy({"jet_id": False}).id for log in self.server_log_ids
-            ]
 
         # Create a new jet
         jet = jet_template.create_jet(
             server, name=name or self._default_cloned_jet_name(), **kwargs
         )
+
+        # Set scheduled tasks of the original jet to the new jet
+        jet.scheduled_task_ids = self.scheduled_task_ids
+
+        # Set server logs of the original jet to the new jet
+        # Delete the server logs of the new jet if the original jet
+        # has no server logs
+        if self.server_log_ids:
+            jet.server_log_ids = [
+                log.copy({"jet_id": False, "server_id": False}).id
+                for log in self.server_log_ids
+            ]
+            # Create files for file-type server logs
+            for jet_log in jet.server_log_ids:
+                if jet_log.log_type == "command":
+                    continue
+                if jet_log.log_type == "file":
+                    jet_log.file_id = jet_log.file_template_id.create_file(
+                        server=jet.server_id, jet=jet, if_file_exists="skip"
+                    ).id
+        else:
+            jet.server_log_ids.unlink()
 
         # NB: we are not passing the state as we need to run
         # the clone flight plan first.
@@ -960,6 +974,11 @@ class CxTowerJet(models.Model):
             **kwargs: Additional arguments:
                 - current_command_log: Optional command log record to track execution
 
+        Returns:
+            dict: A dictionary with the following keys:
+                - status: The status of the action
+                - error: The error message if the action is not available
+
         Raises:
             ValidationError: If the action is not available for this jet.
         """
@@ -989,7 +1008,7 @@ class CxTowerJet(models.Model):
                     status=JET_ACTION_NOT_AVAILABLE,
                     error=error,
                 )
-                return {"status": JET_ACTION_NOT_AVAILABLE, "error": error}
+            return {"status": JET_ACTION_NOT_AVAILABLE, "error": error}
 
         # Update the jet state
         transit_state = action.state_transit_id
@@ -1002,7 +1021,7 @@ class CxTowerJet(models.Model):
         if self.state_id == target_state and from_transition:
             self.sudo().write({"target_state_id": None})
             self._finalize_transition(failed=False)
-            return
+            return {"status": 0, "error": None}
 
         # Set target state if not already set
         if not self.target_state_id:
@@ -1014,12 +1033,13 @@ class CxTowerJet(models.Model):
         if not self.state_id and not self._control_dependencies():
             # The process will be resumed
             # when the dependencies are satisfied
+            error = _("Jet dependencies are not satisfied")
             if current_command_log:
                 current_command_log.finish(
                     status=JET_DEPENDENCIES_NOT_SATISFIED,
-                    error=_("Jet dependencies are not satisfied"),
+                    error=error,
                 )
-            return
+            return {"status": JET_DEPENDENCIES_NOT_SATISFIED, "error": error}
 
         self.sudo().write(
             {
@@ -1052,7 +1072,7 @@ class CxTowerJet(models.Model):
                 # Flight plan will trigger the `_flight_plan_finished` function again
                 # if the flight plan is finished successfully.
                 # So we don't need continue the loop in this case.
-                return
+                return {"status": 0, "error": None}
 
         # Set the state to the destination state if no plan is defined
         final_vals = {
@@ -1072,6 +1092,7 @@ class CxTowerJet(models.Model):
 
         # Trigger the transition finished event
         self._finalize_transition(failed=False)
+        return {"status": 0, "error": None}
 
     def _bring_to_state(self, state=None):
         """
@@ -1381,7 +1402,6 @@ class CxTowerJet(models.Model):
         waypoint_values = self._prepare_waypoint_values(
             waypoint_template=waypoint_template,
             name=name,
-            fly_here=fly_here,
             **metadata,
         )
         if created_from_command_log:
@@ -1389,18 +1409,15 @@ class CxTowerJet(models.Model):
 
         # Create the waypoint
         waypoint = self.env["cx.tower.jet.waypoint"].create(waypoint_values)
-        waypoint.prepare()
+        waypoint.prepare(is_destination=fly_here)
         return waypoint
 
-    def _prepare_waypoint_values(
-        self, waypoint_template, name=None, fly_here=False, **metadata
-    ):
+    def _prepare_waypoint_values(self, waypoint_template, name=None, **metadata):
         """Prepare the waypoint values
 
         Args:
             waypoint_template (cx.tower.jet.waypoint.template): The waypoint template
             name (Char, optional): The name of the waypoint.
-            fly_here (bool, optional): Whether to fly to the waypoint after creation.
         """
         self.ensure_one()
 
@@ -1409,7 +1426,6 @@ class CxTowerJet(models.Model):
             "waypoint_template_id": waypoint_template.id,
             "name": name if name else _("Auto-generated waypoint"),
             "jet_id": self.id,
-            "is_destination": fly_here,
         }
         if metadata:
             vals["metadata"] = metadata
@@ -1481,7 +1497,8 @@ class CxTowerJet(models.Model):
             # Pick the first request that requests a different state
             remaining_requests = explicit_requests - same_state_requests
             if remaining_requests:
-                self._bring_to_state(remaining_requests[0].state_requested_id)
+                self._serve_jet_request(remaining_requests[0])
+                return
 
         # 2. Requests where the jet is requested implicitly via template
         if self._accepts_new_links():
@@ -1489,6 +1506,7 @@ class CxTowerJet(models.Model):
                 [
                     ("server_id", "=", self.server_id.id),  # pylint: disable=no-member
                     ("jet_template_id", "=", self.jet_template_id.id),  # pylint: disable=no-member
+                    ("jet_id", "=", False),
                     ("state", "=", "new"),
                 ]
             )
@@ -1507,7 +1525,8 @@ class CxTowerJet(models.Model):
                 remaining_request = remaining_requests[0]
                 # Set current jet as the target jet for the request
                 remaining_request.write({"jet_id": self.id})  # pylint: disable=no-member
-                self._bring_to_state(remaining_request.state_requested_id)
+                self._serve_jet_request(remaining_request)
+                return
 
         # Send success notification when everything is done
         # Use context timestamp to avoid timezone issues

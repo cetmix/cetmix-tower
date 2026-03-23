@@ -118,6 +118,7 @@ class CxTowerJetRequest(models.Model):
 
         # Set jet template from the jet if not provided
         if not jet_template and jet:
+            jet.ensure_one()
             jet_template = jet.jet_template_id
 
         request = self.env["cx.tower.jet.request"].create(
@@ -213,6 +214,7 @@ class CxTowerJetRequest(models.Model):
         # to the required state - create a new jet
         # TODO: Add an option to wait for the jet to become available
         if jet_template:
+            jet_template.ensure_one()
             _logger.info("Creating new jet using template %s", jet_template.name)
             jet = jet_template.create_jet(server)
             if jet:
@@ -253,6 +255,6 @@ class CxTowerJetRequest(models.Model):
             self.requested_by_jet_id._finalize_jet_request(self)
 
         # 3. Remove the link to the jet that was handling the request
-        if self.jet_id:
+        if self.jet_id and self.jet_id.served_jet_request_id == self:
             # Unlink the jet from the request
-            self.jet_id.served_jet_request_id = False
+            self.jet_id.sudo().write({"served_jet_request_id": False})

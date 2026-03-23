@@ -42,3 +42,4 @@ class CxTowerMetadataMixin(models.AbstractModel):
         self.ensure_one()
         # Preserve the existing data in self.metadata.
         self.write({"metadata": {**(self.metadata or {}), **metadata}})
+        return True
