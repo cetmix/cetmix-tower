@@ -24,4 +24,5 @@ A special helper function `reload_views` is added to the `res.users` model.
 Use this function **wisely**.
 
 When reloading **form views**, be aware that if a user is currently editing a record,
-**their unsaved updates may be lost**.
+**their unsaved updates may be lost** when the form reloads from the server (no confirmation
+dialog is shown).

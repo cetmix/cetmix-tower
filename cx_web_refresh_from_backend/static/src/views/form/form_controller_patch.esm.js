@@ -1,6 +1,5 @@
 /** @odoo-module **/
 
-import {ConfirmationDialog} from "@web/core/confirmation_dialog/confirmation_dialog";
 import {FormController} from "@web/views/form/form_controller";
 import {isResIdInRecIds} from "../utils/get_loaded_record_ids.esm";
 import {onWillUnmount} from "@odoo/owl";
@@ -110,8 +109,9 @@ patch(FormController.prototype, {
     /**
      * Refresh the form with actual data from server.
      *
-     * If the record has unsaved changes, asks for confirmation before reloading.
-     * Dialog / wizard forms are filtered out in _shouldRefreshView().
+     * Reloads without confirmation even when the record is dirty (client changes
+     * may be discarded). Dialog / wizard forms are filtered out in
+     * _shouldRefreshView().
      *
      * @returns {Promise<void>}
      */
@@ -125,26 +125,6 @@ patch(FormController.prototype, {
         }
 
         const record = this.model.root;
-
-        if (record.isDirty) {
-            const confirmed = await new Promise((resolve) => {
-                this.dialogService.add(ConfirmationDialog, {
-                    title: _t("Form is being refreshed from backend"),
-                    body: _t("All unsaved changes will be lost! Continue?"),
-                    confirm: () => resolve(true),
-                    cancel: () => resolve(false),
-                    confirmLabel: _t("Continue"),
-                    cancelLabel: _t("Cancel"),
-                });
-            });
-
-            if (!confirmed) {
-                // User declined: drop any refresh coalesced while this dialog was open.
-                // Otherwise _queueRefresh would run refreshForm() again and reopen the modal.
-                this._hasRefreshQueued = false;
-                return;
-            }
-        }
 
         try {
             await record.load();

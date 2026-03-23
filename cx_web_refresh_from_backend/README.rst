@@ -67,7 +67,8 @@ model.
 Use this function **wisely**.
 
 When reloading **form views**, be aware that if a user is currently
-editing a record, **their unsaved updates may be lost**.
+editing a record, **their unsaved updates may be lost** when the form
+reloads from the server (no confirmation dialog is shown).
 
 **Table of contents**
 

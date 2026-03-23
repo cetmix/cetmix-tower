@@ -118,7 +118,7 @@ QUnit.module("cx_web_refresh_from_backend", (hooks) => {
     );
 
     QUnit.test(
-        "form: unsaved changes show confirmation dialog",
+        "form: dirty form reloads from backend without confirmation dialog",
         async function (assert) {
             const form = await makeView({
                 type: "form",
@@ -141,15 +141,12 @@ QUnit.module("cx_web_refresh_from_backend", (hooks) => {
                 rec_ids: [1],
             });
             await nextTick();
+            await nextTick();
 
-            assert.containsOnce(
+            assert.containsNone(
                 target,
-                ".modal .modal-title",
-                "confirmation dialog should open for dirty form"
-            );
-            assert.strictEqual(
-                target.querySelector(".modal .modal-title").textContent.trim(),
-                "Form is being refreshed from backend"
+                ".modal",
+                "backend refresh must not open a confirmation dialog"
             );
         }
     );
