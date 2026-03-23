@@ -1,32 +1,28 @@
 /** @odoo-module **/
 
+import {ConfirmationDialog} from "@web/core/confirmation_dialog/confirmation_dialog";
 import {FormController} from "@web/views/form/form_controller";
+import {isResIdInRecIds} from "../utils/get_loaded_record_ids.esm";
+import {onWillUnmount} from "@odoo/owl";
 import {patch} from "@web/core/utils/patch";
 import {useService} from "@web/core/utils/hooks";
-import {onWillUnmount} from "@odoo/owl";
-import {ConfirmationDialog} from "@web/core/confirmation_dialog/confirmation_dialog";
+import {_t} from "@web/core/l10n/translation";
 
-// Patch the standard FormController to react on bus notifications
-patch(FormController.prototype, "cx_web_refresh_from_backend.FormController", {
+patch(FormController.prototype, {
     setup() {
-        // Call original setup logic
-        this._super(...arguments);
+        super.setup(...arguments);
 
-        // Get core services used by this behavior
-        this.busService = useService("bus_service");
-        this.actionService = useService("action");
+        // Bus_service is async; useService("bus_service") breaks (SERVICES_METADATA).
+        this.busService = this.env.services.bus_service;
         this.notificationService = useService("notification");
 
-        // Timestamp of last local save (used to avoid immediate auto-refresh)
         this._lastLocalSave = null;
+        this._isRefreshInFlight = false;
+        this._hasRefreshQueued = false;
 
-        // Bind the handler to keep reference for cleanup
         this._boundBusHandler = this._onBusNotification.bind(this);
-
-        // Subscribe to bus notifications
         this.busService.addEventListener("notification", this._boundBusHandler);
 
-        // Cleanup subscription on component unmount
         onWillUnmount(() => {
             if (this.busService && this._boundBusHandler) {
                 this.busService.removeEventListener(
@@ -38,84 +34,89 @@ patch(FormController.prototype, "cx_web_refresh_from_backend.FormController", {
     },
 
     /**
-     * Handle bus notification for view refresh.
-     * Listens for notifications with type "web.refresh_view" and delegates
-     * processing to _handleViewRefresh.
+     * Handle bus notification batch for view refresh.
+     * Coalesces the batch: if any notification matches, refreshes once.
      *
      * @param {Event} event - Bus notification event
      */
     async _onBusNotification({detail: notifications}) {
-        // Check if component is still alive
         if (!this.model || !this.model.root) {
             return;
         }
+        const shouldRefresh = notifications.some(
+            ({type, payload}) =>
+                type === "web.refresh_view" && this._shouldRefreshView(payload)
+        );
+        if (shouldRefresh) {
+            await this._queueRefresh("refreshForm");
+        }
+    },
 
-        for (const {payload, type} of notifications) {
-            if (type === "web.refresh_view") {
-                await this._handleViewRefresh(payload);
-            }
+    async _queueRefresh(methodName) {
+        if (this._isRefreshInFlight) {
+            this._hasRefreshQueued = true;
+            return;
+        }
+        this._isRefreshInFlight = true;
+        try {
+            do {
+                this._hasRefreshQueued = false;
+                await this[methodName]();
+            } while (this._hasRefreshQueued);
+        } finally {
+            this._isRefreshInFlight = false;
         }
     },
 
     /**
-     * Handle view refresh notification.
+     * Check whether a refresh notification is relevant to this form.
      *
-     * Only refreshes when:
+     * Returns true when all of the following hold:
      *  - model matches current form model
-     *  - requested view types include "form" (if specified)
-     *  - record id matches current record (if specified)
+     *  - requested view types include "form" (or none specified)
+     *  - record id matches current record (or none specified)
+     *  - form is not inside a dialog / wizard
      *
-     * @param {Object} notification - Notification payload
+     * @param {Object} payload - Notification payload
+     * @returns {Boolean}
      */
-    async _handleViewRefresh(notification) {
-        const {model, view_types = [], rec_ids = []} = notification;
+    _shouldRefreshView(payload) {
+        const {model, view_types = [], rec_ids = []} = payload;
 
-        // Check if the model matches current form model
         if (this.props.resModel !== model) {
-            return;
+            return false;
         }
-
-        // Check if view_type matches (if specified in notification)
         if (view_types.length > 0 && !view_types.includes("form")) {
-            return;
+            return false;
         }
-
-        // Check if record ID matches (if rec_ids is specified)
         const currentResId = this.model && this.model.root && this.model.root.resId;
-        if (rec_ids.length > 0 && (!currentResId || !rec_ids.includes(currentResId))) {
-            return;
+        if (rec_ids.length > 0 && !isResIdInRecIds(currentResId, rec_ids)) {
+            return false;
         }
-
-        // Skip refresh when form is in a dialog or when a wizard is on top of the stack.
-        // Refreshing in that context can leave wizard/confirmation dialogs stuck open
-        // (e.g. confirm="..." in wizard view).
+        // Skip refresh when form is in a dialog or when a wizard is on top
+        // of the stack. Refreshing in that context can leave wizard/confirmation
+        // dialogs stuck open (e.g. confirm="..." in wizard view).
         if (this.env.inDialog) {
-            return;
+            return false;
         }
         const currentController = this.actionService.currentController;
         const currentAction = currentController && currentController.action;
         if (currentAction && currentAction.target === "new") {
-            return;
+            return false;
         }
-
-        await this.refreshForm();
+        return true;
     },
 
     /**
      * Refresh the form with actual data from server.
      *
-     * For normal forms:
-     *  - if record is clean: perform a soft_reload action
-     *  - if record has unsaved changes: ask for confirmation, then reload
-     *
-     * For wizards (dialogs, target="new"):
-     *  - reload only the current record without full action reload
+     * If the record has unsaved changes, asks for confirmation before reloading.
+     * Dialog / wizard forms are filtered out in _shouldRefreshView().
      *
      * @returns {Promise<void>}
      */
     async refreshForm() {
-        // Do not refresh immediately after an explicit save (debounce window)
-        if (this._lastLocalSave && Date.now() - this._lastLocalSave < 1000) {
+        if (this._lastLocalSave && Date.now() - this._lastLocalSave < 2500) {
             return;
         }
 
@@ -123,27 +124,24 @@ patch(FormController.prototype, "cx_web_refresh_from_backend.FormController", {
             return;
         }
 
-        // Check if this form is opened as a wizard (dialog)
-        const currentController = this.actionService.currentController;
-        const action = currentController && currentController.action;
-        const isWizard = action && action.target === "new";
-
         const record = this.model.root;
 
-        if (!isWizard && record.isDirty) {
-            // Ask user whether to discard unsaved changes before refreshing
+        if (record.isDirty) {
             const confirmed = await new Promise((resolve) => {
                 this.dialogService.add(ConfirmationDialog, {
-                    title: this.env._t("Form is being refreshed from backend"),
-                    body: this.env._t("All unsaved changes will be lost! Continue?"),
+                    title: _t("Form is being refreshed from backend"),
+                    body: _t("All unsaved changes will be lost! Continue?"),
                     confirm: () => resolve(true),
                     cancel: () => resolve(false),
-                    confirmLabel: this.env._t("Continue"),
-                    cancelLabel: this.env._t("Cancel"),
+                    confirmLabel: _t("Continue"),
+                    cancelLabel: _t("Cancel"),
                 });
             });
 
             if (!confirmed) {
+                // User declined: drop any refresh coalesced while this dialog was open.
+                // Otherwise _queueRefresh would run refreshForm() again and reopen the modal.
+                this._hasRefreshQueued = false;
                 return;
             }
         }
@@ -155,14 +153,12 @@ patch(FormController.prototype, "cx_web_refresh_from_backend.FormController", {
                 (error && error.data && error.data.message) ||
                 (error && error.message) ||
                 String(error);
-            this.notificationService.add(
-                this.env._t("Could not reload form. ") + message,
-                {type: "danger"}
-            );
+            this.notificationService.add(_t("Could not reload form. ") + message, {
+                type: "danger",
+            });
             return;
         }
 
-        // Update the view (only if component is still mounted)
         if (this.model && this.model.root) {
             this.render(true);
         }
@@ -171,11 +167,18 @@ patch(FormController.prototype, "cx_web_refresh_from_backend.FormController", {
     /**
      * Override of save button handler.
      *
-     * Stores timestamp of last local save to avoid immediate auto-refresh
-     * triggered by our own changes.
+     * After a successful save, stores a timestamp to avoid immediate auto-refresh
+     * triggered by our own write (bus notification). Failed saves leave the
+     * timestamp unchanged so refresh suppression does not apply incorrectly.
+     *
+     * @param {Object} params - Save options
+     * @returns {Promise<Boolean|undefined>} Result of the core save (truthy when save succeeded)
      */
-    async saveButtonClicked() {
-        this._lastLocalSave = Date.now();
-        return await this._super(...arguments);
+    async saveButtonClicked(params) {
+        const result = await super.saveButtonClicked(params);
+        if (result) {
+            this._lastLocalSave = Date.now();
+        }
+        return result;
     },
 });
