@@ -131,6 +131,15 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         )
         cls.import_wizard.if_record_exists = "update"
 
+    def _create_import_wizard(self, yaml_code, if_record_exists="create"):
+        """Create import wizard for ad-hoc YAML payload."""
+        return self.env["cx.tower.yaml.import.wiz"].create(
+            {
+                "yaml_code": yaml_code,
+                "if_record_exists": if_record_exists,
+            }
+        )
+
     def test_extract_yaml_data(self):
         """Test extract YAML data from file"""
 
@@ -634,6 +643,302 @@ records:
         # Check tag
         self.assertTrue(
             self.Tag.get_by_reference("such_much_tag"), "Tag must be created"
+        )
+
+    def test_action_import_yaml_defers_command_template_links(self):
+        """Forward references for command template links must resolve after import."""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: command
+  reference: deferred_jet_command
+  name: Deferred Jet Command
+  action: jet_action
+  jet_template_id: deferred_jet_template
+- cetmix_tower_model: command
+  reference: deferred_waypoint_command
+  name: Deferred Waypoint Command
+  action: create_waypoint
+  waypoint_template_id:
+    reference: deferred_waypoint_template
+- cetmix_tower_model: jet_template
+  reference: deferred_jet_template
+  name: Deferred Jet Template
+- cetmix_tower_model: jet_waypoint_template
+  reference: deferred_waypoint_template
+  name: Deferred Waypoint Template
+  jet_template_id: deferred_jet_template
+"""
+        wiz = self._create_import_wizard(yaml_code)
+
+        wiz.action_import_yaml()
+
+        deferred_jet_command = self.Command.get_by_reference("deferred_jet_command")
+        deferred_waypoint_command = self.Command.get_by_reference(
+            "deferred_waypoint_command"
+        )
+        deferred_jet_template = self.env["cx.tower.jet.template"].get_by_reference(
+            "deferred_jet_template"
+        )
+        deferred_waypoint_template = self.env[
+            "cx.tower.jet.waypoint.template"
+        ].get_by_reference("deferred_waypoint_template")
+
+        self.assertTrue(
+            deferred_jet_command,
+            "Jet action command must be created during YAML import",
+        )
+        self.assertEqual(
+            deferred_jet_command.jet_template_id,
+            deferred_jet_template,
+            "Deferred jet template link must be written after the main import pass",
+        )
+        self.assertTrue(
+            deferred_waypoint_command,
+            "Waypoint command must be created during YAML import",
+        )
+        self.assertEqual(
+            deferred_waypoint_command.waypoint_template_id,
+            deferred_waypoint_template,
+            "Deferred waypoint template link must be written "
+            "after the main import pass",
+        )
+        self.assertEqual(
+            deferred_waypoint_template.jet_template_id,
+            deferred_jet_template,
+            "Waypoint template must keep its deferred jet template link after import",
+        )
+
+    def test_action_import_yaml_defers_plan_line_command_forward_ref(self):
+        """Plan lines may reference a command still being created (deep YAML cycle)."""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: command
+  reference: yaml_defer_plan_circ_cmd
+  name: YAML defer plan circ command
+  action: create_waypoint
+  allow_parallel_run: false
+  note: false
+  path: false
+  if_file_exists: skip
+  disconnect_file: false
+  fly_here: false
+  waypoint_template_id:
+    reference: yaml_defer_plan_circ_wp
+    name: YAML defer circ waypoint
+    sequence: 10
+    access_level: manager
+    note: false
+    jet_template_id:
+      reference: yaml_defer_plan_circ_jet
+      name: YAML defer circ jet
+      note: false
+      limit_per_server: 0
+      show_in_create_wizard: false
+      action_ids:
+      - reference: yaml_defer_plan_circ_action
+        name: YAML defer circ action
+        note: false
+        priority: 10
+        access_level: manager
+        state_from_id:
+          reference: stopped
+        state_transit_id:
+          reference: building
+        state_to_id:
+          reference: stopped
+        plan_id:
+          reference: yaml_defer_plan_circ_plan
+          name: YAML defer circ plan
+          access_level: manager
+          allow_parallel_run: false
+          color: 0
+          note: false
+          on_error_action: e
+          custom_exit_code: 0
+          line_ids:
+          - reference: yaml_defer_plan_circ_line
+            sequence: 10
+            condition: false
+            use_sudo: false
+            path: false
+            command_id:
+              reference: yaml_defer_plan_circ_cmd
+            is_make_copy: false
+"""
+        wiz = self._create_import_wizard(yaml_code)
+        wiz.action_import_yaml()
+
+        command = self.Command.get_by_reference("yaml_defer_plan_circ_cmd")
+        plan = self.FlightPlan.get_by_reference("yaml_defer_plan_circ_plan")
+        self.assertTrue(command, "Command must be created")
+        self.assertTrue(plan, "Plan must be created")
+        self.assertEqual(
+            len(plan.line_ids),
+            1,
+            "Deferred plan line must be created after the command exists",
+        )
+        self.assertEqual(
+            plan.line_ids.command_id,
+            command,
+            "Plan line command_id must resolve to the enclosing command",
+        )
+
+    def test_action_import_yaml_defers_template_dependency_children(self):
+        """Forward references inside template dependency children must resolve."""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: jet_template
+  reference: owner_template_with_dependency
+  name: Owner Template With Dependency
+  template_requires_ids:
+  - reference: false
+    template_required_id:
+      reference: future_template_dependency
+    state_required_id:
+      reference: running
+- cetmix_tower_model: jet_template
+  reference: future_template_dependency
+  name: Future Template Dependency
+"""
+        wiz = self._create_import_wizard(yaml_code)
+
+        wiz.action_import_yaml()
+
+        owner_template = self.env["cx.tower.jet.template"].get_by_reference(
+            "owner_template_with_dependency"
+        )
+        future_template = self.env["cx.tower.jet.template"].get_by_reference(
+            "future_template_dependency"
+        )
+
+        self.assertTrue(owner_template, "Owner template must be created")
+        self.assertTrue(
+            owner_template.template_requires_ids,
+            "Deferred dependency child must be created after the main import pass",
+        )
+        self.assertEqual(
+            owner_template.template_requires_ids.template_required_id,
+            future_template,
+            "Deferred dependency child must resolve the required template",
+        )
+        self.assertEqual(
+            owner_template.template_requires_ids.state_required_id.reference,
+            "running",
+            "Deferred dependency child must preserve its required state",
+        )
+
+    def test_action_import_yaml_defers_scheduled_task_custom_values(self):
+        """Forward references inside scheduled-task custom values must resolve."""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: scheduled_task
+  reference: deferred_scheduled_task
+  name: Deferred Scheduled Task
+  action: command
+  command_id:
+    reference: test_yaml_command
+  interval_number: 1
+  interval_type: days
+  next_call: 2026-03-27 00:00:00
+  custom_variable_value_ids:
+  - reference: false
+    variable_value_id:
+      reference: deferred_scheduled_task_variable_value
+- cetmix_tower_model: variable_value
+  reference: deferred_scheduled_task_variable_value
+  variable_id:
+    reference: yaml_test
+  value_char: Deferred Value
+"""
+        wiz = self._create_import_wizard(yaml_code)
+
+        wiz.action_import_yaml()
+
+        scheduled_task = self.env["cx.tower.scheduled.task"].get_by_reference(
+            "deferred_scheduled_task"
+        )
+        variable_value = self.env["cx.tower.variable.value"].get_by_reference(
+            "deferred_scheduled_task_variable_value"
+        )
+
+        self.assertTrue(scheduled_task, "Scheduled task must be created")
+        self.assertEqual(
+            len(scheduled_task.custom_variable_value_ids),
+            1,
+            "Deferred scheduled-task custom value must be created after import",
+        )
+        self.assertEqual(
+            scheduled_task.custom_variable_value_ids.variable_value_id,
+            variable_value,
+            "Deferred scheduled-task custom value must resolve variable_value_id",
+        )
+        self.assertEqual(
+            scheduled_task.custom_variable_value_ids.variable_id,
+            variable_value.variable_id,
+            "Deferred scheduled-task custom value must restore variable_id",
+        )
+        self.assertEqual(
+            scheduled_task.custom_variable_value_ids.value_char,
+            variable_value.value_char,
+            "Deferred scheduled-task custom value must restore value_char",
+        )
+
+    def test_action_import_yaml_aggregates_missing_deferred_links(self):
+        """Missing deferred command template links must fail with one clear error."""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: command
+  reference: command_missing_jet_template
+  name: Command Missing Jet Template
+  action: jet_action
+  jet_template_id: missing_jet_template
+- cetmix_tower_model: command
+  reference: command_missing_waypoint_template
+  name: Command Missing Waypoint Template
+  action: create_waypoint
+  waypoint_template_id:
+    reference: missing_waypoint_template
+- cetmix_tower_model: command
+  reference: command_valid_deferred_template
+  name: Command Valid Deferred Template
+  action: jet_action
+  jet_template_id: valid_deferred_jet_template
+- cetmix_tower_model: jet_template
+  reference: valid_deferred_jet_template
+  name: Valid Deferred Jet Template
+"""
+        wiz = self._create_import_wizard(yaml_code)
+
+        with self.assertRaises(ValidationError) as err:
+            wiz.action_import_yaml()
+
+        error_message = str(err.exception)
+        self.assertIn(
+            "Deferred relation resolution failed",
+            error_message,
+            "Import must raise one aggregated deferred-resolution error",
+        )
+        self.assertIn(
+            "Record cx.tower.command 'command_missing_jet_template': "
+            "field 'jet_template_id'",
+            error_message,
+            "Error must include unresolved jet template links",
+        )
+        self.assertIn(
+            "cx.tower.jet.template 'missing_jet_template'",
+            error_message,
+            "Error must include missing jet template reference",
+        )
+        self.assertIn(
+            "Record cx.tower.command 'command_missing_waypoint_template': "
+            "field 'waypoint_template_id'",
+            error_message,
+            "Error must include unresolved waypoint template links",
+        )
+        self.assertIn(
+            "cx.tower.jet.waypoint.template 'missing_waypoint_template'",
+            error_message,
+            "Error must include missing waypoint template reference",
         )
 
     def test_yaml_import_server_without_password(self):

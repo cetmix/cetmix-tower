@@ -103,11 +103,12 @@ records:
   allow_parallel_run: false
   note: false
   path: false
-  code: echo 'Test Command From Yaml'
-  server_status: false
-  no_split_for_sudo: false
   if_file_exists: skip
   disconnect_file: false
+  fly_here: false
+  code: echo 'Test Command From Yaml'
+  no_split_for_sudo: false
+  server_status: false
 - cetmix_tower_model: command
   access_level: manager
   reference: test_command_from_yaml_2
@@ -116,11 +117,12 @@ records:
   allow_parallel_run: false
   note: false
   path: false
-  code: echo 'Test Command From Yaml 2'
-  server_status: false
-  no_split_for_sudo: false
   if_file_exists: skip
   disconnect_file: false
+  fly_here: false
+  code: echo 'Test Command From Yaml 2'
+  no_split_for_sudo: false
+  server_status: false
 """
 
         # -- 1 --

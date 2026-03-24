@@ -16,6 +16,7 @@ class CxTowerJetWaypointTemplate(models.Model):
             "name",
             "sequence",
             "access_level",
+            "jet_template_id",
             "plan_create_id",
             "plan_arrive_id",
             "plan_leave_id",
@@ -23,3 +24,9 @@ class CxTowerJetWaypointTemplate(models.Model):
             "note",
         ]
         return res
+
+    def _get_deferred_m2o_import_fields(self):
+        """Return m2o waypoint-template fields resolved after import."""
+        return {
+            "jet_template_id": "cx.tower.jet.template",
+        }
