@@ -1,4 +1,4 @@
-/** @odoo-module **/
+/** @odoo-module */
 
 import {
     getLoadedRecordIds,
@@ -13,41 +13,33 @@ import {_t} from "@web/core/l10n/translation";
 patch(KanbanController.prototype, {
     setup() {
         super.setup(...arguments);
-        // Bus_service is async; useService("bus_service") is unsafe (SERVICES_METADATA
-        // stores the async flag, not method names — see web/static/src/core/utils/hooks.js).
+        // Bus_service is async; useService("bus_service") breaks (SERVICES_METADATA).
         this.busService = this.env.services.bus_service;
         this.notificationService = useService("notification");
         this._isRefreshInFlight = false;
         this._hasRefreshQueued = false;
 
-        this._boundBusHandler = this._onBusNotification.bind(this);
-        this.busService.addEventListener("notification", this._boundBusHandler);
+        this._boundBusHandler = this._onWebRefreshNotification.bind(this);
+        this.busService.subscribe("web.refresh_view", this._boundBusHandler);
 
         onWillUnmount(() => {
             if (this.busService && this._boundBusHandler) {
-                this.busService.removeEventListener(
-                    "notification",
-                    this._boundBusHandler
-                );
+                this.busService.unsubscribe("web.refresh_view", this._boundBusHandler);
             }
         });
     },
 
     /**
-     * Handle bus notification batch for view refresh.
-     * Coalesces the batch: if any notification matches, refreshes once.
+     * Handle a web.refresh_view bus notification for this kanban.
+     * Called once per notification; coalesces concurrent refreshes via _queueRefresh.
      *
-     * @param {Event} event - Bus notification event
+     * @param {Object} payload - Notification payload {model, view_types, rec_ids}
      */
-    async _onBusNotification({detail: notifications}) {
+    async _onWebRefreshNotification(payload) {
         if (!this.model || !this.model.root) {
             return;
         }
-        const shouldRefresh = notifications.some(
-            ({type, payload}) =>
-                type === "web.refresh_view" && this._shouldRefreshView(payload)
-        );
-        if (shouldRefresh) {
+        if (this._shouldRefreshView(payload)) {
             await this._queueRefresh("refreshList");
         }
     },
@@ -112,11 +104,7 @@ patch(KanbanController.prototype, {
         try {
             await list.load();
         } catch (error) {
-            const message =
-                (error && error.data && error.data.message) ||
-                (error && error.message) ||
-                String(error);
-            this.notificationService.add(_t("Could not reload kanban. ") + message, {
+            this.notificationService.add(this._getRefreshErrorMessage(error), {
                 type: "danger",
             });
             return;
@@ -125,5 +113,13 @@ patch(KanbanController.prototype, {
         if (this.model && this.model.root) {
             this.render(true);
         }
+    },
+
+    _getRefreshErrorMessage(error) {
+        const message =
+            (error && error.data && error.data.message) ||
+            (error && error.message) ||
+            String(error);
+        return _t("Could not reload kanban. %(message)s", {message});
     },
 });

@@ -1,4 +1,4 @@
-# Backend UI Reload Module
+# Refresh UI views from backend
 
 This is a **technical module** that allows triggering a **UI reload** from the backend.
 It enables triggering the reload action for selected users and record IDs.

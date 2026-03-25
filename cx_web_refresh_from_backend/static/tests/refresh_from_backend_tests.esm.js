@@ -1,4 +1,4 @@
-/** @odoo-module **/
+/** @odoo-module */
 /* global QUnit */
 
 import "cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm";
@@ -20,13 +20,19 @@ import {
 let serverData = null;
 let target = null;
 
+/**
+ * Simulate a web.refresh_view notification on the patched controller.
+ *
+ * The unit tests exercise the controller filtering and refresh logic, so they
+ * can call the public notification handler directly instead of reproducing the
+ * bus service internals.
+ *
+ * @param {Object} controller - Patched view controller instance
+ * @param {Object} payload - {model, view_types, rec_ids}
+ * @returns {Promise<void>}
+ */
 function triggerRefresh(controller, payload) {
-    controller.busService.trigger("notification", [
-        {
-            type: "web.refresh_view",
-            payload,
-        },
-    ]);
+    return controller._onWebRefreshNotification(payload);
 }
 
 QUnit.module("cx_web_refresh_from_backend", (hooks) => {
@@ -156,7 +162,7 @@ QUnit.module("cx_web_refresh_from_backend", (hooks) => {
             type: "list",
             resModel: "res.partner",
             serverData,
-            arch: '<tree><field name="name"/></tree>',
+            arch: '<list><field name="name"/></list>',
         });
 
         const deferred = makeDeferred();
@@ -196,7 +202,7 @@ QUnit.module("cx_web_refresh_from_backend", (hooks) => {
             type: "kanban",
             resModel: "res.partner",
             serverData,
-            arch: '<kanban><templates><t t-name="kanban-box"><div><field name="name"/></div></t></templates></kanban>',
+            arch: '<kanban><templates><t t-name="card"><div><field name="name"/></div></t></templates></kanban>',
         });
 
         const deferred = makeDeferred();

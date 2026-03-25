@@ -369,9 +369,9 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !! source digest: sha256:75778e017e5cbb039db1b56320aaa4175b452a8c73721ba63d9a4a87e81cb774
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/license-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/17.0/cx_web_refresh_from_backend"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
-<div class="section" id="backend-ui-reload-module">
-<h1>Backend UI Reload Module</h1>
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html"><img alt="License: LGPL-3" src="https://img.shields.io/badge/license-LGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cx_web_refresh_from_backend"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<div class="section" id="refresh-ui-views-from-backend">
+<h1>Refresh UI views from backend</h1>
 <p>This is a <strong>technical module</strong> that allows triggering a <strong>UI reload</strong>
 from the backend. It enables triggering the reload action for selected
 users and record IDs.</p>
@@ -447,7 +447,7 @@ function.</p>
 </span><span class="n">users_to_reload</span><span class="o">.</span><span class="n">reload_views</span><span class="p">(</span><span class="w">
 </span>    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;crm.lead&quot;</span><span class="p">,</span><span class="w">
 </span>    <span class="n">view_types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;kanban&quot;</span><span class="p">,</span> <span class="s2">&quot;form&quot;</span><span class="p">],</span><span class="w">
-</span>    <span class="n">rec_ids</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">],</span><span class="w">
+</span>    <span class="n">rec_ids</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ids</span><span class="p">],</span><span class="w">
 </span><span class="p">)</span>
 </pre>
 </div>
@@ -457,7 +457,7 @@ function.</p>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cx_web_refresh_from_backend%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cx_web_refresh_from_backend%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
@@ -470,7 +470,7 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 </div>
 <div class="section" id="maintainers">
 <h2>Maintainers</h2>
-<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/17.0/cx_web_refresh_from_backend">cetmix/cetmix-tower</a> project on GitHub.</p>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cx_web_refresh_from_backend">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
 </div>

@@ -1,4 +1,4 @@
-/** @odoo-module **/
+/** @odoo-module */
 
 import {FormController} from "@web/views/form/form_controller";
 import {isResIdInRecIds} from "../utils/get_loaded_record_ids.esm";
@@ -19,34 +19,27 @@ patch(FormController.prototype, {
         this._isRefreshInFlight = false;
         this._hasRefreshQueued = false;
 
-        this._boundBusHandler = this._onBusNotification.bind(this);
-        this.busService.addEventListener("notification", this._boundBusHandler);
+        this._boundBusHandler = this._onWebRefreshNotification.bind(this);
+        this.busService.subscribe("web.refresh_view", this._boundBusHandler);
 
         onWillUnmount(() => {
             if (this.busService && this._boundBusHandler) {
-                this.busService.removeEventListener(
-                    "notification",
-                    this._boundBusHandler
-                );
+                this.busService.unsubscribe("web.refresh_view", this._boundBusHandler);
             }
         });
     },
 
     /**
-     * Handle bus notification batch for view refresh.
-     * Coalesces the batch: if any notification matches, refreshes once.
+     * Handle a web.refresh_view bus notification for this form.
+     * Called once per notification; coalesces concurrent refreshes via _queueRefresh.
      *
-     * @param {Event} event - Bus notification event
+     * @param {Object} payload - Notification payload {model, view_types, rec_ids}
      */
-    async _onBusNotification({detail: notifications}) {
+    async _onWebRefreshNotification(payload) {
         if (!this.model || !this.model.root) {
             return;
         }
-        const shouldRefresh = notifications.some(
-            ({type, payload}) =>
-                type === "web.refresh_view" && this._shouldRefreshView(payload)
-        );
-        if (shouldRefresh) {
+        if (this._shouldRefreshView(payload)) {
             await this._queueRefresh("refreshForm");
         }
     },
@@ -129,11 +122,7 @@ patch(FormController.prototype, {
         try {
             await record.load();
         } catch (error) {
-            const message =
-                (error && error.data && error.data.message) ||
-                (error && error.message) ||
-                String(error);
-            this.notificationService.add(_t("Could not reload form. ") + message, {
+            this.notificationService.add(this._getRefreshErrorMessage(error), {
                 type: "danger",
             });
             return;
@@ -142,6 +131,14 @@ patch(FormController.prototype, {
         if (this.model && this.model.root) {
             this.render(true);
         }
+    },
+
+    _getRefreshErrorMessage(error) {
+        const message =
+            (error && error.data && error.data.message) ||
+            (error && error.message) ||
+            String(error);
+        return _t("Could not reload form. %(message)s", {message});
     },
 
     /**

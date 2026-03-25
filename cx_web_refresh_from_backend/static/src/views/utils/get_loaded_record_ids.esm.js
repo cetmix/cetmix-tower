@@ -1,4 +1,4 @@
-/** @odoo-module **/
+/** @odoo-module */
 
 /**
  * Get IDs of records currently loaded in list-like root models.

@@ -11,6 +11,6 @@ users_to_reload = self.env["res.users"].search([("groups_id", "in", [group_id])]
 users_to_reload.reload_views(
     model="crm.lead",
     view_types=["kanban", "form"],
-    rec_ids=[self.id],
+    rec_ids=[self.ids],
 )
 ```

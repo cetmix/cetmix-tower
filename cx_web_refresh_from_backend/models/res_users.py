@@ -33,7 +33,7 @@ class ResUsers(models.Model):
             users_to_reload.reload_views(
                 model="crm.lead",
                 view_types=["kanban", "form"],
-                rec_ids=[self.id]
+                rec_ids=[self.ids]
             )
         """
 
@@ -44,8 +44,7 @@ class ResUsers(models.Model):
             "rec_ids": rec_ids or [],
         }
 
-        # Send notification to each user's partner
-        notifications = [
-            [user.partner_id, "web.refresh_view", bus_message] for user in self
-        ]
-        self.env["bus.bus"]._sendmany(notifications)
+        # Send one notification per user's partner in deterministic order.
+        bus_bus = self.env["bus.bus"]
+        for user in self.sorted("id"):
+            bus_bus._sendone(user.partner_id, "web.refresh_view", bus_message)
