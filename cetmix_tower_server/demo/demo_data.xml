@@ -1229,7 +1229,7 @@ result={"exit_code": 0, "message": "Jet cloned to different server successfully"
     <record id="cx_tower_scheduled_task_demo_1" model="cx.tower.scheduled.task">
         <field name="name">Scheduled Task Demo #1</field>
         <field name="reference">scheduled_task_demo_1</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">1</field>
         <field name="server_ids" eval="[(4, ref('server_demo_1'))]" />
         <field name="server_template_ids" eval="[(4, ref('demo_server_template_1'))]" />
@@ -1242,7 +1242,7 @@ result={"exit_code": 0, "message": "Jet cloned to different server successfully"
     <record id="cx_tower_scheduled_task_demo_2" model="cx.tower.scheduled.task">
         <field name="name">Scheduled Task Demo #2</field>
         <field name="reference">scheduled_task_demo_2</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">2</field>
         <field
             name="server_ids"
@@ -1259,7 +1259,7 @@ result={"exit_code": 0, "message": "Jet cloned to different server successfully"
     <record id="cx_tower_scheduled_task_odoo" model="cx.tower.scheduled.task">
         <field name="name">Odoo Scheduled Task</field>
         <field name="reference">scheduled_task_odoo</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">10</field>
         <field name="action">command</field>
         <field name="command_id" ref="command_list_dir" />
@@ -1271,7 +1271,7 @@ result={"exit_code": 0, "message": "Jet cloned to different server successfully"
     <record id="cx_tower_scheduled_task_wordpress" model="cx.tower.scheduled.task">
         <field name="name">WordPress Scheduled Task</field>
         <field name="reference">scheduled_task_wordpress</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">11</field>
         <field name="action">plan</field>
         <field name="plan_id" ref="plan_demo_3" />
@@ -1283,7 +1283,7 @@ result={"exit_code": 0, "message": "Jet cloned to different server successfully"
     <record id="cx_tower_scheduled_task_woocommerce" model="cx.tower.scheduled.task">
         <field name="name">WooCommerce Scheduled Task</field>
         <field name="reference">scheduled_task_woocommerce</field>
-        <field name="active">True</field>
+        <field name="active">False</field>
         <field name="sequence">12</field>
         <field name="action">command</field>
         <field name="command_id" ref="command_update_upgrade" />

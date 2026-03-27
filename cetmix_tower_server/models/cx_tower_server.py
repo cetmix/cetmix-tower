@@ -1223,6 +1223,16 @@ class CxTowerServer(models.Model):
 
         self.ensure_one()
 
+        # Check if jet belongs to the server
+        if jet and not jet.server_id == self:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' doesn't belong to the server '%(server)s'.",
+                    jet=jet.name,
+                    server=self.name,  # pylint: disable=no-member
+                )
+            )
+
         # Set jet template from jet if jet is provided
         if jet:
             jet_template = jet.jet_template_id
@@ -1678,14 +1688,27 @@ class CxTowerServer(models.Model):
             raise ValidationError(
                 _("Command log is required for 'Jet Action' commands!")
             )
-        jet_for_which_command_is_run = log_record.jet_id
-        requested_jet_template = log_record.command_id.jet_template_id
 
         # Initialize result values
         status = 0
         response = None
         error = None
         dependent_jets = None
+
+        # Get the action from the command
+        action = log_record.command_id.jet_action_id
+        if not action:
+            status = GENERAL_ERROR
+            error = _("Jet action is not found.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        jet_for_which_command_is_run = log_record.jet_id
+        requested_jet_template = log_record.command_id.jet_template_id
 
         if not jet_for_which_command_is_run:
             status = JET_NOT_FOUND
@@ -1720,13 +1743,58 @@ class CxTowerServer(models.Model):
             )
 
         if dependent_jets:
-            # Trigger the action for all dependent jets
+            # Trigger the action for all dependent jets; aggregate failures as
+            # "ref: message, ref2: message2" for the command log.
+            error_parts = []
             for jet in dependent_jets:
-                jet._trigger_action(
-                    action=log_record.command_id.jet_action_id,
+                result = jet._trigger_action(
+                    action=action,
                     raise_if_not_available=False,
-                    current_command_log=log_record,
                 )
+                if not result:
+                    continue
+                jet_status = result.get("status", 0)
+                jet_error = result.get("error")
+                if jet_status == 0 and not jet_error:
+                    continue
+                if jet_error:
+                    error_parts.append(f"{jet.reference}: {jet_error}")
+                else:
+                    error_parts.append(
+                        _(
+                            "%(jet)s: action failed (status %(status)s)",
+                            jet=jet.reference,
+                            status=jet_status,
+                        )
+                    )
+            # Compose the main message
+            jet_references = ", ".join(jet.reference for jet in dependent_jets)
+
+            main_message = _(
+                "Action triggered for %(jet_references)s",
+                jet_references=jet_references,
+            )
+
+            if error_parts:
+                status = GENERAL_ERROR
+                error = "\n".join(
+                    [
+                        main_message,
+                        (
+                            error_parts[0]
+                            if len(error_parts) == 1
+                            else ", ".join(error_parts)
+                        ),
+                    ]
+                )
+                response = None
+            else:
+                response = main_message
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
         # If no dependent jets, finish the command
         else:
             status = 0  # no dependent jets, so the command is finished with no error
@@ -2298,7 +2366,7 @@ class CxTowerServer(models.Model):
     # ---- Auxiliary functions
     # ------------------------------
 
-    def get_variable_value(self, variable_reference):
+    def get_variable_value(self, variable_reference, no_fallback=False):
         """
         Return the value of a variable for the current server.
         NB: this function follows the value application order.

@@ -2,8 +2,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import ast
 import base64
+import heapq
 import logging
 import xml.etree.ElementTree as ET
+from collections import defaultdict
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -1028,28 +1030,88 @@ class CxTowerJetTemplate(models.Model):
                     levels[dep_template_id] = new_level
                     queue.append((dep_template_id, new_level))
 
-    def _get_all_dependencies(self):
-        """Get all templates that this template depends on (directly or indirectly)
-        ordered by dependency level
+    def _topological_sort_dependency_graph(self, graph):
+        """Topological order: prerequisite templates before dependents.
+
+        For each edge ``required -> dependent`` (``dependent`` lists ``required``
+        in ``template_requires_ids``), ``required`` appears earlier in the result.
+
+        Tie-break: smallest template id first (deterministic).
+
+        Args:
+            graph (dict): Output of :meth:`_build_dependency_graph`.
 
         Returns:
-            list: All templates that this template depends on, ordered by level
+            list: Template ids in topological order, or empty list if the graph
+                has a cycle.
         """
-        graph = self._build_dependency_graph()
-        dependencies = []
+        adj = defaultdict(list)
+        indegree = {tid: 0 for tid in graph}
 
-        # Build list of (template_id, level) tuples, excluding self
+        for tid in graph:
+            for dep in graph[tid]["dependencies"]:
+                dep_id = dep["template_id"]
+                if dep_id not in graph:
+                    continue
+                adj[dep_id].append(tid)
+                indegree[tid] += 1
+
+        heap = [tid for tid in graph if indegree[tid] == 0]
+        heapq.heapify(heap)
+
+        topo = []
+        while heap:
+            node = heapq.heappop(heap)
+            topo.append(node)
+            for succ in sorted(adj[node]):
+                indegree[succ] -= 1
+                if indegree[succ] == 0:
+                    heapq.heappush(heap, succ)
+
+        if len(topo) != len(graph):
+            return []
+
+        return topo
+
+    def _get_all_dependencies_level_fallback(self, graph):
+        """Fallback order when the dependency graph has a cycle: sort by level."""
         dependencies_with_levels = []
         for template_id, info in graph.items():
             if template_id != self.id:
                 dependencies_with_levels.append((info["template"], info["level"]))
 
-        # Sort by level (closest dependencies first)
         dependencies_with_levels.sort(key=lambda x: x[1])
+        return [t for t, _level in dependencies_with_levels]
 
-        # Extract just the template IDs in the correct order
-        for dependency in dependencies_with_levels:
-            dependencies.append(dependency[0])
+    def _get_all_dependencies(self):
+        """Get all templates that this template depends on (directly or indirectly).
+
+        Order is **reverse topological**
+        (see :meth:`_topological_sort_dependency_graph`):
+        ``cx.tower.jet.template.install`` assigns increasing ``order`` and runs
+        tasks with highest ``order`` first, so prerequisites must appear **later**
+        in this list than templates that depend on them.
+
+        Returns:
+            list: ``cx.tower.jet.template`` records excluding ``self``.
+        """
+        self.ensure_one()
+        graph = self._build_dependency_graph()
+
+        topo_order = self._topological_sort_dependency_graph(graph)
+        if not topo_order:
+            _logger.warning(
+                "Dependency cycle or invalid graph for template %s; "
+                "using level-based dependency order",
+                self.name,
+            )
+            return self._get_all_dependencies_level_fallback(graph)
+
+        dependencies = []
+        for tid in reversed(topo_order):
+            if tid == self.id:
+                continue
+            dependencies.append(graph[tid]["template"])
 
         return dependencies
 

@@ -157,6 +157,67 @@ class CxTowerJetWaypoint(models.Model):
             )
 
     # ------------------------------------
+    # --------- Constraints -------------
+    # ------------------------------------
+    @api.constrains("is_destination", "jet_id")
+    def _check_is_destination(self):
+        """
+        Validate ``is_destination`` on each waypoint in the recordset.
+
+        Raises a ValidationError when:
+        - The waypoint is being set as destination while in the ``draft``,
+          ``error``, ``leaving``, ``deleting``, or ``deleted`` state.
+          Use ``prepare(is_destination=True)`` to designate a destination
+          waypoint; it transitions the waypoint out of ``draft`` and sets
+          ``is_destination`` atomically.
+        - Another destination waypoint already exists for the same jet
+          (at most one destination per jet is allowed).
+        """
+        destination_waypoints = self.filtered("is_destination")
+        if not destination_waypoints:
+            return
+
+        existing_destinations = self.search(
+            [
+                ("jet_id", "in", destination_waypoints.mapped("jet_id").ids),
+                ("is_destination", "=", True),
+                ("id", "not in", destination_waypoints.ids),
+            ]
+        )
+        existing_by_jet = {wp.jet_id.id: wp for wp in existing_destinations}
+
+        # Track jet IDs already claimed as destination within this batch so that
+        # two records in the same transaction are caught even though neither
+        # appears in the DB search above.
+        seen_in_batch = {}
+
+        invalid_states = {"draft", "error", "leaving", "deleting", "deleted"}
+
+        for waypoint in destination_waypoints:
+            if waypoint.state in invalid_states:
+                raise ValidationError(
+                    _(
+                        "Cannot set is_destination to True for waypoint %(waypoint)s "
+                        "because it is in the %(state)s state",
+                        waypoint=waypoint.name,
+                        state=waypoint.state,
+                    )
+                )
+            jet_id = waypoint.jet_id.id
+            duplicate = existing_by_jet.get(jet_id) or seen_in_batch.get(jet_id)
+            if duplicate:
+                raise ValidationError(
+                    _(
+                        "Waypoint %(existing)s is already set as the destination "
+                        "for jet %(jet)s. Only one destination waypoint is allowed "
+                        "per jet.",
+                        existing=duplicate.name,
+                        jet=waypoint.jet_id.name,
+                    )
+                )
+            seen_in_batch[jet_id] = waypoint
+
+    # ------------------------------------
     # --------- CRUD Methods -------------
     # ------------------------------------
     @api.model_create_multi
@@ -220,6 +281,7 @@ class CxTowerJetWaypoint(models.Model):
         # Non-deletable waypoints:
         # - are in the 'arriving', 'leaving' or 'preparing' state
         #   or is the current waypoint of the jet
+        #   or is marked as the active destination (is_destination=True)
         # Need to run the on_delete flight plan:
         # - waypoint is in the 'ready' or 'error' state and template has
         #  on_delete flight plan
@@ -229,6 +291,17 @@ class CxTowerJetWaypoint(models.Model):
         waypoints_to_delete = self.browse()
         waypoints_to_run_delete_plan = self.browse()
         for waypoint in self:
+            if waypoint.is_destination:
+                exception_message = _(
+                    "Cannot delete waypoint %(waypoint)s because it is "
+                    "currently designated as the destination for jet %(jet)s.",
+                    waypoint=waypoint.name,
+                    jet=waypoint.jet_id.name,
+                )
+                if self._context.get("waypoint_no_raise_on_delete"):
+                    _logger.error(exception_message)
+                    continue
+                raise ValidationError(exception_message)
             if waypoint.state not in ["draft", "deleted", "error", "ready"]:
                 if waypoint.state == "current":
                     exception_message = _(
@@ -274,12 +347,16 @@ class CxTowerJetWaypoint(models.Model):
     # ------------------------------------
     # --------- Waypoint Setters ---------
     # ------------------------------------
-    def prepare(self):
+    def prepare(self, is_destination=False):
         """
         Prepare the newly created waypoint.
 
+        Args:
+            is_destination (bool): True if the waypoint is the destination
         Returns:
-            bool: True if event was handled else False
+            Boolean: True if the waypoint was prepared successfully
+        Raises:
+            ValidationError: If the waypoint cannot be prepared
         """
         self.ensure_one()
         _logger.info(
@@ -290,17 +367,17 @@ class CxTowerJetWaypoint(models.Model):
             )
         )
         if not self.state == "draft":
-            _logger.error(
-                _(
-                    "Cannot prepare waypoint %(waypoint)s on jet %(jet)s because"
-                    " it is not in the 'draft' state",
-                    waypoint=self.name,
-                    jet=self.jet_id.name,
-                )
+            error = _(
+                "Cannot prepare waypoint %(waypoint)s on jet %(jet)s because"
+                " it is not in the 'draft' state",
+                waypoint=self.name,
+                jet=self.jet_id.name,
             )
-            return False
+            _logger.error(error)
+            raise ValidationError(error)
+
         if self.waypoint_template_id.plan_create_id:
-            self.write({"state": "preparing"})
+            self.write({"state": "preparing", "is_destination": is_destination})
             with self.env.cr.savepoint():
                 self.jet_id.server_id.sudo().run_flight_plan(
                     flight_plan=self.waypoint_template_id.plan_create_id,
@@ -311,7 +388,7 @@ class CxTowerJetWaypoint(models.Model):
                     variable_values=self._get_custom_variable_values(),
                 )
         else:
-            self.write({"state": "ready"})
+            self.write({"state": "ready", "is_destination": is_destination})
             # Save jet variable values when state changes to ready
             self._save_variable_values()
 
@@ -319,7 +396,7 @@ class CxTowerJetWaypoint(models.Model):
             self.env.user.reload_views(model="cx.tower.jet", rec_ids=[self.jet_id.id])
 
             # Fly to this waypoint if set as destination
-            if self.is_destination:
+            if is_destination:
                 self.fly_to()
             else:
                 self._finalize_create_waypoint_command_log(success=True)
@@ -348,31 +425,31 @@ class CxTowerJetWaypoint(models.Model):
             )
         )
         if self.state != "ready":
-            _logger.error(
-                _(
-                    "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
-                    " it is not in the 'ready' state",
-                    waypoint=self.name,
-                    jet=self.jet_id.name,
-                )
+            error = _(
+                "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
+                " it is not in the 'ready' state",
+                waypoint=self.name,
+                jet=self.jet_id.name,
             )
-            return False
+            _logger.error(error)
+            raise ValidationError(error)
 
         # Cannot fly to waypoint if there is another waypoint
         #  in the "arriving" or state
-        if self.jet_id.waypoint_ids.filtered(
+        other_waypoints = self.jet_id.waypoint_ids.filtered(
             lambda w: w.state in ["arriving", "leaving"]
-        ):
-            _logger.error(
-                _(
-                    "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
-                    " there is another waypoint %(other_waypoint)s "
-                    "in the 'arriving' or 'leaving' state",
-                    waypoint=self.name,
-                    jet=self.jet_id.name,
-                )
+        )
+        if other_waypoints:
+            error = _(
+                "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
+                " there is another waypoint %(other_waypoint)s "
+                "in the 'arriving' or 'leaving' state",
+                waypoint=self.name,
+                jet=self.jet_id.name,
+                other_waypoint=other_waypoints[0].name,
             )
-            return False
+            _logger.error(error)
+            raise ValidationError(error)
 
         # Leave the previous waypoint
         previous_waypoint = self.jet_id.waypoint_id
@@ -389,16 +466,35 @@ class CxTowerJetWaypoint(models.Model):
 
         # Cannot leave the waypoint if it is not ready or current
         if previous_waypoint.state not in ["ready", "current"]:
-            return False
+            error = _(
+                "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because"
+                " the previous waypoint %(previous_waypoint)s is not in the"
+                " 'ready' or 'current' state",
+                waypoint=self.name,
+                jet=self.jet_id.name,
+                previous_waypoint=previous_waypoint.name,
+            )
+            _logger.error(error)
+            raise ValidationError(error)
 
-        # Set the new waypoint state to arriving
-        # Mark this waypoint as destination
-        self.write({"state": "arriving", "is_destination": True})
+        # Mark destination first; switch to arriving only after leave succeeds.
+        if not self.is_destination:
+            self.write({"is_destination": True})
+
         # Leave the previous waypoint (this will save its variable values)
         previous_waypoint._leave()
+        if previous_waypoint.state == "error":
+            # Roll back destination when source leave fails immediately.
+            self.write({"is_destination": False})
+            self._finalize_create_waypoint_command_log(
+                success=False,
+                error=_("Failed to leave current waypoint."),
+            )
+            return False
         # If leaving completed immediately (no plan_leave_id),
         # arrive at the new waypoint (which will restore variable values)
-        if previous_waypoint.state in ["ready", "current"]:
+        if self.state == "ready" and previous_waypoint.state in ["ready", "current"]:
+            self.write({"state": "arriving"})
             self._arrive()
         _logger.info(
             _(
@@ -551,9 +647,10 @@ class CxTowerJetWaypoint(models.Model):
                 # if there is any in the arriving state (only for leaving)
                 if self.state == "leaving":
                     destination_waypoint = self.jet_id.waypoint_ids.filtered(
-                        lambda w: w.state == "arriving"
+                        "is_destination"
                     )
                     if destination_waypoint:
+                        destination_waypoint.write({"state": "arriving"})
                         destination_waypoint._arrive()
 
                 # Set the waypoint state to ready after leaving or preparing
@@ -585,7 +682,18 @@ class CxTowerJetWaypoint(models.Model):
                 success=False, error=_("Plan failed while arriving.")
             )
         else:
-            self.write({"state": "error"})
+            if self.state == "leaving":
+                # Cancel pending destination when leave plan fails.
+                destination_waypoint = self.jet_id.waypoint_ids.filtered(
+                    lambda w: w.is_destination and w.id != self.id
+                )
+                if destination_waypoint:
+                    destination_waypoint.write({"is_destination": False})
+                    destination_waypoint._finalize_create_waypoint_command_log(
+                        success=False,
+                        error=_("Failed to leave current waypoint."),
+                    )
+            self.write({"state": "error", "is_destination": False})
             self._finalize_create_waypoint_command_log(
                 success=False, error=_("Plan failed.")
             )

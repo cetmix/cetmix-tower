@@ -1828,30 +1828,97 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
                 f"Should not include template with ID {dependency.id}",
             )
 
-    def test_get_all_dependencies_consistency_with_build_graph(self):
-        """Test _get_all_dependencies consistency with _build_dependency_graph"""
+    def test_get_all_dependencies_same_level_must_order_transitive_edges(self):
+        """
+        If root A depends on B and C directly, and C also depends on B, then B and
+        C share the same shortest-path level. Install lines use reverse order by
+        ``order``; the dependency list must place C before B so B gets a higher
+        line order and is installed before C.
+        """
         # pylint: disable=protected-access
-        # Use Odoo template
+        tpl_b = self.JetTemplate.create(
+            {
+                "name": "Topo Base B",
+                "reference": "topo_base_b",
+            }
+        )
+        tpl_c = self.JetTemplate.create(
+            {
+                "name": "Topo Mid C",
+                "reference": "topo_mid_c",
+            }
+        )
+        tpl_a = self.JetTemplate.create(
+            {
+                "name": "Topo Root A",
+                "reference": "topo_root_a",
+            }
+        )
+        # C depends on B
+        self.JetTemplateDependency.create(
+            {
+                "template_id": tpl_c.id,
+                "template_required_id": tpl_b.id,
+                "state_required_id": self.state_running.id,
+            }
+        )
+        # A depends on C first, then B so graph traversal tends to visit B before C
+        # in ``graph.items()`` while both stay at level 1.
+        self.JetTemplateDependency.create(
+            {
+                "template_id": tpl_a.id,
+                "template_required_id": tpl_c.id,
+                "state_required_id": self.state_running.id,
+            }
+        )
+        self.JetTemplateDependency.create(
+            {
+                "template_id": tpl_a.id,
+                "template_required_id": tpl_b.id,
+                "state_required_id": self.state_running.id,
+            }
+        )
 
-        # Get dependencies using _get_all_dependencies
+        dependencies = tpl_a._get_all_dependencies()
+        idx_b = next(i for i, t in enumerate(dependencies) if t.id == tpl_b.id)
+        idx_c = next(i for i, t in enumerate(dependencies) if t.id == tpl_c.id)
+
+        self.assertLess(
+            idx_c,
+            idx_b,
+            "C must appear before B in dependency order so install (reverse order)"
+            " runs B before C when C depends on B",
+        )
+
+    def test_get_all_dependencies_consistency_with_build_graph(self):
+        """
+        _get_all_dependencies must return dependents before their prerequisites.
+
+        Correctness is verified against the graph edges directly (the topological
+        invariant) rather than re-running _topological_sort_dependency_graph, which
+        would create a circular check where a bug in the sort masks itself.
+        """
+        # pylint: disable=protected-access
+        graph = self.jet_template_odoo._build_dependency_graph()
         dependencies = self.jet_template_odoo._get_all_dependencies()
 
-        # Get dependencies using _build_dependency_graph
-        graph = self.jet_template_odoo._build_dependency_graph()
-        graph_dependencies = []
-        for template_id, info in graph.items():
-            if template_id != self.jet_template_odoo.id:
-                graph_dependencies.append(info["template"])
+        self.assertTrue(dependencies, "Expected a non-empty dependency list")
 
-        # Sort graph dependencies by level to match _get_all_dependencies order
-        graph_dependencies.sort(key=lambda t: graph[t.id]["level"])
+        index = {tmpl.id: i for i, tmpl in enumerate(dependencies)}
 
-        # Should be the same
-        self.assertEqual(
-            dependencies,
-            graph_dependencies,
-            "Should be consistent with _build_dependency_graph",
-        )
+        for u_id, info in graph.items():
+            if u_id not in index:
+                continue
+            for dep in info["dependencies"]:
+                v_id = dep["template_id"]
+                if v_id not in index:
+                    continue
+                self.assertLess(
+                    index[u_id],
+                    index[v_id],
+                    f"{graph[u_id]['name']} (dependent) must appear before "
+                    f"{graph[v_id]['name']} (prerequisite)",
+                )
 
     def test_get_all_dependencies_woocommerce_odoo_chain(self):
         """Test _get_all_dependencies with WooCommerce with Odoo dependency chain"""

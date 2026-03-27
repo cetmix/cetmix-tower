@@ -1,6 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from unittest.mock import patch
+
 from odoo import fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tools import mute_logger
@@ -14,6 +16,72 @@ class TestTowerJet(TestTowerJetsCommon):
     """
 
     # All jet-related test data is now inherited from TestTowerJetsCommon
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   _on_is_available Tests
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    def test_on_is_available_explicit_request_marked_processing_before_dispatch(self):
+        """
+        Regression: explicit request must be attached to the jet and set to
+        processing before transition dispatch starts.
+
+        We patch _bring_to_state (the actual dispatch) rather than
+        _serve_jet_request so that _serve_jet_request runs for real and its
+        side-effects (served_jet_request_id, request.state) are observable.
+        A side_effect captures both values at the exact moment dispatch is
+        triggered, proving ordering rather than just eventual state.
+        """
+        self.jet_test.write(
+            {"state_id": self.state_initial.id, "target_state_id": False}
+        )
+        # Isolate the scenario: keep only the request created in this test.
+        preexisting_new_requests = self.env["cx.tower.jet.request"].search(
+            [("jet_id", "=", self.jet_test.id), ("state", "=", "new")]
+        )
+        if preexisting_new_requests:
+            preexisting_new_requests.unlink()
+        request = self.env["cx.tower.jet.request"].create(
+            {
+                "server_id": self.server_test_1.id,
+                "jet_id": self.jet_test.id,
+                "jet_template_id": self.jet_test.jet_template_id.id,
+                "state_requested_id": self.state_running.id,
+                "state": "new",
+            }
+        )
+
+        # Capture the observable state of jet + request at dispatch time.
+        observed = {}
+
+        def capture(jet_self, target_state):
+            jet_self.invalidate_recordset(["served_jet_request_id"])
+            request.invalidate_recordset(["state"])
+            observed["served_request_id"] = jet_self.served_jet_request_id.id
+            observed["request_state"] = request.state
+
+        with patch(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet.CxTowerJet._bring_to_state",
+            autospec=True,
+            side_effect=capture,
+        ):
+            self.jet_test._on_is_available()
+
+        self.assertTrue(
+            observed,
+            "_bring_to_state must have been called; check that the request "
+            "targets a different state than the jet's current state",
+        )
+        self.assertEqual(
+            observed["served_request_id"],
+            request.id,
+            "Request must be saved to served_jet_request_id before dispatch",
+        )
+        self.assertEqual(
+            observed["request_state"],
+            "processing",
+            "Request must be set to 'processing' before _bring_to_state is called",
+        )
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   _compute_available_actions Tests

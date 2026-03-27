@@ -475,7 +475,7 @@ class TowerVariable(models.Model):
             # Fetch the server value
             if (
                 server
-                and not server_value_char
+                and server_value_char is None
                 and variable_value.server_id.id == server_id
             ):
                 server_value_char = variable_value.value_char
@@ -483,7 +483,7 @@ class TowerVariable(models.Model):
             # Fetch the server template value
             if (
                 server_template
-                and not server_template_value_char
+                and server_template_value_char is None
                 and variable_value.server_template_id.id == server_template_id
             ):
                 server_template_value_char = variable_value.value_char
@@ -491,7 +491,7 @@ class TowerVariable(models.Model):
             # Fetch the plan line action value
             if (
                 plan_line_action
-                and not plan_line_action_value_char
+                and plan_line_action_value_char is None
                 and variable_value.plan_line_action_id.id == plan_line_action_id
             ):
                 plan_line_action_value_char = variable_value.value_char
@@ -499,17 +499,17 @@ class TowerVariable(models.Model):
             # Fetch the jet template value
             if (
                 jet_template
-                and not jet_template_value_char
+                and jet_template_value_char is None
                 and variable_value.jet_template_id.id == jet_template_id
             ):
                 jet_template_value_char = variable_value.value_char
                 continue
             # Fetch the jet value
-            if jet and not jet_value_char and variable_value.jet_id.id == jet_id:
+            if jet and jet_value_char is None and variable_value.jet_id.id == jet_id:
                 jet_value_char = variable_value.value_char
                 continue
             # Fetch the global value
-            if not global_value_char and variable_value.is_global:
+            if global_value_char is None and variable_value.is_global:
                 global_value_char = variable_value.value_char
 
         # 2. Compose the response
@@ -521,18 +521,31 @@ class TowerVariable(models.Model):
         if jet:
             return (
                 jet_value_char
-                or jet_template_value_char
-                or server_value_char
-                or global_value_char
+                if jet_value_char is not None
+                else jet_template_value_char
+                if jet_template_value_char is not None
+                else server_value_char
+                if server_value_char is not None
+                else global_value_char
             )
 
         # 2.3. Jet Template
         if jet_template:
-            return jet_template_value_char or server_value_char or global_value_char
+            return (
+                jet_template_value_char
+                if jet_template_value_char is not None
+                else server_value_char
+                if server_value_char is not None
+                else global_value_char
+            )
 
         # 2.4. Server
         if server:
-            return server_value_char or global_value_char
+            return (
+                server_value_char
+                if server_value_char is not None
+                else global_value_char
+            )
 
         # 2.5. Plan Line Action
         if plan_line_action:

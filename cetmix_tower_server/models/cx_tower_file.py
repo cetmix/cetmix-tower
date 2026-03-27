@@ -536,7 +536,7 @@ class CxTowerFile(models.Model):
         Check the values and reformat if necessary
         """
         if "server_dir" in values:
-            server_dir = values.get("server_dir", "").strip()
+            server_dir = (values.get("server_dir") or "").strip()
             if server_dir.endswith("/") and server_dir != "/":
                 server_dir = server_dir[:-1]
             values.update(

@@ -115,6 +115,8 @@ class CxTowerJetTemplateDependency(models.Model):
         """
         graph = {}
         # Get all dependencies in the system
+        # TODO: This is not efficient, we should find a better way later.
+        # Eg cache the graph in the template model.
         all_deps = self.search([])
 
         for dep in all_deps:

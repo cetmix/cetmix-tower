@@ -556,12 +556,11 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
                 "jet_id": self.jet_test.id,
                 "waypoint_template_id": waypoint_template_no_plan.id,
                 "state": "draft",
-                "is_destination": True,
             }
         )
 
         # Call prepare
-        result = waypoint.prepare()
+        result = waypoint.prepare(is_destination=True)
 
         # Should return True
         self.assertTrue(result, "Should return True")
@@ -759,15 +758,8 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
         with mute_logger(
             "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
         ):
-            result = waypoint.prepare()
-
-        # Should return False and not change state
-        self.assertFalse(result, "Should return False when not in draft state")
-        self.assertEqual(
-            waypoint.state,
-            "ready",
-            "State should remain ready when not in draft",
-        )
+            with self.assertRaises(ValidationError):
+                waypoint.prepare()
 
     def test_plan_finished_preparing_success(self):
         """
@@ -925,6 +917,7 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
                 "name": "Destination Waypoint",
                 "jet_id": self.jet_test.id,
                 "waypoint_template_id": self.waypoint_template.id,
+                "is_destination": True,
                 "state": "arriving",
             }
         )
@@ -968,63 +961,6 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
             destination_waypoint.id,
             "Destination waypoint should be set as current waypoint"
             " after leaving completes",
-        )
-
-    def test_plan_finished_leaving_success_with_is_destination(self):
-        """
-        Test _plan_finished when waypoint is in leaving state with is_destination=True
-        Should NOT automatically call fly_to() when leaving finishes
-        """
-        # Create current waypoint in current state
-        current_waypoint = self.JetWaypoint.create(
-            {
-                "name": "Current Waypoint",
-                "jet_id": self.jet_test.id,
-                "waypoint_template_id": self.waypoint_template.id,
-                "state": "current",
-            }
-        )
-        self.jet_test.waypoint_id = current_waypoint.id
-
-        # Set current waypoint to leaving state with is_destination=True
-        # readonly=True only affects UI, can be written programmatically
-        current_waypoint.write({"state": "leaving", "is_destination": True})
-
-        # Create plan log with success status
-        plan_log = self.PlanLog.create(
-            {
-                "server_id": self.jet_test.server_id.id,
-                "plan_id": self.plan_success.id,
-                "plan_status": 0,  # Success
-            }
-        )
-
-        # Call _plan_finished on leaving waypoint
-        result = current_waypoint._plan_finished(plan_log)
-
-        # Should return True
-        self.assertTrue(result, "Should return True")
-        # Leaving waypoint state should be set to ready
-        self.assertEqual(
-            current_waypoint.state,
-            "ready",
-            "Leaving waypoint state should be set to ready",
-        )
-        # is_destination should remain True
-        # (not cleared because fly_to() was not called)
-        # Note: fly_to() is not called because prepared=False
-        # (state was "leaving")
-        self.assertTrue(
-            current_waypoint.is_destination,
-            "is_destination should remain True when leaving finishes"
-            " (fly_to() should not be called)",
-        )
-        # Current waypoint should remain the same (no fly_to() was called)
-        self.assertEqual(
-            self.jet_test.waypoint_id.id,
-            current_waypoint.id,
-            "Current waypoint should remain the same"
-            " (fly_to() should not be called)",
         )
 
     def test_plan_finished_deleting_success(self):
@@ -1370,6 +1306,63 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
             self.jet_test.waypoint_id.id,
             destination_waypoint.id,
             "Destination waypoint should be set as current waypoint",
+        )
+
+    def test_fly_to_leave_failure_does_not_keep_destination_arriving(self):
+        """
+        Regression: if source leave plan fails during fly_to(),
+        destination must not stay in arriving.
+        """
+        # Create template with failing leave plan.
+        waypoint_template_with_leave_error = self.JetWaypointTemplate.create(
+            {
+                "name": "Template Leave Error",
+                "jet_template_id": self.jet_template_test.id,
+                "plan_leave_id": self.plan_error.id,
+            }
+        )
+
+        # Create current waypoint that will fail while leaving.
+        current_waypoint = self.JetWaypoint.create(
+            {
+                "name": "Current Waypoint Failing Leave",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": waypoint_template_with_leave_error.id,
+                "state": "current",
+            }
+        )
+        self.jet_test.waypoint_id = current_waypoint.id
+
+        # Create destination waypoint (target of fly_to).
+        destination_waypoint = self.JetWaypoint.create(
+            {
+                "name": "Destination Waypoint Stuck Arriving",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+                "state": "ready",
+            }
+        )
+
+        # Execute fly_to; leaving fails synchronously in tests.
+        with mute_logger(
+            "odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint"
+        ):
+            result = destination_waypoint.fly_to()
+
+        self.assertFalse(result, "fly_to() should return False when leave fails")
+        self.assertEqual(
+            current_waypoint.state,
+            "error",
+            "Source waypoint should become error after failed leave plan",
+        )
+        self.assertNotEqual(
+            destination_waypoint.state,
+            "arriving",
+            "Destination waypoint must be reverted from arriving when leave fails",
+        )
+        self.assertFalse(
+            destination_waypoint.is_destination,
+            "Destination flag must be cleared when leave fails",
         )
 
     def test_unlink_current_state_raises_error(self):
@@ -1773,3 +1766,230 @@ class TestTowerJetWaypoint(TestTowerJetsCommon):
             "error",
             "Arriving waypoint state should be error",
         )
+
+    # ------------------------------------
+    # --- _check_is_destination tests ----
+    # ------------------------------------
+
+    def _make_destination_waypoint(self, name, jet=None):
+        """
+        Helper: create a waypoint and atomically transition it to the
+        ``preparing`` state with ``is_destination=True``.
+
+        This mirrors what ``prepare(is_destination=True)`` does internally
+        when the waypoint template has a ``plan_create_id`` (it writes
+        ``state=preparing`` + ``is_destination`` in one call and does not
+        proceed to ``fly_to()``). Using that path keeps ``is_destination``
+        stable for subsequent constraint assertions, whereas calling
+        ``prepare()`` without a plan triggers ``fly_to()`` → ``_arrive()``,
+        which clears ``is_destination`` immediately.
+
+        Args:
+            name (str): Name of the waypoint.
+            jet (cx.tower.jet, optional): Target jet. Defaults to jet_test.
+
+        Returns:
+            cx.tower.jet.waypoint: Waypoint in ``preparing`` state with
+                ``is_destination=True``.
+        """
+        if jet is None:
+            jet = self.jet_test
+        waypoint = self.JetWaypoint.create(
+            {
+                "name": name,
+                "jet_id": jet.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        waypoint.write({"state": "preparing", "is_destination": True})
+        return waypoint
+
+    def test_check_is_destination_single_allowed(self):
+        """
+        Preparing one destination waypoint for a jet via prepare() is valid.
+        """
+        waypoint = self._make_destination_waypoint("Destination Waypoint")
+        self.assertTrue(waypoint.is_destination)
+
+    def test_check_is_destination_different_jets_allowed(self):
+        """
+        Each jet may independently have its own destination waypoint.
+        """
+        self._make_destination_waypoint("Destination Jet Test", jet=self.jet_test)
+        waypoint_other = self._make_destination_waypoint(
+            "Destination Jet Odoo", jet=self.jet_odoo
+        )
+        self.assertTrue(waypoint_other.is_destination)
+
+    def test_check_is_destination_false_ignored(self):
+        """
+        Waypoints with is_destination=False are never checked, even when
+        another destination already exists for the same jet.
+        """
+        self._make_destination_waypoint("Existing Destination")
+        # Creating a non-destination waypoint must not raise.
+        non_dest = self.JetWaypoint.create(
+            {
+                "name": "Non Destination",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+                "is_destination": False,
+            }
+        )
+        self.assertFalse(non_dest.is_destination)
+
+    def _assert_state_blocks_destination(self, state):
+        """
+        Helper: create a waypoint, force it into ``state``, then assert that
+        writing ``is_destination=True`` raises a ValidationError.
+
+        Args:
+            state (str): Waypoint state to test.
+        """
+        waypoint = self.JetWaypoint.create(
+            {
+                "name": f"Waypoint in {state}",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        waypoint.write({"state": state})
+        with self.assertRaises(ValidationError):
+            waypoint.write({"is_destination": True})
+
+    def test_check_is_destination_draft_state_raises(self):
+        """
+        Setting is_destination=True directly on a waypoint in the 'draft' state
+        must raise a ValidationError.
+        Use prepare(is_destination=True) to designate a destination waypoint.
+        """
+        self._assert_state_blocks_destination("draft")
+
+    def test_check_is_destination_error_state_raises(self):
+        """
+        Setting is_destination=True on a waypoint in the 'error' state
+        must raise a ValidationError.
+        """
+        self._assert_state_blocks_destination("error")
+
+    def test_check_is_destination_leaving_state_raises(self):
+        """
+        Setting is_destination=True on a waypoint in the 'leaving' state
+        must raise a ValidationError.
+        """
+        self._assert_state_blocks_destination("leaving")
+
+    def test_check_is_destination_deleting_state_raises(self):
+        """
+        Setting is_destination=True on a waypoint in the 'deleting' state
+        must raise a ValidationError.
+        """
+        self._assert_state_blocks_destination("deleting")
+
+    def test_check_is_destination_deleted_state_raises(self):
+        """
+        Setting is_destination=True on a waypoint in the 'deleted' state
+        must raise a ValidationError.
+        """
+        self._assert_state_blocks_destination("deleted")
+
+    def test_check_is_destination_duplicate_on_create_raises(self):
+        """
+        Setting is_destination via prepare() then trying to prepare a second
+        destination for the same jet must raise a ValidationError.
+        """
+        self._make_destination_waypoint("First Destination")
+        second = self.JetWaypoint.create(
+            {
+                "name": "Second Destination",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        with self.assertRaises(ValidationError):
+            second.write({"state": "ready", "is_destination": True})
+
+    def test_check_is_destination_duplicate_on_write_raises(self):
+        """
+        Writing is_destination=True on a second ready waypoint for the same jet
+        must raise a ValidationError.
+        """
+        self._make_destination_waypoint("Existing Destination")
+        second = self.JetWaypoint.create(
+            {
+                "name": "Second Waypoint",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        second.write({"state": "ready"})
+        with self.assertRaises(ValidationError):
+            second.write({"is_destination": True})
+
+    def test_check_is_destination_duplicate_within_same_batch_raises(self):
+        """
+        Writing is_destination=True on two ready waypoints for the same jet
+        in a single write() call must raise a ValidationError.
+
+        Both records are excluded from the DB search (neither is a destination
+        yet), so the constraint must also detect duplicates within the batch.
+        """
+        wp1 = self.JetWaypoint.create(
+            {
+                "name": "Batch Destination 1",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        wp2 = self.JetWaypoint.create(
+            {
+                "name": "Batch Destination 2",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        (wp1 | wp2).write({"state": "ready"})
+        with self.assertRaises(ValidationError):
+            (wp1 | wp2).write({"is_destination": True})
+
+    # ------------------------------------
+    # --- unlink destination guard tests -
+    # ------------------------------------
+
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint")
+    def test_unlink_destination_waypoint_raises(self):
+        """
+        Deleting a waypoint with is_destination=True must raise a
+        ValidationError regardless of state, to prevent the jet from being
+        stranded mid-flight while a leave plan is still running.
+        """
+        waypoint = self._make_destination_waypoint("Active Destination")
+        with self.assertRaises(ValidationError):
+            waypoint.unlink()
+
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_jet_waypoint")
+    def test_unlink_destination_waypoint_no_raise_context_logs(self):
+        """
+        When waypoint_no_raise_on_delete=True is set in context, deleting a
+        destination waypoint must not raise but must log the error and skip
+        the record.
+        """
+        waypoint = self._make_destination_waypoint("Active Destination No Raise")
+        waypoint.with_context(waypoint_no_raise_on_delete=True).unlink()
+        # Record must still exist — it was skipped, not deleted.
+        self.assertTrue(waypoint.exists())
+
+    def test_unlink_non_destination_ready_waypoint_allowed(self):
+        """
+        Deleting a ready waypoint that is NOT a destination must still work.
+        """
+        waypoint = self.JetWaypoint.create(
+            {
+                "name": "Ready Non-Destination",
+                "jet_id": self.jet_test.id,
+                "waypoint_template_id": self.waypoint_template.id,
+            }
+        )
+        waypoint.write({"state": "ready"})
+        waypoint.unlink()
+        self.assertFalse(waypoint.exists())

@@ -673,7 +673,7 @@ result = {
         )
         variable_value_path.value_char = None
         rendered_command = self.server_test_1._render_command(self.command_create_dir)
-        rendered_code_expected = "cd None && mkdir test-odoo-1"
+        rendered_code_expected = "cd False && mkdir test-odoo-1"
         rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
 
         self.assertEqual(

@@ -162,7 +162,13 @@ class TowerVariableValue(models.Model):
             if rec.variable_id:
                 rec.access_level = rec.variable_id.access_level
 
-    @api.depends("server_id", "server_template_id", "plan_line_action_id")
+    @api.depends(
+        "server_id",
+        "server_template_id",
+        "plan_line_action_id",
+        "jet_id",
+        "jet_template_id",
+    )
     def _compute_is_global(self):
         """
         If variable considered `global` when it's not linked to any record.
@@ -309,7 +315,9 @@ class TowerVariableValue(models.Model):
                     )
                 )
 
-    @api.constrains("server_id", "server_template_id", "jet_id", "jet_template_id")
+    @api.constrains(
+        "server_id", "server_template_id", "jet_id", "jet_template_id", "variable_id"
+    )
     def _check_unique_for_server_no_jet_no_jet_template(self):
         """Ensure uniqueness of variable+server when both jet fields are empty"""
         # Filter records that have both jet fields empty
