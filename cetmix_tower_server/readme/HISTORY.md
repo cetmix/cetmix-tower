@@ -1,3 +1,8 @@
+## 16.0.3.0.1 (2026-03-27)
+
+- Bugfixes: Waypoint behavior improvements. (5313)
+
+
 ## 16.0.3.0.0 (2026-03-23)
 
 - Features: Jets! (4700)
