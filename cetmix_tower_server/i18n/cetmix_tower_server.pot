@@ -113,6 +113,13 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "%(jet)s: action failed (status %(status)s)"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_reference_mixin.py:0
 #, python-format
 msgid "%(name)s (copy %(number)s)"
@@ -627,6 +634,13 @@ msgid "Action to trigger"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#, python-format
+msgid "Action triggered for %(jet_references)s"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__jet_template_id
 msgid "Action will be triggered for all dependent jets of this template"
 msgstr ""
@@ -1042,6 +1056,15 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_waypoint.py:0
+#, python-format
+msgid ""
+"Cannot delete waypoint %(waypoint)s because it is currently designated as "
+"the destination for jet %(jet)s."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #, python-format
 msgid ""
@@ -1056,6 +1079,15 @@ msgstr ""
 msgid ""
 "Cannot fly to waypoint %(waypoint)s on jet %(jet)s because it is not in the "
 "'ready' state"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_waypoint.py:0
+#, python-format
+msgid ""
+"Cannot fly to waypoint %(waypoint)s on jet %(jet)s because the previous "
+"waypoint %(previous_waypoint)s is not in the 'ready' or 'current' state"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1099,6 +1131,15 @@ msgstr ""
 msgid ""
 "Cannot run command\n"
 ". CODE: %(status)s. RESULT: %(res)s. ERROR: %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_waypoint.py:0
+#, python-format
+msgid ""
+"Cannot set is_destination to True for waypoint %(waypoint)s because it is in"
+" the %(state)s state"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2455,6 +2496,14 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_waypoint.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_waypoint.py:0
+#, python-format
+msgid "Failed to leave current waypoint."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_file.py:0
@@ -3555,6 +3604,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 #, python-format
 msgid "Jet '%(jet)s' doesn't belong to the server '%(server)s'."
 msgstr ""
@@ -3711,6 +3761,14 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet__url
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_view_form
 msgid "Jet URL, eg 'https://meme.example.com'"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
+#: code:addons/cetmix_tower_server/tests/test_server_jet_action_command.py:0
+#, python-format
+msgid "Jet action is not found."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -6911,7 +6969,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet__deletable
 msgid ""
-"This field is set by by the jet actions. If enabled, the jet can be deleted"
+"This field is set by the jet actions. If enabled, the jet can be deleted"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -7562,6 +7620,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__waypoint_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__waypoint_id
 msgid "Waypoint"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_waypoint.py:0
+#, python-format
+msgid ""
+"Waypoint %(existing)s is already set as the destination for jet %(jet)s. "
+"Only one destination waypoint is allowed per jet."
 msgstr ""
 
 #. module: cetmix_tower_server
