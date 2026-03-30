@@ -19,13 +19,25 @@ class CxTowerCommand(models.Model):
             "tag_ids",
             "path",
             "file_template_id",
+            "if_file_exists",
+            "disconnect_file",
             "flight_plan_id",
+            "jet_template_id",
+            "jet_action_id",
+            "waypoint_template_id",
+            "fly_here",
             "code",
+            "no_split_for_sudo",
             "server_status",
             "variable_ids",
             "secret_ids",
-            "no_split_for_sudo",
-            "if_file_exists",
-            "disconnect_file",
         ]
         return res
+
+    def _get_deferred_m2o_import_fields(self):
+        """Return m2o command fields resolved after the main import pass."""
+        return {
+            "jet_template_id": "cx.tower.jet.template",
+            "jet_action_id": "cx.tower.jet.action",
+            "waypoint_template_id": "cx.tower.jet.waypoint.template",
+        }

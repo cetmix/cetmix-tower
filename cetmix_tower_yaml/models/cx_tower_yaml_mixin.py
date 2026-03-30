@@ -1,6 +1,7 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import copy
 import logging
 
 import yaml
@@ -9,6 +10,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
 _logger = logging.getLogger(__name__)
+DEFERRED_M2O_IMPORT = object()
 
 
 class CustomDumper(yaml.Dumper):
@@ -76,14 +78,18 @@ class CxTowerYamlMixin(models.AbstractModel):
 
     def _compute_yaml_code(self):
         """Compute YAML code based on model record data"""
-
         # This is used for the file name.
         # Eg cx.tower.command record will have 'command_' prefix.
         for record in self:
+            # Use a shared collector from context when one is provided (e.g. by
+            # the export wizard for cross-record deduplication); otherwise use a
+            # fresh per-record collector so that each record's yaml_code is
+            # deterministic regardless of which sibling records are batched.
+            collector = record._context.get("yaml_collector") or YamlExportCollector()
             # We are reading field list for each record
             # because list of fields can differ from record to record
             record.yaml_code = self._convert_dict_to_yaml(
-                record._prepare_record_for_yaml()
+                record.with_context(yaml_collector=collector)._prepare_record_for_yaml()
             )
 
     def _inverse_yaml_code(self):
@@ -206,6 +212,167 @@ class CxTowerYamlMixin(models.AbstractModel):
             "cx.tower.key",
         ]
 
+    def _get_deferred_m2o_import_fields(self):
+        """Map m2o fields that should be resolved after the main import pass.
+
+        Returns:
+            dict: Field name to expected target model mapping.
+        """
+        return {}
+
+    def _get_deferred_x2m_import_fields(self):
+        """Map x2m child records that should be created after the main import pass.
+
+        Returns:
+            dict: Parent field name to deferred child spec mapping.
+        """
+        return {}
+
+    def _has_meaningful_yaml_value(self, value):
+        """Return whether a YAML value contains meaningful payload."""
+        if value is False or value is None or value == "":
+            return False
+        if isinstance(value, dict):
+            if set(value.keys()) == {"reference"}:
+                return bool(value.get("reference"))
+            return any(
+                self._has_meaningful_yaml_value(item)
+                for key, item in value.items()
+                if key != "reference"
+            )
+        if isinstance(value, list):
+            return any(self._has_meaningful_yaml_value(item) for item in value)
+        return True
+
+    def _get_reference_only_yaml_relation_reference(self, value):
+        """Return reference for reference-only YAML relation values.
+
+        Args:
+            value (str | dict): YAML relation value.
+
+        Returns:
+            str | bool: Reference if the value is reference-only, otherwise False.
+        """
+        if isinstance(value, str):
+            return value
+        if isinstance(value, dict) and set(value.keys()) == {"reference"}:
+            return value.get("reference") or False
+        return False
+
+    def _queue_deferred_m2o_import(self, field, comodel, value):
+        """Queue unresolved m2o relation for the deferred import pass.
+
+        Args:
+            field (str): Owner field name.
+            comodel (BaseModel): Related model.
+            value (str | dict): YAML relation value.
+
+        Returns:
+            bool: True when the relation was queued for deferred resolution.
+        """
+        queue = self._context.get("yaml_deferred_m2o_queue")
+        if queue is None:
+            return False
+
+        deferred_fields = self._get_deferred_m2o_import_fields()
+        expected_model = deferred_fields.get(field)
+        if not expected_model or expected_model != comodel._name:
+            return False
+
+        target_reference = self._get_reference_only_yaml_relation_reference(value)
+        if not target_reference or comodel.get_by_reference(target_reference):
+            return False
+
+        record_reference = self._context.get("yaml_import_record_reference")
+        if not record_reference:
+            return False
+
+        queue.append(
+            {
+                "record_model": self._name,
+                "record_reference": record_reference,
+                "field_name": field,
+                "target_model": comodel._name,
+                "target_reference": target_reference,
+            }
+        )
+        return True
+
+    def _queue_deferred_x2m_import(self, field, comodel, value):
+        """Queue unresolved x2m child record for the deferred import pass.
+
+        Args:
+            field (str): Owner x2m field name.
+            comodel (BaseModel): Related child model.
+            value (dict): YAML child record value.
+
+        Returns:
+            bool: True when the child was queued for deferred creation or
+                  should be skipped (e.g., empty value with skip_empty=True).
+        """
+        queue = self._context.get("yaml_deferred_x2m_queue")
+        if queue is None or not isinstance(value, dict):
+            return False
+
+        deferred_fields = self._get_deferred_x2m_import_fields()
+        spec = deferred_fields.get(field) or {}
+        if spec.get("child_model") != comodel._name:
+            return False
+
+        if spec.get("skip_empty") and not self._has_meaningful_yaml_value(value):
+            return True
+
+        deferred_field = spec.get("deferred_field")
+        if not deferred_field:
+            return False
+
+        target_model = spec.get("target_model")
+        target_value = value.get(deferred_field)
+        target_reference = self._get_reference_only_yaml_relation_reference(
+            target_value
+        )
+        if not target_model or not target_reference:
+            return False
+
+        target_record = self.env[target_model].get_by_reference(target_reference)
+        if target_record:
+            return False
+
+        record_reference = self._context.get("yaml_import_record_reference")
+        if not record_reference:
+            return False
+
+        queue.append(
+            {
+                "record_model": self._name,
+                "record_reference": record_reference,
+                "field_name": field,
+                "child_model": comodel._name,
+                "deferred_field": deferred_field,
+                "target_model": target_model,
+                "target_reference": target_reference,
+                "values": copy.deepcopy(value),
+            }
+        )
+        return True
+
+    def _get_yaml_duplicate_reference_dict(self, ref, values):
+        """Return the stub emitted when a record has already been serialized.
+
+        The collector deduplicates by (model, reference); subsequent occurrences
+        are collapsed to a reference-only dict. Import must never attempt to create
+        from this stub — it must resolve the record by reference instead.
+
+        Args:
+            ref (str): Record reference.
+            values (dict): Raw values (unused; kept for signature compatibility
+                in case subclasses need them).
+
+        Returns:
+            dict: ``{"reference": ref}`` only.
+        """
+        return {"reference": ref}
+
     def _post_process_record_values(self, values):
         """Post process record values
             before converting them to YAML
@@ -226,7 +393,10 @@ class CxTowerYamlMixin(models.AbstractModel):
         collector_key = (self._name, ref) if ref else None
 
         if collector and collector_key and collector.is_added(collector_key):
-            return {"reference": ref}
+            return self._get_yaml_duplicate_reference_dict(ref, values)
+
+        if collector and collector_key:
+            collector.add(collector_key)
 
         # We don't need id because we are not using it
         values.pop("id", None)
@@ -274,9 +444,6 @@ class CxTowerYamlMixin(models.AbstractModel):
                     )._process_relation_field_value(key, value, record_mode=True)
                     new_values.update({key: processed_value})
 
-        if collector and collector_key:
-            collector.add(collector_key)
-
         return new_values
 
     def _post_process_yaml_dict_values(self, values):
@@ -312,16 +479,20 @@ class CxTowerYamlMixin(models.AbstractModel):
         filtered_values = {k: v for k, v in values.items() if k in supported_keys}
 
         # Post process m2o fields
-        for key, value in filtered_values.items():
+        for key, value in list(filtered_values.items()):
             # IMPORTANT: Odoo naming patterns must be followed for related fields.
             # This is why we are checking for the field name ending here.
             # Further checks for the field type are done
             # in _process_relation_field_value()
             if key.endswith("_id") or key.endswith("_ids"):
                 processed_value = self.with_context(
-                    explode_related_record=True
+                    explode_related_record=True,
+                    yaml_import_record_reference=filtered_values.get("reference"),
                 )._process_relation_field_value(key, value, record_mode=False)
-                filtered_values.update({key: processed_value})
+                if processed_value is DEFERRED_M2O_IMPORT:
+                    filtered_values.pop(key, None)
+                else:
+                    filtered_values.update({key: processed_value})
 
         return filtered_values
 
@@ -362,21 +533,22 @@ class CxTowerYamlMixin(models.AbstractModel):
         # Step 3: process value based on the field type
         if field_type == "many2one":
             return self._process_m2o_value(
-                comodel, value, explode_related_record, record_mode
+                field, comodel, value, explode_related_record, record_mode
             )
         if field_type in ["one2many", "many2many"]:
             return self._process_x2m_values(
-                comodel, field_type, value, explode_related_record, record_mode
+                field, comodel, field_type, value, explode_related_record, record_mode
             )
 
         # Step 4: fall back if field type is not supported
         return False
 
     def _process_m2o_value(
-        self, comodel, value, explode_related_record, record_mode=False
+        self, field, comodel, value, explode_related_record, record_mode=False
     ):
         """Post process many2one value
         Args:
+            field (Char): Field the value belongs to
             comodel (BaseClass): Model the value belongs to
             value (Char): Value to process
             explode_related_record (Bool): If True return entire record dict
@@ -410,6 +582,8 @@ class CxTowerYamlMixin(models.AbstractModel):
         # -- (YAML -> Record)
         # Step 1: Process value in normal mode
         record = False
+        if self._queue_deferred_m2o_import(field, comodel, value):
+            return DEFERRED_M2O_IMPORT
 
         # If the value is a string, it is treated as a reference
         if isinstance(value, str):
@@ -418,10 +592,13 @@ class CxTowerYamlMixin(models.AbstractModel):
         # If the value is a dictionary, extract the reference from it
         elif isinstance(value, dict):
             reference = value.get("reference")
+            if self._get_reference_only_yaml_relation_reference(value):
+                record = False
+            else:
+                record = self._update_or_create_related_record(
+                    comodel, reference, value, create_immediately=True
+                )
 
-            record = self._update_or_create_related_record(
-                comodel, reference, value, create_immediately=True
-            )
         else:
             return False
 
@@ -432,10 +609,17 @@ class CxTowerYamlMixin(models.AbstractModel):
         return record.id if record else False
 
     def _process_x2m_values(
-        self, comodel, field_type, values, explode_related_record, record_mode=False
+        self,
+        field,
+        comodel,
+        field_type,
+        values,
+        explode_related_record,
+        record_mode=False,
     ):
         """Post process many2many value
         Args:
+            field (Char): Field the value belongs to
             comodel (BaseClass): Model the value belongs to
             field_type (Char): Field type
             values (list()): Values to process
@@ -485,6 +669,8 @@ class CxTowerYamlMixin(models.AbstractModel):
 
             # If the value is a dictionary, extract the reference from it
             elif isinstance(value, dict):
+                if self._queue_deferred_x2m_import(field, comodel, value):
+                    continue
                 reference = value.get("reference")
                 record = self._update_or_create_related_record(
                     comodel,
@@ -542,6 +728,17 @@ class CxTowerYamlMixin(models.AbstractModel):
 
             # If the record does not exist, create a new one
             else:
+                if set(values.keys()) == {"reference"}:
+                    _logger.warning(
+                        "Attempted to import a record for model '%s' "
+                        "with reference "
+                        "'%s', but only the 'reference' field was provided. "
+                        "Creation will be skipped until the target record "
+                        "exists.",
+                        model._name,
+                        reference,
+                    )
+                    return False
                 if create_immediately:
                     record = model.with_context(from_yaml=True).create(
                         model._post_process_yaml_dict_values(values)
@@ -552,20 +749,20 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         # If there's no reference but value is a dict, create a new record
         else:
-            if create_immediately:
-                # Only 'reference' provided, no other data: do not create,
-                # just log warning
-                if set(values.keys()) == {"reference"}:
-                    _logger.warning(
-                        "Attempted to import a record for model '%s' with reference "
-                        "'%s', but only the 'reference' field was provided. "
-                        "It is possible that this record has already been imported. "
-                        "Creation will be skipped.",
-                        model._name,
-                        reference,
-                    )
-                    return False
+            # Only 'reference' provided, no other data: do not create,
+            # just log warning
+            if set(values.keys()) == {"reference"}:
+                _logger.warning(
+                    "Attempted to import a record for model '%s' with reference "
+                    "'%s', but only the 'reference' field was provided. "
+                    "It is possible that this record has already been imported. "
+                    "Creation will be skipped.",
+                    model._name,
+                    reference,
+                )
+                return False
 
+            if create_immediately:
                 record = model.with_context(from_yaml=True).create(
                     model._post_process_yaml_dict_values(values)
                 )

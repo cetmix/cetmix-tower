@@ -30,3 +30,13 @@ class CxTowerJetTemplate(models.Model):
             "scheduled_task_ids",
         ]
         return res
+
+    def _get_deferred_x2m_import_fields(self):
+        """Return x2m child records resolved after the main import pass."""
+        return {
+            "template_requires_ids": {
+                "child_model": "cx.tower.jet.template.dependency",
+                "deferred_field": "template_required_id",
+                "target_model": "cx.tower.jet.template",
+            }
+        }
