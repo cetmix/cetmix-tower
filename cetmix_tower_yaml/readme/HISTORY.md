@@ -1,3 +1,8 @@
+## 17.0.3.0.0 (2026-03-30)
+
+- Features: Jets! (4700)
+
+
 ## 17.0.2.0.1 (2025-11-13)
 
 - Features: Improve the way secrets are listed in the YAML import widget. (5010)
