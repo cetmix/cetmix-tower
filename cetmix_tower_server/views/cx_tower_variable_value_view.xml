@@ -11,15 +11,28 @@
                 <field name="is_global" widget="boolean_toggle" />
                 <field
                     name="server_id"
-                    readonly="server_template_id or plan_line_action_id"
+                    optional="show"
+                    readonly="plan_line_action_id or jet_template_id or jet_id or server_template_id"
                 />
-            <field
+                <field
+                    name="jet_template_id"
+                    optional="show"
+                    readonly="server_id or plan_line_action_id or jet_id or server_template_id"
+                />
+                <field
+                    name="jet_id"
+                    optional="show"
+                    readonly="server_id or plan_line_action_id or jet_template_id or server_template_id"
+                />
+                <field
                     name="server_template_id"
-                    readonly="server_id or plan_line_action_id"
+                    optional="show"
+                    readonly="server_id or plan_line_action_id or jet_template_id or jet_id"
                 />
-            <field
+                <field
                     name="plan_line_action_id"
-                    readonly="server_id or server_template_id"
+                    optional="show"
+                    readonly="server_id or jet_template_id or jet_id or server_template_id"
                 />
                 <field
                     name="value_char"

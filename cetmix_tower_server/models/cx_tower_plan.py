@@ -3,6 +3,7 @@
 from operator import indexOf
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import expr_eval
 
 from .constants import (
@@ -174,11 +175,13 @@ class CxTowerPlan(models.Model):
         res = super()._get_post_create_fields()
         return res + ["line_ids"]
 
-    def _run_single(self, server, **kwargs):
+    def _run_single(self, server, jet_template=None, jet=None, **kwargs):
         """Run single Flight Plan on a single server
 
         Args:
             server (cx.tower.server()): Server object
+            jet_template (cx.tower.jet.template()): jet template record
+            jet (cx.tower.jet()): jet record
             kwargs (dict): Optional arguments
                 Following are supported but not limited to:
                     - "plan_log": {values passed to flightplan logger}
@@ -197,10 +200,28 @@ class CxTowerPlan(models.Model):
         # Ensure we have a single server record
         server.ensure_one()
 
+        # Check if Jet belongs to the server
+        if jet and jet.server_id != server:
+            raise ValidationError(
+                _(
+                    "Jet %(jet)s does not belong to server %(server)s",
+                    jet=jet.name,
+                    server=server.name,
+                )
+            )
+
         # Check plan access before running
         # This is needed to avoid possible access violations
         self.check_access_rights("read")
         self.check_access_rule("read")
+
+        # Save jet template and jet in kwargs
+        plan_log_vals = kwargs.get("plan_log", {})
+        if jet_template:
+            plan_log_vals["jet_template_id"] = jet_template.id
+        if jet:
+            plan_log_vals["jet_id"] = jet.id
+        kwargs["plan_log"] = plan_log_vals
 
         # Access log as root to bypass access restrictions
         plan_log_obj = self.env["cx.tower.plan.log"].sudo()
@@ -226,13 +247,16 @@ class CxTowerPlan(models.Model):
         if not self.allow_parallel_run or self.env.context.get(
             "prevent_plan_recursion"
         ):
-            running_count = plan_log_obj.search_count(
-                [
-                    ("server_id", "=", server.id),
-                    ("plan_id", "=", self.id),  # pylint: disable=no-member
-                    ("is_running", "=", True),
-                ]
-            )
+            domain = [
+                ("server_id", "=", server.id),
+                ("plan_id", "=", self.id),  # type: ignore
+                ("is_running", "=", True),
+            ]
+            if jet_template:
+                domain.append(("jet_template_id", "=", jet_template.id))
+            if jet:
+                domain.append(("jet_id", "=", jet.id))
+            running_count = plan_log_obj.search_count(domain=domain)
             if running_count > 0:
                 plan_log = plan_log_obj.record(
                     server=server, plan=self, status=ANOTHER_PLAN_RUNNING, **kwargs
@@ -240,7 +264,11 @@ class CxTowerPlan(models.Model):
                 return plan_log
 
         # Start Flight Plan and return the log record
-        return plan_log_obj.start(server, self, fields.Datetime.now(), **kwargs)
+        return plan_log_obj.start(
+            server=server,
+            plan=self,
+            **kwargs,
+        )
 
     def _get_next_action_values(self, command_log):
         """Get next action values based of previous command result:
@@ -270,13 +298,18 @@ class CxTowerPlan(models.Model):
         # Default values
         exit_code = command_log.command_status
         server = command_log.server_id
+        jet_template = command_log.jet_template_id
+        jet = command_log.jet_id
 
         # Check line condition
         variable_values = (
             command_log.variable_values or command_log.plan_log_id.variable_values or {}
         )
         if not current_line._is_executable_line(
-            server, variable_values=variable_values
+            server=server,
+            jet_template=jet_template,
+            jet=jet,
+            variable_values=variable_values,
         ):
             # Immediately return to the next line if condition fails
             return self._get_next_action_state(
@@ -365,8 +398,17 @@ class CxTowerPlan(models.Model):
         if action == "n" and plan_line:
             server = command_log.server_id
             variable_values = command_log.variable_values or plan_log.variable_values
-            if plan_line._is_executable_line(server, variable_values=variable_values):
-                plan_line._run(server, plan_log, variable_values=variable_values)
+            if plan_line._is_executable_line(
+                server=server,
+                jet_template=plan_log.jet_template_id,
+                jet=plan_log.jet_id,
+                variable_values=variable_values,
+            ):
+                plan_line._run(
+                    server,
+                    plan_log,
+                    variable_values=variable_values,
+                )
             else:
                 plan_line._skip(
                     server,

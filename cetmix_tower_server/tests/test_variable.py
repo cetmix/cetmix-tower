@@ -2,15 +2,14 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from unittest.mock import patch
-
-from psycopg2 import IntegrityError
+from urllib.parse import urlparse
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import Form
-from odoo.tools.misc import mute_logger
 
 from .common import TestTowerCommon
+from .common_jets import TestTowerJetsCommon
 
 
 class TestTowerVariable(TestTowerCommon):
@@ -108,12 +107,12 @@ class TestTowerVariable(TestTowerCommon):
         self.check_variable_values(vals=vals, server_ids=self.server_test_1)
 
         # Test 'get_variable_values' function
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_os", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_os", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        self.assertEqual(len(res_vars), 5, "Must be a 5 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_os = res_vars["test_os"]
         var_url = res_vars["test_url"]
@@ -131,12 +130,12 @@ class TestTowerVariable(TestTowerCommon):
         self.VariableValue.create(
             {"variable_id": self.variable_dir.id, "value_char": "/global/dir"}
         )
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_os", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_os", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        self.assertEqual(len(res_vars), 5, "Must be a 5 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_os = res_vars["test_os"]
         var_url = res_vars["test_url"]
@@ -157,12 +156,12 @@ class TestTowerVariable(TestTowerCommon):
             f.save()
 
         # Check
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_os", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_os", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        self.assertEqual(len(res_vars), 5, "Must be a 5 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_os = res_vars["test_os"]
         var_url = res_vars["test_url"]
@@ -202,12 +201,13 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Check values
-        res = self.server_test_1.get_variable_values(
-            ["test_dir", "test_url", "test_version"]
+        res_vars = self.Variable._get_variable_values_by_references(
+            ["test_dir", "test_url", "test_version"],
+            server=self.server_test_1,
         )
-        self.assertEqual(len(res), 1, "Must be a single record key in the result")
+        # Including system variable
+        self.assertEqual(len(res_vars), 4, "Must be a 4 values in the result")
 
-        res_vars = res.get(self.server_test_1.id)
         var_dir = res_vars["test_dir"]
         var_url = res_vars["test_url"]
         var_version = res_vars["test_version"]
@@ -362,8 +362,9 @@ class TestTowerVariable(TestTowerCommon):
         # Get variables
         variables = command.get_variables().get(str(command.id))
         # Get variable values
-        variable_values = self.server_test_1.get_variable_values(variables).get(
-            self.server_test_1.id
+        variable_values = self.Variable._get_variable_values_by_references(
+            variables,
+            server=self.server_test_1,
         )
 
         # Check values
@@ -407,17 +408,32 @@ class TestTowerVariable(TestTowerCommon):
             self.server_test_1.url,
             "System variable doesn't match server property",
         )
+        self.assertEqual(
+            variable_values["tower"]["server"]["hostname"],
+            urlparse(self.server_test_1.url).hostname,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["netloc"],
+            urlparse(self.server_test_1.url).netloc,
+            "System variable doesn't match server property",
+        )
+        self.assertEqual(
+            variable_values["tower"]["server"]["port"],
+            urlparse(self.server_test_1.url).port,
+            "System variable doesn't match server property",
+        )
 
     @patch(
-        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.fields.Datetime.now",
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable.fields.Datetime.now",
         return_value=fields.Datetime.now(),
     )
     @patch(
-        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.fields.Date.today",
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable.fields.Date.today",
         return_value=fields.Date.today(),
     )
     @patch(
-        "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin.uuid.uuid4",
+        "odoo.addons.cetmix_tower_server.models.cx_tower_variable.uuid.uuid4",
         return_value="suchmuchuuid4",
     )
     def test_system_variable_tools_type_values(self, mock_uuid4, mock_today, mock_now):
@@ -431,8 +447,9 @@ class TestTowerVariable(TestTowerCommon):
         # Get variables
         variables = command.get_variables().get(str(command.id))
         # Get variable values
-        variable_values = self.server_test_1.get_variable_values(variables).get(
-            self.server_test_1.id
+        variable_values = self.Variable._get_variable_values_by_references(
+            variables,
+            server=self.server_test_1,
         )
 
         # Check values
@@ -520,64 +537,6 @@ class TestTowerVariable(TestTowerCommon):
             expected_value, result_value, "Result value doesn't match expected"
         )
 
-    def test_get_by_variable_reference(self):
-        """Test getting variable values by variable reference"""
-
-        variable_meme = self.Variable.create(
-            {"name": "Meme Variable", "reference": "meme_variable"}
-        )
-        global_value = self.VariableValue.create(
-            {"variable_id": variable_meme.id, "value_char": "Memes Globalvs"}
-        )
-
-        # -- 1 -- Get value for Server with no server value defined
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_id=self.server_test_1.id
-        )
-        self.assertIsNone(server_result.get("server"))
-        self.assertIsNone(server_result.get("server_template"))
-        self.assertEqual(server_result.get("global"), global_value.value_char)
-
-        # -- 2 -- Add server value and try again
-        server_value = self.VariableValue.create(
-            {
-                "variable_id": variable_meme.id,
-                "value_char": "Memes Servervs",
-                "server_id": self.server_test_1.id,
-            }
-        )
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_id=self.server_test_1.id
-        )
-        self.assertEqual(server_result.get("server"), server_value.value_char)
-        self.assertEqual(server_result.get("global"), global_value.value_char)
-        self.assertIsNone(server_result.get("server_template"))
-
-        # -- 3 -- Do not fetch global value now
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_id=self.server_test_1.id, check_global=False
-        )
-        self.assertIsNone(server_result.get("global"))
-        self.assertEqual(server_result.get("server"), server_value.value_char)
-        self.assertIsNone(server_result.get("server_template"))
-
-        # -- 4 -- Check server template value
-        server_template_value = self.VariableValue.create(
-            {
-                "variable_id": variable_meme.id,
-                "value_char": "Memes Servervs Templatvs",
-                "server_template_id": self.server_template_sample.id,
-            }
-        )
-        server_result = self.VariableValue.get_by_variable_reference(
-            variable_meme.reference, server_template_id=self.server_template_sample.id
-        )
-        self.assertEqual(server_result.get("global"), global_value.value_char)
-        self.assertIsNone(server_result.get("server"))
-        self.assertEqual(
-            server_result.get("server_template"), server_template_value.value_char
-        )
-
     def test_single_assignment(self):
         """Test that a variable can only be assigned to one model at a time."""
         # Create a variable value assigned to the server
@@ -630,8 +589,8 @@ class TestTowerVariable(TestTowerCommon):
         )
 
         # Try to create a second variable value with the same variable and server
-        with mute_logger("odoo.sql_db"), self.assertRaises(
-            IntegrityError,
+        with self.assertRaises(
+            ValidationError,
             msg="A variable value cannot be assigned multiple times to the same server",
         ):
             self.env["cx.tower.variable.value"].create(
@@ -1128,3 +1087,103 @@ class TestVariableReferenceRename(TestTowerCommon):
             f"{self.server_test_1.reference}"
         )
         self.assertEqual(variable_value.reference, expected_variable_pattern)
+
+
+class TestTowerVariableJet(TestTowerJetsCommon):
+    """Testing jet system variables with waypoint data."""
+
+    def test_system_variable_jet_type_values_with_waypoint(self):
+        """Test system variables of `jet` type with waypoint data"""
+        # Set waypoint as current waypoint for the jet
+        self.jet_test.waypoint_id = self.waypoint.id
+
+        # Set waypoint metadata
+        self.waypoint.metadata = {"key1": "value1", "key2": "value2"}
+
+        # Get system variable values
+        variable_values = self.Variable._get_system_variable_values(jet=self.jet_test)
+
+        # Check waypoint data is included
+        self.assertIn(
+            "waypoint", variable_values["jet"], "Waypoint data should be included"
+        )
+        waypoint_data = variable_values["jet"]["waypoint"]
+
+        # Check waypoint reference and type
+        self.assertEqual(
+            waypoint_data["reference"],
+            self.waypoint.reference,
+            "Waypoint reference should match",
+        )
+        self.assertEqual(
+            waypoint_data["type"],
+            self.waypoint_template.reference,
+            "Waypoint type should match template reference",
+        )
+
+        # Check metadata is included
+        self.assertEqual(
+            waypoint_data["key1"],
+            "value1",
+            "Waypoint metadata key1 should match",
+        )
+        self.assertEqual(
+            waypoint_data["key2"],
+            "value2",
+            "Waypoint metadata key2 should match",
+        )
+
+    def test_system_variable_jet_type_values_without_waypoint(self):
+        """Test system variables of `jet` type without waypoint"""
+        # Ensure jet has no waypoint
+        self.jet_test.waypoint_id = False
+
+        # Get system variable values
+        variable_values = self.Variable._get_system_variable_values(jet=self.jet_test)
+
+        # Check waypoint data is included but with False values
+        self.assertIn(
+            "waypoint",
+            variable_values["jet"],
+            "Waypoint data should be included even when jet has no waypoint",
+        )
+        waypoint_data = variable_values["jet"]["waypoint"]
+
+        # Check waypoint reference and type are False
+        self.assertFalse(
+            waypoint_data["reference"],
+            "Waypoint reference should be False when jet has no waypoint",
+        )
+        self.assertFalse(
+            waypoint_data["type"],
+            "Waypoint type should be False when jet has no waypoint",
+        )
+
+    def test_system_variable_jet_type_values_with_waypoint_empty_metadata(self):
+        """Test system variables of `jet` type with waypoint but empty metadata"""
+        # Set waypoint as current waypoint for the jet
+        self.jet_test.waypoint_id = self.waypoint.id
+
+        # Set waypoint metadata to empty dict
+        self.waypoint.metadata = {}
+
+        # Get system variable values
+        variable_values = self.Variable._get_system_variable_values(jet=self.jet_test)
+
+        # Check waypoint data is included
+        self.assertIn(
+            "waypoint", variable_values["jet"], "Waypoint data should be included"
+        )
+        waypoint_data = variable_values["jet"]["waypoint"]
+
+        # Check that only reference and type are present (no metadata keys)
+        self.assertEqual(
+            len(waypoint_data),
+            2,
+            "Waypoint data should only contain reference"
+            " and type when metadata is empty",
+        )
+        self.assertIn(
+            "reference", waypoint_data, "Waypoint reference should be present"
+        )
+        self.assertIn("type", waypoint_data, "Waypoint type should be present")

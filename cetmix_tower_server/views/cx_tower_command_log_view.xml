@@ -35,6 +35,12 @@
                             <field name="is_skipped" invisible="1" />
                             <field name="create_uid" />
                             <field name="server_id" />
+                            <field name="jet_id" invisible="not jet_id" />
+                            <field
+                                name="jet_template_id"
+                                invisible="not jet_template_id"
+                            />
+                            <field name="waypoint_id" invisible="not waypoint_id" />
                             <field name="command_id" />
                             <field name="command_action" invisible="1" />
                             <field
@@ -113,6 +119,8 @@
                 <field name="finish_date" optional="hide" />
                 <field name="duration_current" optional="show" />
                 <field name="server_id" optional="show" />
+                <field name="jet_id" optional="show" />
+                <field name="jet_template_id" optional="hide" />
                 <field name="command_id" optional="show" />
                 <field name="command_action" optional="show" />
                 <field name="command_status" optional="show" />
@@ -128,6 +136,8 @@
             <search string="Search Command Log">
                 <field name="command_id" />
                 <field name="server_id" />
+                <field name="jet_id" />
+                <field name="jet_template_id" />
                 <field name="label" />
                 <separator />
                 <filter

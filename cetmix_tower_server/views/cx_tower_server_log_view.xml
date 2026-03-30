@@ -31,6 +31,8 @@
                     <group>
                         <field name="server_id" invisible="1" />
                         <field name="server_template_id" invisible="1" />
+                        <field name="jet_template_id" invisible="1" />
+                        <field name="jet_id" invisible="1" />
                         <field
                             name="access_level"
                             groups="cetmix_tower_server.group_manager"

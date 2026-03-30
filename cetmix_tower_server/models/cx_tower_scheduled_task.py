@@ -10,6 +10,11 @@ _logger = logging.getLogger(__name__)
 
 
 class CxTowerScheduledTask(models.Model):
+    """
+    Scheduled Tasks.
+    Used to schedule commands and flight plans to run on servers and jets.
+    """
+
     _name = "cx.tower.scheduled.task"
     _description = "Scheduled Task"
     _inherit = ["cx.tower.access.role.mixin", "cx.tower.reference.mixin"]
@@ -30,6 +35,20 @@ class CxTowerScheduledTask(models.Model):
         relation="cx_tower_server_template_scheduled_task_rel",
         column1="scheduled_task_id",
         column2="server_template_id",
+    )
+    jet_ids = fields.Many2many(
+        "cx.tower.jet",
+        "cx_tower_scheduled_task_jet_rel",
+        "scheduled_task_id",
+        "jet_id",
+        string="Jets",
+    )
+    jet_template_ids = fields.Many2many(
+        string="Jet Templates",
+        comodel_name="cx.tower.jet.template",
+        relation="cx_tower_jet_template_scheduled_task_rel",
+        column1="scheduled_task_id",
+        column2="jet_template_id",
     )
     action = fields.Selection(
         [("command", "Command"), ("plan", "Flight Plan")], required=True
@@ -373,8 +392,12 @@ class CxTowerScheduledTask(models.Model):
             "log": {"scheduled_task_id": self.id},
             "variable_values": variable_values,
         }
+        # Run for servers
         for server in self.server_ids:
             server.run_command(self.command_id, **kwargs)
+        # Run for jets
+        for jet in self.jet_ids:
+            jet.run_command(self.command_id, **kwargs)
 
     def _run_plan(self):
         """Run flight plan on selected servers."""
@@ -386,9 +409,12 @@ class CxTowerScheduledTask(models.Model):
             "plan_log": {"scheduled_task_id": self.id},
             "variable_values": variable_values,
         }
-
+        # Run for servers
         for server in self.server_ids:
             server.run_flight_plan(self.plan_id, **kwargs)
+        # Run for jets
+        for jet in self.jet_ids:
+            jet.run_flight_plan(self.plan_id, **kwargs)
 
     def _reserve_tasks(self, limit=None):
         """

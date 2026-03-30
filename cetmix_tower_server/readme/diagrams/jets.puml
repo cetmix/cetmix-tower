@@ -1,0 +1,77 @@
+@startuml new_jet_flow
+title New Jet Flow
+
+start
+
+:New jet is created;
+:Build jet dependencies;
+while (For every dependency)
+  if (Required jet exists?) then (Yes)
+      if (In the required state?) then (Yes)
+        :Save jet in the dependency;
+      else (No)
+        :Create a jet request to bring\nthis jet to the required state;
+      endif
+    else (No)
+    :Create a jet request for a new jet;
+  endif
+endwhile
+
+stop
+@enduml
+
+
+@startuml jet_request_flow
+title Jet Request Flow
+|Requesting Jet|
+:Need for a jet in a specific state;
+
+if (Jet available?) then (Yes)
+  if (In the required state?) then (Yes)
+    if (Jet is busy?) then (no)
+      :Ask to go to the required state;
+    else (Yes)
+      :Create a jet request to bring\nthis jet to the required state;
+      |Requested Jet|
+      :Finalize the current operation;
+      :Check for pending requests;
+      if (Pending requests?) then (Yes)
+        while (Pending requests?)
+          :Process the request;
+          :Callback the request issuer;
+        endwhile
+      endif
+    endif
+  else (No)
+    :Ask to go to the required state;
+  endif
+else (No)
+  |Requesting Jet|
+  :Create a jet request for a new jet;
+endif
+stop
+@enduml
+
+@startuml jet_state_transition
+title Jet State Transition
+
+start
+
+:Update dependencies;
+if (All dependencies satisfied?) then (Yes)
+  while (Actions to reach the required state)
+    :Execute the action;
+    if (Pending requests?) then (Yes)
+      while (For every pending request)
+      :Process the request;
+      :Callback the request issuer;
+  endwhile
+endif
+
+  endwhile
+else (No)
+  :Wait for dependencies;
+endif
+
+stop
+@enduml

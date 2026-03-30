@@ -184,6 +184,61 @@ class TestTowerVariableValue(common.TestTowerCommon):
         # Add server to plan
         cls.test_plan.write({"server_ids": [(4, cls.server_1.id)]})
 
+        # Create Jet Template
+        cls.jet_template = cls.JetTemplate.create(
+            {
+                "name": "Test Jet Template",
+                "server_ids": [(4, cls.server_1.id)],
+                "user_ids": [(4, cls.user.id)],
+                "manager_ids": [(4, cls.manager.id)],
+            }
+        )
+
+        # Create Jet Template variable values
+        cls.jet_template_value_1 = cls.VariableValue.create(
+            {
+                "variable_id": cls.variable_level_1.id,
+                "value_char": "jet_template_value_1",
+                "jet_template_id": cls.jet_template.id,
+            }
+        )
+
+        cls.jet_template_value_2 = cls.VariableValue.with_user(cls.manager).create(
+            {
+                "variable_id": cls.variable_level_2.id,
+                "value_char": "jet_template_value_2",
+                "jet_template_id": cls.jet_template.id,
+            }
+        )
+
+        # Create Jet
+        cls.jet = cls.Jet.create(
+            {
+                "name": "Test Jet",
+                "jet_template_id": cls.jet_template.id,
+                "server_id": cls.server_1.id,
+                "user_ids": [(4, cls.user.id)],
+                "manager_ids": [(4, cls.manager.id)],
+            }
+        )
+
+        # Create Jet variable values
+        cls.jet_value_1 = cls.VariableValue.create(
+            {
+                "variable_id": cls.variable_level_1.id,
+                "value_char": "jet_value_1",
+                "jet_id": cls.jet.id,
+            }
+        )
+
+        cls.jet_value_2 = cls.VariableValue.with_user(cls.manager).create(
+            {
+                "variable_id": cls.variable_level_2.id,
+                "value_char": "jet_value_2",
+                "jet_id": cls.jet.id,
+            }
+        )
+
     def test_variable_value_access_rights(self):
         """
         Test access rights for variable values
@@ -405,7 +460,7 @@ class TestTowerVariableValue(common.TestTowerCommon):
             }
         )
 
-        # Create test value as root to set up the test
+        # Create test values as root to set up the test
         template_value_1 = self.VariableValue.create(
             {
                 "variable_id": self.variable_level_1.id,
@@ -414,12 +469,22 @@ class TestTowerVariableValue(common.TestTowerCommon):
             }
         )
 
-        # Test manager can only read level 1 values (like a regular user)
+        template_value_2 = self.VariableValue.create(
+            {
+                "variable_id": self.variable_level_2.id,
+                "value_char": "manager_user_value_2",
+                "server_template_id": template_with_manager_user.id,
+            }
+        )
+
+        # Test manager can read both level 1 and level 2 values
+        # (Manager Read rule allows access_level <= '2' when manager is in user_ids)
         manager_values = self.VariableValue.with_user(self.manager).search(
             [("server_template_id", "=", template_with_manager_user.id)]
         )
-        self.assertEqual(len(manager_values), 1)
+        self.assertEqual(len(manager_values), 2)
         self.assertIn(template_value_1.id, manager_values.ids)
+        self.assertIn(template_value_2.id, manager_values.ids)
 
         # Create a new variable for testing create access
         test_variable = self.Variable.create(
@@ -533,6 +598,313 @@ class TestTowerVariableValue(common.TestTowerCommon):
         )
         self.assertIn(plan_action_value.id, manager_plan_values.ids)
 
+    def test_jet_access(self):
+        """Test access rights for Jet variable values"""
+
+        # Test user access to jet values
+        # User should see level 1 values from jets they're added to
+        user_jet_values = self.VariableValue.with_user(self.user).search(
+            [("jet_id", "=", self.jet.id)]
+        )
+        self.assertEqual(len(user_jet_values), 1)
+        self.assertIn(self.jet_value_1.id, user_jet_values.ids)
+
+        # User should not be able to create/write/unlink values
+        with self.assertRaises(AccessError):
+            self.VariableValue.with_user(self.user).create(
+                {
+                    "variable_id": self.variable_level_1.id,
+                    "value_char": "test",
+                    "jet_id": self.jet.id,
+                }
+            )
+
+        with self.assertRaises(AccessError):
+            self.jet_value_1.with_user(self.user).write({"value_char": "new_value"})
+
+        with self.assertRaises(AccessError):
+            self.jet_value_1.with_user(self.user).unlink()
+
+        # Test manager access to jet values
+        # Manager should see all level 1 and 2 values from jets they're added to
+        manager_jet_values = self.VariableValue.with_user(self.manager).search(
+            [("jet_id", "=", self.jet.id)]
+        )
+        self.assertEqual(len(manager_jet_values), 2)
+        self.assertIn(self.jet_value_1.id, manager_jet_values.ids)
+        self.assertIn(self.jet_value_2.id, manager_jet_values.ids)
+
+        # Create a new variable for testing manager create rights
+        test_variable = self.Variable.create(
+            {
+                "name": "Test Jet Manager Variable",
+                "access_level": "2",
+            }
+        )
+
+        # Test manager create rights (only when manager in jet manager_ids)
+        new_jet_value = self.VariableValue.with_user(self.manager).create(
+            {
+                "variable_id": test_variable.id,
+                "value_char": "new_jet_value",
+                "jet_id": self.jet.id,
+            }
+        )
+        self.assertTrue(new_jet_value.exists())
+
+        # Test manager write rights
+        self.jet_value_2.with_user(self.manager).write(
+            {"value_char": "updated_jet_value"}
+        )
+        self.assertEqual(self.jet_value_2.value_char, "updated_jet_value")
+
+        # Test manager unlink rights (only own records)
+        new_jet_value.with_user(self.manager).unlink()
+        self.assertFalse(new_jet_value.exists())
+
+        # Test manager cannot create values for jets they're not managers of
+        jet_without_manager = self.Jet.create(
+            {
+                "name": "Jet Without Manager",
+                "jet_template_id": self.jet_template.id,
+                "server_id": self.server_1.id,
+                "user_ids": [(4, self.user2.id)],
+                "manager_ids": [(4, self.manager2.id)],
+            }
+        )
+
+        with self.assertRaises(AccessError):
+            self.VariableValue.with_user(self.manager).create(
+                {
+                    "variable_id": self.variable_level_1.id,
+                    "value_char": "test",
+                    "jet_id": jet_without_manager.id,
+                }
+            )
+
+    def test_jet_manager_in_users_access(self):
+        """Test access rights for Jet when manager is in user_ids only"""
+
+        # Create new jet with manager in user_ids only (not in manager_ids)
+        jet_with_manager_user = self.Jet.create(
+            {
+                "name": "Jet With Manager User",
+                "jet_template_id": self.jet_template.id,
+                "server_id": self.server_1.id,
+                "user_ids": [(4, self.manager.id)],  # Add manager to user_ids only
+                "manager_ids": [(5, 0, 0)],
+            }
+        )
+
+        # Create test values as root to set up the test
+        jet_value_1 = self.VariableValue.create(
+            {
+                "variable_id": self.variable_level_1.id,
+                "value_char": "manager_user_value_1",
+                "jet_id": jet_with_manager_user.id,
+            }
+        )
+
+        jet_value_2 = self.VariableValue.create(
+            {
+                "variable_id": self.variable_level_2.id,
+                "value_char": "manager_user_value_2",
+                "jet_id": jet_with_manager_user.id,
+            }
+        )
+
+        # Test manager can read both level 1 and level 2 values
+        # (Manager Read rule allows access_level <= '2' when manager is in user_ids)
+        manager_values = self.VariableValue.with_user(self.manager).search(
+            [("jet_id", "=", jet_with_manager_user.id)]
+        )
+        self.assertEqual(len(manager_values), 2)
+        self.assertIn(jet_value_1.id, manager_values.ids)
+        self.assertIn(jet_value_2.id, manager_values.ids)
+
+        # Create a new variable for testing create access
+        test_variable = self.Variable.create(
+            {
+                "name": "Test Jet User Variable",
+                "access_level": "1",
+            }
+        )
+
+        # Test manager cannot create values
+        with self.assertRaises(AccessError):
+            self.VariableValue.with_user(self.manager).create(
+                {
+                    "variable_id": test_variable.id,
+                    "value_char": "new_manager_user_value",
+                    "jet_id": jet_with_manager_user.id,
+                }
+            )
+
+        # Test manager cannot write values
+        with self.assertRaises(AccessError):
+            jet_value_1.with_user(self.manager).write(
+                {"value_char": "updated_manager_user_value"}
+            )
+
+        # Test manager cannot delete values
+        with self.assertRaises(AccessError):
+            jet_value_1.with_user(self.manager).unlink()
+
+    def test_jet_template_access(self):
+        """Test access rights for Jet Template variable values"""
+
+        # Test user access to template values
+        # User should see level 1 values from jet templates they're added to
+        user_jet_template_values = self.VariableValue.with_user(self.user).search(
+            [("jet_template_id", "=", self.jet_template.id)]
+        )
+        self.assertEqual(len(user_jet_template_values), 1)
+        self.assertIn(self.jet_template_value_1.id, user_jet_template_values.ids)
+
+        # User should not be able to create/write/unlink values
+        with self.assertRaises(AccessError):
+            self.VariableValue.with_user(self.user).create(
+                {
+                    "variable_id": self.variable_level_1.id,
+                    "value_char": "test",
+                    "jet_template_id": self.jet_template.id,
+                }
+            )
+
+        with self.assertRaises(AccessError):
+            self.jet_template_value_1.with_user(self.user).write(
+                {"value_char": "new_value"}
+            )
+
+        with self.assertRaises(AccessError):
+            self.jet_template_value_1.with_user(self.user).unlink()
+
+        # Test manager access to template values
+        # Manager should see all level 1 and 2 values from jet templates
+        # they're added to
+        manager_jet_template_values = self.VariableValue.with_user(self.manager).search(
+            [("jet_template_id", "=", self.jet_template.id)]
+        )
+        self.assertEqual(len(manager_jet_template_values), 2)
+        self.assertIn(self.jet_template_value_1.id, manager_jet_template_values.ids)
+        self.assertIn(self.jet_template_value_2.id, manager_jet_template_values.ids)
+
+        # Create a new variable for testing manager create rights
+        test_variable = self.Variable.create(
+            {
+                "name": "Test Jet Template Manager Variable",
+                "access_level": "2",
+            }
+        )
+
+        # Test manager create rights (only when manager in template manager_ids)
+        new_jet_template_value = self.VariableValue.with_user(self.manager).create(
+            {
+                "variable_id": test_variable.id,
+                "value_char": "new_jet_template_value",
+                "jet_template_id": self.jet_template.id,
+            }
+        )
+        self.assertTrue(new_jet_template_value.exists())
+
+        # Test manager write rights
+        self.jet_template_value_2.with_user(self.manager).write(
+            {"value_char": "updated_jet_template_value"}
+        )
+        self.assertEqual(
+            self.jet_template_value_2.value_char, "updated_jet_template_value"
+        )
+
+        # Test manager unlink rights (only own records)
+        new_jet_template_value.with_user(self.manager).unlink()
+        self.assertFalse(new_jet_template_value.exists())
+
+        # Test manager cannot create values for templates they're not managers of
+        jet_template_without_manager = self.JetTemplate.create(
+            {
+                "name": "Template Without Manager",
+                "server_ids": [(4, self.server_1.id)],
+                "user_ids": [(4, self.user2.id)],
+                "manager_ids": [(4, self.manager2.id)],
+            }
+        )
+
+        with self.assertRaises(AccessError):
+            self.VariableValue.with_user(self.manager).create(
+                {
+                    "variable_id": self.variable_level_1.id,
+                    "value_char": "test",
+                    "jet_template_id": jet_template_without_manager.id,
+                }
+            )
+
+    def test_jet_template_manager_in_users_access(self):
+        """Test access rights for Jet Template when manager is in user_ids only"""
+
+        # Create new template with manager in user_ids only (not in manager_ids)
+        template_with_manager_user = self.JetTemplate.create(
+            {
+                "name": "Template With Manager User",
+                "server_ids": [(4, self.server_1.id)],
+                "user_ids": [(4, self.manager.id)],  # Add manager to user_ids only
+                "manager_ids": [(5, 0, 0)],
+            }
+        )
+
+        # Create test values as root to set up the test
+        template_value_1 = self.VariableValue.create(
+            {
+                "variable_id": self.variable_level_1.id,
+                "value_char": "manager_user_value_1",
+                "jet_template_id": template_with_manager_user.id,
+            }
+        )
+
+        template_value_2 = self.VariableValue.create(
+            {
+                "variable_id": self.variable_level_2.id,
+                "value_char": "manager_user_value_2",
+                "jet_template_id": template_with_manager_user.id,
+            }
+        )
+
+        # Test manager can read both level 1 and level 2 values
+        # (Manager Read rule allows access_level <= '2' when manager is in user_ids)
+        manager_values = self.VariableValue.with_user(self.manager).search(
+            [("jet_template_id", "=", template_with_manager_user.id)]
+        )
+        self.assertEqual(len(manager_values), 2)
+        self.assertIn(template_value_1.id, manager_values.ids)
+        self.assertIn(template_value_2.id, manager_values.ids)
+
+        # Create a new variable for testing create access
+        test_variable = self.Variable.create(
+            {
+                "name": "Test Template User Variable",
+                "access_level": "1",
+            }
+        )
+
+        # Test manager cannot create values
+        with self.assertRaises(AccessError):
+            self.VariableValue.with_user(self.manager).create(
+                {
+                    "variable_id": test_variable.id,
+                    "value_char": "new_manager_user_value",
+                    "jet_template_id": template_with_manager_user.id,
+                }
+            )
+
+        # Test manager cannot write values
+        with self.assertRaises(AccessError):
+            template_value_1.with_user(self.manager).write(
+                {"value_char": "updated_manager_user_value"}
+            )
+
+        # Test manager cannot delete values
+        with self.assertRaises(AccessError):
+            template_value_1.with_user(self.manager).unlink()
+
     def test_reference_pattern_global_server_template_action(self):
         """Ensure model-scoped references follow the required pattern."""
         # Global
@@ -560,5 +932,21 @@ class TestTowerVariableValue(common.TestTowerCommon):
         self.assertTrue(
             self.plan_value_1.reference.startswith(
                 f"{self.variable_level_1.reference}_{model_ref}_{action_model_ref}_"
+            )
+        )
+
+        # Jet Template
+        jet_tmpl_model_ref = self.JetTemplate._get_model_generic_reference()
+        self.assertTrue(
+            self.jet_template_value_1.reference.startswith(
+                f"{self.variable_level_1.reference}_{model_ref}_{jet_tmpl_model_ref}_"
+            )
+        )
+
+        # Jet
+        jet_model_ref = self.Jet._get_model_generic_reference()
+        self.assertTrue(
+            self.jet_value_1.reference.startswith(
+                f"{self.variable_level_1.reference}_{model_ref}_{jet_model_ref}_"
             )
         )
