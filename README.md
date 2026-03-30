@@ -30,6 +30,7 @@ addon | version | maintainers | summary
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 18.0.1.0.0 |  | Cetmix Tower asynchronous task execution using 'queue_job'
 [cetmix_tower_webhook](cetmix_tower_webhook/) | 18.0.1.0.1 |  | Webhook implementation for Cetmix Tower
 [cetmix_tower_yaml](cetmix_tower_yaml/) | 18.0.1.0.2 |  | Cetmix Tower YAML export/import
+[cx_web_refresh_from_backend](cx_web_refresh_from_backend/) | 18.0.1.0.0 |  | Refresh frontend views from backend
 
 [//]: # (end addons)
 
