@@ -1200,7 +1200,7 @@ class CxTowerServer(models.Model):
 
         Args:
             operation (Char): Operation to check access
-                same format as `check_access_rights`
+                same format as `check_access`
         Returns:
             Bool: True if access is granted, False otherwise
         """

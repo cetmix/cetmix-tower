@@ -4,8 +4,12 @@ import logging
 import uuid
 from urllib.parse import urlparse
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
+from odoo.tools import LazyTranslate
 from odoo.tools.safe_eval import safe_eval, wrap_module
+
+_lt = LazyTranslate(__name__, default_lang="en_US")
+
 
 _logger = logging.getLogger(__name__)
 
@@ -45,7 +49,7 @@ class TowerVariable(models.Model):
 
     _order = "name"
 
-    DEFAULT_VALIDATION_MESSAGE = _("Invalid value!")
+    DEFAULT_VALIDATION_MESSAGE = _lt("Invalid value!")
     SYSTEM_VARIABLE_REFERENCE = "tower"
 
     value_ids = fields.One2many(
@@ -174,7 +178,7 @@ class TowerVariable(models.Model):
 
         return {
             "type": "ir.actions.act_window",
-            "name": _("Variable Values"),
+            "name": self.env._("Variable Values"),
             "res_model": "cx.tower.variable.value",
             "views": [[False, "list"]],
             "target": "current",
@@ -201,7 +205,7 @@ class TowerVariable(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": _("Plan Lines"),
+            "name": self.env._("Plan Lines"),
             "res_model": "cx.tower.plan.line",
             "views": [
                 [False, "tree"],
@@ -245,7 +249,7 @@ class TowerVariable(models.Model):
         self.ensure_one()
         return {
             "type": "ir.actions.act_window",
-            "name": _("Variable Values"),
+            "name": self.env._("Variable Values"),
             "res_model": "cx.tower.variable.value",
             "views": [[False, "list"]],
             "target": "current",
@@ -367,7 +371,7 @@ class TowerVariable(models.Model):
         message = self.validation_message or self.DEFAULT_VALIDATION_MESSAGE
         return (
             False,
-            _(
+            self.env._(
                 "Variable: %(var)s, Value: %(val)s\n%(msg)s",
                 msg=message,
                 var=self.name,  # pylint: disable=no-member

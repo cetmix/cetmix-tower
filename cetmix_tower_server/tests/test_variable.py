@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from odoo import _, fields
 from odoo.exceptions import AccessError, ValidationError
-from odoo.tests.common import Form
+from odoo.tests import Form
 
 from .common import TestTowerCommon
 from .common_jets import TestTowerJetsCommon

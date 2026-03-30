@@ -1,10 +1,12 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _
 from odoo.exceptions import AccessError
+from odoo.tools import LazyTranslate
 
 from .common import TestTowerCommon
+
+_lt = LazyTranslate(__name__, default_lang="en_US")
 
 
 class TestTowerJetsCommon(TestTowerCommon):
@@ -636,7 +638,7 @@ class TestTowerJetsCommon(TestTowerCommon):
 
             if not jet_search or not depends_search:
                 raise AccessError(
-                    _("Manager must have access to both jets before creating")
+                    _lt("Manager must have access to both jets before creating")
                 )
             # Force cache refresh to ensure Many2one relations are accessible,
             jet.invalidate_recordset(["manager_ids", "user_ids"])

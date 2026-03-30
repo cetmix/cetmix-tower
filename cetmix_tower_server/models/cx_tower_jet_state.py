@@ -69,8 +69,7 @@ class CxTowerJetState(models.Model):
             raise ValidationError(_("State can be set only for a single jet"))
 
         # Check access to the jet
-        jet.check_access_rights("read")
-        jet.check_access_rule("write")
+        jet.check_access("read")
 
         # Get user access level
         user_access_level = self.env.user._cetmix_tower_access_level()

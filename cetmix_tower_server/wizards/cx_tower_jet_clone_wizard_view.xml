@@ -67,7 +67,7 @@
                     />
                 </group>
                 <field name="line_ids" invisible="use_custom_variables == 'n'">
-                    <tree editable="bottom">
+                    <list editable="bottom">
                         <field name="variable_id" />
                         <field name="variable_type" column_invisible="True" />
                         <field
@@ -81,7 +81,7 @@
                             readonly="variable_type == 's'"
                             required="variable_type == 'o'"
                         />
-                    </tree>
+                    </list>
                 </field>
                 <footer>
                     <button

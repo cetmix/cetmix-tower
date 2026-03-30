@@ -5,13 +5,7 @@
         <field name="name">cx.tower.jet.kanban</field>
         <field name="model">cx.tower.jet</field>
         <field name="arch" type="xml">
-            <kanban
-                class="o_res_partner_kanban"
-                quick_create="false"
-                records_draggable="0"
-                group_create="false"
-            >
-                <field name="id" />
+            <kanban quick_create="false" records_draggable="0" group_create="false">
                 <field name="name" />
                 <field name="tag_ids" />
                 <field name="reference" />
@@ -26,122 +20,96 @@
                 <field name="sequence" />
                 <field name="partner_id" />
                 <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click o_res_partner_kanban">
-                            <!-- Title and reference -->
-                            <div class="oe_kanban_details d-flex flex-column">
+                    <t t-name="card" class="flex-row">
+                        <aside t-if="record.icon.raw_value">
+                            <field
+                                name="icon"
+                                widget="image"
+                                alt="Jet icon"
+                                options="{'size': [48, 48], 'img_class': 'object-fit-contain rounded'}"
+                            />
+                        </aside>
+                        <main class="ps-2 ps-md-0 d-flex flex-column">
+                            <div
+                                class="d-flex align-items-start justify-content-between mb-1"
+                            >
                                 <div>
-                                    <div class="o_kanban_record_top">
-                                        <div class="o_kanban_record_headings">
-                                            <strong class="o_kanban_record_title">
-                                                <field name="name" />
-                                            </strong>
-                                            <div class="o_kanban_record_subtitle">
-                                                <field name="reference" />
-                                                <field
-                                                    name="tag_ids"
-                                                    widget="many2many_tags"
-                                                    options="{'color_field': 'color'}"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div
-                                            class="float-end"
-                                            t-if="record.id.raw_value and record.icon.raw_value"
-                                        >
-                                            <img
-                                                t-att-src="kanban_image('cx.tower.jet', 'icon', record.id.raw_value)"
-                                                class="o_image_64_contain"
-                                                style="width: 48px; height: 48px; border-radius: 4px;"
-                                                alt="Jet icon"
-                                            />
-                                        </div>
+                                    <strong class="fs-5">
+                                        <field name="name" />
+                                    </strong>
+                                    <div class="text-muted">
+                                        <field name="reference" />
                                     </div>
-                                    <!-- Main content - details on the left -->
-                                    <ul class="o_kanban_record_body">
-                                        <li
-                                            t-if="record.state_id.raw_value"
-                                            class="d-flex align-items-center"
-                                        >
-                                            <i
-                                                class="fa fa-circle me-2"
-                                                title="State"
-                                            />
-                                            <field name="state_id" />
-                                        </li>
-                                        <li
-                                            class="d-flex align-items-center"
-                                            groups="cetmix_tower_server.group_manager"
-                                        >
-                                            <i
-                                                class="fa fa-cube me-2"
-                                                title="Template"
-                                            />
-                                            <field name="jet_template_id" />
-                                        </li>
-                                        <li class="d-flex align-items-center">
-                                            <i
-                                                class="fa fa-server me-2"
-                                                title="Server"
-                                            />
-                                            <field name="server_id" />
-                                        </li>
-                                        <li
-                                            class="d-flex align-items-center"
-                                            t-if="record.partner_id.raw_value"
-                                        >
-                                            <i
-                                                class="fa fa-user me-2"
-                                                title="Partner"
-                                            />
-                                            <field name="partner_id" />
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!-- Footer with Available Actions in bottom left and link in bottom right -->
-                                <div class="o_kanban_record_bottom">
-                                    <div
-                                        class="oe_kanban_bottom_left"
-                                        t-if="record.action_available_ids and record.action_available_ids.raw_value"
-                                    >
-                                        <i
-                                            class="fa fa-list me-2"
-                                            title="Available Actions"
-                                        />
-                                        <field
-                                            name="action_available_ids"
-                                            widget="many2many_tags"
-                                            options="{'color_field': 'color'}"
-                                        />
-                                    </div>
-                                    <div
-                                        class="oe_kanban_bottom_right"
-                                        t-if="record.url.raw_value"
-                                    >
-                                        <a
-                                            t-att-href="record.url.raw_value"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            title="Open Jet URL"
-                                        >
-                                            <i class="fa fa-external-link" />
-                                        </a>
-                                    </div>
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
                                 </div>
                             </div>
-                        </div>
+                            <ul class="list-unstyled mb-0 text-muted small flex-grow-1">
+                                <li
+                                    t-if="record.state_id.raw_value"
+                                    class="d-flex align-items-center mb-1"
+                                >
+                                    <i class="fa fa-circle me-2" title="State" />
+                                    <field name="state_id" />
+                                </li>
+                                <li
+                                    class="d-flex align-items-center mb-1"
+                                    groups="cetmix_tower_server.group_manager"
+                                >
+                                    <i class="fa fa-cube me-2" title="Template" />
+                                    <field name="jet_template_id" />
+                                </li>
+                                <li class="d-flex align-items-center mb-1">
+                                    <i class="fa fa-server me-2" title="Server" />
+                                    <field name="server_id" />
+                                </li>
+                                <li
+                                    t-if="record.partner_id.raw_value"
+                                    class="d-flex align-items-center mb-1"
+                                >
+                                    <i class="fa fa-user me-2" title="Partner" />
+                                    <field name="partner_id" />
+                                </li>
+                            </ul>
+                            <footer>
+                                <div
+                                    t-if="record.action_available_ids.raw_value"
+                                    class="d-flex align-items-center gap-1"
+                                >
+                                    <i class="fa fa-list" title="Available Actions" />
+                                    <field
+                                        name="action_available_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                </div>
+                                <a
+                                    t-if="record.url.raw_value"
+                                    t-att-href="record.url.raw_value"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Open Jet URL"
+                                    class="ms-auto"
+                                >
+                                    <i class="fa fa-external-link" />
+                                </a>
+                            </footer>
+                        </main>
                     </t>
                 </templates>
             </kanban>
         </field>
     </record>
 
-    <!-- Jet Tree View -->
+    <!-- Jet List View -->
     <record id="cx_tower_jet_view_tree" model="ir.ui.view">
-        <field name="name">cx.tower.jet.tree</field>
+        <field name="name">cx.tower.jet.list</field>
         <field name="model">cx.tower.jet</field>
         <field name="arch" type="xml">
-            <tree duplicate="false">
+            <list duplicate="false">
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="reference" optional="hide" />
@@ -160,7 +128,7 @@
                 />
                 <field name="state_id" />
                 <field name="jet_template_state_ids" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -308,7 +276,7 @@
                                         string=" "
                                         invisible="current_action_id"
                                     >
-                                        <tree>
+                                        <list>
                                             <field name="name" />
                                             <button
                                                 type="object"
@@ -318,7 +286,7 @@
                                                 title="Trigger action"
                                                 confirm="Do you want to trigger this action?"
                                             />
-                                        </tree>
+                                        </list>
                                         <form>
                                             <field name="note" invisible="not note" />
                                             <field name="name" invisible="note" />
@@ -336,7 +304,7 @@
                                         string=" "
                                         invisible="current_action_id"
                                     >
-                                        <tree>
+                                        <list>
                                             <field name="name" />
                                             <button
                                                 type="object"
@@ -346,7 +314,7 @@
                                                 title="Set state"
                                                 confirm="Do you want to set this state?"
                                             />
-                                        </tree>
+                                        </list>
                                         <form>
                                             <field name="note" invisible="not note" />
                                         </form>
@@ -360,7 +328,7 @@
                                 order="variable_reference"
                                 context="{'default_server_id': False}"
                             >
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="sequence" widget="handle" />
                                     <field
                                         name="variable_reference"
@@ -382,7 +350,7 @@
                                         readonly="variable_type == 's'"
                                     />
                                     <field name="access_level" optional="show" />
-                                </tree>
+                                </list>
                                 <form>
                                     <group>
                                         <field name="variable_id" />
@@ -413,7 +381,7 @@
                         >
                             <field name="is_waypoints_available" invisible="1" />
                             <field name="waypoint_ids">
-                                <tree
+                                <list
                                     delete="0"
                                     decoration-success="state == 'current'"
                                 >
@@ -455,7 +423,7 @@
                                         confirm="Do you want to delete this waypoint? This action cannot be undone."
                                         invisible="state not in [False, 'draft', 'deleted', 'ready', 'error']"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page
@@ -474,7 +442,7 @@
                                         icon="fa-external-link"
                                     />
                                     <field name="jet_requires_ids" string=" ">
-                                        <tree>
+                                        <list>
                                             <field
                                                 name="jet_depends_on_id"
                                                 placeholder="..no jet is assigned yet"
@@ -483,7 +451,7 @@
                                                 name="jet_template_dependency_id"
                                                 optional="hide"
                                             />
-                                        </tree>
+                                        </list>
                                     </field>
                                 </group>
                                 <group name="required_by" string="Serves dependencies">
@@ -496,7 +464,7 @@
                                         icon="fa-external-link"
                                     />
                                     <field name="jet_required_by_ids" string=" ">
-                                        <tree>
+                                        <list>
                                             <field
                                                 name="jet_id"
                                                 placeholder="...no jet is assigned yet"
@@ -505,7 +473,7 @@
                                                 name="jet_template_dependency_id"
                                                 optional="hide"
                                             />
-                                        </tree>
+                                        </list>
                                     </field>
                                 </group>
                             </group>
@@ -532,7 +500,7 @@
                         </page>
                         <page name="logs" string="Jet Logs">
                             <field name="server_log_ids">
-                                <tree>
+                                <list>
                                     <field name="name" />
                                     <button
                                         type="object"
@@ -540,7 +508,7 @@
                                         name="action_open_log"
                                         title="Open full form"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page
@@ -549,7 +517,7 @@
                             groups="cetmix_tower_server.group_manager"
                         >
                             <field name="scheduled_task_ids">
-                                <tree create="0" edit="0">
+                                <list create="0" edit="0">
                                     <field name="sequence" widget="handle" />
                                     <field name="display_name" />
                                     <field name="action" />
@@ -558,7 +526,7 @@
                                     <field name="is_running" optional="hide" />
                                     <field name="next_call" optional="hide" />
                                     <field name="last_call" optional="hide" />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page
@@ -578,11 +546,7 @@
                     </notebook>
                     <field name="note" placeholder="Put your notes here..." />
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" />
-                    <field name="activity_ids" />
-                    <field name="message_ids" />
-                </div>
+                <chatter />
             </form>
         </field>
     </record>
@@ -669,7 +633,7 @@
     <record id="cx_tower_jet_action" model="ir.actions.act_window">
         <field name="name">Jets</field>
         <field name="res_model">cx.tower.jet</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first Jet!

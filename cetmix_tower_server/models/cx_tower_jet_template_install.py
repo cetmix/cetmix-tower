@@ -469,6 +469,6 @@ class CxTowerJetTemplateInstall(models.Model):
             ),
             "type": "ir.actions.act_window",
             "res_model": "cx.tower.plan.log",
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "domain": [("jet_template_install_id", "=", self.id)],  # pylint: disable=no-member
         }
