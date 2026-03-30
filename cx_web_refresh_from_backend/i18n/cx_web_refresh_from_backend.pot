@@ -16,49 +16,42 @@ msgstr ""
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
-#, python-format
 msgid "Cancel"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js:0
-#, python-format
-msgid "Could not reload form. "
+msgid "Could not reload form. %(message)s"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/kanban/kanban_controller_patch.esm.js:0
-#, python-format
-msgid "Could not reload kanban. "
+msgid "Could not reload kanban. %(message)s"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
-#, python-format
-msgid "Could not reload list. "
+msgid "Could not reload list. %(message)s"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
-#, python-format
-msgid "Could not save record. "
+msgid "Could not save record. %(message)s"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
-#, python-format
 msgid "List is being refreshed from backend"
 msgstr ""
 
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
-#, python-format
 msgid "Save & Refresh"
 msgstr ""
 
@@ -70,6 +63,5 @@ msgstr ""
 #. module: cx_web_refresh_from_backend
 #. odoo-javascript
 #: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
-#, python-format
 msgid "You have unsaved edits. Save them before refreshing?"
 msgstr ""
