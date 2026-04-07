@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User Read Access -->
+    <!-- User is added to "Users" in jet AND user is added to "Users" in related Server -->
+    <record id="rule_cx_tower_jet_user_read" model="ir.rule">
+        <field name="name">Jet: User Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">
+            [
+                ("user_ids", "in", [user.id]),
+                ("server_id.user_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Read Access -->
+    <!-- User is added to "Users" or "Managers" in jet AND user is added to "Users" or "Managers" in related Server -->
+    <record id="rule_cx_tower_jet_manager_read" model="ir.rule">
+        <field name="name">Jet: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            ["&amp;",
+                "|",
+                    ("user_ids", "in", [user.id]),
+                    ("manager_ids", "in", [user.id]),
+                "|",
+                    ("server_id.user_ids", "in", [user.id]),
+                    ("server_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create Access -->
+    <!-- User is added to "Managers" in jet AND user is added to "Users" or "Managers" in related Server -->
+    <record id="rule_cx_tower_jet_manager_write" model="ir.rule">
+        <field name="name">Jet: Manager write &amp; create</field>
+        <field name="model_id" ref="model_cx_tower_jet" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [
+                ("manager_ids", "in", [user.id]),
+                "|",
+                    ("server_id.user_ids", "in", [user.id]),
+                    ("server_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Delete Access -->
+    <!-- User is added to "Managers" in jet AND record is created by the user AND user is added to "Users" or "Managers" in related Server -->
+    <record id="rule_cx_tower_jet_manager_unlink" model="ir.rule">
+        <field name="name">Jet: Manager unlink</field>
+        <field name="model_id" ref="model_cx_tower_jet" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [
+                ("manager_ids", "in", [user.id]),
+                ("create_uid", "=", user.id),
+                "|",
+                    ("server_id.user_ids", "in", [user.id]),
+                    ("server_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Full Access -->
+    <record id="rule_cx_tower_jet_root_full" model="ir.rule">
+        <field name="name">Jet: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

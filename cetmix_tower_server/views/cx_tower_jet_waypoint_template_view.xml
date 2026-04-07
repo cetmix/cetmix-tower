@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Waypoint Template Form View -->
+    <record id="cx_tower_jet_waypoint_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.template.form</field>
+        <field name="model">cx.tower.jet.waypoint.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field
+                                name="name"
+                                placeholder="waypoint template name, e.g. 'Snapshot'"
+                            />
+                        </h1>
+                    </div>
+                    <group name="waypoint_template_form_main">
+                        <group name="general">
+                            <field
+                                name="reference"
+                                placeholder="Leave blank to autogenerate"
+                            />
+                            <field name="access_level" />
+                            <field name="jet_template_id" />
+                        </group>
+                        <group name="flight_plans">
+                            <field name="plan_create_id" />
+                            <field name="plan_arrive_id" />
+                            <field name="plan_leave_id" />
+                            <field name="plan_delete_id" />
+                        </group>
+                        <field name="note" placeholder="Put your notes here" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Waypoint Template List View -->
+    <record id="cx_tower_jet_waypoint_template_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.template.list</field>
+        <field name="model">cx.tower.jet.waypoint.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="access_level" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Waypoint Template Search View -->
+    <record id="cx_tower_jet_waypoint_template_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.template.search</field>
+        <field name="model">cx.tower.jet.waypoint.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Waypoint Templates">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="jet_template_id" />
+                <filter
+                    string="User Access"
+                    name="user_access"
+                    domain="[('access_level', '=', '1')]"
+                />
+                <filter
+                    string="Manager Access"
+                    name="manager_access"
+                    domain="[('access_level', '=', '2')]"
+                />
+                <filter
+                    string="Root Access"
+                    name="root_access"
+                    domain="[('access_level', '=', '3')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Jet Template"
+                        name="group_by_jet_template"
+                        context="{'group_by': 'jet_template_id'}"
+                    />
+                    <filter
+                        string="Access Level"
+                        name="group_by_access_level"
+                        context="{'group_by': 'access_level'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Waypoint Template Action -->
+    <record id="cx_tower_jet_waypoint_template_action" model="ir.actions.act_window">
+        <field name="name">Waypoint Templates</field>
+        <field name="res_model">cx.tower.jet.waypoint.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Waypoint Template!
+            </p>
+            <p>
+                Waypoint Templates define waypoints for jet templates.
+            </p>
+        </field>
+    </record>
+</odoo>

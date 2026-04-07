@@ -19,12 +19,18 @@ class CxTowerServer(models.Model):
         # If the flight plan log has an entry on the parent flight plan log,
         # it means that this flight plan was launched from another plan,
         # this plan should be launched as a synchronous command to
-        # preserve the order of execution of commands with action “Run flight plan”.
+        # preserve the order of execution of commands with actions
+        #  "Run Flight Plan", "Trigger Jet Action" and "Create Waypoint".
         # Use runner only if command log record is provided.
-        if log_record and not log_record.plan_log_id.parent_flight_plan_log_id:
-            # ssh_connection cannot be serialized for queue jobs and will cause
-            # a runtime error. The _queue_command_runner_wrapper will create
-            # its own connection if needed (see _command_runner_ssh).
+        if (
+            log_record
+            and not log_record.plan_log_id.parent_flight_plan_log_id
+            and command.action
+            not in [
+                "jet_action",
+                "create_waypoint",
+            ]
+        ):
             job = self.with_delay()._queue_command_runner_wrapper(
                 command=command,
                 log_record=log_record,

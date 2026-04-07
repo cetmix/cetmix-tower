@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Waypoint Form View -->
+    <record id="cx_tower_jet_waypoint_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.form</field>
+        <field name="model">cx.tower.jet.waypoint</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field
+                                name="name"
+                                placeholder="waypoint name, e.g. 'Snapshot before update'"
+                            />
+                        </h1>
+                    </div>
+                    <group name="waypoint_form_main">
+                        <group name="waypoint_form_general">
+                            <field
+                                name="reference"
+                                readonly="1"
+                                invisible="not reference"
+                            />
+                            <field
+                                name="waypoint_template_id"
+                                options="{'no_create': '1', 'no_quick_create': '1'}"
+                            />
+                            <field name="access_level" />
+                            <field name="jet_id" invisible="1" />
+                            <field name="jet_template_id" invisible="1" />
+                        </group>
+                        <group name="data" groups="base.group_no_one">
+                            <field name="variable_values" invisible="1" />
+                            <field
+                                name="variable_values_text"
+                                string="Variable Values"
+                                invisible="not variable_values"
+                            />
+                            <field name="metadata" invisible="1" />
+                            <field
+                                name="metadata_text"
+                                string="Metadata"
+                                invisible="not metadata"
+                            />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Waypoint List View -->
+    <record id="cx_tower_jet_waypoint_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.list</field>
+        <field name="model">cx.tower.jet.waypoint</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="waypoint_template_id" />
+                <field name="jet_template_id" column_invisible="True" />
+                <field name="reference" optional="hide" />
+                <field name="access_level" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Waypoint Search View -->
+    <record id="cx_tower_jet_waypoint_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.search</field>
+        <field name="model">cx.tower.jet.waypoint</field>
+        <field name="arch" type="xml">
+            <search string="Search Waypoints">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="jet_id" />
+                <field name="waypoint_template_id" />
+                <filter
+                    string="User Access"
+                    name="user_access"
+                    domain="[('access_level', '=', '1')]"
+                />
+                <filter
+                    string="Manager Access"
+                    name="manager_access"
+                    domain="[('access_level', '=', '2')]"
+                />
+                <filter
+                    string="Root Access"
+                    name="root_access"
+                    domain="[('access_level', '=', '3')]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Jet"
+                        name="group_by_jet"
+                        context="{'group_by': 'jet_id'}"
+                    />
+                    <filter
+                        string="Waypoint Template"
+                        name="group_by_waypoint_template"
+                        context="{'group_by': 'waypoint_template_id'}"
+                    />
+                    <filter
+                        string="Access Level"
+                        name="group_by_access_level"
+                        context="{'group_by': 'access_level'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Waypoint Action -->
+    <record id="cx_tower_jet_waypoint_action" model="ir.actions.act_window">
+        <field name="name">Waypoints</field>
+        <field name="res_model">cx.tower.jet.waypoint</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Waypoint!
+            </p>
+            <p>
+                Waypoints represent waypoints for jets.
+            </p>
+        </field>
+    </record>
+</odoo>

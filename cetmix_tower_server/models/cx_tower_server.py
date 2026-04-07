@@ -20,9 +20,13 @@ from .constants import (
     COMMAND_TIMED_OUT_MESSAGE,
     FILE_CREATION_FAILED,
     GENERAL_ERROR,
+    JET_NOT_FOUND,
+    JET_TEMPLATE_NOT_FOUND,
     NO_COMMAND_RUNNER_FOUND,
     PYTHON_COMMAND_ERROR,
     SSH_CONNECTION_ERROR,
+    WAYPOINT_CREATE_FAILED,
+    WAYPOINT_TEMPLATE_NOT_FOUND,
 )
 from .tools import generate_random_id
 
@@ -69,11 +73,10 @@ def ensure_ssh_disconnect(func):
 
 
 class CxTowerServer(models.Model):
-    """Represents a server entity
+    """Represents a server entity.
 
     Keeps information required to connect and perform routine operations
-    such as configuration, file management etc"
-
+    such as configuration, file management etc.
     """
 
     _name = "cx.tower.server"
@@ -81,6 +84,7 @@ class CxTowerServer(models.Model):
         "cx.tower.access.role.mixin",
         "cx.tower.variable.mixin",
         "cx.tower.reference.mixin",
+        "cx.tower.metadata.mixin",
         "mail.thread",
         "mail.activity.mixin",
         "cx.tower.vault.mixin",
@@ -192,7 +196,7 @@ class CxTowerServer(models.Model):
     )
     file_count = fields.Integer(
         "Total Files",
-        compute="_compute_file_count",
+        compute="_compute_counters",
     )
 
     # ---- Server logs
@@ -215,6 +219,29 @@ class CxTowerServer(models.Model):
         string="On Delete Plan",
         groups="cetmix_tower_server.group_manager",
         help="This Flightplan will be run when the server is deleted",
+    )
+
+    # ---- Jets
+    jet_template_ids = fields.Many2many(
+        comodel_name="cx.tower.jet.template",
+        relation="cx_tower_jet_template_server_rel",
+        column1="server_id",
+        column2="jet_template_id",
+        string="Installed Jet Templates",
+        readonly=True,
+        copy=False,
+    )
+    jet_template_count = fields.Integer(
+        compute="_compute_counters",
+    )
+    jet_ids = fields.One2many(
+        comodel_name="cx.tower.jet",
+        inverse_name="server_id",
+        string="Jets",
+        copy=False,
+    )
+    jet_count = fields.Integer(
+        compute="_compute_counters",
     )
 
     # ---- Access. Add relation for mixin fields
@@ -277,10 +304,23 @@ class CxTowerServer(models.Model):
             ("delete_error", "Deletion Error"),
         ]
 
-    def _compute_file_count(self):
-        """Compute total server files"""
+    # ---- Computed fields
+    def _compute_counters(self):
+        """
+        Compute total jet template, jets and files installed on server
+        Note: as numbers depend on the records user has access to,
+        we don't store the values.
+        @depends is not needed because they are displayed in the views only
+        or computed when accessed explicitly.
+        """
         for server in self:
-            server.file_count = len(server.file_ids)
+            server.update(
+                {
+                    "jet_template_count": len(server.jet_template_ids),
+                    "jet_count": len(server.jet_ids),
+                    "file_count": len(server.file_ids),
+                }
+            )
 
     @api.constrains("ip_v4_address", "ip_v6_address", "ssh_auth_mode")
     def _constraint_ssh_settings(self):
@@ -346,7 +386,9 @@ class CxTowerServer(models.Model):
                 continue
 
             plan_label = generate_random_id(4)
-            server.plan_delete_id._run_single(server, plan_log={"label": plan_label})
+            server.plan_delete_id._run_single(
+                server=server, **{"plan_log": {"label": plan_label}}
+            )
             plan_log = flight_plan_log_obj.search(
                 [
                     ("server_id", "=", server.id),
@@ -444,6 +486,7 @@ class CxTowerServer(models.Model):
         """
         Open current server command log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_command_log"
         )
@@ -454,6 +497,7 @@ class CxTowerServer(models.Model):
         """
         Open current server flightplan log records
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.action_cx_tower_plan_log"
         )
@@ -498,10 +542,31 @@ class CxTowerServer(models.Model):
             "context": context,
         }
 
+    def action_new_jet(self):
+        """
+        Returns wizard action to launch a jet
+        """
+        self.ensure_one()
+        context = self.env.context.copy()
+        context.update(
+            {
+                "default_server_id": self.id,
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Launch New Jet"),
+            "res_model": "cx.tower.jet.create.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": context,
+        }
+
     def action_open_files(self):
         """
         Open files of the current server
         """
+        self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_server.cx_tower_file_action"
         )
@@ -520,6 +585,56 @@ class CxTowerServer(models.Model):
         )
         action["context"] = context
         return action
+
+    def action_open_jets(self):
+        """
+        Open jets of the current server
+        """
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_server.cx_tower_jet_action"
+        )
+        action["domain"] = [("server_id", "=", self.id)]  # pylint: disable=no-member
+
+        context = self._context.copy()
+        if "context" in action and isinstance((action["context"]), str):
+            context.update(ast.literal_eval(action["context"]))
+        else:
+            context.update(action.get("context", {}))
+
+        context.update(
+            {
+                "default_server_id": self.id,  # pylint: disable=no-member
+            }
+        )
+        action["context"] = context
+        return action
+
+    def action_install_jet_template(self):
+        """Action to install the Jet Template on the selected servers."""
+        self.ensure_one()
+        # Open the wizard to install the template on the selected servers
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Install Jet Template"),
+            "res_model": "cx.tower.jet.template.install.wiz",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_server_ids": self.ids,  # pylint: disable=no-member
+            },
+        }
+
+    def action_uninstall_jet_template(self):
+        """
+        Uninstall jet template from the current server
+        """
+        self.ensure_one()
+        jet_template_id = self.env.context.get("jet_template_id")
+        if jet_template_id and jet_template_id in self.jet_template_ids.ids:
+            jet_template = self.env["cx.tower.jet.template"].browse(jet_template_id)
+            if jet_template:
+                jet_template.uninstall_from_servers(self)
 
     # ------------------------------
     # ---- Connectivity
@@ -819,7 +934,16 @@ class CxTowerServer(models.Model):
     # ---- Command execution
     # ------------------------------
 
-    def run_command(self, command, path=None, sudo=None, ssh_connection=None, **kwargs):
+    def run_command(
+        self,
+        command,
+        path=None,
+        sudo=None,
+        ssh_connection=None,
+        jet_template=None,
+        jet=None,
+        **kwargs,
+    ):
         """This is the main function to use for running commands.
         It renders command code, creates log record and calls command runner.
 
@@ -833,8 +957,14 @@ class CxTowerServer(models.Model):
                 Pass to reuse existing connection.
                 This is useful in case you would like to speed up
                 the ssh command running.
+            jet_template (cx.tower.jet.template()) Jet Template record
+                Pass to run for specific jet template
+            jet (cx.tower.jet()): Jet record
+                Pass to run for specific jet
             kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
+                    - "waypoint", cx.tower.jet.waypoint(): waypoint record
+                        when running for a waypoint (e.g. from waypoint plan)
                     - "log", dict(): values passed to logger
                     - "key", dict(): values passed to key parser
                     - "variable_values", dict(): custom variable values
@@ -855,6 +985,20 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
 
+        # Check if jet belongs to the server
+        if jet and not jet.server_id == self:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' doesn't belong to the server '%(server)s'.",
+                    jet=jet.name,
+                    server=self.name,  # pylint: disable=no-member
+                )
+            )
+
+        # Force set jet template from jet if jet is provided
+        if jet:
+            jet_template = jet.jet_template_id
+
         # Populate `sudo` value from the server settings if not provided explicitly
         if self.sudo().ssh_username == "root":
             sudo = False
@@ -865,9 +1009,13 @@ class CxTowerServer(models.Model):
         log_obj = self.env["cx.tower.command.log"]
         log_vals = kwargs.get("log", {})
         log_vals.update(
-            {"use_sudo": sudo, "variable_values": kwargs.get("variable_values", {})}
+            {
+                "use_sudo": sudo,
+                "variable_values": kwargs.get("variable_values", {}),
+                "jet_template_id": jet_template.id if jet_template else None,
+                "jet_id": jet.id if jet else None,
+            }
         )
-
         # Check if no log record should be created
         no_command_log = self._context.get("no_command_log")
 
@@ -892,19 +1040,23 @@ class CxTowerServer(models.Model):
             return
 
         # Check if another instance of the same command is running
-        another_command_running = (
-            not command.allow_parallel_run
-            and log_obj.sudo().search_count(
-                [
-                    ("server_id", "=", self.id),  # pylint: disable=no-member
-                    ("command_id", "=", command.id),
-                    ("is_running", "=", True),
-                ]
+        another_command_running_domain = [
+            ("server_id", "=", self.id),
+            ("command_id", "=", command.id),
+            ("is_running", "=", True),
+        ]
+        if jet_template:
+            another_command_running_domain.append(
+                ("jet_template_id", "=", jet_template.id)
             )
+        if jet:
+            another_command_running_domain.append(("jet_id", "=", jet.id))
+        another_command_running_block = (
+            not command.allow_parallel_run
+            and log_obj.sudo().search_count(domain=another_command_running_domain)
         )
-
         # Another command is running, return error
-        if another_command_running:
+        if another_command_running_block:
             if no_command_log:
                 return {
                     "status": ANOTHER_COMMAND_RUNNING,
@@ -922,7 +1074,13 @@ class CxTowerServer(models.Model):
 
         # Render command
         custom_variable_values = kwargs.get("variable_values", {})
-        rendered_command = self._render_command(command, path, custom_variable_values)
+        rendered_command = self._render_command(
+            command=command,
+            path=path,
+            jet_template=jet_template,
+            jet=jet,
+            custom_variable_values=custom_variable_values,
+        )
         rendered_command_code = rendered_command["rendered_code"]
         rendered_command_path = rendered_command["rendered_path"]
 
@@ -955,14 +1113,22 @@ class CxTowerServer(models.Model):
             **kwargs,
         )
 
-    def _render_command(self, command, path=None, custom_variable_values=None):
+    def _render_command(
+        self,
+        command,
+        path=None,
+        jet_template=None,
+        jet=None,
+        custom_variable_values=None,
+    ):
         """Renders command code for selected command for current server
 
         Args:
             command (cx.tower.command): Command to render
             path (Char): Path where to run the command.
                 Provide in case you need to override default command path
-
+            jet (cx.tower.jet()): Jet to render command for
+            custom_variable_values (dict): Custom variable values to render command
         Returns:
             dict: rendered values
                 {
@@ -972,53 +1138,54 @@ class CxTowerServer(models.Model):
         """
         self.ensure_one()
 
-        variables = []
+        variable_references = []
 
         # Get variables from code
         if command.code:
             variables_extracted = command.get_variables_from_code(command.code)
             for ve in variables_extracted:
-                if ve not in variables:
-                    variables.append(ve)
+                if ve not in variable_references:
+                    variable_references.append(ve)
 
         # Get variables from path
         path = path if path else command.path
         if path:
             variables_extracted = command.get_variables_from_code(path)
             for ve in variables_extracted:
-                if ve not in variables:
-                    variables.append(ve)
+                if ve not in variable_references:
+                    variable_references.append(ve)
 
-        # Get variable values for current server
-        variable_values_dict = (
-            self.sudo().get_variable_values(variables)  # pylint: disable=no-member
-            if variables
-            else False
-        )
-
-        # Extract variable values for current server
-        variable_values = (
-            variable_values_dict.get(self.id) if variable_values_dict else {}
-        )  # pylint: disable=no-member
-
-        # Apply custom variable values only if user has write access to the server
-        has_write_access = self._have_access_to_server("write")
-        if custom_variable_values and has_write_access:
-            variable_values.update(custom_variable_values)
-
-        # Render command code and path using variables
-        if variable_values:
-            if command.action == "python_code":
-                variable_values["pythonic_mode"] = True
-
-            rendered_code = (
-                command.render_code_custom(command.code, **variable_values)
-                if command.code
-                else False
+        # If there are variables to render, get variable values
+        if variable_references:
+            # Get the variable values
+            variable_values = (
+                self.env["cx.tower.variable"]
+                .sudo()
+                ._get_variable_values_by_references(
+                    variable_references, server=self, jet_template=jet_template, jet=jet
+                )
             )
-            rendered_path = (
-                command.render_code_custom(path, **variable_values) if path else False
-            )
+
+            # Apply custom variable values only if user has write access to the server
+            has_write_access = self._have_access_to_server("write")
+            if custom_variable_values and has_write_access:
+                variable_values.update(custom_variable_values)
+
+            # Render command code and path using variables
+            if variable_values:
+                if command.action == "python_code":
+                    variable_values["pythonic_mode"] = True
+
+                rendered_code = (
+                    command.render_code_custom(command.code, **variable_values)
+                    if command.code
+                    else False
+                )
+                rendered_path = (
+                    command.render_code_custom(path, **variable_values)
+                    if path
+                    else False
+                )
 
         else:
             rendered_code = command.code
@@ -1033,19 +1200,22 @@ class CxTowerServer(models.Model):
 
         Args:
             operation (Char): Operation to check access
-                same format as `check_access_rights`
+                same format as `check_access`
         Returns:
             Bool: True if access is granted, False otherwise
         """
         # Check access rights first
         return self.has_access(operation)
 
-    def run_flight_plan(self, flight_plan, **kwargs):
+    def run_flight_plan(self, flight_plan, jet_template=None, jet=None, **kwargs):
         """
         Runs flight plan on the current server.
 
         Args:
-            flight_plan (cx.tower.plan()): flight plan record
+            flight_plan (cx.tower.plan()): flight plan to run
+            jet_template (cx.tower.jet.template()): jet template
+                to run the flight plan on
+            jet (cx.tower.jet()): jet to run the flight plan on
             kwargs (dict): Optional arguments
                 Following are supported but not limited to:
                     - "plan_log": {values passed to flightplan logger}
@@ -1055,12 +1225,30 @@ class CxTowerServer(models.Model):
                         in the format of `{variable_reference: variable_value}`
                         eg `{'odoo_version': '16.0'}`
                         Will be applied only if user has write access to the server.
+        Returns:
+            log_record (cx.tower.plan.log()): plan log record
         """
 
         self.ensure_one()
 
+        # Check if jet belongs to the server
+        if jet and not jet.server_id == self:
+            raise ValidationError(
+                _(
+                    "Jet '%(jet)s' doesn't belong to the server '%(server)s'.",
+                    jet=jet.name,
+                    server=self.name,  # pylint: disable=no-member
+                )
+            )
+
+        # Set jet template from jet if jet is provided
+        if jet:
+            jet_template = jet.jet_template_id
+
         # Run flight plan
-        return flight_plan._run_single(self, **kwargs)
+        return flight_plan._run_single(
+            self, jet_template=jet_template, jet=jet, **kwargs
+        )
 
     def _command_runner_wrapper(
         self,
@@ -1156,12 +1344,22 @@ class CxTowerServer(models.Model):
                 rendered_command_code,
                 **kwargs,
             )
+        elif command.action == "jet_action":
+            response = self._command_runner_jet_action(
+                log_record,
+                **kwargs,
+            )
+        elif command.action == "create_waypoint":
+            response = self._command_runner_create_waypoint(
+                log_record,
+                **kwargs,
+            )
         elif command.action == "plan":
             response = self.with_context(
                 prevent_plan_recursion=True
             )._command_runner_flight_plan(
-                log_record,
-                command.flight_plan_id,
+                log_record=log_record,
+                flight_plan=command.flight_plan_id,
                 **kwargs,
             )
             need_check_server_status = True
@@ -1217,6 +1415,8 @@ class CxTowerServer(models.Model):
             server=self,
             server_dir=server_dir,
             if_file_exists=log_record.command_id.if_file_exists,
+            jet_template=log_record.jet_template_id,
+            jet=log_record.jet_id,
         )
 
     def _command_runner_file_using_template(
@@ -1392,6 +1592,7 @@ class CxTowerServer(models.Model):
         response = None
         error = None
         status = 0
+        plan_log_record = None
         try:
             # Generate custom label and add values for log
             kwargs["plan_log"] = {
@@ -1401,9 +1602,12 @@ class CxTowerServer(models.Model):
             # add executed command with action "plan" to save link to plan log
             kwargs["flight_plan_command_log"] = log_record
             plan_log_record = flight_plan.with_context(from_command=True)._run_single(
-                self, **kwargs
+                server=self,
+                jet_template=log_record.jet_template_id,
+                jet=log_record.jet_id,
+                **kwargs,
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             if raise_on_error:
                 raise ValidationError(
                     _("Flight plan running error %(err)s", err=e)
@@ -1422,10 +1626,11 @@ class CxTowerServer(models.Model):
                 status=result["status"],
                 response=result["response"],
                 error=result["error"],
-                variable_values=plan_log_record.variable_values,
+                variable_values=plan_log_record.variable_values
+                if plan_log_record
+                else None,
             )
-        else:
-            return result
+        return result
 
     def _command_runner_python_code(
         self,
@@ -1467,6 +1672,230 @@ class CxTowerServer(models.Model):
             )
         else:
             return result
+
+    def _command_runner_jet_action(
+        self,
+        log_record,
+        **kwargs,
+    ):
+        """
+        Run Jet action.
+        Updates the record in the Command Log (cx.tower.command.log)
+
+        Args:
+            log_record (cx.tower.command.log()): Command log record
+
+        Returns:
+            dict(): jet action running result if `log_record` is
+                    not defined else None
+
+        Raises:
+            ValidationError: if `log_record` is not defined
+        """
+        if not log_record:
+            raise ValidationError(
+                _("Command log is required for 'Jet Action' commands!")
+            )
+
+        # Initialize result values
+        status = 0
+        response = None
+        error = None
+        dependent_jets = None
+
+        # Get the action from the command
+        action = log_record.command_id.jet_action_id
+        if not action:
+            status = GENERAL_ERROR
+            error = _("Jet action is not found.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        jet_for_which_command_is_run = log_record.jet_id
+        requested_jet_template = log_record.command_id.jet_template_id
+
+        if not jet_for_which_command_is_run:
+            status = JET_NOT_FOUND
+            error = _("Jet for which command is run is not found.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+        if not requested_jet_template:
+            status = JET_TEMPLATE_NOT_FOUND
+            error = _("Jet template is not found.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        # Trigger for the jet itself if the same jet template is used
+        # This is used when you want to trigger an action for
+        # the same jet for which the command is run.
+        if jet_for_which_command_is_run.jet_template_id == requested_jet_template:
+            dependent_jets = jet_for_which_command_is_run
+        else:
+            # Get dependent jets by template
+            dependent_jets = (
+                jet_for_which_command_is_run._get_dependent_jets_by_template(
+                    requested_jet_template
+                )
+            )
+
+        if dependent_jets:
+            # Trigger the action for all dependent jets; aggregate failures as
+            # "ref: message, ref2: message2" for the command log.
+            error_parts = []
+            for jet in dependent_jets:
+                result = jet._trigger_action(
+                    action=action,
+                    raise_if_not_available=False,
+                )
+                if not result:
+                    continue
+                jet_status = result.get("status", 0)
+                jet_error = result.get("error")
+                if jet_status == 0 and not jet_error:
+                    continue
+                if jet_error:
+                    error_parts.append(f"{jet.reference}: {jet_error}")
+                else:
+                    error_parts.append(
+                        _(
+                            "%(jet)s: action failed (status %(status)s)",
+                            jet=jet.reference,
+                            status=jet_status,
+                        )
+                    )
+            # Compose the main message
+            jet_references = ", ".join(jet.reference for jet in dependent_jets)
+
+            main_message = _(
+                "Action triggered for %(jet_references)s",
+                jet_references=jet_references,
+            )
+
+            if error_parts:
+                status = GENERAL_ERROR
+                error = "\n".join(
+                    [
+                        main_message,
+                        (
+                            error_parts[0]
+                            if len(error_parts) == 1
+                            else ", ".join(error_parts)
+                        ),
+                    ]
+                )
+                response = None
+            else:
+                response = main_message
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+        # If no dependent jets, finish the command
+        else:
+            status = 0  # no dependent jets, so the command is finished with no error
+            response = _(
+                "Jet %(jet)s has no dependent jets with template %(template)s.",
+                jet=jet_for_which_command_is_run.name,
+                template=requested_jet_template.name,
+            )
+
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+        # Return result
+        return {"status": status, "response": response, "error": error}
+
+    def _command_runner_create_waypoint(self, log_record, **kwargs):
+        """Run Create a Waypoint command.
+
+        Creates a waypoint for the plan's jet from the command's waypoint template.
+        The flight plan sets the jet as busy, so we pass ignore_busy=True so
+        creation is allowed. The command log is not finished here when a waypoint
+        is created; the waypoint callback (_finalize_create_waypoint_command_log)
+        finishes it when the waypoint reaches ready/current or error.
+
+        Args:
+            log_record (cx.tower.command.log): Command log record.
+
+        Returns:
+            dict: status, response (e.g. waypoint id when created), error.
+                When waypoint is created, status 0 and response indicate
+                deferred completion; the log stays running until the callback.
+        """
+        if not log_record:
+            raise ValidationError(
+                _("Command log is required for 'Create a Waypoint' commands!")
+            )
+        command = log_record.command_id
+        jet = log_record.jet_id
+        waypoint_template = command.waypoint_template_id
+
+        status = 0
+        response = None
+        error = None
+
+        if not jet:
+            status = JET_NOT_FOUND
+            error = _("Jet for which command is run is not found.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        if not waypoint_template:
+            status = WAYPOINT_TEMPLATE_NOT_FOUND
+            error = _("Waypoint template is not set.")
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        try:
+            waypoint = jet.create_waypoint(
+                waypoint_template,
+                fly_here=command.fly_here,
+                ignore_busy=True,
+                created_from_command_log=log_record,
+            )
+        except ValidationError:
+            waypoint = False
+
+        if not waypoint:
+            status = WAYPOINT_CREATE_FAILED
+            error = _(
+                "Waypoint creation failed (e.g. waypoint template "
+                "does not match jet template)."
+            )
+            log_record.finish(
+                status=status,
+                response=response,
+                error=error,
+            )
+            return {"status": status, "response": response, "error": error}
+
+        # Do not finish the log; waypoint callback will finish it when
+        # ready/current/error
+        response = {"waypoint_id": waypoint.id}
+        return {"status": 0, "response": response, "error": None}
 
     @ensure_ssh_disconnect
     def _run_command_using_ssh(
@@ -1587,9 +2016,9 @@ class CxTowerServer(models.Model):
             code (Text): python code
             raise_on_error (bool, optional): raise error on error
             kwargs (dict):  extra arguments. Use to pass external values.
-                    Following keys are supported by default:
-                        - "log": {values passed to logger}
-                        - "key": {values passed to key parser}
+                Following keys are supported by default:
+                    - "log": {values passed to logger}
+                    - "key": {values passed to key parser}
 
         Raises:
             ValidationError: python code running error
@@ -1633,12 +2062,32 @@ class CxTowerServer(models.Model):
                             banned_keyword=banned_keyword,
                         )
                     )
+            # Get jet template, jet and waypoint from kwargs or log
+            log_vals = kwargs.get("log", {})
+            if log_vals:
+                jet_template_id = log_vals.get("jet_template_id")
+                jet_id = log_vals.get("jet_id")
+            else:
+                jet_template_id = kwargs.get("jet_template_id")
+                jet_id = kwargs.get("jet_id")
+            waypoint = kwargs.get("waypoint")
+
+            jet_template = (
+                self.env["cx.tower.jet.template"].browse(jet_template_id)
+                if jet_template_id
+                else None
+            )
+            jet = self.env["cx.tower.jet"].browse(jet_id) if jet_id else None
 
             # Get the evaluation context for the python command
             eval_context = self.env[
                 "cx.tower.command"
             ]._get_python_command_eval_context(
-                server=self, variable_values=kwargs.get("variable_values", {})
+                server=self,
+                jet_template=jet_template,
+                jet=jet,
+                waypoint=waypoint,
+                variable_values=kwargs.get("variable_values", {}),
             )
 
             safe_eval(
@@ -1656,7 +2105,7 @@ class CxTowerServer(models.Model):
                 else:
                     error = [result.get("message")]
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             if raise_on_error:
                 raise ValidationError(
                     _("Python code running error: %(err)s", err=e)
@@ -1925,9 +2374,33 @@ class CxTowerServer(models.Model):
     # ---- Auxiliary functions
     # ------------------------------
 
+    def get_variable_value(self, variable_reference, no_fallback=False):
+        """
+        Return the value of a variable for the current server.
+        NB: this function follows the value application order.
+        So it will return the global value if server value is not set.
+
+        Returns:
+            str: The value of the variable for the current record or None
+        """
+        self.ensure_one()
+        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
+        if not variable:
+            return None
+        values = variable._get_variable_values_by_references(
+            variable_references=[variable_reference], server=self
+        )
+        return values[variable_reference]
+
     def server_toggle_active(self, self_active):
         """
-        Change active status of related records
+        Change active status of related records:
+        - files
+        - commands
+        - plans
+        - variable values
+        Add custom logic to your model if you want to change
+        the active status of other records.
 
         Args:
             self_active (bool): active status of the record
@@ -1940,7 +2413,7 @@ class CxTowerServer(models.Model):
         ).toggle_active()
 
     def toggle_active(self):
-        """Archiving related server"""
+        """Archive or unarchive related server"""
         res = super().toggle_active()
         server_active = self.with_context(active_test=False).filtered(
             lambda x: x.active

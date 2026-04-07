@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_state_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.state.wizard.view.form</field>
+        <field name="model">cx.tower.jet.state.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Set Jet State">
+                <div class="alert alert-info" role="alert">
+                    <p>
+                        Select a state to set for the selected jets. Only states that appear in the
+                        "State to" field of jet templates of all selected jets are available.
+                    </p>
+                </div>
+
+                <group>
+                    <field
+                        name="state_id"
+                        options="{'no_create': True}"
+                        default_focus="1"
+                        placeholder="Select a state..."
+                    />
+                    <field name="available_state_ids" invisible="1" />
+                </group>
+                <field name="jet_ids" />
+
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not jet_ids or not state_id"
+                        confirm="State of selected jets will be changed. Are you sure?"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Context Action for bringing jets to state -->
+    <record id="action_cx_tower_jet_bring_to_state" model="ir.actions.act_window">
+        <field name="name">Bring to State</field>
+        <field name="res_model">cx.tower.jet.state.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_cx_tower_jet" />
+        <field name="binding_view_types">list</field>
+        <field name="context">{'default_jet_ids': active_ids}</field>
+    </record>
+</odoo>

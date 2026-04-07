@@ -19,5 +19,24 @@ class CxTowerScheduledTask(models.Model):
             "interval_type",
             "next_call",
             "last_call",
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+            "custom_variable_value_ids",
         ]
         return res
+
+    def _get_deferred_x2m_import_fields(self):
+        """Return scheduled-task child records resolved after import."""
+        return {
+            "custom_variable_value_ids": {
+                "child_model": "cx.tower.scheduled.task.cv",
+                "deferred_field": "variable_value_id",
+                "target_model": "cx.tower.variable.value",
+                "skip_empty": True,
+            }
+        }

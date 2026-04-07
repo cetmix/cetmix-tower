@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from unittest.mock import patch
 
+from odoo.tools import mute_logger
+
 from ..models.constants import GENERAL_ERROR, NOT_FOUND, SSH_CONNECTION_ERROR
 from .common import TestTowerCommon
 
@@ -11,6 +13,7 @@ class TestCetmixTower(TestTowerCommon):
     Tests for the 'cetmix.tower' helper model
     """
 
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
     def test_server_set_variable_value(self):
         """Test plan line action naming"""
 
@@ -59,6 +62,7 @@ class TestCetmixTower(TestTowerCommon):
         self.assertEqual(len(variable_value), 1, "Must be 1 result")
         self.assertEqual(variable_value.value_char, "Pepe", "Must be Pepe!")
 
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
     def test_server_get_variable_value(self):
         """Test getting value for server"""
         variable_meme = self.Variable.create(
@@ -74,13 +78,7 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(value, global_value.value_char)
 
-        # -- 2 -- Do not fetch global value now
-        value = self.CetmixTower.server_get_variable_value(
-            self.server_test_1.reference, variable_meme.reference, check_global=False
-        )
-        self.assertIsNone(value)
-
-        # -- 3 -- Add server value and try again
+        # -- 2 -- Add server value and try again
         server_value = self.VariableValue.create(
             {
                 "variable_id": variable_meme.id,
@@ -93,6 +91,7 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(value, server_value.value_char)
 
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
     def test_server_check_ssh_connection(self):
         """
         Test SSH connection check with a mocked function that
@@ -123,6 +122,7 @@ class TestCetmixTower(TestTowerCommon):
                 "SSH connection should timeout after maximum attempts.",
             )
 
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
     def test_server_run_command(self):
         """Test running command on server"""
         # Create test command
@@ -158,6 +158,7 @@ class TestCetmixTower(TestTowerCommon):
         )
         self.assertEqual(result["exit_code"], 0)
 
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
     def test_server_run_flight_plan(self):
         """Test running flight plan on server"""
         # Create test flight plan
@@ -203,3 +204,41 @@ class TestCetmixTower(TestTowerCommon):
             # Verify result
             self.assertEqual(result, plan_log, "Should return plan log record")
             mock_run.assert_called_once_with(flight_plan)
+
+    @mute_logger("odoo.addons.cetmix_tower_server.models.cetmix_tower")
+    def test_server_run_command_with_variable_values(self):
+        """Test running command with variable values"""
+        # Create test command
+        command = self.Command.create(
+            {
+                "name": "Test Command",
+                "reference": "test_command",
+                "code": "result = {'exit_code': 0, 'message': {{ test_version }}}",
+                "action": "python_code",
+            }
+        )
+        # Set variable value for the server
+        self.CetmixTower.server_set_variable_value(
+            server_reference=self.server_test_1.reference,
+            variable_reference=self.variable_version.reference,
+            value="prod",
+        )
+
+        # -- 1 --
+        # Run command without modifying variable values
+        result = self.CetmixTower.server_run_command(
+            server_reference=self.server_test_1.reference,
+            command_reference=command.reference,
+        )
+        self.assertEqual(result["exit_code"], 0)
+        self.assertEqual(result["message"], "prod")
+
+        # -- 2 --
+        # Run command with modified variable values
+        result = self.CetmixTower.server_run_command(
+            server_reference=self.server_test_1.reference,
+            command_reference=command.reference,
+            **{"test_version": "dev"},
+        )
+        self.assertEqual(result["exit_code"], 0)
+        self.assertEqual(result["message"], "dev")

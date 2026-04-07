@@ -78,7 +78,7 @@ class TestTowerCommand(TestTowerCommon):
                 "name": "test rsa",
                 "reference": "test_rsa",
                 "secret_value": """-----BEGIN RSA PRIVATE KEY-----
-SuchMuchSecretKey
+VeryMuchNiceKey
 -----END RSA PRIVATE KEY----- """,
                 "key_type": "s",
             }
@@ -801,9 +801,7 @@ result = re.sub(pattern, replacement, value)
         # -- 2 --
         # Set invalid expression modifier
         self.variable_path.applied_expression = "invalid"
-        with mute_logger(
-            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
-        ):
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_variable"):
             rendered_command = self.server_test_1._render_command(
                 self.command_create_dir
             )
@@ -843,9 +841,7 @@ result = re.sub(pattern, replacement, value)
                 "action": "ssh_command",
             }
         )
-        with mute_logger(
-            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
-        ):
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_variable"):
             rendered_command = self.server_test_1._render_command(
                 command_with_complex_variable
             )
@@ -859,9 +855,7 @@ result = re.sub(pattern, replacement, value)
         # -- 4 --
         # Remove modifier from variable "Path" and check again
         self.variable_dir.applied_expression = None
-        with mute_logger(
-            "odoo.addons.cetmix_tower_server.models.cx_tower_variable_mixin"
-        ):
+        with mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_variable"):
             rendered_command = self.server_test_1._render_command(
                 command_with_complex_variable
             )
@@ -1924,3 +1918,47 @@ result = {{"exit_code": 0, "message": "ok"}}
                     "action": "ssh_command",
                 }
             )
+
+    def test_server_render_command_with_jet(self):
+        """Test rendering command using `_render_command` method
+        of cx.tower.server
+        """
+
+        # -- 1 --
+        # Test with default path and jet
+        rendered_command = self.server_test_1._render_command(
+            command=self.command_create_dir,
+            jet_template=self.jet_template_sample,
+            jet=self.jet_sample,
+        )
+        rendered_code_expected = "cd /jets/jet1 && mkdir jet_templates"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )
+        self.assertEqual(
+            rendered_command["rendered_path"],
+            rendered_path_expected,
+            "Rendered path doesn't match",
+        )
+
+        # -- 2 --
+        # Test with custom variable values
+        custom_variable_values = {"test_path_": "/such/much/jet"}
+        rendered_command = self.server_test_1._render_command(
+            command=self.command_create_dir,
+            jet_template=self.jet_template_sample,
+            jet=self.jet_sample,
+            custom_variable_values=custom_variable_values,
+        )
+        rendered_code_expected = "cd /such/much/jet && mkdir jet_templates"
+        rendered_path_expected = f"/home/{self.server_test_1.ssh_username}"
+
+        self.assertEqual(
+            rendered_command["rendered_code"],
+            rendered_code_expected,
+            "Rendered code doesn't match",
+        )

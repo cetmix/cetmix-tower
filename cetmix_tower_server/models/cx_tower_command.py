@@ -1,6 +1,8 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+import logging
 from types import SimpleNamespace
+from urllib import parse
 
 from dns import exception, resolver, reversename
 from pytz import timezone
@@ -12,6 +14,8 @@ from odoo.tools.float_utils import float_compare
 from odoo.tools.safe_eval import wrap_module
 
 from .constants import DEFAULT_PYTHON_CODE, DEFAULT_PYTHON_CODE_HELP
+
+_logger = logging.getLogger(__name__)
 
 requests = wrap_module(__import__("requests"), ["post", "get", "delete", "request"])
 json = wrap_module(__import__("json"), ["dumps"])
@@ -35,9 +39,45 @@ hashlib = wrap_module(
         "new",
     ],
 )
+re = wrap_module(
+    __import__("re"),
+    [
+        "match",
+        "fullmatch",
+        "search",
+        "sub",
+        "subn",
+        "split",
+        "findall",
+        "finditer",
+        "compile",
+        "template",
+        "escape",
+        "error",
+    ],
+)
 hmac = wrap_module(
     __import__("hmac"),
     ["new", "compare_digest"],
+)
+urllib_parse = wrap_module(
+    parse,
+    [
+        "urlparse",
+        "urljoin",
+        "urlunparse",
+        "urlencode",
+        "urlsplit",
+        "urlunsplit",
+        "parse_qs",
+        "parse_qsl",
+        "quote",
+        "quote_plus",
+        "quote_from_bytes",
+        "unquote",
+        "unquote_plus",
+        "unquote_to_bytes",
+    ],
 )
 tldextract = wrap_module(__import__("tldextract"), ["extract"])
 dns_resolver = wrap_module(resolver, ["resolve", "query"])
@@ -184,6 +224,28 @@ class CxTowerCommand(models.Model):
             "after running the command.\n"
         ),
     )
+    # -- Jets
+    jet_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.template",
+        help="Action will be triggered for all dependent jets" " of this template",
+    )
+    jet_action_id = fields.Many2one(
+        comodel_name="cx.tower.jet.action",
+        help="Action to trigger",
+        domain="[('jet_template_id', '=', jet_template_id)]",
+    )
+    # -- Waypoints
+    waypoint_template_id = fields.Many2one(
+        comodel_name="cx.tower.jet.waypoint.template",
+        string="Waypoint Template",
+        help="Waypoint template to create the waypoint from. Used when action is "
+        "Create a Waypoint.",
+    )
+    fly_here = fields.Boolean(
+        default=False,
+        help="When enabled, the created waypoint is set as current (fly to) "
+        "after creation.",
+    )
 
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
@@ -219,10 +281,12 @@ class CxTowerCommand(models.Model):
             List of tuples: available options.
         """
         return [
-            ("ssh_command", "SSH command"),
-            ("python_code", "Run Python code"),
-            ("file_using_template", "Create file using template"),
-            ("plan", "Run flight plan"),
+            ("ssh_command", "SSH Command"),
+            ("python_code", "Python Code"),
+            ("file_using_template", "Create/Update File"),
+            ("plan", "Run Flight Plan"),
+            ("jet_action", "Trigger Jet Action"),
+            ("create_waypoint", "Create Waypoint"),
         ]
 
     # -- Defaults
@@ -335,6 +399,16 @@ class CxTowerCommand(models.Model):
                 }}
         """
         python_libraries = {
+            "_logger": {
+                "import": _logger,
+                "help": _(
+                    "Logger object. Use with caution! Only for debugging purposes."
+                ),
+            },
+            "re": {
+                "import": re,
+                "help": _("Python 're' library for regex operations"),
+            },
             "time": {
                 "import": tools.safe_eval.time,
                 "help": _("Python 'time' library"),
@@ -357,6 +431,10 @@ class CxTowerCommand(models.Model):
                     "Python 'requests' library. Available methods: 'post', 'get',"
                     " 'delete', 'request'"
                 ),
+            },
+            "urllib_parse": {
+                "import": urllib_parse,
+                "help": _("Python 'urllib.parse' library methods."),
             },
             "json": {
                 "import": json,
@@ -430,7 +508,9 @@ class CxTowerCommand(models.Model):
             python_libraries.update(libraries)
         return python_libraries
 
-    def _get_python_command_odoo_objects(self, server=None):
+    def _get_python_command_odoo_objects(
+        self, server=None, jet_template=None, jet=None, waypoint=None
+    ):
         """
         This method is used to import Odoo objects.
         Because Odoo objects can be records, this method is not cached.
@@ -440,6 +520,9 @@ class CxTowerCommand(models.Model):
 
         Args:
             server: Server to get the Odoo objects for.
+            jet_template: Jet template to get the Odoo objects for.
+            jet: Jet to get the Odoo objects for.
+            waypoint: Waypoint to get the Odoo objects for.
 
         Returns:
             dict: Available Odoo objects:
@@ -456,6 +539,22 @@ class CxTowerCommand(models.Model):
                 "import": server,
                 "help": _("Current Cetmix Tower server this command is running on"),
             },
+            "jet_template": {
+                "import": jet_template,
+                "help": _(
+                    "Current Cetmix Tower jet template this command is running on"
+                ),
+            },
+            "jet": {
+                "import": jet,
+                "help": _("Current Cetmix Tower jet this command is running on"),
+            },
+            "waypoint": {
+                "import": waypoint,
+                "help": _(
+                    "Current Cetmix Tower Jet waypoint this command is running on"
+                ),
+            },
             "tower": {
                 "import": self.env["cetmix.tower"],
                 "help": _(
@@ -468,6 +567,10 @@ class CxTowerCommand(models.Model):
                 "import": self.env["cx.tower.server"],
                 "help": _("A helper shortcut to <code>env['cx.tower.server']</code>"),
             },
+            "tower_jets": {
+                "import": self.env["cx.tower.jet"],
+                "help": _("A helper shortcut to <code>env['cx.tower.jet']</code>"),
+            },
             "tower_commands": {
                 "import": self.env["cx.tower.command"],
                 "help": _("A helper shortcut to <code>env['cx.tower.command']</code>"),
@@ -475,6 +578,12 @@ class CxTowerCommand(models.Model):
             "tower_plans": {
                 "import": self.env["cx.tower.plan"],
                 "help": _("A helper shortcut to <code>env['cx.tower.plan']</code>"),
+            },
+            "tower_waypoints": {
+                "import": self.env["cx.tower.jet.waypoint"],
+                "help": _(
+                    "A helper shortcut to <code>env['cx.tower.jet.waypoint']</code>"
+                ),
             },
         }
 
@@ -499,35 +608,12 @@ class CxTowerCommand(models.Model):
 
         <module_name> Odoo module technical name.
         <library_name> is the name of the library how it will be used in the code.
-        <library_import> is the library to import.
-        <library_help_html> is the help text for the library shown in the "Help" tab.
 
-        Example:
-
-        ```python
-        # Custom module extending Cetmix Tower
-        custom_python_libraries = super()._custom_python_libraries()
-        custom_python_libraries.update({
-            "cetmix_tower_aws": {
-                "boto3": {
-                    "import": boto3,
-                    "help": "Python 'boto3' library. "
-                    "<a href='https://boto3.amazonaws.com/v1/documentation/api/latest/index.html'"
-                    " target='_blank'>Documentation</a>."
-                },
-                "custom_library_name": {
-                    "import": custom_library_import,
-                    "help": "Custom library help text"
-                }
-            }
-        })
-        return custom_python_libraries
-
-        ```
+            <library_import>: The library object to expose.
+            <library_help_html>: Help text (HTML) shown in the "Help" tab.
         """
         return {}
 
-    @api.model
     def _get_python_command_eval_context(self, server=None, **kwargs):
         """
         Get the evaluation context for the python command.
@@ -535,13 +621,23 @@ class CxTowerCommand(models.Model):
 
         Args:
             server: Server to get the evaluation context for.
-
+            **kwargs: Additional keyword arguments.
         Returns:
             dict: Evaluation context for the python command.
         """
 
+        # Get the jet template, jet and waypoint from kwargs
+        jet_template = kwargs.get("jet_template")
+        jet = kwargs.get("jet")
+        waypoint = kwargs.get("waypoint")
+
         # Get the Odoo objects first
-        imports = self._get_python_command_odoo_objects(server=server)
+        imports = self._get_python_command_odoo_objects(
+            server=server,
+            jet_template=jet_template,
+            jet=jet,
+            waypoint=waypoint,
+        )
 
         # Update with the libraries
         imports.update(self._get_python_command_libraries())

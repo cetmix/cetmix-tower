@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- State Form View -->
+    <record id="cx_tower_jet_action_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.action.form</field>
+        <field name="model">cx.tower.jet.action</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field
+                                name="name"
+                                placeholder="action name, e.g. 'Start'"
+                            />
+                        </h1>
+                    </div>
+                    <group name="action_form_main">
+                        <group name="action_form_general">
+                            <field
+                                name="reference"
+                                groups="base.group_no_one"
+                                placeholder="leave blank to autogenerate"
+                            />
+                            <field name="priority" groups="base.group_no_one" />
+                            <field name="access_level" />
+                            <field name="plan_id" />
+                        </group>
+                        <group name="action_form_states">
+                            <field name="state_from_id" />
+                            <field name="state_transit_id" />
+                            <field name="state_to_id" />
+                            <field name="state_error_id" />
+                        </group>
+                        <field name="note" placeholder="Put your notes here" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

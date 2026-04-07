@@ -1,0 +1,2172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- ===============================================
+    Jet Templates Demo Data
+    ================================================ -->
+
+    <!-- Test Jet Template -->
+    <record id="jet_template_test_demo" model="cx.tower.jet.template">
+        <field name="name">Test Jet Template Demo</field>
+        <field name="reference">test_jet_template_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/test.png"
+        />
+    </record>
+
+    <!-- Level 1: Base dependencies -->
+    <record id="jet_template_tower_core_demo" model="cx.tower.jet.template">
+        <field name="name">Tower Core Demo</field>
+        <field name="reference">tower_core_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/tower.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- Level 2: Infrastructure -->
+    <record id="jet_template_docker_demo" model="cx.tower.jet.template">
+        <field name="name">Docker Demo</field>
+        <field name="reference">docker_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/docker.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- Level 3: Services -->
+    <record id="jet_template_nginx_demo" model="cx.tower.jet.template">
+        <field name="name">Nginx Demo</field>
+        <field name="reference">nginx_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/nginx.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <record id="jet_template_postgres_demo" model="cx.tower.jet.template">
+        <field name="name">Postgres Demo</field>
+        <field name="reference">postgres_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/postgres.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <record id="jet_template_mariadb_demo" model="cx.tower.jet.template">
+        <field name="name">MariaDB Demo</field>
+        <field name="reference">mariadb_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/mariadb.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- Level 5: Applications -->
+    <record id="jet_template_odoo_demo" model="cx.tower.jet.template">
+        <field name="name">Odoo Demo</field>
+        <field name="reference">odoo_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/odoo.png"
+        />
+        <field name="show_in_create_wizard" eval="True" />
+        <field name="plan_install_id" ref="plan_install_odoo" />
+        <field name="plan_uninstall_id" ref="plan_uninstall_odoo" />
+        <field name="plan_clone_same_server_id" ref="plan_clone_odoo_same_server" />
+        <field
+            name="plan_clone_different_server_id"
+            ref="plan_clone_odoo_different_server"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field
+            name="scheduled_task_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.cx_tower_scheduled_task_odoo')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <record id="jet_template_wordpress_demo" model="cx.tower.jet.template">
+        <field name="name">WordPress Demo</field>
+        <field name="reference">wordpress_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/wordpress.png"
+        />
+        <field name="show_in_create_wizard" eval="True" />
+        <field name="plan_install_id" ref="plan_install_wordpress" />
+        <field name="plan_uninstall_id" ref="plan_uninstall_wordpress" />
+        <field
+            name="plan_clone_same_server_id"
+            ref="plan_clone_wordpress_same_server"
+        />
+        <field
+            name="plan_clone_different_server_id"
+            ref="plan_clone_wordpress_different_server"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+        <field
+            name="scheduled_task_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.cx_tower_scheduled_task_wordpress')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+    </record>
+
+    <!-- Level 6: E-commerce Integration -->
+    <record id="jet_template_woocommerce_odoo_demo" model="cx.tower.jet.template">
+        <field name="name">WooCommerce with Odoo Demo</field>
+        <field name="reference">woocommerce_odoo_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/woocommerce.png"
+        />
+        <field name="show_in_create_wizard" eval="True" />
+        <field name="plan_install_id" ref="plan_install_woocommerce" />
+        <field name="plan_uninstall_id" ref="plan_uninstall_woocommerce" />
+        <field
+            name="plan_clone_same_server_id"
+            ref="plan_clone_woocommerce_same_server"
+        />
+        <field
+            name="plan_clone_different_server_id"
+            ref="plan_clone_woocommerce_different_server"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_2')])]"
+        />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production'), ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field
+            name="scheduled_task_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.cx_tower_scheduled_task_woocommerce')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- ===============================================
+    Jet Waypoint Templates
+    ================================================ -->
+
+    <!-- Odoo Waypoint Templates -->
+    <record
+        id="jet_waypoint_template_odoo_build_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Build</field>
+        <field name="reference">odoo_build_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="sequence">10</field>
+        <field name="plan_create_id" ref="plan_demo_1" />
+        <field name="plan_arrive_id" ref="plan_install_odoo" />
+        <field name="plan_leave_id" ref="plan_demo_2" />
+        <field name="plan_delete_id" ref="plan_uninstall_odoo" />
+    </record>
+
+    <record
+        id="jet_waypoint_template_odoo_snapshot_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Snapshot</field>
+        <field name="reference">odoo_snapshot_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="sequence">20</field>
+        <field name="plan_create_id" ref="plan_demo_3" />
+        <field name="plan_arrive_id" ref="plan_demo_4" />
+        <field name="plan_leave_id" ref="plan_demo_5" />
+        <field name="plan_delete_id" ref="plan_demo_1" />
+    </record>
+
+    <!-- WooCommerce Waypoint Templates -->
+    <record
+        id="jet_waypoint_template_woocommerce_build_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Build</field>
+        <field name="reference">woocommerce_build_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="sequence">10</field>
+        <field name="plan_create_id" ref="plan_demo_1" />
+        <field name="plan_arrive_id" ref="plan_install_woocommerce" />
+        <field name="plan_leave_id" ref="plan_demo_2" />
+        <field name="plan_delete_id" ref="plan_uninstall_woocommerce" />
+    </record>
+
+    <record
+        id="jet_waypoint_template_woocommerce_snapshot_demo"
+        model="cx.tower.jet.waypoint.template"
+    >
+        <field name="name">Snapshot</field>
+        <field name="reference">woocommerce_snapshot_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="sequence">20</field>
+        <field name="plan_create_id" ref="plan_demo_3" />
+        <field name="plan_arrive_id" ref="plan_demo_4" />
+        <field name="plan_leave_id" ref="plan_demo_5" />
+        <field name="plan_delete_id" ref="plan_demo_1" />
+    </record>
+
+    <!-- Monitoring Template -->
+    <record id="jet_template_monitoring_demo" model="cx.tower.jet.template">
+        <field name="name">Monitoring Demo</field>
+        <field name="reference">monitoring_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/monitoring.png"
+        />
+    </record>
+
+    <!-- Backup Template -->
+    <record id="jet_template_backup_demo" model="cx.tower.jet.template">
+        <field name="name">Backup Demo</field>
+        <field name="reference">backup_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/backup.png"
+        />
+    </record>
+
+    <!-- Clean Template -->
+    <record id="jet_template_clean_demo" model="cx.tower.jet.template">
+        <field name="name">Clean Template Demo</field>
+        <field name="reference">clean_template_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/clean.png"
+        />
+    </record>
+
+    <!-- Kubernetes Template -->
+    <record id="jet_template_kubernetes_demo" model="cx.tower.jet.template">
+        <field name="name">Kubernetes Demo</field>
+        <field name="reference">kubernetes_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/kubernetes.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- Proxmox Template -->
+    <record id="jet_template_proxmox_demo" model="cx.tower.jet.template">
+        <field name="name">Proxmox Demo</field>
+        <field name="reference">proxmox_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/proxmox.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- OwnCloud Template -->
+    <record id="jet_template_owncloud_demo" model="cx.tower.jet.template">
+        <field name="name">OwnCloud Demo</field>
+        <field name="reference">owncloud_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/owncloud.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- Traefik Template -->
+    <record id="jet_template_traefik_demo" model="cx.tower.jet.template">
+        <field name="name">Traefik Demo</field>
+        <field name="reference">traefik_demo</field>
+        <field
+            name="icon"
+            type="base64"
+            file="cetmix_tower_server/static/demo/img/traefik.png"
+        />
+        <field
+            name="server_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.server_demo_1'), ref('cetmix_tower_server.server_demo_2')])]"
+        />
+    </record>
+
+    <!-- ===============================================
+    Jet Template Dependencies
+    ================================================ -->
+
+    <!-- Docker requires Tower Core to be running -->
+    <record
+        id="jet_template_dependency_docker_tower_core_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_docker_demo" />
+        <field name="template_required_id" ref="jet_template_tower_core_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- Nginx requires Docker to be running -->
+    <record
+        id="jet_template_dependency_nginx_docker_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_nginx_demo" />
+        <field name="template_required_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- Postgres requires Docker to be running -->
+    <record
+        id="jet_template_dependency_postgres_docker_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_postgres_demo" />
+        <field name="template_required_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- MariaDB requires Docker to be running -->
+    <record
+        id="jet_template_dependency_mariadb_docker_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_mariadb_demo" />
+        <field name="template_required_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- Odoo requires Postgres to be running -->
+    <record
+        id="jet_template_dependency_odoo_postgres_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_odoo_demo" />
+        <field name="template_required_id" ref="jet_template_postgres_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- Odoo requires Nginx to be running -->
+    <record
+        id="jet_template_dependency_odoo_nginx_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_odoo_demo" />
+        <field name="template_required_id" ref="jet_template_nginx_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- WordPress requires MariaDB to be running -->
+    <record
+        id="jet_template_dependency_wordpress_mariadb_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_wordpress_demo" />
+        <field name="template_required_id" ref="jet_template_mariadb_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- WordPress requires Nginx to be running -->
+    <record
+        id="jet_template_dependency_wordpress_nginx_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_wordpress_demo" />
+        <field name="template_required_id" ref="jet_template_nginx_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- WooCommerce requires WordPress to be running -->
+    <record
+        id="jet_template_dependency_woocommerce_wordpress_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="template_required_id" ref="jet_template_wordpress_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- WooCommerce requires Odoo to be running -->
+    <record
+        id="jet_template_dependency_woocommerce_odoo_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="template_required_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- Monitoring requires Odoo to be running -->
+    <record
+        id="jet_template_dependency_monitoring_odoo_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_monitoring_demo" />
+        <field name="template_required_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+    </record>
+
+    <!-- Backup requires Postgres to be stopped -->
+    <record
+        id="jet_template_dependency_backup_postgres_demo"
+        model="cx.tower.jet.template.dependency"
+    >
+        <field name="template_id" ref="jet_template_backup_demo" />
+        <field name="template_required_id" ref="jet_template_postgres_demo" />
+        <field
+            name="state_required_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+    </record>
+
+    <!-- ===============================================
+    Jet Actions
+    ================================================ -->
+
+    <!-- Stop Action: Running -> Stopped -->
+    <record id="jet_action_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop Action Demo</field>
+        <field name="reference">stop_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Start Action: Stopped -> Running -->
+    <record id="jet_action_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start Action Demo</field>
+        <field name="reference">start_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Error Action: Running -> Removed (error state) -->
+    <record id="jet_action_error_demo" model="cx.tower.jet.action">
+        <field name="name">Error Action Demo</field>
+        <field name="reference">error_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_removed"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_removed"
+        />
+        <field name="priority">20</field>
+    </record>
+
+    <!-- Recover Action: Removed -> Running -->
+    <record id="jet_action_recover_demo" model="cx.tower.jet.action">
+        <field name="name">Recover Action Demo</field>
+        <field name="reference">recover_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_removed"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Initialize Action: Draft -> Running -->
+    <record id="jet_action_initialize_demo" model="cx.tower.jet.action">
+        <field name="name">Initialize Action Demo</field>
+        <field name="reference">initialize_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_draft"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">5</field>
+    </record>
+
+    <!-- Action A to B: Preparing -> Building -->
+    <record id="jet_action_a_to_b_demo" model="cx.tower.jet.action">
+        <field name="name">Action A to B Demo</field>
+        <field name="reference">action_a_to_b_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_preparing"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_building"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Action B to C: Building -> Restarting -->
+    <record id="jet_action_b_to_c_demo" model="cx.tower.jet.action">
+        <field name="name">Action B to C Demo</field>
+        <field name="reference">action_b_to_c_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_building"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Action C to D: Restarting -> Removing -->
+    <record id="jet_action_c_to_d_demo" model="cx.tower.jet.action">
+        <field name="name">Action C to D Demo</field>
+        <field name="reference">action_c_to_d_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_removing"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Action A to C (direct): Preparing -> Restarting -->
+    <record id="jet_action_a_to_c_demo" model="cx.tower.jet.action">
+        <field name="name">Action A to C (direct) Demo</field>
+        <field name="reference">action_a_to_c_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_preparing"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <!-- Create Action: No initial state -> Running -->
+    <record id="jet_action_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create Action Demo</field>
+        <field name="reference">create_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <!-- Destroy Action: Running -> No final state -->
+    <record id="jet_action_destroy_demo" model="cx.tower.jet.action">
+        <field name="name">Destroy Action Demo</field>
+        <field name="reference">destroy_action_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <!-- ===============================================
+    Common Lifecycle Actions for Other Templates
+    ================================================ -->
+
+    <!-- Tower Core Template Actions -->
+    <record id="jet_action_tower_core_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create Tower Core Demo</field>
+        <field name="reference">create_tower_core_demo</field>
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_tower_core_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start Tower Core Demo</field>
+        <field name="reference">start_tower_core_demo</field>
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_tower_core_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop Tower Core Demo</field>
+        <field name="reference">stop_tower_core_demo</field>
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_tower_core_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart Tower Core Demo</field>
+        <field name="reference">restart_tower_core_demo</field>
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- Docker Template Actions -->
+    <record id="jet_action_docker_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create Docker Demo</field>
+        <field name="reference">create_docker_demo</field>
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_docker_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start Docker Demo</field>
+        <field name="reference">start_docker_demo</field>
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_docker_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop Docker Demo</field>
+        <field name="reference">stop_docker_demo</field>
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_docker_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart Docker Demo</field>
+        <field name="reference">restart_docker_demo</field>
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- Nginx Template Actions -->
+    <record id="jet_action_nginx_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create Nginx Demo</field>
+        <field name="reference">create_nginx_demo</field>
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_nginx_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start Nginx Demo</field>
+        <field name="reference">start_nginx_demo</field>
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_nginx_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop Nginx Demo</field>
+        <field name="reference">stop_nginx_demo</field>
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_nginx_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart Nginx Demo</field>
+        <field name="reference">restart_nginx_demo</field>
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- Postgres Template Actions -->
+    <record id="jet_action_postgres_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create Postgres Demo</field>
+        <field name="reference">create_postgres_demo</field>
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_postgres_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start Postgres Demo</field>
+        <field name="reference">start_postgres_demo</field>
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_postgres_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop Postgres Demo</field>
+        <field name="reference">stop_postgres_demo</field>
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_postgres_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart Postgres Demo</field>
+        <field name="reference">restart_postgres_demo</field>
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- MariaDB Template Actions -->
+    <record id="jet_action_mariadb_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create MariaDB Demo</field>
+        <field name="reference">create_mariadb_demo</field>
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_mariadb_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start MariaDB Demo</field>
+        <field name="reference">start_mariadb_demo</field>
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_mariadb_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop MariaDB Demo</field>
+        <field name="reference">stop_mariadb_demo</field>
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_mariadb_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart MariaDB Demo</field>
+        <field name="reference">restart_mariadb_demo</field>
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- Odoo Template Actions -->
+    <record id="jet_action_odoo_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create Odoo Demo</field>
+        <field name="reference">create_odoo_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_odoo_initialize_demo" model="cx.tower.jet.action">
+        <field name="name">Initialize Odoo Demo</field>
+        <field name="reference">initialize_odoo_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_draft"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">5</field>
+    </record>
+
+    <record id="jet_action_odoo_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start Odoo Demo</field>
+        <field name="reference">start_odoo_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_odoo_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop Odoo Demo</field>
+        <field name="reference">stop_odoo_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_odoo_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart Odoo Demo</field>
+        <field name="reference">restart_odoo_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- WordPress Template Actions -->
+    <record id="jet_action_wordpress_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create WordPress Demo</field>
+        <field name="reference">create_wordpress_demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_wordpress_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start WordPress Demo</field>
+        <field name="reference">start_wordpress_demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_wordpress_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop WordPress Demo</field>
+        <field name="reference">stop_wordpress_demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_wordpress_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart WordPress Demo</field>
+        <field name="reference">restart_wordpress_demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- WooCommerce Template Actions -->
+    <record id="jet_action_woocommerce_create_demo" model="cx.tower.jet.action">
+        <field name="name">Create WooCommerce Demo</field>
+        <field name="reference">create_woocommerce_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">1</field>
+    </record>
+
+    <record id="jet_action_woocommerce_start_demo" model="cx.tower.jet.action">
+        <field name="name">Start WooCommerce Demo</field>
+        <field name="reference">start_woocommerce_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_starting"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_woocommerce_stop_demo" model="cx.tower.jet.action">
+        <field name="name">Stop WooCommerce Demo</field>
+        <field name="reference">stop_woocommerce_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopped"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_stopping"
+        />
+        <field name="priority">10</field>
+    </record>
+
+    <record id="jet_action_woocommerce_restart_demo" model="cx.tower.jet.action">
+        <field name="name">Restart WooCommerce Demo</field>
+        <field name="reference">restart_woocommerce_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field
+            name="state_from_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_to_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_running"
+        />
+        <field
+            name="state_transit_id"
+            ref="cetmix_tower_server.cx_tower_jet_state_restarting"
+        />
+        <field name="priority">15</field>
+    </record>
+
+    <!-- ===============================================
+    Jets
+    ================================================ -->
+
+    <!-- Base infrastructure jets -->
+    <record id="jet_tower_core_demo" model="cx.tower.jet">
+        <field name="name">Tower Core Jet Demo</field>
+        <field name="reference">tower_core_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="jet_docker_demo" model="cx.tower.jet">
+        <field name="name">Docker Jet Demo</field>
+        <field name="reference">docker_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <!-- Service jets -->
+    <record id="jet_nginx_demo" model="cx.tower.jet">
+        <field name="name">Nginx Jet Demo</field>
+        <field name="reference">nginx_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="jet_postgres_demo" model="cx.tower.jet">
+        <field name="name">Postgres Jet Demo</field>
+        <field name="reference">postgres_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+    </record>
+
+    <record id="jet_mariadb_demo" model="cx.tower.jet">
+        <field name="name">MariaDB Jet Demo</field>
+        <field name="reference">mariadb_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+    </record>
+
+    <!-- Application jets -->
+    <record id="jet_test_demo" model="cx.tower.jet">
+        <field name="name">Test Jet Demo</field>
+        <field name="reference">test_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_test_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+    </record>
+
+    <record id="jet_odoo_demo" model="cx.tower.jet">
+        <field name="name">Odoo Jet Demo</field>
+        <field name="reference">odoo_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://odoo.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <record id="jet_wordpress_demo" model="cx.tower.jet">
+        <field name="name">WordPress Jet Demo</field>
+        <field name="reference">wordpress_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://wordpress.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+    </record>
+
+    <record id="jet_woocommerce_demo" model="cx.tower.jet">
+        <field name="name">WooCommerce Jet Demo</field>
+        <field name="reference">woocommerce_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://woocommerce.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production'), ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- Additional Odoo Jets in Stopped State -->
+    <record id="jet_odoo_stopped_1_demo" model="cx.tower.jet">
+        <field name="name">Odoo Jet Stopped #1 Demo</field>
+        <field name="reference">odoo_jet_stopped_1_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_stopped" />
+        <field name="url">https://odoo-stopped-1.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+    </record>
+
+    <record id="jet_odoo_stopped_2_demo" model="cx.tower.jet">
+        <field name="name">Odoo Jet Stopped #2 Demo</field>
+        <field name="reference">odoo_jet_stopped_2_demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_stopped" />
+        <field name="url">https://odoo-stopped-2.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- Additional WooCommerce Jets in Stopped State -->
+    <record id="jet_woocommerce_stopped_1_demo" model="cx.tower.jet">
+        <field name="name">WooCommerce Jet Stopped #1 Demo</field>
+        <field name="reference">woocommerce_jet_stopped_1_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_stopped" />
+        <field name="url">https://woocommerce-stopped-1.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <record id="jet_woocommerce_stopped_2_demo" model="cx.tower.jet">
+        <field name="name">WooCommerce Jet Stopped #2 Demo</field>
+        <field name="reference">woocommerce_jet_stopped_2_demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_stopped" />
+        <field name="url">https://woocommerce-stopped-2.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging'), ref('cetmix_tower_server.tag_custom')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+    </record>
+
+    <!-- Kubernetes Jet -->
+    <record id="jet_kubernetes_demo" model="cx.tower.jet">
+        <field name="name">Kubernetes Jet Demo</field>
+        <field name="reference">kubernetes_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_kubernetes_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://kubernetes.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- Proxmox Jet -->
+    <record id="jet_proxmox_demo" model="cx.tower.jet">
+        <field name="name">Proxmox Jet Demo</field>
+        <field name="reference">proxmox_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_proxmox_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://proxmox.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_production')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- OwnCloud Jet -->
+    <record id="jet_owncloud_demo" model="cx.tower.jet">
+        <field name="name">OwnCloud Jet Demo</field>
+        <field name="reference">owncloud_jet_demo</field>
+        <field name="jet_template_id" ref="jet_template_owncloud_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="state_id" ref="cetmix_tower_server.cx_tower_jet_state_running" />
+        <field name="url">https://owncloud.example.com</field>
+        <field
+            name="tag_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.tag_staging')])]"
+        />
+        <field name="user_ids" eval="[(6, 0, [ref('base.user_demo')])]" />
+        <field name="manager_ids" eval="[(6, 0, [ref('base.user_admin')])]" />
+    </record>
+
+    <!-- ===============================================
+    Jet Dependencies
+    ================================================ -->
+
+    <!-- Docker depends on Tower Core -->
+    <record id="jet_dependency_docker_tower_core_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_docker_demo" />
+        <field name="jet_depends_on_id" ref="jet_tower_core_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_docker_tower_core_demo"
+        />
+    </record>
+
+    <!-- Nginx depends on Docker -->
+    <record id="jet_dependency_nginx_docker_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_nginx_demo" />
+        <field name="jet_depends_on_id" ref="jet_docker_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_nginx_docker_demo"
+        />
+    </record>
+
+    <!-- Postgres depends on Docker -->
+    <record id="jet_dependency_postgres_docker_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_postgres_demo" />
+        <field name="jet_depends_on_id" ref="jet_docker_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_postgres_docker_demo"
+        />
+    </record>
+
+    <!-- MariaDB depends on Docker -->
+    <record id="jet_dependency_mariadb_docker_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_mariadb_demo" />
+        <field name="jet_depends_on_id" ref="jet_docker_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_mariadb_docker_demo"
+        />
+    </record>
+
+    <!-- Odoo depends on Postgres -->
+    <record id="jet_dependency_odoo_postgres_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_odoo_demo" />
+        <field name="jet_depends_on_id" ref="jet_postgres_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_odoo_postgres_demo"
+        />
+    </record>
+
+    <!-- Odoo depends on Nginx -->
+    <record id="jet_dependency_odoo_nginx_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_odoo_demo" />
+        <field name="jet_depends_on_id" ref="jet_nginx_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_odoo_nginx_demo"
+        />
+    </record>
+
+    <!-- WordPress depends on MariaDB -->
+    <record id="jet_dependency_wordpress_mariadb_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_wordpress_demo" />
+        <field name="jet_depends_on_id" ref="jet_mariadb_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_wordpress_mariadb_demo"
+        />
+    </record>
+
+    <!-- WordPress depends on Nginx -->
+    <record id="jet_dependency_wordpress_nginx_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_wordpress_demo" />
+        <field name="jet_depends_on_id" ref="jet_nginx_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_wordpress_nginx_demo"
+        />
+    </record>
+
+    <!-- WooCommerce depends on WordPress -->
+    <record
+        id="jet_dependency_woocommerce_wordpress_demo"
+        model="cx.tower.jet.dependency"
+    >
+        <field name="jet_id" ref="jet_woocommerce_demo" />
+        <field name="jet_depends_on_id" ref="jet_wordpress_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_woocommerce_wordpress_demo"
+        />
+    </record>
+
+    <!-- WooCommerce depends on Odoo -->
+    <record id="jet_dependency_woocommerce_odoo_demo" model="cx.tower.jet.dependency">
+        <field name="jet_id" ref="jet_woocommerce_demo" />
+        <field name="jet_depends_on_id" ref="jet_odoo_demo" />
+        <field
+            name="jet_template_dependency_id"
+            ref="jet_template_dependency_woocommerce_odoo_demo"
+        />
+    </record>
+
+    <!-- ===============================================
+    Server Logs for Jet Templates
+    ================================================ -->
+
+    <!-- Odoo Template Server Logs -->
+    <record id="server_log_odoo_template_file" model="cx.tower.server.log">
+        <field name="name">Odoo Log from File Demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="log_type">file</field>
+        <field name="file_template_id" ref="cx_tower_file_template_demo_4" />
+    </record>
+
+    <record id="server_log_odoo_template_command" model="cx.tower.server.log">
+        <field name="name">Odoo Command Log Demo</field>
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="log_type">command</field>
+        <field name="command_id" ref="command_list_dir" />
+    </record>
+
+    <!-- WordPress Template Server Logs -->
+    <record id="server_log_wordpress_template_file" model="cx.tower.server.log">
+        <field name="name">WordPress Log from File Demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="log_type">file</field>
+        <field name="file_template_id" ref="cx_tower_file_template_demo_4" />
+    </record>
+
+    <record id="server_log_wordpress_template_command" model="cx.tower.server.log">
+        <field name="name">WordPress Command Log Demo</field>
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="log_type">command</field>
+        <field name="command_id" ref="command_create_dir" />
+    </record>
+
+    <!-- WooCommerce Template Server Logs -->
+    <record id="server_log_woocommerce_template_file" model="cx.tower.server.log">
+        <field name="name">WooCommerce Log from File Demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="log_type">file</field>
+        <field name="file_template_id" ref="cx_tower_file_template_demo_4" />
+    </record>
+
+    <record id="server_log_woocommerce_template_command" model="cx.tower.server.log">
+        <field name="name">WooCommerce Command Log Demo</field>
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="log_type">command</field>
+        <field name="command_id" ref="command_update_upgrade" />
+    </record>
+
+    <!-- ===============================================
+    Jet Template Installations on Demo Servers
+    ================================================ -->
+
+    <!-- Odoo Template Installation on Server Demo #1 -->
+    <record
+        id="jet_template_install_odoo_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_odoo_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_odoo_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- WordPress Template Installation on Server Demo #1 -->
+    <record
+        id="jet_template_install_wordpress_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_wordpress_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_wordpress_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- WooCommerce Template Installation on Server Demo #2 -->
+    <record
+        id="jet_template_install_woocommerce_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_woocommerce_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_woocommerce_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_woocommerce_odoo_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Tower Core Template Installation on Server Demo #1 (dependency) -->
+    <record
+        id="jet_template_install_tower_core_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_tower_core_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_tower_core_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Docker Template Installation on Server Demo #1 (dependency) -->
+    <record
+        id="jet_template_install_docker_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_docker_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_docker_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Nginx Template Installation on Server Demo #1 (dependency) -->
+    <record
+        id="jet_template_install_nginx_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_nginx_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_nginx_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Postgres Template Installation on Server Demo #1 (dependency) -->
+    <record
+        id="jet_template_install_postgres_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_postgres_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_postgres_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- MariaDB Template Installation on Server Demo #1 (dependency) -->
+    <record
+        id="jet_template_install_mariadb_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_mariadb_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_mariadb_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Tower Core Template Installation on Server Demo #2 (dependency for Docker) -->
+    <record
+        id="jet_template_install_tower_core_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_tower_core_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_tower_core_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_tower_core_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Docker Template Installation on Server Demo #2 (dependency for WooCommerce) -->
+    <record
+        id="jet_template_install_docker_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_docker_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_docker_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_docker_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Nginx Template Installation on Server Demo #2 (dependency for WooCommerce) -->
+    <record
+        id="jet_template_install_nginx_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_nginx_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_nginx_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_nginx_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Odoo Template Installation on Server Demo #2 (dependency for WooCommerce) -->
+    <record
+        id="jet_template_install_odoo_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_odoo_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_odoo_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_odoo_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- WordPress Template Installation on Server Demo #2 (dependency for WooCommerce) -->
+    <record
+        id="jet_template_install_wordpress_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_wordpress_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_wordpress_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_wordpress_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Postgres Template Installation on Server Demo #2 (dependency for Odoo) -->
+    <record
+        id="jet_template_install_postgres_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_postgres_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_postgres_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_postgres_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- MariaDB Template Installation on Server Demo #2 (dependency for WordPress) -->
+    <record
+        id="jet_template_install_mariadb_server_2"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field name="server_id" ref="server_demo_2" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_mariadb_server_2_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_mariadb_server_2"
+        />
+        <field name="jet_template_id" ref="jet_template_mariadb_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Kubernetes Template Installation on Server Demo #1 -->
+    <record
+        id="jet_template_install_kubernetes_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_kubernetes_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_kubernetes_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_kubernetes_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_kubernetes_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- Proxmox Template Installation on Server Demo #1 -->
+    <record
+        id="jet_template_install_proxmox_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_proxmox_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_proxmox_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_proxmox_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_proxmox_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+
+    <!-- OwnCloud Template Installation on Server Demo #1 -->
+    <record
+        id="jet_template_install_owncloud_server_1"
+        model="cx.tower.jet.template.install"
+    >
+        <field name="jet_template_id" ref="jet_template_owncloud_demo" />
+        <field name="server_id" ref="server_demo_1" />
+        <field name="action">install</field>
+        <field name="state">done</field>
+        <field name="date_done" eval="DateTime.now()" />
+    </record>
+
+    <record
+        id="jet_template_install_owncloud_server_1_line"
+        model="cx.tower.jet.template.install.line"
+    >
+        <field
+            name="jet_template_install_id"
+            ref="jet_template_install_owncloud_server_1"
+        />
+        <field name="jet_template_id" ref="jet_template_owncloud_demo" />
+        <field name="order">0</field>
+        <field name="state">done</field>
+    </record>
+</odoo>

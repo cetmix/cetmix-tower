@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_clone_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.clone.wizard.view.form</field>
+        <field name="model">cx.tower.jet.clone.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Clone Jet">
+                <group>
+                    <label for="jet_id" string="Clone" />
+                    <div class="o_row">
+                        <field name="jet_id" />
+                        <span class="o_form_label">for</span>
+                        <field
+                            name="partner_id"
+                            placeholder="select a partner if required"
+                        />
+                    </div>
+                    <field name="jet_template_id" invisible="1" />
+                    <field
+                        name="same_server"
+                        widget="radio"
+                        string="on the same server"
+                        invisible="not jet_id"
+                    />
+                    <field
+                        name="server_id"
+                        string="to"
+                        invisible="same_server == 'y'"
+                        required="same_server == 'n'"
+                    />
+                    <field
+                        name="state_id"
+                        string="in the state"
+                        invisible="not jet_id"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                        domain="state_domain"
+                    />
+                    <field name="state_domain" invisible="1" />
+                    <label for="name_type" string="with the name that" />
+                    <div class="o_row">
+                        <field
+                            name="name_type"
+                            widget="radio"
+                            string="with the name that"
+                        />
+                        <field
+                            name="name"
+                            placeholder="put the name here"
+                            invisible="name_type in ('a', False)"
+                            required="name_type == 'm'"
+                        />
+                    </div>
+                    <label for="url_type" string="with the URL that" />
+                    <div class="o_row">
+                        <field name="url_type" widget="radio" />
+                        <field
+                            name="url"
+                            placeholder="eg 'https://myjet.example.com'"
+                            invisible="url_type in ('a', False)"
+                            required="url_type == 'm'"
+                        />
+                    </div>
+                    <field
+                        name="use_custom_variables"
+                        widget="radio"
+                        string="that will use"
+                    />
+                </group>
+                <field name="line_ids" invisible="use_custom_variables == 'n'">
+                    <list editable="bottom">
+                        <field name="variable_id" />
+                        <field name="variable_type" column_invisible="True" />
+                        <field
+                            name="value_char"
+                            readonly="variable_type == 'o'"
+                            required="variable_type == 's'"
+                        />
+                        <field
+                            name="option_id"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                            readonly="variable_type == 's'"
+                            required="variable_type == 'o'"
+                        />
+                    </list>
+                </field>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        confirm="Jet will be cloned. Are you sure?"
+                        type="object"
+                        class="btn-primary"
+                        invisible="not jet_id or not state_id or not use_custom_variables or not name_type"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Context Action for cloning jets -->
+    <record id="action_cx_tower_jet_clone" model="ir.actions.act_window">
+        <field name="name">Clone</field>
+        <field name="res_model">cx.tower.jet.clone.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_cx_tower_jet" />
+        <field name="binding_view_types">form</field>
+        <field name="context">{'default_jet_id': active_id}</field>
+    </record>
+</odoo>

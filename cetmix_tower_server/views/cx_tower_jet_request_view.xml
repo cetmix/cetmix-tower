@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- List View -->
+    <record id="view_cx_tower_jet_request_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.request.list</field>
+        <field name="model">cx.tower.jet.request</field>
+        <field name="arch" type="xml">
+            <list
+                decoration-info="state == 'new'"
+                decoration-warning="state == 'processing'"
+                decoration-success="state == 'success'"
+                decoration-danger="state == 'failed'"
+            >
+                <field name="create_date" />
+                <field name="write_date" optional="hide" />
+                <field name="server_id" />
+                <field name="requested_by_jet_id" />
+                <field name="jet_template_id" optional="show" />
+                <field name="state_requested_id" optional="show" />
+                <field name="jet_id" />
+                <field name="state" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cx_tower_jet_request_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.request.search</field>
+        <field name="model">cx.tower.jet.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="server_id" string="Server" />
+                <field name="jet_id" string="Jet" />
+                <field name="jet_template_id" string="Jet Template" />
+                <field name="requested_by_jet_id" string="Requested By Jet" />
+                <filter
+                    name="success"
+                    string="Success"
+                    domain="[('state','=','success')]"
+                />
+                <filter
+                    name="failed"
+                    string="Failed"
+                    domain="[('state','=','failed')]"
+                />
+                <filter
+                    name="group_by_server"
+                    string="Server"
+                    context="{'group_by': 'server_id'}"
+                />
+                <filter
+                    name="group_by_jet"
+                    string="Jet"
+                    context="{'group_by': 'jet_id'}"
+                />
+                <filter
+                    name="group_by_jet_template"
+                    string="Jet Template"
+                    context="{'group_by': 'jet_template_id'}"
+                />
+                <filter
+                    name="group_by_requested_by_jet"
+                    string="Requested By Jet"
+                    context="{'group_by': 'requested_by_jet_id'}"
+                />
+                <searchpanel>
+                    <field
+                        name="state"
+                        string="State"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_cx_tower_jet_request" model="ir.actions.act_window">
+        <field name="name">Jet Requests</field>
+        <field name="res_model">cx.tower.jet.request</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No jet requests found
+            </p>
+            <p>
+                Jet requests will appear here when jets request resources from templates.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -4,7 +4,7 @@
         <field name="name">cx.tower.server.view.kanban</field>
         <field name="model">cx.tower.server</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_dashboard" records_draggable="0" sample="1">
+            <kanban highlight_color="color" records_draggable="0" sample="1">
                 <field name="name" />
                 <field name="url" />
                 <field name="partner_id" />
@@ -23,96 +23,75 @@
                                             role="menuitem"
                                             type="object"
                                             name="action_run_command"
-                                        >Command
-                                        </a>
+                                        >Command</a>
                                     </div>
                                     <div role="menuitem">
                                         <a
                                             role="menuitem"
                                             type="object"
                                             name="action_run_flight_plan"
-                                        >Flight Plan
-                                            </a>
+                                        >Flight Plan</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="o_kanban_card_manage_settings row">
                                 <div role="menuitem" aria-haspopup="true" class="col-6">
-                                    <ul
-                                        class="oe_kanban_colorpicker"
-                                        data-field="color"
-                                        role="popup"
-                                    />
+                                    <field name="color" widget="kanban_color_picker" />
                                 </div>
                             </div>
                         </div>
                     </t>
                     <t t-name="card">
                         <div
-                            t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click"
+                            class="d-flex justify-content-between align-items-start mb-1"
                         >
-                            <div t-attf-class="o_kanban_card_header">
-                                <div
-                                    class="o_kanban_card_header_title d-flex justify-content-between mr-4"
-                                >
-                                    <div class="o_primary">
-                                        <field name="name" />
-                                    </div>
-                                    <field
-                                        name="status"
-                                        widget="server_status"
-                                        options="{'hide_label': False}"
-                                    />
-                                </div>
-                                <div t-if="record.url.raw_value">
-                                    <field name="url" widget="url" />
-                                </div>
-                            </div>
-                            <div class="oe_kanban_content">
-                                <div class="oe_kanban_global_click">
-                                    <div class="col-12 pt8 o_kanban_primary_right">
-                                        <div t-if="record.partner_id.raw_value">
-                                            <strong>Partner:</strong>
-                                            <field name="partner_id" />
-                                        </div>
-                                        <div
-                                            groups="cetmix_tower_server.group_manager"
-                                            t-if="record.os_id.raw_value"
-                                        >
-                                            <strong>Operating System:</strong>
-                                            <field name="os_id" />
-                                        </div>
-                                        <div
-                                            groups="cetmix_tower_server.group_manager"
-                                            t-if="record.ip_v4_address.raw_value"
-                                        >
-                                            <strong>IPv4 Address:</strong>
-                                            <field name="ip_v4_address" />
-                                        </div>
-                                        <div
-                                            groups="cetmix_tower_server.group_manager"
-                                            t-if="record.ip_v6_address.raw_value"
-                                        >
-                                            <strong>IPv6 Address:</strong>
-                                            <field name="ip_v6_address" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left" />
-                                    <div class="oe_kanban_bottom_right">
-                                        <div invisible="not tag_ids">
-                                            <field name="color" invisible="1" />
-                                            <field
-                                                name="tag_ids"
-                                                widget="many2many_tags"
-                                                options="{'color_field': 'color'}"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <strong class="fs-5">
+                                <field name="name" />
+                            </strong>
+                            <field
+                                name="status"
+                                widget="server_status"
+                                options="{'hide_label': False}"
+                            />
                         </div>
+                        <div t-if="record.url.raw_value" class="mb-1">
+                            <field name="url" widget="url" />
+                        </div>
+                        <ul class="list-unstyled text-muted small flex-grow-1 mb-0">
+                            <li t-if="record.partner_id.raw_value">
+                                <strong>Partner:</strong>
+                                <field name="partner_id" />
+                            </li>
+                            <li
+                                groups="cetmix_tower_server.group_manager"
+                                t-if="record.os_id.raw_value"
+                            >
+                                <strong>Operating System:</strong>
+                                <field name="os_id" />
+                            </li>
+                            <li
+                                groups="cetmix_tower_server.group_manager"
+                                t-if="record.ip_v4_address.raw_value"
+                            >
+                                <strong>IPv4:</strong>
+                                <field name="ip_v4_address" />
+                            </li>
+                            <li
+                                groups="cetmix_tower_server.group_manager"
+                                t-if="record.ip_v6_address.raw_value"
+                            >
+                                <strong>IPv6:</strong>
+                                <field name="ip_v6_address" />
+                            </li>
+                        </ul>
+                        <footer>
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                                invisible="not tag_ids"
+                            />
+                        </footer>
                     </t>
                 </templates>
             </kanban>
@@ -183,6 +162,15 @@
                         icon="fa-paper-plane"
                     />
                     <button
+                        name="action_new_jet"
+                        type="object"
+                        class="btn-primary"
+                        string="New Jet"
+                        icon="fa-plane"
+                        groups="cetmix_tower_server.group_manager"
+                        invisible="not jet_template_ids"
+                    />
+                    <button
                         name="test_ssh_connection"
                         type="object"
                         icon="fa-check-square-o"
@@ -213,6 +201,14 @@
                             icon="fa-files-o"
                         >
                             <field name="file_count" widget="statinfo" string="Files" />
+                        </button>
+                        <button
+                            name="action_open_jets"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                        >
+                            <field name="jet_count" string="Jets" widget="statinfo" />
                         </button>
                     </div>
                     <widget
@@ -432,6 +428,7 @@
                             <field name="server_log_ids">
                                 <list>
                                     <field name="name" />
+                                    <field name="jet_id" />
                                     <button
                                         type="object"
                                         string="Open"
@@ -451,16 +448,52 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="display_name" />
                                     <field name="action" />
-                                    <field
-                                        name="interval_number"
-                                        invisible="interval_type == 'dow'"
-                                    />
                                     <field name="interval_type" />
+                                    <field name="interval_number" optional="hide" />
+                                    <field name="is_running" optional="hide" />
                                     <field name="next_call" optional="hide" />
                                     <field name="last_call" optional="hide" />
-                                    <field name="is_running" optional="hide" />
                                 </list>
                             </field>
+                        </page>
+                        <page
+                            name="jet_templates"
+                            string="Jet Templates"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <button
+                                name="action_install_jet_template"
+                                string="Install Jet Template"
+                                type="object"
+                                class="oe_highlight"
+                            />
+                            <field name="jet_template_ids">
+                                <list create="0" edit="0">
+                                    <field name="name" />
+                                    <button
+                                        name="action_uninstall_from_server"
+                                        type="object"
+                                        string="Uninstall"
+                                        class="btn-danger"
+                                        confirm="Jet template will be uninstalled from the server. Are you sure?"
+                                        context="{'server_id': parent.id}"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="metadata"
+                            string="Metadata"
+                            groups="base.group_no_one"
+                        >
+                            <group>
+                                <field name="metadata" invisible="1" />
+                                <field
+                                    name="metadata_text"
+                                    string="Metadata"
+                                    readonly="1"
+                                />
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -500,6 +533,17 @@
                     string="Not Running"
                     name="not_running"
                     domain="[('status', '!=', 'running')]"
+                />
+                <separator />
+                <filter
+                    string="With Jets"
+                    name="with_jets"
+                    domain="[('jet_ids', '!=', False)]"
+                />
+                <filter
+                    string="With Jet Templates"
+                    name="with_jet_templates"
+                    domain="[('jet_template_ids', '!=', False)]"
                 />
                 <group expand="0" string="Group By">
                     <filter

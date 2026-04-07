@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Access -->
+    <!-- Access level is Manager (2) and User is added in "Users" or "Managers" of the Jet -->
+    <record id="rule_cx_tower_jet_waypoint_manager_read" model="ir.rule">
+        <field name="name">Jet Waypoint: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_waypoint" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [("access_level", "&lt;=", "2"),
+             "|",
+                 ("jet_id.user_ids", "in", [user.id]),
+                 ("jet_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create Access -->
+    <!-- Access level is Manager (2) AND user is added to "Managers" of the Jet Template -->
+    <record id="rule_cx_tower_jet_waypoint_manager_write" model="ir.rule">
+        <field name="name">Jet Waypoint: Manager write &amp; create</field>
+        <field name="model_id" ref="model_cx_tower_jet_waypoint" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [("access_level", "&lt;=", "2"),
+             ("jet_id.jet_template_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Delete Access -->
+    <!-- Access level is Manager (2) AND user is added to "Managers" of the Jet Template AND the record is created by the user -->
+    <record id="rule_cx_tower_jet_waypoint_manager_unlink" model="ir.rule">
+        <field name="name">Jet Waypoint: Manager unlink</field>
+        <field name="model_id" ref="model_cx_tower_jet_waypoint" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [("access_level", "&lt;=", "2"),
+             ("jet_id.jet_template_id.manager_ids", "in", [user.id]),
+             ("create_uid", "=", user.id)
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Full Access -->
+    <record id="rule_cx_tower_jet_waypoint_root_full" model="ir.rule">
+        <field name="name">Jet Waypoint: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_waypoint" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_create_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.create.wizard.view.form</field>
+        <field name="model">cx.tower.jet.create.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Jet">
+                <field
+                    name="jet_template_message"
+                    invisible="not jet_template_message"
+                    class="alert alert-warning"
+                    role="alert"
+                />
+                <field name="note" invisible="not note" />
+                <group>
+                    <field
+                        name="jet_template_id"
+                        string="I want a new"
+                        domain="jet_template_domain"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
+                    <field name="jet_template_domain" invisible="1" />
+                    <label
+                        for="server_id"
+                        string="on the server"
+                        invisible="not jet_template_id"
+                    />
+                    <div class="o_row" invisible="not jet_template_id">
+                        <field
+                            name="server_id"
+                            string="on the server"
+                            domain="server_domain"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                        <span class="o_form_label">for</span>
+                        <field
+                            name="partner_id"
+                            placeholder="select a partner if required"
+                        />
+                    </div>
+                    <field name="server_domain" invisible="1" />
+                    <field
+                        name="state_id"
+                        string="in the state"
+                        invisible="not jet_template_id or not server_id"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                        domain="state_domain"
+                    />
+                    <field name="state_domain" invisible="1" />
+                    <label
+                        for="name_type"
+                        string="with the name that"
+                        invisible="not state_id"
+                    />
+                    <div class="o_row">
+                        <field
+                            name="name_type"
+                            widget="radio"
+                            invisible="not state_id"
+                        />
+                        <field
+                            name="name"
+                            placeholder="put the name here"
+                            invisible="not state_id or name_type in ('a', False)"
+                            required="name_type == 'm'"
+                        />
+                    </div>
+                    <label
+                        for="url_type"
+                        string="with the URL that"
+                        invisible="not state_id"
+                    />
+                    <div class="o_row">
+                        <field
+                            name="url_type"
+                            widget="radio"
+                            invisible="not state_id"
+                        />
+                        <field
+                            name="url"
+                            placeholder="eg 'https://myjet.example.com'"
+                            invisible="not state_id or url_type in ('a', False)"
+                            required="url_type == 'm'"
+                        />
+                    </div>
+                    <field
+                        name="use_custom_variables"
+                        widget="radio"
+                        invisible="not state_id"
+                        string="that will use"
+                    />
+                </group>
+                <field name="line_ids" invisible="use_custom_variables == 'n'">
+                    <list editable="bottom">
+                        <field name="variable_id" />
+                        <field name="variable_type" column_invisible="True" />
+                        <field
+                            name="value_char"
+                            readonly="variable_type == 'o'"
+                            required="variable_type == 's'"
+                        />
+                        <field
+                            name="option_id"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                            readonly="variable_type == 's'"
+                            required="variable_type == 'o'"
+                        />
+                    </list>
+                </field>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        string="Confirm"
+                        confirm="New Jet will be created. Are you sure?"
+                        type="object"
+                        class="btn-primary"
+                        invisible="(not jet_template_id or not server_id or not state_id or not use_custom_variables or not name_type or name_type == 'm') and not name"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Context Action for creating new jets -->
+    <record id="action_cx_tower_jet_create" model="ir.actions.act_window">
+        <field name="name">Launch New Jet</field>
+        <field name="res_model">cx.tower.jet.create.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
