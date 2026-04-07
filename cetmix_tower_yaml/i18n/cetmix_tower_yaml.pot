@@ -90,6 +90,12 @@ msgid "Authors"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__reference
+msgid ""
+"Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_command
 msgid "Cetmix Tower Command"
 msgstr ""
@@ -117,6 +123,31 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_plan_line_action
 msgid "Cetmix Tower Flight Plan Line Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_action
+msgid "Cetmix Tower Jet Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_state
+msgid "Cetmix Tower Jet State"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_template
+msgid "Cetmix Tower Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_template_dependency
+msgid "Cetmix Tower Jet Template Dependency"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_jet_waypoint_template
+msgid "Cetmix Tower Jet Waypoint Template"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -283,6 +314,19 @@ msgid "Custom license text when license type is Custom."
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_scheduled_task_cv
+msgid "Custom variable values for scheduled tasks"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid ""
+"Deferred relation resolution failed:\n"
+"%(details)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_description
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_description
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
@@ -338,6 +382,7 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_command_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_file_template_export_yaml
+#: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_jet_template_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_key_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_os_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_plan_export_yaml
@@ -348,6 +393,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_tag_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_export_yaml
 #: model:ir.actions.act_window,name:cetmix_tower_yaml.action_cx_tower_variable_value_export_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
 msgid "Export YAML"
 msgstr ""
 
@@ -564,6 +610,7 @@ msgid "Models to create records in"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__name
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
@@ -636,6 +683,22 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid ""
+"Record %(record_model)s '%(record_reference)s': field '%(field)s' could not "
+"resolve %(target_model)s '%(target_reference)s'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
+msgid ""
+"Record '%(record)s': field '%(field)s' could not resolve %(target_model)s "
+"'%(target_reference)s'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#. odoo-python
 #: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 msgid "Record Import"
@@ -658,6 +721,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 msgid "Records of the following models were created or updated: %(models)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__reference
+msgid "Reference"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -832,6 +900,11 @@ msgid "Wrong value for 'access_level' key: %(acv)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
+msgid "YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.module.category,name:cetmix_tower_yaml.ir_module_category_tower_yaml_export
 msgid "YAML Export"
 msgstr ""
@@ -913,6 +986,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key_value__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__yaml_code
@@ -920,6 +998,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__yaml_code
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__yaml_code
@@ -956,6 +1035,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
 msgid "You are not allowed to create records from YAML"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_jet_template_view_form
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
 msgstr ""
 
 #. module: cetmix_tower_yaml
