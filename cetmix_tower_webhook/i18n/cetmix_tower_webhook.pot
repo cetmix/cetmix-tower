@@ -14,11 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: cetmix_tower_webhook
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_webhook.cx_tower_webhook_authenticator_view_form
-msgid "10.0.0.1,192.168.1.0/24"
-msgstr ""
-
-#. module: cetmix_tower_webhook
 #: model_terms:ir.actions.act_window,help:cetmix_tower_webhook.cx_tower_webhook_action
 msgid "Add a new webhook"
 msgstr ""
