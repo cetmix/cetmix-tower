@@ -1,3 +1,8 @@
+## 18.0.2.0.0 (2026-04-07)
+
+- Features: Jets! (4700)
+
+
 ## 18.0.1.0.11 (2026-03-10)
 
 - Bugfixes: Last flight plan line post-run action was not triggered correctly. (5120)
