@@ -1,0 +1,112 @@
+.o_action_manager .o_cx_tower_terminal_view {
+    gap: 1rem;
+    min-height: 100%;
+    padding: 1rem 1.25rem 1.25rem;
+    color: inherit;
+    background: radial-gradient(
+            circle at top right,
+            rgba(36, 99, 235, 0.05),
+            transparent 22%
+        ),
+        linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
+}
+
+.o_cx_tower_terminal_toolbar {
+    flex-shrink: 0;
+    padding: 0.95rem 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 0.9rem;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.96),
+        rgba(245, 247, 250, 0.98)
+    );
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.o_cx_tower_terminal_title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.o_cx_tower_terminal_meta {
+    color: rgba(15, 23, 42, 0.68);
+}
+
+.o_cx_tower_terminal_status {
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.o_cx_tower_terminal_output_wrap {
+    min-height: 26rem;
+    padding: 0.7rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 0.95rem;
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0.99), rgba(0, 0, 0, 1)),
+        repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.025) 0,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px,
+            transparent 24px
+        );
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 12px 30px rgba(15, 23, 42, 0.18);
+}
+
+.o_cx_tower_terminal_output_wrap:focus {
+    outline: none;
+    border-color: rgba(11, 179, 109, 0.55) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 0 0 0.18rem rgba(11, 179, 109, 0.16),
+        0 12px 30px rgba(15, 23, 42, 0.18);
+}
+
+.o_cx_tower_terminal_output_wrap .xterm {
+    height: 100%;
+}
+
+.o_cx_tower_terminal_output_wrap .xterm-screen,
+.o_cx_tower_terminal_output_wrap .xterm-rows {
+    background: transparent !important;
+}
+
+.o_cx_tower_terminal_output_wrap .xterm-viewport {
+    scrollbar-gutter: stable;
+}
+
+.o_action_manager .o_cx_tower_terminal_output_wrap {
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0.99), rgba(0, 0, 0, 1)),
+        repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.025) 0,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px,
+            transparent 24px
+        ) !important;
+}
+
+.o_cx_tower_terminal_button {
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    color: #f8fafc;
+    transition: all 0.18s ease;
+}
+
+.o_cx_tower_terminal_button:hover,
+.o_cx_tower_terminal_button:focus {
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.o_cx_tower_terminal_button_primary {
+    background: linear-gradient(180deg, #0bb36d, #06814e);
+}

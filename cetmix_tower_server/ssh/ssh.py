@@ -87,7 +87,10 @@ class SSHConnection:
         Connect to the SSH server.
         """
         if self._ssh_client is not None:
-            return self._ssh_client
+            transport = self._ssh_client.get_transport()
+            if transport and transport.is_active():
+                return self._ssh_client
+            self.disconnect()
 
         self._ssh_client = SSHClient()
         self._ssh_client.load_system_host_keys()

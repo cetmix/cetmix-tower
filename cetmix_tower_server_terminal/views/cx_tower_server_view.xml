@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Add Terminal button to the Kanban card manage section -->
+    <record id="view_cx_tower_server_kanban_terminal" model="ir.ui.view">
+        <field name="name">cx.tower.server.kanban.terminal</field>
+        <field name="model">cx.tower.server</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_server_view_kanban"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//a[@name='action_run_command']/.." position="before">
+                <div role="menuitem">
+                    <a
+                        role="menuitem"
+                        type="object"
+                        name="action_open_terminal"
+                    >Terminal</a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Terminal button to the server form header -->
+    <record id="view_cx_tower_server_form_terminal" model="ir.ui.view">
+        <field name="name">cx.tower.server.form.terminal</field>
+        <field name="model">cx.tower.server</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_server_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_run_command']" position="before">
+                <button
+                    name="action_open_terminal"
+                    type="object"
+                    class="btn-primary"
+                    string="Terminal"
+                    icon="fa-terminal"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

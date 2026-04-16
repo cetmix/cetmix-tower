@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="cetmix_tower_server_terminal.TowerTerminalAction">
+        <div class="o_cx_tower_terminal_view d-flex flex-column h-100">
+            <div
+                class="o_cx_tower_terminal_toolbar d-flex justify-content-between align-items-start gap-3"
+            >
+                <div>
+                    <h2 class="o_cx_tower_terminal_title mb-1">
+                        <t t-esc="state.title" />
+                    </h2>
+                    <div class="o_cx_tower_terminal_meta small" t-if="state.message">
+                        <t t-esc="state.message" />
+                    </div>
+                </div>
+                <div
+                    class="d-flex align-items-center gap-2 flex-wrap justify-content-end"
+                >
+                    <span
+                        t-att-class="`badge ${statusClass} o_cx_tower_terminal_status`"
+                    >
+                        <t t-esc="statusLabel" />
+                    </span>
+                    <button
+                        class="btn btn-secondary"
+                        type="button"
+                        t-on-click="clearOutput"
+                    >
+                        Clear
+                    </button>
+                    <button
+                        t-if="isConnected"
+                        class="btn btn-outline-danger"
+                        type="button"
+                        t-on-click="closeTerminal"
+                    >
+                        Disconnect
+                    </button>
+                    <button
+                        t-if="!isConnected"
+                        class="btn o_cx_tower_terminal_button o_cx_tower_terminal_button_primary"
+                        type="button"
+                        t-on-click="reconnectTerminal"
+                        t-att-disabled="state.isSending"
+                    >
+                        Reconnect
+                    </button>
+                </div>
+            </div>
+
+            <div class="o_cx_tower_terminal_output_wrap flex-grow-1" t-ref="output" />
+        </div>
+    </t>
+</templates>
