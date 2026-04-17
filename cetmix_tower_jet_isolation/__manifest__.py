@@ -3,7 +3,7 @@
     "version": "18.0.1.0.0",
     "category": "Tower",
     "summary": "Adds strict isolation mode for Jets, preventing users from altering command visibility.",
-    "author": "Antigravity",
+    "author": "Cetmix, Crumges",
     "website": "https://github.com/cetmix/cetmix-tower",
     "depends": [
         "cetmix_tower_server",
