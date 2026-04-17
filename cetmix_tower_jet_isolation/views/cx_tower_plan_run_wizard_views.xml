@@ -1,14 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="cx_tower_plan_run_wizard_view_form_isolation" model="ir.ui.view">
         <field name="name">cx.tower.plan.run.wizard.view.form.isolation</field>
         <field name="model">cx.tower.plan.run.wizard</field>
-        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_plan_run_wizard_view_form"/>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_plan_run_wizard_view_form"
+        />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="before">
-                <field name="is_isolated_context" invisible="1"/>
+                <field name="is_isolated_context" invisible="1" />
             </xpath>
-            
+
             <xpath expr="//field[@name='applicability']" position="attributes">
                 <attribute name="readonly">is_isolated_context</attribute>
                 <attribute name="force_save">1</attribute>
