@@ -4,17 +4,28 @@ from odoo import api, fields, models
 class CxTowerPlanRunWizardFilter(models.TransientModel):
     _inherit = "cx.tower.plan.run.wizard"
 
-    is_isolated_context = fields.Boolean(compute="_compute_is_isolated_context")
+    is_restricted_context = fields.Boolean(compute="_compute_is_restricted_context")
 
     @api.depends("jet_ids")
-    def _compute_is_isolated_context(self):
+    def _compute_is_restricted_context(self):
+        is_global_manager = self.env.user.has_group("cetmix_tower_server.group_manager")
         for record in self:
-            if record.jet_ids and any(
-                j.jet_template_id.isolation_mode for j in record.jet_ids
-            ):
-                record.is_isolated_context = True
+            jets = record.jet_ids or self.env["cx.tower.jet"].browse(
+                self.env.context.get("default_jet_ids", [])
+            )
+
+            is_isolated = bool(
+                jets and any(j.jet_template_id.isolation_mode for j in jets)
+            )
+
+            if is_global_manager:
+                is_manager = True
+            elif jets and all(self.env.user in j.manager_ids for j in jets):
+                is_manager = True
             else:
-                record.is_isolated_context = False
+                is_manager = False
+
+            record.is_restricted_context = is_isolated and not is_manager
 
     @api.model
     def default_get(self, fields_list):
