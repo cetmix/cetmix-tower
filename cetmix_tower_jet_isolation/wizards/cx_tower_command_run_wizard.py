@@ -8,7 +8,7 @@ class CxTowerCommandRunWizardFilter(models.TransientModel):
     isolated_tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
         compute="_compute_isolated_tag_ids",
-        string="Tags",
+        string="Forced Tags",
     )
 
     @api.depends("jet_ids")
