@@ -22,7 +22,7 @@
             </xpath>
 
             <xpath expr="//field[@name='tag_ids']" position="attributes">
-                <attribute name="invisible">is_restricted_context</attribute>
+                <attribute name="readonly">is_restricted_context</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
 
