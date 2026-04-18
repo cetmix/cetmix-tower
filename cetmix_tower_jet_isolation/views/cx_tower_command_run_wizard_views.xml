@@ -22,10 +22,17 @@
             </xpath>
 
             <xpath expr="//field[@name='tag_ids']" position="attributes">
-                <attribute name="groups" />
-                <attribute name="invisible">result</attribute>
-                <attribute name="readonly">is_restricted_context</attribute>
+                <attribute name="groups">cetmix_tower_server.group_manager</attribute>
+                <attribute name="invisible">is_restricted_context or result</attribute>
                 <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field
+                    name="isolated_tag_ids"
+                    widget="many2many_tags"
+                    invisible="not is_restricted_context or result"
+                />
             </xpath>
 
             <xpath expr="//notebook" position="attributes">

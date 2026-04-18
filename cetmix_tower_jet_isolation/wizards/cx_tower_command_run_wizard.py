@@ -5,6 +5,11 @@ class CxTowerCommandRunWizardFilter(models.TransientModel):
     _inherit = "cx.tower.command.run.wizard"
 
     is_restricted_context = fields.Boolean(compute="_compute_is_restricted_context")
+    isolated_tag_ids = fields.Many2many(
+        comodel_name="cx.tower.tag",
+        compute="_compute_isolated_tag_ids",
+        string="Tags",
+    )
 
     @api.depends("jet_ids")
     def _compute_is_restricted_context(self):
@@ -26,6 +31,11 @@ class CxTowerCommandRunWizardFilter(models.TransientModel):
                 is_manager = False
 
             record.is_restricted_context = is_isolated and not is_manager
+
+    @api.depends("tag_ids")
+    def _compute_isolated_tag_ids(self):
+        for record in self:
+            record.isolated_tag_ids = record.tag_ids
 
     @api.model
     def default_get(self, fields_list):

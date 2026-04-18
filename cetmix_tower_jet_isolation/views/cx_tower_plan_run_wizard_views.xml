@@ -22,8 +22,16 @@
             </xpath>
 
             <xpath expr="//field[@name='tag_ids']" position="attributes">
-                <attribute name="readonly">is_restricted_context</attribute>
+                <attribute name="invisible">is_restricted_context</attribute>
                 <attribute name="force_save">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field
+                    name="isolated_tag_ids"
+                    widget="many2many_tags"
+                    invisible="not is_restricted_context"
+                />
             </xpath>
 
             <xpath
