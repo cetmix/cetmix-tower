@@ -20,7 +20,6 @@ class CxTowerServer(models.Model):
             ("pull", "Pull (SSH)"),
             ("push", "Push (Webhook)"),
         ],
-        string="Monitoring Mode",
         default="none",
         required=True,
     )
@@ -47,7 +46,6 @@ class CxTowerServer(models.Model):
                 )
 
     monitor_token = fields.Char(
-        string="Monitor Token",
         copy=False,
         groups="cetmix_tower_server.group_manager",
         default=lambda self: str(uuid.uuid4()),
@@ -313,9 +311,18 @@ class CxTowerServer(models.Model):
             command_code=full_command,
             raise_on_error=False,
         )
-        raise models.ValidationError(
-            _("DEBUG MONITOR OUTPUT\n\nStatus: %s\n\nResponse:\n%s\n\nError:\n%s")
-            % (res.get("status"), res.get("response"), res.get("error"))
+        raise ValidationError(
+            _(
+                "DEBUG MONITOR OUTPUT\n\n"
+                "Status: %(status)s\n\n"
+                "Response:\n%(response)s\n\n"
+                "Error:\n%(error)s"
+            )
+            % {
+                "status": res.get("status"),
+                "response": res.get("response"),
+                "error": res.get("error"),
+            }
         )
 
     def _process_monitor_output(self, output):
@@ -362,7 +369,8 @@ class CxTowerServer(models.Model):
             if not res_cpu:
                 failed.append("CPU")
             _logger.error(
-                "Metric parsing failed for server %s. Missing: %s.\nRAM: %s\nDisk: %s\nCPU: %s",
+                "Metric parsing failed for server %s. Missing: %s.\n"
+                "RAM: %s\nDisk: %s\nCPU: %s",
                 self.name,
                 ", ".join(failed),
                 ram_out,
@@ -485,26 +493,29 @@ echo "Starting Cetmix Monitor Agent (Interval: $INTERVAL seconds)..."
 while true; do
     # Collect Metrics
     MEM_TOTAL=$(grep MemTotal /proc/meminfo | awk '{{print int($2/1024)}}')
-    MEM_FREE=$(grep -e MemFree -e Buffers -e "^Cached" /proc/meminfo | awk '{{sum += $2}} END {{print int(sum/1024)}}')
+    MEM_FREE=$(grep -e MemFree -e Buffers -e "^Cached" /proc/meminfo | \
+        awk '{{sum += $2}} END {{print int(sum/1024)}}')
     MEM_USED=$((MEM_TOTAL - MEM_FREE))
 
     DISK_TOTAL=$(df -m / | awk 'NR==2 {{print $2}}')
     DISK_USED=$(df -m / | awk 'NR==2 {{print $3}}')
 
-    CPU_USAGE=$(grep 'cpu ' /proc/stat | awk '{{usage=($2+$4)*100/($2+$4+$5)}} END {{print usage}}')
+    CPU_USAGE=$(grep 'cpu ' /proc/stat | \
+        awk '{{usage=($2+$4)*100/($2+$4+$5)}} END {{print usage}}')
     CPU_CORES=$(nproc 2>/dev/null || echo 1)
 
     # Format JSON manually
     PAYLOAD='{{"server_ref": "'$REF'", "token": "'$TOKEN'", "metrics": {{'
     PAYLOAD+='"ram_total_mb": '$MEM_TOTAL', "ram_used_mb": '$MEM_USED', '
-    PAYLOAD+='"disk_total_gb": '$(awk "BEGIN {{print $DISK_TOTAL/1024}}")', "disk_used_gb": '$(awk "BEGIN {{print $DISK_USED/1024}}")', '
+    PAYLOAD+='"disk_total_gb": '$(awk "BEGIN {{print $DISK_TOTAL/1024}}")', '
+    PAYLOAD+='"disk_used_gb": '$(awk "BEGIN {{print $DISK_USED/1024}}")', '
     PAYLOAD+='"cpu_percent": '$CPU_USAGE', "cpu_cores": '$CPU_CORES' }}}}'
 
     # Send to Tower and get next interval
     RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$URL")
 
     # Simple JSON extraction for next_interval
-    NEXT=$(echo "$RESPONSE" | grep -oP '"next_interval":\s*\K\d+')
+    NEXT=$(echo "$RESPONSE" | grep -oP '"next_interval":\s*\\K\\d+')
     if [ ! -z "$NEXT" ]; then
         INTERVAL=$NEXT
     fi
@@ -527,7 +538,8 @@ done
         # Use base64 to avoid escaping issues with single quotes and special chars
         script_b64 = base64.b64encode(script.encode()).decode()
         cmd_write = (
-            f"echo '{script_b64}' | base64 -d | sudo tee /usr/local/bin/cx_monitor.sh > /dev/null && "
+            f"echo '{script_b64}' | base64 -d | "
+            "sudo tee /usr/local/bin/cx_monitor.sh > /dev/null && "
             "sudo chmod +x /usr/local/bin/cx_monitor.sh"
         )
         res = self._run_command_using_ssh(client, cmd_write)
@@ -551,8 +563,11 @@ WantedBy=multi-user.target
 """
         service_b64 = base64.b64encode(service_content.encode()).decode()
         cmd_service = (
-            f"echo '{service_b64}' | base64 -d | sudo tee /etc/systemd/system/cx_monitor.service > /dev/null && "
-            "sudo systemctl daemon-reload && sudo systemctl enable cx_monitor && sudo systemctl restart cx_monitor"
+            f"echo '{service_b64}' | base64 -d | "
+            "sudo tee /etc/systemd/system/cx_monitor.service > /dev/null && "
+            "sudo systemctl daemon-reload && "
+            "sudo systemctl enable cx_monitor && "
+            "sudo systemctl restart cx_monitor"
         )
         res = self._run_command_using_ssh(client, cmd_service)
         if res.get("status") != 0:
