@@ -1,7 +1,6 @@
 /** @odoo-module **/
+/* global Chart */
 
-import {loadBundle} from "@web/core/assets";
-import {rpc} from "@web/core/network/rpc";
 import {
     Component,
     onMounted,
@@ -10,6 +9,8 @@ import {
     useRef,
     useState,
 } from "@odoo/owl";
+import {loadBundle} from "@web/core/assets";
+import {rpc} from "@web/core/network/rpc";
 import {registry} from "@web/core/registry";
 import {standardFieldProps} from "@web/views/fields/standard_field_props";
 
@@ -67,7 +68,7 @@ export class ServerMonitorDashboard extends Component {
         this.stopTimer();
         let intervalMs = this.state.monitor_interval || 1;
         if (this.state.monitoring_mode === "push") {
-            intervalMs = intervalMs * 1000;
+            intervalMs *= 1000;
         } else {
             intervalMs = intervalMs * 60 * 1000;
         }
@@ -81,7 +82,8 @@ export class ServerMonitorDashboard extends Component {
                 document.visibilityState === "visible"
             ) {
                 console.log("Auto-Pulling metrics for Live mode...");
-                await this.refreshData(true); // silent refresh
+                // Silent refresh
+                await this.refreshData(true);
             } else {
                 await this.fetchData();
             }

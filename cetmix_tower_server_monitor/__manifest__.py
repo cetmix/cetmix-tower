@@ -17,7 +17,7 @@
     "assets": {
         "web.assets_backend": [
             "cetmix_tower_server_monitor/static/src/css/dashboard.css",
-            "cetmix_tower_server_monitor/static/src/js/dashboard.js",
+            "cetmix_tower_server_monitor/static/src/js/dashboard.esm.js",
             "cetmix_tower_server_monitor/static/src/xml/dashboard.xml",
         ],
     },
