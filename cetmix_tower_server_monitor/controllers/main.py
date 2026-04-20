@@ -90,7 +90,8 @@ class CxTowerMonitorController(http.Controller):
         if not server.exists():
             return {"status": "error", "message": "Server not found"}
 
-        # Check permissions (simplified, in Cetmix Tower it usually follows cx.tower.server ACLs)
+        # Check permissions (simplified, in Cetmix Tower it usually follows
+        # cx.tower.server ACLs)
         try:
             data = server.get_dashboard_data()
             return {"status": "success", "data": data}

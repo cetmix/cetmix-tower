@@ -515,7 +515,7 @@ while true; do
     RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$URL")
 
     # Simple JSON extraction for next_interval
-    NEXT=$(echo "$RESPONSE" | grep -oP '"next_interval":\s*\\K\\d+')
+    NEXT=$(echo "$RESPONSE" | grep -oP '"next_interval":\\s*\\K\\d+')
     if [ ! -z "$NEXT" ]; then
         INTERVAL=$NEXT
     fi
