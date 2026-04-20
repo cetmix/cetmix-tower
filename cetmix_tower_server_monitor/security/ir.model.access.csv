@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_server_metrics_user,cx.tower.server.metrics.user,model_cx_tower_server_metrics,cetmix_tower_server.group_user,1,0,0,0
+access_cx_tower_server_metrics_manager,cx.tower.server.metrics.manager,model_cx_tower_server_metrics,cetmix_tower_server.group_manager,1,1,1,1
+access_cx_tower_server_alert_user,cx.tower.server.alert.user,model_cx_tower_server_alert,cetmix_tower_server.group_user,1,0,0,0
+access_cx_tower_server_alert_manager,cx.tower.server.alert.manager,model_cx_tower_server_alert,cetmix_tower_server.group_manager,1,1,1,1
