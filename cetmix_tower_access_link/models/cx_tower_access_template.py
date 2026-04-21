@@ -1,4 +1,5 @@
 import re
+
 from odoo import api, fields, models
 
 VARIABLE_PATTERN = re.compile(r"\{\{\s*(\w+)\s*\}\}")

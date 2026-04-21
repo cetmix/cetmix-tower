@@ -1,4 +1,5 @@
 import re
+
 from odoo import api, fields, models
 
 VARIABLE_PATTERN = re.compile(r"\{\{\s*(\w+)\s*\}\}")
@@ -45,7 +46,7 @@ class CxTowerJetAccess(models.Model):
             url = record.template_id.url_code
             has_error = False
 
-            def replace_var(match):
+            def replace_var(match, record=record):
                 nonlocal has_error
                 var_name = match.group(1)
                 val = record.jet_id.get_variable_value(var_name)

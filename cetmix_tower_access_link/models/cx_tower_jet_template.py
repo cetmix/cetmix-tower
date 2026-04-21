@@ -12,5 +12,6 @@ class CxTowerJetTemplate(models.Model):
         column1="jet_template_id",
         column2="access_template_id",
         string="Access Templates",
-        help="Pre-configured access link templates for jets created from this template.",
+        help="Pre-configured access link templates for jets created from "
+        "this template.",
     )
