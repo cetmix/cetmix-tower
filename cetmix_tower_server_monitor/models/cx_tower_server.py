@@ -399,16 +399,9 @@ class CxTowerServer(models.Model):
                 else 1,
             }
 
-            if res_cpu:
-                idle_str = res_cpu.group(1).replace(",", ".")
-                metrics_vals["cpu_percent"] = 100.0 - float(idle_str)
-            else:
-                _logger.warning(
-                    "Could not find CPU idle percentage for server %s in output: %s",
-                    self.name,
-                    cpu_out,
-                )
-                metrics_vals["cpu_percent"] = 0.0
+            # res_cpu is guaranteed to match because of the early return above
+            idle_str = res_cpu.group(1).replace(",", ".")
+            metrics_vals["cpu_percent"] = 100.0 - float(idle_str)
 
             _logger.warning(
                 "Created metrics for server %s: CPU %s%%, RAM %s/%s MB",
@@ -472,8 +465,9 @@ class CxTowerServer(models.Model):
         if alerts:
             self.env["cx.tower.server.alert"].create(alerts)
             # Optionally post to chatter
-            msg = _("Monitoring Alerts triggered: %s") % (
-                ", ".join([a["resource"] for a in alerts])
+            msg = _(
+                "Monitoring Alerts triggered: %s",
+                ", ".join([a["resource"] for a in alerts]),
             )
             self.message_post(body=msg)
 
@@ -541,8 +535,12 @@ while true; do
 
     CPU_CORES=$(nproc 2>/dev/null || echo 1)
 
+    # Escape double quotes for JSON
+    REF_J=${{{{REF//\\\"/\\\\\\\"}}}}
+    TOKEN_J=${{{{TOKEN//\\\"/\\\\\\\"}}}}
+
     # Format JSON manually
-    PAYLOAD='{{"server_ref": "'$REF'", "token": "'$TOKEN'", "metrics": {{'
+    PAYLOAD='{{"server_ref": "'$REF_J'", "token": "'$TOKEN_J'", "metrics": {{'
     PAYLOAD+='"ram_total_mb": '$MEM_TOTAL', "ram_used_mb": '$MEM_USED', '
     PAYLOAD+='"disk_total_gb": '$(awk "BEGIN {{print $DISK_TOTAL/1024}}")', '
     PAYLOAD+='"disk_used_gb": '$(awk "BEGIN {{print $DISK_USED/1024}}")', '

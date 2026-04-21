@@ -1,7 +1,8 @@
+import json
 import logging
 
 from odoo import http
-from odoo.http import request
+from odoo.http import Response, request
 
 _logger = logging.getLogger(__name__)
 
@@ -32,10 +33,6 @@ class CxTowerMonitorController(http.Controller):
             }
         }
         """
-        import json
-
-        from odoo.http import Response
-
         try:
             data = json.loads(request.httprequest.data)
         except Exception:
