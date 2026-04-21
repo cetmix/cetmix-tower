@@ -5,7 +5,7 @@
     "version": "18.0.1.0.0",
     "category": "Tower",
     "summary": "Manage quick access links for Cetmix Tower jets.",
-    "author": "Cetmix",
+    "author": "Cetmix, Crumges",
     "website": "https://tower.cetmix.com",
     "license": "AGPL-3",
     "depends": [
