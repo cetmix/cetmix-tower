@@ -1,8 +1,7 @@
-# Copyright Cetmix OU
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import re
-
 from odoo import api, fields, models
+
+VARIABLE_PATTERN = re.compile(r"\{\{\s*(\w+)\s*\}\}")
 
 
 class CxTowerJetAccess(models.Model):
@@ -57,7 +56,7 @@ class CxTowerJetAccess(models.Model):
                 return str(val)
 
             # Resolve {{ variables }} using re.sub with callback for robustness
-            resolved_url = re.sub(r"\{\{\s*(\w+)\s*\}\}", replace_var, url)
+            resolved_url = VARIABLE_PATTERN.sub(replace_var, url)
 
             record.url_resolved = resolved_url
             record.is_url_valid = not has_error

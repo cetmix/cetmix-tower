@@ -1,8 +1,7 @@
-# Copyright Cetmix OU
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import re
-
 from odoo import api, fields, models
+
+VARIABLE_PATTERN = re.compile(r"\{\{\s*(\w+)\s*\}\}")
 
 
 class CxTowerAccessTemplate(models.Model):
@@ -42,15 +41,16 @@ class CxTowerAccessTemplate(models.Model):
         relation="cx_tower_access_template_manager_rel",
     )
 
+    def _get_url_variables(self):
+        self.ensure_one()
+        if not self.url_code:
+            return []
+        return VARIABLE_PATTERN.findall(self.url_code)
+
     @api.depends("url_code")
     def _compute_variable_ids(self):
         for record in self:
-            if not record.url_code:
-                record.variable_ids = [(5, 0, 0)]
-                continue
-
-            # Find all {{ var }} patterns
-            refs = re.findall(r"\{\{\s*(\w+)\s*\}\}", record.url_code)
+            refs = record._get_url_variables()
             if not refs:
                 record.variable_ids = [(5, 0, 0)]
                 continue
@@ -64,8 +64,8 @@ class CxTowerAccessTemplate(models.Model):
     @api.depends("url_code")
     def _compute_required_variables(self):
         for record in self:
-            if record.url_code:
-                variables = re.findall(r"\{\{\s*(\w+)\s*\}\}", record.url_code)
+            variables = record._get_url_variables()
+            if variables:
                 unique_vars = sorted(list(set(variables)))
                 record.required_variables = ", ".join(unique_vars)
             else:
