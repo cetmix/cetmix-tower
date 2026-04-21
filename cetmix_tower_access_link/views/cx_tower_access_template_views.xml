@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_access_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.access.template.view.form</field>
+        <field name="model">cx.tower.access.template</field>
+        <field name="arch" type="xml">
+            <form string="Access Link Template">
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <group>
+                        <group name="left">
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="active" invisible="1" />
+                        </group>
+                        <group name="right">
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color', 'no_create_edit': True}"
+                                placeholder="Tags..."
+                            />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                options="{'no_create_edit': True}"
+                                invisible="not variable_ids"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="code" string="Code">
+                            <field
+                                name="url_code"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                                placeholder="https://{{ domain }}/web#id={{ record_id }}"
+                            />
+                            <div class="oe_grey mt-2">
+                                Supports Jinja-like syntax:
+                                <code>{{ variable_reference }}</code>
+                            </div>
+                        </page>
+                        <page name="access" string="Access">
+                            <group name="access_config">
+                                <field name="access_level" />
+                            </group>
+                            <group name="record_access" string="Record Access Roles">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="Users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="Managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                        <page name="notes" string="Notes">
+                            <group string="Internal Notes">
+                                <field
+                                    name="description"
+                                    nolabel="1"
+                                    placeholder="Internal notes..."
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_access_template_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.access.template.view.list</field>
+        <field name="model">cx.tower.access.template</field>
+        <field name="arch" type="xml">
+            <list string="Access Link Templates">
+                <field name="name" />
+                <field name="reference" />
+                <field name="access_level" />
+                <field name="tag_ids" widget="many2many_tags" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_access_template_action" model="ir.actions.act_window">
+        <field name="name">Access Link Templates</field>
+        <field name="res_model">cx.tower.access.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Access Link Template!
+            </p>
+        </field>
+    </record>
+</odoo>

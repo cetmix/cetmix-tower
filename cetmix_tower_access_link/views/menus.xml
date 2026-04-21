@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_cx_tower_access_root"
+        name="Access Links"
+        parent="cetmix_tower_server.menu_settings"
+        sequence="50"
+    />
+
+    <menuitem
+        id="menu_cx_tower_access_template"
+        name="Access Templates"
+        parent="menu_cx_tower_access_root"
+        action="cx_tower_access_template_action"
+        sequence="10"
+    />
+</odoo>
