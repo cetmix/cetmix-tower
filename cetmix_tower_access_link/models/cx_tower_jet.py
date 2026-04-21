@@ -15,24 +15,18 @@ class CxTowerJet(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        jets = super().create(vals_list)
-        for jet in jets:
-            if jet.jet_template_id and jet.jet_template_id.access_template_ids:
-                access_vals = []
-                for template in jet.jet_template_id.access_template_ids:
-                    access_vals.append(
-                        (
-                            0,
-                            0,
-                            {
-                                "jet_id": jet.id,
-                                "template_id": template.id,
-                            },
-                        )
-                    )
-                if access_vals:
-                    jet.write({"access_ids": access_vals})
-        return jets
+        for vals in vals_list:
+            if vals.get("jet_template_id") and not vals.get("access_ids"):
+                jet_template = self.env["cx.tower.jet.template"].browse(
+                    vals["jet_template_id"]
+                )
+                if jet_template.access_template_ids:
+                    access_vals = [
+                        (0, 0, {"template_id": t.id})
+                        for t in jet_template.access_template_ids
+                    ]
+                    vals["access_ids"] = access_vals
+        return super().create(vals_list)
 
     def action_sync_access_links(self):
         """Sync access links from the jet template that are not yet in the jet."""
