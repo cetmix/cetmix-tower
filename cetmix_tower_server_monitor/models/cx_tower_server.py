@@ -624,7 +624,9 @@ WantedBy=multi-user.target
             "/etc/systemd/system/cx_monitor.service && "
             "sudo systemctl daemon-reload"
         )
-        self._run_command_using_ssh(client, cmd_clean)
+        res = self._run_command_using_ssh(client, cmd_clean)
+        if res.get("status") != 0:
+            raise UserError(_("Failed to uninstall agent: %s", res.get("error")))
 
         self.is_push_agent_installed = False
         return True
