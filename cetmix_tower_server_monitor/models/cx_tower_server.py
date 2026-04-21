@@ -1,6 +1,7 @@
 import base64
 import logging
 import re
+import shlex
 import uuid
 from datetime import datetime, timedelta
 
@@ -482,16 +483,21 @@ class CxTowerServer(models.Model):
         base_url = (
             self.env["ir.config_parameter"].sudo().get_param("web.base.url").rstrip("/")
         )
-        url = f"{base_url}/cetmix_tower/monitor/push"
+
+        # Securely escape user input for shell
+        url_esc = shlex.quote(f"{base_url}/cetmix_tower/monitor/push")
+        token_esc = shlex.quote(self.monitor_token)
+        ref_esc = shlex.quote(self.reference or self.name)
+        interval_esc = int(self.monitor_interval_push)
 
         script = f"""#!/bin/bash
 # Cetmix Tower Monitor Agent
 # Server: {self.name}
 
-URL="{url}"
-TOKEN="{self.monitor_token}"
-REF="{self.reference or self.name}"
-INTERVAL={self.monitor_interval_push}
+URL={url_esc}
+TOKEN={token_esc}
+REF={ref_esc}
+INTERVAL={interval_esc}
 
 # Sanity check for interval
 if [ "$INTERVAL" -lt 10 ]; then
@@ -503,15 +509,35 @@ echo "Starting Cetmix Monitor Agent (Interval: $INTERVAL seconds)..."
 while true; do
     # Collect Metrics
     MEM_TOTAL=$(grep MemTotal /proc/meminfo | awk '{{print int($2/1024)}}')
-    MEM_FREE=$(grep -e MemFree -e Buffers -e "^Cached" /proc/meminfo | \
+    MEM_FREE=$(grep -e MemFree -e Buffers -e "^Cached" /proc/meminfo | \\
         awk '{{sum += $2}} END {{print int(sum/1024)}}')
     MEM_USED=$((MEM_TOTAL - MEM_FREE))
 
     DISK_TOTAL=$(df -m / | awk 'NR==2 {{print $2}}')
     DISK_USED=$(df -m / | awk 'NR==2 {{print $3}}')
 
-    CPU_USAGE=$(grep 'cpu ' /proc/stat | \
-        awk '{{usage=($2+$4)*100/($2+$4+$5)}} END {{print usage}}')
+    # CPU: Two samples with 1s delay for accurate measurement
+    CPU_N1=($(grep '^cpu ' /proc/stat))
+    IDLE1=$((CPU_N1[4] + CPU_N1[5]))
+    TOTAL1=0
+    for i in {{1..10}}; do TOTAL1=$((TOTAL1 + ${{CPU_N1[i]}})); done
+
+    sleep 1
+
+    CPU_N2=($(grep '^cpu ' /proc/stat))
+    IDLE2=$((CPU_N2[4] + CPU_N2[5]))
+    TOTAL2=0
+    for i in {{1..10}}; do TOTAL2=$((TOTAL2 + ${{CPU_N2[i]}})); done
+
+    IDLE_DIFF=$((IDLE2 - IDLE1))
+    TOTAL_DIFF=$((TOTAL2 - TOTAL1))
+
+    if [ "$TOTAL_DIFF" -le 0 ]; then
+        CPU_USAGE=0
+    else
+        CPU_USAGE=$(awk "BEGIN {{print 100 * ($TOTAL_DIFF - $IDLE_DIFF) / $TOTAL_DIFF}}")
+    fi
+
     CPU_CORES=$(nproc 2>/dev/null || echo 1)
 
     # Format JSON manually
