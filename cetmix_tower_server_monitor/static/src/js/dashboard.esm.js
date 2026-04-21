@@ -28,6 +28,7 @@ export class ServerMonitorDashboard extends Component {
                 ram_total: 0,
                 disk_used: 0,
                 disk_total: 0,
+                cpu_cores: 1,
             },
             history: {
                 labels: [],
@@ -39,7 +40,6 @@ export class ServerMonitorDashboard extends Component {
             monitoring_mode: false,
             monitor_push_status: "none",
             monitor_interval: 1,
-            cpu_cores: 0,
         });
 
         this.canvasRef = useRef("canvas");
@@ -110,10 +110,21 @@ export class ServerMonitorDashboard extends Component {
             );
             console.log("Dashboard RPC result:", result);
             if (result.status === "success" && result.data) {
-                const oldInterval = this.state.monitor_interval;
                 const oldMode = this.state.monitoring_mode;
+                const oldInterval = this.state.monitor_interval;
 
-                Object.assign(this.state, result.data);
+                // Safe merge for current metrics to avoid NaNs in template
+                const safeCurrent = {
+                    cpu: 0,
+                    ram_used: 0,
+                    ram_total: 0,
+                    disk_used: 0,
+                    disk_total: 0,
+                    cpu_cores: 1,
+                    ...(result.data.current || {}),
+                };
+
+                Object.assign(this.state, result.data, {current: safeCurrent});
                 this.state.loading = false;
 
                 // Restart timer if interval or mode changed (crucial for initial load)
