@@ -186,6 +186,7 @@ export class ServerMonitorDashboard extends Component {
 
         if (this.chart) {
             this.chart.data.labels = labels;
+            this.chart.data.datasets[0].label = this.selectedTitle;
             this.chart.data.datasets[0].data = data;
             this.chart.data.datasets[0].borderColor = color.line;
             this.chart.data.datasets[0].backgroundColor = color.fill;
