@@ -619,8 +619,8 @@ WantedBy=multi-user.target
         client = self._get_ssh_client(raise_on_error=True)
 
         cmd_clean = (
-            "sudo systemctl stop cx_monitor && "
-            "sudo systemctl disable cx_monitor && "
+            "sudo systemctl stop cx_monitor || true && "
+            "sudo systemctl disable cx_monitor || true && "
             "sudo rm -f /usr/local/bin/cx_monitor.sh "
             "/etc/systemd/system/cx_monitor.service && "
             "sudo systemctl daemon-reload"
