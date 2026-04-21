@@ -4,8 +4,9 @@
         <div class="o_cx_monitor_dashboard">
             <!-- Sidebar -->
             <div class="o_cx_monitor_sidebar">
-                <div
+                <button
                     class="o_cx_monitor_item"
+                    type="button"
                     t-att-class="state.selectedKey === 'cpu' ? 'is-active' : ''"
                     t-on-click="() => this.selectMetric('cpu')"
                 >
@@ -19,9 +20,10 @@
                         t-esc="Math.round(state.current.cpu)"
                     />%)
                     </div>
-                </div>
-                <div
+                </button>
+                <button
                     class="o_cx_monitor_item"
+                    type="button"
                     t-att-class="state.selectedKey === 'ram' ? 'is-active' : ''"
                     t-on-click="() => this.selectMetric('ram')"
                 >
@@ -35,9 +37,10 @@
                         t-esc="Math.round((state.current.ram_used / state.current.ram_total) * 100) || 0"
                     />%)
                     </div>
-                </div>
-                <div
+                </button>
+                <button
                     class="o_cx_monitor_item"
+                    type="button"
                     t-att-class="state.selectedKey === 'disk' ? 'is-active' : ''"
                     t-on-click="() => this.selectMetric('disk')"
                 >
@@ -51,7 +54,7 @@
                         t-esc="Math.round((state.current.disk_used / state.current.disk_total) * 100) || 0"
                     />%)
                     </div>
-                </div>
+                </button>
             </div>
 
             <!-- Main Chart Area -->

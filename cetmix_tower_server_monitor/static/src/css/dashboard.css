@@ -23,11 +23,20 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    font-family: inherit;
 }
 
 .o_cx_monitor_item:hover {
     border-color: #cbd5e1;
     transform: translateY(-2px);
+}
+
+.o_cx_monitor_item:focus-visible {
+    outline: 2px solid #00a39b;
+    outline-offset: 2px;
 }
 
 .o_cx_monitor_item.is-active {
