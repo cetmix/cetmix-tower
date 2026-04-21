@@ -37,7 +37,7 @@ class CxTowerServer(models.Model):
         help="How often the agent should push metrics (in seconds).",
     )
 
-    @api.constrains("monitor_interval_pull", "monitor_interval_push")
+    @api.constrains("monitor_interval_pull", "monitor_interval_push", "monitoring_mode")
     def _check_monitor_intervals(self):
         for rec in self:
             if rec.monitoring_mode == "pull" and rec.monitor_interval_pull < 1:
