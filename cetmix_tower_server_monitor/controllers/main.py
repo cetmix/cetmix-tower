@@ -45,9 +45,23 @@ class CxTowerMonitorController(http.Controller):
                 status=400,
             )
 
+        if not isinstance(data, dict):
+            return Response(
+                json.dumps({"status": "error", "message": "Invalid JSON object"}),
+                content_type="application/json",
+                status=400,
+            )
+
         server_ref = data.get("server_ref")
         token = data.get("token")
         metrics_data = data.get("metrics", {})
+
+        if not isinstance(metrics_data, dict):
+            return Response(
+                json.dumps({"status": "error", "message": "Invalid metrics payload"}),
+                content_type="application/json",
+                status=400,
+            )
 
         if not server_ref or not metrics_data:
             return Response(
