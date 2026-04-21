@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class CxTowerMonitorController(http.Controller):
     @http.route(
         "/cetmix_tower/monitor/push",
-        type="json",
+        type="http",
         auth="public",
         methods=["POST"],
         csrf=False,
@@ -32,29 +32,57 @@ class CxTowerMonitorController(http.Controller):
             }
         }
         """
-        data = request.dispatcher.jsonrequest
+        import json
+
+        from odoo.http import Response
+
+        try:
+            data = json.loads(request.httprequest.data)
+        except Exception:
+            return Response(
+                json.dumps({"status": "error", "message": "Invalid JSON"}),
+                content_type="application/json",
+                status=400,
+            )
+
         server_ref = data.get("server_ref")
         token = data.get("token")
         metrics_data = data.get("metrics", {})
 
         if not server_ref or not metrics_data:
-            return {"status": "error", "message": "Missing data"}
+            return Response(
+                json.dumps({"status": "error", "message": "Missing data"}),
+                content_type="application/json",
+                status=400,
+            )
 
+        # Better matching: search by reference first, then name
         server = (
             request.env["cx.tower.server"]
             .sudo()
-            .search(
-                ["|", ("reference", "=", server_ref), ("name", "=", server_ref)],
-                limit=1,
-            )
+            .search([("reference", "=", server_ref)], limit=1)
         )
+        if not server:
+            server = (
+                request.env["cx.tower.server"]
+                .sudo()
+                .search([("name", "=", server_ref)], limit=1)
+            )
 
         if not server:
-            return {"status": "error", "message": "Server not found"}
+            return Response(
+                json.dumps({"status": "error", "message": "Server not found"}),
+                content_type="application/json",
+                status=404,
+            )
 
         if server.monitor_token != token:
             _logger.warning("Invalid monitor token for server %s", server_ref)
-            return {"status": "error", "message": "Invalid token"}
+            return Response(
+                json.dumps({"status": "error", "message": "Invalid token"}),
+                content_type="application/json",
+                status=403,
+            )
 
         vals = {
             "server_id": server.id,
@@ -73,11 +101,17 @@ class CxTowerMonitorController(http.Controller):
         server.sudo().write({"last_metrics_id": metrics.id})
         server.sudo()._check_monitor_alerts(metrics)
 
-        return {
-            "status": "success",
-            "metrics_id": metrics.id,
-            "next_interval": server.monitor_interval_push,
-        }
+        return Response(
+            json.dumps(
+                {
+                    "status": "success",
+                    "metrics_id": metrics.id,
+                    "next_interval": server.monitor_interval_push,
+                }
+            ),
+            content_type="application/json",
+            status=200,
+        )
 
     @http.route(
         "/cetmix_tower/server/<int:server_id>/metrics/dashboard",

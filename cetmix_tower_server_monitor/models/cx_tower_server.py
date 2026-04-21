@@ -37,12 +37,16 @@ class CxTowerServer(models.Model):
         help="How often the agent should push metrics (in seconds).",
     )
 
-    @api.constrains("monitor_interval_pull")
-    def _check_monitor_interval_pull(self):
+    @api.constrains("monitor_interval_pull", "monitor_interval_push")
+    def _check_monitor_intervals(self):
         for rec in self:
             if rec.monitoring_mode == "pull" and rec.monitor_interval_pull < 1:
                 raise ValidationError(
                     _("Monitor Interval (PULL) must be at least 1 minute.")
+                )
+            if rec.monitoring_mode == "push" and rec.monitor_interval_push < 10:
+                raise ValidationError(
+                    _("Monitor Interval (PUSH) must be at least 10 seconds.")
                 )
 
     monitor_token = fields.Char(
@@ -488,6 +492,11 @@ TOKEN="{self.monitor_token}"
 REF="{self.reference or self.name}"
 INTERVAL={self.monitor_interval_push}
 
+# Sanity check for interval
+if [ "$INTERVAL" -lt 10 ]; then
+    INTERVAL=10
+fi
+
 echo "Starting Cetmix Monitor Agent (Interval: $INTERVAL seconds)..."
 
 while true; do
@@ -516,7 +525,7 @@ while true; do
 
     # Simple JSON extraction for next_interval
     NEXT=$(echo "$RESPONSE" | grep -oP '"next_interval":\\s*\\K\\d+')
-    if [ ! -z "$NEXT" ]; then
+    if [ ! -z "$NEXT" ] && [ "$NEXT" -ge 10 ]; then
         INTERVAL=$NEXT
     fi
 
