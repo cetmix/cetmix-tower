@@ -34,29 +34,33 @@ class CxTowerJetAccess(models.Model):
     @api.depends("template_id", "jet_id")
     def _compute_url_resolved(self):
         for record in self:
-            if not record.template_id or not record.jet_id:
-                record.url_resolved = False
+            record.url_resolved = False
+            record.is_url_valid = False
+            if (
+                not record.template_id
+                or not record.jet_id
+                or not record.template_id.url_code
+            ):
                 continue
 
             url = record.template_id.url_code
-            if not url:
-                record.url_resolved = False
-                continue
+            has_error = False
 
-            # Resolve {{ variables }} using jet.get_variable_value
-            variables = re.findall(r"\{\{\s*(\w+)\s*\}\}", url)
-            for var in variables:
-                val = record.jet_id.get_variable_value(var)
-                if val is None:
-                    val = ""
-                placeholder = f"{{{{ {var} }}}}"
-                url = url.replace(placeholder, str(val))
-                placeholder_no_space = f"{{{{{var}}}}}"
-                url = url.replace(placeholder_no_space, str(val))
+            def replace_var(match):
+                nonlocal has_error
+                var_name = match.group(1)
+                val = record.jet_id.get_variable_value(var_name)
+                # If variable resolution explicitly fails (False or None)
+                if val is False or val is None:
+                    has_error = True
+                    return "False"
+                return str(val)
 
-            # Check if any resolved variable is 'False'
-            record.url_resolved = url
-            record.is_url_valid = bool(url and "False" not in url)
+            # Resolve {{ variables }} using re.sub with callback for robustness
+            resolved_url = re.sub(r"\{\{\s*(\w+)\s*\}\}", replace_var, url)
+
+            record.url_resolved = resolved_url
+            record.is_url_valid = not has_error
 
     def action_open_url(self):
         """Action to open the resolved URL in a new tab."""
