@@ -9,8 +9,8 @@ class CxTowerJet(models.Model):
     access_ids = fields.One2many(
         comodel_name="cx.tower.jet.access",
         inverse_name="jet_id",
-        string="Accesos Rápidos",
-        help="Enlaces rápidos configurados para este jet.",
+        string="Quick Access Links",
+        help="Quick access links configured for this jet.",
     )
 
     @api.model_create_multi
