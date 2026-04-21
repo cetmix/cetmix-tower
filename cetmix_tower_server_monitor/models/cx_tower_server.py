@@ -535,7 +535,8 @@ while true; do
     if [ "$TOTAL_DIFF" -le 0 ]; then
         CPU_USAGE=0
     else
-        CPU_USAGE=$(awk "BEGIN {{print 100 * ($TOTAL_DIFF - $IDLE_DIFF) / $TOTAL_DIFF}}")
+        CPU_OP="100 * ($TOTAL_DIFF - $IDLE_DIFF) / $TOTAL_DIFF"
+        CPU_USAGE=$(awk "BEGIN {{print $CPU_OP}}")
     fi
 
     CPU_CORES=$(nproc 2>/dev/null || echo 1)
