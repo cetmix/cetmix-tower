@@ -381,6 +381,7 @@ class CxTowerServer(models.Model):
                 disk_out,
                 cpu_out,
             )
+            return
 
         try:
             metrics_vals = {
