@@ -14,7 +14,6 @@ class CxTowerJetTemplate(models.Model):
     _inherit = "cx.tower.jet.template"
 
     isolation_mode = fields.Boolean(
-        string="Isolation Mode",
         help="When active, prevents users from changing applicability or tags "
         "when running commands.",
     )
@@ -22,7 +21,6 @@ class CxTowerJetTemplate(models.Model):
         selection=lambda self: self.env["cx.tower.plan.run.wizard"]
         ._fields["applicability"]
         .selection,
-        string="Forced Applicability",
     )
 
     forced_command_tag_ids = fields.Many2many(
@@ -54,5 +52,8 @@ class CxTowerJetTemplate(models.Model):
         for record in self:
             if record.isolation_mode and not record.forced_applicability:
                 raise ValidationError(
-                    _("Please specify Forced Applicability when Isolation Mode is active.")
+                    _(
+                        "Please specify Forced Applicability when Isolation Mode "
+                        "is active."
+                    )
                 )

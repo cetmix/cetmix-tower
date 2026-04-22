@@ -59,9 +59,13 @@ class CxTowerPlanRunWizard(models.TransientModel):
                 template.forced_applicability
                 and record.applicability != template.forced_applicability
             ):
-                # Only apply forced_applicability if it's 'this' or the user is privileged.
-                # This prevents non-privileged users from escalating to 'shared'.
-                if record._is_privileged_user() or template.forced_applicability == "this":
+                # Only apply forced_applicability if it's 'this' or the user is
+                # privileged. This prevents non-privileged users from escalating
+                # to 'shared'.
+                if (
+                    record._is_privileged_user()
+                    or template.forced_applicability == "this"
+                ):
                     raise ValidationError(
                         _("Isolation mode: applicability cannot be changed.")
                     )
