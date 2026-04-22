@@ -1,7 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerJetTemplate(models.Model):
@@ -18,10 +19,9 @@ class CxTowerJetTemplate(models.Model):
         "when running commands.",
     )
     forced_applicability = fields.Selection(
-        selection=[
-            ("this", "For selected server(s)"),
-            ("shared", "Non server restricted"),
-        ],
+        selection=lambda self: self.env["cx.tower.plan.run.wizard"]
+        ._fields["applicability"]
+        .selection,
         string="Forced Applicability",
     )
 
@@ -36,3 +36,11 @@ class CxTowerJetTemplate(models.Model):
         relation="cx_tower_template_forced_plan_tag_rel",
         string="Forced Flight Plan Tags",
     )
+
+    @api.constrains("isolation_mode", "forced_applicability")
+    def _check_forced_applicability(self):
+        for record in self:
+            if record.isolation_mode and not record.forced_applicability:
+                raise ValidationError(
+                    _("Please specify Forced Applicability when Isolation Mode is active.")
+                )
