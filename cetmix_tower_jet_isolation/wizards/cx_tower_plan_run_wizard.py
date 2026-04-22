@@ -42,12 +42,14 @@ class CxTowerPlanRunWizardFilter(models.TransientModel):
             jet_ids = self.env["cx.tower.jet"].browse(
                 self.env.context["default_jet_ids"]
             )
-            if jet_ids:
-                template = jet_ids[0].jet_template_id
-
-                if template.isolation_mode:
-                    if template.forced_applicability:
-                        res["applicability"] = template.forced_applicability
-                    if template.forced_plan_tag_ids:
-                        res["tag_ids"] = [(6, 0, template.forced_plan_tag_ids.ids)]
+            # Find the first jet that has isolation mode enabled
+            isolated_jet = jet_ids.filtered(lambda j: j.jet_template_id.isolation_mode)[
+                :1
+            ]
+            if isolated_jet:
+                template = isolated_jet.jet_template_id
+                if template.forced_applicability:
+                    res["applicability"] = template.forced_applicability
+                if template.forced_plan_tag_ids:
+                    res["tag_ids"] = [(6, 0, template.forced_plan_tag_ids.ids)]
         return res
