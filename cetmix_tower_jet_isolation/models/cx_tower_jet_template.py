@@ -27,13 +27,17 @@ class CxTowerJetTemplate(models.Model):
 
     forced_command_tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
-        relation="cx_tower_template_forced_command_tag_rel",
+        relation="cx_tower_jet_template_forced_command_tag_rel",
+        column1="jet_template_id",
+        column2="tag_id",
         string="Forced Command Tags",
     )
 
     forced_plan_tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
-        relation="cx_tower_template_forced_plan_tag_rel",
+        relation="cx_tower_jet_template_forced_plan_tag_rel",
+        column1="jet_template_id",
+        column2="tag_id",
         string="Forced Flight Plan Tags",
     )
 
