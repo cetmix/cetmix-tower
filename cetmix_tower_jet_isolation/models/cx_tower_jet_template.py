@@ -41,6 +41,14 @@ class CxTowerJetTemplate(models.Model):
         string="Forced Flight Plan Tags",
     )
 
+    @api.onchange("isolation_mode")
+    def _onchange_isolation_mode(self):
+        """Clear forced values when isolation is disabled"""
+        if not self.isolation_mode:
+            self.forced_applicability = False
+            self.forced_command_tag_ids = [(5, 0, 0)]
+            self.forced_plan_tag_ids = [(5, 0, 0)]
+
     @api.constrains("isolation_mode", "forced_applicability")
     def _check_forced_applicability(self):
         for record in self:
