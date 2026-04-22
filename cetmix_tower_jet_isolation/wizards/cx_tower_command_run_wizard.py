@@ -11,7 +11,7 @@ class CxTowerCommandRunWizardFilter(models.TransientModel):
         string="Forced Tags",
     )
 
-    @api.depends("jet_ids")
+    @api.depends("jet_ids.jet_template_id.isolation_mode")
     def _compute_is_restricted_context(self):
         is_global_manager = self.env.user.has_group("cetmix_tower_server.group_manager")
         for record in self:
@@ -19,9 +19,7 @@ class CxTowerCommandRunWizardFilter(models.TransientModel):
                 self.env.context.get("default_jet_ids", [])
             )
 
-            is_isolated = bool(
-                jets and any(j.jet_template_id.isolation_mode for j in jets)
-            )
+            is_isolated = any(j.jet_template_id.isolation_mode for j in jets)
 
             if is_global_manager:
                 is_manager = True
