@@ -7,7 +7,7 @@ def uninstall_hook(env):
     still read) those stale values would silently reactivate the restriction
     logic.  Resetting them here ensures a clean state.
     """
-    env["cx.tower.jet.template"].search([("isolation_mode", "=", True)]).write(
+    env["cx.tower.jet.template"].with_context(active_test=False).search([]).write(
         {
             "isolation_mode": False,
             "forced_applicability": False,
