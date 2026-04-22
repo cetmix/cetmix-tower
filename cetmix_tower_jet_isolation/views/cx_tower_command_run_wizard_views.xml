@@ -22,7 +22,6 @@
             </xpath>
 
             <xpath expr="//field[@name='tag_ids']" position="attributes">
-                <attribute name="groups">cetmix_tower_server.group_manager</attribute>
                 <attribute name="invisible">is_restricted_context or result</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
