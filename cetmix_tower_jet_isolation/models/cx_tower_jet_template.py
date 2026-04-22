@@ -18,10 +18,12 @@ class CxTowerJetTemplate(models.Model):
         "when running commands.",
     )
     forced_applicability = fields.Selection(
-        selection=lambda self: self.env["cx.tower.plan.run.wizard"]
-        ._fields["applicability"]
-        .selection,
+        selection="_selection_applicability",
     )
+
+    @api.model
+    def _selection_applicability(self):
+        return self.env["cx.tower.plan.run.wizard"]._fields["applicability"].selection
 
     forced_command_tag_ids = fields.Many2many(
         comodel_name="cx.tower.tag",
