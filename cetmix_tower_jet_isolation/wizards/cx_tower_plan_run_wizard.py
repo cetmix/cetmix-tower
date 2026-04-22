@@ -1,7 +1,7 @@
 from odoo import api, fields, models
 
 
-class CxTowerPlanRunWizardFilter(models.TransientModel):
+class CxTowerPlanRunWizard(models.TransientModel):
     _inherit = "cx.tower.plan.run.wizard"
 
     is_restricted_context = fields.Boolean(compute="_compute_is_restricted_context")
