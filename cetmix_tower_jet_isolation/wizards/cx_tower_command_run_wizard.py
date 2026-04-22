@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerCommandRunWizard(models.TransientModel):
@@ -29,6 +30,44 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 is_manager = False
 
             record.is_restricted_context = is_isolated and not is_manager
+
+    @api.constrains("applicability", "tag_ids", "jet_ids")
+    def _check_isolation_constraints(self):
+        """Server-side enforcement of isolation constraints"""
+        is_global_manager = self.env.user.has_group("cetmix_tower_server.group_manager")
+        for record in self:
+            jets = record.jet_ids or self.env["cx.tower.jet"].browse(
+                self.env.context.get("default_jet_ids", [])
+            )
+            is_isolated = any(j.jet_template_id.isolation_mode for j in jets)
+
+            if not is_isolated:
+                continue
+
+            is_manager = is_global_manager or (
+                jets and all(self.env.user in j.manager_ids for j in jets)
+            )
+
+            if is_manager:
+                continue
+
+            # Identify the first isolated template to get forced values
+            isolated_jet = jets.filtered(lambda j: j.jet_template_id.isolation_mode)[:1]
+            template = isolated_jet.jet_template_id
+
+            if (
+                template.forced_applicability
+                and record.applicability != template.forced_applicability
+            ):
+                raise ValidationError(
+                    _("Isolation mode: applicability cannot be changed.")
+                )
+
+            if template.forced_command_tag_ids:
+                if set(record.tag_ids.ids) != set(template.forced_command_tag_ids.ids):
+                    raise ValidationError(
+                        _("Isolation mode: forced tags cannot be changed.")
+                    )
 
     @api.depends("tag_ids")
     def _compute_isolated_tag_ids(self):
