@@ -59,8 +59,16 @@ class CxTowerCommandRunWizard(models.TransientModel):
                 template.forced_applicability
                 and record.applicability != template.forced_applicability
             ):
+                # Only apply forced_applicability if it's 'this' or the user is privileged.
+                # This prevents non-privileged users from escalating to 'shared'.
+                if record._is_privileged_user() or template.forced_applicability == "this":
+                    raise ValidationError(
+                        _("Isolation mode: applicability cannot be changed.")
+                    )
+
+            if not record._is_privileged_user() and record.applicability == "shared":
                 raise ValidationError(
-                    _("Isolation mode: applicability cannot be changed.")
+                    _("You are not allowed to use non server restricted applicability.")
                 )
 
             if template.forced_command_tag_ids:
@@ -88,7 +96,11 @@ class CxTowerCommandRunWizard(models.TransientModel):
             if isolated_jet:
                 template = isolated_jet.jet_template_id
                 if template.forced_applicability:
-                    res["applicability"] = template.forced_applicability
+                    if (
+                        self._is_privileged_user()
+                        or template.forced_applicability == "this"
+                    ):
+                        res["applicability"] = template.forced_applicability
                 if template.forced_command_tag_ids:
                     res["tag_ids"] = [(6, 0, template.forced_command_tag_ids.ids)]
         return res
