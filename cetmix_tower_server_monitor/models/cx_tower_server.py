@@ -113,7 +113,7 @@ class CxTowerServer(models.Model):
         "monitor_interval_push",
     )
     def _compute_monitor_push_status(self):
-        now = datetime.now()
+        now = fields.Datetime.now()
         for rec in self:
             if rec.monitoring_mode != "push" or not rec.last_metrics_id:
                 rec.monitor_push_status = "none"
@@ -484,7 +484,7 @@ class CxTowerServer(models.Model):
         ref_esc = shlex.quote(self.reference or self.name)
         interval_esc = int(self.monitor_interval_push)
 
-        script = f"""#!/bin/bash
+        script = rf"""#!/bin/bash
 # Cetmix Tower Monitor Agent
 # Server: {self.name}
 
@@ -503,8 +503,7 @@ echo "Starting Cetmix Monitor Agent (Interval: $INTERVAL seconds)..."
 while true; do
     # Collect Metrics
     MEM_TOTAL=$(grep MemTotal /proc/meminfo | awk '{{print int($2/1024)}}')
-    MEM_FREE=$(grep -e MemFree -e Buffers -e "^Cached" /proc/meminfo | \\
-        awk '{{sum += $2}} END {{print int(sum/1024)}}')
+    MEM_FREE=$(grep -e MemFree -e Buffers -e "^Cached" /proc/meminfo | awk '{{sum += $2}} END {{print int(sum/1024)}}')
     MEM_USED=$((MEM_TOTAL - MEM_FREE))
 
     DISK_TOTAL=$(df -m / | awk 'NR==2 {{print $2}}')
@@ -530,30 +529,49 @@ while true; do
         CPU_USAGE=0
     else
         CPU_OP="100 * ($TOTAL_DIFF - $IDLE_DIFF) / $TOTAL_DIFF"
-        CPU_USAGE=$(awk "BEGIN {{print $CPU_OP}}")
+        CPU_USAGE=$(LC_ALL=C awk "BEGIN {{print $CPU_OP}}")
     fi
 
     CPU_CORES=$(nproc 2>/dev/null || echo 1)
 
-    # Escape double quotes for JSON
-    REF_J=${{{{REF//\\\"/\\\\\\\"}}}}
-    TOKEN_J=${{{{TOKEN//\\\"/\\\\\\\"}}}}
+    # Escape special chars for JSON
+    # 1. Backslashes
+    REF_J=${{REF//\\\\/\\\\\\\\}}
+    TOKEN_J=${{TOKEN//\\\\/\\\\\\\\}}
+    # 2. Double quotes
+    REF_J=${{REF_J//\"/\\\"}}
+    TOKEN_J=${{TOKEN_J//\"/\\\"}}
 
-    # Format JSON manually
-    PAYLOAD='{{"server_ref": "'$REF_J'", "token": "'$TOKEN_J'", "metrics": {{'
-    PAYLOAD+='"ram_total_mb": '$MEM_TOTAL', "ram_used_mb": '$MEM_USED', '
-    PAYLOAD+='"disk_total_gb": '$(awk "BEGIN {{print $DISK_TOTAL/1024}}")', '
-    PAYLOAD+='"disk_used_gb": '$(awk "BEGIN {{print $DISK_USED/1024}}")', '
-    PAYLOAD+='"cpu_percent": '$CPU_USAGE', "cpu_cores": '$CPU_CORES' }}}}'
+    # Format JSON manually using LC_ALL=C to ensure dots for decimals
+    PAYLOAD=$(LC_ALL=C awk -v ref="$REF_J" -v tok="$TOKEN_J" -v ram_t="$MEM_TOTAL" -v ram_u="$MEM_USED" -v disk_t="$DISK_TOTAL" -v disk_u="$DISK_USED" -v cpu="$CPU_USAGE" -v cores="$CPU_CORES" '
+        BEGIN {{
+            printf "{{\\\"server_ref\\\": \\\"%s\\\", \\\"token\\\": \\\"%s\\\", \\\"metrics\\\": {{", ref, tok
+            printf "\\\"ram_total_mb\\\": %d, \\\"ram_used_mb\\\": %d, ", ram_t, ram_u
+            printf "\\\"disk_total_gb\\\": %.2f, \\\"disk_used_gb\\\": %.2f, ", disk_t/1024, disk_u/1024
+            printf "\\\"cpu_percent\\\": %.2f, \\\"cpu_cores\\\": %d }}}}", cpu, cores
+        }}
+    ')
 
-    # Send to Tower and get next interval
-    RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$URL")
+    # Send to Tower with timeouts and retries
+    # We use -S to show errors even if -s is used, and capture stderr to see curl errors
+    RESPONSE=$(curl -s -S --connect-timeout 10 --max-time 20 --retry 2 \
+        -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$URL" 2>&1)
+    RET=$?
 
-    # Simple JSON extraction for next_interval
-    NEXT=$(echo "$RESPONSE" | grep -oP '"next_interval":\\s*\\K\\d+')
-    if [ ! -z "$NEXT" ] && [ "$NEXT" -ge 10 ]; then
-        INTERVAL=$NEXT
+    if [ $RET -ne 0 ]; then
+        echo "Cetmix Monitor Error: Curl failed (code $RET). Response: $RESPONSE" | logger -t cx_monitor
+    else
+        # Extract next_interval using a more portable sed pattern
+        NEXT=$(echo "$RESPONSE" | sed -n 's/.*"next_interval":[[:space:]]*\([0-9]*\).*/\1/p')
+        if [ ! -z "$NEXT" ] && [ "$NEXT" -ge 10 ]; then
+            INTERVAL=$NEXT
+        fi
+        # Log success for initial debugging (can be commented out later)
+        echo "Cetmix Monitor: Metrics sent successfully. Next in $INTERVAL s." | logger -t cx_monitor
     fi
+
+    # Optional: Log to syslog for debugging
+    # echo "Monitor Push: $PAYLOAD -> $RESPONSE" | logger -t cx_monitor
 
     sleep $INTERVAL
 done
