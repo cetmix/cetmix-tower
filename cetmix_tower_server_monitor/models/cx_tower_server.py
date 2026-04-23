@@ -304,10 +304,16 @@ class CxTowerServer(models.Model):
     def action_monitor_debug(self):
         """Action to show the raw SSH output for debugging."""
         self.ensure_one()
+        base_url = (
+            self.env["ir.config_parameter"].sudo().get_param("web.base.url").rstrip("/")
+        )
+        url = f"{base_url}/cetmix_tower/monitor/push"
         commands = [
             "free -m",
             "df -m /",
             "top -bn1 | grep -E -i '^(%?Cpu|CPU)' | head -n 1",
+            f"echo 'Testing connection to Odoo: {url}'",
+            f"curl -Is --connect-timeout 5 {url} | head -n 1",
         ]
         full_command = " ; echo '---' ; ".join(commands)
         client = self._get_ssh_client(raise_on_error=True)
@@ -318,16 +324,11 @@ class CxTowerServer(models.Model):
         )
         raise ValidationError(
             _(
-                "DEBUG MONITOR OUTPUT\n\n"
-                "Status: %(status)s\n\n"
-                "Response:\n%(response)s\n\n"
-                "Error:\n%(error)s"
+                "Raw Debug Output from %s:\n\n%s\n\nFull Command Used:\n%s",
+                self.name,
+                res.get("response", "No response"),
+                full_command,
             )
-            % {
-                "status": res.get("status"),
-                "response": res.get("response"),
-                "error": res.get("error"),
-            }
         )
 
     def _process_monitor_output(self, output):
