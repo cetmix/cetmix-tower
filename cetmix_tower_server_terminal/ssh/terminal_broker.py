@@ -131,9 +131,9 @@ _active_subscribers: set = set()
 class _BrokerSession:
     """SSH interactive terminal session managed by the broker process."""
 
-    _active_read_sleep = 0.005
-    _idle_read_sleep = 0.04
-    _activity_window = 1.5
+    _ACTIVE_READ_SLEEP = 0.005
+    _IDLE_READ_SLEEP = 0.04
+    _ACTIVITY_WINDOW = 1.5
     # Hard cap on the in-memory output buffer (bytes).  When the buffer grows
     # beyond this limit the oldest data is discarded so that a stalled browser
     # tab or a very verbose shell command cannot cause unbounded memory growth.
@@ -234,9 +234,9 @@ class _BrokerSession:
                     self.touch()
                     self._append_output(output)
                     continue
-                sleep = self._idle_read_sleep
-                if time.time() - self.last_activity <= self._activity_window:
-                    sleep = self._active_read_sleep
+                sleep = self._IDLE_READ_SLEEP
+                if time.time() - self.last_activity <= self._ACTIVITY_WINDOW:
+                    sleep = self._ACTIVE_READ_SLEEP
                 time.sleep(sleep)
         except Exception as err:
             _logger.exception("Reader loop error for session %s", self.token)
