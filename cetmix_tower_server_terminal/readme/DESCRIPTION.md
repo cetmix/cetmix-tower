@@ -1,10 +1,5 @@
-This module adds an interactive SSH terminal client for Cetmix Tower servers.
+This module extends the functionality of Cetmix Tower Server to support interactive
+SSH terminal sessions directly from the Odoo backend.
 
-It extends `cetmix_tower_server` with:
-
-- A terminal action in server kanban and form views.
-- A transient terminal session model (`cx.tower.terminal.session`).
-- Browser terminal UI assets based on xterm.js.
-- A lightweight terminal broker process to keep interactive sessions stable.
-
-Please refer to the official documentation for detailed information.
+It allows users to open a browser-based SSH terminal for any Tower server or jet,
+providing real-time interactive access without leaving the Odoo interface.
