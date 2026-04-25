@@ -63,7 +63,7 @@ class InteractiveShell:
             bytes_sent += sent_now
         return bytes_sent
 
-    def resize(self, width: int, height: int) -> None:
+    def resize(self, width: int, height: int):
         """
         Resize the remote PTY to match the visible terminal size.
         """
@@ -82,7 +82,7 @@ class InteractiveShell:
             chunks.append(channel.recv(max_bytes))
         return b"".join(chunks).decode("utf-8", errors="replace")
 
-    def close(self) -> None:
+    def close(self):
         """
         Close the shell channel.
         """

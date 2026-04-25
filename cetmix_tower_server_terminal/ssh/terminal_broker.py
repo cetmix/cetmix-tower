@@ -139,7 +139,7 @@ class _BrokerSession:
     # tab or a very verbose shell command cannot cause unbounded memory growth.
     _MAX_BUFFER_BYTES = 512 * 1024  # 512 KiB
 
-    def __init__(self, token: str, connection: SSHConnection) -> None:
+    def __init__(self, token: str, connection: SSHConnection):
         """Open a paramiko shell and start the background reader thread."""
         self.token = token
         self.connection = connection
@@ -161,13 +161,13 @@ class _BrokerSession:
 
     # -- activity tracking --------------------------------------------------
 
-    def touch(self) -> None:
+    def touch(self):
         """Update the last-activity timestamp to prevent idle cleanup."""
         self.last_activity = time.time()
 
     # -- output buffer ------------------------------------------------------
 
-    def _append_output(self, output: str) -> None:
+    def _append_output(self, output: str):
         """Append output to the buffer, capping it at _MAX_BUFFER_BYTES."""
         if not output:
             return
@@ -213,7 +213,7 @@ class _BrokerSession:
 
     # -- state management ---------------------------------------------------
 
-    def set_state(self, state: str, message: str | None = None) -> None:
+    def set_state(self, state: str, message: str | None = None):
         """Update session state and wake any waiters on the output condition."""
         self.state = state
         self.message = message
@@ -222,7 +222,7 @@ class _BrokerSession:
 
     # -- reader thread ------------------------------------------------------
 
-    def _reader_loop(self) -> None:
+    def _reader_loop(self):
         """Background thread: read shell output and feed the output buffer."""
         try:
             while not self.stop_event.is_set():
@@ -244,14 +244,14 @@ class _BrokerSession:
 
     # -- resize -------------------------------------------------------------
 
-    def resize(self, cols: int, rows: int) -> None:
+    def resize(self, cols: int, rows: int):
         """Resize the remote PTY to the given dimensions."""
         self.shell.resize(cols, rows)
         self.touch()
 
     # -- close --------------------------------------------------------------
 
-    def close(self) -> None:
+    def close(self):
         """Shut down the reader thread, the shell, and the SSH connection."""
         self.stop_event.set()
         with self.output_condition:
@@ -401,7 +401,7 @@ def _action_send(data: dict) -> dict:
         return _ok(state="error", message=str(exc))
 
 
-def _action_subscribe_stream(data: dict, conn: socket.socket) -> None:
+def _action_subscribe_stream(data: dict, conn: socket.socket):
     """Stream output to the caller until the session ends or the socket closes.
 
     Only one subscriber per session token is allowed at a time.  If another
@@ -545,7 +545,7 @@ def _dispatch(data: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def _handle_client(conn: socket.socket) -> None:
+def _handle_client(conn: socket.socket):
     """Serve one Odoo worker connection: read requests, write responses."""
     try:
         with conn:
@@ -595,7 +595,7 @@ def _handle_client(conn: socket.socket) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _cleanup_loop() -> None:
+def _cleanup_loop():
     """Periodically close idle or dead sessions."""
     while True:
         time.sleep(_CLEANUP_INTERVAL)
@@ -634,7 +634,7 @@ def _lock_path() -> str:
     return f"/tmp/tower_terminal_broker_{os.getuid()}.lock"
 
 
-def main() -> None:
+def main():
     """Start the broker daemon: bind the Unix socket and accept worker connections."""
     sock_path = _socket_path()
     lock_path = _lock_path()
