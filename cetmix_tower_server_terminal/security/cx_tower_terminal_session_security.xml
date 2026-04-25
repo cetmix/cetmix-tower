@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="cx_tower_terminal_session_rule_own_records" model="ir.rule">
+    <record id="cx_tower_terminal_session_rule_group_user_own" model="ir.rule">
         <field name="name">Tower terminal session: own records only</field>
         <field name="model_id" ref="model_cx_tower_terminal_session" />
         <field
