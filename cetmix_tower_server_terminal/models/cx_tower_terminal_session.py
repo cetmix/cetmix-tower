@@ -81,10 +81,12 @@ class CxTowerTerminalSession(models.TransientModel):
 
     @staticmethod
     def _broker_socket_path():
+        """Return the UNIX socket path used to communicate with the broker."""
         return f"/tmp/tower_terminal_broker_{os.getuid()}.sock"
 
     @staticmethod
     def _broker_script_path():
+        """Return the absolute path to the terminal broker Python script."""
         return os.path.normpath(
             os.path.join(os.path.dirname(__file__), "..", "ssh", "terminal_broker.py")
         )
