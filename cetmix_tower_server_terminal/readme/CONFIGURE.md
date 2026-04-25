@@ -1,6 +1,10 @@
-No additional configuration is required beyond the standard
-[Cetmix Tower](https://cetmix.com/tower) server setup.
+To configure this module:
 
-Ensure the target server has SSH key authentication configured in the
-**Tower Server** settings (SSH Private Key and, optionally, *Skip Host Key Check*).
-The terminal session will reuse those credentials to open an interactive PTY shell.
+1. Configure the target server in Cetmix Tower.
+2. Set SSH credentials in the server form:
+	- SSH private key (recommended), or password according to the selected auth mode.
+3. Configure host verification:
+	- Set the server host key for strict verification, or
+	- enable Skip Host Key Check when host key verification is not required.
+
+The terminal session reuses these server SSH settings to open the interactive PTY shell.
