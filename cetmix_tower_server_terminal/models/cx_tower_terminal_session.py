@@ -65,7 +65,7 @@ class CxTowerTerminalSession(models.TransientModel):
     ]
 
     state = fields.Selection(
-        selection="_selection_state",
+        selection=lambda self: self._selection_state(),
         default="open",
         required=True,
         readonly=True,
