@@ -9,7 +9,6 @@
     "website": "https://tower.cetmix.com",
     "author": "Cetmix",
     "license": "AGPL-3",
-    "installable": True,
     "depends": ["cetmix_tower_server"],
     "data": [
         "security/cx_tower_terminal_session_security.xml",
