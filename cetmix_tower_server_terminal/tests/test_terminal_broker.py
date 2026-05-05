@@ -15,9 +15,10 @@ class TestTowerTerminalBroker(TestTowerTerminalCommon):
         """_open_broker_session persists open state on broker success."""
         session = self._create_open_session()
 
-        with self._patch_broker_call(
-            return_value={"status": "ok"}
-        ), self._patch_start_pusher():
+        with (
+            self._patch_broker_call(return_value={"status": "ok"}),
+            self._patch_start_pusher(),
+        ):
             session._open_broker_session()
 
         self.assertEqual(session.state, "open")
@@ -29,9 +30,16 @@ class TestTowerTerminalBroker(TestTowerTerminalCommon):
 
         raised = False
         try:
-            with self._patch_broker_call(
-                return_value={"status": "error", "message": "SSH refused"}
-            ), self._patch_start_pusher():
+            with (
+                self._patch_broker_call(
+                    return_value={"status": "error", "message": "SSH refused"}
+                ),
+                self._patch_start_pusher(),
+                patch(
+                    "odoo.addons.cetmix_tower_server_terminal.models."
+                    "cx_tower_terminal_session._logger"
+                ),
+            ):
                 session._open_broker_session()
         except ValidationError:
             raised = True
@@ -48,11 +56,17 @@ class TestTowerTerminalBroker(TestTowerTerminalCommon):
 
         raised = False
         try:
-            with patch(
-                "odoo.addons.cetmix_tower_server_terminal.models."
-                "cx_tower_terminal_session.CxTowerTerminalSession._broker_call",
-                autospec=True,
-                side_effect=RuntimeError("Broker unavailable"),
+            with (
+                patch(
+                    "odoo.addons.cetmix_tower_server_terminal.models."
+                    "cx_tower_terminal_session.CxTowerTerminalSession._broker_call",
+                    autospec=True,
+                    side_effect=RuntimeError("Broker unavailable"),
+                ),
+                patch(
+                    "odoo.addons.cetmix_tower_server_terminal.models."
+                    "cx_tower_terminal_session._logger"
+                ),
             ):
                 session._open_broker_session()
         except ValidationError:
@@ -65,26 +79,25 @@ class TestTowerTerminalBroker(TestTowerTerminalCommon):
         """_broker_call retries once and calls _ensure_broker on first OSError."""
         session = self._create_open_session()
 
-        import socket as _socket
-
-        with patch(
-            "odoo.addons.cetmix_tower_server_terminal.models."
-            "cx_tower_terminal_session.socket.socket",
-        ) as mock_sock_cls, patch(
-            "odoo.addons.cetmix_tower_server_terminal.models."
-            "cx_tower_terminal_session.CxTowerTerminalSession._ensure_broker",
-            autospec=True,
-        ) as mock_ensure:
+        with (
+            patch(
+                "odoo.addons.cetmix_tower_server_terminal.models."
+                "cx_tower_terminal_session.socket.socket",
+            ) as mock_sock_cls,
+            patch(
+                "odoo.addons.cetmix_tower_server_terminal.models."
+                "cx_tower_terminal_session.CxTowerTerminalSession._ensure_broker",
+                autospec=True,
+            ) as mock_ensure,
+        ):
             # First attempt raises OSError; second returns a valid response
             sock_fail = MagicMock()
-            sock_fail.__enter__ = MagicMock(side_effect=_socket.error("conn refused"))
+            sock_fail.__enter__ = MagicMock(side_effect=OSError("conn refused"))
             sock_fail.__exit__ = MagicMock(return_value=False)
             sock_ok = MagicMock()
             sock_ok.__enter__ = MagicMock(return_value=sock_ok)
             sock_ok.__exit__ = MagicMock(return_value=False)
-            sock_ok.makefile.return_value.readline.return_value = (
-                '{"status": "ok"}\n'
-            )
+            sock_ok.makefile.return_value.readline.return_value = '{"status": "ok"}\n'
             mock_sock_cls.side_effect = [sock_fail, sock_ok]
 
             result = session._broker_call({"action": "ping", "token": "abc"})
