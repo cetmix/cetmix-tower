@@ -80,29 +80,53 @@ class CxTowerTerminalSession(models.TransientModel):
 
     @api.model
     def _selection_state(self):
-        """Return the list of valid state values for the state field."""
+        """Return the list of valid state values for the state field.
+
+        Returns:
+            list: List of (value, label) selection tuples.
+        """
         return _STATE_SELECTION
 
     @api.model
     def _default_state(self):
-        """Return the default value for the state field."""
+        """Return the default value for the state field.
+
+        Returns:
+            str: The default state value ('open').
+        """
         return "open"
 
     @staticmethod
     def _broker_socket_path():
-        """Return the UNIX socket path used to communicate with the broker."""
+        """Return the UNIX socket path used to communicate with the broker.
+
+        Returns:
+            str: Absolute path to the broker Unix-domain socket file.
+        """
         return f"/tmp/tower_terminal_broker_{os.getuid()}.sock"
 
     @staticmethod
     def _broker_script_path():
-        """Return the absolute path to the terminal broker Python script."""
+        """Return the absolute path to the terminal broker Python script.
+
+        Returns:
+            str: Normalised absolute path to terminal_broker.py.
+        """
         return os.path.normpath(
             os.path.join(os.path.dirname(__file__), "..", "ssh", "terminal_broker.py")
         )
 
     @classmethod
     def _ensure_broker(cls):
-        """Make sure the terminal broker daemon is running."""
+        """Make sure the terminal broker daemon is running.
+
+        Starts the broker process if it is not already listening on its
+        socket and waits up to 5 seconds for it to become ready.
+
+        Raises:
+            RuntimeError: If the broker process cannot be started or does
+                not become ready within the allowed timeout.
+        """
         sock_path = cls._broker_socket_path()
         if cls._broker_ping(sock_path):
             return
@@ -128,7 +152,14 @@ class CxTowerTerminalSession(models.TransientModel):
 
     @staticmethod
     def _broker_ping(sock_path):
-        """Return True if the broker socket accepts a connection."""
+        """Return True if the broker socket accepts a connection.
+
+        Args:
+            sock_path (str): Path to the Unix-domain socket to probe.
+
+        Returns:
+            bool: True if the broker responded, False on any socket error.
+        """
         try:
             with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
                 s.settimeout(1.0)
@@ -138,7 +169,21 @@ class CxTowerTerminalSession(models.TransientModel):
             return False
 
     def _broker_call(self, request, sock_timeout=30.0):
-        """Send one request to the broker and return the response dict."""
+        """Send one request to the broker and return the response dict.
+
+        Retries once after restarting the broker if the first attempt
+        fails with an OSError.
+
+        Args:
+            request (dict): JSON-serialisable request payload to send.
+            sock_timeout (float): Socket timeout in seconds. Defaults to 30.0.
+
+        Returns:
+            dict: Parsed JSON response from the broker.
+
+        Raises:
+            RuntimeError: If both connection attempts fail.
+        """
         sock_path = self._broker_socket_path()
         last_exc = None
         for attempt in range(2):
@@ -157,7 +202,18 @@ class CxTowerTerminalSession(models.TransientModel):
     # ── input validation ──────────────────────────────────────────────────────
 
     def _sanitize_terminal_size(self, cols, rows):
-        """Normalize terminal dimensions received from the web client."""
+        """Normalize terminal dimensions received from the web client.
+
+        Args:
+            cols (int): Column count to sanitize.
+            rows (int): Row count to sanitize.
+
+        Returns:
+            tuple: Clamped (cols, rows) within allowed bounds.
+
+        Raises:
+            ValidationError: If cols or rows cannot be converted to int.
+        """
         try:
             sanitized_cols = int(cols)
             sanitized_rows = int(rows)
@@ -170,7 +226,15 @@ class CxTowerTerminalSession(models.TransientModel):
         )
 
     def _sanitize_read_timeout(self, options=None):
-        """Normalize and clamp a caller-provided read timeout value."""
+        """Normalize and clamp a caller-provided read timeout value.
+
+        Args:
+            options (dict): Options dict that may contain a 'read_timeout'
+                key. Ignored if not a dict.
+
+        Returns:
+            float: Clamped timeout between 0.0 and 2.0 seconds.
+        """
         if not isinstance(options, dict):
             return 0.0
 
@@ -187,12 +251,19 @@ class CxTowerTerminalSession(models.TransientModel):
     def _run_output_pusher(cls, db_name, uid, session_id, session_token, stop_event):
         """Daemon thread: subscribes to broker output stream and pushes to bus.bus.
 
-        One pusher runs globally per session token across all workers.  The
+        One pusher runs globally per session token across all workers. The
         broker enforces this via its _active_subscribers set: if another worker
         already holds the stream, the subscribe call returns an error and this
-        thread exits immediately.  When the worker process dies the subscriber
+        thread exits immediately. When the worker process dies the subscriber
         socket closes, the broker releases the slot, and the next watchdog
         call (terminal_read) starts a fresh pusher in whatever worker handles it.
+
+        Args:
+            db_name (str): Odoo database name used to obtain a registry cursor.
+            uid (int): UID of the user owning the terminal session.
+            session_id (int): Database ID of the terminal session record.
+            session_token (str): Unique token identifying the broker session.
+            stop_event (threading.Event): Set this event to request thread exit.
         """
         import odoo
         from odoo.modules.registry import Registry
@@ -268,7 +339,12 @@ class CxTowerTerminalSession(models.TransientModel):
                 time.sleep(1.0)
 
     def _start_output_pusher(self):
-        """Start a pusher thread for this session if none is running."""
+        """Start a pusher thread for this session if none is running.
+
+        A pusher thread subscribes to the broker output stream and forwards
+        terminal output to bus.bus. Only one pusher can be active per token
+        in the current worker process.
+        """
         self.ensure_one()
         token = self.session_token
         with type(self)._PUSHER_LOCK:
@@ -306,7 +382,19 @@ class CxTowerTerminalSession(models.TransientModel):
 
     @api.model
     def action_open_for_server(self, server_id, jet_id=False):
-        """Create a terminal session for a server and return its client action."""
+        """Create a terminal session for a server and return its client action.
+
+        Args:
+            server_id (int): ID of the cx.tower.server record.
+            jet_id (int): Optional ID of the cx.tower.jet record.
+
+        Returns:
+            dict: Odoo client action dict to open the terminal UI.
+
+        Raises:
+            ValidationError: If the server or jet is not found, or if the
+                jet does not belong to the given server.
+        """
         server = self.env["cx.tower.server"].browse(server_id).exists()
         if not server:
             raise ValidationError(self.env._("Server not found."))
@@ -342,7 +430,14 @@ class CxTowerTerminalSession(models.TransientModel):
         return session._get_client_action()
 
     def _build_broker_open_request(self):
-        """Assemble the broker 'open' payload from this session's server config."""
+        """Assemble the broker 'open' payload from this session's server config.
+
+        Returns:
+            dict: Request payload ready to pass to _broker_call.
+
+        Raises:
+            ValidationError: If the host key is missing and is required.
+        """
         self.ensure_one()
         server = self.server_id.sudo()
         host_key = server._get_secret_value("host_key")
@@ -370,7 +465,15 @@ class CxTowerTerminalSession(models.TransientModel):
         }
 
     def _open_broker_session(self):
-        """Ask the broker to open an SSH session for this DB record."""
+        """Ask the broker to open an SSH session for this DB record.
+
+        On success, writes state='open' and starts the output pusher thread.
+        On failure, writes state='error' and re-raises a ValidationError.
+
+        Raises:
+            ValidationError: If the broker rejects the open request or any
+                exception occurs during session establishment.
+        """
         self.ensure_one()
         try:
             request = self._build_broker_open_request()
@@ -394,7 +497,11 @@ class CxTowerTerminalSession(models.TransientModel):
         self._start_output_pusher()
 
     def _get_client_action(self):
-        """Build the client action that opens the terminal UI."""
+        """Build the client action that opens the terminal UI.
+
+        Returns:
+            dict: Odoo ir.actions.client dict referencing the terminal tag.
+        """
         self.ensure_one()
         return {
             "type": "ir.actions.client",
@@ -408,7 +515,15 @@ class CxTowerTerminalSession(models.TransientModel):
         }
 
     def _apply_broker_response(self, resp):
-        """Sync broker state to the DB record and build the RPC response dict."""
+        """Sync broker state to the DB record and build the RPC response dict.
+
+        Args:
+            resp (dict): Raw response dict returned by the broker.
+
+        Returns:
+            dict: Normalised response with 'output', 'state', and 'message'
+                keys.
+        """
         self.ensure_one()
         default_state = self._default_state()
         state = resp.get("state", "closed")
@@ -424,9 +539,12 @@ class CxTowerTerminalSession(models.TransientModel):
     def terminal_read(self):
         """Return initial output and ensure the output pusher is running.
 
-        Called once on mount by the frontend to get the shell banner and start
-        the bus push stream.  Also used as a watchdog every ~15 s to restart
-        the pusher if the worker that owned it was recycled.
+        Called once on mount by the frontend to get the shell banner and
+        start the bus push stream. Also used as a watchdog every ~15 s to
+        restart the pusher if the worker that owned it was recycled.
+
+        Returns:
+            dict: Response dict with 'output', 'state', and 'message' keys.
         """
         self.ensure_one()
         self.check_access("read")
@@ -437,7 +555,19 @@ class CxTowerTerminalSession(models.TransientModel):
         return self._apply_broker_response(resp)
 
     def terminal_send(self, payload, options=None):
-        """Send input to the terminal.  Output is delivered via bus.bus."""
+        """Send input to the terminal. Output is delivered via bus.bus.
+
+        Args:
+            payload (str): Text or control characters to send to the shell.
+            options (dict): Optional extra parameters (currently unused).
+
+        Returns:
+            dict: Response dict with 'output', 'state', and 'message' keys.
+
+        Raises:
+            ValidationError: If payload is not a string or exceeds the
+                maximum allowed length.
+        """
         self.ensure_one()
         self.check_access("read")
         if not isinstance(payload, str):
@@ -455,7 +585,11 @@ class CxTowerTerminalSession(models.TransientModel):
         return self._apply_broker_response(resp)
 
     def terminal_close(self):
-        """Close the active terminal session and return its final state."""
+        """Close the active terminal session and return its final state.
+
+        Returns:
+            dict: Response dict with state='closed' and a disconnect message.
+        """
         self.ensure_one()
         self.check_access("read")
         self._stop_output_pusher()
@@ -473,7 +607,14 @@ class CxTowerTerminalSession(models.TransientModel):
         }
 
     def terminal_reconnect(self):
-        """Reconnect the terminal session and return the initial output."""
+        """Reconnect the terminal session and return the initial output.
+
+        Closes the existing broker session, reopens it, and returns the
+        initial shell banner.
+
+        Returns:
+            dict: Response dict with 'output', 'state', and 'message' keys.
+        """
         self.ensure_one()
         self.check_access("read")
         self._stop_output_pusher()
@@ -488,7 +629,15 @@ class CxTowerTerminalSession(models.TransientModel):
         return self._apply_broker_response(resp)
 
     def terminal_resize(self, cols, rows):
-        """Resize the remote PTY to match the current browser viewport."""
+        """Resize the remote PTY to match the current browser viewport.
+
+        Args:
+            cols (int): New column count for the terminal.
+            rows (int): New row count for the terminal.
+
+        Returns:
+            dict: Response dict with 'output', 'state', and 'message' keys.
+        """
         self.ensure_one()
         self.check_access("read")
         sanitized_cols, sanitized_rows = self._sanitize_terminal_size(cols, rows)
@@ -503,14 +652,22 @@ class CxTowerTerminalSession(models.TransientModel):
         return self._apply_broker_response(resp)
 
     def terminal_debug_ping(self):
-        """Compatibility no-op for stale frontend assets still calling this RPC."""
+        """Compatibility no-op for stale frontend assets still calling this RPC.
+
+        Returns:
+            dict: Response dict with 'output', 'state', and 'message' keys.
+        """
         self.ensure_one()
         self.check_access("read")
         resp = self._broker_call({"action": "ping", "token": self.session_token})
         return self._apply_broker_response(resp)
 
     def unlink(self):
-        """Close broker sessions and stop pushers before deleting records."""
+        """Close broker sessions and stop pushers before deleting records.
+
+        Returns:
+            bool: True if all records were deleted successfully.
+        """
         for session in self:
             session._stop_output_pusher()
             try:
