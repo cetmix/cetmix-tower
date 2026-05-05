@@ -454,7 +454,7 @@ class CxTowerTerminalSession(models.TransientModel):
         try:
             self._broker_call({"action": "close", "token": self.session_token})
         except Exception:
-            _logger.warning(
+            _logger.exception(
                 "terminal_close: broker call failed for session %s", self.id
             )
         self.write({"state": "closed", "message": self.env._("Terminal disconnected.")})
@@ -472,7 +472,7 @@ class CxTowerTerminalSession(models.TransientModel):
         try:
             self._broker_call({"action": "close", "token": self.session_token})
         except Exception:
-            _logger.warning(
+            _logger.exception(
                 "terminal_reconnect: broker close failed for session %s", self.id
             )
         self._open_broker_session()
@@ -508,7 +508,7 @@ class CxTowerTerminalSession(models.TransientModel):
             try:
                 self._broker_call({"action": "close", "token": session.session_token})
             except Exception:
-                _logger.warning(
+                _logger.exception(
                     "unlink: broker close failed for session %s", session.id
                 )
         return super().unlink()
