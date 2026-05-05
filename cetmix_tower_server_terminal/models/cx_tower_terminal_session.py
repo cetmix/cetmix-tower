@@ -221,8 +221,9 @@ class CxTowerTerminalSession(models.TransientModel):
                             msg = json.loads(line)
                         except json.JSONDecodeError:
                             continue
+                        _default_state = _STATE_SELECTION[0][0]
                         output = msg.get("output", "")
-                        state = msg.get("state", "open")
+                        state = msg.get("state", _default_state)
                         # Broker rejected the subscribe (another pusher already active)
                         if msg.get("status") == "error":
                             _logger.debug(
@@ -231,7 +232,7 @@ class CxTowerTerminalSession(models.TransientModel):
                                 msg.get("message"),
                             )
                             return
-                        if not output and state == "open":
+                        if not output and state == _default_state:
                             continue
                         try:
                             registry = Registry(db_name)
@@ -252,7 +253,7 @@ class CxTowerTerminalSession(models.TransientModel):
                                 "Output pusher: bus publish failed for session %s",
                                 session_id,
                             )
-                        if state != "open":
+                        if state != _default_state:
                             return
             except OSError as exc:
                 if stop_event.is_set():
@@ -376,7 +377,7 @@ class CxTowerTerminalSession(models.TransientModel):
                 raise ValidationError(
                     resp.get("message") or self.env._("Unknown broker error.")
                 )
-            self.write({"state": "open", "message": False})
+            self.write({"state": self._default_state(), "message": False})
         except ValidationError:
             _logger.exception("Failed to open broker session %s", self.id)
             self.write({"state": "error", "message": str(sys.exc_info()[1])})
@@ -407,11 +408,12 @@ class CxTowerTerminalSession(models.TransientModel):
     def _apply_broker_response(self, resp):
         """Sync broker state to the DB record and build the RPC response dict."""
         self.ensure_one()
+        default_state = self._default_state()
         state = resp.get("state", "closed")
         message = resp.get("message") or False
         output = resp.get("output", "")
         # Persist terminal-closed/error state back to the DB record
-        if state != "open" and self.state == "open":
+        if state != default_state and self.state == default_state:
             self.write({"state": state, "message": message})
         return {"output": output, "state": state, "message": message}
 
@@ -428,7 +430,7 @@ class CxTowerTerminalSession(models.TransientModel):
         self.check_access("read")
         resp = self._broker_call({"action": "read", "token": self.session_token})
         # Restart pusher if it died (e.g. previous worker was recycled)
-        if resp.get("state") == "open":
+        if resp.get("state") == self._default_state():
             self._start_output_pusher()
         return self._apply_broker_response(resp)
 
