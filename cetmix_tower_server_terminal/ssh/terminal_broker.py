@@ -94,7 +94,8 @@ InteractiveShell = _shell_mod.InteractiveShell  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Logging – write to a temp file so broker errors are diagnosable without
-# needing to capture the subprocess's stderr.
+# needing to capture the subprocess's stderr.  Restrict to owner-only so
+# SSH traces and hostnames are not world-readable.
 # ---------------------------------------------------------------------------
 _LOG_PATH = f"/tmp/tower_terminal_broker_{os.getuid()}.log"
 logging.basicConfig(
@@ -102,6 +103,7 @@ logging.basicConfig(
     filename=_LOG_PATH,
     format="%(asctime)s [broker-%(process)d] %(levelname)s %(message)s",
 )
+os.chmod(_LOG_PATH, 0o600)
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -658,9 +660,14 @@ def main():
     except FileNotFoundError:
         _logger.debug("No stale broker socket to remove at startup: %s", sock_path)
 
-    server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    server_sock.bind(sock_path)
-    os.chmod(sock_path, 0o600)  # owner-only: same security level as process memory
+    # Set umask to 0o177 before bind so the socket is created owner-only (0o600),
+    # closing the TOCTOU window between bind() and chmod().
+    old_umask = os.umask(0o177)
+    try:
+        server_sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server_sock.bind(sock_path)
+    finally:
+        os.umask(old_umask)
     server_sock.listen(100)
 
     _logger.warning("Terminal broker started (pid=%d) on %s", os.getpid(), sock_path)
