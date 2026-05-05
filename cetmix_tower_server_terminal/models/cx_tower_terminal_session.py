@@ -15,7 +15,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import LazyTranslate
 
-from ..ssh.constants import _STATE_SELECTION as _BROKER_STATE_SELECTION
+from ..ssh.constants import _STATE_SELECTION
 
 _logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__, default_lang="en_US")
@@ -60,8 +60,6 @@ class CxTowerTerminalSession(models.TransientModel):
         readonly=True,
         ondelete="cascade",
     )
-    _STATE_SELECTION = _BROKER_STATE_SELECTION
-
     state = fields.Selection(
         selection=lambda self: self._selection_state(),
         default=lambda self: self._default_state(),
@@ -75,7 +73,7 @@ class CxTowerTerminalSession(models.TransientModel):
     @api.model
     def _selection_state(self):
         """Return the list of valid state values for the state field."""
-        return self._STATE_SELECTION
+        return _STATE_SELECTION
 
     @api.model
     def _default_state(self):
