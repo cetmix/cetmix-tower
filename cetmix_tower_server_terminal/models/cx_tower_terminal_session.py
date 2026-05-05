@@ -32,10 +32,10 @@ class CxTowerTerminalSession(models.TransientModel):
     # Each entry lives only in the worker that started it.  The broker's
     # _active_subscribers set is the shared source of truth: only one pusher
     # can hold the subscribe stream at a time across all workers.
-    _pusher_threads: dict = {}
-    _pusher_stop_events: dict = {}
-    _pusher_lock = threading.RLock()
-    _send_read_idle_seconds = 0.03
+    _PUSHER_THREADS: dict = {}
+    _PUSHER_STOP_EVENTS: dict = {}
+    _PUSHER_LOCK = threading.RLock()
+    _SEND_READ_IDLE_SECONDS = 0.03
     _MIN_TERMINAL_COLS = 20
     _MAX_TERMINAL_COLS = 512
     _MIN_TERMINAL_ROWS = 5
@@ -264,8 +264,8 @@ class CxTowerTerminalSession(models.TransientModel):
         """Start a pusher thread for this session if none is running."""
         self.ensure_one()
         token = self.session_token
-        with type(self)._pusher_lock:
-            existing = type(self)._pusher_threads.get(token)
+        with type(self)._PUSHER_LOCK:
+            existing = type(self)._PUSHER_THREADS.get(token)
             if existing and existing.is_alive():
                 return
             stop_event = threading.Event()
@@ -281,17 +281,17 @@ class CxTowerTerminalSession(models.TransientModel):
                 name=f"tower-pusher-{token[:8]}",
                 daemon=True,
             )
-            type(self)._pusher_threads[token] = t
-            type(self)._pusher_stop_events[token] = stop_event
+            type(self)._PUSHER_THREADS[token] = t
+            type(self)._PUSHER_STOP_EVENTS[token] = stop_event
             t.start()
 
     def _stop_output_pusher(self):
         """Signal the pusher thread for this session to stop."""
         self.ensure_one()
         token = self.session_token
-        with type(self)._pusher_lock:
-            stop_event = type(self)._pusher_stop_events.pop(token, None)
-            type(self)._pusher_threads.pop(token, None)
+        with type(self)._PUSHER_LOCK:
+            stop_event = type(self)._PUSHER_STOP_EVENTS.pop(token, None)
+            type(self)._PUSHER_THREADS.pop(token, None)
         if stop_event:
             stop_event.set()
 
