@@ -98,6 +98,14 @@ _constants_spec = _ilu.spec_from_file_location("_cx_tower_constants", _constants
 _constants_mod = _ilu.module_from_spec(_constants_spec)
 _constants_spec.loader.exec_module(_constants_mod)  # type: ignore[union-attr]
 _STATE_SELECTION = _constants_mod._STATE_SELECTION
+_BROKER_IDLE_TIMEOUT = _constants_mod._BROKER_IDLE_TIMEOUT
+_BROKER_CLEANUP_INTERVAL = _constants_mod._BROKER_CLEANUP_INTERVAL
+_BROKER_INITIAL_READ_TIMEOUT = _constants_mod._BROKER_INITIAL_READ_TIMEOUT
+_BROKER_INITIAL_READ_IDLE = _constants_mod._BROKER_INITIAL_READ_IDLE
+_BROKER_ACTIVE_READ_SLEEP = _constants_mod._BROKER_ACTIVE_READ_SLEEP
+_BROKER_IDLE_READ_SLEEP = _constants_mod._BROKER_IDLE_READ_SLEEP
+_BROKER_ACTIVITY_WINDOW = _constants_mod._BROKER_ACTIVITY_WINDOW
+_BROKER_MAX_BUFFER_BYTES = _constants_mod._BROKER_MAX_BUFFER_BYTES
 
 # ---------------------------------------------------------------------------
 # Logging – write to a temp file so broker errors are diagnosable without
@@ -112,14 +120,6 @@ logging.basicConfig(
 )
 os.chmod(_LOG_PATH, 0o600)
 _logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-_IDLE_TIMEOUT = 1800  # seconds before an inactive session is closed
-_CLEANUP_INTERVAL = 60  # seconds between cleanup sweeps
-_INITIAL_READ_TIMEOUT = 1.0  # seconds to wait for shell banner
-_INITIAL_READ_IDLE = 0.03  # idle threshold during initial read
 
 # ---------------------------------------------------------------------------
 # Session store
@@ -139,14 +139,6 @@ _active_subscribers: set = set()
 # ---------------------------------------------------------------------------
 class _BrokerSession:
     """SSH interactive terminal session managed by the broker process."""
-
-    _ACTIVE_READ_SLEEP = 0.005
-    _IDLE_READ_SLEEP = 0.04
-    _ACTIVITY_WINDOW = 1.5
-    # Hard cap on the in-memory output buffer (bytes).  When the buffer grows
-    # beyond this limit the oldest data is discarded so that a stalled browser
-    # tab or a very verbose shell command cannot cause unbounded memory growth.
-    _MAX_BUFFER_BYTES = 512 * 1024  # 512 KiB
 
     def __init__(self, token: str, connection: SSHConnection):
         """Open a paramiko shell and start the background reader thread."""
@@ -177,16 +169,16 @@ class _BrokerSession:
     # -- output buffer ------------------------------------------------------
 
     def _append_output(self, output: str):
-        """Append output to the buffer, capping it at _MAX_BUFFER_BYTES."""
+        """Append output to the buffer, capping it at _BROKER_MAX_BUFFER_BYTES."""
         if not output:
             return
         with self.output_condition:
             self.buffer += output
             # Enforce ring-buffer cap: discard the oldest bytes when the buffer
-            # exceeds _MAX_BUFFER_BYTES so a stalled client cannot cause
+            # exceeds _BROKER_MAX_BUFFER_BYTES so a stalled client cannot cause
             # unbounded memory growth in the broker process.
-            if len(self.buffer) > self._MAX_BUFFER_BYTES:
-                self.buffer = self.buffer[-self._MAX_BUFFER_BYTES :]
+            if len(self.buffer) > _BROKER_MAX_BUFFER_BYTES:
+                self.buffer = self.buffer[-_BROKER_MAX_BUFFER_BYTES :]
             self.last_output_at = time.monotonic()
             self.output_condition.notify_all()
 
@@ -243,9 +235,9 @@ class _BrokerSession:
                     self.touch()
                     self._append_output(output)
                     continue
-                sleep = self._IDLE_READ_SLEEP
-                if time.time() - self.last_activity <= self._ACTIVITY_WINDOW:
-                    sleep = self._ACTIVE_READ_SLEEP
+                sleep = _BROKER_IDLE_READ_SLEEP
+                if time.time() - self.last_activity <= _BROKER_ACTIVITY_WINDOW:
+                    sleep = _BROKER_ACTIVE_READ_SLEEP
                 time.sleep(sleep)
         except Exception as err:
             _logger.exception("Reader loop error for session %s", self.token)
@@ -339,8 +331,8 @@ def _action_open(data: dict) -> dict:
         return _err(str(exc))
 
     initial = session.wait_for_output(
-        timeout_seconds=_INITIAL_READ_TIMEOUT,
-        idle_seconds=_INITIAL_READ_IDLE,
+        timeout_seconds=_BROKER_INITIAL_READ_TIMEOUT,
+        idle_seconds=_BROKER_INITIAL_READ_IDLE,
     )
 
     with _sessions_lock:
@@ -607,13 +599,13 @@ def _handle_client(conn: socket.socket):
 def _cleanup_loop():
     """Periodically close idle or dead sessions."""
     while True:
-        time.sleep(_CLEANUP_INTERVAL)
+        time.sleep(_BROKER_CLEANUP_INTERVAL)
         now = time.time()
         to_close = []
         with _sessions_lock:
             for token, session in list(_sessions.items()):
                 if (
-                    now - session.last_activity > _IDLE_TIMEOUT
+                    now - session.last_activity > _BROKER_IDLE_TIMEOUT
                     or session.state != "open"
                     or not session.shell.is_active()
                 ):
