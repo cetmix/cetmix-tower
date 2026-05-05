@@ -71,7 +71,6 @@ export class TowerTerminalAction extends Component {
             this._unsubscribeBus();
             this.unregisterResizeHandlers();
             this.disposeTerminal();
-            this.closeTerminal(true);
         });
     }
 
