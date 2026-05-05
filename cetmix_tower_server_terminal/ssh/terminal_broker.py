@@ -109,6 +109,11 @@ _logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
+_STATE_SELECTION = [
+    ("open", "Open"),
+    ("closed", "Closed"),
+    ("error", "Error"),
+]
 _IDLE_TIMEOUT = 1800  # seconds before an inactive session is closed
 _CLEANUP_INTERVAL = 60  # seconds between cleanup sweeps
 _INITIAL_READ_TIMEOUT = 1.0  # seconds to wait for shell banner
@@ -150,7 +155,7 @@ class _BrokerSession:
         self.buffer = ""
         self.output_condition = threading.Condition()
         self.stop_event = threading.Event()
-        self.state = "open"
+        self.state = _STATE_SELECTION[0][0]  # "open"
         self.message = None
         self.last_output_at = 0.0
         self.last_activity = time.time()
