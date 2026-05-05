@@ -17,6 +17,9 @@
     ],
     "assets": {
         "web.assets_backend": [
+            "cetmix_tower_server_terminal/static/lib/xterm/xterm.css",
+            "cetmix_tower_server_terminal/static/lib/xterm/xterm.js",
+            "cetmix_tower_server_terminal/static/lib/xterm/addon-fit/addon-fit.js",
             "cetmix_tower_server_terminal/static/src/terminal/**/*.xml",
             "cetmix_tower_server_terminal/static/src/terminal/**/*.js",
             "cetmix_tower_server_terminal/static/src/terminal/**/*.scss",

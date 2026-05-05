@@ -3,7 +3,6 @@
 import {
     Component,
     onMounted,
-    onWillStart,
     onWillUnmount,
     useRef,
     useState,
@@ -17,81 +16,6 @@ const actionRegistry = registry.category("actions");
 const INPUT_FLUSH_DELAY = 12;
 const RESIZE_FLUSH_DELAY = 80;
 const WATCHDOG_INTERVAL = 15000; // Ms between state checks / pusher-restart pings
-const XTERM_CSS_URL = "https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css";
-const XTERM_JS_URL = "https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js";
-const XTERM_FIT_ADDON_URL =
-    "https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js";
-
-let xtermAssetsPromise = null;
-
-function loadStylesheetOnce(url) {
-    if (document.querySelector(`link[data-cetmix-terminal-lib="${url}"]`)) {
-        return;
-    }
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = url;
-    link.dataset.cetmixTerminalLib = url;
-    document.head.appendChild(link);
-}
-
-function loadScriptOnce(url) {
-    return new Promise((resolve, reject) => {
-        const existing = document.querySelector(
-            `script[data-cetmix-terminal-lib="${url}"]`
-        );
-        if (existing) {
-            if (existing.dataset.loaded === "1") {
-                resolve();
-                return;
-            }
-            existing.addEventListener("load", () => resolve(), {once: true});
-            existing.addEventListener(
-                "error",
-                () => reject(new Error(_t("Failed to load terminal script."))),
-                {once: true}
-            );
-            return;
-        }
-
-        const script = document.createElement("script");
-        script.src = url;
-        script.async = false;
-        script.dataset.cetmixTerminalLib = url;
-        script.addEventListener(
-            "load",
-            () => {
-                script.dataset.loaded = "1";
-                resolve();
-            },
-            {once: true}
-        );
-        script.addEventListener(
-            "error",
-            () => reject(new Error(_t("Failed to load terminal script."))),
-            {once: true}
-        );
-        document.head.appendChild(script);
-    });
-}
-
-async function ensureXtermAssetsLoaded() {
-    const fitAddonLoaded = Boolean(window.FitAddon?.FitAddon || window.FitAddon);
-    if (window.Terminal && fitAddonLoaded) {
-        return;
-    }
-    if (!xtermAssetsPromise) {
-        xtermAssetsPromise = (async () => {
-            loadStylesheetOnce(XTERM_CSS_URL);
-            await loadScriptOnce(XTERM_JS_URL);
-            await loadScriptOnce(XTERM_FIT_ADDON_URL);
-        })().catch((error) => {
-            xtermAssetsPromise = null;
-            throw error;
-        });
-    }
-    await xtermAssetsPromise;
-}
 
 export class TowerTerminalAction extends Component {
     static template = "cetmix_tower_server_terminal.TowerTerminalAction";
@@ -132,10 +56,6 @@ export class TowerTerminalAction extends Component {
         });
 
         this.env.config.setDisplayName(this.state.title);
-
-        onWillStart(async () => {
-            await ensureXtermAssetsLoaded();
-        });
 
         onMounted(() => {
             this.initializeTerminal();
