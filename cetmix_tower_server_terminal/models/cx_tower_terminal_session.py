@@ -140,6 +140,7 @@ class CxTowerTerminalSession(models.TransientModel):
     def _broker_call(self, request, sock_timeout=30.0):
         """Send one request to the broker and return the response dict."""
         sock_path = self._broker_socket_path()
+        last_exc = None
         for attempt in range(2):
             try:
                 with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
@@ -147,10 +148,11 @@ class CxTowerTerminalSession(models.TransientModel):
                     s.connect(sock_path)
                     s.sendall((json.dumps(request) + "\n").encode())
                     return json.loads(s.makefile().readline())
-            except OSError:
+            except OSError as exc:
+                last_exc = exc
                 if attempt == 0:
                     self._ensure_broker()
-        raise RuntimeError("Terminal broker is unavailable.")
+        raise RuntimeError("Terminal broker is unavailable.") from last_exc
 
     # ── input validation ──────────────────────────────────────────────────────
 
