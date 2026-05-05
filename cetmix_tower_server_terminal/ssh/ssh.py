@@ -72,14 +72,17 @@ class InteractiveShell:
         self.width = width
         self.height = height
 
-    def receive(self, max_bytes: int = 65535) -> str:
+    def receive(self, chunk_size: int = 65535) -> str:
         """
         Read all currently available bytes from the shell channel.
+
+        Args:
+            chunk_size: Maximum bytes to read in each recv() call.
         """
         channel = self.open()
         chunks = []
         while channel.recv_ready():
-            chunks.append(channel.recv(max_bytes))
+            chunks.append(channel.recv(chunk_size))
         return b"".join(chunks).decode("utf-8", errors="replace")
 
     def close(self):
