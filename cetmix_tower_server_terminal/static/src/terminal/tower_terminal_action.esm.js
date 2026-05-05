@@ -407,9 +407,13 @@ export class TowerTerminalAction extends Component {
             );
             this.lastTerminalSize = size;
             this.applyResponse(response);
-        } catch {
+        } catch (error) {
             this.pendingTerminalSize = size;
             shouldRetryLater = true;
+            // Log unexpected errors; transient network failures are expected and retried
+            if (error?.name !== "ConnectionAbortedError") {
+                console.debug("[terminal] resize RPC failed:", error?.message || error);
+            }
         } finally {
             this.resizeInFlight = false;
             if (this.pendingTerminalSize && this.isConnected) {
