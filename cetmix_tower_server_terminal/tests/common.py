@@ -15,7 +15,16 @@ class TestTowerTerminalCommon(TestTowerCommon):
         cls.TerminalSession = cls.env["cx.tower.terminal.session"]
 
     def _create_open_session(self, server=None, jet=None):
-        """Create an open terminal session bound to the given server."""
+        """Create an open terminal session bound to the given server.
+
+        Args:
+            server (cx.tower.server): Server record to bind the session to.
+                Defaults to self.server_test_1.
+            jet (cx.tower.jet): Optional jet record to attach.
+
+        Returns:
+            cx.tower.terminal.session: Newly created session record.
+        """
         server = server or self.server_test_1
         vals = {
             "name": f"Terminal: {server.name}",
@@ -26,7 +35,15 @@ class TestTowerTerminalCommon(TestTowerCommon):
         return self.TerminalSession.create(vals)
 
     def _patch_broker_call(self, return_value=None):
-        """Return a context manager that patches _broker_call on TerminalSession."""
+        """Return a context manager that patches _broker_call on TerminalSession.
+
+        Args:
+            return_value (dict): Value the patched method will return.
+                Defaults to a standard success response.
+
+        Returns:
+            unittest.mock._patch: Context manager that patches _broker_call.
+        """
         if return_value is None:
             return_value = {
                 "status": "ok",
@@ -42,7 +59,11 @@ class TestTowerTerminalCommon(TestTowerCommon):
         )
 
     def _patch_start_pusher(self):
-        """Return a context manager that patches _start_output_pusher."""
+        """Return a context manager that patches _start_output_pusher.
+
+        Returns:
+            unittest.mock._patch: Context manager that patches _start_output_pusher.
+        """
         return patch(
             "odoo.addons.cetmix_tower_server_terminal.models."
             "cx_tower_terminal_session.CxTowerTerminalSession._start_output_pusher",
@@ -51,7 +72,11 @@ class TestTowerTerminalCommon(TestTowerCommon):
         )
 
     def _patch_stop_pusher(self):
-        """Return a context manager that patches _stop_output_pusher."""
+        """Return a context manager that patches _stop_output_pusher.
+
+        Returns:
+            unittest.mock._patch: Context manager that patches _stop_output_pusher.
+        """
         return patch(
             "odoo.addons.cetmix_tower_server_terminal.models."
             "cx_tower_terminal_session.CxTowerTerminalSession._stop_output_pusher",

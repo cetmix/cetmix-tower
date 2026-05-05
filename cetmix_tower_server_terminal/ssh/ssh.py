@@ -5,9 +5,7 @@ from cetmix_tower_server.ssh.ssh import SSHConnection
 
 
 class InteractiveShell:
-    """
-    Interactive PTY shell over SSH.
-    """
+    """Interactive PTY shell over SSH."""
 
     def __init__(
         self,
@@ -16,6 +14,14 @@ class InteractiveShell:
         width: int = 160,
         height: int = 48,
     ):
+        """Initialize the interactive shell with connection parameters.
+
+        Args:
+            connection (SSHConnection): Active SSH connection to wrap.
+            term (str): Terminal type string to request from the server.
+            width (int): Initial terminal width in columns.
+            height (int): Initial terminal height in rows.
+        """
         self.connection = connection
         self.term = term
         self.width = width
@@ -23,8 +29,10 @@ class InteractiveShell:
         self._channel = None
 
     def open(self):
-        """
-        Open the interactive shell channel.
+        """Open the interactive shell channel.
+
+        Returns:
+            paramiko.Channel: The active shell channel.
         """
         if self._channel is not None and not self._channel.closed:
             return self._channel
@@ -39,8 +47,10 @@ class InteractiveShell:
         return self._channel
 
     def is_active(self) -> bool:
-        """
-        Check whether the shell channel is still active.
+        """Check whether the shell channel is still active.
+
+        Returns:
+            bool: True if the channel exists, is open, and has not received EOF.
         """
         return bool(
             self._channel
@@ -49,8 +59,13 @@ class InteractiveShell:
         )
 
     def send(self, payload: str) -> int:
-        """
-        Send data to the shell channel.
+        """Send data to the shell channel.
+
+        Args:
+            payload (str): Text or control characters to transmit.
+
+        Returns:
+            int: Total number of bytes sent.
         """
         if not payload:
             return 0
@@ -64,8 +79,11 @@ class InteractiveShell:
         return bytes_sent
 
     def resize(self, width: int, height: int):
-        """
-        Resize the remote PTY to match the visible terminal size.
+        """Resize the remote PTY to match the visible terminal size.
+
+        Args:
+            width (int): New terminal width in columns.
+            height (int): New terminal height in rows.
         """
         channel = self.open()
         channel.resize_pty(width=width, height=height)
@@ -73,11 +91,13 @@ class InteractiveShell:
         self.height = height
 
     def receive(self, chunk_size: int = 65535) -> str:
-        """
-        Read all currently available bytes from the shell channel.
+        """Read all currently available bytes from the shell channel.
 
         Args:
-            chunk_size: Maximum bytes to read in each recv() call.
+            chunk_size (int): Maximum bytes to read in each recv() call.
+
+        Returns:
+            str: Decoded output string; empty string if no data is ready.
         """
         channel = self.open()
         chunks = []
@@ -86,9 +106,7 @@ class InteractiveShell:
         return b"".join(chunks).decode("utf-8", errors="replace")
 
     def close(self):
-        """
-        Close the shell channel.
-        """
+        """Close the shell channel."""
         if self._channel is not None:
             try:
                 if not self._channel.closed:

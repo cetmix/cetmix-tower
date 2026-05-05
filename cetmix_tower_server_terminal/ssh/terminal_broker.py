@@ -141,7 +141,12 @@ class _BrokerSession:
     """SSH interactive terminal session managed by the broker process."""
 
     def __init__(self, token: str, connection: SSHConnection):
-        """Open a paramiko shell and start the background reader thread."""
+        """Open a paramiko shell and start the background reader thread.
+
+        Args:
+            token (str): Unique token identifying this session.
+            connection (SSHConnection): Authenticated SSH connection to wrap.
+        """
         self.token = token
         self.connection = connection
         self.shell = InteractiveShell(connection)
@@ -169,7 +174,11 @@ class _BrokerSession:
     # -- output buffer ------------------------------------------------------
 
     def _append_output(self, output: str):
-        """Append output to the buffer, capping it at _BROKER_MAX_BUFFER_BYTES."""
+        """Append output to the buffer, capping it at _BROKER_MAX_BUFFER_BYTES.
+
+        Args:
+            output (str): New output chunk to append.
+        """
         if not output:
             return
         with self.output_condition:
@@ -183,7 +192,11 @@ class _BrokerSession:
             self.output_condition.notify_all()
 
     def consume_output(self) -> str:
-        """Atomically drain and return the current output buffer."""
+        """Atomically drain and return the current output buffer.
+
+        Returns:
+            str: All buffered output; empty string if the buffer was empty.
+        """
         with self.output_condition:
             out = self.buffer
             self.buffer = ""
@@ -192,7 +205,18 @@ class _BrokerSession:
     def wait_for_output(
         self, timeout_seconds: float = 0.0, idle_seconds: float = 0.03
     ) -> str:
-        """Block up to timeout_seconds and return accumulated output once idle."""
+        """Block up to timeout_seconds and return accumulated output once idle.
+
+        Args:
+            timeout_seconds (float): Maximum seconds to wait for output.
+                Pass 0.0 to return immediately with whatever is buffered.
+            idle_seconds (float): Seconds of silence that signals the shell
+                has finished producing output for this burst.
+
+        Returns:
+            str: Accumulated output; empty string if the timeout expired
+                with no data.
+        """
         if timeout_seconds <= 0:
             return self.consume_output()
         deadline = time.monotonic() + timeout_seconds
@@ -215,7 +239,12 @@ class _BrokerSession:
     # -- state management ---------------------------------------------------
 
     def set_state(self, state: str, message: str | None = None):
-        """Update session state and wake any waiters on the output condition."""
+        """Update session state and wake any waiters on the output condition.
+
+        Args:
+            state (str): New session state ('open', 'closed', or 'error').
+            message (str): Optional human-readable status message.
+        """
         self.state = state
         self.message = message
         with self.output_condition:
@@ -246,7 +275,12 @@ class _BrokerSession:
     # -- resize -------------------------------------------------------------
 
     def resize(self, cols: int, rows: int):
-        """Resize the remote PTY to the given dimensions."""
+        """Resize the remote PTY to the given dimensions.
+
+        Args:
+            cols (int): New terminal width in columns.
+            rows (int): New terminal height in rows.
+        """
         self.shell.resize(cols, rows)
         self.touch()
 
@@ -278,12 +312,28 @@ class _BrokerSession:
 
 
 def _ok(state: str = "open", message: str | None = None, output: str = "") -> dict:
-    """Build a successful broker response dict."""
+    """Build a successful broker response dict.
+
+    Args:
+        state (str): Session state to include in the response.
+        message (str): Optional human-readable status message.
+        output (str): Terminal output to include in the response.
+
+    Returns:
+        dict: Response dict with status='ok' and the given fields.
+    """
     return {"status": "ok", "state": state, "message": message, "output": output}
 
 
 def _err(message: str) -> dict:
-    """Build an error broker response dict."""
+    """Build an error broker response dict.
+
+    Args:
+        message (str): Human-readable description of the error.
+
+    Returns:
+        dict: Response dict with status='error' and state='error'.
+    """
     return {
         "status": "error",
         "state": "error",
@@ -298,7 +348,15 @@ def _err(message: str) -> dict:
 
 
 def _action_open(data: dict) -> dict:
-    """Open a new SSH session for the given token and return the shell banner."""
+    """Open a new SSH session for the given token and return the shell banner.
+
+    Args:
+        data (dict): Request payload containing token and SSH connection
+            parameters (host, port, username, password, ssh_key, etc.).
+
+    Returns:
+        dict: Broker response with the initial shell banner as output.
+    """
     token = data["token"]
 
     # Close any existing session with this token first
@@ -342,7 +400,14 @@ def _action_open(data: dict) -> dict:
 
 
 def _action_read(data: dict) -> dict:
-    """Return buffered output for an existing session without blocking."""
+    """Return buffered output for an existing session without blocking.
+
+    Args:
+        data (dict): Request payload containing the session token.
+
+    Returns:
+        dict: Broker response with any buffered output and current state.
+    """
     token = data["token"]
     with _sessions_lock:
         session = _sessions.get(token)
@@ -376,7 +441,15 @@ def _action_read(data: dict) -> dict:
 
 
 def _action_send(data: dict) -> dict:
-    """Send payload to the remote shell.  Output flows via the subscriber stream."""
+    """Send payload to the remote shell. Output flows via the subscriber stream.
+
+    Args:
+        data (dict): Request payload containing the session token and the
+            'payload' string to send.
+
+    Returns:
+        dict: Broker response with current session state.
+    """
     token = data["token"]
     payload = data.get("payload", "")
 
@@ -405,10 +478,14 @@ def _action_send(data: dict) -> dict:
 def _action_subscribe_stream(data: dict, conn: socket.socket):
     """Stream output to the caller until the session ends or the socket closes.
 
-    Only one subscriber per session token is allowed at a time.  If another
+    Only one subscriber per session token is allowed at a time. If another
     subscriber is already active the connection receives an error and closes.
     When the caller's socket closes (e.g. worker process recycled) the token
     is automatically released so the next worker can claim it.
+
+    Args:
+        data (dict): Request payload containing the session token.
+        conn (socket.socket): Open socket connection to the subscribing worker.
     """
     token = data["token"]
 
@@ -476,7 +553,15 @@ def _action_subscribe_stream(data: dict, conn: socket.socket):
 
 
 def _action_resize(data: dict) -> dict:
-    """Resize the remote PTY for the given session."""
+    """Resize the remote PTY for the given session.
+
+    Args:
+        data (dict): Request payload containing the session token plus
+            'cols' and 'rows' integer fields.
+
+    Returns:
+        dict: Broker response with current session state.
+    """
     token = data["token"]
     try:
         cols = int(data.get("cols", 80))
@@ -498,7 +583,14 @@ def _action_resize(data: dict) -> dict:
 
 
 def _action_close(data: dict) -> dict:
-    """Close the SSH session for the given token and remove it from the store."""
+    """Close the SSH session for the given token and remove it from the store.
+
+    Args:
+        data (dict): Request payload containing the session token.
+
+    Returns:
+        dict: Broker response with state='closed'.
+    """
     token = data["token"]
     with _sessions_lock:
         session = _sessions.pop(token, None)
@@ -511,7 +603,14 @@ def _action_close(data: dict) -> dict:
 
 
 def _action_ping(data: dict) -> dict:
-    """Touch the session and return its current state (keepalive / health-check)."""
+    """Touch the session and return its current state (keepalive / health-check).
+
+    Args:
+        data (dict): Request payload containing the session token.
+
+    Returns:
+        dict: Broker response with the current session state and message.
+    """
     token = data["token"]
     with _sessions_lock:
         session = _sessions.get(token)
@@ -533,7 +632,14 @@ _HANDLERS = {
 
 
 def _dispatch(data: dict) -> dict:
-    """Route a decoded request dict to the appropriate action handler."""
+    """Route a decoded request dict to the appropriate action handler.
+
+    Args:
+        data (dict): Decoded JSON request from a worker connection.
+
+    Returns:
+        dict: Broker response dict produced by the matched handler.
+    """
     action = data.get("action")
     handler = _HANDLERS.get(action)
     if not handler:
@@ -547,7 +653,11 @@ def _dispatch(data: dict) -> dict:
 
 
 def _handle_client(conn: socket.socket):
-    """Serve one Odoo worker connection: read requests, write responses."""
+    """Serve one Odoo worker connection: read requests, write responses.
+
+    Args:
+        conn (socket.socket): Accepted socket connection from an Odoo worker.
+    """
     try:
         with conn:
             conn.settimeout(30.0)
@@ -626,12 +736,20 @@ def _cleanup_loop():
 
 
 def _socket_path() -> str:
-    """Return the UNIX socket path for this broker instance."""
+    """Return the UNIX socket path for this broker instance.
+
+    Returns:
+        str: Absolute path to the broker Unix-domain socket file.
+    """
     return f"/tmp/tower_terminal_broker_{os.getuid()}.sock"
 
 
 def _lock_path() -> str:
-    """Return the lock file path used to prevent duplicate broker processes."""
+    """Return the lock file path used to prevent duplicate broker processes.
+
+    Returns:
+        str: Absolute path to the broker lock file.
+    """
     return f"/tmp/tower_terminal_broker_{os.getuid()}.lock"
 
 
