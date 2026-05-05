@@ -13,7 +13,7 @@
     "data": [
         "security/cx_tower_terminal_session_security.xml",
         "security/ir.model.access.csv",
-        "views/cx_tower_server_view.xml",
+        "views/cx_tower_server_views.xml",
     ],
     "assets": {
         "web.assets_backend": [
