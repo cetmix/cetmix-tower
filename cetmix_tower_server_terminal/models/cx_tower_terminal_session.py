@@ -192,7 +192,7 @@ class CxTowerTerminalSession(models.TransientModel):
         from odoo.modules.registry import Registry
 
         sock_path = cls._broker_socket_path()
-        bus_channel = f"terminal_{session_id}"
+        bus_channel = f"terminal_{session_token}"
 
         while not stop_event.is_set():
             try:
@@ -395,6 +395,7 @@ class CxTowerTerminalSession(models.TransientModel):
             "name": self.name,
             "params": {
                 "session_id": self.id,
+                "session_token": self.session_token,
                 "title": self.name,
             },
         }

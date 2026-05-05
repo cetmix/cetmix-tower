@@ -103,6 +103,7 @@ export class TowerTerminalAction extends Component {
         this.notification = useService("notification");
         this.outputRef = useRef("output");
         this.sessionId = this.props.action.params.session_id;
+        this.sessionToken = this.props.action.params.session_token;
 
         this.term = null;
         this.fitAddon = null;
@@ -119,8 +120,8 @@ export class TowerTerminalAction extends Component {
         this.pendingTerminalSize = null;
         this.lastTerminalSize = {cols: 0, rows: 0};
 
-        // Bus channel: matches the server-side f"terminal_{session_id}"
-        this._busChannel = `terminal_${this.sessionId}`;
+        // Bus channel: matches the server-side f"terminal_{session_token}"
+        this._busChannel = `terminal_${this.sessionToken}`;
         this._busNotificationHandler = this._handleBusNotification.bind(this);
 
         this.state = useState({
