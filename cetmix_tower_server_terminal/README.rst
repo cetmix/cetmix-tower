@@ -22,18 +22,12 @@ Cetmix Tower Server Terminal
 
 |badge1| |badge2| |badge3|
 
-This module adds an interactive SSH terminal client for Cetmix Tower
-servers.
+This module extends the functionality of Cetmix Tower Server to support
+interactive SSH terminal sessions directly from the Odoo backend.
 
-It extends ``cetmix_tower_server`` with:
-
-- A terminal action in server kanban and form views.
-- A transient terminal session model (``cx.tower.terminal.session``).
-- Browser terminal UI assets based on xterm.js.
-- A lightweight terminal broker process to keep interactive sessions
-  stable.
-
-Please refer to the official documentation for detailed information.
+It allows users to open a browser-based SSH terminal for any Tower
+server or jet, providing real-time interactive access without leaving
+the Odoo interface.
 
 **Table of contents**
 
@@ -43,14 +37,36 @@ Please refer to the official documentation for detailed information.
 Configuration
 =============
 
-Please refer to the official documentation for detailed configuration
-instructions.
+To configure this module:
+
+1. Configure the target server in Cetmix Tower.
+2. Set SSH credentials in the server form:
+
+   - SSH private key (recommended), or password according to the
+     selected auth mode.
+
+3. Configure host verification:
+
+   - Set the server host key for strict verification, or
+   - enable Skip Host Key Check when host key verification is not
+     required.
+
+The terminal session reuses these server SSH settings to open the
+interactive PTY shell.
 
 Usage
 =====
 
-Please refer to the official documentation for detailed usage
-instructions.
+To use this module, you need to:
+
+1. Go to **Cetmix Tower** > **Servers**.
+2. In the server **Kanban** view, open the manage menu on a server card
+   and click **Terminal**. Alternatively, open a server form and click
+   the **Terminal** button in the header.
+3. An interactive SSH terminal session opens in a new browser tab or
+   action pane.
+4. Type commands and interact with the remote server in real time.
+5. Click **Disconnect** or close the tab to end the session.
 
 Changelog
 =========
@@ -58,8 +74,13 @@ Changelog
 18.0.1.0.0 (2026-04-17)
 -----------------------
 
-- Initial release extracted from ``cetmix_tower_server``.
-- Adds interactive SSH terminal sessions with broker-backed transport.
+- [ADD] Initial release: interactive SSH terminal sessions for Cetmix
+  Tower servers.
+- [ADD] Transient terminal session model
+  (``cx.tower.terminal.session``).
+- [ADD] Browser-based terminal UI using xterm.js.
+- [ADD] Lightweight terminal broker process for stable interactive
+  sessions.
 
 Bug Tracker
 ===========
