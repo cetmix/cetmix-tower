@@ -15,7 +15,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import LazyTranslate
 
-from ..ssh.terminal_broker import _STATE_SELECTION as _BROKER_STATE_SELECTION
+from ..ssh.constants import _STATE_SELECTION as _BROKER_STATE_SELECTION
 
 _logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__, default_lang="en_US")

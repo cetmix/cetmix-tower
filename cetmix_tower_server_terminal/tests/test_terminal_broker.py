@@ -27,25 +27,38 @@ class TestTowerTerminalBroker(TestTowerTerminalCommon):
         """_open_broker_session raises ValidationError when broker returns error."""
         session = self._create_open_session()
 
-        with self._patch_broker_call(
-            return_value={"status": "error", "message": "SSH refused"}
-        ), self._patch_start_pusher(), self.assertRaises(ValidationError):
-            session._open_broker_session()
+        raised = False
+        try:
+            with self._patch_broker_call(
+                return_value={"status": "error", "message": "SSH refused"}
+            ), self._patch_start_pusher():
+                session._open_broker_session()
+        except ValidationError:
+            raised = True
 
+        self.assertTrue(raised, "Expected ValidationError to be raised")
+        # State must be persisted to DB before the exception propagates.
+        # Use try/except (not assertRaises) to avoid Odoo's savepoint rollback
+        # that UserError-catching assertRaises applies.
         self.assertEqual(session.state, "error")
 
     def test_open_broker_session_exception(self):
         """_open_broker_session wraps unexpected exceptions in ValidationError."""
         session = self._create_open_session()
 
-        with patch(
-            "odoo.addons.cetmix_tower_server_terminal.models."
-            "cx_tower_terminal_session.CxTowerTerminalSession._broker_call",
-            autospec=True,
-            side_effect=RuntimeError("Broker unavailable"),
-        ), self.assertRaises(ValidationError):
-            session._open_broker_session()
+        raised = False
+        try:
+            with patch(
+                "odoo.addons.cetmix_tower_server_terminal.models."
+                "cx_tower_terminal_session.CxTowerTerminalSession._broker_call",
+                autospec=True,
+                side_effect=RuntimeError("Broker unavailable"),
+            ):
+                session._open_broker_session()
+        except ValidationError:
+            raised = True
 
+        self.assertTrue(raised, "Expected ValidationError to be raised")
         self.assertEqual(session.state, "error")
 
     def test_broker_call_retries_on_failure(self):

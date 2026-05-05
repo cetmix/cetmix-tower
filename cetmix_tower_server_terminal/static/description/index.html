@@ -370,17 +370,11 @@ ul.auto-toc {
 !! source digest: sha256:7ba16049a3626e00848a84252a5e1f50d3dfc93ec167d112199385b2d6d62c5d
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_server_terminal"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
-<p>This module adds an interactive SSH terminal client for Cetmix Tower
-servers.</p>
-<p>It extends <tt class="docutils literal">cetmix_tower_server</tt> with:</p>
-<ul class="simple">
-<li>A terminal action in server kanban and form views.</li>
-<li>A transient terminal session model (<tt class="docutils literal">cx.tower.terminal.session</tt>).</li>
-<li>Browser terminal UI assets based on xterm.js.</li>
-<li>A lightweight terminal broker process to keep interactive sessions
-stable.</li>
-</ul>
-<p>Please refer to the official documentation for detailed information.</p>
+<p>This module extends the functionality of Cetmix Tower Server to support
+interactive SSH terminal sessions directly from the Odoo backend.</p>
+<p>It allows users to open a browser-based SSH terminal for any Tower
+server or jet, providing real-time interactive access without leaving
+the Odoo interface.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -400,21 +394,50 @@ stable.</li>
 </div>
 <div class="section" id="configuration">
 <h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
-<p>Please refer to the official documentation for detailed configuration
-instructions.</p>
+<p>To configure this module:</p>
+<ol class="arabic simple">
+<li>Configure the target server in Cetmix Tower.</li>
+<li>Set SSH credentials in the server form:<ul>
+<li>SSH private key (recommended), or password according to the
+selected auth mode.</li>
+</ul>
+</li>
+<li>Configure host verification:<ul>
+<li>Set the server host key for strict verification, or</li>
+<li>enable Skip Host Key Check when host key verification is not
+required.</li>
+</ul>
+</li>
+</ol>
+<p>The terminal session reuses these server SSH settings to open the
+interactive PTY shell.</p>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
-<p>Please refer to the official documentation for detailed usage
-instructions.</p>
+<p>To use this module, you need to:</p>
+<ol class="arabic simple">
+<li>Go to <strong>Cetmix Tower</strong> &gt; <strong>Servers</strong>.</li>
+<li>In the server <strong>Kanban</strong> view, open the manage menu on a server card
+and click <strong>Terminal</strong>. Alternatively, open a server form and click
+the <strong>Terminal</strong> button in the header.</li>
+<li>An interactive SSH terminal session opens in a new browser tab or
+action pane.</li>
+<li>Type commands and interact with the remote server in real time.</li>
+<li>Click <strong>Disconnect</strong> or close the tab to end the session.</li>
+</ol>
 </div>
 <div class="section" id="changelog">
 <h1><a class="toc-backref" href="#toc-entry-3">Changelog</a></h1>
 <div class="section" id="section-1">
 <h2><a class="toc-backref" href="#toc-entry-4">18.0.1.0.0 (2026-04-17)</a></h2>
 <ul class="simple">
-<li>Initial release extracted from <tt class="docutils literal">cetmix_tower_server</tt>.</li>
-<li>Adds interactive SSH terminal sessions with broker-backed transport.</li>
+<li>[ADD] Initial release: interactive SSH terminal sessions for Cetmix
+Tower servers.</li>
+<li>[ADD] Transient terminal session model
+(<tt class="docutils literal">cx.tower.terminal.session</tt>).</li>
+<li>[ADD] Browser-based terminal UI using xterm.js.</li>
+<li>[ADD] Lightweight terminal broker process for stable interactive
+sessions.</li>
 </ul>
 </div>
 </div>

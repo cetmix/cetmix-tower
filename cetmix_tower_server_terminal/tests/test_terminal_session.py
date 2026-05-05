@@ -108,7 +108,7 @@ class TestTowerTerminalSession(TestTowerTerminalCommon):
         session = self._create_open_session()
 
         with self._patch_broker_call(
-            return_value={"state": "open", "output": "", "message": False}
+            return_value={"status": "ok", "state": "open", "output": "", "message": False}
         ), self._patch_stop_pusher(), self._patch_start_pusher():
             response = session.terminal_reconnect()
 
