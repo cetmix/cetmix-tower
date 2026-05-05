@@ -102,17 +102,7 @@
     ],
     "assets": {
         "web.assets_backend": [
-            "cetmix_tower_server/static/src/components/ace_variables/ace_variables.xml",
-            "cetmix_tower_server/static/src/components/ace_variables/ace_variables.esm.js",
-            "cetmix_tower_server/static/src/components/ace_variables/ace_variables.scss",
-            "cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.xml",
-            "cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.esm.js",
-            "cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.scss",
-            "cetmix_tower_server/static/src/components/ace_variables/code_editor_tower.xml",
-            "cetmix_tower_server/static/src/components/ace_variables/code_editor_tower.esm.js",
-            "cetmix_tower_server/static/src/components/server_status/server_status_field.esm.js",
-            "cetmix_tower_server/static/src/components/server_status/server_status_field.scss",
-            "cetmix_tower_server/static/src/utils/server_utils.esm.js",
+            "cetmix_tower_server/static/src/**/*",
         ],
     },
 }
