@@ -187,7 +187,7 @@ class _BrokerSession:
             # exceeds _BROKER_MAX_BUFFER_BYTES so a stalled client cannot cause
             # unbounded memory growth in the broker process.
             if len(self.buffer) > _BROKER_MAX_BUFFER_BYTES:
-                self.buffer = self.buffer[-_BROKER_MAX_BUFFER_BYTES :]
+                self.buffer = self.buffer[-_BROKER_MAX_BUFFER_BYTES:]
             self.last_output_at = time.monotonic()
             self.output_condition.notify_all()
 
