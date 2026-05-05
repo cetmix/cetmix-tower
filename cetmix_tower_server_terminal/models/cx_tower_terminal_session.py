@@ -66,7 +66,7 @@ class CxTowerTerminalSession(models.TransientModel):
 
     state = fields.Selection(
         selection=lambda self: self._selection_state(),
-        default="open",
+        default=lambda self: self._default_state(),
         required=True,
         readonly=True,
     )
@@ -78,6 +78,11 @@ class CxTowerTerminalSession(models.TransientModel):
     def _selection_state(self):
         """Return the list of valid state values for the state field."""
         return self._STATE_SELECTION
+
+    @api.model
+    def _default_state(self):
+        """Return the default value for the state field."""
+        return "open"
 
     @staticmethod
     def _broker_socket_path():
