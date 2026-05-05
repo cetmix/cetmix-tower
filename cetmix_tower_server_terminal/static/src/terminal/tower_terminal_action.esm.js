@@ -328,7 +328,7 @@ export class TowerTerminalAction extends Component {
             }
         } finally {
             this.sendInFlight = false;
-            this.state.isSending = Boolean(this.queuedPayload);
+            this.state.isSending = Boolean(this.queuedPayload) && this.isConnected;
             this.focusTerminal();
             if (this.queuedPayload && this.isConnected) {
                 this.processSendQueue();
