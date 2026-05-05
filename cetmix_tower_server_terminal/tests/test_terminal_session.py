@@ -78,9 +78,12 @@ class TestTowerTerminalSession(TestTowerTerminalCommon):
         """terminal_read restarts the output pusher when session is open."""
         session = self._create_open_session()
 
-        with self._patch_broker_call(
-            return_value={"state": "open", "output": "banner", "message": False}
-        ), self._patch_start_pusher() as mock_pusher:
+        with (
+            self._patch_broker_call(
+                return_value={"state": "open", "output": "banner", "message": False}
+            ),
+            self._patch_start_pusher() as mock_pusher,
+        ):
             response = session.terminal_read()
 
         self.assertEqual(response["state"], "open")
@@ -107,10 +110,18 @@ class TestTowerTerminalSession(TestTowerTerminalCommon):
         """terminal_reconnect closes the old session and opens a new one."""
         session = self._create_open_session()
 
-        with self._patch_broker_call(
-            return_value={"status": "ok", "state": "open", "output": "", "message": False}
-        ), self._patch_stop_pusher(), self._patch_start_pusher():
+        with (
+            self._patch_broker_call(
+                return_value={
+                    "status": "ok",
+                    "state": "open",
+                    "output": "",
+                    "message": False,
+                }
+            ),
+            self._patch_stop_pusher(),
+            self._patch_start_pusher(),
+        ):
             response = session.terminal_reconnect()
 
         self.assertEqual(response["state"], "open")
-

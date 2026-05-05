@@ -28,7 +28,12 @@ class TestTowerTerminalCommon(TestTowerCommon):
     def _patch_broker_call(self, return_value=None):
         """Return a context manager that patches _broker_call on TerminalSession."""
         if return_value is None:
-            return_value = {"status": "ok", "state": "open", "output": "", "message": False}
+            return_value = {
+                "status": "ok",
+                "state": "open",
+                "output": "",
+                "message": False,
+            }
         return patch(
             "odoo.addons.cetmix_tower_server_terminal.models."
             "cx_tower_terminal_session.CxTowerTerminalSession._broker_call",

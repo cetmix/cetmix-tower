@@ -3,10 +3,7 @@
     <record id="cx_tower_terminal_session_rule_group_user_own" model="ir.rule">
         <field name="name">Tower terminal session: own records only</field>
         <field name="model_id" ref="model_cx_tower_terminal_session" />
-        <field
-            name="groups"
-            eval="[(4, ref('cetmix_tower_server.group_user'))]"
-        />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
         <field name="domain_force">[("create_uid", "=", user.id)]</field>
     </record>
 </odoo>
