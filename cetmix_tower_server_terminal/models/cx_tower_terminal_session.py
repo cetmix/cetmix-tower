@@ -196,60 +196,60 @@ class CxTowerTerminalSession(models.TransientModel):
 
         while not stop_event.is_set():
             try:
-                sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                sock.settimeout(5.0)
-                sock.connect(sock_path)
-                sock.settimeout(None)  # switch to blocking for streaming
-                sock.sendall(
-                    (
-                        json.dumps({"action": "subscribe", "token": session_token})
-                        + "\n"
-                    ).encode()
-                )
-                f = sock.makefile("r")
-                for line in f:
-                    if stop_event.is_set():
-                        return
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        msg = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    output = msg.get("output", "")
-                    state = msg.get("state", "open")
-                    # Broker rejected the subscribe (another pusher already active)
-                    if msg.get("status") == "error":
-                        _logger.debug(
-                            "Output pusher: broker rejected subscribe for %s (%s)",
-                            session_token[:8],
-                            msg.get("message"),
-                        )
-                        return
-                    if not output and state == "open":
-                        continue
-                    try:
-                        registry = Registry(db_name)
-                        with registry.cursor() as cr:
-                            env = odoo.api.Environment(cr, uid, {})
-                            env["bus.bus"]._sendone(
-                                bus_channel,
-                                "terminal.output",
-                                {
-                                    "session_id": session_id,
-                                    "output": output,
-                                    "state": state,
-                                    "message": msg.get("message"),
-                                },
+                with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                    sock.settimeout(5.0)
+                    sock.connect(sock_path)
+                    sock.settimeout(None)  # switch to blocking for streaming
+                    sock.sendall(
+                        (
+                            json.dumps({"action": "subscribe", "token": session_token})
+                            + "\n"
+                        ).encode()
+                    )
+                    f = sock.makefile("r")
+                    for line in f:
+                        if stop_event.is_set():
+                            return
+                        line = line.strip()
+                        if not line:
+                            continue
+                        try:
+                            msg = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        output = msg.get("output", "")
+                        state = msg.get("state", "open")
+                        # Broker rejected the subscribe (another pusher already active)
+                        if msg.get("status") == "error":
+                            _logger.debug(
+                                "Output pusher: broker rejected subscribe for %s (%s)",
+                                session_token[:8],
+                                msg.get("message"),
                             )
-                    except Exception:
-                        _logger.exception(
-                            "Output pusher: bus publish failed for session %s",
-                            session_id,
-                        )
-                    if state != "open":
-                        return
+                            return
+                        if not output and state == "open":
+                            continue
+                        try:
+                            registry = Registry(db_name)
+                            with registry.cursor() as cr:
+                                env = odoo.api.Environment(cr, uid, {})
+                                env["bus.bus"]._sendone(
+                                    bus_channel,
+                                    "terminal.output",
+                                    {
+                                        "session_id": session_id,
+                                        "output": output,
+                                        "state": state,
+                                        "message": msg.get("message"),
+                                    },
+                                )
+                        except Exception:
+                            _logger.exception(
+                                "Output pusher: bus publish failed for session %s",
+                                session_id,
+                            )
+                        if state != "open":
+                            return
             except OSError as exc:
                 if stop_event.is_set():
                     return
