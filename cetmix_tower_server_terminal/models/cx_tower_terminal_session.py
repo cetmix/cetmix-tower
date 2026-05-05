@@ -15,7 +15,15 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.tools import LazyTranslate
 
-from ..ssh.constants import _STATE_SELECTION
+from ..ssh.constants import (
+    _MAX_PAYLOAD_LENGTH,
+    _MAX_TERMINAL_COLS,
+    _MAX_TERMINAL_ROWS,
+    _MIN_TERMINAL_COLS,
+    _MIN_TERMINAL_ROWS,
+    _SEND_READ_IDLE_SECONDS,
+    _STATE_SELECTION,
+)
 
 _logger = logging.getLogger(__name__)
 _lt = LazyTranslate(__name__, default_lang="en_US")
@@ -28,7 +36,12 @@ class CxTowerTerminalSession(models.TransientModel):
     _description = "Cetmix Tower Terminal Session"
     _transient_max_hours = 12
 
-    _MAX_PAYLOAD_LENGTH = 4096
+    _MAX_PAYLOAD_LENGTH = _MAX_PAYLOAD_LENGTH
+    _MIN_TERMINAL_COLS = _MIN_TERMINAL_COLS
+    _MAX_TERMINAL_COLS = _MAX_TERMINAL_COLS
+    _MIN_TERMINAL_ROWS = _MIN_TERMINAL_ROWS
+    _MAX_TERMINAL_ROWS = _MAX_TERMINAL_ROWS
+    _SEND_READ_IDLE_SECONDS = _SEND_READ_IDLE_SECONDS
 
     # ── per-process pusher thread registry ───────────────────────────────────
     # Each entry lives only in the worker that started it.  The broker's
@@ -37,11 +50,6 @@ class CxTowerTerminalSession(models.TransientModel):
     _PUSHER_THREADS: dict = {}
     _PUSHER_STOP_EVENTS: dict = {}
     _PUSHER_LOCK = threading.RLock()
-    _SEND_READ_IDLE_SECONDS = 0.03
-    _MIN_TERMINAL_COLS = 20
-    _MAX_TERMINAL_COLS = 512
-    _MIN_TERMINAL_ROWS = 5
-    _MAX_TERMINAL_ROWS = 200
 
     name = fields.Char(required=True, readonly=True)
     session_token = fields.Char(
