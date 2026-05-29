@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_cx_tower_key_export_yaml" model="ir.actions.act_window">
+        <field name="name">Export YAML</field>
+        <field name="res_model">cx.tower.yaml.export.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_cx_tower_key" />
+    </record>
+</odoo>

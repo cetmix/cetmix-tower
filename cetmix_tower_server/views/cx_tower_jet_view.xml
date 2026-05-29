@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Jet Kanban View -->
+    <record id="cx_tower_jet_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.jet.kanban</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <kanban quick_create="false" records_draggable="0" group_create="false">
+                <field name="name" />
+                <field name="tag_ids" />
+                <field name="reference" />
+                <field name="icon" />
+                <field name="jet_template_id" />
+                <field name="jet_template_state_ids" />
+                <field name="server_id" />
+                <field name="state_id" />
+                <field name="url" />
+                <field name="action_available_ids" />
+                <field name="color" />
+                <field name="sequence" />
+                <field name="partner_id" />
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <aside t-if="record.icon.raw_value">
+                            <field
+                                name="icon"
+                                widget="image"
+                                alt="Jet icon"
+                                options="{'size': [48, 48], 'img_class': 'object-fit-contain rounded'}"
+                            />
+                        </aside>
+                        <main class="ps-2 ps-md-0 d-flex flex-column">
+                            <div
+                                class="d-flex align-items-start justify-content-between mb-1"
+                            >
+                                <div>
+                                    <strong class="fs-5">
+                                        <field name="name" />
+                                    </strong>
+                                    <div class="text-muted">
+                                        <field name="reference" />
+                                    </div>
+                                    <field
+                                        name="tag_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                </div>
+                            </div>
+                            <ul class="list-unstyled mb-0 text-muted small flex-grow-1">
+                                <li
+                                    t-if="record.state_id.raw_value"
+                                    class="d-flex align-items-center mb-1"
+                                >
+                                    <i class="fa fa-circle me-2" title="State" />
+                                    <field name="state_id" />
+                                </li>
+                                <li
+                                    class="d-flex align-items-center mb-1"
+                                    groups="cetmix_tower_server.group_manager"
+                                >
+                                    <i class="fa fa-cube me-2" title="Template" />
+                                    <field name="jet_template_id" />
+                                </li>
+                                <li class="d-flex align-items-center mb-1">
+                                    <i class="fa fa-server me-2" title="Server" />
+                                    <field name="server_id" />
+                                </li>
+                                <li
+                                    t-if="record.partner_id.raw_value"
+                                    class="d-flex align-items-center mb-1"
+                                >
+                                    <i class="fa fa-user me-2" title="Partner" />
+                                    <field name="partner_id" />
+                                </li>
+                            </ul>
+                            <footer>
+                                <div
+                                    t-if="record.action_available_ids.raw_value"
+                                    class="d-flex align-items-center gap-1"
+                                >
+                                    <i class="fa fa-list" title="Available Actions" />
+                                    <field
+                                        name="action_available_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                </div>
+                                <a
+                                    t-if="record.url.raw_value"
+                                    t-att-href="record.url.raw_value"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Open Jet URL"
+                                    class="ms-auto"
+                                >
+                                    <i class="fa fa-external-link" />
+                                </a>
+                            </footer>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Jet List View -->
+    <record id="cx_tower_jet_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.list</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <list duplicate="false">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field
+                    name="jet_template_id"
+                    optional="show"
+                    groups="cetmix_tower_server.group_manager"
+                />
+                <field name="server_id" optional="show" />
+                <field name="partner_id" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field name="state_id" />
+                <field name="jet_template_state_ids" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Jet Form View -->
+    <record id="cx_tower_jet_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.form</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <form string="Jet" duplicate="false">
+                <header>
+                    <button
+                        name="action_run_command"
+                        type="object"
+                        string="Command"
+                        class="btn-primary"
+                        icon="fa-code"
+                        invisible="current_action_id"
+                    />
+                    <button
+                        name="action_run_flight_plan"
+                        type="object"
+                        string="Flight Plan"
+                        class="btn-primary"
+                        icon="fa-plane"
+                        invisible="current_action_id"
+                    />
+                    <field name="state_id" widget="statusbar" />
+                    <field name="jet_template_state_ids" invisible="1" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Command Logs"
+                            class="oe_stat_button"
+                            icon="fa-code"
+                        />
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Flight Plan Logs"
+                            class="oe_stat_button"
+                            icon="fa-paper-plane"
+                        />
+                        <button
+                            name="action_open_files"
+                            type="object"
+                            string="Files"
+                            class="oe_stat_button"
+                            icon="fa-files-o"
+                        />
+                    </div>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="not deletable"
+                        style="margin-bottom:0px;"
+                    >
+                        <p>
+                            This jet can be deleted.
+                        </p>
+                    </div>
+                    <field
+                        name="icon"
+                        widget="image"
+                        class="oe_avatar"
+                        options="{'preview_image': 'icon'}"
+                        readonly="1"
+                    />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Production Odoo" />
+                        </h1>
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="Tags"
+                            options="{'color_field': 'color'}"
+                        />
+                    </div>
+                    <group name="general">
+                        <group>
+                            <field
+                                name="reference"
+                                placeholder="leave blank to autogenerate"
+                            />
+                            <field
+                                name="url"
+                                placeholder="Jet URL, eg 'https://meme.example.com'"
+                                widget="url"
+                            />
+                            <field name="partner_id" />
+                        </group>
+                        <group>
+                            <field name="jet_template_domain" invisible="1" />
+                            <field name="create_date" invisible="1" />
+                            <field
+                                name="jet_template_id"
+                                readonly="create_date"
+                                domain="jet_template_domain"
+                            />
+                            <field
+                                name="jet_cloned_from_id"
+                                invisible="not jet_cloned_from_id"
+                            />
+                            <field
+                                name="server_id"
+                                domain="server_allowed_domain"
+                                readonly="create_date"
+                            />
+                            <field name="waypoint_id" invisible="not waypoint_id" />
+                            <field name="server_allowed_domain" invisible="1" />
+                            <field name="deletable" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="state" string="States and Actions">
+                            <group name="stats">
+                                <field
+                                    name="show_available_states"
+                                    widget="boolean_toggle"
+                                    invisible="current_action_id"
+                                />
+                                <field
+                                    name="current_action_id"
+                                    invisible="not target_state_id"
+                                />
+                                <field
+                                    name="target_state_id"
+                                    invisible="not target_state_id"
+                                />
+                                <field
+                                    name="served_jet_request_id"
+                                    invisible="not served_jet_request_id"
+                                />
+                            </group>
+                            <group name="states_and_actions">
+                                <group
+                                    name="available_actions"
+                                    string="Available Actions"
+                                >
+                                    <field
+                                        name="action_available_ids"
+                                        string=" "
+                                        invisible="current_action_id"
+                                    >
+                                        <list>
+                                            <field name="name" />
+                                            <button
+                                                type="object"
+                                                name="trigger"
+                                                class="fa fa-play oe_highlight"
+                                                context="{'jet_id': parent.id}"
+                                                title="Trigger action"
+                                                confirm="Do you want to trigger this action?"
+                                            />
+                                        </list>
+                                        <form>
+                                            <field name="note" invisible="not note" />
+                                            <field name="name" invisible="note" />
+                                        </form>
+                                    </field>
+                                </group>
+                                <group
+                                    name="available_states"
+                                    string="Available States"
+                                    invisible="not show_available_states"
+                                    groups="cetmix_tower_server.group_manager"
+                                >
+                                    <field
+                                        name="state_available_ids"
+                                        string=" "
+                                        invisible="current_action_id"
+                                    >
+                                        <list>
+                                            <field name="name" />
+                                            <button
+                                                type="object"
+                                                name="set_state"
+                                                class="fa fa-check oe_highlight"
+                                                context="{'jet_id': parent.id}"
+                                                title="Set state"
+                                                confirm="Do you want to set this state?"
+                                            />
+                                        </list>
+                                        <form>
+                                            <field name="note" invisible="not note" />
+                                        </form>
+                                    </field>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="configuration" string="Configuration">
+                            <field
+                                name="variable_value_ids"
+                                order="variable_reference"
+                                context="{'default_server_id': False}"
+                            >
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="variable_reference"
+                                        column_invisible="True"
+                                    />
+                                    <field name="variable_id" />
+                                    <field
+                                        name="variable_type"
+                                        column_invisible="True"
+                                    />
+                                    <field
+                                        name="value_char"
+                                        readonly="variable_type == 'o'"
+                                        widget="ace_tower"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        readonly="variable_type == 's'"
+                                    />
+                                    <field name="access_level" optional="show" />
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                        <field name="access_level" />
+                                    </group>
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
+                                </form>
+                            </field>
+                        </page>
+                        <page
+                            name="waypoints"
+                            groups="cetmix_tower_server.group_manager"
+                            string="Waypoints"
+                            invisible="not is_waypoints_available"
+                        >
+                            <field name="is_waypoints_available" invisible="1" />
+                            <field name="waypoint_ids">
+                                <list
+                                    delete="0"
+                                    decoration-success="state == 'current'"
+                                >
+                                    <field name="create_date" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="access_level" optional="hide" />
+                                    <field name="waypoint_template_id" />
+                                    <field
+                                        name="jet_template_id"
+                                        column_invisible="True"
+                                    />
+                                    <field name="can_fly_to" column_invisible="True" />
+                                    <field name="state" />
+                                    <button
+                                        type="object"
+                                        name="prepare"
+                                        icon="fa-check"
+                                        string="Prepare"
+                                        title="Prepare Waypoint"
+                                        confirm="Do you want to prepare this waypoint?"
+                                        invisible="state != 'draft'"
+                                    />
+                                    <button
+                                        type="object"
+                                        name="fly_to"
+                                        icon="fa-plane"
+                                        string="Fly here"
+                                        title="Fly to this waypoint"
+                                        confirm="Do you want to fly to this waypoint?"
+                                        invisible="not can_fly_to"
+                                    />
+                                    <button
+                                        type="object"
+                                        name="unlink"
+                                        icon="fa-trash"
+                                        string="Delete"
+                                        title="Delete the Waypoint"
+                                        confirm="Do you want to delete this waypoint? This action cannot be undone."
+                                        invisible="state not in [False, 'draft', 'deleted', 'ready', 'error']"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            string="Dependencies"
+                            name="dependencies"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group>
+                                <group name="requires" string="Depends on">
+                                    <div class="o_form_label" />
+                                    <button
+                                        name="action_open_requires_jets"
+                                        type="object"
+                                        string="Open"
+                                        title="Open jets that this jet depends on"
+                                        icon="fa-external-link"
+                                    />
+                                    <field name="jet_requires_ids" string=" ">
+                                        <list>
+                                            <field
+                                                name="jet_depends_on_id"
+                                                placeholder="..no jet is assigned yet"
+                                            />
+                                            <field
+                                                name="jet_template_dependency_id"
+                                                optional="hide"
+                                            />
+                                        </list>
+                                    </field>
+                                </group>
+                                <group name="required_by" string="Serves dependencies">
+                                    <div class="o_form_label" />
+                                    <button
+                                        name="action_open_required_by_jets"
+                                        type="object"
+                                        string="Open"
+                                        title="Open jets that depend on this jet"
+                                        icon="fa-external-link"
+                                    />
+                                    <field name="jet_required_by_ids" string=" ">
+                                        <list>
+                                            <field
+                                                name="jet_id"
+                                                placeholder="...no jet is assigned yet"
+                                            />
+                                            <field
+                                                name="jet_template_dependency_id"
+                                                optional="hide"
+                                            />
+                                        </list>
+                                    </field>
+                                </group>
+                            </group>
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can access this jet"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this jet"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                        <page name="logs" string="Jet Logs">
+                            <field name="server_log_ids">
+                                <list>
+                                    <field name="name" />
+                                    <button
+                                        type="object"
+                                        string="Open"
+                                        name="action_open_log"
+                                        title="Open full form"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="scheduled_tasks"
+                            string="Scheduled Tasks"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <field name="scheduled_task_ids">
+                                <list create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="display_name" />
+                                    <field name="action" />
+                                    <field name="interval_type" />
+                                    <field name="interval_number" optional="hide" />
+                                    <field name="is_running" optional="hide" />
+                                    <field name="next_call" optional="hide" />
+                                    <field name="last_call" optional="hide" />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="metadata"
+                            string="Metadata"
+                            groups="base.group_no_one"
+                        >
+                            <group>
+                                <field name="metadata" invisible="1" />
+                                <field
+                                    name="metadata_text"
+                                    string="Metadata"
+                                    readonly="1"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                    <field name="note" placeholder="Put your notes here..." />
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <!-- Jet Search View -->
+    <record id="cx_tower_jet_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.search</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="arch" type="xml">
+            <search string="Search Jets">
+                <field
+                    name="name"
+                    string="Name/Reference/URL"
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('reference', 'ilike', self), ('url', 'ilike', self)]"
+                />
+                <field name="partner_id" />
+                <field name="server_id" />
+                <field name="jet_template_id" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
+                <filter
+                    string="With URL"
+                    name="with_url"
+                    domain="[('url', '!=', False)]"
+                />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Deletable"
+                    name="deletable"
+                    domain="[('deletable', '=', True)]"
+                />
+                <filter
+                    string="Not Deletable"
+                    name="not_deletable"
+                    domain="[('deletable', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Template"
+                        name="group_by_template"
+                        context="{'group_by': 'jet_template_id'}"
+                    />
+                    <filter
+                        string="Server"
+                        name="group_by_server"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="State"
+                        name="group_by_state"
+                        context="{'group_by': 'state_id'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="state_id"
+                        string="State"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                    <field name="jet_template_id" string="Template" icon="fa-plane" />
+                    <field
+                        name="tag_ids"
+                        string="Tags"
+                        select="multi"
+                        icon="fa-server"
+                    />
+                    <field
+                        name="jet_cloned_from_id"
+                        string="Cloned from"
+                        icon="fa-clone"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Update Jet Action to include kanban view -->
+    <record id="cx_tower_jet_action" model="ir.actions.act_window">
+        <field name="name">Jets</field>
+        <field name="res_model">cx.tower.jet</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Jet!
+            </p>
+            <p>
+                Jets represent application instances that are managed independently
+                from their host servers.
+            </p>
+        </field>
+    </record>
+</odoo>

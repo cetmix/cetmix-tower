@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_command_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.view.form</field>
+        <field name="model">cx.tower.command</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_plans"
+                            type="object"
+                            class="oe_stat_button"
+                            invisible="flight_plan_used_ids_count == 0"
+                            icon="fa-paper-plane"
+                        >
+                            <field
+                                name="flight_plan_used_ids_count"
+                                string="Used in Plans"
+                                widget="statinfo"
+                            />
+                        </button>
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Logs"
+                            class="oe_stat_button"
+                            icon="fa-code"
+                        />
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="action not in ['file_using_template', 'python_code', 'plan', 'jet_action', 'create_waypoint']"
+                        style="margin-bottom:0px;"
+                    >
+                        <p
+                            invisible="action not in ['file_using_template', 'plan', 'jet_action', 'create_waypoint']"
+                        >
+                            This command can be used only in Flight Plans.
+                        </p>
+                        <p invisible="action != 'python_code'">
+                            Remember: Python code is executed on the Tower server, not on the remote
+                            one.
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="active" invisible='1' />
+                            <field name="action" />
+                            <field
+                                name="file_template_id"
+                                invisible="action != 'file_using_template'"
+                                required="action == 'file_using_template'"
+                            />
+                            <field
+                                name="flight_plan_id"
+                                invisible="action != 'plan'"
+                                required="action == 'plan'"
+                            />
+                            <field
+                                name="path"
+                                widget="ace_tower"
+                                invisible="action == 'python_code'"
+                                placeholder="optional, eg /home/{{ tower.server.username }}"
+                            />
+                            <field
+                                name="if_file_exists"
+                                invisible="action != 'file_using_template'"
+                                required="action == 'file_using_template'"
+                            />
+                            <field
+                                name="disconnect_file"
+                                invisible="action != 'file_using_template'"
+                            />
+                            <field
+                                name="jet_template_id"
+                                invisible="action != 'jet_action'"
+                                required="action == 'jet_action'"
+                            />
+                            <field
+                                name="jet_action_id"
+                                invisible="action != 'jet_action'"
+                                required="action == 'jet_action'"
+                            />
+                            <field
+                                name="waypoint_template_id"
+                                invisible="action != 'create_waypoint'"
+                                required="action == 'create_waypoint'"
+                            />
+                            <field
+                                name="fly_here"
+                                invisible="action != 'create_waypoint'"
+                            />
+                            <field name="allow_parallel_run" />
+                            <field
+                                name="no_split_for_sudo"
+                                invisible="action != 'ssh_command'"
+                            />
+                            <field name="note" />
+                        </group>
+                        <group>
+                            <field
+                                name="server_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="os_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field name="access_level" />
+                            <field name="server_status" widget="server_status" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                readonly="1"
+                                invisible="not variable_ids"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                invisible="not secret_ids"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="code"
+                            string="Code"
+                            invisible="action not in ['ssh_command', 'python_code']"
+                        >
+                            <field
+                                name="code"
+                                required="action == 'python_code'"
+                                widget="ace_tower"
+                                options="{'mode': 'python'}"
+                                placeholder="Enter Python code here. Help about Python expression is available in the help tab of this document."
+                            />
+                        </page>
+                        <page
+                            string="Help"
+                            name="python_help_info"
+                            invisible="action != 'python_code'"
+                        >
+                            <field name="command_help" />
+                        </page>
+                        <page
+                            name="plan_lines"
+                            string="Flight Plan Lines"
+                            invisible="action != 'plan'"
+                        >
+                            <field name="flight_plan_line_ids">
+                                <list>
+                                    <field name="command_id" />
+                                    <field name="tag_ids" widget="many2many_tags" />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="template_code"
+                            string="Template Code"
+                            invisible="action != 'file_using_template'"
+                        >
+                            <field
+                                name="template_code"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                                readonly="1"
+                            />
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.command.view.list</field>
+        <field name="model">cx.tower.command</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="action" />
+                <field name="access_level" optional="hide" />
+                <field
+                    name="server_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field name="path" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field
+                    name="os_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="hide"
+                />
+                <field
+                    name="secret_ids"
+                    widget="many2many_tags"
+                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    optional="hide"
+                />
+                <field name="allow_parallel_run" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.command.view.search</field>
+        <field name="model">cx.tower.command</field>
+        <field name="arch" type="xml">
+            <search string="Search Commands">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="code" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
+                <filter
+                    string="Global"
+                    name="filter_global"
+                    domain="[('server_ids', '=', False)]"
+                />
+                <filter
+                    string="Server tight"
+                    name="server_tight"
+                    domain="[('server_ids', '!=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Allow Parallel Run"
+                    name="filter_run_parallel"
+                    domain="[('allow_parallel_run', '=', True)]"
+                />
+                <separator />
+                <filter
+                    string="Used in Plans"
+                    name="filter_used_in_plans"
+                    domain="[('flight_plan_used_ids', '!=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Tagged"
+                    name="filter_tagged"
+                    domain="[('tag_ids', '!=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Action"
+                        name="group_action"
+                        domain="[]"
+                        context="{'group_by': 'action'}"
+                    />
+                    <filter
+                        string="Access Level"
+                        name="group_access_level"
+                        domain="[]"
+                        context="{'group_by': 'access_level'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="action" string="Action" icon="fa-cog" />
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field
+                        name="os_ids"
+                        string="OSes"
+                        icon="fa-server"
+                        select="multi"
+                    />
+                    <field
+                        name="server_ids"
+                        string="Servers"
+                        icon="fa-server"
+                        select="multi"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_command" model="ir.actions.act_window">
+        <field name="name">Command</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_commands</field>
+        <field name="res_model">cx.tower.command</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

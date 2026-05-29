@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_command_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.form</field>
+        <field name="model">cx.tower.command.log</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_command_log_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='command_id']" position="after">
+                <field name="queue_job_id" invisible="not queue_job_id" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

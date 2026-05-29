@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- State Form View -->
+    <record id="cx_tower_jet_state_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.state.form</field>
+        <field name="model">cx.tower.jet.state</field>
+        <field name="arch" type="xml">
+            <form string="Jet State">
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Running" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="reference"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                            <field name="active" invisible="1" />
+                            <field name="sequence" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="note" placeholder="Add notes here..." />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- State List View -->
+    <record id="cx_tower_jet_state_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.jet.state.list</field>
+        <field name="model">cx.tower.jet.state</field>
+        <field name="arch" type="xml">
+            <list editable="top">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="access_level" optional="show" />
+                <field name="color" widget="color_picker" />
+            </list>
+        </field>
+    </record>
+
+    <!-- State Search View -->
+    <record id="cx_tower_jet_state_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.jet.state.search</field>
+        <field name="model">cx.tower.jet.state</field>
+        <field name="arch" type="xml">
+            <search string="Search Jet States">
+                <field name="name" />
+                <field name="reference" />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+
+    <!-- State Action -->
+    <record id="cx_tower_jet_state_action" model="ir.actions.act_window">
+        <field name="name">Jet States</field>
+        <field name="res_model">cx.tower.jet.state</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Jet State!
+            </p>
+            <p>
+                Jet States represent the different states a jet can be in during its lifecycle.
+            </p>
+        </field>
+    </record>
+</odoo>

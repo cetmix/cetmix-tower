@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User Access -->
+    <record id="rule_cx_tower_server_group_user_read" model="ir.rule">
+        <field name="name">Tower Server: user visibility rule</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <!-- allow read if the user is in Users -->
+        <field name="domain_force">[('user_ids', 'in', [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Access -->
+    <!-- Rule 1: Read access if the current user is a follower or is in manager_ids -->
+    <record id="rule_cx_tower_server_group_manager_read" model="ir.rule">
+        <field
+            name="name"
+        >Tower Server: Manager Read (if follower or in manager_ids)</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <!-- allow read if the user is in Users or Managers -->
+        <field name="domain_force">
+            ['|', ('user_ids', 'in', [user.id]),
+            ('manager_ids', 'in', [user.id])]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Rule 2: Write and Create access if the current user is in manager_ids -->
+    <record id="rule_cx_tower_server_group_manager_write" model="ir.rule">
+        <field
+            name="name"
+        >Tower Server: Manager Write &amp; Create (if in manager_ids)</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <!-- allow write/create only if the user is in the manager_ids many2many field -->
+        <field name="domain_force">[('manager_ids', 'in', [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Rule 3: Delete access if the current user is in manager_ids and is the creator -->
+    <record id="rule_cx_tower_server_group_manager_unlink" model="ir.rule">
+        <field
+            name="name"
+        >Tower Server: Manager Delete (if in manager_ids and creator)</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <!-- allow deletion only if the user is in manager_ids and he is the record creator -->
+        <field
+            name="domain_force"
+        >[('manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Access -->
+    <record id="rule_cx_tower_server_group_root_full" model="ir.rule">
+        <field name="name">Tower Server: root visibility rule</field>
+        <field name="model_id" ref="model_cx_tower_server" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+    </record>
+</odoo>

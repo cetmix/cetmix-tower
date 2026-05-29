@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_file_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.form</field>
+        <field name="model">cx.tower.file</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_file_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group" position="before">
+                <field name="is_being_processed" invisible="1" />
+                <field name="server_response" invisible="1" />
+                <widget
+                    name="web_ribbon"
+                    title="Processing"
+                    bg_color="bg-info"
+                    invisible="is_being_processed == False"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="Success"
+                    bg_color="bg-success"
+                    invisible="is_being_processed or server_response != 'ok'"
+                />
+                <widget
+                    name="web_ribbon"
+                    title="Error"
+                    bg_color="bg-danger"
+                    invisible="is_being_processed or server_response in ('ok', False)"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_queue_file_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.queue.file.view.list</field>
+        <field name="model">cx.tower.file</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_file_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="is_being_processed" column_invisible="True" />
+                <field name="server_response" column_invisible="True" />
+            </xpath>
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-info">
+                    is_being_processed
+                </attribute>
+                <attribute name="decoration-success">
+                    not is_being_processed and server_response == 'ok'
+                </attribute>
+                <attribute name="decoration-danger">
+                    not is_being_processed and server_response not in ('ok', False)
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_plan_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.view.form</field>
+        <field name="model">cx.tower.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Logs"
+                            class="oe_stat_button"
+                            icon="fa-paper-plane"
+                        />
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div
+                        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager"
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="not access_level_warn_msg"
+                        style="margin-bottom:0px;"
+                    >
+                        <p>
+                            <i
+                                class="fa fa-info-circle"
+                                role="img"
+                                aria-label="Info"
+                                title="Info"
+                            />
+                            <span>&amp;nbsp;</span>
+                            <field name="access_level_warn_msg" class="text-center" />
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="allow_parallel_run" />
+                            <field name="active" invisible='1' />
+                            <label for="on_error_action" />
+                            <div class="o_row">
+                                <field name="on_error_action" />
+                                <field
+                                    name="custom_exit_code"
+                                    invisible="on_error_action != 'ec'"
+                                    required="on_error_action == 'ec'"
+                                />
+                            </div>
+                            <field name="note" />
+                        </group>
+                        <group>
+                            <field
+                                name="server_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field name="access_level" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="plan_lines" string="Commands">
+                            <field name="line_ids">
+                                <list decoration-bf="action=='plan'">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="action" optional="show" />
+                                    <field
+                                        name="tag_ids"
+                                        optional="show"
+                                        widget="many2many_tags"
+                                        groups="cetmix_tower_server.group_manager"
+                                        options="{'color_field': 'color'}"
+                                    />
+                                    <field name="use_sudo" optional="show" />
+                                    <field name="path" optional="show" />
+                                    <field
+                                        name="condition"
+                                        widget="ace_tower"
+                                        options="{'mode': 'python'}"
+                                        optional="show"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_plan_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.plan.view.list</field>
+        <field name="model">cx.tower.plan</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="access_level" optional="hide" />
+                <field
+                    name="server_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_plan_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.plan.view.search</field>
+        <field name="model">cx.tower.plan</field>
+        <field name="arch" type="xml">
+            <search string="Search Flight Plans">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="user_ids" />
+                <field name="manager_ids" />
+                <filter
+                    string="Global"
+                    name="filter_global"
+                    domain="[('server_ids', '=', False)]"
+                />
+                <filter
+                    string="Server tight"
+                    name="server_tight"
+                    domain="[('server_ids', '!=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Tagged"
+                    name="filter_tagged"
+                    domain="[('tag_ids', '!=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Access Level"
+                        name="group_access_level"
+                        domain="[]"
+                        context="{'group_by': 'access_level'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="access_level" string="Access Level" icon="fa-shield" />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field
+                        name="server_ids"
+                        string="Servers"
+                        icon="fa-server"
+                        select="multi"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_plan" model="ir.actions.act_window">
+        <field name="name">Flight Plan</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_flight_plans</field>
+        <field name="res_model">cx.tower.plan</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

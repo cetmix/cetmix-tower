@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- List View -->
+    <record id="cx_tower_git_repo_owner_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.git.repo.owner.list</field>
+        <field name="model">cx.tower.git.repo.owner</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="display_name" />
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="cx_tower_git_repo_owner_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.git.repo.owner.form</field>
+        <field name="model">cx.tower.git.repo.owner</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="display_name" placeholder="e.g., Cetmix, OCA" />
+                        <field name="name" placeholder="e.g., cetmix, oca" />
+                        <field
+                            name="reference"
+                            placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                        />
+                        <field name="secret_id" />
+                    </group>
+                    <notebook>
+                        <page string="Repositories" name="repositories">
+                            <field name="repo_ids" readonly="True">
+                                <list>
+                                    <field name="name" />
+                                    <field name="reference" optional="hide" />
+                                    <field name="provider" />
+                                    <field name="is_private" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_cx_tower_git_repo_owner" model="ir.actions.act_window">
+        <field name="name">Repository Owners</field>
+        <field name="res_model">cx.tower.git.repo.owner</field>
+        <field name="path">cetmix_tower_git_repo_owners</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first repository owner!
+            </p>
+            <p>
+                Repository owners represent organizations or users that own git repositories.
+                Examples include "cetmix", "OCA", etc.
+            </p>
+        </field>
+    </record>
+</odoo>

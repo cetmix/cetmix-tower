@@ -1,0 +1,40 @@
+<odoo>
+    <record id="cx_tower_variable_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.variable.view.form</field>
+        <field name="model">cx.tower.variable</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_variable_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_open_webhooks"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-link"
+                    invisible="webhook_ids_count == 0"
+                >
+                    <field
+                        name="webhook_ids_count"
+                        widget="statinfo"
+                        string="Webhooks"
+                    />
+                </button>
+                <button
+                    name="action_open_webhook_authenticators"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-key"
+                    invisible="webhook_authenticator_ids_count == 0"
+                >
+                    <field
+                        name="webhook_authenticator_ids_count"
+                        widget="statinfo"
+                        string="Webhook Authenticators"
+                    />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

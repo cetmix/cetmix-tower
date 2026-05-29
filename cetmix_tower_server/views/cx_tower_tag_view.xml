@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_tag_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.tag.view.form</field>
+        <field name="model">cx.tower.tag</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="color" widget="color_picker" />
+                        </group>
+                        <group>
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                            <field name="server_ids" widget="many2many_tags" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_tag_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.tag.view.list</field>
+        <field name="model">cx.tower.tag</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="server_ids" widget="many2many_tags" optional="show" />
+                <field name="reference" optional="show" />
+                <field name="color" widget="color_picker" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_tag_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.tag.view.search</field>
+        <field name="model">cx.tower.tag</field>
+        <field name="arch" type="xml">
+            <search string="Search Tags">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="server_ids" />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_tag" model="ir.actions.act_window">
+        <field name="name">Tag</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.tag</field>
+        <field name="path">cetmix_tower_tags</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="cx_tower_tag_search_view" />
+    </record>
+</odoo>

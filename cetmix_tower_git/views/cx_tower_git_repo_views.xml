@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- List View -->
+    <record id="cx_tower_git_repo_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.git.repo.list</field>
+        <field name="model">cx.tower.git.repo</field>
+        <field name="arch" type="xml">
+            <list decoration-info="is_private">
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="provider" optional="show" />
+                <field name="owner_id" optional="hide" />
+                <field name="is_private" optional="hide" />
+                <field name="remote_count" optional="hide" />
+                <field name="git_project_count" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="cx_tower_git_repo_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.git.repo.form</field>
+        <field name="model">cx.tower.git.repo</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_remotes"
+                            type="object"
+                            string="Remotes"
+                            class="oe_stat_button"
+                            icon="fa-external-link"
+                            invisible="remote_count == 0"
+                        >
+                            <field
+                                name="remote_count"
+                                widget="statinfo"
+                                string="Remotes"
+                            />
+                        </button>
+                        <button
+                            name="action_view_projects"
+                            type="object"
+                            string="GitProjects"
+                            class="oe_stat_button"
+                            icon="fa-folder"
+                            invisible="git_project_count == 0"
+                        >
+                            <field
+                                name="git_project_count"
+                                widget="statinfo"
+                                string="Projects"
+                            />
+                        </button>
+                    </div>
+                    <group>
+                        <group name="info">
+                            <field
+                                name="url"
+                                placeholder="https, ssh or git formats are accepted"
+                            />
+                            <field name="url_ssh" />
+                            <field name="url_git" />
+                            <field name="repo" placeholder="e.g., cetmix-tower, odoo" />
+                            <field name="host" />
+                        </group>
+                        <group name="details">
+                            <field
+                                name="reference"
+                                placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                            <field name="active" />
+                            <field name="owner_id" />
+                            <field name="provider" />
+                            <field name="is_private" />
+                            <field name="secret_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="cx_tower_git_repo_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.git.repo.search</field>
+        <field name="model">cx.tower.git.repo</field>
+        <field name="arch" type="xml">
+            <search>
+                <field
+                    name="repo"
+                    string="Name/Reference"
+                    filter_domain="['|', ('repo', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="owner_id" string="Org" />
+                <field name="provider" />
+
+                <filter
+                    string="Public"
+                    name="public"
+                    domain="[('is_private', '=', False)]"
+                />
+                <filter
+                    string="Private"
+                    name="private"
+                    domain="[('is_private', '=', True)]"
+                />
+                <separator />
+                <filter
+                    string="Provider: Other"
+                    name="no_provider"
+                    domain="[('provider', '=', 'other')]"
+                />
+
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Provider"
+                        name="group_provider"
+                        context="{'group_by': 'provider'}"
+                    />
+                    <filter
+                        string="Org"
+                        name="group_owner"
+                        context="{'group_by': 'owner_id'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="provider"
+                        string="Provider"
+                        icon="fa-globe"
+                        enable_counters="1"
+                    />
+                    <field
+                        name="owner_id"
+                        string="Org"
+                        icon="fa-building"
+                        enable_counters="1"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_cx_tower_git_repo" model="ir.actions.act_window">
+        <field name="name">Repositories</field>
+        <field name="path">cetmix_tower_git_repositories</field>
+        <field name="res_model">cx.tower.git.repo</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first repository!
+            </p>
+            <p>
+                Repositories represent git repositories with their metadata and configuration.
+                They can be linked to remotes to automatically populate URL information.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_webhook_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.webhook.log.view.form</field>
+        <field name="model">cx.tower.webhook.log</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <field
+                        name="code_status"
+                        widget="statusbar"
+                        options="{'clickable': False}"
+                        statusbar_visible="success,failed,skipped"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="display_name" class="oe_edit_only" />
+                        <h1>
+                            <field
+                                name="display_name"
+                                placeholder="Name"
+                                required="1"
+                            />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="webhook_id" />
+                            <field name="authenticator_id" />
+                            <field name="endpoint" />
+                            <field name="request_method" />
+                            <field name="http_status" />
+                            <field name="authentication_status" />
+                        </group>
+                        <group>
+                            <field name="user_id" />
+                            <field name="ip_address" />
+                            <field name="country_id" />
+                            <field name="create_date" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="request" string="Request Payload">
+                            <field
+                                name="request_payload"
+                                widget="ace"
+                                options="{'mode': 'json'}"
+                                readonly="1"
+                            />
+                        </page>
+                        <page name="request_headers" string="Request Headers">
+                            <field
+                                name="request_headers"
+                                widget="ace"
+                                options="{'mode': 'json'}"
+                                readonly="1"
+                            />
+                        </page>
+                        <page
+                            name="response"
+                            string="Response Payload"
+                            invisible="code_status != 'success'"
+                        >
+                            <field
+                                name="result_message"
+                                widget="ace"
+                                options="{'mode': 'json'}"
+                                readonly="1"
+                            />
+                        </page>
+                        <page
+                            name="error"
+                            string="Error"
+                            invisible="code_status != 'failed' and authentication_status != 'failed'"
+                        >
+                            <code>
+                                <field name="error_message" readonly="1" />
+                            </code>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_webhook_log_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.webhook.log.view.list</field>
+        <field name="model">cx.tower.webhook.log</field>
+        <field name="arch" type="xml">
+            <list
+                decoration-info="authentication_status == 'success' and code_status == 'success'"
+                decoration-danger="authentication_status == 'failed' or code_status == 'failed'"
+                decoration-warning="authentication_status == 'not_required' or code_status == 'skipped'"
+            >
+                <field name="create_date" />
+                <field name="webhook_id" />
+                <field name="endpoint" />
+                <field name="request_method" />
+                <field name="http_status" />
+                <field name="authentication_status" />
+                <field name="code_status" />
+                <field name="user_id" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_webhook_log_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.webhook.log.view.search</field>
+        <field name="model">cx.tower.webhook.log</field>
+        <field name="arch" type="xml">
+            <search string="Webhook Logs">
+                <field name="webhook_id" />
+                <field name="endpoint" />
+                <field name="authentication_status" />
+                <field name="code_status" />
+                <field name="http_status" />
+                <field name="user_id" />
+                <field name="ip_address" />
+                <field name="create_date" />
+                <filter
+                    name="auth_failed"
+                    string="Auth Failed"
+                    domain="[('authentication_status','=','failed')]"
+                />
+                <filter
+                    name="code_failed"
+                    string="Code Failed"
+                    domain="[('code_status','=','failed')]"
+                />
+                <filter
+                    name="http_200"
+                    string="HTTP 200"
+                    domain="[('http_status','=',200)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_webhook"
+                        string="Webhook"
+                        context="{'group_by': 'webhook_id'}"
+                    />
+                    <filter
+                        name="group_by_method"
+                        string="Method"
+                        context="{'group_by': 'request_method'}"
+                    />
+                    <filter
+                        name="group_by_user"
+                        string="User"
+                        context="{'group_by': 'user_id'}"
+                    />
+                    <filter
+                        name="group_by_auth_status"
+                        string="Auth Status"
+                        context="{'group_by': 'authentication_status'}"
+                    />
+                    <filter
+                        name="group_by_code_status"
+                        string="Code Status"
+                        context="{'group_by': 'code_status'}"
+                    />
+                    <filter
+                        name="group_by_http_status"
+                        string="HTTP Status"
+                        context="{'group_by': 'http_status'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_webhook_log_action" model="ir.actions.act_window">
+        <field name="name">Webhook Logs</field>
+        <field name="res_model">cx.tower.webhook.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="cx_tower_webhook_log_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No webhook logs found
+            </p>
+        </field>
+    </record>
+</odoo>

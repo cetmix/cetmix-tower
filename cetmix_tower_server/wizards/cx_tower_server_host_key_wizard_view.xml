@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- pylint:disable=duplicate-xml-fields -->
+<odoo>
+    <record id="view_cx_tower_server_host_key_wizard_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.host.key.wizard.form</field>
+        <field name="model">cx.tower.server.host.key.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Host Key">
+                <field name="is_error" invisible="1" />
+                <div class="alert alert-warning" role="status" invisible="is_error">
+                    Check the key before inserting in the server settings. Do not insert the key if you have any doubts!
+                </div>
+                <field name="host_key" readonly="1" invisible="is_error" />
+                <field
+                    name="host_key"
+                    readonly="1"
+                    invisible="not is_error"
+                    class="alert alert-danger"
+                    role="status"
+                />
+                <footer>
+                    <button
+                        name="action_insert_host_key"
+                        type="object"
+                        string="Insert Key"
+                        class="btn-primary"
+                        invisible="is_error"
+                        confirm="I confirm that the key is correct and I want to insert it in the server settings"
+                    />
+                    <button special="cancel" string="Close" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

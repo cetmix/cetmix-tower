@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_server_template_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.kanban</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <kanban highlight_color="color" records_draggable="0">
+                <field name="name" />
+                <field name="reference" />
+                <field name="tag_ids" />
+                <field name="os_id" />
+                <field name="color" />
+                <field name="server_count" />
+                <templates>
+                    <t t-name="menu">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-8 o_kanban_card_manage_section">
+                                    <div role="menuitem">
+                                        <a
+                                            role="menuitem"
+                                            type="object"
+                                            name="action_create_server"
+                                        >Create Server</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_manage_settings row">
+                                <div role="menuitem" aria-haspopup="true" class="col-6">
+                                    <field name="color" widget="kanban_color_picker" />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-name="card">
+                        <strong class="fs-5 d-block mb-1">
+                            <field name="name" />
+                        </strong>
+                        <ul class="list-unstyled text-muted small flex-grow-1 mb-0">
+                            <li t-if="record.server_count.raw_value">
+                                <strong>Servers:</strong>
+                                <field name="server_count" />
+                            </li>
+                            <li t-if="record.os_id.raw_value">
+                                <strong>Operating System:</strong>
+                                <field name="os_id" />
+                            </li>
+                        </ul>
+                        <footer>
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                                invisible="not tag_ids"
+                            />
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_template_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.list</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="reference" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field name="color" widget="color_picker" optional="show" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.form</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_create_server"
+                        type="object"
+                        class="oe_highlight"
+                        string="Create Server"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_servers"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-server"
+                        >
+                            <field
+                                name="server_count"
+                                widget="statinfo"
+                                string="Servers"
+                            />
+                        </button>
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_title">
+                        <field name="color" widget="color_picker" />
+                        <h1 class="d-flex flex-grow justify-content-between">
+                            <field name="name" placeholder="Name" />
+                        </h1>
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="Tags"
+                            options="{'color_field': 'color'}"
+                        />
+                    </div>
+                    <group>
+                        <field
+                            name="reference"
+                            placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                        />
+                    </group>
+                    <notebook>
+                        <page name="General" string="General Settings">
+                            <group name="root">
+                                <group name="main">
+                                    <field name="flight_plan_id" />
+                                    <field name="plan_delete_id" />
+                                    <field name="os_id" />
+                                    <field name="active" invisible='1' />
+                                </group>
+                                <group name="ssh">
+                                    <field name="ssh_auth_mode" />
+                                    <field name="ssh_port" />
+                                    <field name="ssh_username" />
+                                    <field name="use_sudo" placeholder="No/Undefined" />
+                                    <field name="ssh_password" password="True" />
+                                    <field
+                                        name="ssh_key_id"
+                                        context="{'default_key_type': 'k', 'secrets_only': True}"
+                                    />
+                                </group>
+                                <field name="note" placeholder="Put your notes here" />
+                            </group>
+                        </page>
+                        <page name="variables" string="Configuration">
+                            <field name="variable_value_ids" order="variable_reference">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="variable_reference"
+                                        column_invisible="1"
+                                    />
+                                    <field name="variable_id" />
+                                    <field name="variable_type" column_invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        readonly="variable_type == 'o'"
+                                        widget="ace_tower"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        readonly="variable_type == 's'"
+                                    />
+                                    <field name="access_level" optional="show" />
+                                    <field name="required" />
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                        <field name="access_level" />
+                                        <field name="required" />
+                                    </group>
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
+                                </form>
+                            </field>
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can access this template"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this template"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                        <page name="logs" string="Server Logs">
+                            <field name="server_log_ids">
+                                <list>
+                                    <field name="name" />
+                                </list>
+                                <form>
+                                    <sheet>
+                                        <div class="oe_title">
+                                            <h1
+                                                class="d-flex flex-grow justify-content-between"
+                                            >
+                                                <field name="name" />
+                                            </h1>
+                                        </div>
+                                        <group>
+                                            <field
+                                                name="server_template_id"
+                                                invisible="1"
+                                            />
+                                            <field name="access_level" />
+                                            <field name="log_type" />
+                                            <field
+                                                name="command_id"
+                                                domain="[('server_ids', '=', False)]"
+                                                invisible="log_type != 'command'"
+                                                required="log_type == 'command'"
+                                            />
+                                            <field
+                                                name="use_sudo"
+                                                invisible="log_type != 'command'"
+                                            />
+                                            <field
+                                                name="file_template_id"
+                                                invisible="log_type != 'file'"
+                                                required="log_type == 'file'"
+                                            />
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page name="shortcuts" string="Shortcuts">
+                            <field name="shortcut_ids">
+                                <list create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="action" optional="hide" />
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="name" />
+                                        <field name="action" />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page name="scheduled_tasks" string="Scheduled Tasks">
+                            <field name="scheduled_task_ids">
+                                <list create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="action" optional="hide" />
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="name" />
+                                        <field name="action" />
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_template_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.search</field>
+        <field name="model">cx.tower.server.template</field>
+        <field name="arch" type="xml">
+            <search string="Search Server Templates">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="user_ids" />
+                <field name="manager_ids" />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="OS"
+                        name="group_by_os"
+                        domain="[]"
+                        context="{'group_by': 'os_id'}"
+                    />
+                    <filter
+                        string="Users"
+                        name="group_by_user_ids"
+                        domain="[]"
+                        context="{'group_by': 'user_ids'}"
+                    />
+                    <filter
+                        string="Managers"
+                        name="group_by_manager_ids"
+                        domain="[]"
+                        context="{'group_by': 'manager_ids'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field name="os_id" string="OS" icon="fa-server" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_server_template" model="ir.actions.act_window">
+        <field name="name">Server Templates</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cx.tower.server.template</field>
+        <field name="path">cetmix_tower_server_templates</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="cx_tower_server_template_search_view" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a new server template</p>
+        </field>
+    </record>
+</odoo>

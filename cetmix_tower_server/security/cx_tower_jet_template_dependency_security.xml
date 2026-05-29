@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Access -->
+    <!-- Template access level is "Manager" or less OR user is added in "Users" or "Managers" in the Jet Template -->
+    <record id="rule_cx_tower_jet_template_dependency_manager_read" model="ir.rule">
+        <field name="name">Jet Template Dependency: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_dependency" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            ["|",
+                ("template_id.access_level", "&lt;=", "2"),
+                "|",
+                    ("template_id.user_ids", "in", [user.id]),
+                    ("template_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create/Delete Access -->
+    <!-- Template access level is "Manager" or less AND user is added in "Managers" in the Jet Template -->
+    <record id="rule_cx_tower_jet_template_dependency_manager_crud" model="ir.rule">
+        <field
+            name="name"
+        >Jet Template Dependency: Manager write &amp; create &amp; unlink</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_dependency" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [("template_id.access_level", "&lt;=", "2"), ("template_id.manager_ids", "in", [user.id])]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Full Access -->
+    <record id="rule_cx_tower_jet_template_dependency_root_full" model="ir.rule">
+        <field name="name">Jet Template Dependency: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_dependency" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>

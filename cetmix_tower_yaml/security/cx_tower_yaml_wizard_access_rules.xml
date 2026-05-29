@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo noupdate="1">
+    <!-- cx.tower.yaml.export.wiz -->
+    <record id="rule_cx_tower_yaml_export_wiz_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_yaml_export_wiz" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+    <!-- cx.tower.yaml.export.wiz.download -->
+
+    <record id="rule_cx_tower_yaml_export_wiz_download_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_yaml_export_wiz_download" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- cx.tower.yaml.import.wiz -->
+    <record id="rule_cx_tower_yaml_import_wiz_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_yaml_import_wiz" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <!-- cx.tower.yaml.import.wiz.upload -->
+    <record id="rule_cx_tower_yaml_import_wiz_upload_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_yaml_import_wiz_upload" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,67 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cx_web_refresh_from_backend
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
+msgid "Cancel"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js:0
+msgid "Could not reload form. %(message)s"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/kanban/kanban_controller_patch.esm.js:0
+msgid "Could not reload kanban. %(message)s"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
+msgid "Could not reload list. %(message)s"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
+msgid "Could not save record. %(message)s"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
+msgid "List is being refreshed from backend"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
+msgid "Save & Refresh"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#: model:ir.model,name:cx_web_refresh_from_backend.model_res_users
+msgid "User"
+msgstr ""
+
+#. module: cx_web_refresh_from_backend
+#. odoo-javascript
+#: code:addons/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js:0
+msgid "You have unsaved edits. Save them before refreshing?"
+msgstr ""

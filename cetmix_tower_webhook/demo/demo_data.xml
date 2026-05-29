@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Webhook Authenticators -->
+    <record id="webhook_authenticator_1" model="cx.tower.webhook.authenticator">
+        <field name="name">Demo Webhook Authenticator 1</field>
+        <field name="reference">demo_webhook_authenticator_1</field>
+        <field name="allowed_ip_addresses">192.168.1.10,192.168.2.0/24,10.0.0.1</field>
+        <field name="code">result = {"allowed": True}</field>
+    </record>
+
+    <record id="webhook_authenticator_2" model="cx.tower.webhook.authenticator">
+        <field name="name">Demo Webhook Authenticator 2</field>
+        <field name="reference">demo_webhook_authenticator_2</field>
+        <field
+            name="code"
+        >result = {"allowed": False, "http_code": 403, "message": "Sorry..."}</field>
+    </record>
+
+    <!-- Webhooks -->
+    <record id="webhook_1" model="cx.tower.webhook">
+        <field name="name">Demo Webhook 1</field>
+        <field name="reference">demo_webhook_1</field>
+        <field name="authenticator_id" ref="webhook_authenticator_1" />
+        <field name="endpoint">demo_webhook_1</field>
+        <field name="code">result = {"exit_code": 0, "message": "OK"}</field>
+    </record>
+
+    <record id="webhook_2" model="cx.tower.webhook">
+        <field name="name">Demo Webhook 2</field>
+        <field name="reference">demo_webhook_2</field>
+        <field name="authenticator_id" ref="webhook_authenticator_2" />
+        <field name="endpoint">demo_webhook_2</field>
+        <field name="method">get</field>
+        <field name="code">result = {"exit_code": 0, "message": "OK"}</field>
+    </record>
+</odoo>

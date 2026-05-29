@@ -1,0 +1,27 @@
+<odoo>
+    <menuitem
+        id="menu_cetmix_tower_webhook_authenticator"
+        name="Webhook Authenticators"
+        action="cx_tower_webhook_authenticator_action"
+        parent="cetmix_tower_server.menu_cx_tower_automation_root"
+        groups="cetmix_tower_server.group_root"
+        sequence="3"
+    />
+
+    <menuitem
+        id="menu_cetmix_tower_webhook"
+        name="Webhooks"
+        action="cx_tower_webhook_action"
+        parent="cetmix_tower_server.menu_cx_tower_automation_root"
+        groups="cetmix_tower_server.group_root"
+        sequence="4"
+    />
+
+    <menuitem
+        id="menu_cetmix_tower_webhook_log"
+        name="Webhook Calls"
+        action="cx_tower_webhook_log_action"
+        parent="cetmix_tower_server.menu_cx_tower_log_root"
+        sequence="150"
+    />
+</odoo>

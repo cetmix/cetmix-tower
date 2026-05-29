@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_server_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.form.shortcuts</field>
+        <field name="model">cx.tower.server</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_server_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page
+                    name="git_projects"
+                    string="Git Projects"
+                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                >
+                    <field name="git_project_rel_ids">
+                        <list editable="bottom">
+                            <field name="server_id" column_invisible="True" />
+                            <field name="git_project_id" />
+                            <field name="file_id" />
+                            <field name="project_format" />
+                            <field name="auto_sync" />
+                            <button
+                                type="object"
+                                string="Configure"
+                                name="action_open_project"
+                                title="Open Git Project"
+                                class="btn-secondary"
+                            />
+                        </list>
+                        <form>
+                            <group>
+                                <field name="server_id" invisible="1" />
+                                <field name="git_project_id" />
+                                <field name="file_id" />
+                                <field name="project_format" />
+                                <field name="auto_sync" />
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

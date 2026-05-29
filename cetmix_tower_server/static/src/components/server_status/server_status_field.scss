@@ -1,0 +1,33 @@
+.o_server_status_bubble {
+    @extend .o_status;
+
+    &.o_color_server_status_bubble_info {
+        background-color: $o-info;
+    }
+    &.o_color_server_status_bubble_success {
+        background-color: $o-success;
+    }
+    &.o_color_server_status_bubble_danger {
+        background-color: $o-danger;
+    }
+    &.o_color_server_status_bubble_warning {
+        background-color: $o-warning;
+    }
+}
+.o_field_server_status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    margin: 0px 16px;
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+    width: fit-content !important;
+
+    .o_status_label {
+        color: #4c4c4c;
+        font-size: 14px;
+        margin-left: 0.5rem !important;
+        display: block;
+    }
+}

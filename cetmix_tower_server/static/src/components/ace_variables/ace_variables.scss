@@ -1,0 +1,44 @@
+// Custom styles ONLY for AceCommandField - more specific selectors
+.o_field_widget.o_field_ace_tower {
+    display: block !important;
+}
+
+.o_field_widget[data-field-name] .o_field_ace.ace-command-field {
+    min-height: 200px !important;
+    height: auto !important;
+    width: 100% !important;
+    display: block !important;
+
+    .ace_editor {
+        min-height: 200px !important;
+        height: auto !important;
+        width: 100% !important;
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        display: block !important;
+    }
+
+    .ace_content {
+        min-height: 200px !important;
+        width: 100% !important;
+    }
+
+    .ace_scroller {
+        width: 100% !important;
+        // Remove any scroll restrictions that might affect standard ACE
+        overflow: auto !important;
+    }
+}
+
+// Custom autocomplete popup styles
+.ace-autocomplete-popup {
+    .ace-autocomplete-item {
+        &:hover {
+            background-color: #e6f3ff !important;
+        }
+
+        &:last-child {
+            border-bottom: none !important;
+        }
+    }
+}

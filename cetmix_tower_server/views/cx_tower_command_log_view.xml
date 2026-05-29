@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_command_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.form</field>
+        <field name="model">cx.tower.command.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Running"
+                        bg_color="bg-info"
+                        invisible="not is_running"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Finished"
+                        invisible="is_running or not is_running and command_status != 0"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Failed"
+                        bg_color="bg-danger"
+                        invisible="is_running or not is_running and command_status in [0, -205]"
+                    />
+                    <widget
+                        name="web_ribbon"
+                        title="Skipped"
+                        bg_color="bg-dark"
+                        invisible="is_running or not is_running and command_status != -205"
+                    />
+
+                    <group>
+                        <group>
+                            <field name="is_skipped" invisible="1" />
+                            <field name="create_uid" />
+                            <field name="server_id" />
+                            <field name="jet_id" invisible="not jet_id" />
+                            <field
+                                name="jet_template_id"
+                                invisible="not jet_template_id"
+                            />
+                            <field name="waypoint_id" invisible="not waypoint_id" />
+                            <field name="command_id" />
+                            <field name="command_action" invisible="1" />
+                            <field
+                                name="condition"
+                                invisible="not condition"
+                                widget="ace"
+                                options="{'mode': 'python'}"
+                            />
+                            <field name="path" invisible="not path" />
+                            <field name="is_running" invisible="not is_running" />
+                            <field name="use_sudo" invisible="not use_sudo" />
+                            <field
+                                name="plan_log_id"
+                                invisible="context.get('opened_from_plan', False)"
+                            />
+                            <field
+                                name="triggered_plan_log_id"
+                                invisible="not triggered_plan_log_id"
+                            />
+                            <field
+                                name="scheduled_task_id"
+                                invisible="not scheduled_task_id"
+                            />
+                        </group>
+                        <group>
+                            <field name="label" invisible="not label" />
+                            <field name="start_date" />
+                            <field name="finish_date" />
+                            <field name="duration_current" />
+                            <field name="command_status" invisible="is_running" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="result"
+                            string="Result"
+                            invisible="command_action == 'plan'"
+                        >
+                            <field
+                                invisible="not command_result_html"
+                                name="command_result_html"
+                            />
+                        </page>
+                        <page
+                            name="code"
+                            string="Command"
+                            invisible="command_action == 'plan'"
+                        >
+                            <field name="code" />
+                        </page>
+                        <page
+                            name="triggered"
+                            string="Triggered Commands"
+                            invisible="command_action != 'plan'"
+                        >
+                            <field name="triggered_plan_command_log_ids">
+                                <list default_order="id asc" />
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_log_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.list</field>
+        <field name="model">cx.tower.command.log</field>
+        <field name="arch" type="xml">
+            <list
+                decoration-danger="command_status not in [0, -205]"
+                decoration-info="is_running == True"
+                decoration-muted="command_status == -205"
+            >
+                <field name="start_date" />
+                <field name="finish_date" optional="hide" />
+                <field name="duration_current" optional="show" />
+                <field name="server_id" optional="show" />
+                <field name="jet_id" optional="show" />
+                <field name="jet_template_id" optional="hide" />
+                <field name="command_id" optional="show" />
+                <field name="command_action" optional="show" />
+                <field name="command_status" optional="show" />
+                <field name="is_running" optional="hide" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_command_log_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.command.log.view.search</field>
+        <field name="model">cx.tower.command.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Command Log">
+                <field name="command_id" />
+                <field name="server_id" />
+                <field name="jet_id" />
+                <field name="jet_template_id" />
+                <field name="label" />
+                <separator />
+                <filter
+                    string="Success"
+                    name="filter_success"
+                    domain="[('command_status', '=', 0)]"
+                />
+                <filter
+                    string="Error"
+                    name="filter_error"
+                    domain="[('command_status', '!=', 0)]"
+                />
+                <filter
+                    string="Running Now"
+                    name="filter_is_running"
+                    domain="[('is_running', '=', True)]"
+                />
+                <separator />
+                <filter
+                    string="Labeled"
+                    name="filter_labeled"
+                    domain="[('label', '!=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Server"
+                        name="group_server"
+                        domain="[]"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="Command"
+                        name="group_command"
+                        domain="[]"
+                        context="{'group_by': 'command_id'}"
+                    />
+                    <filter
+                        string="Action"
+                        name="group_action"
+                        domain="[]"
+                        context="{'group_by': 'command_action'}"
+                    />
+                    <filter
+                        string="Start date"
+                        name="group_start"
+                        domain="[]"
+                        context="{'group_by': 'start_date:day'}"
+                    />
+                    <filter
+                        string="Finish date"
+                        name="group_finish"
+                        domain="[]"
+                        context="{'group_by': 'finish_date:day'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="command_action" string="Action" icon="fa-cog" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_command_log" model="ir.actions.act_window">
+        <field name="name">Command Log</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_command_logs</field>
+        <field name="res_model">cx.tower.command.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+    </record>
+</odoo>

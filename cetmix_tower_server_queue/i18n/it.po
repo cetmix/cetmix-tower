@@ -1,0 +1,156 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_server_queue
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model.fields,help:cetmix_tower_server_queue.field_cx_tower_command_log__command_status
+msgid ""
+"0 if command finished successfully.\n"
+"-100 general error,\n"
+"-101 not found,\n"
+"-201 another instance of this command is running,\n"
+"-202 no runner found for the command action,\n"
+"-203 Python code execution failed\n"
+"-205 plan line condition check failed\n"
+"503 if SSH connection error occurred\n"
+"601 if queue job failed"
+msgstr ""
+"0 se il comando è stato completato correttamente.\n"
+"-100 errore generale,-101 non trovato,\n"
+"-201 un'altra istanza di questo comando è in esecuzione,\n"
+"-202 nessun runner trovato per l'azione del comando,\n"
+"-203 esecuzione del codice Python non riuscita,\n"
+"-205 controllo delle condizioni della riga del piano non riuscito,\n"
+"503 se si è verificato un errore di connessione SSH,\n"
+"601 se il processo in coda non è riuscito"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model,name:cetmix_tower_server_queue.model_cx_tower_command_log
+msgid "Cetmix Tower Command Log"
+msgstr "Registro comandi Cetmix Tower"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model,name:cetmix_tower_server_queue.model_cx_tower_file
+msgid "Cetmix Tower File"
+msgstr "File Cetmix Tower"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model,name:cetmix_tower_server_queue.model_cx_tower_server
+msgid "Cetmix Tower Server"
+msgstr "Server Cetmix Tower"
+
+#. module: cetmix_tower_server_queue
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server_queue.cx_tower_file_view_form
+msgid "Error"
+msgstr "Errore"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__command_status
+msgid "Exit Code"
+msgstr "Codice di uscita"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "Failure"
+msgstr "Operazione non riuscita"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "File downloaded!"
+msgstr "File scaricato!"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model.fields,help:cetmix_tower_server_queue.field_cx_tower_file__is_being_processed
+msgid "File is currently being processed"
+msgstr "Il file è attualmente in elaborazione"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "File uploaded!"
+msgstr "File caricato!"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "Files downloaded!"
+msgstr "File scaricati!"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "Files uploaded!"
+msgstr "File caricati!"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_file__is_being_processed
+msgid "Is Being Processed"
+msgstr "In elaborazione"
+
+#. module: cetmix_tower_server_queue
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server_queue.cx_tower_file_view_form
+msgid "Processing"
+msgstr "Elaborazione"
+
+#. module: cetmix_tower_server_queue
+#: model:ir.model,name:cetmix_tower_server_queue.model_queue_job
+#: model:ir.model.fields,field_description:cetmix_tower_server_queue.field_cx_tower_command_log__queue_job_id
+msgid "Queue Job"
+msgstr "Lavoro in coda"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server_queue.cx_tower_file_view_form
+#, python-format
+msgid "Success"
+msgstr "Successo"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid "The following files are already being processed: %(name)s"
+msgstr "I seguenti file sono già in elaborazione: %(name)s"
+
+#. module: cetmix_tower_server_queue
+#. odoo-python
+#: code:addons/cetmix_tower_server_queue/models/cx_tower_file.py:0
+#, python-format
+msgid ""
+"Unable to upload file '%(f)s'.\n"
+"Upload operation is not supported for 'server' type files."
+msgstr ""
+"Impossibile caricare il file '%(f)s'.\n"
+"L'operazione di caricamento non è supportata per i file di tipo 'server'."
+
+#~ msgid "Display Name"
+#~ msgstr "Nome visualizzato"
+
+#~ msgid "ID"
+#~ msgstr "ID"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"

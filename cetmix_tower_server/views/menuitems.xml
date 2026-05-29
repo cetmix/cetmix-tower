@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_root"
+        name="Cetmix Tower"
+        groups="group_user"
+        web_icon="cetmix_tower_server,static/description/icon.png"
+    />
+    <!-- ========================= Servers ========================= -->
+    <menuitem
+        id="menu_cx_tower_server_root"
+        name="Servers"
+        parent="menu_root"
+        sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_server"
+        name="Servers"
+        action="action_cx_tower_server"
+        parent="menu_cx_tower_server_root"
+        sequence="3"
+    />
+    <menuitem
+        id="menu_cx_tower_server_template"
+        name="Templates"
+        action="action_cx_tower_server_template"
+        parent="menu_cx_tower_server_root"
+        groups="group_manager"
+        sequence="10"
+    />
+
+    <!-- ========================= Partners ========================= -->
+    <menuitem
+        id="menu_cx_tower_partner"
+        name="Partners"
+        action="action_cx_cetmix_tower_partner"
+        parent="menu_cx_tower_server_root"
+        sequence="15"
+    />
+
+    <!-- ========================= Jets ========================= -->
+    <menuitem id="menu_cx_tower_jet_root" name="Jets" parent="menu_root" sequence="5" />
+
+    <menuitem
+        id="menu_cx_tower_jet"
+        name="Jets"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_action"
+        sequence="10"
+    />
+
+    <menuitem
+        id="menu_cx_tower_jet_template"
+        name="Templates"
+        parent="menu_cx_tower_jet_root"
+        action="cx_tower_jet_template_action"
+        sequence="20"
+    />
+
+    <menuitem
+        id="menu_cx_tower_create_jet"
+        name="Launch New Jet"
+        parent="menu_cx_tower_jet_root"
+        action="action_cx_tower_jet_create"
+        sequence="30"
+        groups="cetmix_tower_server.group_manager"
+    />
+
+    <!-- ========================= Logs ========================= -->
+    <menuitem
+        id="menu_cx_tower_log_root"
+        name="Logs"
+        parent="menu_root"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_command_log"
+        name="Command Log"
+        action="action_cx_tower_command_log"
+        parent="menu_cx_tower_log_root"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_cx_tower_plan_log"
+        name="Flight Plan Log"
+        action="action_cx_tower_plan_log"
+        parent="menu_cx_tower_log_root"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_request"
+        name="Jet Requests"
+        action="action_cx_tower_jet_request"
+        parent="menu_cx_tower_log_root"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_template_install"
+        name="Jet Template Installations"
+        parent="menu_cx_tower_log_root"
+        action="cx_tower_jet_template_install_action"
+        sequence="35"
+    />
+
+    <!-- ========================= Commands ========================= -->
+    <menuitem
+        id="menu_cx_tower_command_root"
+        name="Commands"
+        parent="menu_root"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_cx_tower_command"
+        name="Commands"
+        action="action_cx_tower_command"
+        parent="menu_cx_tower_command_root"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_cx_tower_plan"
+        name="Flight Plans"
+        action="action_cx_tower_plan"
+        parent="menu_cx_tower_command_root"
+        sequence="20"
+    />
+
+    <!-- ========================= Files ========================= -->
+    <menuitem
+        id="menu_cx_tower_file_root"
+        name="Files"
+        parent="menu_root"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_cx_tower_file"
+        name="Files"
+        action="cx_tower_file_action"
+        parent="menu_cx_tower_file_root"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_cx_tower_file_template"
+        name="Templates"
+        action="cx_tower_file_template_action"
+        parent="menu_cx_tower_file_root"
+        sequence="2"
+    />
+
+    <!-- ========================= Tools ========================= -->
+    <menuitem id="menu_tools" name="Tools" parent="menu_root" sequence="50" />
+
+    <!-- ========================= Settings ========================= -->
+    <menuitem
+        id="menu_settings"
+        name="Settings"
+        parent="menu_root"
+        sequence="60"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cetmix_tower_general_settings"
+        name="General Settings"
+        parent="menu_settings"
+        sequence="0"
+        action="action_cetmix_tower_config_settings"
+        groups="group_manager"
+    />
+    <!-- Variables -->
+    <menuitem
+        id="menu_cx_tower_variable_root"
+        name="Variables"
+        parent="menu_settings"
+        sequence="10"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cx_tower_variable"
+        name="Variables"
+        parent="menu_cx_tower_variable_root"
+        action="action_cx_tower_variable"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_cx_tower_variable_value"
+        name="Variable Values"
+        action="action_cx_tower_variable_value"
+        parent="menu_cx_tower_variable_root"
+        sequence="2"
+    />
+
+    <!-- Keys and Secrets -->
+    <menuitem
+        id="menu_cx_tower_key_root"
+        name="Keys and Secrets"
+        parent="menu_settings"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_cx_tower_key"
+        name="Keys and Secrets"
+        action="action_cx_tower_key"
+        parent="menu_cx_tower_key_root"
+        sequence="1"
+    />
+    <!-- Jets -->
+    <menuitem
+        id="menu_cx_tower_jet_settings_root"
+        name="Jets"
+        parent="menu_settings"
+        sequence="25"
+    />
+    <menuitem
+        id="menu_cx_tower_jet_state"
+        name="States"
+        parent="menu_cx_tower_jet_settings_root"
+        action="cx_tower_jet_state_action"
+        groups="cetmix_tower_server.group_manager"
+        sequence="10"
+    />
+    <!-- Automation -->
+    <menuitem
+        id="menu_cx_tower_automation_root"
+        name="Automation"
+        parent="menu_settings"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_cx_tower_scheduled_task"
+        name="Scheduled Tasks"
+        action="action_cx_tower_scheduled_task"
+        parent="menu_cx_tower_automation_root"
+        sequence="1"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cx_tower_shortcut"
+        name="Shortcuts"
+        action="action_cx_tower_shortcut"
+        parent="menu_cx_tower_automation_root"
+        sequence="2"
+    />
+    <!-- Properties -->
+    <menuitem
+        id="menu_cx_tower_property_root"
+        name="Properties"
+        parent="menu_settings"
+        sequence="500"
+    />
+    <menuitem
+        id="menu_cx_tower_os"
+        name="Operating Systems"
+        action="action_cx_tower_os"
+        parent="menu_cx_tower_property_root"
+        sequence="100"
+    />
+    <menuitem
+        id="menu_cx_tower_tag"
+        name="Tags"
+        action="action_cx_tower_tag"
+        parent="menu_cx_tower_property_root"
+        sequence="13"
+    />
+</odoo>

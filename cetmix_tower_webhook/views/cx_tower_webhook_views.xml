@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_webhook_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.webhook.view.form</field>
+        <field name="model">cx.tower.webhook</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Disabled"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            type="object"
+                            name="action_view_logs"
+                            string="Logs"
+                            icon="fa-list"
+                            class="oe_stat_button"
+                            invisible="log_count == 0"
+                        >
+                            <field name="log_count" widget="statinfo" string="Logs" />
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" />
+                            <field name="reference" />
+                            <field name="active" />
+                            <field name="authenticator_id" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                readonly="1"
+                                invisible="not variable_ids"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                invisible="not secret_ids"
+                            />
+                        </group>
+                        <group>
+                            <field name="endpoint" />
+                            <field
+                                name="full_url"
+                                invisible="not endpoint"
+                                widget="CopyClipboardChar"
+                                options="{'string': 'Copy'}"
+                            />
+                            <field name="method" />
+                            <field name="content_type" invisible="method == 'get'" />
+                            <field name="user_id" context="{'active_test': False}" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="code" string="Code">
+                            <field
+                                name="code"
+                                widget="ace_tower"
+                                options="{'mode': 'python'}"
+                                placeholder="Enter Python code here. Help about Python expression is available in the help tab of this document."
+                            />
+                        </page>
+                        <page string="Help" name="python_help_info">
+                            <field name="code_help" />
+                        </page>
+                        <page name="yaml" string="YAML">
+                            <div groups="!cetmix_tower_yaml.group_export">
+                                <h3
+                                >You must be a member of the "YAML/Export" group to export data as YAML.</h3>
+                            </div>
+                            <button
+                                type="object"
+                                groups="cetmix_tower_yaml.group_export"
+                                class="oe_highlight"
+                                name="action_open_yaml_export_wizard"
+                                string="Export YAML"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_webhook_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.webhook.view.list</field>
+        <field name="model">cx.tower.webhook</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="not active">
+                <field name="name" />
+                <field name="reference" optional="show" />
+                <field name="authenticator_id" optional="show" />
+                <field name="user_id" optional="show" />
+                <field name="endpoint" optional="show" />
+                <field name="method" optional="show" />
+                <field name="content_type" optional="show" />
+                <field name="active" widget="boolean_toggle" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_webhook_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.webhook.view.search</field>
+        <field name="model">cx.tower.webhook</field>
+        <field name="arch" type="xml">
+            <search string="Search Webhooks">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="endpoint" />
+                <filter
+                    string="All"
+                    name="all"
+                    domain="['|', ('active', '=', True), ('active', '=', False)]"
+                />
+                <filter
+                    name="filter_enabled"
+                    string="Enabled"
+                    domain="[('active', '=', True)]"
+                />
+                <filter
+                    name="filter_disabled"
+                    string="Disabled"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_method"
+                        string="Method"
+                        context="{'group_by': 'method'}"
+                    />
+                    <filter
+                        name="group_by_authenticator_id"
+                        string="Authenticator"
+                        context="{'group_by': 'authenticator_id'}"
+                    />
+                    <filter
+                        name="group_by_user_id"
+                        string="User"
+                        context="{'group_by': 'user_id'}"
+                    />
+                    <filter
+                        name="group_by_content_type"
+                        string="Content Type"
+                        context="{'group_by': 'content_type'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="method" string="Method" icon="fa-cog" />
+                    <field name="content_type" string="Content Type" icon="fa-file" />
+                    <field
+                        name="authenticator_id"
+                        string="Authenticator"
+                        icon="fa-shield"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_webhook_action" model="ir.actions.act_window">
+        <field name="name">Webhooks</field>
+        <field name="res_model">cx.tower.webhook</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="cx_tower_webhook_view_search" />
+        <field name="context">{'search_default_all': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new webhook
+            </p>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_webhook_export_yaml" model="ir.actions.act_window">
+        <field name="name">Export YAML</field>
+        <field name="res_model">cx.tower.yaml.export.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="model_cx_tower_webhook" />
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_yaml.group_export'))]" />
+    </record>
+</odoo>

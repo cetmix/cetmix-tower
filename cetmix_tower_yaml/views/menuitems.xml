@@ -1,0 +1,33 @@
+<odoo>
+    <!-- Import YAML -> Tools -->
+    <menuitem
+        id="menu_cetmix_tower_yaml_import"
+        name="Import YAML"
+        parent="cetmix_tower_server.menu_tools"
+        sequence="10"
+        groups="group_import"
+        action="action_cx_tower_yaml_import_wiz_upload"
+    />
+
+    <!-- YAML Manifest Settings -> Settings -->
+    <menuitem
+        id="menu_yaml_settings_root"
+        name="YAML Export/Import"
+        parent="cetmix_tower_server.menu_settings"
+        sequence="60"
+    />
+    <menuitem
+        id="menu_yaml_manifest_author_action"
+        name="Manifest Authors"
+        parent="menu_yaml_settings_root"
+        action="action_yaml_manifest_author"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_yaml_manifest_template"
+        name="Manifest Templates"
+        parent="menu_yaml_settings_root"
+        action="action_yaml_manifest_template"
+        sequence="2"
+    />
+</odoo>

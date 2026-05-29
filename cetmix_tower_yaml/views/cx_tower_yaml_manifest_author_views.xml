@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_yaml_manifest_author_tree" model="ir.ui.view">
+        <field name="name">yaml.manifest.author.list</field>
+        <field name="model">cx.tower.yaml.manifest.author</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_yaml_manifest_author_form" model="ir.ui.view">
+        <field name="name">yaml.manifest.author.form</field>
+        <field name="model">cx.tower.yaml.manifest.author</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_yaml_manifest_author" model="ir.actions.act_window">
+        <field name="name">YAML Manifest Authors</field>
+        <field name="res_model">cx.tower.yaml.manifest.author</field>
+        <field name="path">cetmix_tower_yaml_manifest_authors</field>
+        <field name="view_mode">list,form</field>
+        <field name="target">current</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first YAML manifest author!
+            </p>
+            <p>
+                YAML manifest authors represent organizations or users who are authors of YAML manifests.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_res_partner_form_inherit_cetmix_tower" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.cetmix.tower</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_partner_servers"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-server"
+                    groups="cetmix_tower_server.group_user"
+                    invisible="server_count == 0"
+                >
+                    <field name="server_count" widget="statinfo" string="Servers" />
+                </button>
+            </xpath>
+
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="Cetmix Tower" groups="cetmix_tower_server.group_user">
+                    <group>
+                        <group name="group_servers" string="Servers">
+                            <field name="server_ids" string="" readonly="1">
+                                <list>
+                                    <field name="name" />
+                                    <field name="status" />
+                                </list>
+                            </field>
+                        </group>
+                        <group
+                            name="group_secrets"
+                            string="Secrets"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <field name="secret_ids" string="">
+                                <list editable="bottom">
+                                    <field
+                                        name="key_id"
+                                        context="{'default_key_type': 's', 'secrets_only': True}"
+                                    />
+                                    <field name="server_id" />
+                                    <field name="secret_value" />
+                                </list>
+                            </field>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_res_partner_filter" model="ir.ui.view">
+        <field name="name">res.partner.select.inherit.cetmix.tower</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="server_ids" string="Servers" />
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="before">
+                <filter
+                    string="With Servers"
+                    name="filter_with_servers"
+                    domain="[('server_ids', '!=', False)]"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_cx_cetmix_tower_partner" model="ir.actions.act_window">
+        <field name="name">Partners</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="context">{'search_default_filter_with_servers': 1}</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a new partner</p>
+        </field>
+    </record>
+</odoo>

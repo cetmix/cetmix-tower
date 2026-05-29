@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_yaml_export_wizard,Export YAML,model_cx_tower_yaml_export_wiz,group_export,1,1,1,1
+access_yaml_export_wizard_download,Export YAML File,model_cx_tower_yaml_export_wiz_download,group_export,1,1,1,1
+access_yaml_import_wizard_upload,Import YAML,model_cx_tower_yaml_import_wiz_upload,group_import,1,1,1,1
+access_yaml_import_wizard,Import YAML,model_cx_tower_yaml_import_wiz,group_import,1,1,1,1
+access_manifest_tmpl_read_export,Manifest tmpl read (export),model_cx_tower_yaml_manifest_tmpl,cetmix_tower_yaml.group_export,1,0,0,0
+access_manifest_tmpl_admin,Manifest tmpl admin,model_cx_tower_yaml_manifest_tmpl,cetmix_tower_server.group_root,1,1,1,1
+access_manifest_author_read_export,Manifest author read (export),model_cx_tower_yaml_manifest_author,cetmix_tower_yaml.group_export,1,0,0,0
+access_manifest_author_admin,Manifest author admin,model_cx_tower_yaml_manifest_author,cetmix_tower_server.group_root,1,1,1,1

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User Read Access -->
+    <!-- Access level is "User" or user is added in "Users" or user is added in "Users" of any Jets created from the template -->
+    <record id="rule_cx_tower_jet_template_user_read" model="ir.rule">
+        <field name="name">Jet Template: User Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">
+            ["|","|",
+                ("access_level", "=", "1"),
+                ("user_ids", "in", [user.id]),
+                ("jet_ids.user_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Read Access -->
+    <!-- Access level is "Manager" or less OR user is added in "Users" or "Managers" -->
+    <record id="rule_cx_tower_jet_template_manager_read" model="ir.rule">
+        <field name="name">Jet Template: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            ["|",
+                ("access_level", "&lt;=", "2"),
+                "|", "|",
+                    ("user_ids", "in", [user.id]),
+                    ("manager_ids", "in", [user.id]),
+                    ("jet_ids.manager_ids", "in", [user.id])
+
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create Access -->
+    <!-- Access level is "Manager" or less AND user is added to "Managers" -->
+    <record id="rule_cx_tower_jet_template_manager_write" model="ir.rule">
+        <field name="name">Jet Template: Manager write &amp; create</field>
+        <field name="model_id" ref="model_cx_tower_jet_template" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [("access_level", "&lt;=", "2"), ("manager_ids", "in", [user.id])]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Delete Access -->
+    <!-- Access level is "Manager" or less AND user is added to "Managers" AND the record is created by the user -->
+    <record id="rule_cx_tower_jet_template_manager_unlink" model="ir.rule">
+        <field name="name">Jet Template: Manager unlink</field>
+        <field name="model_id" ref="model_cx_tower_jet_template" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [("access_level", "&lt;=", "2"), ("manager_ids", "in", [user.id]), ("create_uid", "=", user.id)]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Full Access -->
+    <record id="rule_cx_tower_jet_template_root_full" model="ir.rule">
+        <field name="name">Jet Template: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>

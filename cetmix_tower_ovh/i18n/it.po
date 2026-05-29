@@ -1,0 +1,54 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_ovh
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: cetmix_tower_ovh
+#: model:ir.model,name:cetmix_tower_ovh.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr "Comando Cetmix Tower"
+
+#. module: cetmix_tower_ovh
+#. odoo-python
+#: code:addons/cetmix_tower_ovh/models/cx_tower_command.py:0
+#, python-format
+msgid "Python 'ovh' library for OVH services. Available methods: 'Client'<br/>Supports OVH services<br/>Please check the <a href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1' target='_blank'>OVH Documentation</a> for detailed information about the services and methods."
+msgstr "Libreria Python 'ovh' per servizi OVH. Metodi disponibili: 'Client'<br/>Supporta i servizi OVH<br/>Verificare la <a href='https://eu.api.ovh.com/console/?section=%2FallDom&branch=v1' target='_blank'>documentazione OVH</a> per informazioni dettagliate sui servizi e i metodi."
+
+#~ msgid "Display Name"
+#~ msgstr "Nome visualizzato"
+
+#~ msgid "ID"
+#~ msgstr "ID"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
+
+#~ msgid ""
+#~ "#  - ovh: Python 'ovh' library for OVH services. Available methods: "
+#~ "'Client'\n"
+#~ "#    Supports OVH services\n"
+#~ "#  - tldextract: Python 'tldextract' library. Available methods: "
+#~ "'extract'\n"
+#~ "#    Supports domain extraction"
+#~ msgstr ""
+#~ "#  - ovh: libreria Python 'ovh' per i servizi OVH. Metodi disponibili: "
+#~ "'Client'\n"
+#~ "#    Supporta servizi OVH\n"
+#~ "#  - tldextract: libreria Python 'tldextract'. Metodi disponibili: "
+#~ "'extract'\n"
+#~ "#    Supporta estrazione dominio"

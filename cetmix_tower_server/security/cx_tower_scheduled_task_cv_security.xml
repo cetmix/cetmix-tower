@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager: Read (see his records by user_ids or via server's user_ids/manager_ids) -->
+    <record id="cx_tower_scheduled_task_cv_rule_manager_read" model="ir.rule">
+        <field name="name">Scheduled Task CV: manager read access</field>
+        <field name="model_id" ref="model_cx_tower_scheduled_task_cv" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">
+            ['|',
+                '|',
+                    ('scheduled_task_id.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.manager_ids', 'in', [user.id]),
+                '|',
+                '|',
+                '|',
+                '|',
+                '|',
+                '|',
+                '|',
+                    ('scheduled_task_id.server_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.server_ids.manager_ids', 'in', [user.id]),
+                    ('scheduled_task_id.server_template_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.server_template_ids.manager_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_ids.manager_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_template_ids.user_ids', 'in', [user.id]),
+                    ('scheduled_task_id.jet_template_ids.manager_ids', 'in', [user.id])
+            ]
+        </field>
+    </record>
+
+    <!-- Manager: Create/Write -->
+    <record id="cx_tower_scheduled_task_cv_rule_manager_write" model="ir.rule">
+        <field name="name">Scheduled Task CV: manager write access</field>
+        <field name="model_id" ref="model_cx_tower_scheduled_task_cv" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+        <field name="domain_force">
+            [('scheduled_task_id.manager_ids', 'in', [user.id])]
+        </field>
+    </record>
+
+    <!-- Manager: Unlink (only if in manager_ids AND creator) -->
+    <record id="cx_tower_scheduled_task_cv_rule_manager_unlink" model="ir.rule">
+        <field name="name">Scheduled Task CV: manager unlink access</field>
+        <field name="model_id" ref="model_cx_tower_scheduled_task_cv" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+        <field name="domain_force">
+            [
+                ('scheduled_task_id.manager_ids', 'in', [user.id]),
+                ('create_uid', '=', user.id)
+            ]
+        </field>
+    </record>
+
+    <!-- Root: Full access -->
+    <record id="cx_tower_scheduled_task_cv_rule_root_full" model="ir.rule">
+        <field name="name">Scheduled Task CV: root full access</field>
+        <field name="model_id" ref="model_cx_tower_scheduled_task_cv" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

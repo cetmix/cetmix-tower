@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_file_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.form</field>
+        <field name="model">cx.tower.file</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_push_to_server"
+                        string="Push to Server"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="source != 'tower'"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                    <button
+                        name="action_pull_from_server"
+                        string="Pull from Server"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="source != 'server'"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" widget="ace_tower" />
+                            <!-- This is done to get the priority to the auto generated reference -->
+                            <field name="reference" invisible="not reference" />
+                            <field name="source" required="1" />
+                            <field name="file_type" />
+                            <field name="id" invisible="1" />
+                            <field
+                                name="file"
+                                filename="name"
+                                invisible="file_type != 'binary'"
+                                readonly="id or source == 'server'"
+                                required="file_type == 'binary' and source != 'server'"
+                            />
+                            <field
+                                name="template_id"
+                                domain="[('source', '=', source)]"
+                            />
+                            <field
+                                name="keep_when_deleted"
+                                invisible="source != 'tower'"
+                            />
+                            <field name="auto_sync" />
+                            <field
+                                name="auto_sync_interval"
+                                invisible="not auto_sync or source != 'server'"
+                                required="auto_sync and source == 'server'"
+                            />
+                            <field
+                                name="sync_date_next"
+                                invisible="not auto_sync or source != 'server'"
+                            />
+                            <field name="sync_date_last" />
+                        </group>
+                        <group>
+                            <field
+                                name="server_id"
+                                readonly="jet_id"
+                                required="not jet_id"
+                            />
+                            <field
+                                name="jet_template_id"
+                                invisible="not jet_template_id"
+                                readonly="jet_id"
+                            />
+                            <field name="jet_id" invisible="not jet_id" />
+                            <field name="server_dir" widget="ace_tower" />
+                            <field name="full_server_path" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                invisible="not variable_ids"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                invisible="not secret_ids"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="code"
+                            string="Code"
+                            invisible="file_type == 'binary'"
+                        >
+                            <button
+                                string="Modify Code"
+                                icon="fa-pencil-square-o"
+                                name="action_unlink_from_template"
+                                type="object"
+                                class="btn-secondary"
+                                confirm="File will be disconnected from template. Continue?"
+                                invisible="not template_id"
+                            />
+                            <field
+                                name="code"
+                                widget="ace_tower"
+                                nolabel="1"
+                                readonly="template_id or source == 'server'"
+                            />
+                        </page>
+                        <page
+                            name="rendered_code"
+                            string="Preview"
+                            invisible="source != 'tower' or file_type == 'binary'"
+                        >
+                            <field
+                                name="rendered_code"
+                                nolabel="1"
+                                class="o_field_text"
+                            />
+                        </page>
+                        <page
+                            name="code_on_server"
+                            string="Server Version"
+                            invisible="source != 'tower' or file_type == 'binary'"
+                        >
+                            <group>
+                                <button
+                                    name="action_get_current_server_code"
+                                    type="object"
+                                    class="oe_highlight"
+                                >Refresh</button>
+                            </group>
+
+                            <field
+                                name="code_on_server"
+                                nolabel="1"
+                                class="o_field_text"
+                            />
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.list</field>
+        <field name="model">cx.tower.file</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" optional="hide" />
+                <field name="rendered_name" optional="show" />
+                <field name="reference" optional="hide" />
+                <field name="full_server_path" optional="hide" />
+                <field name="source" />
+                <field name="file_type" optional="show" />
+                <field name="server_id" />
+                <field name="jet_template_id" optional="hide" />
+                <field name="jet_id" optional="hide" />
+                <field name="sync_date_last" optional="show" />
+                <field name="template_id" optional="show" />
+                <field
+                    name="secret_ids"
+                    widget="many2many_tags"
+                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    optional="hide"
+                />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.file.view.search</field>
+        <field name="model">cx.tower.file</field>
+        <field name="arch" type="xml">
+            <search string="Search Files">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="code" />
+                <field name="server_id" />
+                <field name="server_dir" />
+                <filter
+                    string="Has Template"
+                    name="filter_has_template"
+                    domain="[('template_id', '!=', False)]"
+                />
+                <filter
+                    string="No Template"
+                    name="filter_no_template"
+                    domain="[('template_id', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Synced"
+                    name="filter_is_synced"
+                    domain="[('server_response', '=', 'ok')]"
+                />
+                <filter
+                    string="No Synced"
+                    name="filter_is_no_synced"
+                    domain="[('server_response', '=', False)]"
+                />
+                <filter
+                    string="Sync Error"
+                    name="filter_is_error_synced"
+                    domain="[('server_response', 'not in', ['ok', False])]"
+                />
+                <separator />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Source"
+                        name="group_by_source"
+                        domain="[]"
+                        context="{'group_by': 'source'}"
+                    />
+                    <filter
+                        string="File Type"
+                        name="group_by_file_type"
+                        domain="[]"
+                        context="{'group_by': 'file_type'}"
+                    />
+                    <filter
+                        string="Server"
+                        name="group_by_server"
+                        domain="[]"
+                        context="{'group_by': 'server_id'}"
+                    />
+                    <filter
+                        string="Jet Template"
+                        name="group_by_jet_template"
+                        domain="[]"
+                        context="{'group_by': 'jet_template_id'}"
+                    />
+                    <filter
+                        string="Jet"
+                        name="group_by_jet"
+                        domain="[]"
+                        context="{'group_by': 'jet_id'}"
+                    />
+                    <filter
+                        string="Template"
+                        name="group_by_template"
+                        domain="[]"
+                        context="{'group_by': 'template_id'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="source" string="Source" icon="fa-server" />
+                    <field name="file_type" string="File Type" icon="fa-file" />
+                    <field name="template_id" string="Template" icon="fa-file" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_action" model="ir.actions.act_window">
+        <field name="name">Files</field>
+        <field name="res_model">cx.tower.file</field>
+        <field name="path">cetmix_tower_files</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="cx_tower_file_view_search" />
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Add a new file
+          </p>
+        </field>
+    </record>
+
+    <record id="cetmix_tower_file_upload_action" model="ir.actions.server">
+        <field name="name">Upload</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="binding_model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_push_to_server()</field>
+    </record>
+
+    <record id="cetmix_tower_file_download_action" model="ir.actions.server">
+        <field name="name">Download</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="binding_model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_pull_from_server()</field>
+    </record>
+
+    <record id="cetmix_tower_file_delete_action" model="ir.actions.server">
+        <field name="name">Delete from server</field>
+        <field name="model_id" ref="model_cx_tower_file" />
+        <field name="binding_model_id" ref="model_cx_tower_file" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_delete_from_server()</field>
+        <field
+            name="groups_id"
+            eval="[
+            (4, ref('cetmix_tower_server.group_manager')),
+            (4, ref('cetmix_tower_server.group_root')),
+        ]"
+        />
+    </record>
+</odoo>

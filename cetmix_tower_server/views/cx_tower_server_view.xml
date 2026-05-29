@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_server_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.kanban</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <kanban highlight_color="color" records_draggable="0" sample="1">
+                <field name="name" />
+                <field name="url" />
+                <field name="partner_id" />
+                <field name="tag_ids" />
+                <field name="os_id" />
+                <field name="ip_v4_address" />
+                <field name="ip_v6_address" />
+                <field name="color" />
+                <templates>
+                    <t t-name="menu">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-8 o_kanban_card_manage_section">
+                                    <div role="menuitem">
+                                        <a
+                                            role="menuitem"
+                                            type="object"
+                                            name="action_run_command"
+                                        >Command</a>
+                                    </div>
+                                    <div role="menuitem">
+                                        <a
+                                            role="menuitem"
+                                            type="object"
+                                            name="action_run_flight_plan"
+                                        >Flight Plan</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_manage_settings row">
+                                <div role="menuitem" aria-haspopup="true" class="col-6">
+                                    <field name="color" widget="kanban_color_picker" />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <t t-name="card">
+                        <div
+                            class="d-flex justify-content-between align-items-start mb-1"
+                        >
+                            <strong class="fs-5">
+                                <field name="name" />
+                            </strong>
+                            <field
+                                name="status"
+                                widget="server_status"
+                                options="{'hide_label': False}"
+                            />
+                        </div>
+                        <div t-if="record.url.raw_value" class="mb-1">
+                            <field name="url" widget="url" />
+                        </div>
+                        <ul class="list-unstyled text-muted small flex-grow-1 mb-0">
+                            <li t-if="record.partner_id.raw_value">
+                                <strong>Partner:</strong>
+                                <field name="partner_id" />
+                            </li>
+                            <li
+                                groups="cetmix_tower_server.group_manager"
+                                t-if="record.os_id.raw_value"
+                            >
+                                <strong>Operating System:</strong>
+                                <field name="os_id" />
+                            </li>
+                            <li
+                                groups="cetmix_tower_server.group_manager"
+                                t-if="record.ip_v4_address.raw_value"
+                            >
+                                <strong>IPv4:</strong>
+                                <field name="ip_v4_address" />
+                            </li>
+                            <li
+                                groups="cetmix_tower_server.group_manager"
+                                t-if="record.ip_v6_address.raw_value"
+                            >
+                                <strong>IPv6:</strong>
+                                <field name="ip_v6_address" />
+                            </li>
+                        </ul>
+                        <footer>
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                                invisible="not tag_ids"
+                            />
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.list</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <list>
+                <header>
+                    <button
+                        name="action_run_command"
+                        type="object"
+                        class="btn-primary"
+                        string="Command"
+                        icon="fa-code"
+                    />
+                    <button
+                        name="action_run_flight_plan"
+                        type="object"
+                        class="btn-primary"
+                        string="Flight Plan"
+                        icon="fa-plane"
+                    />
+                </header>
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="partner_id" optional="show" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+                <field name="color" widget="color_picker" optional="show" />
+                <field
+                    name="status"
+                    widget="badge"
+                    decoration-danger="status == 'stopped'"
+                    decoration-info="status in ['stopping','restarting','starting']"
+                    decoration-success="status == 'running'"
+                    decoration-warning="status in ['deleting','delete_error']"
+                />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.form</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_run_command"
+                        type="object"
+                        class="btn-primary"
+                        string="Command"
+                        icon="fa-code"
+                    />
+                    <button
+                        name="action_run_flight_plan"
+                        type="object"
+                        class="btn-primary"
+                        string="Flight Plan"
+                        icon="fa-paper-plane"
+                    />
+                    <button
+                        name="action_new_jet"
+                        type="object"
+                        class="btn-primary"
+                        string="New Jet"
+                        icon="fa-plane"
+                        groups="cetmix_tower_server.group_manager"
+                        invisible="not jet_template_ids"
+                    />
+                    <button
+                        name="test_ssh_connection"
+                        type="object"
+                        icon="fa-check-square-o"
+                        string="Test Connection"
+                        groups="cetmix_tower_server.group_manager"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_command_logs"
+                            type="object"
+                            string="Command Logs"
+                            class="oe_stat_button"
+                            icon="fa-code"
+                        />
+                        <button
+                            name="action_open_plan_logs"
+                            type="object"
+                            string="Flight Plan Logs"
+                            class="oe_stat_button"
+                            icon="fa-paper-plane"
+                        />
+                        <button
+                            name="action_open_files"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-files-o"
+                        >
+                            <field name="file_count" widget="statinfo" string="Files" />
+                        </button>
+                        <button
+                            name="action_open_jets"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                        >
+                            <field name="jet_count" string="Jets" widget="statinfo" />
+                        </button>
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_title">
+                        <field name="color" widget="color_picker" />
+                        <h1 class="d-flex flex-grow justify-content-between">
+                            <field name="name" placeholder="Name" />
+                            <field
+                                name="status"
+                                widget="server_status"
+                                options="{'hide_label': False}"
+                                class="ml-auto"
+                            />
+                        </h1>
+                        <field
+                            name="tag_ids"
+                            widget="many2many_tags"
+                            placeholder="Tags"
+                            options="{'color_field': 'color'}"
+                        />
+                    </div>
+                    <group>
+                        <field
+                            name="reference"
+                            placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                        />
+                        <field
+                            name="url"
+                            placeholder="Server URL, eg 'https://meme.example.com'"
+                            widget="url"
+                        />
+                    </group>
+                    <notebook>
+                        <page name="shortcuts" string="Shortcuts">
+                            <field name="shortcut_ids">
+                                <list create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" />
+                                    <field name="action" optional="hide" />
+                                    <button
+                                        type="object"
+                                        name="run"
+                                        class="fa fa-play oe_highlight"
+                                        context="{'server_id': parent.id}"
+                                        title="Trigger shortcut"
+                                        confirm="Are you sure?"
+                                    />
+                                </list>
+                                <form>
+                                    <field name="note" readonly="1" />
+                                </form>
+                            </field>
+                        </page>
+                        <page name="General" string="General Settings">
+                            <group name="root">
+                                <group name="main">
+                                    <field name="id" invisible="1" />
+                                    <field name="partner_id" />
+                                    <field name="os_id" />
+                                    <field name="active" invisible='1' />
+                                    <field name="ip_v4_address" />
+                                    <field name="ip_v6_address" />
+                                    <label
+                                        for="host_key"
+                                        groups="cetmix_tower_server.group_manager"
+                                        invisible="skip_host_key"
+                                    />
+                                    <div
+                                        groups="cetmix_tower_server.group_manager"
+                                        class="o_row"
+                                        invisible="skip_host_key"
+                                    >
+                                        <field name="host_key" placeholder="Host key" />
+                                        <button
+                                            name="action_show_host_key"
+                                            groups="cetmix_tower_server.group_manager"
+                                            type="object"
+                                            string="Get from Host"
+                                            class="btn-secondary"
+                                        />
+                                    </div>
+                                    <field
+                                        name="skip_host_key"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
+                                    <div class="o_form_label" />
+                                    <div
+                                        class="alert alert-warning"
+                                        id="host_key_alert"
+                                        role="alert"
+                                        style="margin-bottom:0px;"
+                                        groups="cetmix_tower_server.group_manager"
+                                        invisible="not skip_host_key"
+                                    >
+                                        In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks.
+                                    </div>
+                                </group>
+                                <group name="ssh">
+                                    <field name="ssh_auth_mode" />
+                                    <field name="ssh_port" />
+                                    <field name="ssh_username" />
+                                    <field name="use_sudo" placeholder="No" />
+                                    <field
+                                        name="ssh_password"
+                                        required="ssh_auth_mode == 'p'"
+                                    />
+                                    <field
+                                        name="ssh_key_id"
+                                        required="ssh_auth_mode == 'k'"
+                                        context="{'default_key_type': 'k', 'secrets_only': True}"
+                                    />
+                                </group>
+                                <group name="extra">
+                                    <field
+                                        name="server_template_id"
+                                        invisible="not server_template_id"
+                                        groups="cetmix_tower_server.group_manager"
+                                    />
+                                    <field name="plan_delete_id" />
+                                </group>
+                                <field name="note" placeholder="Put your notes here" />
+                            </group>
+                        </page>
+                        <page name="configuration" string="Configuration">
+                            <field name="variable_value_ids" order="variable_reference">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field
+                                        name="variable_reference"
+                                        column_invisible="1"
+                                    />
+                                    <field name="variable_id" />
+                                    <field name="variable_type" column_invisible="1" />
+                                    <field
+                                        name="value_char"
+                                        widget="ace_tower"
+                                        readonly="variable_type == 'o'"
+                                    />
+                                    <field
+                                        name="option_id"
+                                        options="{'no_create': True, 'no_create_edit': True}"
+                                        readonly="variable_type == 's'"
+                                    />
+                                    <field name="access_level" optional="show" />
+                                    <field name="required" optional="show" />
+                                </list>
+                                <form>
+                                    <group>
+                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_reference"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy reference'}"
+                                        />
+                                        <field
+                                            name="value_char"
+                                            widget="CopyClipboardChar"
+                                            options="{'string': 'Copy value'}"
+                                        />
+                                        <field name="access_level" />
+                                        <field name="required" />
+                                    </group>
+                                    <field
+                                        name="note"
+                                        placeholder="Put your notes here..."
+                                    />
+                                </form>
+                            </field>
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can access this server"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this server"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                        <page
+                            name="secrets"
+                            string="Secrets"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <field name="secret_ids">
+                                <list editable="bottom">
+                                    <field
+                                        name="key_id"
+                                        context="{'default_key_type': 's', 'secrets_only': True}"
+                                    />
+                                    <field name="secret_value" />
+                                </list>
+                            </field>
+                        </page>
+                        <page name="logs" string="Server Logs">
+                            <button
+                                name="action_update_server_logs"
+                                string="Refresh All"
+                                type="object"
+                                class="oe_highlight"
+                            />
+                            <field name="server_log_ids">
+                                <list>
+                                    <field name="name" />
+                                    <field name="jet_id" />
+                                    <button
+                                        type="object"
+                                        string="Open"
+                                        name="action_open_log"
+                                        title="Open full form"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="scheduled_tasks"
+                            string="Scheduled Tasks"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <field name="scheduled_task_ids">
+                                <list create="0" edit="0">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="display_name" />
+                                    <field name="action" />
+                                    <field name="interval_type" />
+                                    <field name="interval_number" optional="hide" />
+                                    <field name="is_running" optional="hide" />
+                                    <field name="next_call" optional="hide" />
+                                    <field name="last_call" optional="hide" />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="jet_templates"
+                            string="Jet Templates"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <button
+                                name="action_install_jet_template"
+                                string="Install Jet Template"
+                                type="object"
+                                class="oe_highlight"
+                            />
+                            <field name="jet_template_ids">
+                                <list create="0" edit="0">
+                                    <field name="name" />
+                                    <button
+                                        name="action_uninstall_from_server"
+                                        type="object"
+                                        string="Uninstall"
+                                        class="btn-danger"
+                                        confirm="Jet template will be uninstalled from the server. Are you sure?"
+                                        context="{'server_id': parent.id}"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page
+                            name="metadata"
+                            string="Metadata"
+                            groups="base.group_no_one"
+                        >
+                            <group>
+                                <field name="metadata" invisible="1" />
+                                <field
+                                    name="metadata_text"
+                                    string="Metadata"
+                                    readonly="1"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_search_view" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.search</field>
+        <field name="model">cx.tower.server</field>
+        <field name="arch" type="xml">
+            <search string="Search Servers">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="url" />
+                <field name="partner_id" />
+                <field name="user_ids" />
+                <field name="manager_ids" />
+                <field name="ip_v4_address" />
+                <field name="ip_v6_address" />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <separator />
+                <filter
+                    string="Running"
+                    name="running"
+                    domain="[('status', '=', 'running')]"
+                />
+                <filter
+                    string="Not Running"
+                    name="not_running"
+                    domain="[('status', '!=', 'running')]"
+                />
+                <separator />
+                <filter
+                    string="With Jets"
+                    name="with_jets"
+                    domain="[('jet_ids', '!=', False)]"
+                />
+                <filter
+                    string="With Jet Templates"
+                    name="with_jet_templates"
+                    domain="[('jet_template_ids', '!=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Status"
+                        name="group_by_status"
+                        domain="[]"
+                        context="{'group_by': 'status'}"
+                    />
+                    <filter
+                        string="Partner"
+                        name="group_by_partner_id"
+                        domain="[]"
+                        context="{'group_by': 'partner_id'}"
+                    />
+                    <filter
+                        string="Users"
+                        name="group_by_user_ids"
+                        domain="[]"
+                        context="{'group_by': 'user_ids'}"
+                    />
+                    <filter
+                        string="Managers"
+                        name="group_by_manager_ids"
+                        domain="[]"
+                        context="{'group_by': 'manager_ids'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field
+                        name="status"
+                        string="Status"
+                        icon="fa-cog"
+                        enable_counters="1"
+                    />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                    <field name="os_id" string="OS" icon="fa-server" />
+                    <field
+                        name="server_template_id"
+                        string="Server Template"
+                        icon="fa-server"
+                    />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cx_tower_server" model="ir.actions.act_window">
+        <field name="name">Servers</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="path">cetmix_tower_servers</field>
+        <field name="res_model">cx.tower.server</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="cx_tower_server_search_view" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a new server</p>
+        </field>
+    </record>
+</odoo>

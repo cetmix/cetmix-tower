@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User Read Access -->
+    <!-- Action access level is "User" AND Template access level is "User" OR user is added in "Users" in the Jet Template OR user is added in "Users" of any Jets created from the template -->
+    <record id="rule_cx_tower_jet_action_user_read" model="ir.rule">
+        <field name="name">Jet Action: User Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_action" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">
+            [
+                ("access_level", "=", "1"),
+                "|",
+                    ("jet_template_id.access_level", "=", "1"),
+                    "|",
+                        ("jet_template_id.user_ids", "in", [user.id]),
+                        ("jet_template_id.jet_ids.user_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Read Access -->
+    <!-- Action access level is "Manager" or less AND Jet Template access level is "Manager" or less OR user is added in "Users" or "Managers" in the template -->
+    <record id="rule_cx_tower_jet_action_manager_read" model="ir.rule">
+        <field name="name">Jet Action: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_action" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [
+                ("access_level", "&lt;=", "2"),
+                "|",
+                    ("jet_template_id.access_level", "&lt;=", "2"),
+                    "|",
+                        ("jet_template_id.user_ids", "in", [user.id]),
+                        ("jet_template_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager Write/Create/Unlink Access -->
+    <!-- Action access level is "Manager" or less AND user is added to "Managers" of the Jet Template -->
+    <record id="rule_cx_tower_jet_action_manager_write" model="ir.rule">
+        <field name="name">Jet Action: Manager Write/Create/Unlink</field>
+        <field name="model_id" ref="model_cx_tower_jet_action" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            [
+                ("access_level", "&lt;=", "2"),
+                ("jet_template_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root Full Access -->
+    <!-- Any record -->
+    <record id="rule_cx_tower_jet_action_root_full" model="ir.rule">
+        <field name="name">Jet Action: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_action" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

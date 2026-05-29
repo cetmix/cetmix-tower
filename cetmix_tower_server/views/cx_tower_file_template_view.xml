@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_file_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.file.template.view.form</field>
+        <field name="model">cx.tower.file.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_open_files"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-files-o"
+                        >
+                            <field name="file_count" widget="statinfo" string="Files" />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" />
+                        <h1>
+                            <field name="name" placeholder="Name" required="1" />
+                        </h1>
+                        <h3>
+                            <field
+                                name="reference"
+                                placeholder="Reference. Can contain English letters, digits and '_'. Leave blank to autogenerate"
+                            />
+                        </h3>
+                        <field name="active" invisible="1" />
+                    </div>
+                    <group>
+                        <group>
+                            <field name="file_name" widget="ace_tower" />
+                            <field name="server_dir" widget="ace_tower" />
+                            <field name="source" />
+                            <field
+                                name="tag_ids"
+                                widget="many2many_tags"
+                                options="{'color_field': 'color'}"
+                            />
+                            <field
+                                name="keep_when_deleted"
+                                invisible="source == 'server'"
+                            />
+                            <field name="file_type" />
+                            <field name="auto_sync" invisible="source == 'server'" />
+                            <field name="note" />
+                            <field
+                                name="variable_ids"
+                                widget="many2many_tags"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                readonly="1"
+                                invisible="not variable_ids"
+                            />
+                            <field
+                                name="secret_ids"
+                                widget="many2many_tags"
+                                invisible="not secret_ids"
+                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="code"
+                            string="Code"
+                            invisible="file_type == 'binary' or source == 'server'"
+                        >
+                            <field name="code" widget="ace_tower" nolabel="1" />
+                        </page>
+                        <page
+                            name="access"
+                            string="Access"
+                            groups="cetmix_tower_server.group_manager"
+                        >
+                            <group name="access">
+                                <field
+                                    name="user_ids"
+                                    widget="many2many_tags"
+                                    placeholder="users who can view this record"
+                                    options="{'no_create': True}"
+                                />
+                                <field
+                                    name="manager_ids"
+                                    widget="many2many_tags"
+                                    placeholder="managers who can modify this record"
+                                    options="{'no_create': True}"
+                                />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_template_view_tree" model="ir.ui.view">
+        <field name="name">cx.tower.file.template.view.list</field>
+        <field name="model">cx.tower.file.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="reference" optional="hide" />
+                <field name="file_type" optional="show" />
+                <field name="file_name" optional="show" />
+                <field name="server_dir" optional="hide" />
+                <field name="auto_sync" optional="hide" />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color'}"
+                    optional="show"
+                />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_template_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.file.template.view.search</field>
+        <field name="model">cx.tower.file.template</field>
+        <field name="arch" type="xml">
+            <search string="Search File Templates">
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+                <field name="server_dir" />
+                <filter
+                    string="Archived"
+                    name="archived"
+                    domain="[('active', '=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_file_type"
+                        string="File Type"
+                        context="{'group_by': 'file_type'}"
+                    />
+                </group>
+                <searchpanel>
+                    <field name="source" string="Source" icon="fa-server" />
+                    <field name="file_type" string="File Type" icon="fa-file" />
+                    <field name="tag_ids" string="Tags" icon="fa-tags" select="multi" />
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_file_template_action" model="ir.actions.act_window">
+        <field name="name">Templates</field>
+        <field name="res_model">cx.tower.file.template</field>
+        <field name="path">cetmix_tower_file_templates</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="cx_tower_file_template_view_search" />
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Add a new file template
+          </p>
+        </field>
+    </record>
+</odoo>

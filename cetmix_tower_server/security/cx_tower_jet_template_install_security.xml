@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Manager Read Access -->
+    <!-- User is added to "Users" or "Managers" in the related server AND template access level is "Manager" or less OR user is added in "Users" -->
+    <record id="rule_cx_tower_jet_template_install_manager_read" model="ir.rule">
+        <field name="name">Jet Template Install: Manager Read Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_install" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+            ["&amp;",
+                "|",
+                    ("server_id.user_ids", "in", [user.id]),
+                    ("server_id.manager_ids", "in", [user.id]),
+                "|",
+                    ("jet_template_id.access_level", "&lt;=", "2"),
+                    ("jet_template_id.user_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Root Full Access -->
+    <record id="rule_cx_tower_jet_template_install_root_full" model="ir.rule">
+        <field name="name">Jet Template Install: Root Full Access</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_install" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

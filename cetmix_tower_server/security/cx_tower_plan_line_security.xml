@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- User: read rule for cx.tower.plan.line -->
+    <record id="rule_cx_tower_plan_line_group_user_read" model="ir.rule">
+        <field name="name">Plan Line: User read</field>
+        <field name="model_id" ref="model_cx_tower_plan_line" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="domain_force">
+          ["&amp;",
+              ("access_level", "=", "1"),
+              "|",
+                ("plan_id.user_ids", "in", [user.id]),
+                ("plan_id.server_ids.user_ids", "in", [user.id])
+          ]
+      </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: read rule for cx.tower.plan.line -->
+    <record id="rule_cx_tower_plan_line_group_manager_read" model="ir.rule">
+        <field name="name">Plan Line: Manager read</field>
+        <field name="model_id" ref="model_cx_tower_plan_line" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <!-- The domain requires:
+           1. access_level <= "2"
+           2. AND either the plan itself grants access via (user_ids OR manager_ids)
+              OR there are no related servers
+              OR a related server grants access via (server_ids.user_ids OR server_ids.manager_ids)
+      -->
+        <field name="domain_force">
+        ["&amp;",
+            ("access_level", "&lt;=", "2"),
+            "|",
+                "|", ("plan_id.user_ids", "in", [user.id]), ("plan_id.manager_ids", "in", [user.id]),
+                "|",
+                    ("plan_id.server_ids", "=", False),
+                    "|",
+                        ("plan_id.server_ids.user_ids", "in", [user.id]),
+                        ("plan_id.server_ids.manager_ids", "in", [user.id])
+        ]
+      </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: write & create rule for cx.tower.plan.line -->
+    <record id="rule_cx_tower_plan_line_group_manager_write" model="ir.rule">
+        <field name="name">Plan Line: Manager write &amp; create</field>
+        <field name="model_id" ref="model_cx_tower_plan_line" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+         ["&amp;", ("access_level", "&lt;=", "2"), ("plan_id.manager_ids", "in", [user.id])]
+      </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <!-- Manager: unlink rule for cx.tower.plan.line -->
+    <record id="rule_cx_tower_plan_line_group_manager_unlink" model="ir.rule">
+        <field name="name">Plan Line: Manager unlink</field>
+        <field name="model_id" ref="model_cx_tower_plan_line" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="domain_force">
+         [
+           ("access_level", "&lt;=", "2"),
+           ("create_uid", "=", user.id),
+           ("plan_id.manager_ids", "in", [user.id])
+         ]
+      </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Root: unrestricted access rule for cx.tower.plan.line -->
+    <record id="rule_cx_tower_plan_line_group_root_full" model="ir.rule">
+        <field name="name">Plan Line: Root unrestricted access</field>
+        <field name="model_id" ref="model_cx_tower_plan_line" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>
