@@ -23,8 +23,11 @@ class CxTowerJetCreateWizard(models.TransientModel):
             return
 
         # If custom settings are selected, populate lines if they are empty
-        # or if the template changed (the variables in lines don't belong to the template)
-        template_var_ids = set(self.jet_template_id.variable_value_ids.mapped("variable_id.id"))
+        # or if the template changed (the variables in lines don't belong
+        # to the template)
+        template_var_ids = set(
+            self.jet_template_id.variable_value_ids.mapped("variable_id.id")
+        )
         line_var_ids = set(self.line_ids.mapped("variable_id.id"))
 
         if not self.line_ids or (line_var_ids != template_var_ids):

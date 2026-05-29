@@ -6,7 +6,6 @@ from odoo.tests.common import TransactionCase
 
 
 class TestJetTemplateSync(TransactionCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -71,7 +70,8 @@ class TestJetTemplateSync(TransactionCase):
         self.assertEqual(jet_val.value_char, "default_val_1")
 
     def test_02_propagation_with_override(self):
-        """Test that variables overridden during creation are not replaced by template defaults"""
+        """Test that variables overridden during creation are not replaced
+        by template defaults"""
         # Create a jet with overridden variables
         jet = self.template.create_jet(
             self.server,
@@ -88,7 +88,8 @@ class TestJetTemplateSync(TransactionCase):
         self.assertEqual(jet_val.value_char, "overridden_val_1")
 
     def test_03_sync_button(self):
-        """Test that the sync button correctly propagates newly added template variables and logs to existing jets"""
+        """Test that the sync button correctly propagates newly added
+        template variables and logs to existing jets"""
         # Create a jet from the template
         jet = self.template.create_jet(self.server, name="Test Jet 3")
         self.assertEqual(len(jet.variable_value_ids), 1)
@@ -97,11 +98,13 @@ class TestJetTemplateSync(TransactionCase):
         self.assertFalse(self.template.has_pending_sync)
 
         # Add a new variable and a server log to the template
-        command = self.env["cx.tower.command"].create({
-            "name": "Test command",
-            "action": "ssh_command",
-            "code": "echo hello",
-        })
+        command = self.env["cx.tower.command"].create(
+            {
+                "name": "Test command",
+                "action": "ssh_command",
+                "code": "echo hello",
+            }
+        )
         self.template.write(
             {
                 "variable_value_ids": [
@@ -122,7 +125,7 @@ class TestJetTemplateSync(TransactionCase):
                             "name": "Sync Test Log",
                             "log_type": "command",
                             "command_id": command.id,
-                        }
+                        },
                     )
                 ],
             }
@@ -131,10 +134,11 @@ class TestJetTemplateSync(TransactionCase):
         # There should be pending sync now
         self.assertTrue(self.template.has_pending_sync)
 
-        # Manually customize the first variable on the jet so we can verify it is not overwritten
-        jet.variable_value_ids.filtered(
-            lambda v: v.variable_id == self.var1
-        ).write({"value_char": "customized_val_1"})
+        # Manually customize the first variable on the jet so we can verify it
+        # is not overwritten
+        jet.variable_value_ids.filtered(lambda v: v.variable_id == self.var1).write(
+            {"value_char": "customized_val_1"}
+        )
 
         # Run the sync action
         self.template.action_sync_to_jets()
@@ -144,12 +148,8 @@ class TestJetTemplateSync(TransactionCase):
 
         # 1. Check that the new variable was synchronized
         self.assertEqual(len(jet.variable_value_ids), 2)
-        jet_val1 = jet.variable_value_ids.filtered(
-            lambda v: v.variable_id == self.var1
-        )
-        jet_val2 = jet.variable_value_ids.filtered(
-            lambda v: v.variable_id == self.var2
-        )
+        jet_val1 = jet.variable_value_ids.filtered(lambda v: v.variable_id == self.var1)
+        jet_val2 = jet.variable_value_ids.filtered(lambda v: v.variable_id == self.var2)
         self.assertEqual(jet_val1.value_char, "customized_val_1")
         self.assertEqual(jet_val2.value_char, "default_val_2")
 
@@ -174,7 +174,8 @@ class TestJetTemplateSync(TransactionCase):
         wizard._onchange_jet_template_id_populate_variables()
         self.assertFalse(wizard.line_ids)
 
-        # Trigger onchange manually to simulate UI behavior with use_custom_variables = "y"
+        # Trigger onchange manually to simulate UI behavior with
+        # use_custom_variables = "y"
         wizard.use_custom_variables = "y"
         wizard._onchange_jet_template_id_populate_variables()
 
@@ -191,41 +192,52 @@ class TestJetTemplateSync(TransactionCase):
         self.assertFalse(wizard.line_ids)
 
     def test_05_wizard_default_get(self):
-        """Test that the wizard defaults to 'n' (default settings) and empty lines"""
+        """Test that the wizard defaults to 'n' (default settings) and
+        empty lines"""
         WizardModel = self.env["cx.tower.jet.create.wizard"].with_context(
             default_jet_template_id=self.template.id
         )
-        defaults = WizardModel.default_get(["jet_template_id", "line_ids", "use_custom_variables"])
+        defaults = WizardModel.default_get(
+            ["jet_template_id", "line_ids", "use_custom_variables"]
+        )
 
-        # Default should be 'n' (default settings) and no variables pre-populated in lines
+        # Default should be 'n' (default settings) and no variables
+        # pre-populated in lines
         self.assertEqual(defaults.get("use_custom_variables"), "n")
         self.assertFalse(defaults.get("line_ids"))
 
     def test_06_sync_scheduled_tasks(self):
-        """Test that adding a scheduled task to a template shows pending sync and copies it to jets"""
+        """Test that adding a scheduled task to a template shows pending
+        sync and copies it to jets"""
         # Create a jet from the template
         jet = self.template.create_jet(self.server, name="Test Jet Tasks")
         self.assertFalse(jet.scheduled_task_ids)
 
         # Create a scheduled task
-        command = self.env["cx.tower.command"].create({
-            "name": "Task command",
-            "action": "ssh_command",
-            "code": "echo task",
-        })
-        task = self.env["cx.tower.scheduled.task"].create({
-            "name": "Template Scheduled Task",
-            "action": "command",
-            "command_id": command.id,
-            "interval_number": 1,
-            "interval_type": "days",
-            "next_call": fields.Datetime.now(),
-        })
+        command = self.env["cx.tower.command"].create(
+            {
+                "name": "Task command",
+                "action": "ssh_command",
+                "code": "echo task",
+            }
+        )
+        task = self.env["cx.tower.scheduled.task"].create(
+            {
+                "name": "Template Scheduled Task",
+                "action": "command",
+                "command_id": command.id,
+                "interval_number": 1,
+                "interval_type": "days",
+                "next_call": fields.Datetime.now(),
+            }
+        )
 
         # Add task to template
-        self.template.write({
-            "scheduled_task_ids": [(4, task.id)],
-        })
+        self.template.write(
+            {
+                "scheduled_task_ids": [(4, task.id)],
+            }
+        )
 
         # Verify pending sync is True
         self.assertTrue(self.template.has_pending_sync)
@@ -240,7 +252,8 @@ class TestJetTemplateSync(TransactionCase):
         self.assertIn(task, jet.scheduled_task_ids)
 
     def test_07_exclude_from_sync(self):
-        """Test that a jet with exclude_from_sync=True is ignored during sync check and sync action"""
+        """Test that a jet with exclude_from_sync=True is ignored during
+        sync check and sync action"""
         # Create a jet from the template and exclude it
         jet = self.template.create_jet(self.server, name="Test Excluded Jet")
         jet.write({"exclude_from_sync": True})

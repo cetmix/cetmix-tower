@@ -9,7 +9,6 @@ class CxTowerJetTemplate(models.Model):
 
     has_pending_sync = fields.Boolean(
         compute="_compute_has_pending_sync",
-        string="Has Pending Sync",
     )
 
     @api.depends(
@@ -28,7 +27,9 @@ class CxTowerJetTemplate(models.Model):
             jets = template.jet_ids.filtered(lambda j: not j.exclude_from_sync)
             if jets:
                 # 1. Check if any variable from template is missing in any jet
-                template_var_ids = set(template.variable_value_ids.mapped("variable_id.id"))
+                template_var_ids = set(
+                    template.variable_value_ids.mapped("variable_id.id")
+                )
                 for jet in jets:
                     jet_var_ids = set(jet.variable_value_ids.mapped("variable_id.id"))
                     if not template_var_ids.issubset(jet_var_ids):
@@ -66,7 +67,7 @@ class CxTowerJetTemplate(models.Model):
         existing_vars = vals.get("variable_value_ids", [])
         existing_var_ids = set()
         for cmd in existing_vars:
-            if isinstance(cmd, (tuple, list)) and cmd[0] == 0:
+            if isinstance(cmd, tuple | list) and cmd[0] == 0:
                 existing_var_ids.add(cmd[2].get("variable_id"))
 
         new_vars = list(existing_vars)
@@ -94,10 +95,13 @@ class CxTowerJetTemplate(models.Model):
 
     def action_sync_to_jets(self):
         """
-        Synchronizes variables, logs, and scheduled tasks from the template to all its existing Jets.
+        Synchronizes variables, logs, and scheduled tasks from the template
+        to all its existing Jets.
         - Variables: Only adds variables that do not already exist on the Jet.
-        - Logs: Only adds server logs that do not already exist on the Jet (by name).
-        - Scheduled Tasks: Only adds scheduled tasks that do not already exist on the Jet.
+        - Logs: Only adds server logs that do not already exist on the Jet
+          (by name).
+        - Scheduled Tasks: Only adds scheduled tasks that do not already
+          exist on the Jet.
         """
         self.ensure_one()
         jets = self.jet_ids.filtered(lambda j: not j.exclude_from_sync)
@@ -121,7 +125,7 @@ class CxTowerJetTemplate(models.Model):
         for jet in jets:
             existing_variable_ids = jet.variable_value_ids.mapped("variable_id.id")
             to_sync_vars = template_vars.filtered(
-                lambda v: v.variable_id.id not in existing_variable_ids
+                lambda v, var_ids=existing_variable_ids: v.variable_id.id not in var_ids
             )
             for template_val in to_sync_vars:
                 value_obj.create(
@@ -129,8 +133,7 @@ class CxTowerJetTemplate(models.Model):
                         "variable_id": template_val.variable_id.id,
                         "value_char": template_val.value_char,
                         "option_id": template_val.option_id.id
-                        if hasattr(template_val, "option_id")
-                        and template_val.option_id
+                        if hasattr(template_val, "option_id") and template_val.option_id
                         else False,
                         "jet_id": jet.id,
                     }
@@ -143,7 +146,7 @@ class CxTowerJetTemplate(models.Model):
         for jet in jets:
             existing_log_names = jet.server_log_ids.mapped("name")
             to_sync_logs = template_logs.filtered(
-                lambda l: l.name not in existing_log_names
+                lambda log, log_names=existing_log_names: log.name not in log_names
             )
             for template_log in to_sync_logs:
                 jet_log = template_log.copy(
@@ -174,17 +177,17 @@ class CxTowerJetTemplate(models.Model):
             "params": {
                 "title": _("Sync Complete"),
                 "message": _(
-                    "Successfully synchronized to %d jet(s):\n"
-                    "- %d variable(s)\n"
-                    "- %d log(s)\n"
-                    "- %d scheduled task(s)"
+                    "Successfully synchronized to %(jets)d jet(s):\n"
+                    "- %(vars)d variable(s)\n"
+                    "- %(logs)d log(s)\n"
+                    "- %(tasks)d scheduled task(s)"
                 )
-                % (
-                    len(jets),
-                    vars_created_count,
-                    logs_created_count,
-                    tasks_created_count,
-                ),
+                % {
+                    "jets": len(jets),
+                    "vars": vars_created_count,
+                    "logs": logs_created_count,
+                    "tasks": tasks_created_count,
+                },
                 "type": "success",
                 "sticky": False,
             },
