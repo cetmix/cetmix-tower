@@ -122,54 +122,74 @@ class CxTowerJetTemplate(models.Model):
         value_obj = self.env["cx.tower.variable.value"]
         vars_created_count = 0
 
-        for jet in jets:
-            existing_variable_ids = jet.variable_value_ids.mapped("variable_id.id")
-            to_sync_vars = template_vars.filtered(
-                lambda v, var_ids=existing_variable_ids: v.variable_id.id not in var_ids
-            )
-            for template_val in to_sync_vars:
-                value_obj.create(
-                    {
-                        "variable_id": template_val.variable_id.id,
-                        "value_char": template_val.value_char,
-                        "option_id": template_val.option_id.id
-                        if hasattr(template_val, "option_id") and template_val.option_id
-                        else False,
-                        "jet_id": jet.id,
-                    }
+        if template_vars:
+            # Prefetch variable values for all jets in one go
+            jets.mapped("variable_value_ids")
+            existing_vars_by_jet = {
+                jet.id: set(jet.variable_value_ids.mapped("variable_id.id"))
+                for jet in jets
+            }
+            vars_to_create = []
+            for jet in jets:
+                existing_var_ids = existing_vars_by_jet[jet.id]
+                to_sync_vars = template_vars.filtered(
+                    lambda v, var_ids=existing_var_ids: v.variable_id.id not in var_ids
                 )
-                vars_created_count += 1
+                for template_val in to_sync_vars:
+                    vars_to_create.append(
+                        {
+                            "variable_id": template_val.variable_id.id,
+                            "value_char": template_val.value_char,
+                            "option_id": template_val.option_id.id
+                            if hasattr(template_val, "option_id")
+                            and template_val.option_id
+                            else False,
+                            "jet_id": jet.id,
+                        }
+                    )
+            if vars_to_create:
+                value_obj.create(vars_to_create)
+                vars_created_count = len(vars_to_create)
 
         # 2. Sync Logs
         logs_created_count = 0
         template_logs = self.server_log_ids
-        for jet in jets:
-            existing_log_names = jet.server_log_ids.mapped("name")
-            to_sync_logs = template_logs.filtered(
-                lambda log, log_names=existing_log_names: log.name not in log_names
-            )
-            for template_log in to_sync_logs:
-                jet_log = template_log.copy(
-                    {
-                        "jet_id": jet.id,
-                        "server_id": jet.server_id.id,
-                        "jet_template_id": False,
-                    }
+        if template_logs:
+            # Prefetch server logs for all jets in one go
+            jets.mapped("server_log_ids")
+            existing_logs_by_jet = {
+                jet.id: set(jet.server_log_ids.mapped("name")) for jet in jets
+            }
+            for jet in jets:
+                existing_log_names = existing_logs_by_jet[jet.id]
+                to_sync_logs = template_logs.filtered(
+                    lambda log, log_names=existing_log_names: log.name not in log_names
                 )
-                if template_log.log_type == "file":
-                    jet_log.file_id = template_log.file_template_id.create_file(
-                        server=jet.server_id, jet=jet, if_file_exists="skip"
-                    ).id
-                logs_created_count += 1
+                for template_log in to_sync_logs:
+                    jet_log = template_log.copy(
+                        {
+                            "jet_id": jet.id,
+                            "server_id": jet.server_id.id,
+                            "jet_template_id": False,
+                        }
+                    )
+                    if template_log.log_type == "file":
+                        jet_log.file_id = template_log.file_template_id.create_file(
+                            server=jet.server_id, jet=jet, if_file_exists="skip"
+                        ).id
+                    logs_created_count += 1
 
         # 3. Sync Scheduled Tasks
         tasks_created_count = 0
         template_tasks = self.scheduled_task_ids
-        for jet in jets:
-            missing_tasks = template_tasks - jet.scheduled_task_ids
-            if missing_tasks:
-                jet.scheduled_task_ids = [(4, task.id) for task in missing_tasks]
-                tasks_created_count += len(missing_tasks)
+        if template_tasks:
+            # Prefetch scheduled tasks for all jets in one go
+            jets.mapped("scheduled_task_ids")
+            for jet in jets:
+                missing_tasks = template_tasks - jet.scheduled_task_ids
+                if missing_tasks:
+                    jet.scheduled_task_ids = [(4, task.id) for task in missing_tasks]
+                    tasks_created_count += len(missing_tasks)
 
         return {
             "type": "ir.actions.client",
