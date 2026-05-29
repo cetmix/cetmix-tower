@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_template_view_form_inherit" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.form.inherit</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_template_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_new_jet']" position="after">
+                <field name="has_pending_sync" invisible="1" />
+                <button
+                    name="action_sync_to_jets"
+                    type="object"
+                    string="Sync Template to Jets"
+                    class="oe_highlight btn-primary"
+                    icon="fa-refresh"
+                    groups="cetmix_tower_server.group_manager"
+                    invisible="not has_pending_sync"
+                />
+                <button
+                    name="action_sync_to_jets"
+                    type="object"
+                    string="Sync Template to Jets"
+                    class="btn-secondary"
+                    icon="fa-refresh"
+                    groups="cetmix_tower_server.group_manager"
+                    invisible="has_pending_sync"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
