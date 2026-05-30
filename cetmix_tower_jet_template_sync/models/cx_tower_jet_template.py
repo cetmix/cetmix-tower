@@ -22,6 +22,12 @@ class CxTowerJetTemplate(models.Model):
         "scheduled_task_ids",
     )
     def _compute_has_pending_sync(self):
+        all_jets = self.mapped("jet_ids").filtered(lambda j: not j.exclude_from_sync)
+        if all_jets:
+            all_jets.mapped("variable_value_ids")
+            all_jets.mapped("server_log_ids")
+            all_jets.mapped("scheduled_task_ids")
+
         for template in self:
             pending = False
             jets = template.jet_ids.filtered(lambda j: not j.exclude_from_sync)
