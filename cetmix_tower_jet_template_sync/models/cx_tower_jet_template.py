@@ -171,7 +171,10 @@ class CxTowerJetTemplate(models.Model):
                             "jet_template_id": False,
                         }
                     )
-                    if template_log.log_type == "file":
+                    if (
+                        template_log.log_type == "file"
+                        and template_log.file_template_id
+                    ):
                         jet_log.file_id = template_log.file_template_id.create_file(
                             server=jet.server_id, jet=jet, if_file_exists="skip"
                         ).id
@@ -198,14 +201,12 @@ class CxTowerJetTemplate(models.Model):
                     "Successfully synchronized to %(jets)d jet(s):\n"
                     "- %(vars)d variable(s)\n"
                     "- %(logs)d log(s)\n"
-                    "- %(tasks)d scheduled task(s)"
-                )
-                % {
-                    "jets": len(jets),
-                    "vars": vars_created_count,
-                    "logs": logs_created_count,
-                    "tasks": tasks_created_count,
-                },
+                    "- %(tasks)d scheduled task(s)",
+                    jets=len(jets),
+                    vars=vars_created_count,
+                    logs=logs_created_count,
+                    tasks=tasks_created_count,
+                ),
                 "type": "success",
                 "sticky": False,
             },
