@@ -81,8 +81,7 @@ class CxTowerJetTemplate(models.Model):
                             "variable_id": template_val.variable_id.id,
                             "value_char": template_val.value_char,
                             "option_id": template_val.option_id.id
-                            if hasattr(template_val, "option_id")
-                            and template_val.option_id
+                            if template_val.option_id
                             else False,
                         },
                     )
@@ -141,8 +140,7 @@ class CxTowerJetTemplate(models.Model):
                             "variable_id": template_val.variable_id.id,
                             "value_char": template_val.value_char,
                             "option_id": template_val.option_id.id
-                            if hasattr(template_val, "option_id")
-                            and template_val.option_id
+                            if template_val.option_id
                             else False,
                             "jet_id": jet.id,
                         }

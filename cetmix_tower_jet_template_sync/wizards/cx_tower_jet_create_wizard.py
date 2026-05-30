@@ -40,9 +40,7 @@ class CxTowerJetCreateWizard(models.TransientModel):
                         {
                             "variable_id": val.variable_id.id,
                             "value_char": val.value_char,
-                            "option_id": val.option_id.id
-                            if hasattr(val, "option_id") and val.option_id
-                            else False,
+                            "option_id": val.option_id.id if val.option_id else False,
                             "variable_value_id": val.id,
                         },
                     )

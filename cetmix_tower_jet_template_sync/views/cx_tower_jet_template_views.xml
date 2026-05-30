@@ -14,7 +14,7 @@
                     name="action_sync_to_jets"
                     type="object"
                     string="Sync Template to Jets"
-                    class="oe_highlight btn-primary"
+                    class="oe_highlight"
                     icon="fa-refresh"
                     groups="cetmix_tower_server.group_manager"
                     invisible="not has_pending_sync"
