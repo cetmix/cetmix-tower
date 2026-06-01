@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_view_form_inherit_mode" model="ir.ui.view">
+        <field name="name">cx.tower.jet.view.form.inherit.mode</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <!-- Add mode selector and read-only description to general group -->
+            <xpath expr="//group[@name='general']/group[2]" position="inside">
+                <field name="mode_required" invisible="1" />
+                <field
+                    name="active_mode_id"
+                    options="{'no_create': True}"
+                    placeholder="Select Active Mode..."
+                    required="mode_required"
+                />
+                <div
+                    colspan="2"
+                    invisible="not active_mode_id"
+                    style="margin-top: 10px;"
+                >
+                    <label
+                        for="active_mode_description"
+                        string="Mode Description"
+                        style="font-weight: bold; display: block; margin-bottom: 5px;"
+                    />
+                    <field
+                        name="active_mode_description"
+                        widget="html"
+                        readonly="1"
+                        nolabel="1"
+                    />
+                </div>
+            </xpath>
+
+            <xpath
+                expr="//field[@name='variable_value_ids']/list"
+                position="attributes"
+            >
+                <attribute name="decoration-hidden">not is_mode_allowed</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='variable_value_ids']/list" position="inside">
+                <field name="is_mode_allowed" column_invisible="True" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
