@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 from odoo import exceptions
 from odoo.exceptions import AccessError
 
@@ -191,6 +193,46 @@ class TestTowerFile(TestTowerCommon):
         """
         self.file.action_push_to_server()
         self.assertEqual(self.file.server_response, "ok")
+
+    def test_upload_file_with_server_only_secret(self):
+        """Server-only secrets must resolve when uploading a file."""
+        secret = self.Key.create(
+            {
+                "name": "Server Only Secret",
+                "reference": "SERVER_ONLY_SECRET",
+                "key_type": "s",
+            }
+        )
+        self.KeyValue.create(
+            {
+                "key_id": secret.id,
+                "secret_value": "server_secret_value",
+                "server_id": self.server_test_1.id,
+            }
+        )
+        file_record = self.File.create(
+            {
+                "name": "secret.txt",
+                "source": "tower",
+                "server_id": self.server_test_1.id,
+                "server_dir": "/tmp",
+                "code": "password=#!cxtower.secret.SERVER_ONLY_SECRET!#",
+            }
+        )
+
+        uploaded = {}
+
+        def capture_upload(server_self, data, remote_path, from_path=False):
+            uploaded["data"] = data
+            uploaded["path"] = remote_path
+            return MagicMock()
+
+        with patch.object(type(self.server_test_1), "upload_file", new=capture_upload):
+            file_record.upload(raise_error=True)
+
+        self.assertEqual(file_record.server_response, "ok")
+        self.assertEqual(uploaded["data"], "password=server_secret_value")
+        self.assertNotIn("None", uploaded["data"])
 
     def test_delete_file(self):
         """

@@ -579,6 +579,23 @@ class CxTowerFile(models.Model):
         """
         self._process("delete", raise_error)
 
+    def _get_secret_parse_context(self):
+        """Build kwargs for secret resolution scoped to this file's server.
+
+        Mirrors the key context prepared in ``cx.tower.server`` command
+        runners so server- and partner-specific secrets resolve the same
+        way on file upload/download/delete as when running commands.
+
+        Returns:
+            dict: ``server_id`` and optionally ``partner_id`` for
+                ``cx.tower.key._parse_code``.
+        """
+        self.ensure_one()
+        key_vals = {"server_id": self.server_id.id}
+        if self.server_id.partner_id:
+            key_vals["partner_id"] = self.server_id.partner_id.id
+        return key_vals
+
     def _process_download(
         self,
         tower_key_obj,
@@ -605,7 +622,9 @@ class CxTowerFile(models.Model):
         """
         self.ensure_one()
         code = self.server_id.download_file(
-            tower_key_obj._parse_code(self.full_server_path),
+            tower_key_obj._parse_code(
+                self.full_server_path, **self._get_secret_parse_context()
+            ),
         )
         if self.file_type == "text" and b"\x00" in code:
             return {
@@ -705,17 +724,22 @@ class CxTowerFile(models.Model):
                     if res:
                         return res
                 elif action == "upload":
+                    key_ctx = file._get_secret_parse_context()
                     if file.file_type == "binary":
                         file_content = b64decode(file.file)
                     else:
-                        file_content = tower_key_obj._parse_code(file.rendered_code)
+                        file_content = tower_key_obj._parse_code(
+                            file.rendered_code, **key_ctx
+                        )
                     file.server_id.upload_file(
                         file_content,
-                        tower_key_obj._parse_code(file.full_server_path),
+                        tower_key_obj._parse_code(file.full_server_path, **key_ctx),
                     )
                 elif action == "delete":
                     file.server_id.delete_file(
-                        tower_key_obj._parse_code(file.full_server_path)
+                        tower_key_obj._parse_code(
+                            file.full_server_path, **file._get_secret_parse_context()
+                        )
                     )
                 else:
                     return False
