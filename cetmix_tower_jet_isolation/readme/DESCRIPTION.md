@@ -1,0 +1,1 @@
+Adds strict isolation mode for Jets. When active, it prevents non-privileged users from changing applicability or tags when running commands or flight plans. This ensures that operations on sensitive jets follow predefined security policies.

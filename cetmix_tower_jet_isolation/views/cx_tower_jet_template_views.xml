@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_template_view_form_isolation" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.view.form.isolation</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_jet_template_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='general']" position="after">
+                <group name="isolation" string="Execution Security (Isolation Mode)">
+                    <field name="isolation_mode" widget="boolean_toggle" />
+                    <field
+                        name="forced_applicability"
+                        invisible="not isolation_mode"
+                        required="isolation_mode"
+                    />
+                    <field
+                        name="forced_command_tag_ids"
+                        widget="many2many_tags"
+                        invisible="not isolation_mode"
+                    />
+                    <field
+                        name="forced_plan_tag_ids"
+                        widget="many2many_tags"
+                        invisible="not isolation_mode"
+                    />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
