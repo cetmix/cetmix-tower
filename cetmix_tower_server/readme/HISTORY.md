@@ -1,3 +1,8 @@
+## 18.0.2.0.1 (2026-08-28)
+
+- Bugfixes: Fix rendering of server-only secrets when uploading files. (5574)
+
+
 ## 18.0.2.0.0 (2026-04-07)
 
 - Features: Jets! (4700)
