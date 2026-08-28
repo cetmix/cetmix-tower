@@ -1,0 +1,109 @@
+.o_cx_monitor_dashboard {
+    display: flex;
+    gap: 20px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    height: 450px;
+}
+
+.o_cx_monitor_sidebar {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.o_cx_monitor_item {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    text-align: left;
+    color: inherit;
+    font-family: inherit;
+}
+
+.o_cx_monitor_item:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.o_cx_monitor_item:focus-visible {
+    outline: 2px solid #00a39b;
+    outline-offset: 2px;
+}
+
+.o_cx_monitor_item.is-active {
+    background: #00a39b;
+    color: white;
+    border-color: #008a83;
+    box-shadow: 0 4px 12px rgba(0, 163, 155, 0.2);
+}
+
+.o_cx_monitor_item_header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.o_cx_monitor_item_value {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.o_cx_monitor_main {
+    flex: 1;
+    background: white;
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.o_cx_monitor_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.o_cx_monitor_title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.o_cx_monitor_meta {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.o_cx_monitor_chart_container {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+.o_cx_monitor_loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #94a3b8;
+}
+
+.o_cx_monitor_footer {
+    padding-top: 15px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+}

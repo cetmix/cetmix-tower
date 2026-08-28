@@ -1,0 +1,82 @@
+forbidden files......................................(no files to check)Skipped
+en.po files cannot exist.............................(no files to check)Skipped
+init pyproject.toml with whool...........................................Passed
+Update pre-commit excluded addons........................................Passed
+Fix the manifest website key.............................................Passed
+Generate addons README files from fragments..............................Passed
+Generate requirements.txt for an addons directory........................Passed
+Checks for Odoo modules..................................................Passed
+Checks for .po[t] files..................................................Passed
+prettier (with plugin-xml)...............................................Passed
+eslint...................................................................Failed
+- hook id: eslint
+- duration: 3.81s
+- exit code: 1
+
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cetmix_tower_server/static/src/components/ace_variables/ace_variables.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"     [2mjsdoc/check-tag-names[22m[0m
+[0m  [2m6:1[22m  [33mwarning[39m  Imports should be sorted alphabetically  [2msort-imports[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cetmix_tower_server/static/src/components/ace_variables/autocomplete_popup.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"  [2mjsdoc/check-tag-names[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cetmix_tower_server/static/src/utils/server_utils.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"  [2mjsdoc/check-tag-names[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cx_web_refresh_from_backend/static/src/views/form/form_controller_patch.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"     [2mjsdoc/check-tag-names[22m[0m
+[0m  [2m8:1[22m  [33mwarning[39m  Imports should be sorted alphabetically  [2msort-imports[22m[0m
+[0m[0m
+[0m[33m[1m✖ 6 problems (0 errors, 6 warnings)[22m[39m[0m
+[0m[33m[1m[22m[39m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cetmix_tower_server/static/src/components/ace_variables/code_editor_tower.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"  [2mjsdoc/check-tag-names[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cetmix_tower_server_monitor/static/src/js/dashboard.js[24m[0m
+[0m  [2m3:1[22m  [31merror[39m  Parsing error: 'import' and 'export' may appear only with 'sourceType: module'[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cx_web_refresh_from_backend/static/src/views/list/list_controller_patch.esm.js[24m[0m
+[0m   [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"     [2mjsdoc/check-tag-names[22m[0m
+[0m  [2m12:1[22m  [33mwarning[39m  Imports should be sorted alphabetically  [2msort-imports[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cx_web_refresh_from_backend/static/tests/refresh_from_backend_tests.esm.js[24m[0m
+[0m  [2m1:1[22m   [33mwarning[39m  Invalid JSDoc tag name "odoo-module"                      [2mjsdoc/check-tag-names[22m[0m
+[0m  [2m2:11[22m  [33mwarning[39m  'QUnit' is already defined as a built-in global variable  [2mno-redeclare[22m[0m
+[0m[0m
+[0m[31m[1m✖ 6 problems (1 error, 5 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cetmix_tower_server/static/src/components/server_status/server_status_field.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"               [2mjsdoc/check-tag-names[22m[0m
+[0m  [2m4:1[22m  [33mwarning[39m  Expected 'multiple' syntax before 'single' syntax  [2msort-imports[22m[0m
+[0m  [2m9:1[22m  [33mwarning[39m  Imports should be sorted alphabetically            [2msort-imports[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cx_web_refresh_from_backend/static/src/views/kanban/kanban_controller_patch.esm.js[24m[0m
+[0m   [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"     [2mjsdoc/check-tag-names[22m[0m
+[0m  [2m11:1[22m  [33mwarning[39m  Imports should be sorted alphabetically  [2msort-imports[22m[0m
+[0m[0m
+[0m[4m/home/odoo/cetmix-tower/cx_web_refresh_from_backend/static/src/views/utils/get_loaded_record_ids.esm.js[24m[0m
+[0m  [2m1:1[22m  [33mwarning[39m  Invalid JSDoc tag name "odoo-module"  [2mjsdoc/check-tag-names[22m[0m
+[0m[0m
+[0m[33m[1m✖ 6 problems (0 errors, 6 warnings)[22m[39m[0m
+[0m[33m[1m[22m[39m[0m
+
+trim trailing whitespace.................................................Passed
+fix end of files.........................................................Passed
+debug statements (python)................................................Passed
+fix python encoding pragma (deprecated)..................................Passed
+check for case conflicts.................................................Passed
+check docstring is first.................................................Passed
+check that executables have shebangs.................(no files to check)Skipped
+check for merge conflicts................................................Passed
+check for broken symlinks............................(no files to check)Skipped
+check xml................................................................Passed
+mixed line ending........................................................Passed
+ruff.....................................................................Passed
+ruff-format..............................................................Passed
+pylint with optional checks..............................................Passed
+- hook id: pylint_odoo
+- duration: 32.37s
+Check for Odoo modules using pylint......................................Passed

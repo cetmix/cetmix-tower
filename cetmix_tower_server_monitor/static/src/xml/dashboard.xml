@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <t t-name="cetmix_tower_server_monitor.Dashboard">
+        <div class="o_cx_monitor_dashboard">
+            <!-- Sidebar -->
+            <div class="o_cx_monitor_sidebar">
+                <button
+                    class="o_cx_monitor_item"
+                    type="button"
+                    t-att-class="state.selectedKey === 'cpu' ? 'is-active' : ''"
+                    t-on-click="() => this.selectMetric('cpu')"
+                >
+                    <div class="o_cx_monitor_item_header">
+                        <i class="fa fa-microchip me-2" /> CPU
+                    </div>
+                    <div class="o_cx_monitor_item_value">
+                        <t
+                        t-esc="((state.current.cpu / 100) * state.current.cpu_cores).toFixed(2)"
+                    /> / <t t-esc="state.current.cpu_cores || 0" /> Cores (<t
+                        t-esc="Math.round(state.current.cpu)"
+                    />%)
+                    </div>
+                </button>
+                <button
+                    class="o_cx_monitor_item"
+                    type="button"
+                    t-att-class="state.selectedKey === 'ram' ? 'is-active' : ''"
+                    t-on-click="() => this.selectMetric('ram')"
+                >
+                    <div class="o_cx_monitor_item_header">
+                        <i class="fa fa-tasks me-2" /> RAM
+                    </div>
+                    <div class="o_cx_monitor_item_value">
+                        <t t-esc="formatMB(state.current.ram_used)" /> / <t
+                        t-esc="formatMB(state.current.ram_total)"
+                    /> (<t
+                        t-esc="Math.round((state.current.ram_used / state.current.ram_total) * 100) || 0"
+                    />%)
+                    </div>
+                </button>
+                <button
+                    class="o_cx_monitor_item"
+                    type="button"
+                    t-att-class="state.selectedKey === 'disk' ? 'is-active' : ''"
+                    t-on-click="() => this.selectMetric('disk')"
+                >
+                    <div class="o_cx_monitor_item_header">
+                        <i class="fa fa-hdd-o me-2" /> SSD
+                    </div>
+                    <div class="o_cx_monitor_item_value">
+                        <t t-esc="state.current.disk_used.toFixed(1)" /> / <t
+                        t-esc="state.current.disk_total.toFixed(1)"
+                    /> GB (<t
+                        t-esc="Math.round((state.current.disk_used / state.current.disk_total) * 100) || 0"
+                    />%)
+                    </div>
+                </button>
+            </div>
+
+            <!-- Main Chart Area -->
+            <div class="o_cx_monitor_main">
+                <div class="o_cx_monitor_header">
+                    <div class="o_cx_monitor_title">
+                        <t t-esc="selectedTitle" />
+                    </div>
+                    <div class="o_cx_monitor_meta">
+                        <i
+                        t-attf-class="fa fa-circle me-1 #{state.monitor_push_status === 'active' ? 'text-success' : (state.monitor_push_status === 'overdue' ? 'text-danger' : 'text-muted')}"
+                        t-if="state.monitoring_mode === 'push'"
+                        t-attf-title="Push Agent Status: #{state.monitor_push_status}"
+                    />
+                        Last Update: <t t-esc="state.last_update || 'Never'" />
+                    </div>
+                </div>
+
+                <div class="o_cx_monitor_chart_container">
+                    <div t-if="state.loading" class="o_cx_monitor_loader">
+                        <i class="fa fa-spinner fa-spin fa-3x" />
+                    </div>
+                    <div
+                        t-if="!state.loading and !state.last_update"
+                        class="o_cx_monitor_no_data text-center p-5"
+                    >
+                        <t t-if="state.monitoring_mode === 'none'">
+                            <i class="fa fa-eye-slash fa-3x mb-3 text-muted" />
+                            <h4>Monitoring Disabled</h4>
+                            <p
+                                class="text-muted"
+                            >Select a monitoring mode (Pull or Push) to begin tracking resource usage.</p>
+                        </t>
+                        <t t-else="">
+                            <i class="fa fa-line-chart fa-3x mb-3 text-muted" />
+                            <h4>No Monitoring Data Available</h4>
+                            <p
+                                class="text-muted"
+                            >Metrics have not been collected yet. Use the button below to trigger a test.</p>
+                        </t>
+                    </div>
+                    <canvas
+                        t-ref="canvas"
+                        t-att-class="(state.loading or !state.last_update) ? 'd-none' : ''"
+                    />
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
