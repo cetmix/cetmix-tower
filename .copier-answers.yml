@@ -1,8 +1,7 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.7.0-331-g6517d72
+_commit: v1.7.0-372-geb9417d
 _src_path: https://github.com/cetmix/cetmix-addons-repo-template.git
 additional_ruff_rules: []
-ci: GitHub
 convert_readme_fragments_to_markdown: true
 enable_checklog_odoo: true
 generate_requirements_txt: true
@@ -18,6 +17,7 @@ odoo_test_flavor: Both
 odoo_version: 18.0
 org_name: Cetmix
 org_slug: cetmix
+postgres_image: ''
 rebel_module_groups: []
 repo_description: Cetmix Tower
 repo_name: Odoo bases server management tool
