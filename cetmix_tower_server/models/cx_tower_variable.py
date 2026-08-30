@@ -13,23 +13,27 @@ _lt = LazyTranslate(__name__, default_lang="en_US")
 
 _logger = logging.getLogger(__name__)
 
-re = wrap_module(
-    __import__("re"),
-    [
-        "match",
-        "fullmatch",
-        "search",
-        "sub",
-        "subn",
-        "split",
-        "findall",
-        "finditer",
-        "compile",
-        "template",
-        "escape",
-        "error",
-    ],
-)
+_re_module = __import__("re")
+_re_attributes = [
+    "match",
+    "fullmatch",
+    "search",
+    "sub",
+    "subn",
+    "split",
+    "findall",
+    "finditer",
+    "compile",
+    "escape",
+    "error",
+]
+# `re.template` was deprecated in Python 3.11 and removed in 3.13. Keep
+# exposing it where the interpreter still provides it, so commands relying on
+# it keep working, without breaking the import on newer Pythons.
+if hasattr(_re_module, "template"):
+    _re_attributes.append("template")
+
+re = wrap_module(_re_module, _re_attributes)
 
 # Maximum recursion depth for variable value rendering
 # to prevent infinite loops
