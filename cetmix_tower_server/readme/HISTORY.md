@@ -1,3 +1,8 @@
+## 18.0.2.0.2 (2026-08-30)
+
+- Bugfixes: Remove the deprecated 'template' method from the 're' lib import (3973)
+
+
 ## 18.0.2.0.1 (2026-08-28)
 
 - Bugfixes: Fix rendering of server-only secrets when uploading files. (5574)
