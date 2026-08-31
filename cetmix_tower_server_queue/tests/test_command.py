@@ -1,10 +1,17 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from psycopg2.errors import LockNotAvailable
+
 from odoo.fields import Datetime
 from odoo.tools import mute_logger
 
+from odoo.addons.cetmix_tower_server.models.constants import (
+    COMMAND_STOPPED,
+    COMMAND_TIMED_OUT,
+)
 from odoo.addons.cetmix_tower_server.tests.common import TestTowerCommon
+from odoo.addons.queue_job.tests.common import trap_jobs
 
 
 class TestTowerCommand(TestTowerCommon):
@@ -143,3 +150,114 @@ class TestTowerCommand(TestTowerCommon):
 
         # check zombie command logs
         self._verify_zombie_command_job_cancellation("python_code")
+
+    def test_nested_plan_ssh_is_enqueued(self):
+        """Nested-plan SSH is queued once the parent action=plan job runs."""
+        child_plan = self.Plan.create({"name": "Queue nested child"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Queue run nested child",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create({"name": "Queue nested parent"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        with trap_jobs() as trap:
+            parent_plan._run_single(self.server_test_1)
+            self.assertTrue(trap.enqueued_jobs)
+            trap.perform_enqueued_jobs()
+            nested_ssh_jobs = [
+                job
+                for job in trap.enqueued_jobs
+                if job.kwargs.get("command")
+                and job.kwargs["command"].action == "ssh_command"
+            ]
+            self.assertTrue(nested_ssh_jobs, "Nested SSH should be enqueued")
+        nested_ssh_logs = self.CommandLog.search(
+            [
+                ("command_id", "=", self.command_create_dir.id),
+                ("plan_log_id.plan_id", "=", child_plan.id),
+            ]
+        )
+        self.assertTrue(nested_ssh_logs, "Nested SSH command log should exist")
+        self.assertTrue(nested_ssh_logs.is_running)
+
+    def test_timeout_does_not_cancel_job_when_lock_skipped(self):
+        """Losing FOR UPDATE NOWAIT must not cancel the queue job."""
+        ssh_command = self.Command.create(
+            {
+                "name": "Lock skip SSH",
+                "code": "ls -la",
+                "action": "ssh_command",
+            }
+        )
+        cx_tower_server_obj = self.registry["cx.tower.server"]
+        with self._patch_command_runner("ssh", cx_tower_server_obj._command_runner_ssh):
+            self.server_test_1.run_command(
+                ssh_command, log={"start_date": self.old_time}
+            )
+        command_log = self.CommandLog.search(
+            [
+                ("command_id", "=", ssh_command.id),
+                ("start_date", "=", self.old_time),
+            ],
+            limit=1,
+        )
+        job = command_log.queue_job_id
+        self.assertTrue(job)
+        original_execute = self.env.cr.execute
+
+        def raise_lock(query, params=None, *args, **kwargs):
+            query_str = query if isinstance(query, str) else str(query)
+            if "FOR UPDATE NOWAIT" in query_str:
+                raise LockNotAvailable()
+            return original_execute(query, params, *args, **kwargs)
+
+        with (
+            mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_command_log"),
+            patch.object(self.env.cr, "execute", side_effect=raise_lock),
+        ):
+            command_log.finish(status=COMMAND_TIMED_OUT)
+        command_log.invalidate_recordset()
+        job.invalidate_recordset()
+        self.assertTrue(command_log.is_running)
+        self.assertEqual(job.state, "pending")
+
+    def test_stop_cancels_queue_job(self):
+        """Stopping a queued command cancels the related queue job."""
+        ssh_command = self.Command.create(
+            {
+                "name": "Stop queued SSH",
+                "code": "ls -la",
+                "action": "ssh_command",
+            }
+        )
+        cx_tower_server_obj = self.registry["cx.tower.server"]
+        with self._patch_command_runner("ssh", cx_tower_server_obj._command_runner_ssh):
+            self.server_test_1.run_command(ssh_command)
+        command_log = self.CommandLog.search(
+            [("command_id", "=", ssh_command.id)], order="id desc", limit=1
+        )
+        job = command_log.queue_job_id
+        self.assertTrue(job)
+        self.assertEqual(job.state, "pending")
+        command_log.stop()
+        command_log.invalidate_recordset()
+        job.invalidate_recordset()
+        self.assertFalse(command_log.is_running)
+        self.assertEqual(command_log.command_status, COMMAND_STOPPED)
+        self.assertEqual(job.state, "cancelled")
