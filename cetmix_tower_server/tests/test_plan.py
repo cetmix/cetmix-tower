@@ -8,6 +8,7 @@ from odoo.tools.misc import mute_logger
 
 from ..models.constants import (
     ANOTHER_PLAN_RUNNING,
+    COMMAND_STOPPED,
     GENERAL_ERROR,
     PLAN_IS_EMPTY,
     PLAN_LINE_CONDITION_CHECK_FAILED,
@@ -134,6 +135,32 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         if kwargs:
             vals.update(kwargs)
         return self.Plan.create(vals)
+
+    def _make_plan_command(self, name):
+        """Create an action=plan command that runs a one-line child plan.
+
+        Args:
+            name (str): Name used for the child plan and the command.
+
+        Returns:
+            tuple: (cx.tower.plan, cx.tower.command)
+        """
+        child_plan = self.Plan.create({"name": name})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": name,
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        return child_plan, plan_command
 
     def test_user_read_access(self):
         """
@@ -2161,6 +2188,62 @@ custom_values['random_var_reference'] = 'another_random_var_value'
             "SSH command should succeed",
         )
 
+    def test_run_plan_command_no_command_log_keeps_jet(self):
+        """action=plan with no_command_log must still pass jet to the child plan."""
+        child_plan, plan_command = self._make_plan_command("No-log jet child")
+        result = self.server_test_1.with_context(no_command_log=True).run_command(
+            plan_command,
+            jet=self.jet_sample,
+        )
+        self.assertEqual(result["status"], 0)
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", child_plan.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1)
+        self.assertEqual(plan_log.jet_id, self.jet_sample)
+        self.assertEqual(
+            plan_log.jet_template_id,
+            self.jet_template_sample,
+            "Jet template must come from the selected jet",
+        )
+
+        child_plan, plan_command = self._make_plan_command("No-log jet template child")
+        result = self.server_test_1.with_context(no_command_log=True).run_command(
+            plan_command,
+            jet_template=self.jet_template_sample,
+        )
+        self.assertEqual(result["status"], 0)
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", child_plan.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1)
+        self.assertEqual(plan_log.jet_template_id, self.jet_template_sample)
+        self.assertFalse(plan_log.jet_id)
+
+        child_plan, plan_command = self._make_plan_command("Logged jet child")
+        with self._patch_defer_handlers([]):
+            self.server_test_1.run_command(
+                plan_command,
+                jet=self.jet_sample,
+            )
+        command_log = self.CommandLog.search(
+            [("command_id", "=", plan_command.id)],
+            order="id desc",
+            limit=1,
+        )
+        self.assertEqual(command_log.jet_id, self.jet_sample)
+        self.assertEqual(
+            command_log.triggered_plan_log_id.jet_id,
+            self.jet_sample,
+            "Logged action=plan must still pass jet from the command log",
+        )
+
     def test_plan_with_custom_values_in_condition(self):
         """
         Ensure that plan line conditions see updated custom_values
@@ -2897,3 +2980,476 @@ result = {
 
         # Final plan status must be custom exit code 0
         self.assertEqual(plan_log.plan_status, 0)
+
+    def test_standalone_action_plan_waits_for_deferred_child(self):
+        """Standalone action=plan stays running until the child plan finishes."""
+        child_plan = self.Plan.create({"name": "Deferred child standalone"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run deferred child standalone",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            self.server_test_1.run_command(plan_command)
+        parent_log = self.CommandLog.search(
+            [("command_id", "=", plan_command.id)], order="id desc", limit=1
+        )
+        self.assertFalse(parent_log.plan_log_id)
+        self.assertTrue(parent_log.is_running)
+        child_plan_log = parent_log.triggered_plan_log_id
+        self.assertTrue(child_plan_log)
+        self.assertTrue(child_plan_log.is_running)
+        self.assertEqual(child_plan_log.triggering_command_log_id, parent_log)
+        child_ssh = child_plan_log.command_log_ids.filtered("is_running")
+        self.assertEqual(len(child_ssh), 1)
+        child_ssh.finish(status=0)
+        parent_log.invalidate_recordset()
+        child_plan_log.invalidate_recordset()
+        self.assertFalse(child_plan_log.is_running)
+        self.assertFalse(parent_log.is_running)
+        self.assertEqual(parent_log.command_status, 0)
+
+    def test_nested_plan_deferred_child_advances_parent(self):
+        """Nested action=plan waits; finishing the child advances one line."""
+        child_plan = self.Plan.create({"name": "Deferred nested child"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run nested deferred child",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create({"name": "Deferred nested parent"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": parent_plan.id,
+                "command_id": self.command_list_dir.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+            parent_plan_log = self.PlanLog.search(
+                [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+            )
+            plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+                lambda log: log.command_id == plan_command
+            )
+            self.assertTrue(plan_cmd_log.is_running)
+            child_plan_log = plan_cmd_log.triggered_plan_log_id
+            self.assertTrue(child_plan_log.is_running)
+            self.assertEqual(child_plan_log.triggering_command_log_id, plan_cmd_log)
+            child_ssh = child_plan_log.command_log_ids.filtered("is_running")
+            child_ssh.finish(status=0)
+            plan_cmd_log.invalidate_recordset()
+            parent_plan_log.invalidate_recordset(["command_log_ids", "is_running"])
+            self.assertFalse(plan_cmd_log.is_running)
+            self.assertEqual(plan_cmd_log.command_status, 0)
+            self.assertEqual(len(parent_plan_log.command_log_ids), 2)
+            self.assertTrue(
+                parent_plan_log.command_log_ids.filtered(
+                    lambda log: log.command_id == self.command_list_dir
+                    and log.is_running
+                )
+            )
+
+    def test_nested_plan_deferred_child_error_uses_on_error(self):
+        """Child error finishes the parent command with that plan_status."""
+        child_plan = self.Plan.create({"name": "Deferred nested child error"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run nested child error",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create(
+            {"name": "Deferred nested parent error", "on_error_action": "e"}
+        )
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": parent_plan.id,
+                "command_id": self.command_list_dir.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+        parent_plan_log = self.PlanLog.search(
+            [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+        )
+        plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == plan_command
+        )
+        child_ssh = plan_cmd_log.triggered_plan_log_id.command_log_ids.filtered(
+            "is_running"
+        )
+        child_ssh.finish(status=1)
+        plan_cmd_log.invalidate_recordset()
+        parent_plan_log.invalidate_recordset()
+        self.assertEqual(plan_cmd_log.command_status, 1)
+        self.assertFalse(parent_plan_log.is_running)
+        self.assertEqual(parent_plan_log.plan_status, 1)
+        self.assertEqual(len(parent_plan_log.command_log_ids), 1)
+
+    def test_empty_plan_closes_parent_from_plan_finish(self):
+        """Empty child plan finishes the parent command with PLAN_IS_EMPTY."""
+        empty_plan = self.Plan.create({"name": "Empty deferred plan"})
+        plan_command = self.Command.create(
+            {
+                "name": "Run empty plan",
+                "action": "plan",
+                "flight_plan_id": empty_plan.id,
+            }
+        )
+        with self._patch_defer_handlers([]):
+            self.server_test_1.run_command(plan_command)
+        parent_log = self.CommandLog.search(
+            [("command_id", "=", plan_command.id)], order="id desc", limit=1
+        )
+        self.assertFalse(parent_log.is_running)
+        self.assertEqual(parent_log.command_status, PLAN_IS_EMPTY)
+        self.assertTrue(parent_log.triggered_plan_log_id)
+        self.assertEqual(
+            parent_log.triggered_plan_log_id.triggering_command_log_id, parent_log
+        )
+        self.assertEqual(parent_log.triggered_plan_log_id.plan_status, PLAN_IS_EMPTY)
+
+    def test_another_plan_running_closes_parent_from_record(self):
+        """ANOTHER_PLAN_RUNNING record() closes the parent command via 7.3."""
+        child_plan = self.Plan.create({"name": "Busy child plan"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            child_plan._run_single(self.server_test_1)
+        plan_command = self.Command.create(
+            {
+                "name": "Run busy child",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        with self._patch_defer_handlers([]):
+            self.server_test_1.run_command(plan_command)
+        parent_log = self.CommandLog.search(
+            [("command_id", "=", plan_command.id)], order="id desc", limit=1
+        )
+        self.assertFalse(parent_log.is_running)
+        self.assertEqual(parent_log.command_status, ANOTHER_PLAN_RUNNING)
+        self.assertTrue(parent_log.triggered_plan_log_id)
+        self.assertEqual(
+            parent_log.triggered_plan_log_id.plan_status, ANOTHER_PLAN_RUNNING
+        )
+        self.assertEqual(
+            parent_log.triggered_plan_log_id.triggering_command_log_id, parent_log
+        )
+
+    def test_stop_parent_plan_stops_child_plan_and_command(self):
+        """Stopping the parent plan stops the nested plan and child command."""
+        child_plan = self.Plan.create({"name": "Stop child plan"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run stop child",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create({"name": "Stop parent plan"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+        parent_plan_log = self.PlanLog.search(
+            [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+        )
+        plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == plan_command
+        )
+        child_plan_log = plan_cmd_log.triggered_plan_log_id
+        child_ssh = child_plan_log.command_log_ids.filtered("is_running")
+        parent_plan_log.stop()
+        parent_plan_log.invalidate_recordset()
+        plan_cmd_log.invalidate_recordset()
+        child_plan_log.invalidate_recordset()
+        child_ssh.invalidate_recordset()
+        self.assertFalse(parent_plan_log.is_running)
+        self.assertTrue(parent_plan_log.is_stopped)
+        self.assertFalse(child_plan_log.is_running)
+        self.assertFalse(child_ssh.is_running)
+        self.assertFalse(plan_cmd_log.is_running)
+
+    def test_stop_parent_plan_command_stops_child_first(self):
+        """Stopping the action=plan command stops the child plan first."""
+        child_plan = self.Plan.create({"name": "Stop via command child"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run stop via command",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create(
+            {"name": "Stop via command parent", "on_error_action": "e"}
+        )
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": parent_plan.id,
+                "command_id": self.command_list_dir.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+        parent_plan_log = self.PlanLog.search(
+            [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+        )
+        plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == plan_command
+        )
+        child_plan_log = plan_cmd_log.triggered_plan_log_id
+        plan_cmd_log.stop()
+        plan_cmd_log.invalidate_recordset()
+        child_plan_log.invalidate_recordset()
+        parent_plan_log.invalidate_recordset()
+        self.assertFalse(child_plan_log.is_running)
+        self.assertFalse(plan_cmd_log.is_running)
+        self.assertEqual(plan_cmd_log.command_status, PLAN_STOPPED)
+        self.assertFalse(parent_plan_log.is_stopped)
+        self.assertEqual(len(parent_plan_log.command_log_ids), 1)
+
+    def test_stop_child_plan_only_finishes_parent_command(self):
+        """Stopping only the child plan closes the parent command with PLAN_STOPPED."""
+        child_plan = self.Plan.create({"name": "Stop child only"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run stop child only",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create(
+            {"name": "Stop child only parent", "on_error_action": "e"}
+        )
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+        parent_plan_log = self.PlanLog.search(
+            [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+        )
+        plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == plan_command
+        )
+        child_plan_log = plan_cmd_log.triggered_plan_log_id
+        child_plan_log.stop()
+        plan_cmd_log.invalidate_recordset()
+        parent_plan_log.invalidate_recordset()
+        self.assertEqual(plan_cmd_log.command_status, PLAN_STOPPED)
+        self.assertFalse(parent_plan_log.is_stopped)
+
+    def test_stop_without_reverse_link_still_closes_parent_command(self):
+        """Missing reverse link: stop() finishes the parent with COMMAND_STOPPED."""
+        child_plan = self.Plan.create({"name": "Stop missing reverse child"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run stop missing reverse",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create(
+            {"name": "Stop missing reverse parent", "on_error_action": "e"}
+        )
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+        parent_plan_log = self.PlanLog.search(
+            [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+        )
+        plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == plan_command
+        )
+        child_plan_log = plan_cmd_log.triggered_plan_log_id
+        child_plan_log.triggering_command_log_id = False
+        plan_cmd_log.stop()
+        plan_cmd_log.invalidate_recordset()
+        child_plan_log.invalidate_recordset()
+        parent_plan_log.invalidate_recordset()
+        self.assertFalse(child_plan_log.is_running)
+        self.assertFalse(plan_cmd_log.is_running)
+        self.assertEqual(plan_cmd_log.command_status, COMMAND_STOPPED)
+        self.assertFalse(parent_plan_log.is_stopped)
+
+    def test_variable_values_copied_on_child_plan_finish(self):
+        """Child plan variable_values are copied onto the parent command log."""
+        child_plan = self.Plan.create({"name": "Vars child"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run vars child",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            self.server_test_1.run_command(plan_command)
+        parent_log = self.CommandLog.search(
+            [("command_id", "=", plan_command.id)], order="id desc", limit=1
+        )
+        child_ssh = parent_log.triggered_plan_log_id.command_log_ids.filtered(
+            "is_running"
+        )
+        child_ssh.finish(status=0, variable_values={"copied_var": "from_child"})
+        parent_log.invalidate_recordset()
+        self.assertEqual(parent_log.variable_values.get("copied_var"), "from_child")
+
+    def test_leftover_runner_finish_is_noop(self):
+        """A leftover finish() after 7.3 does not advance the parent plan twice."""
+        child_plan = self.Plan.create({"name": "Noop finish child"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": "Run noop finish child",
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        parent_plan = self.Plan.create({"name": "Noop finish parent"})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": parent_plan.id,
+                "command_id": plan_command.id,
+            }
+        )
+        self.plan_line.create(
+            {
+                "sequence": 20,
+                "plan_id": parent_plan.id,
+                "command_id": self.command_list_dir.id,
+            }
+        )
+        with self._patch_defer_handlers([(10, self._defer_ssh)]):
+            parent_plan._run_single(self.server_test_1)
+        parent_plan_log = self.PlanLog.search(
+            [("plan_id", "=", parent_plan.id)], order="id desc", limit=1
+        )
+        plan_cmd_log = parent_plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == plan_command
+        )
+        child_ssh = plan_cmd_log.triggered_plan_log_id.command_log_ids.filtered(
+            "is_running"
+        )
+        child_ssh.finish(status=0)
+        parent_plan_log.invalidate_recordset(["command_log_ids"])
+        command_count_after_first = len(parent_plan_log.command_log_ids)
+        plan_cmd_log.finish(status=0)
+        parent_plan_log.invalidate_recordset(["command_log_ids"])
+        self.assertEqual(
+            len(parent_plan_log.command_log_ids), command_count_after_first
+        )

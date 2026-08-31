@@ -46,3 +46,6 @@ that explains its license.
 
 ----
 <!-- /!\ Non OCA Context : Set here the full description of your organization. -->
+## Skills for AI agents
+
+Create Jet Templates, Flight Plans, Commands and any other assets using AI: [https://github.com/cetmix/cetmix-tower-skills](https://github.com/cetmix/cetmix-tower-skills)
