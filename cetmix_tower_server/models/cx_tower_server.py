@@ -1134,6 +1134,11 @@ class CxTowerServer(models.Model):
         # If on command we have the flag
         if command.no_split_for_sudo:
             kwargs["no_split_for_sudo"] = True
+        # Command logs carry jet context. Without a log the plan runner
+        # still needs these to render child commands with jet values.
+        if command.action == "plan":
+            kwargs["jet_template"] = jet_template
+            kwargs["jet"] = jet
         return self._command_runner_wrapper(
             command=command,
             log_record=log_record,
@@ -1652,6 +1657,8 @@ class CxTowerServer(models.Model):
                     Following keys are supported by default:
                         - "log": {values passed to logger}
                         - "key": {values passed to key parser}
+                        - "jet_template": used when ``log_record`` is empty
+                        - "jet": used when ``log_record`` is empty
         Returns:
             dict | None: flight plan running result. None when ``log_record``
                 is set and the child plan is still running (completion is
@@ -1661,6 +1668,13 @@ class CxTowerServer(models.Model):
         error = None
         status = 0
         plan_log_record = None
+        # Prefer the command log. no_command_log has none, so use kwargs.
+        # Pop either way so **kwargs cannot collide with _run_single args.
+        jet_template = kwargs.pop("jet_template", None)
+        jet = kwargs.pop("jet", None)
+        if log_record:
+            jet_template = log_record.jet_template_id
+            jet = log_record.jet_id
         try:
             plan_log_vals = {"label": generate_random_id(4)}
             if log_record:
@@ -1669,8 +1683,8 @@ class CxTowerServer(models.Model):
             kwargs["plan_log"] = plan_log_vals
             plan_log_record = flight_plan.with_context(from_command=True)._run_single(
                 server=self,
-                jet_template=log_record.jet_template_id if log_record else None,
-                jet=log_record.jet_id if log_record else None,
+                jet_template=jet_template,
+                jet=jet,
                 **kwargs,
             )
         except Exception as e:  # pylint: disable=broad-exception-caught

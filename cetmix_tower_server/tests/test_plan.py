@@ -136,6 +136,32 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
             vals.update(kwargs)
         return self.Plan.create(vals)
 
+    def _make_plan_command(self, name):
+        """Create an action=plan command that runs a one-line child plan.
+
+        Args:
+            name (str): Name used for the child plan and the command.
+
+        Returns:
+            tuple: (cx.tower.plan, cx.tower.command)
+        """
+        child_plan = self.Plan.create({"name": name})
+        self.plan_line.create(
+            {
+                "sequence": 10,
+                "plan_id": child_plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        plan_command = self.Command.create(
+            {
+                "name": name,
+                "action": "plan",
+                "flight_plan_id": child_plan.id,
+            }
+        )
+        return child_plan, plan_command
+
     def test_user_read_access(self):
         """
         For a user:
@@ -2160,6 +2186,62 @@ custom_values['random_var_reference'] = 'another_random_var_value'
             nested_ssh_command_log.code,
             rendered_code_expected,
             "SSH command should succeed",
+        )
+
+    def test_run_plan_command_no_command_log_keeps_jet(self):
+        """action=plan with no_command_log must still pass jet to the child plan."""
+        child_plan, plan_command = self._make_plan_command("No-log jet child")
+        result = self.server_test_1.with_context(no_command_log=True).run_command(
+            plan_command,
+            jet=self.jet_sample,
+        )
+        self.assertEqual(result["status"], 0)
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", child_plan.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1)
+        self.assertEqual(plan_log.jet_id, self.jet_sample)
+        self.assertEqual(
+            plan_log.jet_template_id,
+            self.jet_template_sample,
+            "Jet template must come from the selected jet",
+        )
+
+        child_plan, plan_command = self._make_plan_command("No-log jet template child")
+        result = self.server_test_1.with_context(no_command_log=True).run_command(
+            plan_command,
+            jet_template=self.jet_template_sample,
+        )
+        self.assertEqual(result["status"], 0)
+        plan_log = self.PlanLog.search(
+            [
+                ("plan_id", "=", child_plan.id),
+                ("server_id", "=", self.server_test_1.id),
+            ],
+        )
+        self.assertEqual(len(plan_log), 1)
+        self.assertEqual(plan_log.jet_template_id, self.jet_template_sample)
+        self.assertFalse(plan_log.jet_id)
+
+        child_plan, plan_command = self._make_plan_command("Logged jet child")
+        with self._patch_defer_handlers([]):
+            self.server_test_1.run_command(
+                plan_command,
+                jet=self.jet_sample,
+            )
+        command_log = self.CommandLog.search(
+            [("command_id", "=", plan_command.id)],
+            order="id desc",
+            limit=1,
+        )
+        self.assertEqual(command_log.jet_id, self.jet_sample)
+        self.assertEqual(
+            command_log.triggered_plan_log_id.jet_id,
+            self.jet_sample,
+            "Logged action=plan must still pass jet from the command log",
         )
 
     def test_plan_with_custom_values_in_condition(self):
