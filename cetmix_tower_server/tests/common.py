@@ -513,3 +513,44 @@ class TestTowerCommon(BaseCommon):
         if values:
             records.write(values)
             records.invalidate_recordset(values.keys())
+
+    def _patch_defer_handlers(self, handlers):
+        """Replace ``_get_command_defer_handlers`` with a fixed list.
+
+        Args:
+            handlers (list): ``[(sequence, callable), ...]``.
+
+        Returns:
+            unittest.mock._patch: Patch context manager.
+        """
+        return patch.object(
+            self.registry["cx.tower.server"],
+            "_get_command_defer_handlers",
+            return_value=handlers,
+        )
+
+    def _defer_ssh(
+        self,
+        command,
+        log_record,
+        rendered_command_code,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
+    ):
+        """Defer SSH commands that have a log record.
+
+        Args:
+            command (cx.tower.command): Command to run.
+            log_record (cx.tower.command.log): Command log or empty.
+            rendered_command_code (str): Rendered command code.
+            sudo (str, optional): sudo mode.
+            rendered_command_path (str, optional): Rendered path.
+            ssh_connection: Unused.
+            **kwargs: Extra runner arguments.
+
+        Returns:
+            bool: True if the SSH command was claimed.
+        """
+        return bool(log_record and command.action == "ssh_command")

@@ -113,6 +113,11 @@ class CxTowerPlanLog(models.Model):
     parent_flight_plan_log_id = fields.Many2one(
         "cx.tower.plan.log", string="Main Log", ondelete="cascade"
     )
+    triggering_command_log_id = fields.Many2one(
+        comodel_name="cx.tower.command.log",
+        ondelete="set null",
+        help="Command log of the action=plan command that started this plan",
+    )
     scheduled_task_id = fields.Many2one(
         "cx.tower.scheduled.task",
         ondelete="set null",
@@ -229,6 +234,7 @@ class CxTowerPlanLog(models.Model):
             vals["variable_values"] = variable_values
 
         plan_log = self.sudo().create(vals)
+        plan_log._link_triggering_command_log(**kwargs)
 
         # Process each line until the first executable one is found
         for line, is_executable in get_executable_line(
@@ -260,6 +266,26 @@ class CxTowerPlanLog(models.Model):
             plan_log.finish(plan_status=PLAN_IS_EMPTY)
 
         return plan_log
+
+    def _link_triggering_command_log(self, **kwargs):
+        """Link this plan log to the action=plan command that started it.
+
+        Reads top-level ``kwargs["flight_plan_command_log"]`` (the value
+        ``_command_runner_flight_plan`` sets). Sets both sides of the link
+        so stop/finish can find the parent even when the child plan has no
+        executable lines (empty plan, another instance running).
+
+        Args:
+            **kwargs: Extra arguments. ``flight_plan_command_log`` is the
+                parent ``cx.tower.command.log`` if this plan was started
+                from an ``action=plan`` command.
+        """
+        self.ensure_one()
+        command_log = kwargs.get("flight_plan_command_log")
+        if not command_log:
+            return
+        self.triggering_command_log_id = command_log
+        command_log.triggered_plan_log_id = self
 
     def stop(self):
         """
@@ -326,6 +352,13 @@ class CxTowerPlanLog(models.Model):
         if kwargs:
             values.update(kwargs)
         self.sudo().write(values)
+
+        command_logs = self.sudo().triggering_command_log_id.filtered("is_running")
+        if command_logs:
+            finish_kwargs = {"variable_values": self.variable_values}
+            if self.plan_status != 0:
+                finish_kwargs["error"] = _("Flight plan running error")
+            command_logs.finish(status=self.plan_status, **finish_kwargs)
 
         # Call the plan finished hook
         # Use try/except to ensure that the plan finished hook is called
@@ -419,6 +452,7 @@ class CxTowerPlanLog(models.Model):
             vals.update(plan_log_kwargs)
 
         plan_log = self.sudo().create(vals)
+        plan_log._link_triggering_command_log(**kwargs)
         plan_log.finish(plan_status=status)
         return plan_log
 
