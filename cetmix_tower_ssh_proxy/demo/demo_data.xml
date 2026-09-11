@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- ===============================================
+    SSH Proxy Servers
+    ================================================ -->
+    <record id="server_demo_ssh_proxy_1" model="cx.tower.server">
+        <field name="name">Demo SSH Proxy #1</field>
+        <field name="status">running</field>
+        <field name="ip_v4_address">localhost</field>
+        <field name="ssh_username">tower</field>
+        <field name="ssh_password">password</field>
+        <field name="ssh_auth_mode">p</field>
+        <field name="skip_host_key">True</field>
+        <field name="os_id" ref="cetmix_tower_server.os_debian_10" />
+        <field name="url">demo-proxy-1.example.com</field>
+        <field name="ssh_connection_route">direct</field>
+    </record>
+
+    <record id="server_demo_ssh_proxy_2" model="cx.tower.server">
+        <field name="name">Demo SSH Proxy #2</field>
+        <field name="status">running</field>
+        <field name="ip_v4_address">localhost</field>
+        <field name="ssh_username">tower</field>
+        <field name="ssh_password">password</field>
+        <field name="ssh_auth_mode">p</field>
+        <field name="skip_host_key">True</field>
+        <field name="os_id" ref="cetmix_tower_server.os_debian_10" />
+        <field name="url">demo-proxy-2.example.com</field>
+        <field name="ssh_connection_route">proxy</field>
+        <field name="ssh_proxy_server_id" ref="server_demo_ssh_proxy_1" />
+    </record>
+
+    <!-- ===============================================
+    Servers
+    ================================================ -->
+    <record id="server_demo_ssh_proxy_target" model="cx.tower.server">
+        <field name="name">Demo Server via SSH Proxy</field>
+        <field name="status">running</field>
+        <field name="ip_v4_address">localhost</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">password</field>
+        <field name="ssh_auth_mode">p</field>
+        <field name="skip_host_key">True</field>
+        <field name="os_id" ref="cetmix_tower_server.os_debian_10" />
+        <field name="url">demo-target.example.com</field>
+        <field name="ssh_connection_route">proxy</field>
+        <field name="ssh_proxy_server_id" ref="server_demo_ssh_proxy_1" />
+    </record>
+
+    <record id="server_demo_ssh_multi_proxy_target" model="cx.tower.server">
+        <field name="name">Demo Server via Multi-Hop SSH Proxy</field>
+        <field name="status">running</field>
+        <field name="ip_v4_address">localhost</field>
+        <field name="ssh_username">admin</field>
+        <field name="ssh_password">password</field>
+        <field name="ssh_auth_mode">p</field>
+        <field name="skip_host_key">True</field>
+        <field name="os_id" ref="cetmix_tower_server.os_debian_10" />
+        <field name="url">demo-target.example.com</field>
+        <field name="ssh_connection_route">proxy</field>
+        <field name="ssh_proxy_server_id" ref="server_demo_ssh_proxy_2" />
+    </record>
+</odoo>
