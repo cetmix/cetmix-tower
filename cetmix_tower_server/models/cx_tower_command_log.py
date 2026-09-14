@@ -5,7 +5,8 @@ import logging
 
 from ansi2html import Ansi2HTMLConverter
 
-from odoo import _, api, fields, models
+from odoo import _, api, fields, models, tools
+from odoo.service.model import PG_CONCURRENCY_EXCEPTIONS_TO_RETRY
 
 from .constants import COMMAND_STOPPED, GENERAL_ERROR
 
@@ -229,10 +230,32 @@ class CxTowerCommandLog(models.Model):
     def stop(self):
         """
         Stop the command execution.
+
+        If this command started a child flight plan that is still running,
+        stop that plan first. The child plan's ``finish()`` then closes this
+        command with ``PLAN_STOPPED`` when ``triggering_command_log_id`` is
+        set. If that reverse link is missing, finish this command with
+        ``COMMAND_STOPPED``. Do not force-stop the parent plan: line
+        actions decide.
         """
         user_name = self.env.user.name
         for log in self:
             if not log.is_running:
+                continue
+
+            if log.triggered_plan_log_id and log.triggered_plan_log_id.is_running:
+                log.triggered_plan_log_id.stop()
+                log.invalidate_recordset(
+                    ["is_running", "finish_date", "command_status"]
+                )
+                # 7.3 should have closed this command. Close it here when
+                # the reverse link is missing. Do not stop plan_log_id:
+                # line actions decide.
+                if log.is_running:
+                    log.finish(
+                        status=COMMAND_STOPPED,
+                        error=_("Stopped by user %(user)s", user=user_name),
+                    )
                 continue
 
             log.finish(
@@ -248,7 +271,20 @@ class CxTowerCommandLog(models.Model):
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
         """Save final command result when command is finished.
-        This method can be called for multiple command logs at once.
+
+        Can be called for multiple command logs at once.
+
+        Idempotent: logs that already have ``finish_date`` are skipped.
+        ``is_running`` also requires ``start_date``, so it cannot be the
+        unfinished check (Integer ``command_status`` 0 is both unset and
+        success). Concurrent callers that lose ``FOR UPDATE NOWAIT`` (or
+        hit serialization/deadlock) are skipped without raising so a batch
+        zombie cron can continue.
+
+        After a successful write, if ``command_status`` is 0 and the command
+        has ``server_status``, that status is written once per server. If
+        several logs share a server and disagree on ``server_status``, the
+        last log in the recordset wins.
 
         Args:
             finish_date (datetime) command finish date time.
@@ -257,24 +293,63 @@ class CxTowerCommandLog(models.Model):
             error (Char, optional): Command error. Defaults to None.
             **kwargs (dict): optional values
         """
-        self_with_sudo = self.sudo()
+        unfinished_logs = self.filtered(lambda rec: not rec.finish_date)
+        if not unfinished_logs:
+            return
 
-        # Duration
+        locked_logs = self.browse()
+        for command_log in unfinished_logs:
+            try:
+                with self.env.cr.savepoint(), tools.mute_logger("odoo.sql_db"):
+                    self.env.cr.execute(
+                        (
+                            f"SELECT finish_date FROM {self._table}"
+                            " WHERE id = %s FOR UPDATE NOWAIT"
+                        ),
+                        (command_log.id,),
+                    )
+                    row = self.env.cr.fetchone()
+                    if row and row[0]:
+                        continue
+                    locked_logs |= command_log
+            except PG_CONCURRENCY_EXCEPTIONS_TO_RETRY as err:
+                _logger.warning(
+                    "Could not acquire lock on command log %s, skipping: %s",
+                    command_log.id,
+                    err,
+                )
+                continue
+
+        if not locked_logs:
+            return
+
+        self_with_sudo = locked_logs.sudo()
+
         now = fields.Datetime.now()
         date_finish = finish_date if finish_date else now
+        command_status = GENERAL_ERROR if status is None else status
 
         vals = {
             "finish_date": date_finish,
-            "command_status": GENERAL_ERROR if status is None else status,
+            "command_status": command_status,
             "command_response": response,
             "command_error": error,
         }
 
-        # Apply kwargs and write
         vals.update(kwargs)
         self_with_sudo.write(vals)
 
-        # Trigger post finish hook
+        if vals.get("command_status") == 0:
+            server_status_by_id = {}
+            for command_log in self_with_sudo:
+                if command_log.command_id.server_status:
+                    server_status_by_id[command_log.server_id.id] = (
+                        command_log.server_id,
+                        command_log.command_id.server_status,
+                    )
+            for server, new_status in server_status_by_id.values():
+                server.write({"status": new_status})
+
         for command_log in self_with_sudo:
             command_log._command_finished()
 
@@ -321,8 +396,12 @@ class CxTowerCommandLog(models.Model):
         return rec
 
     def _command_finished(self):
-        """Triggered when command is finished
-        Inherit to implement your own hooks
+        """Triggered when command is finished.
+
+        Inherit to implement your own hooks. Extenders that need to cancel
+        an external job on COMMAND_STOPPED / COMMAND_TIMED_OUT should
+        inspect ``command_status``, then call ``super()``. Core ``stop()``
+        already goes through ``finish()``.
 
         Returns:
             bool: True if event was handled
