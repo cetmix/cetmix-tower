@@ -1,3 +1,8 @@
+## 18.0.2.1.0 (2026-09-14)
+
+- Features: Allow a later module to defer command execution (queue job, external worker) without copying SSH preparation, double-finishing logs, or forcing nested flight plans to run synchronously. (5596)
+
+
 ## 18.0.2.0.2 (2026-08-30)
 
 - Bugfixes: Remove the deprecated 'template' method from the 're' lib import (3973)
