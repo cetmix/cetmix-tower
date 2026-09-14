@@ -1545,6 +1545,11 @@ msgid "Command log is required for 'Jet Action' commands!"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_log__triggering_command_log_id
+msgid "Command log of the action=plan command that started this plan"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_waypoint__created_from_command_log_id
 msgid ""
 "Command log that created this waypoint; the waypoint callback finishes it "
@@ -2754,6 +2759,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_plan_log.py:0
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 msgid "Flight plan running error"
 msgstr ""
@@ -6871,6 +6877,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__triggered_plan_log_id
 msgid "Triggered Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__triggering_command_log_id
+msgid "Triggering Command Log"
 msgstr ""
 
 #. module: cetmix_tower_server
