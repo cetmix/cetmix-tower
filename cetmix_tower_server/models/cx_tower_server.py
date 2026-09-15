@@ -1307,6 +1307,44 @@ class CxTowerServer(models.Model):
         """
         return []
 
+    def _get_command_runners(self):
+        """Return the mapping of command actions to runner callables.
+
+        Inheriting modules MUST call ``super()`` and add their actions to
+        the returned dict. Keys must match values returned by
+        ``cx.tower.command._selection_action()``. A module that adds an
+        action extends both methods. ``cx.tower.plan.line.action`` reads
+        its selection from the same method.
+
+        Values are bound methods. Do not look up runners by naming
+        convention: the ``_command_runner_`` prefix is also used by
+        helpers that are not runners
+        (``_command_runner_wrapper``,
+        ``_command_runner_file_using_template_create_file``).
+
+        Each runner is called with the same keyword arguments as
+        ``_command_runner`` (except ``self``):
+
+            command, log_record, rendered_command_code, sudo,
+            rendered_command_path, ssh_connection, **kwargs
+
+        and returns ``dict`` or ``None`` as that runner does today. A log
+        record does not by itself mean ``None``.
+
+        Returns:
+            dict: ``{action: bound method}`` for every registered action.
+        """
+        return {
+            "ssh_command": self._command_runner_ssh,
+            "file_using_template": self._command_runner_file_using_template,
+            "python_code": self._command_runner_python_code,
+            "jet_action": self._command_runner_jet_action,
+            "create_waypoint": self._command_runner_create_waypoint,
+            "plan": self.with_context(
+                prevent_plan_recursion=True
+            )._command_runner_flight_plan,
+        }
+
     def _command_runner_wrapper(
         self,
         command,
@@ -1378,7 +1416,8 @@ class CxTowerServer(models.Model):
         **kwargs,
     ):
         """Top level command runner function.
-        Calls command type specific runners.
+        Resolves the runner from ``_get_command_runners`` and calls it
+        with a uniform keyword argument list.
 
         Args:
             command (cx.tower.command()): Command
@@ -1395,75 +1434,39 @@ class CxTowerServer(models.Model):
         Returns:
             dict(): command running result if `log_record` is defined else None
         """
-        response = None
-        need_check_server_status = True
-        if command.action == "ssh_command":
-            response = self._command_runner_ssh(
-                log_record=log_record,
-                rendered_command_code=rendered_command_code,
-                sudo=sudo,
-                rendered_command_path=rendered_command_path,
-                ssh_connection=ssh_connection,
-                **kwargs,
+        runner = self._get_command_runners().get(command.action)
+        if not runner:
+            error_message = _(
+                "No runner found for command action '%(cmd_action)s'",
+                cmd_action=command.action,
             )
-        elif command.action == "file_using_template":
-            response = self._command_runner_file_using_template(
-                log_record,
-                rendered_command_path,
-                **kwargs,
-            )
-        elif command.action == "python_code":
-            response = self._command_runner_python_code(
-                log_record,
-                rendered_command_code,
-                **kwargs,
-            )
-        elif command.action == "jet_action":
-            response = self._command_runner_jet_action(
-                log_record,
-                **kwargs,
-            )
-        elif command.action == "create_waypoint":
-            response = self._command_runner_create_waypoint(
-                log_record,
-                **kwargs,
-            )
-        elif command.action == "plan":
-            response = self.with_context(
-                prevent_plan_recursion=True
-            )._command_runner_flight_plan(
-                log_record=log_record,
-                flight_plan=command.flight_plan_id,
-                **kwargs,
-            )
-        else:
-            need_check_server_status = False
+            if log_record:
+                log_record.finish(
+                    finish_date=fields.Datetime.now(),
+                    status=NO_COMMAND_RUNNER_FOUND,
+                    response=None,
+                    error=error_message,
+                )
+                return
+            raise ValidationError(error_message)
 
+        response = runner(
+            command=command,
+            log_record=log_record,
+            rendered_command_code=rendered_command_code,
+            sudo=sudo,
+            rendered_command_path=rendered_command_path,
+            ssh_connection=ssh_connection,
+            **kwargs,
+        )
         if (
-            need_check_server_status
-            and not log_record
+            not log_record
             and command.server_status
             and response
             and response["status"] == 0
         ):
             self.write({"status": command.server_status})
-
-        if need_check_server_status:
-            return response
-
-        error_message = _(
-            "No runner found for command action '%(cmd_action)s'",
-            cmd_action=command.action,
-        )
-        if log_record:
-            log_record.finish(
-                finish_date=fields.Datetime.now(),
-                status=NO_COMMAND_RUNNER_FOUND,
-                response=None,
-                error=error_message,
-            )
-        else:
-            raise ValidationError(error_message)
+        return response
 
     def _command_runner_file_using_template_create_file(
         self, log_record, server_dir, **kwargs
@@ -1494,7 +1497,11 @@ class CxTowerServer(models.Model):
     def _command_runner_file_using_template(
         self,
         log_record,
-        server_dir,
+        rendered_command_path,
+        command=None,
+        rendered_command_code=None,
+        sudo=None,
+        ssh_connection=None,
         **kwargs,
     ):
         """
@@ -1509,8 +1516,13 @@ class CxTowerServer(models.Model):
         Args:
             log_record (recordset): The log record to update with the command's
                 status.
-            server_dir (str): The directory on the server where the file should be
-                created.
+            rendered_command_path (str): The directory on the server where the file
+                should be created.
+            command (cx.tower.command(), optional): Command being run.
+            rendered_command_code (Text, optional): Rendered command code.
+            sudo (Selection, optional): Command sudo mode.
+            ssh_connection (SSH client instance, optional): SSH connection to
+                reuse.
             **kwargs: Additional keyword arguments.
 
         Returns:
@@ -1525,7 +1537,7 @@ class CxTowerServer(models.Model):
             # Attempt to create a new file using the template for the current server
             file = self._command_runner_file_using_template_create_file(
                 log_record=log_record,
-                server_dir=server_dir,
+                server_dir=rendered_command_path,
             )
 
             # If file creation failed, log the failure and exit
@@ -1597,6 +1609,7 @@ class CxTowerServer(models.Model):
         sudo=None,
         rendered_command_path=None,
         ssh_connection=None,
+        command=None,
         **kwargs,
     ):
         """Run SSH command.
@@ -1609,6 +1622,7 @@ class CxTowerServer(models.Model):
             sudo (Selection): Command sudo mode. Defaults to None.
             rendered_command_path (Char, optional): Rendered command path.
             ssh_connection (SSH client instance, optional): SSH connection to reuse.
+            command (cx.tower.command(), optional): Command being run.
         kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
@@ -1644,14 +1658,29 @@ class CxTowerServer(models.Model):
             return command_result
 
     def _command_runner_flight_plan(
-        self, log_record, flight_plan, raise_on_error=False, **kwargs
+        self,
+        log_record,
+        command=None,
+        rendered_command_code=None,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
+        raise_on_error=False,
+        **kwargs,
     ):
         """
         Run Flight plan from command.
         Updates the record in the Command Log (cx.tower.command.log)
         Args:
             log_record (cx.tower.command.log()): Command log record.
-            flight_plan (cx.tower.plan()): Flight Plan to be run.
+            command (cx.tower.command(), optional): Command being run. The flight
+                plan is ``command.flight_plan_id`` as received, so the plan
+                recordset keeps ``command.env``.
+            rendered_command_code (Text, optional): Rendered command code.
+            sudo (Selection, optional): Command sudo mode.
+            rendered_command_path (Char, optional): Rendered command path.
+            ssh_connection (SSH client instance, optional): SSH connection to
+                reuse.
             raise_on_error (bool, optional): raise error on error.
             kwargs (dict):  extra arguments. Use to pass external values.
                     Following keys are supported by default:
@@ -1664,6 +1693,7 @@ class CxTowerServer(models.Model):
                 is set and the child plan is still running (completion is
                 left to ``plan_log.finish()``).
         """
+        flight_plan = command.flight_plan_id
         response = None
         error = None
         status = 0
@@ -1722,7 +1752,11 @@ class CxTowerServer(models.Model):
     def _command_runner_python_code(
         self,
         log_record,
-        rendered_code,
+        rendered_command_code,
+        command=None,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
         **kwargs,
     ):
         """
@@ -1731,7 +1765,12 @@ class CxTowerServer(models.Model):
 
         Args:
             log_record (cx.tower.command.log()): Command log record
-            rendered_code (Text): Rendered python code.
+            rendered_command_code (Text): Rendered python code.
+            command (cx.tower.command(), optional): Command being run.
+            sudo (Selection, optional): Command sudo mode.
+            rendered_command_path (Char, optional): Rendered command path.
+            ssh_connection (SSH client instance, optional): SSH connection to
+                reuse.
         kwargs (dict):  extra arguments. Use to pass external values.
                 Following keys are supported by default:
                     - "log": {values passed to logger}
@@ -1743,7 +1782,7 @@ class CxTowerServer(models.Model):
         """
         # Run python code
         result = self._run_python_code(
-            code=rendered_code,
+            code=rendered_command_code,
             raise_on_error=False,
             **kwargs,
         )
@@ -1763,6 +1802,11 @@ class CxTowerServer(models.Model):
     def _command_runner_jet_action(
         self,
         log_record,
+        command=None,
+        rendered_command_code=None,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
         **kwargs,
     ):
         """
@@ -1771,6 +1815,12 @@ class CxTowerServer(models.Model):
 
         Args:
             log_record (cx.tower.command.log()): Command log record
+            command (cx.tower.command(), optional): Command being run.
+            rendered_command_code (Text, optional): Rendered command code.
+            sudo (Selection, optional): Command sudo mode.
+            rendered_command_path (Char, optional): Rendered command path.
+            ssh_connection (SSH client instance, optional): SSH connection to
+                reuse.
 
         Returns:
             dict(): jet action running result if `log_record` is
@@ -1907,7 +1957,16 @@ class CxTowerServer(models.Model):
         # Return result
         return {"status": status, "response": response, "error": error}
 
-    def _command_runner_create_waypoint(self, log_record, **kwargs):
+    def _command_runner_create_waypoint(
+        self,
+        log_record,
+        command=None,
+        rendered_command_code=None,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
+    ):
         """Run Create a Waypoint command.
 
         Creates a waypoint for the plan's jet from the command's waypoint template.
@@ -1918,6 +1977,12 @@ class CxTowerServer(models.Model):
 
         Args:
             log_record (cx.tower.command.log): Command log record.
+            command (cx.tower.command(), optional): Command being run.
+            rendered_command_code (Text, optional): Rendered command code.
+            sudo (Selection, optional): Command sudo mode.
+            rendered_command_path (Char, optional): Rendered command path.
+            ssh_connection (SSH client instance, optional): SSH connection to
+                reuse.
 
         Returns:
             dict: status, response (e.g. waypoint id when created), error.

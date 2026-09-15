@@ -1,6 +1,7 @@
 from . import test_server
 from . import test_command
 from . import test_command_defer
+from . import test_command_runner_registry
 from . import test_file
 from . import test_file_template
 from . import test_plan

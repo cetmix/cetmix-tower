@@ -51,6 +51,8 @@ class TestTowerCommand(TestTowerCommon):
             args = list(args)
             if len(args) > 1:
                 args[1] = False  # Set log_record to False
+            if "log_record" in kwargs:
+                kwargs["log_record"] = False
             return runner_method(*args, **kwargs)
 
         return patch.object(
@@ -85,6 +87,11 @@ class TestTowerCommand(TestTowerCommon):
         self.assertTrue(job.exists(), "Zombie command job should exist")
 
         self.assertEqual(job.state, "pending", "Zombie command job should be pending")
+
+        self.assertTrue(
+            zombie_command_logs.is_running,
+            "Command log must still be running before the zombie check",
+        )
 
         # run process to kill zombie command
         self.server_test_1._check_zombie_commands()
