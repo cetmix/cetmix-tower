@@ -9,7 +9,7 @@
                 <page
                     name="git_projects"
                     string="Git Projects"
-                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                 >
                     <field name="git_project_rel_ids">
                         <list editable="bottom">

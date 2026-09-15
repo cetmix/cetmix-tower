@@ -11,7 +11,7 @@
             '|',
                 ('server_id.user_ids', 'in', [user.id]),
                 ('server_id.manager_ids', 'in', [user.id])]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -26,7 +26,7 @@
         <field name="model_id" ref="model_cx_tower_git_project_rel" />
         <field name="domain_force">[('git_project_id.manager_ids', 'in', [user.id]),
                                   ('server_id.manager_ids', 'in', [user.id])]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />
@@ -38,6 +38,6 @@
         <field name="name">Git Project Relation: Root Full Access</field>
         <field name="model_id" ref="model_cx_tower_git_project_rel" />
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
     </record>
 </odoo>
