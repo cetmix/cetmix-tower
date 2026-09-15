@@ -37,26 +37,26 @@ class CxTowerServerLog(models.Model):
     log_type = fields.Selection(
         selection=lambda self: self._selection_log_type(),
         required=True,
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_root,cetmix_tower_base.group_manager",
         default=lambda self: self._selection_log_type()[0][0],
     )
     command_id = fields.Many2one(
         "cx.tower.command",
         domain="[('action', 'in', ['ssh_command', 'python_code']), "
         "'|', ('server_ids', 'in', [server_id]), ('server_ids', '=', False)]",
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_root,cetmix_tower_base.group_manager",
         help="Command that will be executed to get the log data.\n"
         "Be careful with commands that don't support parallel execution!",
     )
     use_sudo = fields.Boolean(
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_root,cetmix_tower_base.group_manager",
         help="Will use sudo based on server settings."
         "If no sudo is configured will run without sudo",
     )
     file_id = fields.Many2one(
         "cx.tower.file",
         domain="[('server_id', '=', server_id)]",
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_root,cetmix_tower_base.group_manager",
         help="File that will be executed to get the log data",
         copy=False,
     )
@@ -68,7 +68,7 @@ class CxTowerServerLog(models.Model):
     file_template_id = fields.Many2one(
         "cx.tower.file.template",
         ondelete="cascade",
-        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_root,cetmix_tower_base.group_manager",
         help="This file template will be used to create log files"
         " when server is created from a template",
     )

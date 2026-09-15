@@ -69,7 +69,7 @@ class CxTowerFileTemplate(models.Model):
     user_ids = fields.Many2many(
         relation="cx_tower_file_template_user_rel",
         domain=lambda self: [
-            ("groups_id", "in", [self.env.ref("cetmix_tower_server.group_manager").id])
+            ("groups_id", "in", [self.env.ref("cetmix_tower_base.group_manager").id])
         ],
     )
     manager_ids = fields.Many2many(

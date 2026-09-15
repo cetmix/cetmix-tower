@@ -4,7 +4,7 @@
     <record id="cx_tower_scheduled_task_rule_manager_read" model="ir.rule">
         <field name="name">Scheduled Task: manager read access</field>
         <field name="model_id" ref="model_cx_tower_scheduled_task" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -37,7 +37,7 @@
     <record id="cx_tower_scheduled_task_rule_manager_write" model="ir.rule">
         <field name="name">Scheduled Task: manager write access</field>
         <field name="model_id" ref="model_cx_tower_scheduled_task" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />
@@ -51,7 +51,7 @@
     <record id="cx_tower_scheduled_task_rule_manager_unlink" model="ir.rule">
         <field name="name">Scheduled Task: manager unlink access</field>
         <field name="model_id" ref="model_cx_tower_scheduled_task" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -68,7 +68,7 @@
     <record id="cx_tower_scheduled_task_rule_root_full" model="ir.rule">
         <field name="name">Scheduled Task: root full access</field>
         <field name="model_id" ref="model_cx_tower_scheduled_task" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />

@@ -23,7 +23,7 @@
                             <field
                                 name="reference"
                                 placeholder="Can contain English letters, digits and '_'. Leave blank to autogenerate"
-                                groups="cetmix_tower_server.group_manager"
+                                groups="cetmix_tower_base.group_manager"
                             />
                         </h3>
                     </div>
@@ -34,28 +34,28 @@
                         <field name="jet_id" invisible="1" />
                         <field
                             name="access_level"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                         <field
                             name="log_type"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                         <field
                             name="command_id"
                             invisible="log_type != 'command'"
                             required="log_type == 'command'"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                         <field
                             name="use_sudo"
                             invisible="log_type != 'command'"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                         <field
                             name="file_id"
                             invisible="log_type != 'file'"
                             required="log_type == 'file'"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                     </group>
                     <field name="log_html" />

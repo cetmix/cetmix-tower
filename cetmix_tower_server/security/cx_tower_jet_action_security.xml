@@ -5,7 +5,7 @@
     <record id="rule_cx_tower_jet_action_user_read" model="ir.rule">
         <field name="name">Jet Action: User Read Access</field>
         <field name="model_id" ref="model_cx_tower_jet_action" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
         <field name="domain_force">
             [
                 ("access_level", "=", "1"),
@@ -27,7 +27,7 @@
     <record id="rule_cx_tower_jet_action_manager_read" model="ir.rule">
         <field name="name">Jet Action: Manager Read Access</field>
         <field name="model_id" ref="model_cx_tower_jet_action" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="domain_force">
             [
                 ("access_level", "&lt;=", "2"),
@@ -49,7 +49,7 @@
     <record id="rule_cx_tower_jet_action_manager_write" model="ir.rule">
         <field name="name">Jet Action: Manager Write/Create/Unlink</field>
         <field name="model_id" ref="model_cx_tower_jet_action" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="domain_force">
             [
                 ("access_level", "&lt;=", "2"),
@@ -67,7 +67,7 @@
     <record id="rule_cx_tower_jet_action_root_full" model="ir.rule">
         <field name="name">Jet Action: Root Full Access</field>
         <field name="model_id" ref="model_cx_tower_jet_action" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 </odoo>

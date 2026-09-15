@@ -27,9 +27,9 @@ class TestTowerCommon(BaseCommon):
         # -- Create core elements invoked in the tests
         # ----------------------------------------------
         # Group XML records
-        cls.group_user = cls.env.ref("cetmix_tower_server.group_user")
-        cls.group_manager = cls.env.ref("cetmix_tower_server.group_manager")
-        cls.group_root = cls.env.ref("cetmix_tower_server.group_root")
+        cls.group_user = cls.env.ref("cetmix_tower_base.group_user")
+        cls.group_manager = cls.env.ref("cetmix_tower_base.group_manager")
+        cls.group_root = cls.env.ref("cetmix_tower_base.group_root")
 
         # Cetmix Tower helper model
         cls.CetmixTower = cls.env["cetmix.tower"]

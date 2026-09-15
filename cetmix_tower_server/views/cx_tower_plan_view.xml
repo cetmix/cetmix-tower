@@ -22,7 +22,7 @@
                         invisible="active"
                     />
                     <div
-                        groups="cetmix_tower_server.group_root,cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_root,cetmix_tower_base.group_manager"
                         class="alert alert-warning"
                         role="alert"
                         invisible="not access_level_warn_msg"
@@ -82,7 +82,7 @@
                                         name="tag_ids"
                                         optional="show"
                                         widget="many2many_tags"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                         options="{'color_field': 'color'}"
                                     />
                                     <field name="use_sudo" optional="show" />
@@ -99,7 +99,7 @@
                         <page
                             name="access"
                             string="Access"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="access">
                                 <field

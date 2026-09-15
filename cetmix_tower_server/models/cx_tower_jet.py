@@ -118,7 +118,7 @@ class CxTowerJet(models.Model):
         help="Other jets this jet depends on",
         compute="_compute_jet_requires_ids",
         store=True,
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         copy=False,
     )
     jet_required_by_ids = fields.One2many(
@@ -126,7 +126,7 @@ class CxTowerJet(models.Model):
         inverse_name="jet_depends_on_id",
         string="Required By",
         help="Jets that depend on this jet",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         copy=False,
         readonly=True,
     )
@@ -172,7 +172,7 @@ class CxTowerJet(models.Model):
         help="Show available states in the jet view",
         compute="_compute_show_available_states",
         inverse="_inverse_show_available_states",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     action_available_ids = fields.Many2many(
         comodel_name="cx.tower.jet.action",
@@ -190,7 +190,7 @@ class CxTowerJet(models.Model):
     current_command_log_id = fields.Many2one(
         comodel_name="cx.tower.command.log",
         string="Executing Command Log",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         readonly=True,
         copy=False,
     )

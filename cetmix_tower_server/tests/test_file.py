@@ -481,13 +481,13 @@ class TestTowerFile(TestTowerCommon):
         self.remove_from_group(
             self.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
         # Add bob to user group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
         # Add bob as subscriber of the server to allow upload file
         self.server_test_1.write({"user_ids": [(4, self.user_bob.id)]})
         # Upload file to server

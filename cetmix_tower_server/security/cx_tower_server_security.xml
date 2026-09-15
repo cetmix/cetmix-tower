@@ -4,7 +4,7 @@
     <record id="rule_cx_tower_server_group_user_read" model="ir.rule">
         <field name="name">Tower Server: user visibility rule</field>
         <field name="model_id" ref="model_cx_tower_server" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
         <!-- allow read if the user is in Users -->
         <field name="domain_force">[('user_ids', 'in', [user.id])]</field>
         <field name="perm_read" eval="1" />
@@ -20,7 +20,7 @@
             name="name"
         >Tower Server: Manager Read (if follower or in manager_ids)</field>
         <field name="model_id" ref="model_cx_tower_server" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <!-- allow read if the user is in Users or Managers -->
         <field name="domain_force">
             ['|', ('user_ids', 'in', [user.id]),
@@ -38,7 +38,7 @@
             name="name"
         >Tower Server: Manager Write &amp; Create (if in manager_ids)</field>
         <field name="model_id" ref="model_cx_tower_server" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <!-- allow write/create only if the user is in the manager_ids many2many field -->
         <field name="domain_force">[('manager_ids', 'in', [user.id])]</field>
         <field name="perm_read" eval="0" />
@@ -53,7 +53,7 @@
             name="name"
         >Tower Server: Manager Delete (if in manager_ids and creator)</field>
         <field name="model_id" ref="model_cx_tower_server" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <!-- allow deletion only if the user is in manager_ids and he is the record creator -->
         <field
             name="domain_force"
@@ -69,6 +69,6 @@
         <field name="name">Tower Server: root visibility rule</field>
         <field name="model_id" ref="model_cx_tower_server" />
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
     </record>
 </odoo>

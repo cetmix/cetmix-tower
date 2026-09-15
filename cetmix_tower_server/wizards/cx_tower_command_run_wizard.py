@@ -383,7 +383,7 @@ class CxTowerCommandRunWizard(models.TransientModel):
         # Generate custom label. Will be used later to locate the command log
         log_label = generate_random_id(4)
         path_value = (
-            self.env.user.has_group("cetmix_tower_server.group_manager") and self.path
+            self.env.user.has_group("cetmix_tower_base.group_manager") and self.path
         )
         # Add custom values for log
         kwargs = {
@@ -542,8 +542,8 @@ class CxTowerCommandRunWizard(models.TransientModel):
     def _is_privileged_user(self):
         """Return True if current user is in Manager or Root group."""
         return self.env.user.has_group(
-            "cetmix_tower_server.group_manager"
-        ) or self.env.user.has_group("cetmix_tower_server.group_root")
+            "cetmix_tower_base.group_manager"
+        ) or self.env.user.has_group("cetmix_tower_base.group_root")
 
 
 class CxTowerCommandRunWizardVariableValue(models.TransientModel):

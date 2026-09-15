@@ -613,7 +613,7 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
             self.plan_1.with_user(self.user_bob)._run_single(self.server_test_1)
 
         # Add user to the "User" group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
 
         # Ensure that access error is raised
         # Because plan access level is "Manager" and user_bob is in "User" group
@@ -700,14 +700,14 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         self.remove_from_group(
             self.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
 
         # Add user_bob to group_manager
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
 
         # Add user_bob as manager to the plan
         self.plan_1.manager_ids = [(4, self.user_bob.id)]
@@ -724,7 +724,7 @@ custom_values['{cls.variable_url.reference}'] = 'https://www.cetmix.com'
         self.assertTrue(self.plan_1.access_level_warn_msg)
 
         # Add user_bob to group_root
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
 
         # check if user_bob can make plan access leve higher than commands access level
         self.plan_1.with_user(self.user_bob).write({"access_level": "3"})

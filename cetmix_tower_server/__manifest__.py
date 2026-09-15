@@ -16,13 +16,12 @@
         "python": ["paramiko<4.0.0", "tldextract", "dnspython", "ansi2html"],
     },
     "depends": [
+        "cetmix_tower_base",
         "mail",
-        "rpc_helper",
         "web_notify",
         "cx_web_refresh_from_backend",
     ],
     "data": [
-        "security/cetmix_tower_server_groups.xml",
         "security/ir.model.access.csv",
         "security/cx_tower_server_security.xml",
         "security/cx_tower_command_security.xml",
@@ -51,7 +50,6 @@
         "security/cx_tower_scheduled_task_cv_security.xml",
         "security/cx_tower_key_security.xml",
         "security/cx_tower_key_value_security.xml",
-        "security/cx_tower_tag_security.xml",
         "security/cx_tower_shortcut_security.xml",
         "security/cx_tower_server_wizard_access_rules.xml",
         "data/ir_cron.xml",

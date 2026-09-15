@@ -31,7 +31,7 @@
                         string="Run on"
                         widget="many2many_tags"
                         invisible="not show_jets"
-                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                        groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                     />
                     <field name="show_servers" invisible="1" />
                     <field
@@ -41,7 +41,7 @@
                         invisible="not show_servers"
                         readonly="not jet_ids"
                         required="not jet_ids"
-                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                        groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                     />
                     <label
                         for="applicability"
@@ -55,7 +55,7 @@
                             options="{'horizontal': True}"
                             invisible="result"
                             readonly="show_servers"
-                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                         />
                         <field
                             name="tag_ids"
@@ -81,20 +81,20 @@
                     <field
                         name="path"
                         widget="ace_tower"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                         invisible="action == 'python_code' or result"
                         placeholder="e.g. /home/user This field does NOT support variables"
                     />
                     <field name="note" readonly="1" invisible="not note" />
                 </group>
                 <field name="result" readonly="1" invisible="not result" />
-                <notebook invisible="result" groups="cetmix_tower_server.group_manager">
+                <notebook invisible="result" groups="cetmix_tower_base.group_manager">
                     <page name="code" string="Code">
                         <field
                             name="code"
                             widget="ace_tower"
                             options="{'mode': 'python'}"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                         <div
                             class="alert alert-danger"
@@ -166,7 +166,7 @@
                             name="rendered_code"
                             widget="ace"
                             options="{'mode':'python'}"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         />
                     </page>
                 </notebook>
@@ -185,7 +185,7 @@
                         string="Run in wizard"
                         help="Run code as it appears in 'Rendered code' in wizard and return to wizard. Result will not be logged"
                         class="oe_highlight"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                         invisible="result or not code or show_servers or has_missing_required_values"
                     />
                     <button string="Cancel" special="cancel" />

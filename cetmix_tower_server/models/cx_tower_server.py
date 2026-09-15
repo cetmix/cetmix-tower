@@ -107,37 +107,37 @@ class CxTowerServer(models.Model):
 
     # ---- Connection
     ip_v4_address = fields.Char(
-        string="IPv4 Address", groups="cetmix_tower_server.group_manager"
+        string="IPv4 Address", groups="cetmix_tower_base.group_manager"
     )
     ip_v6_address = fields.Char(
-        string="IPv6 Address", groups="cetmix_tower_server.group_manager"
+        string="IPv6 Address", groups="cetmix_tower_base.group_manager"
     )
     skip_host_key = fields.Boolean(
         default=False,
         help="Enable to skip host key verification",
     )
     host_key = fields.Char(
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         help="Host key to verify the server",
     )
     ssh_port = fields.Integer(
         string="SSH port",
         required=True,
         default=22,
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     ssh_username = fields.Char(
-        string="SSH Username", required=True, groups="cetmix_tower_server.group_manager"
+        string="SSH Username", required=True, groups="cetmix_tower_base.group_manager"
     )
     ssh_password = fields.Char(
         string="SSH Password",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     ssh_key_id = fields.Many2one(
         comodel_name="cx.tower.key",
         string="SSH Private Key",
         domain=[("key_type", "=", "k")],
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     ssh_auth_mode = fields.Selection(
         string="SSH Auth Mode",
@@ -147,13 +147,13 @@ class CxTowerServer(models.Model):
         ],
         default="p",
         required=True,
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     use_sudo = fields.Selection(
         string="Use sudo",
         selection=[("n", "Without password"), ("p", "With password")],
         help="Run commands using 'sudo'. Leave empty if 'sudo' is not needed.",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     url = fields.Char(
         string="URL", help="Server web interface, eg 'https://doge.example.com'"
@@ -168,14 +168,14 @@ class CxTowerServer(models.Model):
         string="Secrets",
         comodel_name="cx.tower.key.value",
         inverse_name="server_id",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
 
     # ---- Attributes
     os_id = fields.Many2one(
         string="Operating System",
         comodel_name="cx.tower.os",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     tag_ids = fields.Many2many(
         relation="cx_tower_server_tag_rel",
@@ -217,7 +217,7 @@ class CxTowerServer(models.Model):
     plan_delete_id = fields.Many2one(
         "cx.tower.plan",
         string="On Delete Plan",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         help="This Flightplan will be run when the server is deleted",
     )
 
