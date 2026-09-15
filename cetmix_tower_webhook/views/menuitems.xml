@@ -4,7 +4,7 @@
         name="Webhook Authenticators"
         action="cx_tower_webhook_authenticator_action"
         parent="cetmix_tower_server.menu_cx_tower_automation_root"
-        groups="cetmix_tower_server.group_root"
+        groups="cetmix_tower_base.group_root"
         sequence="3"
     />
 
@@ -13,7 +13,7 @@
         name="Webhooks"
         action="cx_tower_webhook_action"
         parent="cetmix_tower_server.menu_cx_tower_automation_root"
-        groups="cetmix_tower_server.group_root"
+        groups="cetmix_tower_base.group_root"
         sequence="4"
     />
 
