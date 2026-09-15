@@ -13,7 +13,7 @@
     <menuitem
         id="menu_yaml_settings_root"
         name="YAML Export/Import"
-        parent="cetmix_tower_server.menu_settings"
+        parent="cetmix_tower_base.menu_settings"
         sequence="60"
     />
     <menuitem

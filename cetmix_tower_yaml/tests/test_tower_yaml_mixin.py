@@ -66,7 +66,7 @@ class TestTowerYamlMixin(TransactionCase):
                 "login": "root@example.com",
                 "groups_id": [
                     (4, self.env.ref("base.group_user").id),
-                    (4, self.env.ref("cetmix_tower_server.group_root").id),
+                    (4, self.env.ref("cetmix_tower_base.group_root").id),
                 ],
             }
         )
