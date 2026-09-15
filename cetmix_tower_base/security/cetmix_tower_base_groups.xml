@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ir_module_category_tower" model="ir.module.category">
+        <field name="name">Cetmix Tower</field>
+        <field name="sequence">199</field>
+    </record>
+
+    <record id="ir_module_category_tower_server" model="ir.module.category">
+        <field name="parent_id" ref="ir_module_category_tower" />
+        <field name="name">Access Level</field>
+    </record>
+
+    <record id="group_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="ir_module_category_tower_server" />
+        <field name="comment">
+        Basic actions for selected servers.
+    </field>
+    </record>
+
+    <record id="group_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="ir_module_category_tower_server" />
+        <field name="implied_ids" eval="[(4, ref('group_user'))]" />
+        <field name="comment">
+        Create and modify selected servers.
+    </field>
+    </record>
+
+    <record id="group_root" model="res.groups">
+        <field name="name">Root</field>
+        <field name="category_id" ref="ir_module_category_tower_server" />
+        <field name="implied_ids" eval="[(4, ref('group_manager'))]" />
+        <field name="comment">
+        Full control over all servers.
+    </field>
+    </record>
+</odoo>
