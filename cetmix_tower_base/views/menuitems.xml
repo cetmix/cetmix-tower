@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_root"
+        name="Cetmix Tower"
+        groups="group_user"
+        web_icon="cetmix_tower_base,static/description/icon.png"
+    />
+    <menuitem
+        id="menu_settings"
+        name="Settings"
+        parent="menu_root"
+        sequence="60"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cetmix_tower_general_settings"
+        name="General Settings"
+        parent="menu_settings"
+        sequence="0"
+        action="action_cetmix_tower_config_settings"
+        groups="group_manager"
+    />
+    <menuitem
+        id="menu_cx_tower_tag"
+        name="Tags"
+        action="action_cx_tower_tag"
+        parent="menu_settings"
+        sequence="490"
+    />
+</odoo>

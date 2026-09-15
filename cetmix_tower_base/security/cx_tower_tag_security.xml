@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Record Rules -->
+    <record id="rule_cx_tower_tag_user" model="ir.rule">
+        <field name="name">Tower Tag: User can read any record</field>
+        <field name="model_id" ref="model_cx_tower_tag" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="False" />
+        <field name="perm_create" eval="False" />
+        <field name="perm_unlink" eval="False" />
+    </record>
+
+    <record id="rule_cx_tower_tag_manager" model="ir.rule">
+        <field name="name">Tower Tag: Manager can create/edit/delete own records</field>
+        <field name="model_id" ref="model_cx_tower_tag" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]" />
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+
+    <record id="rule_cx_tower_tag_root" model="ir.rule">
+        <field name="name">Tower Tag: Root has full access</field>
+        <field name="model_id" ref="model_cx_tower_tag" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_root'))]" />
+    </record>
+</odoo>
