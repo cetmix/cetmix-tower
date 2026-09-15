@@ -1,3 +1,8 @@
+## 18.0.2.1.1 (2026-09-15)
+
+- Features: Modules can add command actions by extending `_get_command_runners()` together with `_selection_action()`. (5621)
+
+
 ## 18.0.2.1.0 (2026-09-14)
 
 - Features: Allow a later module to defer command execution (queue job, external worker) without copying SSH preparation, double-finishing logs, or forcing nested flight plans to run synchronously. (5596)
