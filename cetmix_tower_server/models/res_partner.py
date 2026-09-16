@@ -11,7 +11,7 @@ class ResPartner(models.Model):
         "cx.tower.server",
         "partner_id",
         string="Servers",
-        groups="cetmix_tower_server.group_user",
+        groups="cetmix_tower_base.group_user",
     )
 
     server_count = fields.Integer(
@@ -24,7 +24,7 @@ class ResPartner(models.Model):
         "partner_id",
         string="Secrets",
         domain=[("key_id.key_type", "=", "s")],
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
 
     @api.depends("server_ids", "child_ids.server_count")

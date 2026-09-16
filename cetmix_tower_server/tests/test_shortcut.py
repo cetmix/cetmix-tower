@@ -92,9 +92,9 @@ class TestTowerShortcut(TestTowerCommon):
         self.remove_from_group(
             self.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
 
@@ -102,7 +102,7 @@ class TestTowerShortcut(TestTowerCommon):
         shortcut_template_as_bob = shortcut_level_2_template.with_user(self.user_bob)
 
         # Test: User access
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
         self.server_test_1_pro.write({"user_ids": [(4, self.user_bob.id)]})
 
         # User should see level 1 shortcuts for their servers
@@ -116,7 +116,7 @@ class TestTowerShortcut(TestTowerCommon):
         self.assertEqual(len(search_result), 0)
 
         # Test: Manager access through server assignment
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
         self.server_test_1_pro.write({"manager_ids": [(4, self.user_bob.id)]})
 
         # Manager should see shortcuts for servers they manage
@@ -168,7 +168,7 @@ class TestTowerShortcut(TestTowerCommon):
         self.assertEqual(len(search_result), 0)
 
         # Root should see all shortcuts
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
         search_result = shortcut_level_3_as_bob.search(
             [
                 (

@@ -1,25 +1,13 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class CxTowerTag(models.Model):
-    """
-    Cetmix Tower Tag.
-    Tags are used to group servers, commands, flight plans, etc.
-    """
+    """Cetmix Tower Tag — server-side relations."""
 
-    _name = "cx.tower.tag"
-    _inherit = [
-        "cx.tower.reference.mixin",
-    ]
-    _description = "Cetmix Tower Tag"
-    _order = "name"
+    _inherit = "cx.tower.tag"
 
-    color = fields.Integer(help="For better visualization in views")
-
-    # --- Relations
     server_ids = fields.Many2many(
         comodel_name="cx.tower.server",
         relation="cx_tower_server_tag_rel",
@@ -56,36 +44,16 @@ class CxTowerTag(models.Model):
         string="File Templates",
     )
 
-    def unlink(self):
-        """
-        Prevent deletion of tags that are in use
-        unless user is root or using sudo.
-        """
-        if not self.env.is_superuser() and not self.env.user.has_group(
-            "cetmix_tower_server.group_root"
-        ):
-            self._check_tags_can_be_deleted()
-        return super().unlink()
+    def _get_tag_usage_fields(self):
+        """Extend the deletion check with server-side relations.
 
-    def _check_tags_can_be_deleted(self):
-        """Check if tags can be deleted.
-
-        Raises:
-            ValidationError: If tag is in use
+        Returns:
+            list: field names on cx.tower.tag
         """
-
-        for tag in self:
-            if (
-                tag.server_ids
-                or tag.command_ids
-                or tag.plan_ids
-                or tag.server_template_ids
-                or tag.file_template_ids
-            ):
-                raise ValidationError(
-                    _(
-                        "Cannot delete tag '%(tag_name)s' because"
-                        " it is used in related records.",
-                        tag_name=tag.name,
-                    )
-                )
+        return super()._get_tag_usage_fields() + [
+            "server_ids",
+            "command_ids",
+            "plan_ids",
+            "server_template_ids",
+            "file_template_ids",
+        ]

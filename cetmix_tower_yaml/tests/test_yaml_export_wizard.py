@@ -79,9 +79,7 @@ class TestYamlExportWizard(BaseCommon):
             {
                 "name": "No Yaml Export User",
                 "login": "no_yaml_export_user",
-                "groups_id": [
-                    (4, self.env.ref("cetmix_tower_server.group_manager").id)
-                ],
+                "groups_id": [(4, self.env.ref("cetmix_tower_base.group_manager").id)],
             }
         )
         with self.assertRaises(AccessError):

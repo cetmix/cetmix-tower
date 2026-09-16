@@ -202,7 +202,7 @@
                         <page
                             name="access"
                             string="Access"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="access">
                                 <field

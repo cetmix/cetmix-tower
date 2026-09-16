@@ -63,21 +63,21 @@
                                 <field name="partner_id" />
                             </li>
                             <li
-                                groups="cetmix_tower_server.group_manager"
+                                groups="cetmix_tower_base.group_manager"
                                 t-if="record.os_id.raw_value"
                             >
                                 <strong>Operating System:</strong>
                                 <field name="os_id" />
                             </li>
                             <li
-                                groups="cetmix_tower_server.group_manager"
+                                groups="cetmix_tower_base.group_manager"
                                 t-if="record.ip_v4_address.raw_value"
                             >
                                 <strong>IPv4:</strong>
                                 <field name="ip_v4_address" />
                             </li>
                             <li
-                                groups="cetmix_tower_server.group_manager"
+                                groups="cetmix_tower_base.group_manager"
                                 t-if="record.ip_v6_address.raw_value"
                             >
                                 <strong>IPv6:</strong>
@@ -167,7 +167,7 @@
                         class="btn-primary"
                         string="New Jet"
                         icon="fa-plane"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                         invisible="not jet_template_ids"
                     />
                     <button
@@ -175,7 +175,7 @@
                         type="object"
                         icon="fa-check-square-o"
                         string="Test Connection"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                 </header>
                 <sheet>
@@ -278,18 +278,18 @@
                                     <field name="ip_v6_address" />
                                     <label
                                         for="host_key"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                         invisible="skip_host_key"
                                     />
                                     <div
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                         class="o_row"
                                         invisible="skip_host_key"
                                     >
                                         <field name="host_key" placeholder="Host key" />
                                         <button
                                             name="action_show_host_key"
-                                            groups="cetmix_tower_server.group_manager"
+                                            groups="cetmix_tower_base.group_manager"
                                             type="object"
                                             string="Get from Host"
                                             class="btn-secondary"
@@ -297,7 +297,7 @@
                                     </div>
                                     <field
                                         name="skip_host_key"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                     />
                                     <div class="o_form_label" />
                                     <div
@@ -305,7 +305,7 @@
                                         id="host_key_alert"
                                         role="alert"
                                         style="margin-bottom:0px;"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                         invisible="not skip_host_key"
                                     >
                                         In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks.
@@ -330,7 +330,7 @@
                                     <field
                                         name="server_template_id"
                                         invisible="not server_template_id"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                     />
                                     <field name="plan_delete_id" />
                                 </group>
@@ -386,7 +386,7 @@
                         <page
                             name="access"
                             string="Access"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="access">
                                 <field
@@ -406,7 +406,7 @@
                         <page
                             name="secrets"
                             string="Secrets"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="secret_ids">
                                 <list editable="bottom">
@@ -441,7 +441,7 @@
                         <page
                             name="scheduled_tasks"
                             string="Scheduled Tasks"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="scheduled_task_ids">
                                 <list create="0" edit="0">
@@ -459,7 +459,7 @@
                         <page
                             name="jet_templates"
                             string="Jet Templates"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <button
                                 name="action_install_jet_template"

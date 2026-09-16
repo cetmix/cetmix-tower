@@ -5,7 +5,7 @@
         <field name="name">Variable Option: User Read Access</field>
         <field name="model_id" ref="model_cx_tower_variable_option" />
         <field name="domain_force">[('access_level', '=', '1')]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -17,7 +17,7 @@
         <field name="name">Variable Option: Manager Read Access</field>
         <field name="model_id" ref="model_cx_tower_variable_option" />
         <field name="domain_force">[('access_level', '&lt;=', '2')]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -31,7 +31,7 @@
         <field
             name="domain_force"
         >[('access_level', '&lt;=', '2'), ('create_uid', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />
@@ -43,7 +43,7 @@
         <field name="name">Variable Option: Root Full Access</field>
         <field name="model_id" ref="model_cx_tower_variable_option" />
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />

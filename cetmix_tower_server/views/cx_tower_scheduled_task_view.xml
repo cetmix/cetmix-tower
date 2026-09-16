@@ -44,7 +44,7 @@
                         type="object"
                         class="oe_highlight"
                         invisible="is_running"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                 </header>
                 <sheet>

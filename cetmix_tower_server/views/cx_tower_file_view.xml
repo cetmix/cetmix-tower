@@ -12,7 +12,7 @@
                         type="object"
                         class="oe_highlight"
                         invisible="source != 'tower'"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                     <button
                         name="action_pull_from_server"
@@ -20,7 +20,7 @@
                         type="object"
                         class="oe_highlight"
                         invisible="source != 'server'"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                 </header>
                 <sheet>
@@ -76,13 +76,13 @@
                             <field
                                 name="variable_ids"
                                 widget="many2many_tags"
-                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                                 invisible="not variable_ids"
                             />
                             <field
                                 name="secret_ids"
                                 widget="many2many_tags"
-                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                                 invisible="not secret_ids"
                             />
                         </group>
@@ -165,7 +165,7 @@
                 <field
                     name="secret_ids"
                     widget="many2many_tags"
-                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                     optional="hide"
                 />
             </list>
@@ -299,8 +299,8 @@
         <field
             name="groups_id"
             eval="[
-            (4, ref('cetmix_tower_server.group_manager')),
-            (4, ref('cetmix_tower_server.group_root')),
+            (4, ref('cetmix_tower_base.group_manager')),
+            (4, ref('cetmix_tower_base.group_root')),
         ]"
         />
     </record>

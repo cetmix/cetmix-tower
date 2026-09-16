@@ -95,7 +95,7 @@ class CxTowerServerTemplate(models.Model):
     plan_delete_id = fields.Many2one(
         "cx.tower.plan",
         string="On Delete Plan",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         help="This Flightplan will be executed when the server is deleted",
     )
 
@@ -115,7 +115,7 @@ class CxTowerServerTemplate(models.Model):
     user_ids = fields.Many2many(
         relation="cx_tower_server_template_user_rel",
         domain=lambda self: [
-            ("groups_id", "in", [self.env.ref("cetmix_tower_server.group_manager").id])
+            ("groups_id", "in", [self.env.ref("cetmix_tower_base.group_manager").id])
         ],
     )
     manager_ids = fields.Many2many(

@@ -12,7 +12,7 @@
                         string="Run on"
                         widget="many2many_tags"
                         invisible="not show_jets"
-                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                        groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                     />
                     <field name="show_servers" invisible="1" />
                     <field
@@ -20,7 +20,7 @@
                         widget="many2many_tags"
                         string="Run on"
                         invisible="not show_servers"
-                        groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                        groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                     />
                     <label for="applicability" string="Show Flight Plans" />
                     <div class="o_row">
@@ -29,7 +29,7 @@
                             widget="radio"
                             options="{'horizontal': True}"
                             readonly="show_servers"
-                            groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                            groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                         />
                         <field
                             name="tag_ids"
@@ -59,7 +59,7 @@
                                 <field
                                     name="tag_ids"
                                     optional="show"
-                                    groups="cetmix_tower_server.group_manager"
+                                    groups="cetmix_tower_base.group_manager"
                                     widget="many2many_tags"
                                     options="{'color_field': 'color'}"
                                 />

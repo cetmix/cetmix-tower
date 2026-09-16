@@ -128,14 +128,14 @@
                             <field
                                 name="variable_ids"
                                 widget="many2many_tags"
-                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                                 readonly="1"
                                 invisible="not variable_ids"
                             />
                             <field
                                 name="secret_ids"
                                 widget="many2many_tags"
-                                groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                                groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                                 invisible="not secret_ids"
                             />
                         </group>
@@ -188,7 +188,7 @@
                         <page
                             name="access"
                             string="Access"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="access">
                                 <field
@@ -242,7 +242,7 @@
                 <field
                     name="secret_ids"
                     widget="many2many_tags"
-                    groups="cetmix_tower_server.group_manager,cetmix_tower_server.group_root"
+                    groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                     optional="hide"
                 />
                 <field name="allow_parallel_run" optional="hide" />

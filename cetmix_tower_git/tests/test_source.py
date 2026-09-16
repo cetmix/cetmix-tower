@@ -15,7 +15,7 @@ class TestSource(CommonTest):
                 "name": "Second Manager",
                 "login": "manager2",
                 "email": "manager2@test.com",
-                "groups_id": [(4, cls.env.ref("cetmix_tower_server.group_manager").id)],
+                "groups_id": [(4, cls.env.ref("cetmix_tower_base.group_manager").id)],
             }
         )
 

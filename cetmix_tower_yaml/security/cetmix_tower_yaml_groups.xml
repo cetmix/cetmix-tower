@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="ir_module_category_tower_yaml_export" model="ir.module.category">
-        <field name="parent_id" ref="cetmix_tower_server.ir_module_category_tower" />
+        <field name="parent_id" ref="cetmix_tower_base.ir_module_category_tower" />
         <field name="name">YAML Export</field>
     </record>
 
     <record id="ir_module_category_tower_yaml_import" model="ir.module.category">
-        <field name="parent_id" ref="cetmix_tower_server.ir_module_category_tower" />
+        <field name="parent_id" ref="cetmix_tower_base.ir_module_category_tower" />
         <field name="name">YAML Import</field>
     </record>
 

@@ -478,7 +478,7 @@ result = {
     # ------------------------------------------------------------
     def test_user_record_not_visible_without_user_ids(self):
         """
-        Test that a user in the 'cetmix_tower_server.group_user' group cannot see
+        Test that a user in the 'cetmix_tower_base.group_user' group cannot see
         a Tower Server record if not added to user_ids.
         """
         # Create a Tower Server record without any user_ids.

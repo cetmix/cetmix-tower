@@ -13,7 +13,7 @@
                         string="Install"
                         class="btn-primary"
                         icon="fa-plus-square"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                     <button
                         name="action_new_jet"
@@ -22,7 +22,7 @@
                         class="btn-primary"
                         icon="fa-plane"
                         invisible="not show_in_create_wizard"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                 </header>
                 <sheet>
@@ -87,7 +87,7 @@
                         <page
                             string="General Settings"
                             name="general_settings"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="main">
                                 <group name="general" string="General Settings">
@@ -262,7 +262,7 @@
                         <page
                             name="waypoints"
                             string="Waypoints"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="waypoint_template_ids">
                                 <list>
@@ -276,7 +276,7 @@
                         <page
                             name="access"
                             string="Access"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="access">
                                 <field
@@ -296,7 +296,7 @@
                         <page
                             name="logs"
                             string="Jet Logs"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="server_log_ids">
                                 <list>
@@ -341,7 +341,7 @@
                         <page
                             name="scheduled_tasks"
                             string="Scheduled Tasks"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="scheduled_task_ids">
                                 <list create="0" edit="0">
@@ -359,7 +359,7 @@
                         <page
                             name="servers"
                             string="Installed on Servers"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="server_ids">
                                 <list>
@@ -399,7 +399,7 @@
                         <page
                             name="installations"
                             string="Installation Logs"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="install_ids">
                                 <list>

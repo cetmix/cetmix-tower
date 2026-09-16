@@ -60,13 +60,13 @@
                                     <field
                                         name="action"
                                         optional="show"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                     />
                                     <field
                                         name="tag_ids"
                                         optional="show"
                                         widget="many2many_tags"
-                                        groups="cetmix_tower_server.group_manager"
+                                        groups="cetmix_tower_base.group_manager"
                                         options="{'color_field': 'color'}"
                                     />
                                     <field name="use_sudo" optional="show" />

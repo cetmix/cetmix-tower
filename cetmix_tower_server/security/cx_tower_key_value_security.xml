@@ -7,7 +7,7 @@
         <field
             name="domain_force"
         >['|', ('key_id.user_ids', 'in', [user.id]), ('key_id.manager_ids', 'in', [user.id])]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -23,7 +23,7 @@
             '|', '|', ('server_id', '=', False),
             ('server_id.user_ids', 'in', [user.id]),
             ('server_id.manager_ids', 'in', [user.id])]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -35,7 +35,7 @@
         <field name="name">Key Value: Manager Write/Create Access - Key Managers</field>
         <field name="model_id" ref="model_cx_tower_key_value" />
         <field name="domain_force">[('key_id.manager_ids', 'in', [user.id])]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />
@@ -48,7 +48,7 @@
         >Key Value: Manager Write/Create Access - Server Managers</field>
         <field name="model_id" ref="model_cx_tower_key_value" />
         <field name="domain_force">[('server_id.manager_ids', 'in', [user.id])]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="1" />
         <field name="perm_create" eval="1" />
@@ -62,7 +62,7 @@
         <field
             name="domain_force"
         >[('key_id.key_type', '=', 's'),('key_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -75,7 +75,7 @@
         <field
             name="domain_force"
         >[('key_id.key_type', '=', 's'),('server_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
@@ -87,6 +87,6 @@
         <field name="name">Key Value: Root Full Access</field>
         <field name="model_id" ref="model_cx_tower_key_value" />
         <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
     </record>
 </odoo>

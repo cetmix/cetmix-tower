@@ -4,7 +4,7 @@
     <record id="rule_cx_tower_file_group_user_read" model="ir.rule">
         <field name="name">File: User read via related server (user_ids)</field>
         <field name="model_id" ref="model_cx_tower_file" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
         <field name="domain_force">[('server_id.user_ids', 'in', [user.id])]</field>
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
@@ -18,7 +18,7 @@
             name="name"
         >File: Manager write &amp; create via related server (manager_ids)</field>
         <field name="model_id" ref="model_cx_tower_file" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="domain_force">[('server_id.manager_ids', 'in', [user.id])]</field>
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="1" />
@@ -32,7 +32,7 @@
             name="name"
         >File: Manager unlink via related server (manager_ids) and record creator</field>
         <field name="model_id" ref="model_cx_tower_file" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_manager'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="domain_force">
             [ ('server_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id) ]
         </field>
@@ -46,7 +46,7 @@
     <record id="rule_cx_tower_file_group_root_full" model="ir.rule">
         <field name="name">File: Root Unrestricted Access</field>
         <field name="model_id" ref="model_cx_tower_file" />
-        <field name="groups" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
         <field name="domain_force">[(1, '=', 1)]</field>
     </record>
 </odoo>

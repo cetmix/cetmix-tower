@@ -18,7 +18,7 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         column2="user_id",
         string="Users",
         domain=lambda self: [
-            ("groups_id", "in", [self.env.ref("cetmix_tower_server.group_user").id])
+            ("groups_id", "in", [self.env.ref("cetmix_tower_base.group_user").id])
         ],
         default=lambda self: self._default_user_ids(),
         help="Users who can view this record",
@@ -30,9 +30,9 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         column1="record_id",
         column2="manager_id",
         string="Managers",
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
         domain=lambda self: [
-            ("groups_id", "in", [self.env.ref("cetmix_tower_server.group_manager").id])
+            ("groups_id", "in", [self.env.ref("cetmix_tower_base.group_manager").id])
         ],
         default=lambda self: self._default_manager_ids(),
         help="Managers who can modify this record",
@@ -44,7 +44,7 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         Default Users for new Records.
         """
         # If user is in group_user, add them to the list
-        if self.env.user.has_group("cetmix_tower_server.group_user"):
+        if self.env.user.has_group("cetmix_tower_base.group_user"):
             return [self.env.user.id]
         # Otherwise, return an empty list. Eg if created using sudo()
         return []
@@ -54,7 +54,7 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         Default Managers for new Records.
         """
         # If user is manager, add them to the list
-        if self.env.user.has_group("cetmix_tower_server.group_manager"):
+        if self.env.user.has_group("cetmix_tower_base.group_manager"):
             return [self.env.user.id]
         # Otherwise, return an empty list. Eg if created using sudo()
         return []

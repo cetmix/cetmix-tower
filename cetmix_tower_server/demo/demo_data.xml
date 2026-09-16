@@ -2,10 +2,10 @@
 <odoo noupdate="1">
     <!-- Add demo users to groups  -->
     <record id="base.user_admin" model="res.users">
-        <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_root'))]" />
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
     </record>
     <record id="base.user_demo" model="res.users">
-        <field name="groups_id" eval="[(4, ref('cetmix_tower_server.group_user'))]" />
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
     </record>
 
     <!-- ===============================================

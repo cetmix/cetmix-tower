@@ -13,9 +13,9 @@ class TestProject(CommonTest):
         cls.remove_from_group(
             cls.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
 
@@ -25,7 +25,7 @@ class TestProject(CommonTest):
                 "name": "Second Manager",
                 "login": "manager2",
                 "email": "manager2@test.com",
-                "groups_id": [(4, cls.env.ref("cetmix_tower_server.group_manager").id)],
+                "groups_id": [(4, cls.env.ref("cetmix_tower_base.group_manager").id)],
             }
         )
 
@@ -130,9 +130,9 @@ class TestProject(CommonTest):
 
     def test_compute_user_ids(self):
         """Test computation of user_ids and manager_ids for git projects"""
-        # Add users "Bob" and "user" to the group "cetmix_tower_server.group_manager"
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
-        self.add_to_group(self.user, "cetmix_tower_server.group_manager")
+        # Add users "Bob" and "user" to the group "cetmix_tower_base.group_manager"
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
+        self.add_to_group(self.user, "cetmix_tower_base.group_manager")
 
         # -- 1 --
         # Create project as manager

@@ -1,9 +1,6 @@
 from odoo import fields, models
 
-from odoo.addons.rpc_helper.decorator import disable_rpc
 
-
-@disable_rpc()
 class CxTowerVault(models.Model):
     """Vault for storing secret data.
 

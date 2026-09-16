@@ -13,7 +13,7 @@
                         class="oe_highlight"
                         invisible="not is_running or is_stopped"
                         confirm="Flight Plan will be terminated after executing the current command. Continue?"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                 </header>
                 <sheet>
@@ -123,7 +123,7 @@
                         type="object"
                         class="oe_highlight"
                         confirm="Flight Plan will be terminated after executing the current command. Continue?"
-                        groups="cetmix_tower_server.group_manager"
+                        groups="cetmix_tower_base.group_manager"
                     />
                 </header>
                 <field name="start_date" />

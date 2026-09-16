@@ -57,7 +57,7 @@
                                 </li>
                                 <li
                                     class="d-flex align-items-center mb-1"
-                                    groups="cetmix_tower_server.group_manager"
+                                    groups="cetmix_tower_base.group_manager"
                                 >
                                     <i class="fa fa-cube me-2" title="Template" />
                                     <field name="jet_template_id" />
@@ -116,7 +116,7 @@
                 <field
                     name="jet_template_id"
                     optional="show"
-                    groups="cetmix_tower_server.group_manager"
+                    groups="cetmix_tower_base.group_manager"
                 />
                 <field name="server_id" optional="show" />
                 <field name="partner_id" optional="show" />
@@ -297,7 +297,7 @@
                                     name="available_states"
                                     string="Available States"
                                     invisible="not show_available_states"
-                                    groups="cetmix_tower_server.group_manager"
+                                    groups="cetmix_tower_base.group_manager"
                                 >
                                     <field
                                         name="state_available_ids"
@@ -375,7 +375,7 @@
                         </page>
                         <page
                             name="waypoints"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                             string="Waypoints"
                             invisible="not is_waypoints_available"
                         >
@@ -429,7 +429,7 @@
                         <page
                             string="Dependencies"
                             name="dependencies"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group>
                                 <group name="requires" string="Depends on">
@@ -481,7 +481,7 @@
                         <page
                             name="access"
                             string="Access"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <group name="access">
                                 <field
@@ -514,7 +514,7 @@
                         <page
                             name="scheduled_tasks"
                             string="Scheduled Tasks"
-                            groups="cetmix_tower_server.group_manager"
+                            groups="cetmix_tower_base.group_manager"
                         >
                             <field name="scheduled_task_ids">
                                 <list create="0" edit="0">

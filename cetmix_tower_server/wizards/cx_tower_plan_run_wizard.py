@@ -59,7 +59,7 @@ class CxTowerPlanRunWizard(models.TransientModel):
         comodel_name="cx.tower.plan.line",
         compute="_compute_plan_line_ids",
         compute_sudo=True,
-        groups="cetmix_tower_server.group_manager",
+        groups="cetmix_tower_base.group_manager",
     )
     show_servers = fields.Boolean(
         compute="_compute_show_servers",
@@ -159,8 +159,8 @@ class CxTowerPlanRunWizard(models.TransientModel):
     def _is_privileged_user(self):
         """Return True if current user is in Manager or Root group."""
         return self.env.user.has_group(
-            "cetmix_tower_server.group_manager"
-        ) or self.env.user.has_group("cetmix_tower_server.group_root")
+            "cetmix_tower_base.group_manager"
+        ) or self.env.user.has_group("cetmix_tower_base.group_root")
 
 
 class CxTowerPlanRunWizardVariableValue(models.TransientModel):

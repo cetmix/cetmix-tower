@@ -13,7 +13,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         """Test user access rules"""
 
         # Add Bob to `root` group in order to create a wizard
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
 
         # Create new wizard
         test_wizard = (
@@ -34,9 +34,9 @@ class TestTowerCommandWizard(TestTowerCommon):
         self.remove_from_group(
             self.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
         # Ensure that regular user cannot execute command in wizard
@@ -44,19 +44,19 @@ class TestTowerCommandWizard(TestTowerCommon):
             test_wizard.run_command_in_wizard()
 
         # Add bob back to `user` group and try again
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
         with self.assertRaises(AccessError):
             test_wizard.run_command_in_wizard()
 
         # Now promote bob to `manager` group and try again
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
         test_wizard.run_command_in_wizard()
 
     def test_execute_code_without_a_command(self):
         """Run command code without a command selected"""
 
         # Add Bob to `root` group in order to create a wizard
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
 
         # Create new wizard
         test_wizard = (
@@ -77,7 +77,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         """Test access rights for executing command on server"""
 
         # Add Bob to `root` group
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
 
         # Create new wizard with Bob as a root user
         test_wizard = (
@@ -98,9 +98,9 @@ class TestTowerCommandWizard(TestTowerCommon):
         self.remove_from_group(
             self.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
 
@@ -109,11 +109,11 @@ class TestTowerCommandWizard(TestTowerCommon):
             test_wizard.run_command_on_server()
 
         #  Add Bob to `user` group and ensure he can execute commands
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
         test_wizard.run_command_on_server()
         # Ensure that Bob has access to path field but can't read its value
         allowed_path = (
-            self.user_bob.has_group("cetmix_tower_server.group_manager")
+            self.user_bob.has_group("cetmix_tower_base.group_manager")
             and test_wizard.path
         )
 
@@ -123,14 +123,14 @@ class TestTowerCommandWizard(TestTowerCommon):
         test_wizard.write({"path": "/new/invalid/path"})
         allowed_path = (
             test_wizard.path
-            if self.user_bob.has_group("cetmix_tower_server.group_manager")
+            if self.user_bob.has_group("cetmix_tower_base.group_manager")
             and test_wizard.path
             else None
         )
         self.assertEqual(allowed_path, None)
 
         # Add Bob to `manager` group and ensure access to execute commands
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
         test_wizard.run_command_on_server()
         # Check that path access is valid for the manager
         test_wizard.read(["path"])
@@ -158,7 +158,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         )
 
         # Add Bob to `root` group in order to create a wizard
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
 
         server = self.Server.with_user(self.user_bob).create(
             {
@@ -174,14 +174,14 @@ class TestTowerCommandWizard(TestTowerCommon):
         self.remove_from_group(
             self.user_bob,
             [
-                "cetmix_tower_server.group_user",
-                "cetmix_tower_server.group_manager",
-                "cetmix_tower_server.group_root",
+                "cetmix_tower_base.group_user",
+                "cetmix_tower_base.group_manager",
+                "cetmix_tower_base.group_root",
             ],
         )
 
         # Add user bob to group user
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
 
         # Create new wizard with Bob
         test_wizard = (
@@ -219,7 +219,7 @@ class TestTowerCommandWizard(TestTowerCommon):
             }
         )
 
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_root")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_root")
 
         # Create new wizard with multiple servers selected
         test_wizard = (
@@ -446,7 +446,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         self.assertEqual(default_usr.get("applicability"), "this")
 
         # Manager user should receive the original default ("shared")
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
         default_mgr = (
             self.env["cx.tower.command.run.wizard"]
             .with_user(self.user_bob)
@@ -457,7 +457,7 @@ class TestTowerCommandWizard(TestTowerCommon):
     def test_compute_show_servers_behavior(self):
         """Should enforce 'this' for regular users but preserve manager choice."""
         # Grant Bob the basic 'user' group so he can read servers and create the wizard
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_user")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_user")
 
         # Ensure Bob has read access to the first server
         self.server_test_1.write({"user_ids": [(4, self.user_bob.id)]})
@@ -487,7 +487,7 @@ class TestTowerCommandWizard(TestTowerCommon):
         self.assertEqual(wiz_usr.applicability, "this")
 
         # --- Manager user scenario ---
-        self.add_to_group(self.user_bob, "cetmix_tower_server.group_manager")
+        self.add_to_group(self.user_bob, "cetmix_tower_base.group_manager")
         # Grant Bob manager access to both servers
         self.server_test_1.write({"manager_ids": [(4, self.user_bob.id)]})
         srv2.write({"manager_ids": [(4, self.user_bob.id)]})

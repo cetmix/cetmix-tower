@@ -186,7 +186,7 @@ class CxTowerGitProject(models.Model):
 
             # Get all user and manager ids from related servers
             all_user_ids = server_ids.user_ids.filtered(
-                lambda u: u.has_group("cetmix_tower_server.group_manager")
+                lambda u: u.has_group("cetmix_tower_base.group_manager")
             ).ids
             all_manager_ids = server_ids.manager_ids.ids
 
