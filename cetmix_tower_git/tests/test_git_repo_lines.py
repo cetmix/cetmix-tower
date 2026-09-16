@@ -96,7 +96,6 @@ class TestGitRepoLines(CommonTest):
     def test_repo_resolution_and_errors(self):
         project = self.GitProject.create({"name": "Resolve Project"})
         project.add_repo_lines([self._repo_line(self.repo_cetmix_tower)])
-        by_ref = project.get_repo_lines()
         project_b = self.GitProject.create({"name": "Resolve B"})
         self.assertTrue(
             project_b.add_repo_lines(
@@ -148,6 +147,17 @@ class TestGitRepoLines(CommonTest):
             project.add_repo_lines(
                 [{"repo_id": self.repo_cetmix_tower.id, "head": "x"}]
             )
+        repo_count = self.Repo.search_count([])
+        with self.assertRaises(ValidationError):
+            project.add_repo_lines(
+                [
+                    {
+                        "repo_url": "https://github.com/new-org/should-not-create.git",
+                        "head": "x",
+                    }
+                ]
+            )
+        self.assertEqual(self.Repo.search_count([]), repo_count)
         with self.assertRaises(ValidationError):
             project.add_repo_lines(
                 [{"repo_id": self.repo_cetmix_tower.id, "head_type": "branch"}]
@@ -200,7 +210,10 @@ class TestGitRepoLines(CommonTest):
                 ]
             )
         )
-        self.assertTrue(by_ref)
+        ref_line = next(
+            line for line in project_b.get_repo_lines() if line["head"] == "ref-head"
+        )
+        self.assertEqual(ref_line["repo_id"], self.repo_cetmix_tower.id)
 
     def test_get_set_round_trip(self):
         project = self.GitProject.create({"name": "Round Trip"})

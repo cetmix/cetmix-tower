@@ -227,41 +227,17 @@ class CxTowerJet(models.Model):
         lines = []
         if self.git_project_id:
             lines = [
-                {
-                    "remote_id": remote.id,
-                    "repo_id": remote.repo_id.id,
-                    "url_protocol": remote.url_protocol or "https",
-                    "head_type": remote.head_type,
-                    "head": remote.head,
-                    "enabled": bool(remote.enabled),
-                    "_sequence": remote.sequence,
-                }
+                self._git_remote_to_line(remote)
                 for remote in self.git_project_id._get_flat_remotes()
             ]
         by_id = {line["remote_id"]: line for line in lines}
         created = []
+        remote_model = self.env["cx.tower.git.remote"]
         for command in commands or []:
-            if not command:
-                continue
-            code = command[0]
-            if code == 0:
-                created.append(self._git_remote_vals_to_line(command[2] or {}))
-            elif code == 1:
-                line = by_id.get(command[1])
-                if line:
-                    line.update(
-                        self._git_remote_vals_to_line(command[2] or {}, partial=True)
-                    )
-            elif code in (2, 3):
-                by_id.pop(command[1], None)
-                lines = [line for line in lines if line.get("remote_id") != command[1]]
-            elif code == 5:
-                lines = []
-                by_id = {}
-            elif code == 6:
-                ids = command[2] or []
-                lines = [by_id[rid] for rid in ids if rid in by_id]
-                by_id = {line["remote_id"]: line for line in lines}
+            if command:
+                self._apply_git_remote_command(
+                    command, lines, by_id, created, remote_model
+                )
         remaining = [line for line in lines if line.get("remote_id") in by_id]
         sequences = [line["_sequence"] for line in remaining]
         if remaining and len(sequences) == len(set(sequences)):
@@ -275,6 +251,78 @@ class CxTowerJet(models.Model):
         if not self.git_project_id and not result:
             return True
         return self.set_git_repo_lines(result)
+
+    def _apply_git_remote_command(self, command, lines, by_id, created, remote_model):
+        """Apply one Git Project tab x2many command.
+
+        Args:
+            command (tuple): One2many command.
+            lines (list): Current repo line dicts. Mutated in place.
+            by_id (dict): Lines keyed by remote id. Mutated in place.
+            created (list): CREATE line dicts. Mutated in place.
+            remote_model (cx.tower.git.remote): Remote model.
+        """
+        code = command[0]
+        if code == 0:
+            created.append(self._git_remote_vals_to_line(command[2] or {}))
+            return
+        if code == 1:
+            line = by_id.get(command[1])
+            if line:
+                line.update(
+                    self._git_remote_vals_to_line(command[2] or {}, partial=True)
+                )
+            return
+        if code in (2, 3):
+            by_id.pop(command[1], None)
+            lines[:] = [line for line in lines if line.get("remote_id") != command[1]]
+            return
+        if code == 4:
+            # Web client keeps DELETE after switching project, then
+            # LINK when the same remotes are shown again. Restore
+            # only remotes that still belong to this Jet's project.
+            remote_id = command[1]
+            if not remote_id or remote_id in by_id:
+                return
+            remote = remote_model.browse(remote_id)
+            if (
+                not remote.exists()
+                or not self.git_project_id
+                or remote.git_project_id != self.git_project_id
+            ):
+                return
+            line = self._git_remote_to_line(remote)
+            lines.append(line)
+            by_id[remote.id] = line
+            return
+        if code == 5:
+            lines.clear()
+            by_id.clear()
+            return
+        if code == 6:
+            ids = command[2] or []
+            lines[:] = [by_id[rid] for rid in ids if rid in by_id]
+            by_id.clear()
+            by_id.update({line["remote_id"]: line for line in lines})
+
+    def _git_remote_to_line(self, remote):
+        """Return a repo line dict for an existing remote.
+
+        Args:
+            remote (cx.tower.git.remote): Remote to convert.
+
+        Returns:
+            dict: Repo line keys plus ``_sequence``.
+        """
+        return {
+            "remote_id": remote.id,
+            "repo_id": remote.repo_id.id,
+            "url_protocol": remote.url_protocol or "https",
+            "head_type": remote.head_type,
+            "head": remote.head,
+            "enabled": bool(remote.enabled),
+            "_sequence": remote.sequence,
+        }
 
     def _git_remote_vals_to_line(self, vals, partial=False):
         """Convert a remote command payload to a repo line dict.

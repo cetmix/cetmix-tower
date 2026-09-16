@@ -277,6 +277,80 @@ class TestJetGitProject(CommonTest, TestTowerJetsCommon):
             project.source_ids.remote_ids.repo_id,
         )
 
+    def test_reselect_own_project_keeps_remotes(self):
+        """A→B→A on the form keeps DELETE then LINK of the original remotes.
+
+        The web client does not cancel DELETE when a later onchange LINKs
+        the same remote (static_list.js ``_applyCommands``).
+        """
+        jet = self.jet_template_sample.create_jet(
+            self.server_test_1, name="Reselect Own Project Jet"
+        )
+        jet.write(
+            {
+                "git_remote_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "repo_id": self.repo_cetmix_tower.id,
+                            "url_protocol": "https",
+                            "head_type": "branch",
+                            "head": "main",
+                            "enabled": True,
+                        },
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "repo_id": self.repo_odoo_enterprise.id,
+                            "url_protocol": "https",
+                            "head_type": "branch",
+                            "head": "main",
+                            "enabled": True,
+                        },
+                    ),
+                ]
+            }
+        )
+        project = jet.git_project_id
+        own_ids = project._get_flat_remotes().ids
+        other_ids = self.git_project_1.source_ids.remote_ids.ids
+        self.assertTrue(own_ids)
+        self.assertTrue(other_ids)
+        jet.write(
+            {
+                "git_project_id": project.id,
+                "git_remote_ids": (
+                    [(2, remote_id) for remote_id in own_ids]
+                    + [(2, remote_id) for remote_id in other_ids]
+                    + [(4, remote_id) for remote_id in own_ids]
+                ),
+            }
+        )
+        self.assertEqual(jet.git_project_id, project)
+        self.assertEqual(set(project._get_flat_remotes().ids), set(own_ids))
+
+    def test_reselect_own_project_keeps_remotes_form(self):
+        """Selecting another project then the original must keep remotes."""
+        jet = self.jet_template_sample.create_jet(
+            self.server_test_1, name="Reselect Own Project Form Jet"
+        )
+        with Form(jet) as jet_form:
+            with jet_form.git_remote_ids.new() as line:
+                self._fill_git_line_form(line, self.repo_cetmix_tower)
+            with jet_form.git_remote_ids.new() as line:
+                self._fill_git_line_form(line, self.repo_odoo_enterprise)
+        project = jet.git_project_id
+        own_ids = set(project._get_flat_remotes().ids)
+        self.assertTrue(own_ids)
+        with Form(jet) as jet_form:
+            jet_form.git_project_id = self.git_project_1
+            jet_form.git_project_id = project
+        self.assertEqual(jet.git_project_id, project)
+        self.assertEqual(set(project._get_flat_remotes().ids), own_ids)
+
     def test_launch_select_repos_creates_named_project(self):
         wizard = self.env["cx.tower.jet.create.wizard"].create(
             {

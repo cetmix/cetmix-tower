@@ -301,7 +301,12 @@ class CxTowerServer(models.Model):
                 status=0,
                 response=_("Git Project uploaded successfully"),
             )
-        except Exception as err:
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            _logger.exception(
+                "Git Project upload failed for command '%s' on server '%s'.",
+                command.name,
+                self.name,
+            )
             return self._git_project_upload_finish(
                 log_record,
                 status=FILE_CREATION_FAILED,

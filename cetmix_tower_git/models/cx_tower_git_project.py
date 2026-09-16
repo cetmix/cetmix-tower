@@ -525,7 +525,6 @@ class CxTowerGitProject(models.Model):
                         key=sorted(unknown)[0],
                     )
                 )
-            repo = self._resolve_repo_from_line(line, index)
             head_type = line.get("head_type")
             if not head_type:
                 raise ValidationError(
@@ -574,6 +573,7 @@ class CxTowerGitProject(models.Model):
                             index=index,
                         )
                     ) from err
+            repo = self._resolve_repo_from_line(line, index)
             parsed.append(
                 {
                     "remote_id": remote_id or False,
@@ -848,6 +848,8 @@ class CxTowerGitProject(models.Model):
         source_seq = {}
         next_source = 10
         next_remote = {}
+        remote_batches = {}
+        remote_model = self.env["cx.tower.git.remote"]
         for remote in remotes:
             if not remote.exists():
                 continue
@@ -856,8 +858,12 @@ class CxTowerGitProject(models.Model):
                 source_seq[source.id] = next_source
                 next_source += 10
                 next_remote[source.id] = 10
-            remote.write({"sequence": next_remote[source.id]})
+            sequence = next_remote[source.id]
+            remote_batches.setdefault(sequence, remote_model)
+            remote_batches[sequence] |= remote
             next_remote[source.id] += 10
+        for sequence, batch in remote_batches.items():
+            batch.write({"sequence": sequence})
         for source_id, sequence in source_seq.items():
             self.env["cx.tower.git.source"].browse(source_id).write(
                 {"sequence": sequence}
