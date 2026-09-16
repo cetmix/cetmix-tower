@@ -9,11 +9,12 @@ msgstr ""
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2025-11-17 10:49+0100\n"
 "Last-Translator: Stefano Consolaro <stefano.consolaro@mymage.it>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/tower-server-14-0-dev/cetmix_tower_base/it/>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/tower-"
+"server-14-0-dev/cetmix_tower_base/it/>\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 2.3\n"
 
@@ -53,14 +54,12 @@ msgstr ""
 #. module: cetmix_tower_base
 #. odoo-python
 #: code:addons/cetmix_tower_base/models/cx_tower_reference_mixin.py:0
-#, python-format
 msgid "%(name)s (copy %(number)s)"
 msgstr "%(name)s (copy %(number)s)"
 
 #. module: cetmix_tower_base
 #. odoo-python
 #: code:addons/cetmix_tower_base/models/cx_tower_reference_mixin.py:0
-#, python-format
 msgid "%(name)s (copy)"
 msgstr "%(name)s (copia)"
 
@@ -71,18 +70,28 @@ msgid "Access Level"
 msgstr "Livello accesso"
 
 #. module: cetmix_tower_base
+#: model:ir.model.fields,help:cetmix_tower_base.field_cx_tower_metadata_mixin__metadata
+#: model:ir.model.fields,help:cetmix_tower_base.field_cx_tower_metadata_mixin__metadata_text
+msgid "Additional metadata for this record"
+msgstr ""
+
+#. module: cetmix_tower_base
 #: model:ir.model.fields,help:cetmix_tower_base.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,help:cetmix_tower_base.field_cx_tower_tag__reference
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_base.cx_tower_tag_view_form
-msgid "Can contain English letters, digits and '_'. Leave blank to autogenerate"
-msgstr "Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la generazione automatica"
+msgid ""
+"Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+"Può contenere lettere inglesi, cifre e '_'. Lasciare vuoto per la "
+"generazione automatica"
 
 #. module: cetmix_tower_base
 #. odoo-python
 #: code:addons/cetmix_tower_base/models/cx_tower_tag.py:0
-#, python-format
 msgid "Cannot delete tag '%(tag_name)s' because it is used in related records."
-msgstr "Non si può cancellare l'etichetta '%(tag_name)s' perché è usata nei record relativi."
+msgstr ""
+"Non si può cancellare l'etichetta '%(tag_name)s' perché è usata nei record "
+"relativi."
 
 #. module: cetmix_tower_base
 #: model:ir.module.category,name:cetmix_tower_base.ir_module_category_tower
@@ -95,6 +104,12 @@ msgstr "Cetmix Tower"
 #: model:ir.model,name:cetmix_tower_base.model_cx_tower_tag
 msgid "Cetmix Tower Tag"
 msgstr "Etichetta Cetmix Tower"
+
+#. module: cetmix_tower_base
+#: model:ir.model,name:cetmix_tower_base.model_cx_tower_tag_mixin
+#, fuzzy
+msgid "Cetmix Tower Tag Mixin"
+msgstr "Mixin archivio Cetmix Tower"
 
 #. module: cetmix_tower_base
 #: model:ir.model,name:cetmix_tower_base.model_cx_tower_vault
@@ -115,6 +130,12 @@ msgstr "Mixin accesso Cetmix Tower"
 #: model:ir.model,name:cetmix_tower_base.model_cx_tower_access_role_mixin
 msgid "Cetmix Tower access role mixin"
 msgstr "Mixin ruolo accesso Cetmix Tower"
+
+#. module: cetmix_tower_base
+#: model:ir.model,name:cetmix_tower_base.model_cx_tower_metadata_mixin
+#, fuzzy
+msgid "Cetmix Tower metadata mixin"
+msgstr "Mixin archivio Cetmix Tower"
 
 #. module: cetmix_tower_base
 #: model:ir.model,name:cetmix_tower_base.model_cx_tower_reference_mixin
@@ -189,6 +210,8 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: cetmix_tower_base
+#. odoo-python
+#: code:addons/cetmix_tower_base/models/cx_tower_access_mixin.py:0
 #: model:res.groups,name:cetmix_tower_base.group_manager
 msgid "Manager"
 msgstr "Responsabile"
@@ -202,6 +225,16 @@ msgstr "Responsabili"
 #: model:ir.model.fields,help:cetmix_tower_base.field_cx_tower_access_role_mixin__manager_ids
 msgid "Managers who can modify this record"
 msgstr "Responsabili che possono modificare questo record"
+
+#. module: cetmix_tower_base
+#: model:ir.model.fields,field_description:cetmix_tower_base.field_cx_tower_metadata_mixin__metadata
+msgid "Metadata"
+msgstr ""
+
+#. module: cetmix_tower_base
+#: model:ir.model.fields,field_description:cetmix_tower_base.field_cx_tower_metadata_mixin__metadata_text
+msgid "Metadata Text"
+msgstr ""
 
 #. module: cetmix_tower_base
 #: model:ir.model.fields,help:cetmix_tower_base.field_cx_tower_vault__res_model
@@ -220,13 +253,54 @@ msgid "Name of the field that contains the secret value"
 msgstr "Nome del campo che contiene il valore segreto"
 
 #. module: cetmix_tower_base
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_base.cx_tower_tag_search_view
+#, fuzzy
+msgid "Name/Reference"
+msgstr "Riferimento"
+
+#. module: cetmix_tower_base
 #: model:ir.model.fields,field_description:cetmix_tower_base.field_cx_tower_reference_mixin__reference
 #: model:ir.model.fields,field_description:cetmix_tower_base.field_cx_tower_tag__reference
 msgid "Reference"
 msgstr "Riferimento"
 
 #. module: cetmix_tower_base
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_command_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_file_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_file_template_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_git_project_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_git_project_rel_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_git_remote_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_git_repo_owner_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_git_repo_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_git_source_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_action_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_state_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_template_dependency_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_template_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_waypoint_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_jet_waypoint_template_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_key_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_key_value_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_os_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_plan_line_action_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_plan_line_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_plan_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_reference_mixin_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_scheduled_task_cv_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_scheduled_task_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_server_log_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_server_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_server_template_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_shortcut_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_tag_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_variable_option_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_variable_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_variable_value_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_webhook_authenticator_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_webhook_eval_mixin_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_webhook_reference_unique
 msgid "Reference must be unique"
 msgstr "Il riferimento deve essere univoco"
 
@@ -241,6 +315,8 @@ msgid "Resource Model"
 msgstr "Modello risorsa"
 
 #. module: cetmix_tower_base
+#. odoo-python
+#: code:addons/cetmix_tower_base/models/cx_tower_access_mixin.py:0
 #: model:res.groups,name:cetmix_tower_base.group_root
 msgid "Root"
 msgstr "Radice"
@@ -266,6 +342,7 @@ msgid "Tag"
 msgstr "Etichetta"
 
 #. module: cetmix_tower_base
+#: model:ir.model.fields,field_description:cetmix_tower_base.field_cx_tower_tag_mixin__tag_ids
 #: model:ir.ui.menu,name:cetmix_tower_base.menu_cx_tower_tag
 msgid "Tags"
 msgstr "Etichette"
@@ -276,6 +353,9 @@ msgid "The secret data to be stored in the vault"
 msgstr "Il dato segreto da salvare nell'archivio"
 
 #. module: cetmix_tower_base
+#. odoo-python
+#: code:addons/cetmix_tower_base/models/cx_tower_access_mixin.py:0
+#: model:ir.model,name:cetmix_tower_base.model_res_users
 #: model:res.groups,name:cetmix_tower_base.group_user
 msgid "User"
 msgstr "Utente"

@@ -4,18 +4,14 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2025-03-03 12:07+0000\n"
-"Last-Translator: CetmixWeblateBot <weblate@cetmix.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/tower-server-14-0-"
-"dev/cetmix_tower_base/de/>\n"
-"Language: de\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.10.3-dev\n"
+"Plural-Forms: \n"
 
 #. module: cetmix_tower_base
 #: model:res.groups,comment:cetmix_tower_base.group_user
@@ -24,9 +20,6 @@ msgid ""
 "        Basic actions for selected servers.\n"
 "    "
 msgstr ""
-"\n"
-"        Basisaktionen für die ausgewählten Server.\n"
-"    "
 
 #. module: cetmix_tower_base
 #: model:res.groups,comment:cetmix_tower_base.group_manager
@@ -35,9 +28,6 @@ msgid ""
 "        Create and modify selected servers.\n"
 "    "
 msgstr ""
-"\n"
-"        Erstelle und editiere den gewählten Server.\n"
-"    "
 
 #. module: cetmix_tower_base
 #: model:res.groups,comment:cetmix_tower_base.group_root
@@ -46,9 +36,6 @@ msgid ""
 "        Full control over all servers.\n"
 "    "
 msgstr ""
-"\n"
-"        Alle Rechte für alle Server.\n"
-"    "
 
 #. module: cetmix_tower_base
 #. odoo-python
@@ -85,7 +72,8 @@ msgstr ""
 #. module: cetmix_tower_base
 #. odoo-python
 #: code:addons/cetmix_tower_base/models/cx_tower_tag.py:0
-msgid "Cannot delete tag '%(tag_name)s' because it is used in related records."
+msgid ""
+"Cannot delete tag '%(tag_name)s' because it is used in related records."
 msgstr ""
 
 #. module: cetmix_tower_base
