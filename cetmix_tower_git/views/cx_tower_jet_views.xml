@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.view.form.git</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="git_project" string="Git Project">
+                    <div
+                        class="alert alert-info"
+                        role="alert"
+                        invisible="not git_project_readonly_reason"
+                    >
+                        <field name="git_project_readonly_reason" nolabel="1" />
+                    </div>
+                    <group>
+                        <field
+                            name="git_project_id"
+                            readonly="git_project_readonly"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                    </group>
+                    <field
+                        name="git_remote_ids"
+                        readonly="git_project_readonly"
+                        context="{'default_git_project_id': git_project_id}"
+                    >
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle" />
+                            <field
+                                name="repo_id"
+                                required="1"
+                                options="{'no_create_edit': True}"
+                            />
+                            <field name="url_protocol" required="1" optional="show" />
+                            <field name="head_type" required="1" />
+                            <field name="head" required="1" />
+                            <field name="enabled" widget="boolean_toggle" />
+                            <field
+                                name="source_id"
+                                readonly="1"
+                                required="0"
+                                string="Source"
+                                optional="hide"
+                            />
+                        </list>
+                    </field>
+                    <button
+                        name="action_open_git_project"
+                        type="object"
+                        string="Open Git Project"
+                        class="btn-secondary"
+                        invisible="not git_project_id"
+                    />
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

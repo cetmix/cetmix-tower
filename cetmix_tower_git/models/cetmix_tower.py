@@ -12,6 +12,10 @@ class CetmixTower(models.AbstractModel):
         """
         Return servers linked to a given Git repository reference.
 
+        Legacy: kept for servers that do not use Jets. New setups should
+        link the Git Project to the Jet and write it with Upload Git
+        Project. There is no Jet equivalent of this helper.
+
         This is a thin shortcut that delegates to
         :meth:`cx.tower.server.get_servers_by_git_ref`.
 

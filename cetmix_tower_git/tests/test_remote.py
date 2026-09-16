@@ -66,8 +66,7 @@ class TestRemote(CommonTest):
                     "head": "main",
                 }
             )
-        with self.assertRaises(AccessError):
-            user_remote.search([("id", "=", self.remote.id)])
+        self.assertFalse(user_remote.search([("id", "=", self.remote.id)]))
         with self.assertRaises(AccessError):
             self.remote.with_user(self.user).write({"head": "dev"})
         with self.assertRaises(AccessError):

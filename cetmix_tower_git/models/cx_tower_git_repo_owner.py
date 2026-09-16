@@ -41,7 +41,10 @@ class CxTowerGitRepoOwner(models.Model):
         comodel_name="cx.tower.key",
         string="Secret",
         domain="[('key_type', '=', 's')]",
-        help="Custom secret used for this repository owner",
+        help="Owner-specific secret. Not currently used: private HTTPS"
+        " URLs use environment placeholders"
+        " ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN,"
+        " $BITBUCKET_TOKEN).",
     )
 
     @api.depends("name")

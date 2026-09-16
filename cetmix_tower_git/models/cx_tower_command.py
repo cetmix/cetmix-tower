@@ -1,7 +1,7 @@
 # Copyright 2024 Cetmix OÜ
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.tools.safe_eval import wrap_module
 
 # Wrap giturlparse safely
@@ -12,6 +12,41 @@ class CxTowerCommand(models.Model):
     """Extends cx.tower.command to add giturlparse functionality."""
 
     _inherit = "cx.tower.command"
+
+    git_file_name = fields.Char(
+        string="File Name",
+        help="File name without path. Variables are allowed.",
+    )
+
+    @classmethod
+    def _get_depends_fields(cls):
+        """Include ``git_file_name`` in command hash dependencies.
+
+        Returns:
+            list: Field names the command depends on.
+        """
+        return super()._get_depends_fields() + ["git_file_name"]
+
+    def _selection_action(self):
+        """Add the Upload Git Project command action.
+
+        Returns:
+            list: Action selection pairs.
+        """
+        res = super()._selection_action()
+        return res + [("git_project_upload", "Upload Git Project")]
+
+    def _get_fields_for_yaml(self):
+        """Export ``git_file_name`` with the command YAML.
+
+        Returns:
+            list: YAML field names.
+        """
+        res = super()._get_fields_for_yaml()
+        res += [
+            "git_file_name",
+        ]
+        return res
 
     def _custom_python_libraries(self):
         """

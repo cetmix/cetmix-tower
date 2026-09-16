@@ -8,6 +8,10 @@ from odoo.exceptions import ValidationError
 class CxTowerGitProjectRel(models.Model):
     """
     Relation between git projects and other model records.
+
+    Legacy: kept for servers that do not use Jets. New setups should
+    link the Git Project to the Jet and write it with Upload Git
+    Project.
     """
 
     _name = "cx.tower.git.project.rel"
@@ -25,6 +29,9 @@ class CxTowerGitProjectRel(models.Model):
         index=True,
         required=True,
         ondelete="cascade",
+        help="Legacy: Git Project linked to a server file. Kept for"
+        " servers that do not use Jets. New setups should link the Git"
+        " Project to the Jet and write it with Upload Git Project.",
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",

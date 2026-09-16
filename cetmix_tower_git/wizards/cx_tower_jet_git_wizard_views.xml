@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_create_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.create.wizard.view.form.git</field>
+        <field name="model">cx.tower.jet.create.wizard</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_jet_create_wizard_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']" position="after">
+                <group invisible="not state_id">
+                    <field name="add_repositories" widget="radio" />
+                    <field
+                        name="git_project_id"
+                        invisible="add_repositories != 'existing'"
+                        required="add_repositories == 'existing'"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
+                </group>
+                <field
+                    name="git_repo_line_ids"
+                    invisible="add_repositories != 'repos' or not state_id"
+                >
+                    <list editable="bottom">
+                        <field name="sequence" widget="handle" />
+                        <field name="repo_id" />
+                        <field name="url_protocol" />
+                        <field name="head_type" />
+                        <field name="head" />
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_jet_clone_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.clone.wizard.view.form.git</field>
+        <field name="model">cx.tower.jet.clone.wizard</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_jet_clone_wizard_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']" position="after">
+                <group invisible="not parent_git_project_id">
+                    <field name="git_project_mode" widget="radio" />
+                    <field
+                        name="git_project_id"
+                        invisible="git_project_mode != 'select'"
+                        required="git_project_mode == 'select'"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
+                </group>
+                <field
+                    name="git_repo_line_ids"
+                    invisible="not parent_git_project_id or git_project_mode != 'repos'"
+                >
+                    <list editable="bottom">
+                        <field name="sequence" widget="handle" />
+                        <field name="repo_id" />
+                        <field name="url_protocol" />
+                        <field name="head_type" />
+                        <field name="head" />
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

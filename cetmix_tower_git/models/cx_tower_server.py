@@ -3,7 +3,9 @@
 
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+
+from odoo.addons.cetmix_tower_server.models.constants import FILE_CREATION_FAILED
 
 _logger = logging.getLogger(__name__)
 
@@ -17,6 +19,9 @@ class CxTowerServer(models.Model):
         copy=False,
         depends=["git_project_ids"],
         groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root",
+        help="Legacy: Git Projects linked through files on this server."
+        " Kept for servers that do not use Jets. New setups should link"
+        " the Git Project to the Jet and write it with Upload Git Project.",
     )
 
     # Helper field to get all git projects related to server
@@ -30,6 +35,8 @@ class CxTowerServer(models.Model):
         copy=False,
         depends=["git_project_rel_ids"],
         groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root",
+        help="Legacy: Git Projects linked through files on this server."
+        " Kept for servers that do not use Jets.",
     )
 
     # ------------------------------
@@ -69,6 +76,10 @@ class CxTowerServer(models.Model):
     def get_servers_by_git_ref(self, repository_url, head=None, head_type=None):
         """
         Return servers linked to a given Git repository reference.
+
+        Legacy: kept for servers that do not use Jets. New setups should
+        link the Git Project to the Jet and write it with Upload Git
+        Project.
 
         Parameters
         ----------
@@ -185,3 +196,164 @@ class CxTowerServer(models.Model):
                 }
             )
         return file
+
+    def _get_command_runners(self):
+        """Register the Upload Git Project command runner.
+
+        Returns:
+            dict: Command action to runner method.
+        """
+        runners = super()._get_command_runners()
+        runners["git_project_upload"] = self._command_runner_git_project_upload
+        return runners
+
+    def _command_runner_git_project_upload(
+        self,
+        command,
+        log_record,
+        rendered_command_code=None,
+        sudo=None,
+        rendered_command_path=None,
+        ssh_connection=None,
+        **kwargs,
+    ):
+        """Write the Jet's Git Project to a file on the Jet's server.
+
+        Args:
+            command (cx.tower.command): Command being run.
+            log_record (cx.tower.command.log): Command log, if any.
+            rendered_command_code (str, optional): Rendered command code.
+            sudo (str, optional): Command sudo mode.
+            rendered_command_path (str, optional): Rendered directory path.
+            ssh_connection: SSH connection to reuse.
+            **kwargs: Extra arguments.
+
+        Returns:
+            dict | None: Command result when there is no log record.
+        """
+        try:
+            jet = log_record.jet_id if log_record else self.env["cx.tower.jet"]
+            if not jet or not jet.git_project_id:
+                return self._git_project_upload_finish(
+                    log_record,
+                    status=0,
+                    response=_("No Git Project to upload"),
+                )
+
+            file_name = self._render_git_file_name(command, jet)
+            server_dir = self.env["cx.tower.file"]._sanitize_values(
+                {"server_dir": rendered_command_path or ""}
+            )["server_dir"]
+            # Match cx.tower.file full_server_path, including an empty directory.
+            full_path = f"{server_dir}/{file_name}"
+
+            file_model = self.env["cx.tower.file"]
+            candidates = file_model.search(
+                [
+                    ("jet_id", "=", jet.id),
+                    ("source", "=", "tower"),
+                ]
+            )
+            files = candidates.filtered(lambda rec: rec.full_server_path == full_path)
+            file = files[:1]
+
+            if not file:
+                file = file_model.create(
+                    {
+                        "name": command.git_file_name,
+                        "server_dir": server_dir,
+                        "server_id": jet.server_id.id,
+                        "jet_id": jet.id,
+                        "source": "tower",
+                        "file_type": "text",
+                        "auto_sync": False,
+                    }
+                )
+
+            project = jet.git_project_id
+            project_format = project._default_project_format()
+            rel_model = self.env["cx.tower.git.project.rel"]
+            link = rel_model.search(
+                [
+                    ("git_project_id", "=", project.id),
+                    ("file_id", "=", file.id),
+                    ("project_format", "=", project_format),
+                ],
+                limit=1,
+            )
+            if link:
+                link._save_to_file()
+            else:
+                rel_model.create(
+                    {
+                        "git_project_id": project.id,
+                        "server_id": jet.server_id.id,
+                        "file_id": file.id,
+                        "project_format": project_format,
+                    }
+                )
+
+            if not file.auto_sync:
+                file.auto_sync = True
+            file.action_push_to_server()
+            return self._git_project_upload_finish(
+                log_record,
+                status=0,
+                response=_("Git Project uploaded successfully"),
+            )
+        except Exception as err:
+            return self._git_project_upload_finish(
+                log_record,
+                status=FILE_CREATION_FAILED,
+                error=_("An error occurred: %(error)s", error=str(err)),
+            )
+
+    def _render_git_file_name(self, command, jet):
+        """Render ``git_file_name`` the same way the file model renders
+        ``name``.
+
+        Args:
+            command (cx.tower.command): Command with ``git_file_name``.
+            jet (cx.tower.jet): Jet the command runs on.
+
+        Returns:
+            str: Rendered file name, or the raw name when there are no
+                variable values.
+        """
+        raw_name = command.git_file_name or ""
+        references = command.get_variables_from_code(raw_name)
+        if not references:
+            return raw_name
+        values = self.env["cx.tower.variable"]._get_variable_values_by_references(
+            references,
+            server=jet.server_id,
+            jet_template=jet.jet_template_id,
+            jet=jet,
+        )
+        if not values:
+            return raw_name
+        return command.render_code_custom(raw_name, **values)
+
+    def _git_project_upload_finish(
+        self, log_record, status=0, response=None, error=None
+    ):
+        """Finish the command log or return a result dict.
+
+        Args:
+            log_record (cx.tower.command.log): Log record, if any.
+            status (int): Command status.
+            response (str, optional): Success message.
+            error (str, optional): Error message.
+
+        Returns:
+            dict | None: Result when there is no log record.
+        """
+        if log_record:
+            log_record.finish(
+                finish_date=fields.Datetime.now(),
+                status=status,
+                response=response,
+                error=error,
+            )
+            return None
+        return {"status": status, "response": response, "error": error}
