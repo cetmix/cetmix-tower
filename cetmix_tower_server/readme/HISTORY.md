@@ -1,3 +1,14 @@
+## 18.0.3.0.0 (2026-09-16)
+
+- Features: Extract access groups, menus, tags, vault and mixins into ``cetmix_tower_base``.
+
+  Upgrade with ``-u cetmix_tower_server`` (or ``-i cetmix_tower_base -u all``).
+  A plain ``-u all`` does not install the new dependency. ``cetmix_portal_base``
+  and any custom module that references ``cetmix_tower_server.group_*``,
+  ``menu_settings`` or ``ir_module_category_tower`` must be updated at the same
+  time. (5622)
+
+
 ## 18.0.2.1.1 (2026-09-15)
 
 - Features: Modules can add command actions by extending `_get_command_runners()` together with `_selection_action()`. (5621)
