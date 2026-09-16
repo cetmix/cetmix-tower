@@ -38,6 +38,7 @@ class CxTowerGitRemote(models.Model):
         related="source_id.git_project_id",
         store=True,
         readonly=True,
+        ondelete="cascade",
     )
     repo_id = fields.Many2one(
         comodel_name="cx.tower.git.repo",
@@ -144,14 +145,11 @@ class CxTowerGitRemote(models.Model):
         projects = self.git_project_id
         res = super().unlink()
 
-        # Update related files and templates on unlink
+        # Update related files on unlink
         if projects:
             file_relations = projects.git_project_rel_ids  # type: ignore
             if file_relations:
                 file_relations._save_to_file()
-            template_relations = projects.git_project_file_template_rel_ids  # type: ignore
-            if template_relations:
-                template_relations._save_to_file_template()
         return res
 
     def _sanitize_head(self, head):
@@ -174,11 +172,6 @@ class CxTowerGitRemote(models.Model):
         related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
         if related_files:
             related_files._save_to_file()
-        related_templates = self.mapped("git_project_id").mapped(
-            "git_project_file_template_rel_ids"
-        )
-        if related_templates:
-            related_templates._save_to_file_template()
 
     # ------------------------------
     # Reference mixin methods

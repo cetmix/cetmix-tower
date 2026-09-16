@@ -12,12 +12,17 @@ class CxTowerPlanLine(models.Model):
     git_project_id = fields.Many2one(
         comodel_name="cx.tower.git.project",
         string="Git Project",
-        help="Select a git project to be linked to the file and server.",
+        help="Legacy: Git Project linked to the file created by this"
+        " flight plan line. Kept for servers that do not use Jets."
+        " New setups should link the Git Project to the Jet and write"
+        " it with Upload Git Project. The __git_project__ custom value"
+        " is also legacy.",
     )
     is_make_copy = fields.Boolean(
         string="Make a Copy",
-        help="Create a copy of the Git Project instead of linking "
-        "the file to the existing one.",
+        help="Legacy: create a copy of the Git Project instead of"
+        " linking the file to the existing one. Never touches a Jet's"
+        " Git Project.",
     )
 
     # ------------------------------

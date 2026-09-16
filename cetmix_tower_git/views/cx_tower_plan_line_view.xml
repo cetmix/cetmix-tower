@@ -19,9 +19,11 @@
                     invisible="not file_template_id"
                 >
                     <p>
-                        You can also provide a Git Project reference using the <code
-                    >__git_project__</code> variable in the flight plan custom values.<br
-                    />
+                        Legacy: kept for servers that do not use Jets. New setups
+                        should link the Git Project to the Jet and write it with
+                        the Upload Git Project command. You can also provide a
+                        Git Project reference using the <code>__git_project__</code>
+                        variable in the flight plan custom values (also legacy).<br />
                         Python command code example:
                         <code>
 custom_values['__git_project__'] = 'my_git_project'

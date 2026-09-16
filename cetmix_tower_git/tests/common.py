@@ -11,9 +11,6 @@ class CommonTest(TestTowerCommon):
         # Models
         cls.GitProject = cls.env["cx.tower.git.project"]
         cls.GitProjectRel = cls.env["cx.tower.git.project.rel"]
-        cls.GitProjectFileTemplateRel = cls.env[
-            "cx.tower.git.project.file.template.rel"
-        ]
         cls.GitSource = cls.env["cx.tower.git.source"]
         cls.GitRemote = cls.env["cx.tower.git.remote"]
 
@@ -133,4 +130,60 @@ class CommonTest(TestTowerCommon):
             {
                 "name": "File Template 1",
             }
+        )
+
+    def _repo_line(self, repo, **kwargs):
+        """Build a repo line dict for tests.
+
+        Args:
+            repo (cx.tower.git.repo): Repository.
+            **kwargs: Overrides for the default line keys.
+
+        Returns:
+            dict: Repo line dict.
+        """
+        line = {
+            "repo_id": repo.id,
+            "head_type": "branch",
+            "head": "main",
+            "url_protocol": "https",
+            "enabled": True,
+        }
+        line.update(kwargs)
+        return line
+
+    def _enable_clone(self, template):
+        """Give ``template`` a clone flight plan.
+
+        Args:
+            template (cx.tower.jet.template): Template to update.
+
+        Returns:
+            recordset: Created ``cx.tower.plan``.
+        """
+        plan = self.Plan.create({"name": "Git Clone Plan"})
+        self.plan_line.create(
+            {
+                "plan_id": plan.id,
+                "command_id": self.command_create_dir.id,
+            }
+        )
+        template.write({"plan_clone_same_server_id": plan.id})
+        return plan
+
+    def _create_jet_with_project(self, name, lines=None):
+        """Create a Jet with a Git Project.
+
+        Args:
+            name (str): Jet name.
+            lines (list, optional): Repo line dicts. Defaults to one
+                Cetmix Tower branch line.
+
+        Returns:
+            recordset: Created ``cx.tower.jet``.
+        """
+        return self.jet_template_sample.create_jet(
+            self.server_test_1,
+            name=name,
+            git_repo_lines=lines or [self._repo_line(self.repo_cetmix_tower)],
         )

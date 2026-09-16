@@ -11,12 +11,17 @@
                     string="Git Projects"
                     groups="cetmix_tower_base.group_manager,cetmix_tower_base.group_root"
                 >
+                    <div class="alert alert-warning" role="alert">
+                        Legacy: kept for servers that do not use Jets. New setups
+                        should link the Git Project to the Jet (Jet "Git Project"
+                        tab or the launch/clone wizards) and write it to the host
+                        with the Upload Git Project command.
+                    </div>
                     <field name="git_project_rel_ids">
                         <list editable="bottom">
                             <field name="server_id" column_invisible="True" />
                             <field name="git_project_id" />
                             <field name="file_id" />
-                            <field name="project_format" />
                             <field name="auto_sync" />
                             <button
                                 type="object"
@@ -31,7 +36,6 @@
                                 <field name="server_id" invisible="1" />
                                 <field name="git_project_id" />
                                 <field name="file_id" />
-                                <field name="project_format" />
                                 <field name="auto_sync" />
                             </group>
                         </form>

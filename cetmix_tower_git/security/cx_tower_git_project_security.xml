@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!-- Legacy regime: projects with no Jets -->
+
     <!-- Manager Read Rule -->
     <record id="rule_git_project_manager_read" model="ir.rule">
         <field name="name">Git Project: Manager Read Access</field>
         <field name="model_id" ref="model_cx_tower_git_project" />
         <field
             name="domain_force"
-        >['|', ('user_ids', 'in', [user.id]), ('manager_ids', 'in', [user.id])]</field>
+        >[('jet_ids', '=', False), '|', ('user_ids', 'in', [user.id]), ('manager_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
@@ -18,7 +20,7 @@
     <record id="rule_git_project_manager_read_server" model="ir.rule">
         <field name="name">Git Project: Manager Read Access via Server</field>
         <field name="model_id" ref="model_cx_tower_git_project" />
-        <field name="domain_force">['|',
+        <field name="domain_force">[('jet_ids', '=', False), '|',
             ('git_project_rel_ids.server_id.user_ids', 'in', [user.id]),
             ('git_project_rel_ids.server_id.manager_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
@@ -32,7 +34,9 @@
     <record id="rule_git_project_manager_write" model="ir.rule">
         <field name="name">Git Project: Manager Write Access</field>
         <field name="model_id" ref="model_cx_tower_git_project" />
-        <field name="domain_force">[('manager_ids', 'in', [user.id])]</field>
+        <field
+            name="domain_force"
+        >[('jet_ids', '=', False), ('manager_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="1" />
@@ -46,11 +50,72 @@
         <field name="model_id" ref="model_cx_tower_git_project" />
         <field
             name="domain_force"
-        >[('manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
+        >[('jet_ids', '=', False), ('manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="0" />
         <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <!-- Jet-project regime -->
+
+    <record id="cx_tower_git_project_rule_user" model="ir.rule">
+        <field name="name">Git Project: User Read Access via Jet</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field name="domain_force">
+            [('jet_ids', 'any', [
+                ('user_ids', 'in', [user.id]),
+                ('server_id.user_ids', 'in', [user.id])
+            ])]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_git_project_rule_manager" model="ir.rule">
+        <field name="name">Git Project: Manager Read Access via Jet</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field name="domain_force">
+            [('jet_ids', 'any', [
+                '&amp;',
+                    '|',
+                        ('user_ids', 'in', [user.id]),
+                        ('manager_ids', 'in', [user.id]),
+                    '|',
+                        ('server_id.user_ids', 'in', [user.id]),
+                        ('server_id.manager_ids', 'in', [user.id])
+            ])]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_git_project_rule_manager_write" model="ir.rule">
+        <field name="name">Git Project: Manager Write Access via Jet</field>
+        <field name="model_id" ref="model_cx_tower_git_project" />
+        <field name="domain_force">
+            [
+                ('jet_ids', '!=', False),
+                ('jet_ids', 'not any', [
+                    '|',
+                        ('manager_ids', 'not in', [user.id]),
+                        '&amp;',
+                            ('server_id.user_ids', 'not in', [user.id]),
+                            ('server_id.manager_ids', 'not in', [user.id])
+                ])
+            ]
+        </field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
         <field name="perm_unlink" eval="1" />
     </record>
 

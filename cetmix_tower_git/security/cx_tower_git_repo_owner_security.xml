@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Manager Read Rule - View All Records - nothing to add as this is default -->
+    <!-- User Read Rule - shared lookup data, no domain -->
+    <record id="rule_git_repo_owner_user_read" model="ir.rule">
+        <field name="name">Git Repository Owner: User Read Access</field>
+        <field name="model_id" ref="model_cx_tower_git_repo_owner" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_user'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
 
     <!-- Manager Write/Create Rule -->
     <record id="rule_git_repo_owner_manager_write" model="ir.rule">

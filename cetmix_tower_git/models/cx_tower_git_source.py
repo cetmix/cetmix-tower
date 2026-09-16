@@ -93,14 +93,11 @@ class CxTowerGitSource(models.Model):
         projects = self.git_project_id
         res = super().unlink()
 
-        # Update related files and templates on unlink
+        # Update related files on unlink
         if projects:
             file_relations = projects.git_project_rel_ids  # type: ignore
             if file_relations:
                 file_relations._save_to_file()
-            template_relations = projects.git_project_file_template_rel_ids  # type: ignore
-            if template_relations:
-                template_relations._save_to_file_template()
         return res
 
     def _compose_name(self):
@@ -119,16 +116,26 @@ class CxTowerGitSource(models.Model):
                 continue
             source.name = f"{remote_repo.owner_id.name}/{remote_repo.repo}"
 
+    def _compose_name_if_placeholder(self):
+        """Compose ``owner/repo`` when the name is still the empty placeholder.
+
+        Source create runs ``_compose_name`` before remotes exist, so a
+        G1 source is stored as ``Empty Source``. After a remote is
+        linked, writing an empty name runs ``_compose_name`` again.
+        """
+        placeholders = self.filtered(
+            lambda source: not source.name or source.name == "Empty Source"
+        )
+        if not placeholders:
+            return
+        placeholders.invalidate_recordset(["remote_ids", "name"])
+        placeholders.write({"name": False})
+
     def _update_related_files_and_templates(self):
         # Update related files and templates on update
         related_files = self.mapped("git_project_id").mapped("git_project_rel_ids")
         if related_files:
             related_files._save_to_file()
-        related_templates = self.mapped("git_project_id").mapped(
-            "git_project_file_template_rel_ids"
-        )
-        if related_templates:
-            related_templates._save_to_file_template()
 
     # ------------------------------
     # Reference mixin methods
@@ -166,7 +173,10 @@ class CxTowerGitSource(models.Model):
         remotes = {}
         merges = []
         target = None
-        for remote in self.remote_ids:
+        ordered_remotes = self.remote_ids.sorted(
+            key=lambda remote: (remote.sequence, remote.name or "", remote.id)
+        )
+        for remote in ordered_remotes:
             if remote.enabled:
                 remotes.update({remote.name: remote._git_aggregator_prepare_url()})
                 merges.append(

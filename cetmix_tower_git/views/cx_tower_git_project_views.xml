@@ -69,9 +69,9 @@
                                 options="{'color_field': 'color'}"
                             />
                             <field
-                                name="file_template_ids"
+                                name="jet_ids"
                                 widget="many2many_tags"
-                                invisible="not file_template_ids"
+                                invisible="not jet_ids"
                             />
                         </group>
                         <group string="Git Aggregator">
@@ -133,7 +133,6 @@
                                         name="file_id"
                                         options="{'no_create': True, 'no_create_edit': True}"
                                     />
-                                    <field name="project_format" />
                                     <field name="auto_sync" />
                                     <button
                                         type="object"
@@ -147,32 +146,7 @@
                                     <group>
                                         <field name="server_id" />
                                         <field name="file_id" />
-                                        <field name="project_format" />
                                         <field name="auto_sync" />
-                                    </group>
-                                </form>
-                            </field>
-                        </page>
-                        <page name="file_templates" string="File Templates">
-                            <field name="git_project_file_template_rel_ids">
-                                <list editable="bottom">
-                                    <field
-                                        name="file_template_id"
-                                        options="{'no_create': True, 'no_create_edit': True}"
-                                    />
-                                    <field name="project_format" />
-                                    <button
-                                        type="object"
-                                        string="Open file template"
-                                        name="action_open_file_template"
-                                        title="Open File Template"
-                                        class="btn-secondary"
-                                    />
-                                </list>
-                                <form>
-                                    <group>
-                                        <field name="file_template_id" />
-                                        <field name="project_format" />
                                     </group>
                                 </form>
                             </field>
@@ -189,6 +163,7 @@
                             name="access"
                             string="Access"
                             groups="cetmix_tower_base.group_manager"
+                            invisible="jet_ids"
                         >
                             <group name="access">
                                 <field
@@ -230,6 +205,9 @@
                             </div>
                         </page>
                     </notebook>
+                    <div class="alert alert-info" role="alert" invisible="not jet_ids">
+                        Access is controlled by the Jets using this project.
+                    </div>
                 </sheet>
             </form>
         </field>
