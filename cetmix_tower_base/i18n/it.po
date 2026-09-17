@@ -217,6 +217,11 @@ msgid "Manager"
 msgstr "Responsabile"
 
 #. module: cetmix_tower_base
+#: model:ir.ui.menu,name:cetmix_tower_base.menu_cx_tower_log_root
+msgid "Logs"
+msgstr "Registri"
+
+#. module: cetmix_tower_base
 #: model:ir.model.fields,field_description:cetmix_tower_base.field_cx_tower_access_role_mixin__manager_ids
 msgid "Managers"
 msgstr "Responsabili"

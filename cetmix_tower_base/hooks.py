@@ -14,6 +14,7 @@ XMLIDS_TO_BASE = (
     ("group_manager", "res.groups"),
     ("group_root", "res.groups"),
     ("menu_root", "ir.ui.menu"),
+    ("menu_cx_tower_log_root", "ir.ui.menu"),
     ("menu_settings", "ir.ui.menu"),
     ("menu_cetmix_tower_general_settings", "ir.ui.menu"),
     ("menu_cx_tower_tag", "ir.ui.menu"),
@@ -35,9 +36,9 @@ XMLIDS_TO_BASE = (
 def _move_server_xmlids_to_base(cr):
     """Re-own xmlids that this module now declares.
 
-    Must run from ``pre_init_hook``, before models and XML load. Server's
-    update runs only after base is fully loaded, so a server pre-migration
-    would be too late: base would create duplicate groups, menus and
+    Run from ``pre_init_hook`` or a base pre-migration before XML loads.
+    Server's update runs only after base is fully loaded, so a server
+    pre-migration would be too late: base would create duplicate groups, menus and
     actions, and ``_process_end`` would delete the originals (and group
     membership). See task 5622 §8.1.
 
