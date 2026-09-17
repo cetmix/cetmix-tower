@@ -1485,7 +1485,11 @@ class CxTowerServer(models.Model):
         Returns:
             record: The created file record.
         """
-        file_template_id = log_record.command_id.file_template_id
+        # Stamp the template env so create_file / auto_sync push-pull
+        # inherit inline_file_operation (create_file uses self.env).
+        file_template_id = log_record.command_id.file_template_id.with_context(
+            inline_file_operation=True
+        )
         return file_template_id.create_file(
             server=self,
             server_dir=server_dir,
@@ -1525,6 +1529,13 @@ class CxTowerServer(models.Model):
                 reuse.
             **kwargs: Additional keyword arguments.
 
+        Context:
+            inline_file_operation (bool): Set on the file (and on the
+                template used by ``create_file``) so a deferral backend
+                (queue) runs the transfer in-process as part of this
+                command. Core ``upload`` / ``download`` ignore the key
+                when the queue module is not installed.
+
         Returns:
             None
 
@@ -1560,6 +1571,8 @@ class CxTowerServer(models.Model):
             # Context is used to detect a retry
             # and avoid handling skip logic on first attempt
             is_creation_skipped = file._context.get("file_creation_skipped")
+            # Merge: keep file_creation_skipped on the skip path.
+            file = file.with_context(inline_file_operation=True)
 
             if not is_creation_skipped:
                 if file.source == "server":
