@@ -492,7 +492,14 @@ class CxTowerFile(models.Model):
                 Possible options:
                     - "create"
                     - "write"
+
+        Context:
+            inline_file_operation (bool): When True, skip auto-sync
+                push/pull. The ``file_using_template`` runner already
+                performs the transfer.
         """
+        if self.env.context.get("inline_file_operation"):
+            return
 
         # Pull all `auto_sync` server files
         server_files_to_sync = self.filtered(

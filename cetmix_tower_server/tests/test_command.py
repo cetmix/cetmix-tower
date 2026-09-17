@@ -1239,6 +1239,63 @@ result = re.sub(pattern, replacement, value)
 
         self.assertEqual(len(log_record_2), 1, msg="Must be a single log record")
 
+    def test_file_using_template_auto_sync_uploads_once(self):
+        """auto_sync create must not add a second upload."""
+        template = self.FileTemplate.create(
+            {
+                "name": "Auto-sync tower template",
+                "file_name": "auto_sync_once.txt",
+                "source": "tower",
+                "server_dir": "/tmp/auto-sync-once",
+                "code": "once",
+                "auto_sync": True,
+            }
+        )
+        command = self.Command.create(
+            {
+                "name": "Create auto-sync tower file",
+                "path": "/tmp/auto-sync-once",
+                "action": "file_using_template",
+                "file_template_id": template.id,
+                "if_file_exists": "raise",
+            }
+        )
+        with patch.object(
+            self.registry["cx.tower.server"],
+            "upload_file",
+            return_value="ok",
+        ) as mock_upload:
+            self.server_test_1.run_command(command)
+        mock_upload.assert_called_once()
+
+    def test_file_using_template_auto_sync_downloads_once(self):
+        """auto_sync create must not add a second download."""
+        template = self.FileTemplate.create(
+            {
+                "name": "Auto-sync server template",
+                "file_name": "auto_sync_once_dl.txt",
+                "source": "server",
+                "server_dir": "/tmp/auto-sync-once-dl",
+                "auto_sync": True,
+            }
+        )
+        command = self.Command.create(
+            {
+                "name": "Create auto-sync server file",
+                "path": "/tmp/auto-sync-once-dl",
+                "action": "file_using_template",
+                "file_template_id": template.id,
+                "if_file_exists": "raise",
+            }
+        )
+        with patch.object(
+            self.registry["cx.tower.server"],
+            "download_file",
+            return_value=b"once",
+        ) as mock_download:
+            self.server_test_1.run_command(command)
+        mock_download.assert_called_once()
+
     def test_run_command_no_command_log(self):
         """Run command without creating a log record.
         Such commands return execution result directly.
