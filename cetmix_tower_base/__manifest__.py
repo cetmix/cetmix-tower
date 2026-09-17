@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Base",
     "summary": "Core access groups, menus and mixins for Cetmix Tower",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
     "author": "Cetmix",
