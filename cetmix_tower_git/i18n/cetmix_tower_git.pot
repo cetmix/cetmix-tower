@@ -81,12 +81,33 @@ msgid "Access"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
+msgid "Access is controlled by the Jets using this project."
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__active
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__active
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__active
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__active
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
 msgid "Active"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_clone_wizard__git_project_mode__repos
+msgid "Add repos"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_create_wizard__add_repositories
+msgid "Add repositories"
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_server.py:0
+msgid "An error occurred: %(error)s"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -102,6 +123,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__branch
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_repo_line_wizard__head_type__branch
 msgid "Branch"
 msgstr ""
 
@@ -134,11 +156,6 @@ msgid "Cetmix Tower File"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model,name:cetmix_tower_git.model_cx_tower_file_template
-msgid "Cetmix Tower File Template"
-msgstr ""
-
-#. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_plan_line
 msgid "Cetmix Tower Flight Plan Line"
 msgstr ""
@@ -146,11 +163,6 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project
 msgid "Cetmix Tower Git Project"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_project_file_template_rel
-msgid "Cetmix Tower Git Project relation to File Templates"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -179,6 +191,16 @@ msgid "Cetmix Tower Git Source"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_jet
+msgid "Cetmix Tower Jet"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_jet_template
+msgid "Cetmix Tower Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model,name:cetmix_tower_git.model_cetmix_tower
 msgid "Cetmix Tower Odoo Automation"
 msgstr ""
@@ -189,14 +211,24 @@ msgid "Cetmix Tower Server"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__clone_wizard_id
+msgid "Clone Wizard"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_jet_clone_wizard
+msgid "Clone jet"
+msgstr ""
+
+#. module: cetmix_tower_git
 #. odoo-python
-#: code:addons/cetmix_tower_git/models/cx_tower_git_project_file_template_rel.py:0
 #: code:addons/cetmix_tower_git/models/cx_tower_git_project_rel.py:0
 msgid "Code generator function for '%(project_format)s' format not found."
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__commit
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_repo_line_wizard__head_type__commit
 msgid "Commit"
 msgstr ""
 
@@ -206,10 +238,18 @@ msgid "Configure"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_plan_line__is_make_copy
-msgid ""
-"Create a copy of the Git Project instead of linking the file to the existing"
-" one."
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_clone_wizard__git_project_mode__copy
+msgid "Copy parent"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__create_wizard_id
+msgid "Create Wizard"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_jet_create_wizard
+msgid "Create new jet"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -236,6 +276,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__create_uid
 msgid "Created by"
@@ -245,19 +286,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__create_date
 msgid "Created on"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo__secret_id
-msgid "Custom secret used for this repository"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo_owner__secret_id
-msgid "Custom secret used for this repository owner"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -268,10 +300,10 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__display_name
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__display_name
 msgid "Display Name"
@@ -290,14 +322,27 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__enabled
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__enabled
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__enabled
 msgid "Enabled"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_clone_wizard__git_project_id
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_create_wizard__add_repositories__existing
+msgid "Existing Project"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_tree
 msgid "Export YAML"
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/wizards/cx_tower_jet_git_wizard.py:0
+msgid "Failed to create jet. Please check the server and template settings."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -312,14 +357,8 @@ msgid "File '%(file)s' doesn't belong to server '%(server)s'"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__file_template_id
-msgid "File Template"
-msgstr ""
-
-#. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__file_template_ids
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid "File Templates"
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_command__git_file_name
+msgid "File Name"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -328,8 +367,8 @@ msgid "File is already related to the same project and format"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.constraint,message:cetmix_tower_git.constraint_cx_tower_git_project_file_template_rel_project_server_file_template_format_uniq
-msgid "File template is already related to the same project and format"
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_command__git_file_name
+msgid "File name without path. Variables are allowed."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -339,13 +378,13 @@ msgid "Files"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__project_format
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__project_format
 msgid "Format"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__url_protocol__git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_repo_line_wizard__url_protocol__git
 msgid "GIT"
 msgstr ""
 
@@ -404,12 +443,14 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file__git_project_id
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file_template__git_project_id
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__git_project_ids
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet__git_project_id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_clone_wizard__git_project_mode
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_create_wizard__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_plan_line__git_project_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_server__git_project_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_jet_view_form
 msgid "Git Project"
 msgstr ""
 
@@ -419,8 +460,13 @@ msgid "Git Project Count"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__git_project_file_template_rel_ids
-msgid "Git Project File Template Relations"
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet__git_project_readonly
+msgid "Git Project Readonly"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet__git_project_readonly_reason
+msgid "Git Project Readonly Reason"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -439,8 +485,31 @@ msgid "Git Project Server File Relations"
 msgstr ""
 
 #. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet_template.py:0
+msgid "Git Project id %(project_id)s was not found."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_jet__git_project_id
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_jet_clone_wizard__parent_git_project_id
+msgid "Git Project of this Jet. Several Jets may share a project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet_template.py:0
+msgid "Git Project reference '%(reference)s' was not found."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_server.py:0
+msgid "Git Project uploaded successfully"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.actions.act_window,name:cetmix_tower_git.cx_tower_git_project_action
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_file_template__git_project_ids
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project_settings
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
@@ -450,6 +519,11 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.actions.act_window,name:cetmix_tower_git.action_cx_tower_git_remote
 msgid "Git Remotes"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model,name:cetmix_tower_git.model_cx_tower_git_repo_line_wizard
+msgid "Git Repository Line"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -497,6 +571,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__url_protocol__https
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_repo_line_wizard__url_protocol__https
 msgid "HTTPS"
 msgstr ""
 
@@ -517,11 +592,13 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__head
 msgid "Head"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_type
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__head_type
 msgid "Head Type"
 msgstr ""
 
@@ -532,10 +609,10 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__id
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__id
 msgid "ID"
@@ -574,9 +651,118 @@ msgid "Indicates if the repository is private"
 msgstr ""
 
 #. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: expected a dictionary."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: invalid URL."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: invalid head_type '%(head_type)s'."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: invalid remote_id."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: invalid repo_id."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: invalid url_protocol '%(url_protocol)s'."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: missing head."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: missing head_type."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid ""
+"Invalid repo line %(index)s: missing repository (repo_id, repo_reference or "
+"repo_url)."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid ""
+"Invalid repo line %(index)s: remote_id %(remote_id)s does not belong to this"
+" project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: remote_id %(remote_id)s is used twice."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: repository id %(repo_id)s was not found."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid ""
+"Invalid repo line %(index)s: repository keys resolve to different "
+"repositories."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Invalid repo line %(index)s: unknown key '%(key)s'."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid ""
+"Invalid repo line %(index)s: unresolvable repository reference "
+"'%(reference)s'."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__jet_ids
+msgid "Jets"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_clone_wizard__git_project_mode__keep
+msgid "Keep parent"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_uid
 msgid "Last Updated by"
@@ -586,9 +772,74 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project_rel__git_project_id
+msgid ""
+"Legacy: Git Project linked to a server file. Kept for servers that do not "
+"use Jets. New setups should link the Git Project to the Jet and write it "
+"with Upload Git Project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_plan_line__git_project_id
+msgid ""
+"Legacy: Git Project linked to the file created by this flight plan line. "
+"Kept for servers that do not use Jets. New setups should link the Git "
+"Project to the Jet and write it with Upload Git Project. The __git_project__"
+" custom value is also legacy."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_server__git_project_ids
+msgid ""
+"Legacy: Git Projects linked through files on this server. Kept for servers "
+"that do not use Jets."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_server__git_project_rel_ids
+msgid ""
+"Legacy: Git Projects linked through files on this server. Kept for servers "
+"that do not use Jets. New setups should link the Git Project to the Jet and "
+"write it with Upload Git Project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_plan_line__is_make_copy
+msgid ""
+"Legacy: create a copy of the Git Project instead of linking the file to the "
+"existing one. Never touches a Jet's Git Project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
+msgid ""
+"Legacy: kept for servers that do not use Jets. New setups\n"
+"                        should link the Git Project to the Jet (Jet \"Git Project\"\n"
+"                        tab or the launch/clone wizards) and write it to the host\n"
+"                        with the Upload Git Project command."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_plan_line_view_form
+msgid ""
+"Legacy: kept for servers that do not use Jets. New setups\n"
+"                        should link the Git Project to the Jet and write it with\n"
+"                        the Upload Git Project command. You can also provide a\n"
+"                        Git Project reference using the <code>__git_project__</code>\n"
+"                        variable in the flight plan custom values (also legacy).<br/>\n"
+"                        Python command code example:\n"
+"                        <code>\n"
+"custom_values['__git_project__'] = 'my_git_project'\n"
+"                        </code>\n"
+"                        <br/>\n"
+"                        Important: if defined, this variable value overrides the Git Project selected in the form."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -608,7 +859,6 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__name
-#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_file_template_rel__name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project_rel__name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__name
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__name
@@ -632,6 +882,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_view_search
 msgid "Name/Reference"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_create_wizard__add_repositories__no
+msgid "No"
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_server.py:0
+msgid "No Git Project to upload"
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -661,11 +922,15 @@ msgid "Number of remotes this repository is used in"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid "Open File Template"
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet_template.py:0
+msgid ""
+"Only one of git_project, git_project_copy_from or git_repo_lines may be "
+"given."
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_jet_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
 msgid "Open Git Project"
 msgstr ""
@@ -676,11 +941,6 @@ msgid "Open Server"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
-msgid "Open file template"
-msgstr ""
-
-#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_view_search
 msgid "Org"
 msgstr ""
@@ -688,6 +948,38 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__owner_id
 msgid "Owner"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo_owner__secret_id
+msgid ""
+"Owner-specific secret. Not currently used: private HTTPS URLs use "
+"environment placeholders ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN, "
+"$BITBUCKET_TOKEN)."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_clone_wizard__parent_git_project_id
+msgid "Parent Git Project"
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet_template.py:0
+#: code:addons/cetmix_tower_git/wizards/cx_tower_jet_git_wizard.py:0
+msgid "Please add at least one repository to create a Git Project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/wizards/cx_tower_jet_git_wizard.py:0
+msgid "Please select a Git Project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/wizards/cx_tower_jet_git_wizard.py:0
+msgid "Please select a server to create a jet."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -714,6 +1006,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__url_protocol
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__url_protocol
 msgid "Protocol"
 msgstr ""
 
@@ -736,6 +1029,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__head_type__pr
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_repo_line_wizard__head_type__pr
 msgid "Pull/Merge Request"
 msgstr ""
 
@@ -795,6 +1089,12 @@ msgid "Remotes that use this repository"
 msgstr ""
 
 #. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_project.py:0
+msgid "Repo lines must be a list of dictionaries."
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 msgid "Repos"
 msgstr ""
@@ -803,6 +1103,9 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_git.action_cx_tower_git_repo
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__repo_ids
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__repo_ids
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet__git_remote_ids
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_clone_wizard__git_repo_line_ids
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_create_wizard__git_repo_line_ids
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_repositories
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_owner_view_form
 msgid "Repositories"
@@ -827,6 +1130,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__repo_id
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__repo_id
 msgid "Repository"
 msgstr ""
 
@@ -887,12 +1191,21 @@ msgid "Repository provider to determine provider-based behaviour"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo__secret_id
+msgid ""
+"Repository-specific secret. Not currently used: private HTTPS URLs use "
+"environment placeholders ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN, "
+"$BITBUCKET_TOKEN)."
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 msgid "Root Directory"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_remote__url_protocol__ssh
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_git_repo_line_wizard__url_protocol__ssh
 msgid "SSH"
 msgstr ""
 
@@ -923,12 +1236,18 @@ msgid "Secret"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_plan_line__git_project_id
-msgid "Select a git project to be linked to the file and server."
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_clone_wizard__git_project_mode__select
+msgid "Select"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields.selection,name:cetmix_tower_git.selection__cx_tower_jet_create_wizard__add_repositories__repos
+msgid "Select repos"
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__sequence
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_source__sequence
 msgid "Sequence"
 msgstr ""
@@ -943,11 +1262,14 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_project__server_ids
 msgid ""
-"Servers are added automatically based on the files linked to the project."
+"Servers are added automatically based on the files linked to the project. "
+"Legacy: used for servers that do not use Jets. New setups should link the "
+"Git Project to the Jet."
 msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__source_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_jet_view_form
 msgid "Source"
 msgstr ""
 
@@ -962,6 +1284,20 @@ msgstr ""
 msgid ""
 "The top one remote will be used as a merge target.\n"
 "                                You can re-arrange remotes by dragging them or changing their sequence value."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet.py:0
+msgid ""
+"This Git Project is shared with Jets you cannot modify. You can view the "
+"repositories but cannot edit them."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet.py:0
+msgid "This Jet has no Git Project."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -985,23 +1321,17 @@ msgid "Yaml Code"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_plan_line_view_form
-msgid ""
-"You can also provide a Git Project reference using the <code>__git_project__</code> variable in the flight plan custom values.<br/>\n"
-"                        Python command code example:\n"
-"                        <code>\n"
-"custom_values['__git_project__'] = 'my_git_project'\n"
-"                        </code>\n"
-"                        <br/>\n"
-"                        Important: if defined, this variable value overrides the Git Project selected in the form."
-msgstr ""
-
-#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 msgid ""
 "You can edit these fields at your own risk. However keep in mind that they "
 "will be automatically updated each time related servers are added, removed "
 "or updated."
+msgstr ""
+
+#. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_jet.py:0
+msgid "You cannot modify this Jet."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -1017,6 +1347,11 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_repo_view_form
 msgid "e.g., cetmix-tower, odoo"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_command_view_form
+msgid "eg repos.yml or {{ tower.jet.reference }}.yml"
 msgstr ""
 
 #. module: cetmix_tower_git
