@@ -1485,8 +1485,10 @@ class CxTowerServer(models.Model):
         Returns:
             record: The created file record.
         """
-        # Stamp the template env so create_file / auto_sync push-pull
-        # inherit inline_file_operation (create_file uses self.env).
+        # Stamp the template env so create_file inherits
+        # inline_file_operation (create_file uses self.env). Auto-sync
+        # push/pull is skipped while this key is set; this runner
+        # performs the single transfer.
         file_template_id = log_record.command_id.file_template_id.with_context(
             inline_file_operation=True
         )
