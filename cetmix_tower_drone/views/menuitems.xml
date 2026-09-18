@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_cx_tower_drone_root"
+        name="Drones"
+        parent="cetmix_tower_base.menu_settings"
+        sequence="450"
+        groups="cetmix_tower_base.group_root"
+    />
+    <menuitem
+        id="cx_tower_drone_controller_menu"
+        name="Drone Controllers"
+        action="cx_tower_drone_controller_action"
+        parent="menu_cx_tower_drone_root"
+        sequence="10"
+        groups="cetmix_tower_base.group_root"
+    />
+    <menuitem
+        id="cx_tower_drone_job_menu"
+        name="Drone Jobs"
+        action="cx_tower_drone_job_action"
+        parent="cetmix_tower_base.menu_cx_tower_log_root"
+        sequence="200"
+        groups="cetmix_tower_base.group_root"
+    />
+</odoo>

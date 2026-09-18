@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_drone_job_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.drone.job.view.form</field>
+        <field name="model">cx.tower.drone.job</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <header>
+                    <button
+                        name="action_cancel"
+                        type="object"
+                        string="Cancel"
+                        invisible="state not in ('pending', 'running')"
+                        confirm="Cancel this job? The controller will be asked to stop the work."
+                    />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="skill_id" />
+                            <field name="controller_id" />
+                            <field name="res_model" />
+                            <field name="res_id" />
+                            <field name="method_name" />
+                            <field name="user_id" />
+                        </group>
+                        <group>
+                            <field name="create_date" />
+                            <field name="last_heartbeat" />
+                            <field name="last_check" />
+                            <field name="date_done" />
+                            <field name="callback_attempts" />
+                        </group>
+                    </group>
+                    <group>
+                        <field name="callback_error" invisible="not callback_error" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_drone_job_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.drone.job.view.list</field>
+        <field name="model">cx.tower.drone.job</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="skill_id" />
+                <field name="controller_id" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-muted="state in ('pending', 'cancelled')"
+                    decoration-info="state == 'running'"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state in ('failed', 'timed_out')"
+                />
+                <field name="res_model" />
+                <field name="res_id" />
+                <field name="method_name" />
+                <field name="user_id" />
+                <field name="create_date" />
+                <field name="last_heartbeat" />
+                <field name="date_done" />
+                <field name="callback_attempts" />
+                <field name="callback_error" optional="hide" />
+                <button
+                    name="action_cancel"
+                    type="object"
+                    string="Cancel"
+                    icon="fa-stop"
+                    invisible="state not in ('pending', 'running')"
+                    confirm="Cancel this job? The controller will be asked to stop the work."
+                />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_drone_job_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.drone.job.view.search</field>
+        <field name="model">cx.tower.drone.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="skill_id" />
+                <field name="controller_id" />
+                <field name="res_model" />
+                <field name="user_id" />
+                <filter
+                    name="active_jobs"
+                    string="Pending or Running"
+                    domain="[('state', 'in', ('pending', 'running'))]"
+                />
+                <filter
+                    name="failed_jobs"
+                    string="Failed or Timed Out"
+                    domain="[('state', 'in', ('failed', 'timed_out'))]"
+                />
+                <group>
+                    <filter
+                        name="group_state"
+                        string="State"
+                        context="{'group_by': 'state'}"
+                    />
+                    <filter
+                        name="group_controller"
+                        string="Controller"
+                        context="{'group_by': 'controller_id'}"
+                    />
+                    <filter
+                        name="group_skill"
+                        string="Skill"
+                        context="{'group_by': 'skill_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_drone_job_action" model="ir.actions.act_window">
+        <field name="name">Drone Jobs</field>
+        <field name="res_model">cx.tower.drone.job</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
