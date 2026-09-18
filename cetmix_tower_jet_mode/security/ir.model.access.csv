@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_jet_mode_user,cx.tower.jet.mode.user,model_cx_tower_jet_mode,base.group_user,1,1,1,1

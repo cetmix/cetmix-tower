@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Demo Jet Modes linked to the native Odoo Demo template from cetmix_tower_server -->
+    <record id="cx_tower_jet_mode_demo_logs" model="cx.tower.jet.mode">
+        <field name="name">📋 Logs &amp; Monitoring</field>
+        <field name="sequence">10</field>
+        <field name="access_level">1</field>
+        <field
+            name="jet_template_id"
+            ref="cetmix_tower_server.jet_template_odoo_demo"
+        />
+        <field
+            name="variable_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.variable_command_error')])]"
+        />
+        <field
+            name="action_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.jet_action_odoo_start_demo'), ref('cetmix_tower_server.jet_action_odoo_stop_demo')])]"
+        />
+        <field name="description" type="html">
+            <h3>📋 Logs and Monitoring Profile</h3>
+            <p
+            >Use this mode to inspect container output, monitor performance metrics, and view real-time log streams.</p>
+            <ul>
+                <li><strong
+                >Target:</strong> System operations &amp; troubleshooting</li>
+                <li><strong>Access:</strong> Available to all Users</li>
+            </ul>
+        </field>
+    </record>
+
+    <record id="cx_tower_jet_mode_demo_backups" model="cx.tower.jet.mode">
+        <field name="name">📁 Workspace Initialization</field>
+        <field name="sequence">20</field>
+        <field name="access_level">2</field>
+        <field
+            name="jet_template_id"
+            ref="cetmix_tower_server.jet_template_odoo_demo"
+        />
+        <field
+            name="variable_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.variable_demo_dir')])]"
+        />
+        <field
+            name="action_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.jet_action_odoo_initialize_demo')])]"
+        />
+        <field name="description" type="html">
+            <h3>📁 Workspace Initialization Profile</h3>
+            <p
+            >Enables actions for directory listing, workspace creation, and initial environment setup.</p>
+            <ul>
+                <li><strong
+                >Target:</strong> Initial provisioning and directory checks</li>
+                <li><strong>Access:</strong> Managers only</li>
+            </ul>
+        </field>
+    </record>
+
+    <record id="cx_tower_jet_mode_demo_state" model="cx.tower.jet.mode">
+        <field name="name">⚙️ State &amp; Deployment</field>
+        <field name="sequence">30</field>
+        <field name="access_level">3</field>
+        <field
+            name="jet_template_id"
+            ref="cetmix_tower_server.jet_template_odoo_demo"
+        />
+        <field
+            name="variable_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.variable_demo_branch'), ref('cetmix_tower_server.variable_demo_path')])]"
+        />
+        <field
+            name="action_ids"
+            eval="[(6, 0, [ref('cetmix_tower_server.jet_action_odoo_create_demo')])]"
+        />
+        <field name="description" type="html">
+            <h3>🚀 Core System &amp; State Management</h3>
+            <p
+            >Allows modifying high-level network topology, resetting jet status, and applying critical updates directly to database containers.</p>
+            <ul>
+                <li><strong>Target:</strong> Infrastructure administrators</li>
+                <li><strong
+                >Access:</strong> Root developers and administrators only</li>
+            </ul>
+        </field>
+    </record>
+</odoo>
