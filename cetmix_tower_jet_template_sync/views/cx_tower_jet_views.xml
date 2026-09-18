@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_view_form_inherit" model="ir.ui.view">
+        <field name="name">cx.tower.jet.form.inherit</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="exclude_from_sync" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_jet_view_tree_inherit" model="ir.ui.view">
+        <field name="name">cx.tower.jet.list.inherit</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state_id']" position="before">
+                <field name="exclude_from_sync" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_jet_view_search_inherit" model="ir.ui.view">
+        <field name="name">cx.tower.jet.search.inherit</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='deletable']" position="before">
+                <filter
+                    string="Excluded from Sync"
+                    name="excluded_from_sync"
+                    domain="[('exclude_from_sync', '=', True)]"
+                />
+                <filter
+                    string="Not Excluded from Sync"
+                    name="not_excluded_from_sync"
+                    domain="[('exclude_from_sync', '=', False)]"
+                />
+                <separator />
+            </xpath>
+        </field>
+    </record>
+</odoo>
