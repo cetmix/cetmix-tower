@@ -7,6 +7,12 @@
         web_icon="cetmix_tower_base,static/description/icon.png"
     />
     <menuitem
+        id="menu_cx_tower_log_root"
+        name="Logs"
+        parent="menu_root"
+        sequence="20"
+    />
+    <menuitem
         id="menu_settings"
         name="Settings"
         parent="menu_root"

@@ -1,12 +1,62 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo.modules.migration import exec_script
+from odoo.tools import file_path
+
 from ..hooks import XMLIDS_TO_BASE, _move_server_xmlids_to_base
 from .common import TestTowerBaseCommon
 
 
 class TestTowerBaseHooks(TestTowerBaseCommon):
     """Tests for the xmlid re-own helper used by pre_init_hook."""
+
+    def test_logs_migration_preserves_menu_and_children(self):
+        """Upgrading base preserves the existing menu and custom child placement."""
+        menu = self.env.ref("cetmix_tower_base.menu_cx_tower_log_root")
+        menus = self.env["ir.ui.menu"]
+        menus.create(
+            [
+                {"name": "Custom log A", "parent_id": menu.id, "sequence": 7},
+                {"name": "Custom log B", "parent_id": menu.id, "sequence": 42},
+            ]
+        )
+        children = menus.with_context(**{"ir.ui.menu.full_list": True}).search(
+            [("parent_id", "=", menu.id)]
+        )
+        fields = ["name", "parent_id", "sequence", "action", "groups_id"]
+        before = (menu | children).read(fields)
+        self.env.flush_all()
+        self.env.cr.execute(
+            """
+            UPDATE ir_model_data
+               SET module = 'cetmix_tower_server'
+             WHERE module = 'cetmix_tower_base'
+               AND name = 'menu_cx_tower_log_root'
+            """
+        )
+        exec_script(
+            self.env.cr,
+            "18.0.1.0.0",
+            file_path("cetmix_tower_base/migrations/18.0.1.0.1/pre-migrate.py"),
+            "cetmix_tower_base",
+            "pre",
+            "18.0.1.0.1",
+        )
+        self.env.registry.clear_cache()
+        self.assertEqual(self.env.ref("cetmix_tower_base.menu_cx_tower_log_root"), menu)
+        self.assertEqual(_move_server_xmlids_to_base(self.env.cr), 0)
+        self.env.invalidate_all()
+        self.assertEqual((menu | children).read(fields), before)
+        self.env.cr.execute(
+            """
+            SELECT module, res_id
+              FROM ir_model_data
+             WHERE name = 'menu_cx_tower_log_root'
+               AND module IN ('cetmix_tower_base', 'cetmix_tower_server')
+            """
+        )
+        self.assertEqual(self.env.cr.fetchall(), [("cetmix_tower_base", menu.id)])
 
     def test_move_listed_rows_keeps_res_id(self):
         """Listed xmlids move back to base and keep the same res_id."""
