@@ -1,0 +1,1 @@
+Fall back to built-in SSH when no drone controller is available, instead of failing the command by default. (5282)
