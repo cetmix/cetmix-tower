@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_drone_payload_key_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.drone.payload.key.wizard.view.form</field>
+        <field name="model">cx.tower.drone.payload.key.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Payload Key">
+                <div class="alert alert-warning" role="alert">
+                    Copy this key now and configure the same value on the
+                    controller. It will not be shown again after you close
+                    this dialog.
+                </div>
+                <group>
+                    <field
+                        name="payload_key"
+                        widget="CopyClipboardChar"
+                        string="Payload Key"
+                    />
+                </group>
+                <footer>
+                    <button special="cancel" string="Done" class="btn-primary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
