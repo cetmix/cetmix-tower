@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_drone_job_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.drone.job.view.form.drone.ssh</field>
+        <field name="model">cx.tower.drone.job</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_drone.cx_tower_drone_job_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='controller_id']" position="after">
+                <field name="command_log_id" invisible="not command_log_id" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

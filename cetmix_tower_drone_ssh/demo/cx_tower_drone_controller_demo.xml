@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="drone_skill_ssh" model="cx.tower.drone.skill">
+        <field name="name">SSH</field>
+        <field name="reference">ssh</field>
+    </record>
+    <record id="drone_controller_ssh_demo" model="cx.tower.drone.controller">
+        <field name="name">Demo SSH Drone Controller</field>
+        <field name="active" eval="False" />
+        <field name="skill_ids" eval="[(6, 0, [ref('drone_skill_ssh')])]" />
+        <field name="priority">100</field>
+        <field name="controller_url">http://127.0.0.1:9</field>
+        <field name="drone_api_key">demo-drone-api-key</field>
+        <field name="drone_response_key">demo-drone-response-key</field>
+    </record>
+</odoo>
