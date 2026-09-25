@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="rule_cx_tower_drone_skill_root" model="ir.rule">
+        <field name="name">Tower Drone Skill: Root has full access</field>
+        <field name="model_id" ref="model_cx_tower_drone_skill" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+    </record>
+
+    <record id="rule_cx_tower_drone_controller_root" model="ir.rule">
+        <field name="name">Tower Drone Controller: Root has full access</field>
+        <field name="model_id" ref="model_cx_tower_drone_controller" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+    </record>
+
+    <record id="rule_cx_tower_drone_job_root" model="ir.rule">
+        <field name="name">Tower Drone Job: Root has full access</field>
+        <field name="model_id" ref="model_cx_tower_drone_job" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+    </record>
+</odoo>

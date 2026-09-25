@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.cetmix.tower.drone</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_base.res_config_settings_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='cetmix_tower_base']" position="inside">
+                <block title="Drones" name="cetmix_tower_drone_settings">
+                    <setting
+                        id="cetmix_tower_drone_cron_batch_size"
+                        help="Number of jobs the poll and stale pending crons ask controllers about in one batch. Remaining jobs are handled right after."
+                    >
+                        <field name="cetmix_tower_drone_cron_batch_size" />
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
