@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_drone_skill_user,Drone Skill->User,model_cx_tower_drone_skill,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_drone_skill_manager,Drone Skill->Manager,model_cx_tower_drone_skill,cetmix_tower_base.group_manager,0,0,0,0
+access_cx_tower_drone_skill_root,Drone Skill->Root,model_cx_tower_drone_skill,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_drone_controller_user,Drone Controller->User,model_cx_tower_drone_controller,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_drone_controller_manager,Drone Controller->Manager,model_cx_tower_drone_controller,cetmix_tower_base.group_manager,0,0,0,0
+access_cx_tower_drone_controller_root,Drone Controller->Root,model_cx_tower_drone_controller,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_drone_job_user,Drone Job->User,model_cx_tower_drone_job,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_drone_job_manager,Drone Job->Manager,model_cx_tower_drone_job,cetmix_tower_base.group_manager,0,0,0,0
+access_cx_tower_drone_job_root,Drone Job->Root,model_cx_tower_drone_job,cetmix_tower_base.group_root,1,0,0,1
+access_cx_tower_drone_payload_key_wizard_root,Show Payload Key->Root,model_cx_tower_drone_payload_key_wizard,cetmix_tower_base.group_root,1,1,1,1

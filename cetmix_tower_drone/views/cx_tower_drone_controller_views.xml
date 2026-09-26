@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_drone_controller_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.drone.controller.view.form</field>
+        <field name="model">cx.tower.drone.controller</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button
+                        name="action_check_health"
+                        type="object"
+                        string="Check Connection"
+                        help="Ask the controller whether it is healthy and update its status"
+                    />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_jobs"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-tasks"
+                        >
+                            <field name="job_count" string="Jobs" widget="statinfo" />
+                        </button>
+                    </div>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="text-bg-danger"
+                        invisible="active"
+                    />
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="reference" />
+                            <field name="controller_url" widget="url" />
+                            <field
+                                name="skill_ids"
+                                widget="many2many_tags"
+                                readonly="1"
+                            />
+                        </group>
+                        <group>
+                            <field
+                                name="status"
+                                decoration-success="status == 'available'"
+                                decoration-warning="status == 'draining'"
+                                decoration-danger="status in ('error', 'not_reachable')"
+                            />
+                            <field name="active" widget="boolean_toggle" />
+                            <field name="priority" />
+                            <field name="max_running_jobs" />
+                            <field name="running_job_count" />
+                            <field name="last_health_check" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page
+                            name="keys"
+                            string="Keys"
+                            groups="cetmix_tower_base.group_root"
+                        >
+                            <group>
+                                <field name="drone_api_key" password="True" />
+                                <label for="payload_key" />
+                                <div class="o_row">
+                                    <field name="payload_key" password="True" />
+                                    <button
+                                        name="action_generate_payload_key"
+                                        type="object"
+                                        string="Generate"
+                                        class="btn-secondary"
+                                        help="Generate a Fernet key, save it, and show it so it can be copied"
+                                    />
+                                </div>
+                                <field name="drone_response_key" password="True" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_tower_drone_controller_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.drone.controller.view.list</field>
+        <field name="model">cx.tower.drone.controller</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="skill_ids" widget="many2many_tags" readonly="1" />
+                <field
+                    name="status"
+                    widget="badge"
+                    decoration-success="status == 'available'"
+                    decoration-warning="status == 'draining'"
+                    decoration-danger="status in ('error', 'not_reachable')"
+                />
+                <field name="priority" />
+                <field name="active" widget="boolean_toggle" />
+                <field name="controller_url" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_tower_drone_controller_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.drone.controller.view.search</field>
+        <field name="model">cx.tower.drone.controller</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="controller_url" />
+                <field name="skill_ids" />
+                <filter
+                    name="archived"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_tower_drone_controller_action" model="ir.actions.act_window">
+        <field name="name">Drone Controllers</field>
+        <field name="res_model">cx.tower.drone.controller</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
