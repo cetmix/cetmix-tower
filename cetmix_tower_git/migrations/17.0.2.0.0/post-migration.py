@@ -1,66 +1,88 @@
 import logging
 
 from odoo import SUPERUSER_ID, api
+from odoo.tools.sql import column_exists
 
 _logger = logging.getLogger(__name__)
 
 
 def migrate(cr, version):
-    """
-    Convert URLs in remotes to repositories.
-    Add repo_id to remotes.
-    """
+    """Link git remotes to repositories and clean URL-shaped heads.
 
-    _logger.info(
-        "Converting URLs in remotes to repositories and adding repo_id to remotes."
-    )
+    A database upgraded through 16.0.2.0.0 already created repositories
+    from ``cx_tower_git_remote.url``. Odoo then dropped that column, so
+    selecting it fails on the way to 17.0. An earlier 17.0 database still
+    has the column and must be converted here. Head cleanup runs either way.
+
+    Args:
+        cr (odoo.sql_db.Cursor): Database cursor of the upgrade transaction.
+        version (str): Module version installed before this script runs.
+
+    Returns:
+        None
+
+    Raises:
+        ValidationError: If a legacy remote URL cannot be parsed into a
+            repository.
+    """
     env = api.Environment(cr, SUPERUSER_ID, {})
-
-    # Fetch all remotes using SQL query Group them {"url": [remote_id, remote_id, ...]}
-    cr.execute(
-        """
-        SELECT url, array_agg(id) as remote_ids
-        FROM cx_tower_git_remote
-        GROUP BY url
-    """
-    )
-    remote_urls = cr.fetchall()
-    remote_urls_dict = {url: remote_ids for url, remote_ids in remote_urls}
-
-    # Create repo for each url and add this repo to all remotes
-    url_count = 0
     remote_obj = env["cx.tower.git.remote"]
     repo_obj = env["cx.tower.git.repo"]
-    for url, remote_ids in remote_urls_dict.items():
-        repo_id = repo_obj.name_create(url)[0]
-        # Check if any of the remotes is private
-        remotes = remote_obj.browse(remote_ids)
-        is_private = bool(remotes.filtered(lambda r: r.is_private))
+    url_count = 0
 
-        # Add repo to remotes
-        # We are using SQL to avoid post-write triggers
+    # 16.0.2.0.0 already removed this column. Earlier 17.0 still has it.
+    if column_exists(cr, "cx_tower_git_remote", "url"):
+        _logger.info(
+            "Converting URLs in remotes to repositories and adding"
+            " repo_id to remotes."
+        )
+        # Group remotes that still store a URL on the remote itself.
         cr.execute(
             """
-            UPDATE cx_tower_git_remote
-            SET repo_id = %s
-            WHERE id = ANY(%s)
-        """,
-            (repo_id, remote_ids),
+            SELECT url, array_agg(id) as remote_ids
+            FROM cx_tower_git_remote
+            GROUP BY url
+        """
         )
+        remote_urls = cr.fetchall()
+        remote_urls_dict = {url: remote_ids for url, remote_ids in remote_urls}
 
-        # Update repo.is_private
-        # We are using SQL to avoid post-write triggers
-        if is_private:
+        for url, remote_ids in remote_urls_dict.items():
+            repo_id = repo_obj.name_create(url)[0]
+            # Check if any of the remotes is private
+            remotes = remote_obj.browse(remote_ids)
+            is_private = bool(remotes.filtered(lambda r: r.is_private))
+
+            # Add repo to remotes
+            # We are using SQL to avoid post-write triggers
             cr.execute(
                 """
-                UPDATE cx_tower_git_repo
-                SET is_private = true
-                WHERE id = %s
+                UPDATE cx_tower_git_remote
+                SET repo_id = %s
+                WHERE id = ANY(%s)
             """,
-                (repo_id,),
+                (repo_id, remote_ids),
             )
 
-        url_count += 1
+            # Update repo.is_private
+            # We are using SQL to avoid post-write triggers
+            if is_private:
+                cr.execute(
+                    """
+                    UPDATE cx_tower_git_repo
+                    SET is_private = true
+                    WHERE id = %s
+                """,
+                    (repo_id,),
+                )
+
+            url_count += 1
+    else:
+        _logger.info(
+            "Skipping remote URL conversion while upgrading from %s:"
+            " cx_tower_git_remote.url was already removed.",
+            version,
+        )
 
     # Compute project_ids for repositories
     _logger.info("Computing project_ids for repositories.")
