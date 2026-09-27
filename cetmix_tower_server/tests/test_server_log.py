@@ -1,6 +1,8 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from unittest.mock import patch
+
 from odoo.exceptions import AccessError
 
 from .common_jets import TestTowerJetsCommon
@@ -275,6 +277,41 @@ class TestTowerServerLog(TestTowerJetsCommon):
             test_logs.unlink()
         except AccessError:
             self.fail("Root should be able to unlink any logs")
+
+    def test_command_log_includes_stdout_and_stderr(self):
+        """A command log shows stderr together with stdout."""
+        log = self.ServerLog.create(
+            {
+                "name": "Command log",
+                "server_id": self.server_test_1.id,
+                "log_type": "command",
+                "command_id": self.command_list_dir.id,
+                "access_level": "1",
+            }
+        )
+        results = [
+            {
+                "status": 0,
+                "response": "stdout line",
+                "error": "stderr line",
+            },
+            {"status": 0, "response": "stdout only", "error": None},
+            {"status": 1, "response": None, "error": "stderr only"},
+            {"status": 0, "response": None, "error": None},
+        ]
+        expected = [
+            "stdout line\nstderr line",
+            "stdout only",
+            "stderr only",
+            self.ServerLog.NO_LOG_FETCHED_MESSAGE,
+        ]
+        with patch.object(
+            type(self.env["cx.tower.server"]),
+            "run_command",
+            side_effect=results,
+        ):
+            for want in expected:
+                self.assertEqual(log._get_log_from_command(), want)
 
     def test_log_text_access_restrictions(self):
         """Test log_text field access controls"""
