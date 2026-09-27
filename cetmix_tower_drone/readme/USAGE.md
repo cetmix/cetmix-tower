@@ -53,7 +53,7 @@ A skill token is a string of lowercase letters, digits and underscores. Extra ke
 }
 ```
 
-`data` is the payload the caller passed to `launch_drone()`. Accept the job quickly and do the work asynchronously: a timeout on this request means "may have arrived", not "rejected".
+`data` is the payload the caller passed to `launch_drone()`. `callback_url` and `heartbeat_url` use the controller Callback URL. A new controller stores the Odoo web base URL there. Accept the job quickly and do the work asynchronously: a timeout on this request means "may have arrived", not "rejected".
 
 **Status** answers one of:
 

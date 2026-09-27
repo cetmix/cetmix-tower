@@ -32,26 +32,60 @@ class TestDroneController(TestDroneCommon):
         self.controller_1.write({"payload_key": new_key})
         self.assertEqual(self.controller_1._get_secret_value("payload_key"), new_key)
 
-    def test_action_generate_payload_key(self):
-        """Generate stores a Fernet key and opens a wizard that shows it."""
-        old_key = self.controller_1._get_secret_value("payload_key")
-        action = self.controller_1.action_generate_payload_key()
-        new_key = self.controller_1._get_secret_value("payload_key")
-        self.assertNotEqual(new_key, old_key)
-        Fernet(new_key.encode())
+    def test_action_generate_keys(self):
+        """Generate stores three keys and shows a storage key without saving it."""
+        old = {
+            name: self.controller_1._get_secret_value(name)
+            for name in ("drone_api_key", "payload_key", "drone_response_key")
+        }
+        action = self.controller_1.action_generate_keys()
+        stored = {
+            name: self.controller_1._get_secret_value(name)
+            for name in ("drone_api_key", "payload_key", "drone_response_key")
+        }
+        self.assertEqual(len(set(stored.values())), 3)
+        for name, value in stored.items():
+            self.assertNotEqual(value, old[name])
+            self.assertTrue(value)
+        Fernet(stored["payload_key"].encode())
+        self.assertEqual(len(stored["drone_api_key"]), 43)
+        self.assertEqual(len(stored["drone_response_key"]), 43)
+        self.assertNotIn("result_storage_key", self.controller_1._fields)
+        storage_key = action["context"]["default_result_storage_key"]
+        self.assertEqual(len(storage_key), 64)
+        self.assertTrue(all(char in "0123456789abcdef" for char in storage_key))
+        self.assertNotIn(storage_key, stored.values())
         self.assertEqual(action["res_model"], "cx.tower.drone.payload.key.wizard")
         self.assertEqual(action["target"], "new")
-        self.assertEqual(action["context"]["default_payload_key"], new_key)
+        context = action["context"]
+        self.assertEqual(context["default_drone_api_key"], stored["drone_api_key"])
+        self.assertEqual(context["default_payload_key"], stored["payload_key"])
+        self.assertEqual(
+            context["default_drone_response_key"], stored["drone_response_key"]
+        )
         wizard = self.env[action["res_model"]].browse(action["res_id"])
-        self.assertFalse(wizard._fields["payload_key"].store)
         self.assertEqual(wizard.controller_id, self.controller_1)
+        shown_names = list(stored) + ["result_storage_key"]
+        for name in shown_names:
+            self.assertFalse(wizard._fields[name].store)
         # The form reads the wizard with the action context, as web_read does.
-        shown = wizard.with_context(**action["context"]).read(["payload_key"])
-        self.assertEqual(shown[0]["payload_key"], new_key)
-        # The plaintext key is not written to the transient table
+        shown = wizard.with_context(**context).read(shown_names)
+        for name, value in stored.items():
+            self.assertEqual(shown[0][name], value)
+        self.assertEqual(shown[0]["result_storage_key"], storage_key)
+        # Plaintext keys are not written to the transient table, and the
+        # controller columns stay empty because the vault holds the values.
         self.env.flush_all()
+        self.env.cr.execute(
+            "SELECT drone_api_key, payload_key, drone_response_key "
+            "FROM cx_tower_drone_controller WHERE id = %s",
+            [self.controller_1.id],
+        )
+        self.assertEqual(self.env.cr.fetchone(), (None, None, None))
         self.env.invalidate_all()
-        self.assertFalse(wizard.read(["payload_key"])[0]["payload_key"])
+        hidden = wizard.read(shown_names)[0]
+        for name in shown_names:
+            self.assertFalse(hidden[name])
 
     @mute_logger("odoo.sql_db")
     def test_max_running_jobs_not_negative(self):
@@ -75,6 +109,32 @@ class TestDroneController(TestDroneCommon):
             self.controller_1.drone_response_key,
             self.controller_1.SECRET_VALUE_PLACEHOLDER,
         )
+
+    def test_callback_url_defaults_to_web_base(self):
+        """A new controller stores the Odoo web base URL."""
+        self.env["ir.config_parameter"].sudo().set_param(
+            "web.base.url", "https://tower.example.com/"
+        )
+        controller = self.Controller.create(
+            {
+                "name": "Default Callback",
+                "controller_url": "https://default-callback.example.com",
+            }
+        )
+        self.assertEqual(controller.callback_url, "https://tower.example.com")
+
+    def test_callback_url_origin(self):
+        """Callback URL is an absolute http(s) origin, or empty."""
+        self.controller_1.callback_url = "http://odoo:8069"
+        self.controller_1.callback_url = False
+        for value in (
+            "odoo:8069",
+            "ftp://odoo:8069",
+            "http://odoo:8069/cetmix_tower_drone/job/result",
+            "http://user:secret@odoo:8069",
+        ):
+            with self.assertRaises(ValidationError):
+                self.controller_1.callback_url = value
 
     def test_default_status(self):
         controller = self.Controller.create(

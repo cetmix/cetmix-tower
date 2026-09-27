@@ -55,12 +55,11 @@ class TestDroneSshCommon(TestTowerCommon):
         Skill = cls.env["cx.tower.drone.skill"]
         Skill.search([("reference", "=", SKILL_SSH)]).unlink()
         cls.skill_ssh = Skill.create({"name": "SSH", "reference": SKILL_SSH})
-        cls.controller_1 = cls._create_controller("SSH Controller 1", priority=1)
-        cls.controller_2 = cls._create_controller("SSH Controller 2", priority=2)
-
         cls.ICP = cls.env["ir.config_parameter"].sudo()
         cls.ICP.set_param("web.base.url", "https://tower.example.com")
         cls.ICP.set_param("cetmix_tower_server.command_timeout", "600")
+        cls.controller_1 = cls._create_controller("SSH Controller 1", priority=1)
+        cls.controller_2 = cls._create_controller("SSH Controller 2", priority=2)
 
         cls.command_ssh = cls.Command.create(
             {"name": "Drone SSH", "action": "ssh_command", "code": "ls -la"}

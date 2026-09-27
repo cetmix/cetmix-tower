@@ -39,6 +39,7 @@
                         <group>
                             <field name="reference" />
                             <field name="controller_url" widget="url" />
+                            <field name="callback_url" widget="url" />
                             <field
                                 name="skill_ids"
                                 widget="many2many_tags"
@@ -65,19 +66,16 @@
                             string="Keys"
                             groups="cetmix_tower_base.group_root"
                         >
+                            <button
+                                name="action_generate_keys"
+                                type="object"
+                                string="Generate Keys"
+                                class="btn-secondary"
+                                help="Generate a new API key, payload key and response key, save them, and show them once so they can be copied. Also shows a result storage key, which is not saved"
+                            />
                             <group>
                                 <field name="drone_api_key" password="True" />
-                                <label for="payload_key" />
-                                <div class="o_row">
-                                    <field name="payload_key" password="True" />
-                                    <button
-                                        name="action_generate_payload_key"
-                                        type="object"
-                                        string="Generate"
-                                        class="btn-secondary"
-                                        help="Generate a Fernet key, save it, and show it so it can be copied"
-                                    />
-                                </div>
+                                <field name="payload_key" password="True" />
                                 <field name="drone_response_key" password="True" />
                             </group>
                         </page>

@@ -284,6 +284,28 @@ class TestDroneJob(TestDroneCommon):
         self.assertEqual(len(posts), 1)
         self.assertEqual(posts[0]["base"], self.controller_1.controller_url)
 
+    def test_callback_url_replaces_web_base(self):
+        """A controller Callback URL is the envelope origin."""
+        self.controller_2.active = False
+        self.controller_1.callback_url = "http://odoo.internal:8069/"
+        job = self.launch().sudo()
+        self.run_postcommit()
+        posts = self.network.find("POST", "/jobs")
+        self.assertEqual(len(posts), 1)
+        key = self.controller_1.sudo()._get_secret_value("payload_key")
+        envelope = json.loads(
+            Fernet(key.encode()).decrypt(posts[0]["json"]["payload"].encode())
+        )
+        self.assertEqual(job.controller_id, self.controller_1)
+        self.assertEqual(
+            envelope["callback_url"],
+            "http://odoo.internal:8069/cetmix_tower_drone/job/result",
+        )
+        self.assertEqual(
+            envelope["heartbeat_url"],
+            "http://odoo.internal:8069/cetmix_tower_drone/job/heartbeat",
+        )
+
     def test_payload_encrypted_per_candidate(self):
         """``data`` is the same dict for every controller; the token is not."""
         self.network.set(self.controller_1, post=400)
@@ -951,7 +973,7 @@ class TestDroneJob(TestDroneCommon):
             {
                 "action_cancel",
                 "action_check_health",
-                "action_generate_payload_key",
+                "action_generate_keys",
                 "action_view_jobs",
                 "launch_drone",
             },

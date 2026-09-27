@@ -4,6 +4,8 @@
 import hmac
 import logging
 import re
+import secrets
+from urllib.parse import urlsplit
 
 import psycopg2
 import requests
@@ -20,9 +22,15 @@ from .constants import (
     CONTROLLER_NOT_REACHABLE,
     JOB_ACTIVE_STATES,
     OUTBOUND_TIMEOUT,
+    ROUTE_JOB_HEARTBEAT,
+    ROUTE_JOB_RESULT,
 )
 
 _logger = logging.getLogger(__name__)
+
+# Bearer tokens (API key, response key). 32 bytes is 256 bits from the
+# CSPRNG, the largest size that still adds brute-force resistance here.
+_BEARER_KEY_BYTES = 32
 
 # Statuses a controller may report about itself
 INBOUND_STATUSES = (CONTROLLER_AVAILABLE, CONTROLLER_ERROR, CONTROLLER_NOT_REACHABLE)
@@ -65,6 +73,13 @@ class CxTowerDroneController(models.Model):
         help="Skills reported by the last successful health check",
     )
     controller_url = fields.Char(string="URL", required=True)
+    callback_url = fields.Char(
+        string="Callback URL",
+        default=lambda self: self._default_callback_url(),
+        help="Base address this controller uses to call Tower. "
+        "Result and heartbeat paths are added to it. "
+        "Defaults to the Odoo web base URL",
+    )
     drone_api_key = fields.Char(
         string="Drone API Key",
         groups="cetmix_tower_base.group_root",
@@ -141,13 +156,107 @@ class CxTowerDroneController(models.Model):
         return super().write(vals)
 
     @api.model
+    def _default_callback_url(self):
+        """Return the Odoo web base URL for a new controller.
+
+        Returns:
+            str: ``web.base.url`` without a trailing slash, or an empty
+            string when it is not set.
+        """
+        base_url = (
+            self.env["ir.config_parameter"].sudo().get_param("web.base.url") or ""
+        )
+        return base_url.strip().rstrip("/")
+
+    @api.constrains("callback_url")
+    def _check_callback_url(self):
+        """Reject a Callback URL that is not an absolute http(s) origin.
+
+        Raises:
+            ValidationError: The address is not http or https, has no host,
+                includes credentials, or includes a path, query or fragment.
+        """
+        for controller in self:
+            raw = (controller.callback_url or "").strip()
+            if not raw:
+                continue
+            parts = urlsplit(raw)
+            origin = (
+                parts.scheme in ("http", "https")
+                and parts.hostname
+                and not parts.username
+                and not parts.password
+                and parts.path in ("", "/")
+                and not parts.query
+                and not parts.fragment
+            )
+            if not origin:
+                raise ValidationError(
+                    self.env._(
+                        "Callback URL must be an http or https address "
+                        "with no path, such as http://odoo:8069."
+                    )
+                )
+
+    def _get_callback_urls(self):
+        """Return the result and heartbeat URLs sent to this controller.
+
+        Uses Callback URL when it is set. Otherwise uses the Odoo web
+        base URL.
+
+        Returns:
+            tuple: ``(callback_url, heartbeat_url)``, each a str.
+        """
+        self.ensure_one()
+        base_url = (self.callback_url or "").strip().rstrip("/")
+        if not base_url:
+            configured = (
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url") or ""
+            )
+            base_url = configured.strip().rstrip("/")
+        return f"{base_url}{ROUTE_JOB_RESULT}", f"{base_url}{ROUTE_JOB_HEARTBEAT}"
+
+    @api.model
+    def _generate_bearer_key(self):
+        """Return a new bearer token.
+
+        Used for the API key and the response key. Those values are
+        compared, not used to encrypt, so the strongest construction is
+        256 bits from the operating system's random source, encoded
+        url-safe. Url-safe encoding keeps the token free of quotes and
+        commas when it is passed as an environment value.
+
+        Returns:
+            str: Url-safe encoding of 32 random bytes.
+        """
+        return secrets.token_urlsafe(_BEARER_KEY_BYTES)
+
+    @api.model
     def _generate_payload_key(self):
         """Return a new Fernet key as a string.
+
+        Fernet is the cipher the drone accepts for payloads: AES-128-CBC
+        with HMAC-SHA256, and a 256-bit key. A longer key or another
+        cipher is rejected by the controller.
 
         Returns:
             str: url-safe base64-encoded Fernet key.
         """
         return Fernet.generate_key().decode()
+
+    @api.model
+    def _generate_result_storage_key(self):
+        """Return a new key for drone results at rest.
+
+        The drone accepts 64 hexadecimal characters, or base64 that
+        decodes to 32 bytes. Hex has no padding and no characters that
+        break a quoted environment value. Tower does not store this
+        key: the drone is the only process that uses it.
+
+        Returns:
+            str: 64 hexadecimal characters, encoding 32 random bytes.
+        """
+        return secrets.token_hex(32)
 
     @api.model
     def _check_payload_key(self, payload_key):
@@ -163,28 +272,47 @@ class CxTowerDroneController(models.Model):
                 self.env._("Payload Key must be a valid Fernet key.")
             ) from exc
 
-    def action_generate_payload_key(self):
-        """Generate a Fernet payload key, store it, and show it for copying.
+    def action_generate_keys(self):
+        """Generate the API, payload and response keys, store them, and show them.
+
+        Also shows a result storage key. That key is not written: the
+        drone uses it to encrypt results at rest, and Tower has no
+        field for it. The plaintext of every key is not written on the
+        wizard. The dialog reads it from this action's context, which
+        the form sends back on web_read, and does not keep it after the
+        dialog closes.
 
         Returns:
             dict: Action that opens the show-key wizard.
         """
         self.ensure_one()
-        key = self._generate_payload_key()
-        self.write({"payload_key": key})
-        # The key is not stored on the wizard. The dialog reads it from
-        # this context, which the form sends back on web_read.
+        api_key = self._generate_bearer_key()
+        payload_key = self._generate_payload_key()
+        response_key = self._generate_bearer_key()
+        result_storage_key = self._generate_result_storage_key()
+        self.write(
+            {
+                "drone_api_key": api_key,
+                "payload_key": payload_key,
+                "drone_response_key": response_key,
+            }
+        )
         wizard = self.env["cx.tower.drone.payload.key.wizard"].create(
             {"controller_id": self.id}
         )
         return {
             "type": "ir.actions.act_window",
-            "name": self.env._("Payload Key"),
+            "name": self.env._("Drone Keys"),
             "res_model": "cx.tower.drone.payload.key.wizard",
             "res_id": wizard.id,
             "views": [(False, "form")],
             "target": "new",
-            "context": {"default_payload_key": key},
+            "context": {
+                "default_drone_api_key": api_key,
+                "default_payload_key": payload_key,
+                "default_drone_response_key": response_key,
+                "default_result_storage_key": result_storage_key,
+            },
         }
 
     def _compute_running_job_count(self):
