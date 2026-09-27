@@ -30,8 +30,6 @@ from .constants import (
     JOB_STATE_PENDING,
     JOB_STATE_RUNNING,
     JOB_STATE_TIMED_OUT,
-    ROUTE_JOB_HEARTBEAT,
-    ROUTE_JOB_RESULT,
     STALE_PENDING_MINUTES,
     SUBMISSION_DB_RETRIES,
     SUBMIT_ACCEPTED,
@@ -369,7 +367,7 @@ class CxTowerDroneJob(models.Model):
         """
         try:
             payload_key = controller._get_secret_value("payload_key")
-            callback_url, heartbeat_url = self._get_callback_urls()
+            callback_url, heartbeat_url = controller._get_callback_urls()
             envelope = {
                 "nonce": self.nonce,
                 "callback_url": callback_url,
@@ -499,17 +497,6 @@ class CxTowerDroneJob(models.Model):
             self.id,
         )
         return _STOP
-
-    def _get_callback_urls(self):
-        """Return the result and heartbeat URLs sent to the controller.
-
-        Returns:
-            tuple: (callback_url, heartbeat_url)
-        """
-        base_url = (
-            self.env["ir.config_parameter"].sudo().get_param("web.base.url") or ""
-        ).rstrip("/")
-        return f"{base_url}{ROUTE_JOB_RESULT}", f"{base_url}{ROUTE_JOB_HEARTBEAT}"
 
     # ------------------------------
     # Delivery

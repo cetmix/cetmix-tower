@@ -4,18 +4,22 @@
         <field name="name">cx.tower.drone.payload.key.wizard.view.form</field>
         <field name="model">cx.tower.drone.payload.key.wizard</field>
         <field name="arch" type="xml">
-            <form string="Payload Key">
+            <form string="Drone Keys">
                 <div class="alert alert-warning" role="alert">
-                    Copy this key now and configure the same value on the
-                    controller. It will not be shown again after you close
-                    this dialog.
+                    Copy these keys now and configure the same values on the
+                    drone. They will not be shown again after you close this
+                    dialog. The previous API, payload and response keys no
+                    longer work. The result storage key is not saved.
                 </div>
                 <group>
+                    <field name="drone_api_key" widget="CopyClipboardChar" />
                     <field
                         name="payload_key"
                         widget="CopyClipboardChar"
                         string="Payload Key"
                     />
+                    <field name="drone_response_key" widget="CopyClipboardChar" />
+                    <field name="result_storage_key" widget="CopyClipboardChar" />
                 </group>
                 <footer>
                     <button special="cancel" string="Done" class="btn-primary" />

@@ -111,6 +111,11 @@ Go to "Cetmix Tower > Settings > Drones > Drone Controllers" and click
 - Reference. Unique reference. Leave this field blank to auto generate
   it. The controller uses it to report its status to Tower
 - URL. Base URL of the controller API. Must be unique
+- Callback URL. Base address this controller uses to call Tower. Result
+  and heartbeat paths are added to it. A new controller stores the Odoo
+  web base URL. Change it when the drone must call Tower at another
+  address, for example ``http://<container>:8069`` on the same Docker
+  network. The drone's callback origin must be this same address
 - Skills. Skills reported by the last successful health check. Read
   only. The next successful health check replaces them
 - Status. Current controller status. Jobs are sent only to active
@@ -128,13 +133,14 @@ Go to "Cetmix Tower > Settings > Drones > Drone Controllers" and click
 
 - Drone API Key. Sent by Tower to the controller in every request
 - Payload Key. Fernet key used to encrypt job payloads. Generated
-  automatically when left empty. Click "Generate" next to the field to
-  create a new key and show it once so it can be copied. Configure the
-  same key on the controller
+  automatically when left empty. Configure the same key on the drone
 - Drone Response Key. Sent by the controller to Tower in every request
 
-Key values are stored in the vault and are never shown after saving. Use
-"Generate" when you need to copy the Payload Key.
+Key values are stored in the vault and are never shown after saving.
+Click "Generate Keys" to replace all three and copy them once. The
+previous keys stop working. The same dialog also shows a result storage
+key for the drone's stored results. That key is not saved in Tower.
+Close the dialog and none of the keys are shown again.
 
 Health
 ------
@@ -275,9 +281,11 @@ envelope below, encrypted with the controller Payload Key (Fernet):
      "data": {}
    }
 
-``data`` is the payload the caller passed to ``launch_drone()``. Accept
-the job quickly and do the work asynchronously: a timeout on this
-request means "may have arrived", not "rejected".
+``data`` is the payload the caller passed to ``launch_drone()``.
+``callback_url`` and ``heartbeat_url`` use the controller Callback URL.
+A new controller stores the Odoo web base URL there. Accept the job
+quickly and do the work asynchronously: a timeout on this request means
+"may have arrived", not "rejected".
 
 **Status** answers one of:
 

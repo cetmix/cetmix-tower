@@ -3,29 +3,47 @@
 
 from odoo import api, fields, models
 
+# Context keys the generate action uses. None of these are stored.
+_CONTEXT_KEYS = (
+    ("drone_api_key", "default_drone_api_key"),
+    ("payload_key", "default_payload_key"),
+    ("drone_response_key", "default_drone_response_key"),
+    ("result_storage_key", "default_result_storage_key"),
+)
+
 
 class CxTowerDronePayloadKeyWizard(models.TransientModel):
-    """Show a freshly generated payload key so it can be copied."""
+    """Show freshly generated drone keys so they can be copied."""
 
     _name = "cx.tower.drone.payload.key.wizard"
-    _description = "Show Generated Payload Key"
+    _description = "Show Generated Drone Keys"
 
     controller_id = fields.Many2one(
         comodel_name="cx.tower.drone.controller",
         required=True,
         ondelete="cascade",
     )
-    payload_key = fields.Char(compute="_compute_payload_key")
+    drone_api_key = fields.Char(
+        string="Drone API Key",
+        compute="_compute_keys",
+    )
+    payload_key = fields.Char(compute="_compute_keys")
+    drone_response_key = fields.Char(compute="_compute_keys")
+    result_storage_key = fields.Char(compute="_compute_keys")
 
-    @api.depends_context("default_payload_key")
-    def _compute_payload_key(self):
-        """Read the key from the action that opened this dialog.
+    @api.depends_context(*(context_key for _field, context_key in _CONTEXT_KEYS))
+    def _compute_keys(self):
+        """Read the keys from the action that opened this dialog.
 
-        The generate action puts the Fernet key in the context. The form
-        sends that context when it reads the wizard, so the key is shown
-        once and is not written to the transient table.
+        The generate action puts each key in the context. The form sends
+        that context when it reads the wizard, so the keys are shown once
+        and are not written to the transient table.
 
         """
-        key = self.env.context.get("default_payload_key") or False
+        values = {
+            field: self.env.context.get(context_key) or False
+            for field, context_key in _CONTEXT_KEYS
+        }
         for wizard in self:
-            wizard.payload_key = key
+            for field, value in values.items():
+                wizard[field] = value

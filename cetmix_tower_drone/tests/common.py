@@ -191,11 +191,11 @@ class TestDroneCommon(TestTowerBaseCommon):
         cls.tag_a = cls.Tag.create({"name": "Drone Tag A"})
         cls.tag_b = cls.Tag.create({"name": "Drone Tag B"})
         cls.target = cls.Tag.create({"name": "Drone Callback Target"})
-        cls.controller_1 = cls._create_controller("Controller 1", priority=1)
-        cls.controller_2 = cls._create_controller("Controller 2", priority=2)
         cls.env["ir.config_parameter"].sudo().set_param(
             "web.base.url", "https://tower.example.com"
         )
+        cls.controller_1 = cls._create_controller("Controller 1", priority=1)
+        cls.controller_2 = cls._create_controller("Controller 2", priority=2)
 
     @classmethod
     def _create_controller(cls, name, **vals):
