@@ -18,7 +18,7 @@ from .constants import DEFAULT_PYTHON_CODE, DEFAULT_PYTHON_CODE_HELP
 _logger = logging.getLogger(__name__)
 
 requests = wrap_module(__import__("requests"), ["post", "get", "delete", "request"])
-json = wrap_module(__import__("json"), ["dumps"])
+json = wrap_module(__import__("json"), ["dumps", "loads"])
 hashlib = wrap_module(
     __import__("hashlib"),
     [
@@ -442,7 +442,7 @@ class CxTowerCommand(models.Model):
             },
             "json": {
                 "import": json,
-                "help": _("Python 'json' library. Available methods: 'dumps'"),
+                "help": _("Python 'json' library. Available methods: 'dumps', 'loads'"),
             },
             "float_compare": {
                 "import": float_compare,
