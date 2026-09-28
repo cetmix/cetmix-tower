@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.cetmix.tower.drone.ssh</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_drone.res_config_settings_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//block[@name='cetmix_tower_drone_settings']"
+                position="inside"
+            >
+                <setting
+                    id="cetmix_tower_drone_ssh_no_controller_policy"
+                    help="What to do with an SSH command when no drone controller is available. Fail: finish the command with an error. Fallback: run the command without a drone."
+                >
+                    <field name="cetmix_tower_drone_ssh_no_controller_policy" />
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

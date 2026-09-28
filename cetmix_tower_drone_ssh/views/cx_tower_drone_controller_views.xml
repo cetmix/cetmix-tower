@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_drone_controller_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.drone.controller.view.form.drone.ssh</field>
+        <field name="model">cx.tower.drone.controller</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_drone.cx_tower_drone_controller_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_command_logs"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-code"
+                >
+                    <field
+                        name="drone_command_log_count"
+                        string="Commands"
+                        widget="statinfo"
+                    />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>
