@@ -12,6 +12,12 @@
                         string="Check Connection"
                         help="Ask the controller whether it is healthy and update its status"
                     />
+                    <button
+                        name="action_fetch_skill_schemas"
+                        type="object"
+                        string="Fetch Schemas"
+                        help="Ask this controller for the schema of each linked skill and store it"
+                    />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -40,11 +46,24 @@
                             <field name="reference" />
                             <field name="controller_url" widget="url" />
                             <field name="callback_url" widget="url" />
-                            <field
-                                name="skill_ids"
-                                widget="many2many_tags"
-                                readonly="1"
-                            />
+                            <field name="skill_ids" readonly="1" mode="list">
+                                <form create="0" delete="0" duplicate="0">
+                                    <header>
+                                        <button
+                                            name="action_fetch_schema"
+                                            type="object"
+                                            string="Fetch Schema"
+                                            help="Ask a linked controller for this skill's schema and store it"
+                                        />
+                                    </header>
+                                    <field name="schema" invisible="1" />
+                                    <field
+                                        name="schema_text"
+                                        string="Schema"
+                                        readonly="1"
+                                    />
+                                </form>
+                            </field>
                         </group>
                         <group>
                             <field
