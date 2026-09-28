@@ -33,12 +33,15 @@ Every request carries `Authorization: Bearer <Drone API Key>`. Tower waits at mo
 | Action | Method | Path | Answer |
 |---|---|---|---|
 | Health | GET | `/health` | 200 with `{"skills": ["ssh", "backup"]}` |
+| Skills | GET | `/skills` | 200 with a JSON object whose keys are skill references and whose values are `{"data": <schema>, "response": <schema>}` |
 | Submit | POST | `/jobs` | 2xx when accepted; 4xx when rejected; 409 for a fenced nonce |
 | Status | GET | `/jobs/<nonce>` | 200 with the job state; 404 for a nonce never accepted |
 | Cancel | POST | `/jobs/<nonce>/cancel` | 2xx |
 | Fence | POST | `/jobs/<nonce>/fence` | 200 `{"state": "fenced"}` or `{"state": "accepted"}` |
 
 A skill token is a string of lowercase letters, digits and underscores. Extra keys in the health body are ignored. Duplicate tokens count once. A 200 whose body is missing, not JSON, not an object, or whose `skills` list contains anything else is an error: the status becomes "Error" (a draining controller keeps "Draining") and the stored skills are left as they are. `{"skills": []}` clears the stored skills.
+
+Tower calls `GET /skills` only from "Fetch Schemas" on a controller and "Fetch Schema" on a skill. A failed call does not change the controller status or its skills.
 
 **Submit** body is `{"payload": "<token>"}`. The token is the JSON envelope below, encrypted with the controller Payload Key (Fernet):
 

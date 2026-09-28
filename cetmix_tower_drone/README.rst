@@ -98,6 +98,9 @@ a record appears the first time a health reply contains its reference.
 - Name. Label. A Root user can change it. A later health check does not
   overwrite it
 - Reference. Unique reference reported by the controller. Read only
+- Schema. Data and response schema stored for this skill. Read only.
+  Filled by "Fetch Schema" on this form. A skill linked to no controller
+  keeps the schema it already has
 
 Configure a Drone Controller
 ----------------------------
@@ -117,7 +120,10 @@ Go to "Cetmix Tower > Settings > Drones > Drone Controllers" and click
   address, for example ``http://<container>:8069`` on the same Docker
   network. The drone's callback origin must be this same address
 - Skills. Skills reported by the last successful health check. Read
-  only. The next successful health check replaces them
+  only. The next successful health check replaces them. On this form
+  they are a list. Open a row to see that skill's schema as text, read
+  only, with "Fetch Schema" in the header. The name is edited from Drone
+  Skills. The controller list still shows skills as tags
 - Status. Current controller status. Jobs are sent only to active
   controllers in the "Available" status
 - Active. Inactive controllers receive no jobs
@@ -128,6 +134,11 @@ Go to "Cetmix Tower > Settings > Drones > Drone Controllers" and click
 - Jobs. Opens the drone jobs run on this controller. The count includes
   finished and cancelled jobs
 - Last Health Check. Time of the last successful health check. Read only
+
+Click "Fetch Schemas" to store the data and response schema each linked
+skill reports. A linked skill the answer omits has its schema cleared.
+This does not change the status, the skills or the last health check. A
+failed call changes nothing.
 
 **Keys tab:**
 
@@ -158,6 +169,9 @@ Click "Check Connection" on the controller form to check it right away,
 for example after configuring it. This works for inactive and draining
 controllers too, which the cron skips. A draining controller keeps that
 status.
+
+The health check does not load schemas. "Check Connection" does not load
+them either.
 
 Cron Batch Size
 ---------------
@@ -241,6 +255,13 @@ waits at most 10 seconds to connect and 10 seconds for an answer.
 |        |        |                        | ``{"skills"            |
 |        |        |                        | : ["ssh", "backup"]}`` |
 +--------+--------+------------------------+------------------------+
+| Skills | GET    | ``/skills``            | 200 with a JSON object |
+|        |        |                        | whose keys are skill   |
+|        |        |                        | references and whose   |
+|        |        |                        | values are             |
+|        |        |                        | ``{"data": <schema>, " |
+|        |        |                        | response": <schema>}`` |
++--------+--------+------------------------+------------------------+
 | Submit | POST   | ``/jobs``              | 2xx when accepted; 4xx |
 |        |        |                        | when rejected; 409 for |
 |        |        |                        | a fenced nonce         |
@@ -266,6 +287,10 @@ A 200 whose body is missing, not JSON, not an object, or whose
 ``skills`` list contains anything else is an error: the status becomes
 "Error" (a draining controller keeps "Draining") and the stored skills
 are left as they are. ``{"skills": []}`` clears the stored skills.
+
+Tower calls ``GET /skills`` only from "Fetch Schemas" on a controller
+and "Fetch Schema" on a skill. A failed call does not change the
+controller status or its skills.
 
 **Submit** body is ``{"payload": "<token>"}``. The token is the JSON
 envelope below, encrypted with the controller Payload Key (Fernet):

@@ -973,6 +973,8 @@ class TestDroneJob(TestDroneCommon):
             {
                 "action_cancel",
                 "action_check_health",
+                "action_fetch_schema",
+                "action_fetch_skill_schemas",
                 "action_generate_keys",
                 "action_view_jobs",
                 "launch_drone",

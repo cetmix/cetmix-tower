@@ -392,6 +392,229 @@ class TestDroneController(TestDroneCommon):
         self.assertFalse(call["allow_redirects"])
 
     # ------------------------------
+    # Skill schemas
+    # ------------------------------
+    def _stamp_controller(self):
+        """Freeze status, skills and the last health check for a fetch.
+
+        Returns:
+            tuple: Linked skills (cx.tower.drone.skill) and the frozen
+                health-check time (str).
+        """
+        stamp = "2026-06-01 12:00:00"
+        skills = self.controller_1.skill_ids
+        self.controller_1.write({"status": "error", "last_health_check": stamp})
+        return skills, stamp
+
+    def _assert_controller_unchanged(self, skills, stamp):
+        """Check status, skills and the last health check stayed frozen.
+
+        Args:
+            skills (cx.tower.drone.skill): Skills linked before the fetch.
+            stamp (str): Health-check time written by ``_stamp_controller``.
+
+        Returns:
+            None
+        """
+        self.assertEqual(self.controller_1.status, "error")
+        self.assertEqual(self.controller_1.skill_ids, skills)
+        self.assertEqual(str(self.controller_1.last_health_check), stamp)
+
+    def test_fetch_skill_schemas_stores_and_clears(self):
+        """A valid body writes linked skills and clears the ones it omits."""
+        skills, stamp = self._stamp_controller()
+        self.skill.schema = {"data": {"old": True}, "response": {"old": True}}
+        self.skill_untagged.schema = {"data": {"old": True}, "response": {}}
+        empty = {"data": {}, "response": {}}
+        self.network.set(self.controller_1, skills=(200, {"test_skill": empty}))
+        action = self.controller_1.action_fetch_skill_schemas()
+        self.assertEqual(action["params"]["type"], "success")
+        self.assertEqual(action["params"]["title"], "Schemas fetched")
+        self.assertEqual(
+            action["params"]["next"], {"type": "ir.actions.act_window_close"}
+        )
+        self.assertEqual(self.skill.schema, empty)
+        self.assertEqual(self.skill.schema_text, str(empty))
+        self.assertFalse(self.skill_untagged.schema)
+        self.assertFalse(self.skill_untagged.schema_text)
+        self._assert_controller_unchanged(skills, stamp)
+
+        self.network.set(self.controller_1, skills=(200, {}))
+        action = self.controller_1.action_fetch_skill_schemas()
+        self.assertEqual(action["params"]["type"], "success")
+        self.assertFalse(self.skill.schema)
+        self.assertFalse(self.skill.schema_text)
+        self.assertFalse(self.skill_untagged.schema)
+        self._assert_controller_unchanged(skills, stamp)
+
+    def test_fetch_skill_schemas_ignores_unlinked(self):
+        """A key that is not linked here does not create or update a skill."""
+        kept = {"data": {"keep": True}, "response": {}}
+        other = self.Skill.create({"name": "Other", "reference": "other_skill"})
+        other.schema = kept
+        self.controller_2.write({"skill_ids": [(6, 0, [other.id])]})
+        self.network.set(
+            self.controller_1,
+            skills=(
+                200,
+                {
+                    "test_skill": {"data": {}, "response": {}},
+                    "other_skill": {"data": {"changed": True}, "response": {}},
+                    "brand_new": {"data": {}, "response": {}},
+                },
+            ),
+        )
+        self.controller_1.action_fetch_skill_schemas()
+        self.assertEqual(other.schema, kept)
+        self.assertFalse(self.Skill.search([("reference", "=", "brand_new")]))
+        self.assertEqual(self.skill.schema, {"data": {}, "response": {}})
+
+    def test_fetch_skill_schemas_failed_call_writes_nothing(self):
+        """A bad call leaves schemas and the controller as they were."""
+        skills, stamp = self._stamp_controller()
+        stored = {"data": {"keep": True}, "response": {}}
+        self.skill.schema = stored
+        self.skill_untagged.schema = stored
+        good = {"data": {}, "response": {}}
+        answers = (
+            connection_refused(),
+            401,
+            500,
+            200,
+            (200, ["test_skill"]),
+            (200, {"test_skill": {"data": {}}, "untagged_skill": good}),
+            (
+                200,
+                {
+                    "test_skill": {"data": {}, "response": {}, "extra": 1},
+                    "untagged_skill": good,
+                },
+            ),
+            (200, {"test_skill": ["data", "response"], "untagged_skill": good}),
+        )
+        for answer in answers:
+            self.network.set(self.controller_1, skills=answer)
+            action = self.controller_1.action_fetch_skill_schemas()
+            self.assertEqual(action["params"]["type"], "warning")
+            self.assertEqual(action["params"]["title"], "Schemas not fetched")
+            self.assertEqual(self.skill.schema, stored)
+            self.assertEqual(self.skill_untagged.schema, stored)
+            self._assert_controller_unchanged(skills, stamp)
+
+    def test_health_does_not_call_skills(self):
+        """Health, Check Connection and the cron do not call ``GET /skills``."""
+        self.controller_1._check_health()
+        self.controller_1.action_check_health()
+        self.Controller._cron_check_health()
+        self.assertFalse(self.network.find("GET", "/skills"))
+        self.assertTrue(self.network.find("GET", "/health"))
+
+    def test_fetch_schema_asks_first_linked_controller(self):
+        """Lowest priority, then lowest id, chooses the controller."""
+        first = {"data": {"from": "first"}, "response": {}}
+        second = {"data": {"from": "second"}, "response": {}}
+        self.controller_2.priority = self.controller_1.priority
+        self.network.set(self.controller_1, skills=(200, {"test_skill": first}))
+        self.network.set(self.controller_2, skills=(200, {"test_skill": second}))
+        action = self.skill.action_fetch_schema()
+        self.assertEqual(action["params"]["type"], "success")
+        self.assertEqual(action["params"]["title"], "Schema fetched")
+        self.assertEqual(self.skill.schema, first)
+        self.assertFalse(
+            self.network.find("GET", "/skills", base=self.controller_2.controller_url)
+        )
+
+        self.network.reset()
+        self.skill.schema = False
+        self.controller_1.priority = 20
+        self.network.set(self.controller_1, skills=(200, {"test_skill": first}))
+        self.network.set(self.controller_2, skills=(200, {"test_skill": second}))
+        action = self.skill.action_fetch_schema()
+        self.assertEqual(action["params"]["type"], "success")
+        self.assertEqual(self.skill.schema, second)
+        self.assertFalse(
+            self.network.find("GET", "/skills", base=self.controller_1.controller_url)
+        )
+
+    def test_fetch_schema_does_not_skip_or_fall_through(self):
+        """An inactive or bad status is still asked, and a failure stops."""
+        first = {"data": {"from": "first"}, "response": {}}
+        second = {"data": {"from": "second"}, "response": {}}
+        cases = (
+            {"active": False, "status": "available"},
+            {"active": True, "status": "not_reachable"},
+            {"active": True, "status": "error"},
+            {"active": True, "status": "draining"},
+        )
+        for vals in cases:
+            self.network.reset()
+            self.skill.schema = False
+            self.controller_1.write(vals)
+            self.network.set(self.controller_1, skills=(200, {"test_skill": first}))
+            self.network.set(self.controller_2, skills=(200, {"test_skill": second}))
+            action = self.skill.action_fetch_schema()
+            self.assertEqual(action["params"]["type"], "success")
+            self.assertEqual(self.skill.schema, first)
+            self.assertEqual(
+                len(
+                    self.network.find(
+                        "GET", "/skills", base=self.controller_1.controller_url
+                    )
+                ),
+                1,
+            )
+            self.assertFalse(
+                self.network.find(
+                    "GET", "/skills", base=self.controller_2.controller_url
+                )
+            )
+
+        self.network.reset()
+        self.network.set(self.controller_1, skills=connection_refused())
+        self.network.set(self.controller_2, skills=(200, {"test_skill": second}))
+        action = self.skill.action_fetch_schema()
+        self.assertEqual(action["params"]["type"], "warning")
+        self.assertEqual(action["params"]["title"], "Schema not fetched")
+        self.assertEqual(self.skill.schema, first)
+        self.assertFalse(
+            self.network.find("GET", "/skills", base=self.controller_2.controller_url)
+        )
+
+    def test_fetch_schema_without_controller(self):
+        """No linked controller means no request and the schema stays."""
+        stored = {"data": {"keep": True}, "response": {}}
+        self.skill.schema = stored
+        (self.controller_1 | self.controller_2).write(
+            {"skill_ids": [(3, self.skill.id, 0)]}
+        )
+        action = self.skill.action_fetch_schema()
+        self.assertEqual(action["params"]["type"], "warning")
+        self.assertEqual(action["params"]["title"], "Schema not fetched")
+        self.assertEqual(self.skill.schema, stored)
+        self.assertFalse(self.network.calls)
+
+    def test_fetch_schema_updates_only_that_skill(self):
+        """The skill button writes this skill and leaves the others."""
+        kept = {"data": {"kept": True}, "response": {}}
+        loaded = {"data": {"loaded": True}, "response": {}}
+        other = {"data": {"other": True}, "response": {}}
+        self.skill_untagged.schema = kept
+        self.network.set(
+            self.controller_1,
+            skills=(200, {"test_skill": loaded, "untagged_skill": other}),
+        )
+        action = self.skill.action_fetch_schema()
+        self.assertEqual(action["params"]["type"], "success")
+        self.assertEqual(self.skill.schema, loaded)
+        self.assertEqual(self.skill_untagged.schema, kept)
+
+        self.network.set(self.controller_1, skills=(200, {"untagged_skill": other}))
+        action = self.skill.action_fetch_schema()
+        self.assertEqual(action["params"]["type"], "success")
+        self.assertFalse(self.skill.schema)
+        self.assertEqual(self.skill_untagged.schema, kept)
+
+    # ------------------------------
     # Inbound status
     # ------------------------------
     def test_http_status(self):

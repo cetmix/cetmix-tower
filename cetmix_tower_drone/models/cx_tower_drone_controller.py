@@ -667,3 +667,129 @@ class CxTowerDroneController(models.Model):
                 "next": {"type": "ir.actions.act_window_close"},
             },
         }
+
+    # ------------------------------
+    # Skill schemas
+    # ------------------------------
+    def _read_skill_schemas(self):
+        """Return the schema document from ``GET /skills``.
+
+        The call is valid when the status is 200 and the body is a JSON
+        object whose every value is an object with exactly the keys
+        ``data`` and ``response``. One bad entry rejects the body. A
+        failed call writes nothing and does not change the controller
+        status.
+
+        Returns:
+            dict | None: Skill reference to its data and response schema,
+                or None when the call failed. An empty object is valid.
+        """
+        self.ensure_one()
+        try:
+            response = self._drone_request("GET", "/skills")
+        except requests.exceptions.RequestException:
+            return None
+        if response.status_code != 200:
+            return None
+        try:
+            data = response.json()
+        except ValueError:
+            return None
+        if not isinstance(data, dict):
+            return None
+        for entry in data.values():
+            if not isinstance(entry, dict) or set(entry) != {"data", "response"}:
+                return None
+        return data
+
+    def _apply_skill_schemas(self, schemas, skills):
+        """Store ``schemas`` on ``skills`` and clear the ones it omits.
+
+        A key whose skill is not in ``skills`` is ignored. It does not
+        create a skill.
+
+        Args:
+            schemas (dict): Valid ``GET /skills`` body.
+            skills (cx.tower.drone.skill): Skills this call may update.
+
+        Returns:
+            None: Present skills store their entry. Omitted skills are
+                cleared.
+        """
+        cleared = skills.browse()
+        for skill in skills:
+            if skill.reference in schemas:
+                skill.write({"schema": schemas[skill.reference]})
+            else:
+                cleared |= skill
+        if cleared:
+            cleared.write({"schema": False})
+
+    @api.model
+    def _schema_fetch_notification(self, fetched, plural, message=None):
+        """Build the notification a schema button shows.
+
+        The open form closes so it reloads. The message contains no
+        response body and no key.
+
+        Args:
+            fetched (bool): True when a valid body was applied.
+            plural (bool): True for every skill on a controller, False
+                for one skill.
+            message (str | None): Sentence to show. None uses the
+                sentence for ``fetched`` and ``plural``.
+
+        Returns:
+            dict: Client action.
+        """
+        if plural:
+            title = (
+                self.env._("Schemas fetched")
+                if fetched
+                else self.env._("Schemas not fetched")
+            )
+            if message is None:
+                message = (
+                    self.env._("Schemas were loaded from this controller.")
+                    if fetched
+                    else self.env._("Schemas could not be loaded from this controller.")
+                )
+        else:
+            title = (
+                self.env._("Schema fetched")
+                if fetched
+                else self.env._("Schema not fetched")
+            )
+            if message is None:
+                message = (
+                    self.env._("The schema was loaded for this skill.")
+                    if fetched
+                    else self.env._("The schema could not be loaded for this skill.")
+                )
+        return {
+            "type": "ir.actions.client",
+            "tag": "display_notification",
+            "params": {
+                "type": "success" if fetched else "warning",
+                "title": title,
+                "message": message,
+                "next": {"type": "ir.actions.act_window_close"},
+            },
+        }
+
+    def action_fetch_skill_schemas(self):
+        """Load schemas for this controller's skills from ``GET /skills``.
+
+        A linked skill whose reference is in the body stores that entry.
+        A linked skill the body omits is cleared. A failed call leaves
+        schemas, status, skills and the last health check unchanged.
+
+        Returns:
+            dict: Notification. The form closes so it reloads.
+        """
+        self.ensure_one()
+        schemas = self._read_skill_schemas()
+        if schemas is None:
+            return self._schema_fetch_notification(False, plural=True)
+        self._apply_skill_schemas(schemas, self.skill_ids)
+        return self._schema_fetch_notification(True, plural=True)

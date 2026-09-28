@@ -57,7 +57,7 @@ class FakeDroneNetwork:
     def set(self, controller, **answers):
         """Set answers for a controller.
 
-        Keys: post, get, fence, cancel, health.
+        Keys: post, get, fence, cancel, health, skills.
         """
         keys = {
             "post": ("POST", "/jobs"),
@@ -65,6 +65,7 @@ class FakeDroneNetwork:
             "fence": ("POST", "/fence"),
             "cancel": ("POST", "/cancel"),
             "health": ("GET", "/health"),
+            "skills": ("GET", "/skills"),
         }
         routes = self.answers.setdefault(controller.controller_url, {})
         for key, answer in answers.items():

@@ -472,6 +472,9 @@ a record appears the first time a health reply contains its reference.</p>
 <li>Name. Label. A Root user can change it. A later health check does not
 overwrite it</li>
 <li>Reference. Unique reference reported by the controller. Read only</li>
+<li>Schema. Data and response schema stored for this skill. Read only.
+Filled by “Fetch Schema” on this form. A skill linked to no controller
+keeps the schema it already has</li>
 </ul>
 </div>
 <div class="section" id="configure-a-drone-controller">
@@ -490,7 +493,10 @@ web base URL. Change it when the drone must call Tower at another
 address, for example <tt class="docutils literal"><span class="pre">http://&lt;container&gt;:8069</span></tt> on the same Docker
 network. The drone’s callback origin must be this same address</li>
 <li>Skills. Skills reported by the last successful health check. Read
-only. The next successful health check replaces them</li>
+only. The next successful health check replaces them. On this form
+they are a list. Open a row to see that skill’s schema as text, read
+only, with “Fetch Schema” in the header. The name is edited from Drone
+Skills. The controller list still shows skills as tags</li>
 <li>Status. Current controller status. Jobs are sent only to active
 controllers in the “Available” status</li>
 <li>Active. Inactive controllers receive no jobs</li>
@@ -502,6 +508,10 @@ controller. 0 means no limit</li>
 finished and cancelled jobs</li>
 <li>Last Health Check. Time of the last successful health check. Read only</li>
 </ul>
+<p>Click “Fetch Schemas” to store the data and response schema each linked
+skill reports. A linked skill the answer omits has its schema cleared.
+This does not change the status, the skills or the last health check. A
+failed call changes nothing.</p>
 <p><strong>Keys tab:</strong></p>
 <ul class="simple">
 <li>Drone API Key. Sent by Tower to the controller in every request</li>
@@ -529,6 +539,8 @@ its own status. That report does not change its skills.</p>
 for example after configuring it. This works for inactive and draining
 controllers too, which the cron skips. A draining controller keeps that
 status.</p>
+<p>The health check does not load schemas. “Check Connection” does not load
+them either.</p>
 </div>
 <div class="section" id="cron-batch-size">
 <h2><a class="toc-backref" href="#toc-entry-7">Cron Batch Size</a></h2>
@@ -618,6 +630,16 @@ waits at most 10 seconds to connect and 10 seconds for an answer.</p>
 <tt class="docutils literal">{&quot;skills&quot;
 : [&quot;ssh&quot;, <span class="pre">&quot;backup&quot;]}</span></tt></td>
 </tr>
+<tr><td>Skills</td>
+<td>GET</td>
+<td><tt class="docutils literal">/skills</tt></td>
+<td>200 with a JSON object
+whose keys are skill
+references and whose
+values are
+<tt class="docutils literal">{&quot;data&quot;: &lt;schema&gt;, &quot;
+response&quot;: &lt;schema&gt;}</tt></td>
+</tr>
 <tr><td>Submit</td>
 <td>POST</td>
 <td><tt class="docutils literal">/jobs</tt></td>
@@ -657,6 +679,9 @@ A 200 whose body is missing, not JSON, not an object, or whose
 <tt class="docutils literal">skills</tt> list contains anything else is an error: the status becomes
 “Error” (a draining controller keeps “Draining”) and the stored skills
 are left as they are. <tt class="docutils literal">{&quot;skills&quot;: []}</tt> clears the stored skills.</p>
+<p>Tower calls <tt class="docutils literal">GET /skills</tt> only from “Fetch Schemas” on a controller
+and “Fetch Schema” on a skill. A failed call does not change the
+controller status or its skills.</p>
 <p><strong>Submit</strong> body is <tt class="docutils literal">{&quot;payload&quot;: <span class="pre">&quot;&lt;token&gt;&quot;}</span></tt>. The token is the JSON
 envelope below, encrypted with the controller Payload Key (Fernet):</p>
 <pre class="code json literal-block">
