@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.view.form.project</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//group[@name='general']//field[@name='partner_id']"
+                position="after"
+            >
+                <field name="project_task_id" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
