@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.view.form.project</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_tasks"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-check"
+                    groups="project.group_project_user"
+                    invisible="task_count == 0"
+                >
+                    <field name="task_count" widget="statinfo" string="Tasks" />
+                </button>
+            </xpath>
+            <xpath
+                expr="//group[@name='general']//field[@name='partner_id']"
+                position="after"
+            >
+                <field
+                    name="task_ids"
+                    widget="many2many_tags"
+                    groups="project.group_project_user"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

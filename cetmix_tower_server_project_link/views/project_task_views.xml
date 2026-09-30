@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_task_form2_jet" model="ir.ui.view">
+        <field name="name">project.task.form.jet</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="arch" type="xml">
+            <span id="end_button_box" position="before">
+                <button
+                    name="action_view_jets"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-plane"
+                    groups="cetmix_tower_base.group_user"
+                    invisible="jet_count == 0"
+                >
+                    <field name="jet_count" widget="statinfo" string="Jets" />
+                </button>
+            </span>
+        </field>
+    </record>
+</odoo>
