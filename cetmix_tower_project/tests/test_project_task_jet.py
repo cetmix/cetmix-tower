@@ -35,8 +35,8 @@ class TestProjectTaskJet(TestTowerJetsCommon):
         )
 
     def _link_jet(self, jet, task=None):
-        """Set ``project_task_id`` on a Jet."""
-        jet.write({"project_task_id": (task or self.task).id})
+        """Add a Project task to ``task_ids`` without removing the others."""
+        jet.write({"task_ids": [(4, (task or self.task).id)]})
 
     def _create_readable_jet(self, name, reference, **kwargs):
         """Create a Jet the Tower user can read.
@@ -53,11 +53,14 @@ class TestProjectTaskJet(TestTowerJetsCommon):
         kwargs.setdefault("server_user_ids", [(4, self.user.id)])
         return self._create_jet(name, reference, **kwargs)
 
-    def test_project_task_id_inverse(self):
-        """Writing project_task_id exposes the Jet on task.jet_ids."""
+    def test_task_ids_inverse(self):
+        """Writing task_ids exposes the Jet on each task.jet_ids."""
         jet = self._create_readable_jet("Task Jet", "task_jet")
-        self._link_jet(jet)
+        self._link_jet(jet, self.task)
+        self._link_jet(jet, self.task_2)
         self.assertIn(jet, self.task.jet_ids)
+        self.assertIn(jet, self.task_2.jet_ids)
+        self.assertEqual(jet.task_count, 2)
 
     def test_jet_count_zero(self):
         """Task with no linked Jets has jet_count 0."""
@@ -109,7 +112,7 @@ class TestProjectTaskJet(TestTowerJetsCommon):
         self.assertEqual(self.task.jet_count, 2)
         task_user = self.task.with_user(self.user)
         self.assertEqual(task_user.jet_count, 1)
-        # Warm the shared One2many cache before the restricted user acts.
+        # Warm the shared many2many cache before the restricted user acts.
         sudo_jets = self.task.sudo().jet_ids
         self.assertEqual(len(sudo_jets), 2)
         action = task_user.action_view_jets()
@@ -125,8 +128,19 @@ class TestProjectTaskJet(TestTowerJetsCommon):
         self.assertEqual(self.task.jet_count, 0)
         self.assertEqual(self.task.with_context(active_test=False).jet_count, 1)
 
-    def test_copy_jet_clears_project_task(self):
-        """Cloning a Jet does not copy project_task_id."""
+    def test_archived_source_still_counts_with_active_test(self):
+        """Archived source records keep their count when active_test is on."""
+        jet = self._create_readable_jet("Source Jet", "source_jet")
+        self._link_jet(jet, self.task)
+        jet.active = False
+        self.assertEqual(jet.task_count, 1)
+        live_jet = self._create_readable_jet("Live Jet", "live_jet")
+        self._link_jet(live_jet, self.task_2)
+        self.task_2.active = False
+        self.assertEqual(self.task_2.jet_count, 1)
+
+    def test_copy_jet_clears_tasks(self):
+        """Cloning a Jet does not copy task_ids."""
         jet = self._create_jet(
             "Copy Jet",
             "copy_jet",
@@ -137,10 +151,10 @@ class TestProjectTaskJet(TestTowerJetsCommon):
         )
         self._link_jet(jet)
         clone = jet.copy({"name": "Copy Jet Clone"})
-        self.assertFalse(clone.project_task_id)
+        self.assertFalse(clone.task_ids)
 
-    def test_unlink_task_clears_jet_link(self):
-        """Deleting the task clears project_task_id on the Jet."""
+    def test_unlink_task_keeps_other_links(self):
+        """Deleting one task drops only that link."""
         task = self.env["project.task"].create(
             {
                 "name": "Delete Me",
@@ -148,17 +162,67 @@ class TestProjectTaskJet(TestTowerJetsCommon):
             }
         )
         jet = self._create_readable_jet("Unlink Jet", "unlink_jet")
-        jet.write({"project_task_id": task.id})
+        self._link_jet(jet, task)
+        self._link_jet(jet, self.task_2)
         jet_id = jet.id
         task.unlink()
         jet = self.Jet.browse(jet_id)
-        self.assertFalse(jet.project_task_id)
+        self.assertTrue(jet.exists())
+        self.assertEqual(jet.task_ids, self.task_2)
 
-    def test_move_jet_to_other_task(self):
-        """Reassigning project_task_id moves the Jet between tasks."""
-        jet = self._create_readable_jet("Move Jet", "move_jet")
+    def test_action_view_tasks_single(self):
+        """One visible task opens its form action."""
+        jet = self._create_readable_jet("Task Form Jet", "task_form_jet")
         self._link_jet(jet, self.task)
-        self.assertIn(jet, self.task.jet_ids)
-        jet.write({"project_task_id": self.task_2.id})
-        self.assertNotIn(jet, self.task.jet_ids)
-        self.assertIn(jet, self.task_2.jet_ids)
+        action = jet.with_user(self.user).action_view_tasks()
+        self.assertEqual(action["res_model"], "project.task")
+        self.assertEqual(action["res_id"], self.task.id)
+        self.assertEqual(action["view_mode"], "form")
+        self.assertFalse(action["context"].get("create"))
+        self.assertNotIn("search_default_open_tasks", action["context"])
+
+    def test_action_view_tasks_multiple(self):
+        """Several visible tasks open a list action with a domain."""
+        jet = self._create_readable_jet("Task List Jet", "task_list_jet")
+        self._link_jet(jet, self.task)
+        self._link_jet(jet, self.task_2)
+        action = jet.with_user(self.user).action_view_tasks()
+        self.assertEqual(action["res_model"], "project.task")
+        self.assertEqual(action["view_mode"], "list,form")
+        self.assertEqual(action["views"][0][1], "list")
+        self.assertEqual(action["domain"][0][0], "id")
+        self.assertEqual(set(action["domain"][0][2]), {self.task.id, self.task_2.id})
+        self.assertFalse(action["context"].get("create"))
+        self.assertNotIn("search_default_open_tasks", action["context"])
+
+    def test_task_count_respects_task_access(self):
+        """A cached superuser task read is not reused for a restricted user."""
+        private_project = self.env["project.project"].create(
+            {
+                "name": "Follower Project",
+                "privacy_visibility": "followers",
+            }
+        )
+        hidden_task = self.env["project.task"].create(
+            {
+                "name": "Hidden Task",
+                "project_id": private_project.id,
+                "user_ids": [(6, 0, [])],
+            }
+        )
+        self.assertFalse(
+            self.env["project.task"]
+            .with_user(self.user)
+            .search([("id", "=", hidden_task.id)])
+        )
+        jet = self._create_readable_jet("Access Jet", "access_task_jet")
+        self._link_jet(jet, self.task)
+        self._link_jet(jet, hidden_task)
+        self.assertEqual(jet.task_count, 2)
+        sudo_tasks = jet.sudo().task_ids
+        self.assertEqual(len(sudo_tasks), 2)
+        jet_user = jet.with_user(self.user)
+        self.assertEqual(jet_user.task_count, 1)
+        action = jet_user.action_view_tasks()
+        self.assertEqual(action.get("res_id"), self.task.id)
+        self.assertEqual(action["view_mode"], "form")

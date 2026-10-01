@@ -9,10 +9,13 @@ class ProjectTask(models.Model):
 
     _inherit = "project.task"
 
-    jet_ids = fields.One2many(
+    jet_ids = fields.Many2many(
         comodel_name="cx.tower.jet",
-        inverse_name="project_task_id",
+        relation="cx_tower_jet_project_task_rel",
+        column1="task_id",
+        column2="jet_id",
         string="Jets",
+        copy=False,
     )
 
     jet_count = fields.Integer(
@@ -31,17 +34,19 @@ class ProjectTask(models.Model):
         Returns:
             None: The count is written on ``jet_count``.
         """
+        wanted = set(self.ids)
         counts = {}
-        for jet in self.env["cx.tower.jet"].search(
-            [("project_task_id", "in", self.ids)]
-        ):
-            task_id = jet.project_task_id.id
-            counts[task_id] = counts.get(task_id, 0) + 1
+        jets = self.env["cx.tower.jet"].search([("task_ids", "in", list(wanted))])
+        for jet in jets:
+            linked_tasks = jet.with_context(active_test=False).task_ids
+            for task_id in set(linked_tasks.ids) & wanted:
+                counts[task_id] = counts.get(task_id, 0) + 1
         for task in self:
             task.jet_count = counts.get(task.id, 0)
 
     def action_view_jets(self):
         """Open linked Jets: one Jet opens its form, several open a list.
+
 
         Args:
             self (project.task): Task whose Jets are opened. Single record.
@@ -50,7 +55,7 @@ class ProjectTask(models.Model):
             dict: Window action on ``cx.tower.jet``, or a close action when none.
         """
         self.ensure_one()
-        jets = self.env["cx.tower.jet"].search([("project_task_id", "=", self.id)])
+        jets = self.env["cx.tower.jet"].search([("task_ids", "in", self.ids)])
         if not jets:
             return {"type": "ir.actions.act_window_close"}
 

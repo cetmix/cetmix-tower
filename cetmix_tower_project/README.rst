@@ -25,10 +25,10 @@ Cetmix Tower Project
 This module links `Cetmix Tower <https://cetmix.com/tower>`__ Jets to
 Odoo Project tasks.
 
-Each Jet can reference a Project task (``project_task_id``). The task
-form shows a **Jets** stat button that opens the linked Jet or a list of
-Jets. Tower automation sets the link on the Jet; this module only adds
-the fields and navigation.
+A Jet can be linked to several Project tasks with the tags on the Jet
+form. The task form shows a **Jets** stat button, and the Jet form shows
+a **Tasks** stat button. One linked record opens its form; several open
+a list.
 
 **Table of contents**
 
