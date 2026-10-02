@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 {
-    "name": "Cetmix Tower Project",
+    "name": "Cetmix Tower Project Link",
     "summary": "Link Cetmix Tower Jets to Odoo Project tasks",
     "version": "18.0.1.0.0",
     "development_status": "Beta",
