@@ -1,0 +1,141 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_ssh_proxy
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-11 08:40+0000\n"
+"PO-Revision-Date: 2026-09-11 08:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model,name:cetmix_tower_ssh_proxy.model_cx_tower_server
+msgid "Cetmix Tower Server"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model,name:cetmix_tower_ssh_proxy.model_cx_tower_server_template
+msgid "Cetmix Tower Server Template"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "Circular SSH proxy route detected."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model,name:cetmix_tower_ssh_proxy.model_cx_tower_server_template_create_wizard
+msgid "Create new server from template"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields,help:cetmix_tower_ssh_proxy.field_cx_tower_server_template__ssh_connection_route
+msgid "Default SSH route for servers created from this template."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields,help:cetmix_tower_ssh_proxy.field_cx_tower_server_template__ssh_proxy_server_id
+msgid "Default jump/bastion server for servers created from this template."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields.selection,name:cetmix_tower_ssh_proxy.selection__cx_tower_server__ssh_connection_route__direct
+#: model:ir.model.fields.selection,name:cetmix_tower_ssh_proxy.selection__cx_tower_server_template__ssh_connection_route__direct
+#: model:ir.model.fields.selection,name:cetmix_tower_ssh_proxy.selection__cx_tower_server_template_create_wizard__ssh_connection_route__direct
+msgid "Direct"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields,help:cetmix_tower_ssh_proxy.field_cx_tower_server__ssh_connection_route
+msgid ""
+"Direct connects to this server from the Tower host. SSH Proxy opens the "
+"target SSH connection through another Tower server using a Paramiko direct-"
+"tcpip channel."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "Host key not found for server %s."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "IP address is not configured for server %s."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields,help:cetmix_tower_ssh_proxy.field_cx_tower_server__ssh_proxy_server_id
+msgid ""
+"Jump/bastion server used to reach this server. The proxy may itself use "
+"another proxy, allowing a multi-hop SSH chain."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields,field_description:cetmix_tower_ssh_proxy.field_cx_tower_server__ssh_connection_route
+#: model:ir.model.fields,field_description:cetmix_tower_ssh_proxy.field_cx_tower_server_template__ssh_connection_route
+#: model:ir.model.fields,field_description:cetmix_tower_ssh_proxy.field_cx_tower_server_template_create_wizard__ssh_connection_route
+msgid "SSH Connection Route"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields.selection,name:cetmix_tower_ssh_proxy.selection__cx_tower_server__ssh_connection_route__proxy
+#: model:ir.model.fields.selection,name:cetmix_tower_ssh_proxy.selection__cx_tower_server_template__ssh_connection_route__proxy
+#: model:ir.model.fields.selection,name:cetmix_tower_ssh_proxy.selection__cx_tower_server_template_create_wizard__ssh_connection_route__proxy
+msgid "SSH Proxy"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#: model:ir.model.fields,field_description:cetmix_tower_ssh_proxy.field_cx_tower_server__ssh_proxy_server_id
+#: model:ir.model.fields,field_description:cetmix_tower_ssh_proxy.field_cx_tower_server_template__ssh_proxy_server_id
+#: model:ir.model.fields,field_description:cetmix_tower_ssh_proxy.field_cx_tower_server_template_create_wizard__ssh_proxy_server_id
+msgid "SSH Proxy Server"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "SSH Proxy Server %s is archived."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "SSH Proxy Server is not configured for server %s."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server_template.py:0
+#: code:addons/cetmix_tower_ssh_proxy/wizards/cx_tower_server_template_create_wizard.py:0
+msgid "SSH Proxy Server is required when SSH Connection Route is Proxy."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server_template.py:0
+#: code:addons/cetmix_tower_ssh_proxy/wizards/cx_tower_server_template_create_wizard.py:0
+msgid "SSH Proxy Server must be empty when SSH Connection Route is Direct."
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "SSH connection error %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_ssh_proxy
+#. odoo-python
+#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
+msgid "SSH proxy route exceeds the maximum of %s hops."
+msgstr ""

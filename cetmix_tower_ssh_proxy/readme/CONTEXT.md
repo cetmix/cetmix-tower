@@ -1,0 +1,3 @@
+Although Cetmix Tower can connect directly to servers over SSH, some servers are only reachable through a jump or bastion host, for example when they are located in private networks, behind VPN gateways, or in isolated customer environments.
+
+We found that supporting SSH proxy routes directly in Cetmix Tower makes managing such servers more convenient while keeping the standard command and file management workflows unchanged. However, not all Cetmix Tower users require proxy routing, so to avoid adding unnecessary complexity to the core server module, we have included this functionality in a separate module.
