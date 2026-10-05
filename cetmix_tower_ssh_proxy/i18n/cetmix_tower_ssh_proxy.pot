@@ -4,10 +4,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0+e\n"
+"Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 08:40+0000\n"
-"PO-Revision-Date: 2026-09-11 08:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -59,18 +57,6 @@ msgid ""
 "Direct connects to this server from the Tower host. SSH Proxy opens the "
 "target SSH connection through another Tower server using a Paramiko direct-"
 "tcpip channel."
-msgstr ""
-
-#. module: cetmix_tower_ssh_proxy
-#. odoo-python
-#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
-msgid "Host key not found for server %s."
-msgstr ""
-
-#. module: cetmix_tower_ssh_proxy
-#. odoo-python
-#: code:addons/cetmix_tower_ssh_proxy/models/cx_tower_server.py:0
-msgid "IP address is not configured for server %s."
 msgstr ""
 
 #. module: cetmix_tower_ssh_proxy
