@@ -12,7 +12,7 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import mute_logger
 
-from odoo.addons.cetmix_tower_drone.tests.common import JOB_LOGGER
+from odoo.addons.cetmix_drone.tests.common import JOB_LOGGER
 from odoo.addons.cetmix_tower_server.models.constants import (
     COMMAND_STOPPED,
     COMMAND_TIMED_OUT,
@@ -371,7 +371,7 @@ class TestDroneSshDispatch(TestDroneSshCommon):
         job = log.sudo().drone_job_id
         self.env.flush_all()
         self.env.cr.execute(
-            "UPDATE cx_tower_drone_job SET create_date = %s WHERE id = %s",
+            "UPDATE cx_drone_job SET create_date = %s WHERE id = %s",
             [fields.Datetime.now() - timedelta(minutes=20), job.id],
         )
         self.env.invalidate_all()

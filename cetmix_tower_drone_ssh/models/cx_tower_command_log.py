@@ -3,7 +3,7 @@
 
 from odoo import fields, models
 
-from odoo.addons.cetmix_tower_drone.models.constants import (
+from odoo.addons.cetmix_drone.models.constants import (
     JOB_ACTIVE_STATES,
     JOB_STATE_FAILED,
     JOB_STATE_TIMED_OUT,
@@ -21,14 +21,14 @@ class CxTowerCommandLog(models.Model):
     _inherit = "cx.tower.command.log"
 
     drone_job_id = fields.Many2one(
-        comodel_name="cx.tower.drone.job",
+        comodel_name="cx.drone.job",
         ondelete="set null",
         copy=False,
         index=True,
         groups="cetmix_tower_base.group_root",
     )
     drone_controller_id = fields.Many2one(
-        comodel_name="cx.tower.drone.controller",
+        comodel_name="cx.drone.controller",
         string="Executed on",
         related="drone_job_id.controller_id",
         store=True,
@@ -42,7 +42,7 @@ class CxTowerCommandLog(models.Model):
         Called by the drone module as the user who ran the command.
 
         Args:
-            drone_job (cx.tower.drone.job): Job in its final state.
+            drone_job (cx.drone.job): Job in its final state.
             result (dict): ``status``, ``response``, ``error``; None for
                 a timeout.
 

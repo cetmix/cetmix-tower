@@ -11,14 +11,14 @@
     "application": False,
     "installable": True,
     "auto_install": False,
-    "depends": ["cetmix_tower_drone", "cetmix_tower_server"],
+    "depends": ["cetmix_drone", "cetmix_tower_server"],
     "data": [
         "views/cx_tower_command_log_views.xml",
-        "views/cx_tower_drone_controller_views.xml",
-        "views/cx_tower_drone_job_views.xml",
+        "views/cx_drone_controller_views.xml",
+        "views/cx_drone_job_views.xml",
         "views/res_config_settings_views.xml",
     ],
     "demo": [
-        "demo/cx_tower_drone_controller_demo.xml",
+        "demo/cx_drone_controller_demo.xml",
     ],
 }

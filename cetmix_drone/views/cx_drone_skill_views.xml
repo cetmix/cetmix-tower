@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_drone_skill_view_form" model="ir.ui.view">
+        <field name="name">cx.drone.skill.view.form</field>
+        <field name="model">cx.drone.skill</field>
+        <field name="arch" type="xml">
+            <form create="0" delete="0" duplicate="0">
+                <header>
+                    <button
+                        name="action_fetch_schema"
+                        type="object"
+                        string="Fetch Schema"
+                        help="Ask a linked controller for this skill's schema and store it"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                        </group>
+                        <group>
+                            <field name="reference" readonly="1" />
+                            <field name="schema" invisible="1" />
+                            <field name="schema_text" string="Schema" readonly="1" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cx_drone_skill_view_list" model="ir.ui.view">
+        <field name="name">cx.drone.skill.view.list</field>
+        <field name="model">cx.drone.skill</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0" duplicate="0">
+                <field name="name" />
+                <field name="reference" optional="show" />
+            </list>
+        </field>
+    </record>
+
+    <record id="cx_drone_skill_view_search" model="ir.ui.view">
+        <field name="name">cx.drone.skill.view.search</field>
+        <field name="model">cx.drone.skill</field>
+        <field name="arch" type="xml">
+            <search>
+                <field
+                    name="name"
+                    string="Name/Reference"
+                    filter_domain="['|', ('name', 'ilike', self), ('reference', 'ilike', self)]"
+                />
+            </search>
+        </field>
+    </record>
+
+    <record id="cx_drone_skill_action" model="ir.actions.act_window">
+        <field name="name">Drone Skills</field>
+        <field name="res_model">cx.drone.skill</field>
+        <field name="path">cetmix_drone_skills</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
