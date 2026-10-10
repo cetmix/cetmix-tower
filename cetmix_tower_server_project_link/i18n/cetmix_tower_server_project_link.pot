@@ -1,0 +1,63 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_server_project_link
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_server_project_link
+#: model:ir.model,name:cetmix_tower_server_project_link.model_cx_tower_jet
+msgid "Cetmix Tower Jet"
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#. odoo-python
+#: code:addons/cetmix_tower_server_project_link/models/project_task.py:0
+msgid "Jet"
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#: model:ir.model.fields,field_description:cetmix_tower_server_project_link.field_project_task__jet_count
+msgid "Jet Count"
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#. odoo-python
+#: code:addons/cetmix_tower_server_project_link/models/project_task.py:0
+#: model:ir.model.fields,field_description:cetmix_tower_server_project_link.field_project_task__jet_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server_project_link.view_task_form2_jet
+msgid "Jets"
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#: model:ir.model.fields,help:cetmix_tower_server_project_link.field_cx_tower_jet__task_ids
+msgid "Project tasks this Jet is associated with."
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#. odoo-python
+#: code:addons/cetmix_tower_server_project_link/models/cx_tower_jet.py:0
+#: model:ir.model,name:cetmix_tower_server_project_link.model_project_task
+msgid "Task"
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#: model:ir.model.fields,field_description:cetmix_tower_server_project_link.field_cx_tower_jet__task_count
+msgid "Task Count"
+msgstr ""
+
+#. module: cetmix_tower_server_project_link
+#. odoo-python
+#: code:addons/cetmix_tower_server_project_link/models/cx_tower_jet.py:0
+#: model:ir.model.fields,field_description:cetmix_tower_server_project_link.field_cx_tower_jet__task_ids
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server_project_link.cx_tower_jet_view_form
+msgid "Tasks"
+msgstr ""
