@@ -52,8 +52,6 @@ repos:
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
-      - id: oca-fix-manifest-website
-        args: ["https://tower.cetmix.com"]
       - id: oca-gen-addon-readme
         args:
           - --addons-dir=.
@@ -64,6 +62,15 @@ repos:
           - --keep-source-digest
           - --convert-fragments-to-markdown
       - id: oca-gen-external-dependencies
+  - repo: local
+    hooks:
+      # The maintainer hook rewrites every manifest, including cetmix_drone.
+      - id: fix-manifest-website
+        name: Fix the manifest website key
+        entry: python3 setup/fix_manifest_website.py
+        language: system
+        pass_filenames: false
+        files: (__manifest__\.py|__openerp__\.py|__terp__\.py)$
   - repo: https://github.com/OCA/odoo-pre-commit-hooks
     rev: v0.0.33
     hooks:

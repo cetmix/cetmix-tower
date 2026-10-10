@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from cryptography.fernet import Fernet
 
-from odoo.addons.cetmix_tower_drone.tests.common import FakeDroneNetwork
+from odoo.addons.cetmix_drone.tests.common import FakeDroneNetwork
 from odoo.addons.cetmix_tower_server.tests.common import TestTowerCommon
 
 from ..models.constants import SKILL_SSH
@@ -27,8 +27,8 @@ class TestDroneSshCommon(TestTowerCommon):
             cls.registry.enter_test_mode(cls.cr)
             cls.addClassCleanup(cls.registry.leave_test_mode)
 
-        cls.Job = cls.env["cx.tower.drone.job"]
-        cls.Controller = cls.env["cx.tower.drone.controller"]
+        cls.Job = cls.env["cx.drone.job"]
+        cls.Controller = cls.env["cx.drone.controller"]
 
         # Defer handlers
         server_class = type(cls.Server)
@@ -52,7 +52,7 @@ class TestDroneSshCommon(TestTowerCommon):
 
         # Skill. Demo may already have inserted this reference. Drop that
         # row and create the suite's own record so tests do not use demo data.
-        Skill = cls.env["cx.tower.drone.skill"]
+        Skill = cls.env["cx.drone.skill"]
         Skill.search([("reference", "=", SKILL_SSH)]).unlink()
         cls.skill_ssh = Skill.create({"name": "SSH", "reference": SKILL_SSH})
         cls.ICP = cls.env["ir.config_parameter"].sudo()

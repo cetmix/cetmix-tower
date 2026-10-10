@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <!--
+        Keep this name on every install and update, in every language.
+        cetmix_drone sets Drone while this module is not installed, and
+        loads before this file when both modules are updated together.
+        A record would update English only and leave Drone in the others.
+    -->
+    <function model="ir.ui.menu" name="_cetmix_tower_server_set_root_menu_name" />
+
     <!-- ========================= Servers ========================= -->
     <menuitem
         id="menu_cx_tower_server_root"
