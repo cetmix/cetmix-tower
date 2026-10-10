@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record
+        forcecreate="True"
+        id="ir_cron_check_drone_controller_health"
+        model="ir.cron"
+    >
+        <field name="name">Cetmix Tower: Check drone controller health</field>
+        <field name="model_id" ref="model_cx_tower_drone_controller" />
+        <field name="state">code</field>
+        <field name="code">model._cron_check_health()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+    </record>
+
+    <record forcecreate="True" id="ir_cron_poll_drone_jobs" model="ir.cron">
+        <field name="name">Cetmix Tower: Poll drone jobs</field>
+        <field name="model_id" ref="model_cx_tower_drone_job" />
+        <field name="state">code</field>
+        <field name="code">model._cron_poll()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">2</field>
+        <field name="interval_type">minutes</field>
+    </record>
+
+    <record forcecreate="True" id="ir_cron_check_drone_job_timeout" model="ir.cron">
+        <field name="name">Cetmix Tower: Check drone job timeout</field>
+        <field name="model_id" ref="model_cx_tower_drone_job" />
+        <field name="state">code</field>
+        <field name="code">model._cron_check_timeout()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">15</field>
+        <field name="interval_type">minutes</field>
+    </record>
+</odoo>
