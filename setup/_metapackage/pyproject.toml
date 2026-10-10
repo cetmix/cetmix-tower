@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-cetmix-cetmix-tower"
-version = "18.0.20261005.0"
+version = "18.0.20261010.0"
 dependencies = [
     "odoo-addon-cetmix_tower==18.0.*",
     "odoo-addon-cetmix_tower_aws==18.0.*",
@@ -8,6 +8,7 @@ dependencies = [
     "odoo-addon-cetmix_tower_git==18.0.*",
     "odoo-addon-cetmix_tower_ovh==18.0.*",
     "odoo-addon-cetmix_tower_server==18.0.*",
+    "odoo-addon-cetmix_tower_server_project_link==18.0.*",
     "odoo-addon-cetmix_tower_server_queue==18.0.*",
     "odoo-addon-cetmix_tower_ssh_proxy==18.0.*",
     "odoo-addon-cetmix_tower_webhook==18.0.*",
