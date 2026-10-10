@@ -5013,6 +5013,15 @@ msgid "Raise Error"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__rating_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__rating_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__rating_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__rating_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_jet_waypoint__state__ready
 msgid "Ready"
 msgstr ""
@@ -7219,6 +7228,24 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.actions.act_window,help:cetmix_tower_server.cx_tower_jet_waypoint_action
 msgid "Waypoints represent waypoints for jets."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__website_message_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__website_message_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__website_message_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__website_message_ids
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__website_message_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet__website_message_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_template__website_message_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__website_message_ids
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template__website_message_ids
+msgid "Website communication history"
 msgstr ""
 
 #. module: cetmix_tower_server
