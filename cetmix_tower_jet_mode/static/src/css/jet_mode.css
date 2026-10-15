@@ -1,0 +1,4 @@
+/* Custom styles to hide rows in Jet Modes */
+tr.text-hidden {
+    display: none !important;
+}
