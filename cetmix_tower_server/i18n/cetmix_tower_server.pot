@@ -2782,6 +2782,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_jet_template.py:0
 msgid ""
+"Following templates cannot be deleted as an installation is in progress: %s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_template.py:0
+msgid ""
 "Following templates cannot be deleted as they are installed on servers: %s"
 msgstr ""
 
@@ -4936,7 +4943,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
-msgid "Python 'json' library. Available methods: 'dumps'"
+msgid "Python 'json' library. Available methods: 'dumps', 'loads'"
 msgstr ""
 
 #. module: cetmix_tower_server
