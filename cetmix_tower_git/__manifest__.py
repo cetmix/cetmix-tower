@@ -31,6 +31,7 @@
         "views/cx_tower_server_view.xml",
         "views/cx_tower_plan_line_view.xml",
         "views/cx_tower_jet_views.xml",
+        "views/cx_tower_jet_template_views.xml",
         "views/cx_tower_command_views.xml",
         "wizards/cx_tower_jet_git_wizard_views.xml",
         "views/menuitems.xml",

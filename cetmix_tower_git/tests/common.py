@@ -8,6 +8,9 @@ class CommonTest(TestTowerCommon):
     def setUpClass(cls):
         super().setUpClass()
 
+        # Git tests exercise the Jet tab and launch/clone wizards.
+        cls.jet_template_sample.use_git_projects = True
+
         # Models
         cls.GitProject = cls.env["cx.tower.git.project"]
         cls.GitProjectRel = cls.env["cx.tower.git.project.rel"]

@@ -9,7 +9,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='line_ids']" position="after">
-                <group invisible="not state_id">
+                <group invisible="not use_git_projects or not state_id">
                     <field name="add_repositories" widget="radio" />
                     <field
                         name="git_project_id"
@@ -20,7 +20,7 @@
                 </group>
                 <field
                     name="git_repo_line_ids"
-                    invisible="add_repositories != 'repos' or not state_id"
+                    invisible="not use_git_projects or add_repositories != 'repos' or not state_id"
                 >
                     <list editable="bottom">
                         <field name="sequence" widget="handle" />
@@ -43,7 +43,7 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='line_ids']" position="after">
-                <group invisible="not parent_git_project_id">
+                <group invisible="not use_git_projects or not parent_git_project_id">
                     <field name="git_project_mode" widget="radio" />
                     <field
                         name="git_project_id"
@@ -54,7 +54,7 @@
                 </group>
                 <field
                     name="git_repo_line_ids"
-                    invisible="not parent_git_project_id or git_project_mode != 'repos'"
+                    invisible="not use_git_projects or not parent_git_project_id or git_project_mode != 'repos'"
                 >
                     <list editable="bottom">
                         <field name="sequence" widget="handle" />

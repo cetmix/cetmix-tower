@@ -17,6 +17,10 @@ class CxTowerJet(models.Model):
         copy=False,
         help="Git Project of this Jet. Several Jets may share a project.",
     )
+    use_git_projects = fields.Boolean(
+        related="jet_template_id.use_git_projects",
+        readonly=True,
+    )
     git_remote_ids = fields.One2many(
         comodel_name="cx.tower.git.remote",
         compute="_compute_git_remote_ids",
