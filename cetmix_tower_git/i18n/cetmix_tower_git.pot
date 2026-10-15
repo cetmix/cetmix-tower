@@ -512,6 +512,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:cetmix_tower_git.cx_tower_git_project_action
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project
 #: model:ir.ui.menu,name:cetmix_tower_git.menu_cx_tower_git_project_settings
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_jet_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_server_view_form
 msgid "Git Projects"
 msgstr ""
@@ -751,6 +752,17 @@ msgstr ""
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_project__jet_ids
 msgid "Jets"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_jet__use_git_projects
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_jet_clone_wizard__use_git_projects
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_jet_create_wizard__use_git_projects
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_jet_template__use_git_projects
+msgid ""
+"Jets of this template can have a Git Project. The Git Project tab on the "
+"Jet, and the repository section in the launch and clone wizards, are shown "
+"only when this is enabled."
 msgstr ""
 
 #. module: cetmix_tower_git
@@ -1298,6 +1310,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_git/models/cx_tower_jet.py:0
 msgid "This Jet has no Git Project."
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet__use_git_projects
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_clone_wizard__use_git_projects
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_create_wizard__use_git_projects
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_jet_template__use_git_projects
+msgid "Use Git Projects"
 msgstr ""
 
 #. module: cetmix_tower_git
