@@ -1,3 +1,8 @@
+## 18.0.3.0.4 (2026-10-15)
+
+- Bugfixes: Allow adding a custom value on a scheduled task without a name. (5687)
+
+
 ## 18.0.3.0.0 (2026-09-16)
 
 - Features: Extract access groups, menus, tags, vault and mixins into ``cetmix_tower_base``.

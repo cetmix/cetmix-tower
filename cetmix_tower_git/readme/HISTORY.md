@@ -1,3 +1,8 @@
+## 18.0.3.0.1 (2026-10-15)
+
+- Features: Show Git Projects on a Jet only when its template enables them. (5687)
+
+
 ## 18.0.3.0.0 (2026-09-17)
 
 - Features: Link Git Projects to Jets, edit remotes as a flat list, and write them to the
