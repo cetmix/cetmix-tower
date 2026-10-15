@@ -27,6 +27,7 @@ from . import cx_tower_scheduled_task_cv
 from . import cetmix_tower
 from . import cx_tower_variable_option
 from . import ir_actions_server
+from . import ir_ui_menu
 from . import res_config_settings
 from . import res_partner
 from . import res_users
