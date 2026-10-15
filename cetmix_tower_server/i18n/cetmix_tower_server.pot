@@ -4153,6 +4153,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_line_action__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_scheduled_task_cv__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template__name
