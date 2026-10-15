@@ -18,6 +18,7 @@ class CxTowerJetTemplateInstall(models.Model):
     jet_template_id = fields.Many2one(
         comodel_name="cx.tower.jet.template",
         required=True,
+        ondelete="cascade",
         help="Template to install/uninstall",
     )
     server_id = fields.Many2one(

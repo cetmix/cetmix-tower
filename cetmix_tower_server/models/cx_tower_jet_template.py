@@ -341,6 +341,22 @@ class CxTowerJetTemplate(models.Model):
                     ",".join(templates_with_installed_servers.mapped("display_name")),
                 )
             )
+        # Install lines point at the template. Their parent job stays
+        # "processing" until the flight plan callback records the result.
+        # Cascade on the job would drop that record before the callback.
+        templates_with_processing_install = self.filtered(
+            lambda template: template.install_ids.filtered(
+                lambda line: line.jet_template_install_id.state == "processing"
+            )
+        )
+        if templates_with_processing_install:
+            raise ValidationError(
+                _(
+                    "Following templates cannot be deleted "
+                    "as an installation is in progress: %s",
+                    ",".join(templates_with_processing_install.mapped("display_name")),
+                )
+            )
 
         files = self.file_ids
         res = super().unlink()

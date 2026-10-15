@@ -209,9 +209,16 @@ class CxTowerServerLog(models.Model):
             return self.file_id.code_on_server
 
     def _get_log_from_command(self):
-        """Get log from a command.
+        """Get log text from a command.
+
+        Both stdout and stderr are included. A command such as
+        ``docker logs`` writes the container's stdout and stderr on
+        separate streams, and stderr is the stream a process uses for
+        a startup failure.
+
         Returns:
-            Text: log text
+            str: Combined log text, or ``NO_LOG_FETCHED_MESSAGE`` when
+            the command produced neither stream.
         """
         self.ensure_one()
 
@@ -222,15 +229,16 @@ class CxTowerServerLog(models.Model):
             jet_template=self.jet_template_id,
             sudo=use_sudo,
         )
-        log_text = self.NO_LOG_FETCHED_MESSAGE
-        if command_result:
-            response = command_result["response"]
-            error = command_result["error"]
-            if response:
-                log_text = response
-            elif error:
-                log_text = error
-        return log_text
+        if not command_result:
+            return self.NO_LOG_FETCHED_MESSAGE
+        parts = [
+            part
+            for part in (command_result["response"], command_result["error"])
+            if part
+        ]
+        if not parts:
+            return self.NO_LOG_FETCHED_MESSAGE
+        return "\n".join(parts)
 
     def _get_copied_name(self, force_name=None):
         # Original name is preserved when log is duplicated

@@ -1775,3 +1775,54 @@ class TestTowerJetTemplateInstall(TestTowerJetsCommon):
 
             # Verify uninstall was called only for server3
             mock_uninstall.assert_called_once_with(server=server3, template=template)
+
+    def test_unlink_template_blocked_while_install_processing(self):
+        """A template with a running installation cannot be deleted.
+
+        Deletion cascades to the installation record. The flight-plan
+        callback still needs that record to store the result.
+        """
+        template = self.JetTemplate.create(
+            {
+                "name": "Processing Install Guard",
+                "reference": "processing_install_guard",
+            }
+        )
+        install = self.JetTemplateInstall.create(
+            {
+                "jet_template_id": template.id,
+                "server_id": self.server_test_1.id,
+                "line_ids": [(0, 0, {"jet_template_id": template.id})],
+            }
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            template.unlink()
+
+        self.assertIn("installation is in progress", str(error.exception))
+
+        self.assertTrue(template.exists())
+        self.assertTrue(install.exists())
+        self.assertEqual(install.state, "processing")
+
+    def test_unlink_template_cascades_finished_install(self):
+        """A finished installation is removed together with its template."""
+        template = self.JetTemplate.create(
+            {
+                "name": "Finished Install Cascade",
+                "reference": "finished_install_cascade",
+            }
+        )
+        install = self.JetTemplateInstall.create(
+            {
+                "jet_template_id": template.id,
+                "server_id": self.server_test_1.id,
+                "state": "done",
+                "line_ids": [(0, 0, {"jet_template_id": template.id})],
+            }
+        )
+
+        template.unlink()
+
+        self.assertFalse(template.exists())
+        self.assertFalse(install.exists())
