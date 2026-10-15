@@ -1,7 +1,7 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -10,8 +10,31 @@ class CxTowerJetTemplate(models.Model):
 
     _inherit = "cx.tower.jet.template"
 
+    use_git_projects = fields.Boolean(
+        help="Jets of this template can have a Git Project."
+        " The Git Project tab on the Jet, and the repository section"
+        " in the launch and clone wizards, are shown only when this"
+        " is enabled.",
+    )
+
+    def _get_fields_for_yaml(self):
+        """Export the Git Projects setting with the Jet Template.
+
+        Returns:
+            list: YAML field names.
+        """
+        res = super()._get_fields_for_yaml()
+        res += [
+            "use_git_projects",
+        ]
+        return res
+
     def _prepare_jet_values(self, server, name=None, **kwargs):
         """Prepare Jet values, attaching a Git Project when requested.
+
+        Git keyword arguments are used only when Use Git Projects is
+        enabled. Otherwise they are ignored, and a clone does not copy
+        the parent Jet's project.
 
         Git keyword arguments (at most one of the three):
 
@@ -21,8 +44,9 @@ class CxTowerJetTemplate(models.Model):
         * ``git_repo_lines``: list of repo line dicts used to create a
           new project named after the new Jet.
 
-        If none is given and ``kwargs`` contains ``jet_cloned_from_id``,
-        the parent Jet's project is copied (clone default).
+        If none is given, Use Git Projects is enabled, and ``kwargs``
+        contains ``jet_cloned_from_id``, the parent Jet's project is
+        copied (clone default).
         ``jet_cloned_from_id`` is read and left in ``kwargs`` for
         ``super()``.
 
@@ -38,6 +62,9 @@ class CxTowerJetTemplate(models.Model):
         git_project = kwargs.pop("git_project", None)
         git_project_copy_from = kwargs.pop("git_project_copy_from", None)
         git_repo_lines = kwargs.pop("git_repo_lines", None)
+
+        if not self.use_git_projects:
+            return super()._prepare_jet_values(server, name=name, **kwargs)
 
         provided = [
             key

@@ -6,7 +6,11 @@
         <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page name="git_project" string="Git Project">
+                <page
+                    name="git_project"
+                    string="Git Project"
+                    invisible="not use_git_projects"
+                >
                     <div
                         class="alert alert-info"
                         role="alert"

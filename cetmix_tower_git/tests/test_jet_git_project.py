@@ -119,6 +119,48 @@ class TestJetGitProject(CommonTest, TestTowerJetsCommon):
                     self._fill_git_line_form(line, repo, head=head, head_type=head_type)
         return wizard_form.record
 
+    def test_disabled_template_ignores_git_on_create_and_clone(self):
+        self.jet_template_sample.use_git_projects = False
+        count_before = self.GitProject.search_count([])
+        jet = self.jet_template_sample.create_jet(
+            self.server_test_1,
+            name="Disabled Git Template",
+            git_repo_lines=[self._repo_line(self.repo_cetmix_tower)],
+        )
+        self.assertFalse(jet.git_project_id)
+        self.assertEqual(self.GitProject.search_count([]), count_before)
+
+        wizard = self.env["cx.tower.jet.create.wizard"].create(
+            {
+                "name_type": "m",
+                "name": "Disabled Wizard Jet",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": self.server_test_1.id,
+                "add_repositories": "existing",
+                "git_project_id": self.git_project_1.id,
+            }
+        )
+        launched = self.Jet.browse(wizard.action_confirm()["res_id"])
+        self.assertFalse(launched.git_project_id)
+
+        self.jet_template_sample.use_git_projects = True
+        self._enable_clone(self.jet_template_sample)
+        parent = self.jet_template_sample.create_jet(
+            self.server_test_1,
+            name="Disabled Clone Parent",
+            git_repo_lines=[self._repo_line(self.repo_cetmix_tower)],
+        )
+        self.jet_template_sample.use_git_projects = False
+        clone = parent.clone(name="Disabled Clone")
+        self.assertFalse(clone.git_project_id)
+        self.assertTrue(parent.git_project_id)
+
+    def test_yaml_exports_use_git_projects(self):
+        values = self.jet_template_sample.with_context(
+            no_yaml_service_fields=True
+        )._prepare_record_for_yaml()
+        self.assertTrue(values["use_git_projects"])
+
     def test_launch_no_creates_jet_without_project(self):
         wizard = self.env["cx.tower.jet.create.wizard"].create(
             {

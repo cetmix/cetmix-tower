@@ -88,6 +88,9 @@ class CxTowerJetCreateWizard(models.TransientModel):
         inverse_name="create_wizard_id",
         string="Repositories",
     )
+    use_git_projects = fields.Boolean(
+        related="jet_template_id.use_git_projects",
+    )
 
     def action_confirm(self):
         """Create a new jet, passing Git Project keyword arguments.
@@ -191,6 +194,9 @@ class CxTowerJetCloneWizard(models.TransientModel):
     parent_git_project_id = fields.Many2one(
         related="jet_id.git_project_id",
         string="Parent Git Project",
+    )
+    use_git_projects = fields.Boolean(
+        related="jet_template_id.use_git_projects",
     )
 
     def action_confirm(self):
