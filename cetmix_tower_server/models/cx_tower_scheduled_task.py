@@ -91,6 +91,7 @@ class CxTowerScheduledTask(models.Model):
         "cx.tower.scheduled.task.cv",
         "scheduled_task_id",
         string="Custom Variable Values",
+        copy=True,
     )
     warning_message = fields.Text(
         compute="_compute_warning_message",

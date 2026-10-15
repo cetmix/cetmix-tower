@@ -181,6 +181,14 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
+                            name="action_open_jets"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-plane"
+                        >
+                            <field name="jet_count" string="Jets" widget="statinfo" />
+                        </button>
+                        <button
                             name="action_open_command_logs"
                             type="object"
                             string="Command Logs"
@@ -201,14 +209,6 @@
                             icon="fa-files-o"
                         >
                             <field name="file_count" widget="statinfo" string="Files" />
-                        </button>
-                        <button
-                            name="action_open_jets"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-plane"
-                        >
-                            <field name="jet_count" string="Jets" widget="statinfo" />
                         </button>
                     </div>
                     <widget
