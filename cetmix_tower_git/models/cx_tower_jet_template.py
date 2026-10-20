@@ -15,19 +15,8 @@ class CxTowerJetTemplate(models.Model):
         " The Git Project tab on the Jet, and the repository section"
         " in the launch and clone wizards, are shown only when this"
         " is enabled.",
+        yaml_export=True,
     )
-
-    def _get_fields_for_yaml(self):
-        """Export the Git Projects setting with the Jet Template.
-
-        Returns:
-            list: YAML field names.
-        """
-        res = super()._get_fields_for_yaml()
-        res += [
-            "use_git_projects",
-        ]
-        return res
 
     def _prepare_jet_values(self, server, name=None, **kwargs):
         """Prepare Jet values, attaching a Git Project when requested.

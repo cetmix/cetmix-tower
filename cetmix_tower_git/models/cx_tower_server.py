@@ -22,6 +22,7 @@ class CxTowerServer(models.Model):
         help="Legacy: Git Projects linked through files on this server."
         " Kept for servers that do not use Jets. New setups should link"
         " the Git Project to the Jet and write it with Upload Git Project.",
+        yaml_export="explode",
     )
 
     # Helper field to get all git projects related to server
@@ -38,16 +39,6 @@ class CxTowerServer(models.Model):
         help="Legacy: Git Projects linked through files on this server."
         " Kept for servers that do not use Jets.",
     )
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "git_project_rel_ids",
-        ]
-        return res
 
     def _get_force_x2m_resolve_models(self):
         res = super()._get_force_x2m_resolve_models()
