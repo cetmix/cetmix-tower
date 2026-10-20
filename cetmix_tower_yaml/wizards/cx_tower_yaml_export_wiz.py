@@ -30,10 +30,12 @@ class CxTowerYamlExportWiz(models.TransientModel):
         help="Snippet file name without extension, eg 'my_snippet'",
     )
 
-    explode_child_records = fields.Boolean(
+    include_related_records = fields.Boolean(
         default=True,
-        help="Add entire child record definitions to the exported YAML file. "
-        "Otherwise only references to child records will be added.",
+        help="Add records used by the selected records to the file, after the "
+        "records they use. When disabled, only the selected records are "
+        "exported and those links are written as references. Records that "
+        "belong to the selected record are always included.",
     )
     remove_empty_values = fields.Boolean(
         string="Remove Empty x2m Field Values",
@@ -190,9 +192,16 @@ class CxTowerYamlExportWiz(models.TransientModel):
                 rec.manifest_price = 0.0
                 rec.manifest_currency = False
 
-    @api.onchange("explode_child_records", "remove_empty_values", *MANIFEST_FIELDS)
-    def onchange_explode_child_records(self):
-        """Compute YAML code and file content."""
+    @api.onchange("include_related_records", "remove_empty_values", *MANIFEST_FIELDS)
+    def onchange_include_related_records(self):
+        """Compute YAML code and file content.
+
+        Selected records are roots. With related records enabled, every record
+        they use is written first, each record once.
+
+        Raises:
+            ValidationError: No records are selected for export.
+        """
 
         self.ensure_one()
 
@@ -201,32 +210,29 @@ class CxTowerYamlExportWiz(models.TransientModel):
         if not records:
             raise ValidationError(_("No valid records selected"))
 
-        explode_related_record = self.explode_child_records
         remove_empty_values = self.remove_empty_values
 
         # Prepare YAML header
         yaml_header = FILE_HEADER.rstrip("\n")
         # Use the YAML export collector for unique records
         collector = YamlExportCollector()
+        ordered_records = []
+        records._collect_yaml_export_records(
+            self.include_related_records,
+            collector,
+            set(),
+            ordered_records,
+        )
+        root_keys = {(record._name, record.id) for record in records}
         record_list = []
-        for rec in records:
+        for rec in ordered_records:
             record_yaml_dict = rec.with_context(
-                explode_related_record=explode_related_record,
                 remove_empty_values=remove_empty_values,
-                yaml_collector=collector,
+                yaml_export_root=(rec._name, rec.id) in root_keys,
             )._prepare_record_for_yaml()
 
             if not record_yaml_dict:
                 continue
-            if isinstance(record_yaml_dict, dict) and list(record_yaml_dict) == [
-                "reference"
-            ]:
-                continue
-
-            if "cetmix_tower_model" not in record_yaml_dict:
-                record_yaml_dict["cetmix_tower_model"] = rec._name.replace(
-                    "cx.tower.", ""
-                ).replace(".", "_")
 
             record_list.append(record_yaml_dict)
 

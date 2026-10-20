@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models
+from odoo import fields, models
 
 
 class CxTowerServerTemplate(models.Model):
@@ -10,27 +10,22 @@ class CxTowerServerTemplate(models.Model):
         "cx.tower.yaml.mixin",
     ]
 
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "color",
-            "os_id",
-            "tag_ids",
-            "note",
-            "ssh_port",
-            "ssh_username",
-            "ssh_key_id",
-            "ssh_auth_mode",
-            "use_sudo",
-            "variable_value_ids",
-            "server_log_ids",
-            "shortcut_ids",
-            "scheduled_task_ids",
-            "flight_plan_id",
-            "plan_delete_id",
-        ]
-        return res
+    name = fields.Char(yaml_export=True)
+    color = fields.Integer(yaml_export=True)
+    os_id = fields.Many2one(yaml_export="include")
+    tag_ids = fields.Many2many(yaml_export="include")
+    note = fields.Text(yaml_export=True)
+    ssh_port = fields.Integer(yaml_export=True)
+    ssh_username = fields.Char(yaml_export=True)
+    ssh_key_id = fields.Many2one(yaml_export="include")
+    ssh_auth_mode = fields.Selection(yaml_export=True)
+    use_sudo = fields.Selection(yaml_export=True)
+    variable_value_ids = fields.One2many(yaml_export="explode")
+    server_log_ids = fields.One2many(yaml_export="explode")
+    shortcut_ids = fields.Many2many(yaml_export="include")
+    scheduled_task_ids = fields.Many2many(yaml_export="include")
+    flight_plan_id = fields.Many2one(yaml_export="include")
+    plan_delete_id = fields.Many2one(yaml_export="include")
 
     def _get_force_x2m_resolve_models(self):
         res = super()._get_force_x2m_resolve_models()

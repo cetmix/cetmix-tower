@@ -1,6 +1,6 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models
+from odoo import fields, models
 
 
 class CxTowerJetWaypointTemplate(models.Model):
@@ -10,23 +10,12 @@ class CxTowerJetWaypointTemplate(models.Model):
         "cx.tower.yaml.mixin",
     ]
 
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "sequence",
-            "access_level",
-            "jet_template_id",
-            "plan_create_id",
-            "plan_arrive_id",
-            "plan_leave_id",
-            "plan_delete_id",
-            "note",
-        ]
-        return res
-
-    def _get_deferred_m2o_import_fields(self):
-        """Return m2o waypoint-template fields resolved after import."""
-        return {
-            "jet_template_id": "cx.tower.jet.template",
-        }
+    name = fields.Char(yaml_export=True)
+    sequence = fields.Integer(yaml_export=True)
+    access_level = fields.Selection(yaml_export=True)
+    jet_template_id = fields.Many2one(yaml_export="reference")
+    plan_create_id = fields.Many2one(yaml_export="include")
+    plan_arrive_id = fields.Many2one(yaml_export="include")
+    plan_leave_id = fields.Many2one(yaml_export="include")
+    plan_delete_id = fields.Many2one(yaml_export="include")
+    note = fields.Text(yaml_export=True)

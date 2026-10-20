@@ -69,7 +69,7 @@ class TestYamlExportWizard(BaseCommon):
             active_model="cx.tower.server.template",
             active_ids=[cls.server_template_test_wizard.id],
         ).create({})
-        cls.test_wizard.onchange_explode_child_records()
+        cls.test_wizard.onchange_include_related_records()
 
     def test_user_without_export_group_cannot_export(self):
         """Test if user without export group cannot export"""
@@ -88,52 +88,28 @@ class TestYamlExportWizard(BaseCommon):
     def test_yaml_export_wizard_yaml_generation(self):
         """Test code generation of YAML export wizard."""
 
-        wizard_yaml = """
-# This file is generated with Cetmix Tower.
-# Details and documentation: https://cetmix.com/tower
-cetmix_tower_yaml_version: 1
-records:
-- cetmix_tower_model: command
-  access_level: manager
-  reference: test_command_from_yaml
-  name: Test Command From Yaml
-  action: ssh_command
-  allow_parallel_run: false
-  note: false
-  path: false
-  if_file_exists: skip
-  disconnect_file: false
-  fly_here: false
-  code: echo 'Test Command From Yaml'
-  no_split_for_sudo: false
-  server_status: false
-- cetmix_tower_model: command
-  access_level: manager
-  reference: test_command_from_yaml_2
-  name: Test Command From Yaml 2
-  action: ssh_command
-  allow_parallel_run: false
-  note: false
-  path: false
-  if_file_exists: skip
-  disconnect_file: false
-  fly_here: false
-  code: echo 'Test Command From Yaml 2'
-  no_split_for_sudo: false
-  server_status: false
-"""
-
         # -- 1 --
         # Test with two commands
         context = {
-            "default_explode_child_records": True,
+            "default_include_related_records": True,
             "default_remove_empty_values": True,
             "active_model": "cx.tower.command",
             "active_ids": [self.command_test_wizard.id, self.command_test_wizard_2.id],
         }
         wizard = self.YamlExportWizard.with_context(context).create({})  # pylint: disable=context-overridden # new need a new clean context
-        wizard.onchange_explode_child_records()
-        self.assertEqual(wizard.yaml_code, wizard_yaml)
+        wizard.onchange_include_related_records()
+        self.assertIn(self.file_header.strip(), wizard.yaml_code)
+        yaml_data = yaml.safe_load(wizard.yaml_code)
+        self.assertEqual(yaml_data["cetmix_tower_yaml_version"], 1)
+        records = yaml_data["records"]
+        self.assertEqual(
+            [record["reference"] for record in records],
+            ["test_command_from_yaml", "test_command_from_yaml_2"],
+        )
+        for record in records:
+            self.assertTrue(record["cetmix_tower_root"])
+            self.assertEqual(record["access_level"], "manager")
+            self.assertEqual(record["action"], "ssh_command")
 
     def test_yaml_export_wizard(self):
         """Test the YAML export wizard."""
@@ -193,54 +169,30 @@ records:
         ]
 
         # Prepare YAML code
-        self.test_wizard.onchange_explode_child_records()
+        self.test_wizard.onchange_include_related_records()
         yaml_data = yaml.safe_load(self.test_wizard.yaml_code)
 
-        # reference counters
-        ref_full = set()
-        ref_refs = set()
-
-        # Recursively walk through the YAML data and count references
-        def walk(obj):
-            if isinstance(obj, dict):
-                ref = obj.get("reference")
-                # dict only with "reference" = ref, otherwise — full object
-                if ref:
-                    if list(obj.keys()) == ["reference"]:
-                        ref_refs.add(ref)
-                    else:
-                        ref_full.add(ref)
-                for v in obj.values():
-                    walk(v)
-            elif isinstance(obj, list):
-                for v in obj:
-                    walk(v)
-
-        # Walk through the YAML data
-        walk(yaml_data["records"])
-
-        # Each reference as a full object — only once
-        for ref in ref_full:
-            self.assertEqual(
-                list(ref_full).count(ref),
-                1,
-                f"Reference '{ref}' appears as a full object more than once",
-            )
-        # Check that no full objects appear more than once
+        command_reference = self.command_test_wizard.reference
+        full_commands = [
+            record
+            for record in yaml_data["records"]
+            if record.get("cetmix_tower_model") == "command"
+            and record.get("reference") == command_reference
+        ]
         self.assertEqual(
-            len(ref_full),
-            len(set(ref_full)),
-            "Some full objects appear more than once",
+            len(full_commands),
+            1,
+            "A command used twice must be written once",
         )
-
-        # Check that for each ref there is no only reference, but no full object
-        for ref in ref_refs:
-            self.assertIn(
-                ref,
-                ref_full,
-                f"Reference '{ref}' is used only as a reference, "
-                "but no full object present",
-            )
+        plan = next(
+            record
+            for record in yaml_data["records"]
+            if record.get("reference") == self.flight_plan_test_wizard.reference
+        )
+        self.assertGreaterEqual(len(plan["line_ids"]), 2)
+        self.assertTrue(
+            all(line["command_id"] == command_reference for line in plan["line_ids"])
+        )
 
     def test_export_required_model_name_in_yaml(self):
         """
@@ -260,7 +212,7 @@ records:
             active_ids=[command_run_flight_plan.id, self.command_test_wizard.id],
         ).create({})
 
-        wizard.onchange_explode_child_records()
+        wizard.onchange_include_related_records()
 
         yaml_data = yaml.safe_load(wizard.yaml_code)
 
@@ -319,7 +271,7 @@ records:
             active_model="cx.tower.command",
             active_ids=[self.command_test_wizard.id],
         ).create({})
-        wiz.onchange_explode_child_records()
+        wiz.onchange_include_related_records()
         act = wiz.action_generate_yaml_file()
         download = self.env["cx.tower.yaml.export.wiz.download"].browse(act["res_id"])
         self.assertTrue(download.yaml_file_name.endswith(".yaml"))

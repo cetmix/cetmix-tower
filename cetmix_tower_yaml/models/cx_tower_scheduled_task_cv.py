@@ -1,6 +1,6 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models
+from odoo import fields, models
 
 
 class CxTowerScheduledTaskCv(models.Model):
@@ -11,10 +11,7 @@ class CxTowerScheduledTaskCv(models.Model):
         "cx.tower.reference.mixin",
     ]
 
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += ["variable_value_id"]
-        return res
+    variable_value_id = fields.Many2one(yaml_export="reference")
 
     def _post_process_yaml_dict_values(self, values):
         """Populate required child fields from the linked variable value."""
