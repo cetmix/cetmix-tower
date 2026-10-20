@@ -24,6 +24,7 @@ class CxTowerWebhookEvalMixin(models.AbstractModel):
     code = fields.Text(
         default=lambda self: self._default_eval_code(),
         required=True,
+        yaml_export=True,
     )
 
     @classmethod
