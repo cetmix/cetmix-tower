@@ -578,7 +578,7 @@ describe("WebWidgetAutocomplete", () => {
         await mountAutocompleteForm();
         await typeAndWait("abc");
         expect.verifySteps([
-            "notify:danger:Autocomplete suggestions could not be loaded.",
+            "notify:danger:rpc failed",
             "warn:Autocomplete suggestions could not be loaded.",
         ]);
         expect(".o-autocomplete--dropdown-item").toHaveCount(0);
