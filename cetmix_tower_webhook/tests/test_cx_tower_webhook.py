@@ -3,6 +3,10 @@
 
 from odoo.exceptions import ValidationError
 
+from odoo.addons.cetmix_tower_yaml.tests.yaml_export_check import (
+    assert_yaml_export_attributes,
+)
+
 from .common import CetmixTowerWebhookCommon
 
 
@@ -152,3 +156,10 @@ class TestCetmixTowerWebhook(CetmixTowerWebhookCommon):
         )
         # the result should be from user_demo anyway
         self.assertEqual(result["message"], test_user.login)
+
+    def test_yaml_export_attributes(self):
+        """Webhook models use the same yaml_export rules as the other YAML models."""
+        assert_yaml_export_attributes(
+            self,
+            ["cx.tower.webhook", "cx.tower.webhook.authenticator"],
+        )

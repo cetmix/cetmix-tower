@@ -65,12 +65,14 @@ class CxTowerGitProject(models.Model):
         copy=False,
         context={"active_test": False},
     )
+    name = fields.Char(yaml_export=True)
     source_ids = fields.One2many(
         comodel_name="cx.tower.git.source",
         inverse_name="git_project_id",
         string="Sources",
         auto_join=True,
         copy=True,
+        yaml_export="explode",
     )
     git_project_rel_ids = fields.One2many(
         comodel_name="cx.tower.git.project.rel",
@@ -100,7 +102,7 @@ class CxTowerGitProject(models.Model):
         copy=False,
         help="Repositories used in this project through its sources and remotes",
     )
-    note = fields.Text()
+    note = fields.Text(yaml_export=True)
 
     # ---- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
@@ -133,6 +135,7 @@ class CxTowerGitProject(models.Model):
         help="Git aggregator root directory where sources will be cloned."
         " Eg '/tmp/git-aggregator'"
         " Will use '.' if not set",
+        yaml_export=True,
     )
 
     def _selection_project_format(self):
@@ -300,21 +303,8 @@ class CxTowerGitProject(models.Model):
         return _("%(name)s (copy)", name=self.name)
 
     # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "note",
-            "source_ids",
-            "git_aggregator_root_dir",
-        ]
-        return res
-
-    # -------------------------------
     # Git Aggregator related methods
-    # -------------------------------
+    # ------------------------------
     def _git_aggregator_prepare_record(self):
         """Prepare json structure for git aggregator.
 

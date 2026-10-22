@@ -16,6 +16,7 @@ class CxTowerCommand(models.Model):
     git_file_name = fields.Char(
         string="File Name",
         help="File name without path. Variables are allowed.",
+        yaml_export=True,
     )
 
     @classmethod
@@ -35,18 +36,6 @@ class CxTowerCommand(models.Model):
         """
         res = super()._selection_action()
         return res + [("git_project_upload", "Upload Git Project")]
-
-    def _get_fields_for_yaml(self):
-        """Export ``git_file_name`` with the command YAML.
-
-        Returns:
-            list: YAML field names.
-        """
-        res = super()._get_fields_for_yaml()
-        res += [
-            "git_file_name",
-        ]
-        return res
 
     def _custom_python_libraries(self):
         """

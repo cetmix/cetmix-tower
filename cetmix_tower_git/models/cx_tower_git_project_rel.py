@@ -32,6 +32,7 @@ class CxTowerGitProjectRel(models.Model):
         help="Legacy: Git Project linked to a server file. Kept for"
         " servers that do not use Jets. New setups should link the Git"
         " Project to the Jet and write it with Upload Git Project.",
+        yaml_export="include",
     )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
@@ -46,6 +47,7 @@ class CxTowerGitProjectRel(models.Model):
         "('file_type', '=', 'text')]",
         required=True,
         ondelete="cascade",
+        yaml_export="reference",
     )
     project_format = fields.Selection(
         selection=lambda self: self.env[
@@ -54,8 +56,11 @@ class CxTowerGitProjectRel(models.Model):
         default=lambda self: self.env["cx.tower.git.project"]._default_project_format(),
         required=True,
         string="Format",
+        yaml_export=True,
     )
-    auto_sync = fields.Boolean(related="file_id.auto_sync", readonly=False)
+    auto_sync = fields.Boolean(
+        related="file_id.auto_sync", readonly=False, yaml_export=True
+    )
 
     _sql_constraints = [
         (
@@ -171,16 +176,3 @@ class CxTowerGitProjectRel(models.Model):
             code = code_generator_function(record)
             if record.file_id.code != code:
                 record.file_id.write({"code": code})
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "file_id",
-            "git_project_id",
-            "project_format",
-            "auto_sync",
-        ]
-        return res
