@@ -592,3 +592,70 @@ records:
         shortcut = self.Shortcut.get_by_reference("yaml_flat_shortcut")
         plan = self.Plan.get_by_reference("yaml_flat_shortcut_plan")
         self.assertEqual(shortcut.plan_id, plan)
+
+    def _variable_with_option(self, reference, option_reference, value_char):
+        """Create an options variable and one option.
+
+        Args:
+            reference (str): Variable reference. The name is the same string.
+            option_reference (str): Option reference.
+            value_char (str): Option value.
+
+        Returns:
+            tuple: Variable and its option.
+        """
+        variable = self.env["cx.tower.variable"].create(
+            {
+                "name": reference,
+                "reference": reference,
+                "variable_type": "o",
+                "option_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": option_reference,
+                            "value_char": value_char,
+                            "reference": option_reference,
+                        },
+                    )
+                ],
+            }
+        )
+        return variable, variable.option_ids
+
+    def test_create_variable_copy_keeps_original_options(self):
+        """A new variable copy gets its own options."""
+        variable, option = self._variable_with_option(
+            "yaml_option_variable_two", "yaml_option_no", "option-no-value"
+        )
+        code, _data = self._export(variable)
+        code = code.replace(
+            "name: yaml_option_variable_two",
+            "name: yaml_option_variable_copy",
+        )
+        self._import(code, "create")
+        copy = self.env["cx.tower.variable"].search(
+            [("name", "=", "yaml_option_variable_copy")]
+        )
+        self.assertEqual(option.variable_id, variable)
+        self.assertEqual(variable.option_ids, option)
+        self.assertEqual(len(copy), 1)
+        self.assertEqual(len(copy.option_ids), 1)
+        self.assertNotEqual(copy.option_ids, option)
+        self.assertEqual(copy.option_ids.value_char, "option-no-value")
+        self.assertNotEqual(copy.option_ids.reference, option.reference)
+
+    def test_update_variable_writes_existing_option(self):
+        """Update writes the existing option and leaves it on the variable."""
+        variable, option = self._variable_with_option(
+            "yaml_option_variable_update",
+            "yaml_option_update",
+            "option-update-value",
+        )
+        code, _data = self._export(variable)
+        code = code.replace("option-update-value", "option-updated-value")
+        self._import(code, "update")
+        self.assertEqual(option.variable_id, variable)
+        self.assertEqual(variable.option_ids, option)
+        self.assertEqual(option.value_char, "option-updated-value")

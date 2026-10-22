@@ -293,12 +293,15 @@ class CxTowerYamlMixin(models.AbstractModel):
         instead of creating new ones when referenced in x2m related fields.
         Such as variables or tags.
 
+        Variable options are not listed. An option belongs to one variable,
+        and linking an existing option sets that variable to the record
+        being saved.
+
         Returns:
             List: list of models that will always try to be resolved
         """
         return [
             "cx.tower.variable",
-            "cx.tower.variable.option",
             "cx.tower.tag",
             "cx.tower.os",
             "cx.tower.key",
