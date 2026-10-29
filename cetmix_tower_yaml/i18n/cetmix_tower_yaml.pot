@@ -14,6 +14,15 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__source
+msgid ""
+"\n"
+"            - Tower:  file is pushed from Tower to server.\n"
+"            - Server: file is pulled from server to Tower.\n"
+"        "
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:res.groups,comment:cetmix_tower_yaml.group_export
 msgid ""
 "\n"
@@ -42,22 +51,51 @@ msgid "'invalid_model' is not a valid model"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__access_level
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__access_level
+msgid "Access Level"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__action
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__action
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__action
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__action
+msgid "Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__jet_action_id
+msgid "Action to trigger"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__jet_template_id
+msgid "Action will be triggered for all dependent jets of this template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__action_ids
+msgid "Actions"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line__action_ids
 msgid ""
-"<strong>Important:</strong> To maintain data consistency, the following\n"
-"                        model records will always be updated if they exist in Odoo:"
+"Actions trigger based on command result. If empty next command will be "
+"executed"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__add_manifest
 msgid "Add Manifest"
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
-msgid ""
-"Add entire child record definitions to the exported YAML file. Otherwise "
-"only references to child records will be added."
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -67,9 +105,41 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__include_related_records
+msgid ""
+"Add records used by the selected records to the file, after the records they"
+" use. When disabled, only the selected records are exported and those links "
+"are written as references. Records that belong to the selected record are "
+"always included."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable__note
+msgid ""
+"Additional notes about the variable. \n"
+"This field will be displayed in the variable form."
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:res.groups,name:cetmix_tower_yaml.group_export
 #: model:res.groups,name:cetmix_tower_yaml.group_import
 msgid "Allow"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__allow_parallel_run
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__allow_parallel_run
+msgid "Allow Parallel Run"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__applied_expression
+msgid "Applied Expression"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_arrive_id
+msgid "Arrive Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -87,6 +157,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_author_ids
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__author_ids
 msgid "Authors"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__auto_sync
+msgid "Auto Sync"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__auto_sync_interval
+msgid "Auto Sync Interval"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__file
+msgid "Binary Content"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -239,13 +324,67 @@ msgid "Close"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__code
+msgid "Code"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Code preview"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__color
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__color
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__color
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__color
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__color
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__color
+msgid "Color"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_author_string
 msgid "Comma-separated list"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__command_id
+msgid "Command"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_log__command_id
+msgid ""
+"Command that will be executed to get the log data.\n"
+"Be careful with commands that don't support parallel execution!"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__command_ids
+msgid "Commands"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__condition
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__condition
+msgid "Condition"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line__condition
+msgid ""
+"Conditions under which this Flight Plan Line will be launched. e.g.: {{ "
+"odoo_version}} == '14.0'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_create_id
+msgid "Create Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -309,6 +448,17 @@ msgid "Custom"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__custom_exit_code
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__custom_exit_code
+msgid "Custom Exit Code"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__custom_variable_value_ids
+msgid "Custom Variable Values"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__license_text
 msgid "Custom license text when license type is Custom."
 msgstr ""
@@ -316,6 +466,26 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_scheduled_task_cv
 msgid "Custom variable values for scheduled tasks"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__sync_date_last
+msgid "Date and time of the latest successful synchronisation"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__sync_date_next
+msgid "Date and time of the next synchronisation"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__path
+msgid "Default Path"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file_template__file_name
+msgid "Default full file name with file type for example: test.txt"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -327,6 +497,26 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#. odoo-python
+#: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_mixin.py:0
+msgid ""
+"Deferred relation resolution failed:\n"
+"Record %(record_model)s '%(record_reference)s': field '%(field)s' could not resolve %(target_model)s '%(target_reference)s'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__template_requires_ids
+msgid ""
+"Define other templates that must be in specific states for this template to "
+"function"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_delete_id
+msgid "Delete Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_description
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_description
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
@@ -335,8 +525,28 @@ msgid "Description"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_action__state_to_id
+msgid "Destination state for this transition. Leave blank for a final state"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "Detailed description (optional)"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__server_dir
+msgid "Directory on Server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__server_dir
+msgid "Directory on server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__disconnect_file
+msgid "Disconnect from Template"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -347,6 +557,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__server_dir
+msgid "Eg '/home/user' or '/var/log'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__skip_host_key
+msgid "Enable to skip host key verification"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__state_error_id
+msgid "Error State"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -372,11 +597,6 @@ msgstr ""
 msgid ""
 "Existing record will be updated with the new data. Related records, present in the YAML code, will be updated too.\n"
 "                        If any of those related records doesn't exist, it will be created automatically."
-msgstr ""
-
-#. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__explode_child_records
-msgid "Explode Child Records"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -414,8 +634,31 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__file_id
+msgid "File"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__file_name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz_upload__file_name
 msgid "File Name"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__file_template_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__file_template_id
+msgid "File Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__file_type
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__file_type
+msgid "File Type"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__code
+msgid "File content"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -432,14 +675,123 @@ msgid "File is not a valid base64-encoded file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__name
+msgid "File name WITHOUT path. Eg 'test.txt'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__file_prefix
 msgid "File prefix"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_log__file_id
+msgid "File that will be executed to get the log data"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__keep_when_deleted
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file_template__keep_when_deleted
+msgid "File will be kept on server when deleted in Tower"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__file_ids
+msgid "Files"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__flight_plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__flight_plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__plan_id
+msgid "Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__plan_ids
+msgid "Flight Plans"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__flight_plan_id
+msgid "Flight plan run by the command"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_action__plan_id
+msgid "Flight plan to execute when this action is triggered"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_create_id
+msgid "Flight plan to run after waypoint is created"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_arrive_id
+msgid "Flight plan to run after waypoint is reached"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_delete_id
+msgid "Flight plan to run before deleting the waypoint"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_leave_id
+msgid "Flight plan to run before leaving the waypoint"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__plan_clone_same_server_id
+msgid "Flight plan used to clone the jet on the same server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__plan_clone_different_server_id
+msgid "Flight plan used to clone the jet to a different server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__plan_install_id
+msgid "Flight plan used to install the template from a server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__plan_uninstall_id
+msgid "Flight plan used to uninstall the template from a server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__fly_here
+msgid "Fly Here"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 msgid "Following secrets are used in the code:<br/>%(secrets)s"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_os__color
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan__color
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__color
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_template__color
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_tag__color
+msgid "For better visualization in views"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__friday
+msgid "Friday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__state_from_id
+msgid "From State"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -458,8 +810,62 @@ msgid "ID"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__ip_v4_address
+msgid "IPv4 Address"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__ip_v6_address
+msgid "IPv6 Address"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__if_file_exists
+msgid "If File Exists"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
 msgid "If Record Exists"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__auto_sync
+msgid "If enabled file will be synced automatically using cron"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__disconnect_file
+msgid ""
+"If enabled, disconnects the file from its template after running the "
+"command.\n"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__no_split_for_sudo
+msgid ""
+"If enabled, do not split command on '&&' when using sudo.Prepend sudo once "
+"to the whole command."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__allow_parallel_run
+msgid ""
+"If enabled, multiple instances of the same command can be run on the same server at the same time.\n"
+"Otherwise, ANOTHER_COMMAND_RUNNING status will be returned if another instance of the same command is already running"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan__allow_parallel_run
+msgid ""
+"If enabled, multiple instances of the same flight plan can be run on the same server at the same time.\n"
+"Otherwise, ANOTHER_PLAN_RUNNING status will be returned if another instance of the same flight plan is already running"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__show_in_create_wizard
+msgid ""
+"If enabled, the template will be shown in the wizard to create a new jet"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -480,9 +886,34 @@ msgid "Import result: %(model)s"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__include_related_records
+msgid "Include Related Records"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Information"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__plan_install_id
+msgid "Installation Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_action__state_transit_id
+msgid "Intermediate state during the transition"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__interval_number
+msgid "Interval Number"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__interval_type
+msgid "Interval Unit"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -492,8 +923,45 @@ msgid "Invalid YAML file"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "Key/Secrets"
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__jet_action_id
+msgid "Jet Action"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__jet_template_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__jet_template_id
+msgid "Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__jet_template_id
+msgid "Jet template this waypoint template belongs to"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__keep_when_deleted
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__keep_when_deleted
+msgid "Keep When Deleted"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key_value__key_id
+msgid "Key"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__key_type
+msgid "Key Type"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__last_call
+msgid "Last Execution Date"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__sync_date_last
+msgid "Last Sync Date"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -514,6 +982,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_leave_id
+msgid "Leave Flight Plan"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -560,6 +1033,21 @@ msgid "License used for the code snippet."
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__action_ids
+msgid "Lifecycle Actions"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__limit_per_server
+msgid "Limit per Server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__line_ids
+msgid "Lines"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__author_ids
 msgid "List of author names to include in the YAML manifest."
 msgstr ""
@@ -567,6 +1055,24 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
 msgid "List of secrets present in the YAML file (formatted as HTML list)"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line__path
+msgid ""
+"Location where command will be executed. Overrides command default path. You"
+" can use {{ variables }} in path"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__path
+msgid ""
+"Location where command will be run. You can use {{ variables }} in path"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__log_type
+msgid "Log Type"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -587,6 +1093,23 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.ui.menu,name:cetmix_tower_yaml.menu_yaml_manifest_template
 msgid "Manifest Templates"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__limit_per_server
+msgid ""
+"Maximum number of Jets that can be launched on a server. Set to 0 for no "
+"limit."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable__validation_message
+msgid ""
+"Message to display when the variable value is invalid. \n"
+"First line will be added automatically: `Variable:<variable_name>, Value: <value>`\n"
+"Eg: `Variable: Customer Name, Value: Test\n"
+"Invalid value!`\n"
+"If empty, the default message will be used."
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -612,7 +1135,30 @@ msgid "Models to create records in"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__monday
+msgid "Monday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_tag__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__name
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_author__name
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__name
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
@@ -622,6 +1168,26 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__name
 msgid "Name of the manifest template."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__next_call
+msgid "Next Execution Date"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__sync_date_next
+msgid "Next Sync Date"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_scheduled_task__next_call
+msgid "Next planned execution date for this task."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__no_split_for_sudo
+msgid "No Split for sudo"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -638,7 +1204,6 @@ msgstr ""
 
 #. module: cetmix_tower_yaml
 #. odoo-python
-#: code:addons/cetmix_tower_yaml/tests/test_yaml_import_wizard.py:0
 #: code:addons/cetmix_tower_yaml/wizards/cx_tower_yaml_import_wiz.py:0
 msgid "No records were created or updated"
 msgstr ""
@@ -650,8 +1215,61 @@ msgid "No valid records selected"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "OSs"
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_key__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__note
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__note
+msgid "Note"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__os_ids
+msgid "OSes"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__plan_delete_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__plan_delete_id
+msgid "On Delete Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__on_error_action
+msgid "On Error"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__os_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__os_id
+msgid "Operating System"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__option_ids
+msgid "Options"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__path
+msgid "Path"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__plan_clone_different_server_id
+msgid "Plan Clone Different Server"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__plan_clone_same_server_id
+msgid "Plan Clone Same Server"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -666,10 +1284,25 @@ msgid "Preview code"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_os__parent_id
+msgid "Previous Version"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_scheduled_task__last_call
+msgid "Previous time the task ran successfully."
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_price
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_price
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
 msgid "Price"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__priority
+msgid "Priority"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -681,6 +1314,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
 msgid "Provide Custom License Text when License is set to 'Custom'."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable__applied_expression
+msgid ""
+"Python expression to apply to the variable value. \n"
+"You can use general python sting functions and 're' module for regex operations. Use 'value' variable to refer to the variable value, use 'result' to assign the final result that will be used as a variable value.\n"
+"Eg 'result = value.lower().replace(' ', '_')'"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -731,6 +1372,13 @@ msgid "Reference"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable__validation_pattern
+msgid ""
+"Regex pattern to validate the variable values using the 're.match' function. Eg. ^[a-z0-9]+$ \n"
+"If empty, the variable values will not be validated."
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__remove_empty_values
 msgid "Remove Empty x2m Field Values"
 msgstr ""
@@ -743,13 +1391,102 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_scheduled_task__interval_number
+msgid "Repeat every x."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__required
+msgid "Required"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__template_required_id
+msgid "Required Jet"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__state_required_id
+msgid "Required State"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__template_requires_ids
+msgid "Requires"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__value_char
+msgid "Result"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_shortcut__use_sudo
+msgid "Run command using 'sudo'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_template__use_sudo
+msgid "Run commands using 'sudo'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__use_sudo
+msgid "Run commands using 'sudo'. Leave empty if 'sudo' is not needed."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__ssh_auth_mode
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__ssh_auth_mode
+msgid "SSH Auth Mode"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__ssh_key_id
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__ssh_key_id
+msgid "SSH Private Key"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__ssh_username
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__ssh_username
+msgid "SSH Username"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__ssh_port
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__ssh_port
+msgid "SSH port"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__saturday
+msgid "Saturday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model,name:cetmix_tower_yaml.model_cx_tower_scheduled_task
 msgid "Scheduled Task"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__scheduled_task_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__scheduled_task_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__scheduled_task_ids
+msgid "Scheduled Tasks"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__secret_list
 msgid "Secret List"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__secret_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__secret_ids
+msgid "Secrets"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -763,6 +1500,68 @@ msgid "Select a template to auto-populate manifest fields"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+msgid ""
+"Selected records are copied. The reference from the file is kept\n"
+"                        when it is free; otherwise a suffix is added. Any other record\n"
+"                        that already exists is left unchanged. A record that is not in\n"
+"                        the database is created."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_state__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__sequence
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__server_log_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__server_log_ids
+msgid "Server Log"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__server_log_ids
+msgid "Server Logs"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__server_response
+msgid "Server Response"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__server_status
+msgid "Server Status"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__server_response
+msgid ""
+"Server response received during the last operation.\n"
+"Default value if no error happened is 'ok'.\n"
+"Otherwise there will be a server error message logged."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__url
+msgid "Server web interface, eg 'https://doge.example.com'"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__server_status
+msgid ""
+"Set the following status if command finishes with success. Leave 'Undefined'"
+" if you don't need to update the status"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_summary
 msgid "Short summary that includes core information. 160 symbols max"
 msgstr ""
@@ -770,6 +1569,22 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "Short summary, 160 symbols max"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__shortcut_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__shortcut_ids
+msgid "Shortcuts"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__show_in_create_wizard
+msgid "Show in Wizard"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__skip_host_key
+msgid "Skip Host Key"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -789,6 +1604,22 @@ msgid "Snippet file name without extension, eg 'my_snippet'"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__source
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__source
+msgid "Source"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_action__state_from_id
+msgid "Source state for this transition. Leave blank for an initial state"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_action__state_error_id
+msgid "State to transition to if an error occurs"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_summary
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_summary
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
@@ -796,8 +1627,74 @@ msgid "Summary"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__sunday
+msgid "Sunday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__tag_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__tag_ids
 msgid "Tags"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__template_id
+msgid "Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__template_required_id
+msgid "The Jet template that is required to be in a specific state"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template_dependency__state_required_id
+msgid "The state of the required Jet"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_template__plan_delete_id
+msgid "This Flightplan will be executed when the server is deleted"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__plan_delete_id
+msgid "This Flightplan will be run when the server is deleted"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan__on_error_action
+msgid ""
+"This action will be triggered on error if no command action can be applied"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file_template__note
+msgid "This field is used to put some notes regarding template."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__code
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file__code
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_file_template__code
+msgid "This field will be rendered using variables"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_log__file_template_id
+msgid ""
+"This file template will be used to create log files when server is created "
+"from a template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_template__flight_plan_id
+msgid "This flight plan will be run upon server creation"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -806,15 +1703,43 @@ msgid "This may overwrite existing records. Proceed?"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid ""
-"To create new entities instead of updating existing ones, remove or modify\n"
-"                        the <code>reference</code> field in the YAML code for those entities."
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__file_template_id
+msgid "This template will be used to create or update the pushed file"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__thursday
+msgid "Thursday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__state_to_id
+msgid "To State"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__preview_code
 msgid "Toggle to show or hide YAML code preview"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__state_transit_id
+msgid "Transit State"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__tuesday
+msgid "Tuesday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__variable_type
+msgid "Type"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__url
+msgid "URL"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -824,14 +1749,53 @@ msgid "US Dollar"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__plan_uninstall_id
+msgid "Uninstallation Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__update
 msgid "Update existing record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__use_sudo
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_log__use_sudo
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_shortcut__use_sudo
+msgid "Use Sudo"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__use_sudo
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__use_sudo
+msgid "Use sudo"
 msgstr ""
 
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_version
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_export_wiz_view_form
 msgid "Use the Major.Minor.Patch format, e.g. 1.2.3"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__sequence
+msgid "Used to sort waypoints in views"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__validation_message
+msgid "Validation Message"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable__validation_pattern
+msgid "Validation Pattern"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_option__value_char
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__value_char
+msgid "Value"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -842,12 +1806,36 @@ msgid "Values must be a dictionary"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
-msgid "Variable Options"
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__variable_id
+msgid "Variable"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_yaml.cx_tower_yaml_import_wiz_view_form
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task_cv__variable_value_id
+msgid "Variable Value"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__variable_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line_action__variable_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__variable_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__variable_value_ids
+msgid "Variable Values"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__variable_value_ids
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line_action__variable_value_ids
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__variable_value_ids
+msgid "Variable values for selected record"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_file_template__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__variable_ids
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__variable_ids
 msgid "Variables"
 msgstr ""
 
@@ -877,6 +1865,28 @@ msgid "Version must be in the Major.Minor.Patch format, e.g. 1.2.3"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__waypoint_template_id
+msgid "Waypoint Template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__waypoint_template_id
+msgid ""
+"Waypoint template to create the waypoint from. Used when action is Create a "
+"Waypoint."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__waypoint_template_ids
+msgid "Waypoints"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__waypoint_template_ids
+msgid "Waypoints of the template"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_export_wiz__manifest_website
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__manifest_website
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_yaml_manifest_tmpl__website
@@ -890,8 +1900,43 @@ msgid "Website URL for the manifest."
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_scheduled_task__wednesday
+msgid "Wednesday"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__if_file_exists
+msgid ""
+"What to do if file already exists on the server.\n"
+"- Skip: Do not create or update the file.\n"
+"- Overwrite: Replace the existing file with the new one.\n"
+"- Raise Error: Raise an error if the file already exists."
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_yaml_import_wiz__if_record_exists
 msgid "What to do if record with the same reference already exists"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_command__fly_here
+msgid ""
+"When enabled, the created waypoint is set as current (fly to) after "
+"creation."
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan__custom_exit_code
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line_action__custom_exit_code
+msgid "Will be used instead of the command exit code"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_plan_line__use_sudo
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server_log__use_sudo
+msgid ""
+"Will use sudo based on server settings.If no sudo is configured will run "
+"without sudo"
 msgstr ""
 
 #. module: cetmix_tower_yaml
