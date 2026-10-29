@@ -1,0 +1,470 @@
+<div style="color: #334155; font-size: 16px; line-height: 1.65;">
+
+    <!-- Hero -->
+    <section class="container pt32 pb24">
+        <div class="p-4 p-lg-5" style="background-color: #0b1f33; border-radius: 20px;">
+            <p class="text-uppercase fw-semibold mb16" style="color: #38bdf8; font-size: 13px; letter-spacing: 0.12em;">Generic job layer for Odoo</p>
+            <h2 class="fw-bold mb16" style="color: #ffffff; font-size: 44px; line-height: 1.15;">Cetmix Drone</h2>
+            <p class="mb16" style="color: #e2e8f0; font-size: 21px; line-height: 1.45; max-width: 820px;">Run long work on external workers and get the result back in Odoo.</p>
+            <p class="mb24" style="color: #94a3b8; font-size: 16px; max-width: 820px;">This module lets any Odoo model hand long-running work to external workers (&#8220;drones&#8221;) and receive the result through a callback method.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="d-inline-block text-decoration-none fw-semibold" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html" target="_blank" rel="noopener" style="background-color: #12304d; color: #e0f2fe; border: 1px solid #1e4468; border-radius: 999px; padding: 6px 14px; font-size: 13px;">License: AGPL-3</a>
+                <a class="d-inline-block text-decoration-none fw-semibold" href="https://github.com/cetmix/cetmix-tower" target="_blank" rel="noopener" style="background-color: #12304d; color: #e0f2fe; border: 1px solid #1e4468; border-radius: 999px; padding: 6px 14px; font-size: 13px;">GitHub: cetmix/cetmix-tower</a>
+                <a class="d-inline-block text-decoration-none fw-semibold" href="https://drone.cetmix.com" target="_blank" rel="noopener" style="background-color: #12304d; color: #e0f2fe; border: 1px solid #1e4468; border-radius: 999px; padding: 6px 14px; font-size: 13px;">drone.cetmix.com</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="container pt16 pb32" id="how">
+        <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">How it works</p>
+        <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">From your model to a drone and back</h3>
+        <img class="img-fluid w-100" src="drone_flow.svg" alt="Diagram: an Odoo model calls launch_drone, which creates a Drone Job. After commit Odoo sends the encrypted job to a Drone Controller with POST /jobs and polls it. The controller runs the work on its drones, sends heartbeats and posts the result back to Odoo, which calls the callback method." width="1200" height="500" loading="lazy"/ style="border: 1px solid #e2e8f0; border-radius: 16px;">
+    </section>
+
+    <!-- In-page navigation -->
+    <section class="container pb32">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#how" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">How it works</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#context" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">Use cases</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#features" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">Features</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#configure" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">Configuration</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#usage" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">Usage</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#http" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">HTTP contract</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#developer" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">Developer contract</a>
+            <a class="d-inline-block text-decoration-none fw-semibold" href="#support" style="color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 8px 16px; font-size: 14px;">Support &amp; credits</a>
+        </div>
+    </section>
+
+    <!-- Use Cases / Context -->
+    <section class="container pt32 pb40" id="context">
+        <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">Use cases / context</p>
+        <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">Keep long work out of Odoo workers</h3>
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <p>Some work takes minutes or hours: long deployments, large transfers, builds. Running it inside Odoo holds an Odoo worker for the whole time and ties the work to the limits of that worker and of any cron that assumes the work happens inside Odoo.</p>
+                <p class="mb-0">This module moves such work out of Odoo. Odoo hands a payload to an external worker, keeps a job record, and is called back when the worker is done.</p>
+            </div>
+            <div class="col-lg-5">
+                <div class="mb16" style="background-color: #f1f5f9; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7;">
+                    <p class="fw-semibold mb8" style="color: #0f172a;">A generic job layer</p>
+                    <p class="mb-0">It is a generic job layer only and ships no skills of its own. Skills are whatever a controller reports. This module does not define them.</p>
+                </div>
+                <div style="background-color: #f1f5f9; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7;">
+                    <p class="fw-semibold mb8" style="color: #0f172a;">Drones are not Odoo records</p>
+                    <p class="mb-0">Odoo only talks to drone controllers, and each controller runs the work on its own drones.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <div class="container pt48 pb48">
+            <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">Features</p>
+            <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">What the module provides</h3>
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Drone Controllers</p>
+                        <p class="mb-0">External processes that accept jobs and run them on their drones. A controller reports the skills it can run, and has a priority and an optional job limit.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Skills</p>
+                        <p class="mb-0">The kinds of work a controller reports. The caller supplies the payload. This module ships no skills.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Jobs</p>
+                        <p class="mb-0">One record per dispatched job: skill, controller, state, callback target, heartbeat and timeout. A job stores neither the parameters, the payload nor the result.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Two-phase dispatch</p>
+                        <p class="mb-0">The job record and the controller reservation are created in the caller&#8217;s transaction; the submission to the controller happens only after that transaction commits. A rolled back transaction sends nothing.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Encryption</p>
+                        <p class="mb-0">Each payload is encrypted with the Fernet key of the controller it is sent to.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Callback</p>
+                        <p class="mb-0">The result is passed to the method given at dispatch, as the user who dispatched the job.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Poll and heartbeat</p>
+                        <p class="mb-0">Controllers report progress with heartbeats, and Odoo polls running jobs periodically.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Timeout</p>
+                        <p class="mb-0">Jobs whose heartbeat stops for longer than the timeout given at dispatch are ended as timed out, and the controller is asked to stop the work.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Menu</p>
+                        <p class="mb-0">When only this module is installed, the root menu is Drone. When Cetmix Tower is installed, drones are in the Cetmix Tower menu.</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div style="background-color: #e0f2fe; border: 1px solid #bae6fd; border-radius: 14px; padding: 24px;">
+                        <p class="fw-bold mb8" style="color: #0f172a; font-size: 17px;">Access</p>
+                        <p class="mb-0">Drone Administrator is required to configure and manage drones: controllers, skills, jobs and cancelling a job from the screen. It is not required to use them. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">launch_drone()</code> does not check this group. The code that calls it decides who may run that work.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration -->
+    <section class="container pt48 pb40" id="configure">
+        <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">Configuration</p>
+        <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">Set up controllers and access</h3>
+        <div class="row g-3 mb32">
+            <div class="col-lg-6">
+                <div class="h-100" style="background-color: #ecfdf5; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #10b981;">
+                    <p class="fw-semibold mb8" style="color: #065f46;">Drone Administrator is required to configure and manage drones.</p>
+                    <p class="mb-0">That is the group for controllers, skills, jobs, keys, health, draining and cancelling a job from the screen. It grants Cetmix Tower Root, which is what those screens check.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="h-100" style="background-color: #f1f5f9; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7;">
+                    <p class="fw-semibold mb8" style="color: #0f172a;">Drone Administrator is not required to use drones.</p>
+                    <p class="mb-0">Using a drone is a call to <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">launch_drone()</code> from your own code. That call does not check this group. The code that calls it decides who may run that work.</p>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Access</h4>
+        <p class="mb32">On a user, under <strong>Drone &gt; Drone Access</strong>, set <strong>Administrator</strong>. Administrator grants Cetmix Tower Root, and through it User and Manager, so the Tower access levels do not have to be chosen separately. With demo data, the admin user is in this group.</p>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Menus</h4>
+        <p>When only this module is installed, the root menu is <strong>Drone</strong>.</p>
+        <p class="mb32"><strong>When Cetmix Tower is installed, drones are in the Cetmix Tower menu.</strong> The root menu stays Cetmix Tower, and drone controllers, skills and jobs are opened from there. The paths below are those Cetmix Tower paths.</p>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Install</h4>
+        <p>This module is not installed automatically. Install &#8220;Cetmix Drone&#8221; from the Apps menu.</p>
+        <p class="mb32">This module ships no skills. Save a controller with a URL and keys, then click &#8220;Check Connection&#8221;. Skills are filled from the health reply and are read only. The skill list is not a place to create skills.</p>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Drone Skills</h4>
+        <p>Go to <span class="d-inline-block fw-semibold" style="background-color: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0 8px; font-size: 14px;">Cetmix Tower &#8250; Settings &#8250; Drones &#8250; Drone Skills</span> to see the skills controllers have reported. Skills are not created from this list: a record appears the first time a health reply contains its reference.</p>
+        <div class="table-responsive mb32" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+            <table class="table mb-0">
+                <thead><tr><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px; width: 28%;">Field</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Name</td><td style="padding: 12px 16px;">Label. A Drone Administrator can change it. A later health check does not overwrite it</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Reference</td><td style="padding: 12px 16px;">Unique reference reported by the controller. Read only</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Schema</td><td style="padding: 12px 16px;">Data and response schema stored for this skill. Read only. Filled by &#8220;Fetch Schema&#8221; on this form. A skill linked to no controller keeps the schema it already has</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Configure a Drone Controller</h4>
+        <p>Go to <span class="d-inline-block fw-semibold" style="background-color: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0 8px; font-size: 14px;">Cetmix Tower &#8250; Settings &#8250; Drones &#8250; Drone Controllers</span> and click &#8220;New&#8221;. Complete the following fields:</p>
+        <div class="table-responsive mb24" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+            <table class="table mb-0">
+                <thead><tr><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px; width: 28%;">Field</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Name</td><td style="padding: 12px 16px;">Controller name</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Reference</td><td style="padding: 12px 16px;">Unique reference. Leave this field blank to auto generate it. The controller uses it to report its status to Odoo</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">URL</td><td style="padding: 12px 16px;">Base URL of the controller API. Must be unique</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Callback URL</td><td style="padding: 12px 16px;">Base address this controller uses to call Odoo. Result and heartbeat paths are added to it. A new controller stores the Odoo web base URL. Change it when the drone must call Odoo at another address, for example <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">http://&lt;container&gt;:8069</code> on the same Docker network. The drone&#8217;s callback origin must be this same address</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Skills</td><td style="padding: 12px 16px;">Skills reported by the last successful health check. Read only. The next successful health check replaces them. On this form they are a list. Open a row to see that skill&#8217;s schema as text, read only, with &#8220;Fetch Schema&#8221; in the header. The name is edited from Drone Skills. The controller list still shows skills as tags</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Status</td><td style="padding: 12px 16px;">Current controller status. Jobs are sent only to active controllers in the &#8220;Available&#8221; status</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Active</td><td style="padding: 12px 16px;">Inactive controllers receive no jobs</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Priority</td><td style="padding: 12px 16px;">Controllers with a lower value are tried first</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Max Jobs</td><td style="padding: 12px 16px;">Maximum number of pending and running jobs on this controller. 0 means no limit</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Running Jobs</td><td style="padding: 12px 16px;">Current number of pending and running jobs. Read only</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Jobs</td><td style="padding: 12px 16px;">Opens the drone jobs run on this controller. The count includes finished and cancelled jobs</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Last Health Check</td><td style="padding: 12px 16px;">Time of the last successful health check. Read only</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="mb24">Click &#8220;Fetch Schemas&#8221; to store the data and response schema each linked skill reports. A linked skill the answer omits has its schema cleared. This does not change the status, the skills or the last health check. A failed call changes nothing.</p>
+
+        <h5 class="fw-semibold mb16" style="color: #0f172a; font-size: 17px;">Keys tab</h5>
+        <div class="table-responsive mb16" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+            <table class="table mb-0">
+                <thead><tr><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px; width: 28%;">Key</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Description</th></tr></thead>
+                <tbody>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Drone API Key</td><td style="padding: 12px 16px;">Sent by Odoo to the controller in every request</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Payload Key</td><td style="padding: 12px 16px;">Fernet key used to encrypt job payloads. Generated automatically when left empty. Configure the same key on the drone</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Drone Response Key</td><td style="padding: 12px 16px;">Sent by the controller to Odoo in every request</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mb32" style="background-color: #fffbeb; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #f59e0b;">
+            <p class="mb-0">Key values are stored in the vault and are never shown after saving. Click &#8220;Generate Keys&#8221; to replace all three and copy them once. The previous keys stop working. The same dialog also shows a result storage key for the drone&#8217;s stored results. That key is not saved in Odoo. Close the dialog and none of the keys are shown again.</p>
+        </div>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Health</h4>
+        <p>Odoo checks the health of every active controller every 5 minutes. A healthy controller answers 200 with <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"skills": ["ssh", "backup"]}</code>. That check sets the status to &#8220;Available&#8221; and replaces the controller&#8217;s skills with that list. A 200 without that body sets the status to &#8220;Error&#8221; and does not change the stored skills. A connection failure sets the status to &#8220;Not Reachable&#8221; and any other HTTP status sets it to &#8220;Error&#8221;; neither changes the stored skills. A controller can also report its own status. That report does not change its skills.</p>
+        <p>Click &#8220;Check Connection&#8221; on the controller form to check it right away, for example after configuring it. This works for inactive and draining controllers too, which the cron skips. A draining controller keeps that status.</p>
+        <p class="mb32">The health check does not load schemas. &#8220;Check Connection&#8221; does not load them either.</p>
+
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Cron Batch Size</h4>
+                    <p class="mb-0">Go to <span class="d-inline-block fw-semibold" style="background-color: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0 8px; font-size: 14px;">Settings &#8250; Cetmix Tower &#8250; Drones</span> and set &#8220;Drone Cron Batch Size&#8221;: the number of jobs the poll and stale pending crons ask controllers about in one batch. Default is 20. Every due job is still checked in each cron run: the remaining jobs are handled in the following batches.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Draining</h4>
+                    <p class="mb-0">Set the status to &#8220;Draining&#8221; to stop sending new jobs to a controller while its current jobs finish. Only a Drone Administrator can set or clear this status: neither the health check nor the controller itself changes it.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage -->
+    <section id="usage" style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <div class="container pt48 pb48">
+            <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">Usage</p>
+            <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">Follow and control jobs</h3>
+            <div class="row g-3 mb32">
+                <div class="col-lg-6">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="mb-0"><strong>Drone Administrator is required to configure and manage drones</strong>, including the job list and the Cancel button below. <strong>It is not required to use drones.</strong> <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">launch_drone()</code> does not check this group. The code that calls it decides who may run that work. See <a href="#developer" style="color: #0369a1;">&#8220;Developer contract&#8221;</a>.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <p class="mb-0"><strong>When Cetmix Tower is installed, drones are in the Cetmix Tower menu.</strong> The paths below are those paths. When only this module is installed, the root menu is Drone and the same entries are under it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Drone Jobs</h4>
+            <p>Go to <span class="d-inline-block fw-semibold" style="background-color: #f1f5f9; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0 8px; font-size: 14px;">Cetmix Tower &#8250; Logs &#8250; Drone Jobs</span> to see dispatched jobs. All fields are read only:</p>
+            <img class="img-fluid w-100 mb24" src="drone_job_states.svg" alt="Diagram of job states: Pending becomes Running when the controller accepts the job. Running ends as Done, Failed or Timed Out, and the callback is called for each of these. Pending or Running jobs can be cancelled; the callback is then not called and the controller is asked to stop the work." width="1200" height="300" loading="lazy"/ style="border: 1px solid #e2e8f0; border-radius: 16px;">
+            <div class="table-responsive mb32" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+                <table class="table mb-0">
+                    <thead><tr><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px; width: 28%;">Field</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Description</th></tr></thead>
+                    <tbody>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Skill</td><td style="padding: 12px 16px;">Skill of the job</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Controller</td><td style="padding: 12px 16px;">Controller that holds the job</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">State</td><td style="padding: 12px 16px;">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb8"><span class="d-inline-block fw-semibold" style="background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">Pending</span><span>a slot is reserved and the job may be in submission.</span></div>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb8"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">Running</span><span>the controller accepted the job.</span></div>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb8"><span class="d-inline-block fw-semibold" style="background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">Done</span><span class="d-inline-block fw-semibold" style="background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">Failed</span><span class="d-inline-block fw-semibold" style="background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">Timed Out</span><span>the job ended and its callback consumed the result.</span></div>
+                            <div class="d-flex flex-wrap align-items-center gap-2"><span class="d-inline-block fw-semibold" style="background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">Cancelled</span><span>the job was cancelled.</span></div>
+                        </td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Target Model, Target Records, Method</td><td style="padding: 12px 16px;">Callback that receives the result. Target Records holds the ids the callback is bound to. Empty means the callback runs on the model, with no records</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">User</td><td style="padding: 12px 16px;">The callback runs as this user</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Created on, Last Heartbeat, Done Date</td><td style="padding: 12px 16px;">Job timestamps</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Last Check</td><td style="padding: 12px 16px;">Last time a cron asked the controller about the job</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Callback Attempts</td><td style="padding: 12px 16px;">Number of times the callback was called</td></tr>
+                        <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Callback Error</td><td style="padding: 12px 16px;">Exception type, callback location and attempt number of the last failed callback call. It never contains the exception message or the result</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Cancel a job</h4>
+                        <p>Click &#8220;Cancel&#8221; on a pending or running job. The job becomes &#8220;Cancelled&#8221; and, once that is saved, the controller is asked to stop the work. The callback is not called.</p>
+                        <p class="mb-0">A pending job whose controller stays unreachable is retried indefinitely (see <a href="#not-ended" style="color: #0369a1;">below</a>); cancelling it is the only way to end it.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Where the callback runs</h4>
+                        <p class="mb-0">The callback runs inside the request or cron that delivers the result: the result request sent by the controller, the poll cron (every 2 minutes) or the timeout cron (every 15 minutes). Each cron batch asks controllers about at most &#8220;Drone Cron Batch Size&#8221; jobs; the remaining jobs are handled in the next batches of the same run. Anything the callback does synchronously runs there too, against that process&#8217; limits.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HTTP contract -->
+    <section class="container pt48 pb40" id="http">
+        <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">For controller implementers</p>
+        <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">HTTP contract</h3>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Odoo &#8594; controller</h4>
+        <p>Every request carries <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">Authorization: Bearer &lt;Drone API Key&gt;</code>. Odoo waits at most 10 seconds to connect and 10 seconds for an answer.</p>
+        <div class="table-responsive mb24" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+            <table class="table mb-0">
+                <thead><tr><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Action</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Method</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Path</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Answer</th></tr></thead>
+                <tbody>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Health</td><td style="padding: 12px 16px;"><span class="d-inline-block fw-semibold" style="background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">GET</span></td><td class="text-nowrap"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/health</code></td><td style="padding: 12px 16px;">200 with <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"skills": ["ssh", "backup"]}</code></td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Skills</td><td style="padding: 12px 16px;"><span class="d-inline-block fw-semibold" style="background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">GET</span></td><td class="text-nowrap"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/skills</code></td><td style="padding: 12px 16px;">200 with a JSON object whose keys are skill references and whose values are <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"data": &lt;schema&gt;, "response": &lt;schema&gt;}</code></td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Submit</td><td style="padding: 12px 16px;"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">POST</span></td><td class="text-nowrap"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/jobs</code></td><td style="padding: 12px 16px;">2xx when accepted; 4xx when rejected; 409 for a fenced nonce</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Status</td><td style="padding: 12px 16px;"><span class="d-inline-block fw-semibold" style="background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">GET</span></td><td class="text-nowrap"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/jobs/&lt;nonce&gt;</code></td><td style="padding: 12px 16px;">200 with the job state; 404 for a nonce never accepted</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Cancel</td><td style="padding: 12px 16px;"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">POST</span></td><td class="text-nowrap"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/jobs/&lt;nonce&gt;/cancel</code></td><td style="padding: 12px 16px;">2xx</td></tr>
+                    <tr><td class="fw-semibold" style="color: #0f172a; padding: 12px 16px;">Fence</td><td style="padding: 12px 16px;"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">POST</span></td><td class="text-nowrap"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/jobs/&lt;nonce&gt;/fence</code></td><td style="padding: 12px 16px;">200 <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"state": "fenced"}</code> or <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"state": "accepted"}</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>A skill token is a string of lowercase letters, digits and underscores. Extra keys in the health body are ignored. Duplicate tokens count once. A 200 whose body is missing, not JSON, not an object, or whose <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">skills</code> list contains anything else is an error: the status becomes &#8220;Error&#8221; (a draining controller keeps &#8220;Draining&#8221;) and the stored skills are left as they are. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"skills": []}</code> clears the stored skills.</p>
+        <p class="mb32">Odoo calls <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">GET /skills</code> only from &#8220;Fetch Schemas&#8221; on a controller and &#8220;Fetch Schema&#8221; on a skill. A failed call does not change the controller status or its skills.</p>
+
+        <div class="row g-4 mb32">
+            <div class="col-12">
+                <h5 class="fw-semibold mb16" style="color: #0f172a; font-size: 17px;">Submit</h5>
+                <p>Submit body is <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"payload": "&lt;token&gt;"}</code>. The token is the JSON envelope below, encrypted with the controller Payload Key (Fernet):</p>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">{
+  "nonce": "...",
+  "callback_url": "https://&lt;odoo&gt;/cetmix_drone/job/result",
+  "heartbeat_url": "https://&lt;odoo&gt;/cetmix_drone/job/heartbeat",
+  "timeout": 600,
+  "skill": "&lt;skill reference&gt;",
+  "data": {}
+}</pre>
+                <p class="mb-0"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">data</code> is the payload the caller passed to <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">launch_drone()</code>. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">callback_url</code> and <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">heartbeat_url</code> use the controller Callback URL. A new controller stores the Odoo web base URL there. Accept the job quickly and do the work asynchronously: a timeout on this request means &#8220;may have arrived&#8221;, not &#8220;rejected&#8221;.</p>
+            </div>
+            <div class="col-12">
+                <h5 class="fw-semibold mb16" style="color: #0f172a; font-size: 17px;">Status</h5>
+                <p>Status answers one of:</p>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">{"state": "running"}
+{"state": "finished", "status": ..., "response": ..., "error": ...}
+{"state": "failed", "error": ...}</pre>
+                <div style="background-color: #f1f5f9; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7;">
+                    <p class="fw-semibold mb8" style="color: #0f172a;">Nonce fence</p>
+                    <p class="mb8">Fence and Cancel must be decided atomically with accepting a nonce:</p>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb4">Fence on a nonce never accepted records it as fenced and answers <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"state": "fenced"}</code>. On an accepted nonce it changes nothing and answers <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">{"state": "accepted"}</code>. Fence never stops work.</li>
+                        <li class="mb4">Cancel on an accepted nonce stops the work. On a nonce never accepted it records it as fenced. Both answer 2xx.</li>
+                        <li class="mb4">A Submit carrying a fenced nonce is answered 409 and starts no work, however late it arrives. Status for a fenced nonce never accepted answers 404.</li>
+                        <li>Keep fences for at least one hour.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="mb40" style="background-color: #fffbeb; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #f59e0b;">
+            <p class="mb-0">A controller should reject a Submit with 4xx when it is full: the Max Jobs limit in Odoo cannot see work sent to the controller by anything else.</p>
+        </div>
+
+        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Controller &#8594; Odoo</h4>
+        <p class="mb24">Every request carries <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">Authorization: Bearer &lt;Drone Response Key&gt;</code> and a JSON body.</p>
+        <div class="row g-3">
+            <div class="col-12">
+                <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <p class="mb16"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">POST</span> <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/cetmix_drone/job/result</code></p>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">{"nonce": "...", "state": "finished", "status": 0, "response": "...", "error": null}</pre>
+                    <p class="mb-0"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">state</code> is <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">finished</code> or <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">failed</code>. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">status</code>, <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">response</code> and <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">error</code> may be values or lists. Answers: 200 when delivered or already decided, 404 unknown nonce, 403 wrong key, 400 invalid body, 503 when the callback did not consume the result. Retry on 503.</p>
+                </div>
+            </div>
+            <div class="col-12">
+                <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <p class="mb16"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">POST</span> <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/cetmix_drone/job/heartbeat</code></p>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">{"nonce": "..."}</pre>
+                    <p class="mb-0">Answers: 200 while the job is pending or running, 409 when it has ended (stop the work), 404, 403.</p>
+                </div>
+            </div>
+            <div class="col-12">
+                <div style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <p class="mb16"><span class="d-inline-block fw-semibold" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: 2px 10px; font-size: 12px; line-height: 1.6;">POST</span> <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">/cetmix_drone/controller/status</code></p>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">{"reference": "&lt;controller reference&gt;", "status": "available"}</pre>
+                    <p class="mb-0"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">status</code> is <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">available</code>, <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">error</code> or <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">not_reachable</code>. Answers: 200, 404 unknown reference, 403 wrong key, 400 other status, 409 while the controller is draining. This route does not change the controller&#8217;s skills.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Developer contract -->
+    <section id="developer" style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <div class="container pt48 pb48">
+            <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">For Odoo developers</p>
+            <h3 class="fw-bold mb24" style="color: #0f172a; font-size: 30px; line-height: 1.25;">Developer contract</h3>
+
+            <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Dispatch a job</h4>
+            <p><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">launch_drone()</code> is available on every model. No mixin, registration or decorator is needed. It does not require Drone Administrator, and it does not check any drone group. Who may use a drone is defined by the code that calls it: put the access check on your own action, button or method. The job record itself stays limited to Cetmix Tower Root, so read its fields with <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">sudo()</code>.</p>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">job = record.launch_drone(
+    "my_skill",
+    record._on_my_task_done,
+    {"example": "value"},
+    drone_timeout=600,
+)</pre>
+            <div class="table-responsive mb24" style="border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+                <table class="table mb-0">
+                    <thead><tr><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px; width: 22%;">Argument</th><th style="background-color: #f8fafc; color: #0f172a; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 16px;">Rule</th></tr></thead>
+                    <tbody>
+                        <tr><td style="padding: 12px 16px;"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">skill</code></td><td style="padding: 12px 16px;">Skill reference, the string a controller reported. It is not checked against a list in Python.</td></tr>
+                        <tr><td style="padding: 12px 16px;"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">on_complete</code></td><td style="padding: 12px 16px;">A bound method of a recordset of one model, including several records or none. A lambda, a closure or a plain function is rejected. No records means the callback&#8217;s <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">self</code> is the model. A recordset that contains a new record is rejected, including one new record mixed with saved records, and a new record created with an origin.</td></tr>
+                        <tr><td style="padding: 12px 16px;"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">payload</code></td><td style="padding: 12px 16px;">One dictionary. It must be accepted by <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">json.dumps(payload, allow_nan=False)</code>, so <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">NaN</code> and <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">Infinity</code> are rejected. It becomes <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">data</code> in the envelope. The same dictionary is encrypted for every controller tried. It is kept in memory only and is never stored.</td></tr>
+                        <tr><td style="padding: 12px 16px;"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">drone_timeout</code></td><td style="padding: 12px 16px;">Seconds without a heartbeat. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">0</code> means no heartbeat timeout. A boolean is rejected. The default is <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">0</code>.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <ul class="ps-3 mb40">
+                <li>A payload or drone timeout that is rejected raises <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">ValidationError</code> before a controller is reserved, and no job is created.</li>
+                <li>The returned job is <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">pending</code>: a controller slot is reserved but nothing has been sent. The job is submitted after the current transaction commits. If the transaction rolls back, nothing is sent.</li>
+                <li>An empty recordset means no controller can take the job: none has reported that skill, or none of those that have is active and &#8220;Available&#8221; with a free slot. Nothing was sent or created; what to do next is up to the caller.</li>
+                <li>Selection uses the skill. Controller tags are not used.</li>
+                <li>The job record is limited to Cetmix Tower Root, which Drone Administrator grants. Read its fields with <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">sudo()</code>. Calling <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">launch_drone()</code> does not require that group.</li>
+                <li>A serialization failure while reserving a controller is retried automatically in HTTP and RPC requests. In a cron it aborts that cron run, which repeats on its own schedule.</li>
+            </ul>
+
+            <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Callback</h4>
+<pre class="overflow-x-auto mb16" style="background-color: #0b1f33; color: #e2e8f0; border-radius: 12px; padding: 18px 20px; font-size: 13px; line-height: 1.6; white-space: pre;">def _on_my_task_done(self, drone_job, result):
+    ...
+    return True</pre>
+            <ul class="ps-3 mb40">
+                <li>Called for every final outcome: <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">done</code>, <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">failed</code>, <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">timed_out</code>. Not called for <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">cancelled</code>.</li>
+                <li>Deleted ids are dropped before the call. The job fails only when every stored id is gone. No stored ids means the callback runs on the model.</li>
+                <li><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">drone_job.state</code> already holds the outcome. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">result</code> is the dict sent by the controller (<code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">status</code>, <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">response</code>, <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">error</code>), or <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">None</code> for <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">timed_out</code>.</li>
+                <li>Return a truthy value when the result is consumed. A falsy return or an exception leaves the job running and the result is delivered again.</li>
+                <li>The job stores no result. Store what you need, with secrets masked, on your own model. Mask secrets before any code that could raise with them in the message.</li>
+                <li>Callbacks must be idempotent: a callback can be called again when a previous attempt was rolled back.</li>
+                <li>Effects outside the database must be idempotent or deferred to <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">self.env.cr.postcommit.add(...)</code>. A deferred function must re-read the job and its own record and act only if its outcome was actually saved: a rolled back callback attempt does not remove what it registered.</li>
+                <li>A timeout does not wait for a callback that keeps failing: each delivery from the controller pushes the timeout back by one timeout period, and if no delivery arrives within it the job times out.</li>
+            </ul>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Cancel from code</h4>
+                        <p class="mb-0"><code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">_cancel()</code> cancels jobs without an access check: call it only after checking that the user may stop the work of the recordset or the model the job belongs to. That check is yours. <code style="color: #0f172a; background-color: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 0 5px; font-size: 0.875em;">action_cancel()</code> is the screen button and requires Cetmix Tower Root, which Drone Administrator grants.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="h-100" id="not-ended" style="background-color: #fffbeb; border-radius: 12px; padding: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #f59e0b;">
+                        <h4 class="fw-bold mb16" style="color: #0f172a; font-size: 20px; border-left-width: 4px; border-left-style: solid; border-left-color: #0284c7; padding-left: 12px;">Jobs that are not ended automatically</h4>
+                        <ul class="mb-0 ps-3">
+                            <li class="mb8">A job dispatched with timeout 0 has no heartbeat timeout. If its controller goes silent, the job stays running until it is cancelled.</li>
+                            <li>A pending job whose controller stays unreachable is checked again by every timeout cron run and stays pending until the controller answers or the job is cancelled.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support & credits -->
+    <section class="container pt48 pb48" id="support">
+        <div class="row g-3">
+            <div class="col-lg-7">
+                <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">Bug tracker</p>
+                    <p>Bugs are tracked on <a href="https://github.com/cetmix/cetmix-tower/issues" target="_blank" rel="noopener" style="color: #0369a1;">GitHub Issues</a>. In case of trouble, please check there if your issue has already been reported. If you spotted it first, help us to smash it by providing a detailed and welcomed <a href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_drone%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**" target="_blank" rel="noopener" style="color: #0369a1;">feedback</a>.</p>
+                    <p class="mb-0" style="color: #64748b;">Do not contact contributors directly about support or help with technical issues.</p>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="h-100" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px;">
+                    <p class="text-uppercase fw-semibold mb8" style="color: #0284c7; font-size: 13px; letter-spacing: 0.12em;">Credits</p>
+                    <p class="mb8"><strong style="color: #0f172a;">Authors:</strong> Cetmix</p>
+                    <p class="mb8"><strong style="color: #0f172a;">Maintainers:</strong> This module is part of the <a href="https://github.com/cetmix/cetmix-tower" target="_blank" rel="noopener" style="color: #0369a1;">cetmix/cetmix-tower</a> project on GitHub.</p>
+                    <p class="mb-0">You are welcome to contribute.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
