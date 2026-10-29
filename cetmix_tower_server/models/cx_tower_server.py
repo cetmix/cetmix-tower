@@ -1296,7 +1296,7 @@ class CxTowerServer(models.Model):
         and extend the list.
 
         Assigned sequences:
-            10: cetmix_tower_drone
+            10: cetmix_tower_drone_ssh
             50: cetmix_tower_server_queue
 
         Returns:
