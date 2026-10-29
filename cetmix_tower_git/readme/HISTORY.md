@@ -1,3 +1,10 @@
+## 18.0.3.1.0 (2026-10-29)
+
+- Features: Git records follow the flat YAML file layout. (5653)
+
+- Bugfixes: Creating a server from a YAML file copies its files onto the new server instead of taking them from the existing one. (5653)
+
+
 ## 18.0.3.0.1 (2026-10-15)
 
 - Features: Show Git Projects on a Jet only when its template enables them. (5687)
