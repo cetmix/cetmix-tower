@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="ir_module_category_drone" model="ir.module.category">
+        <field name="name">Drone</field>
+        <field name="sequence">200</field>
+    </record>
+
+    <record id="ir_module_category_drone_access" model="ir.module.category">
+        <field name="parent_id" ref="ir_module_category_drone" />
+        <field name="name">Drone Access</field>
+    </record>
+
+    <record id="group_administrator" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="category_id" ref="ir_module_category_drone_access" />
+        <field name="implied_ids" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+        <field name="comment">
+        Full drone access. Grants Cetmix Tower Root, including User and Manager, so those levels do not have to be chosen separately.
+    </field>
+    </record>
+</odoo>
