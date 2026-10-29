@@ -1,42 +1,26 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models
+from odoo import fields, models
 
 
 class CxTowerScheduledTask(models.Model):
     _name = "cx.tower.scheduled.task"
     _inherit = ["cx.tower.scheduled.task", "cx.tower.yaml.mixin"]
 
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "sequence",
-            "action",
-            "command_id",
-            "plan_id",
-            "interval_number",
-            "interval_type",
-            "next_call",
-            "last_call",
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday",
-            "custom_variable_value_ids",
-        ]
-        return res
-
-    def _get_deferred_x2m_import_fields(self):
-        """Return scheduled-task child records resolved after import."""
-        return {
-            "custom_variable_value_ids": {
-                "child_model": "cx.tower.scheduled.task.cv",
-                "deferred_field": "variable_value_id",
-                "target_model": "cx.tower.variable.value",
-                "skip_empty": True,
-            }
-        }
+    name = fields.Char(yaml_export=True)
+    sequence = fields.Integer(yaml_export=True)
+    action = fields.Selection(yaml_export=True)
+    command_id = fields.Many2one(yaml_export="include")
+    plan_id = fields.Many2one(yaml_export="include")
+    interval_number = fields.Integer(yaml_export=True)
+    interval_type = fields.Selection(yaml_export=True)
+    next_call = fields.Datetime(yaml_export=True)
+    last_call = fields.Datetime(yaml_export=True)
+    monday = fields.Boolean(yaml_export=True)
+    tuesday = fields.Boolean(yaml_export=True)
+    wednesday = fields.Boolean(yaml_export=True)
+    thursday = fields.Boolean(yaml_export=True)
+    friday = fields.Boolean(yaml_export=True)
+    saturday = fields.Boolean(yaml_export=True)
+    sunday = fields.Boolean(yaml_export=True)
+    custom_variable_value_ids = fields.One2many(yaml_export="explode")

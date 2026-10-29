@@ -1,6 +1,6 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import models
+from odoo import fields, models
 
 
 class CxTowerServerLog(models.Model):
@@ -10,14 +10,9 @@ class CxTowerServerLog(models.Model):
         "cx.tower.yaml.mixin",
     ]
 
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "log_type",
-            "command_id",
-            "use_sudo",
-            "file_template_id",
-            "file_id",
-        ]
-        return res
+    name = fields.Char(yaml_export=True)
+    log_type = fields.Selection(yaml_export=True)
+    command_id = fields.Many2one(yaml_export="include")
+    use_sudo = fields.Boolean(yaml_export=True)
+    file_template_id = fields.Many2one(yaml_export="include")
+    file_id = fields.Many2one(yaml_export="reference")

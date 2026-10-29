@@ -113,7 +113,7 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         cls.export_wizard = (
             cls.env["cx.tower.yaml.export.wiz"].with_context(context).create({})  # pylint: disable=context-overridden # new need a new clean context
         )
-        cls.export_wizard.onchange_explode_child_records()
+        cls.export_wizard.onchange_include_related_records()
         cls.export_wizard.action_generate_yaml_file()
         cls.yaml_code = cls.export_wizard.yaml_code
         cls.yaml_file = base64.b64encode(cls.yaml_code.encode("utf-8"))
@@ -266,36 +266,26 @@ class TestTowerYamlImportWizUpload(TransactionCase):
         # Run import wizard action
         import_wizard_result_action = self.import_wizard.action_import_yaml()
 
-        # Test if action is composed properly
+        # Skipping an existing root opens that record
         self.assertEqual(
             import_wizard_result_action["type"],
-            "ir.actions.client",
+            "ir.actions.act_window",
             "Import wizard action type is not correct",
         )
         self.assertEqual(
-            import_wizard_result_action["tag"],
-            "display_notification",
-            "Import wizard action tag is not correct",
+            import_wizard_result_action["res_model"],
+            "cx.tower.server.template",
+            "Skipped root must open on its own model",
         )
         self.assertEqual(
-            import_wizard_result_action["params"]["title"],
-            _("Record Import"),
-            "Import wizard action title is not correct",
+            import_wizard_result_action["res_id"],
+            self.server_template_yaml_test.id,
+            "Skipped root must be the existing server template",
         )
         self.assertEqual(
-            import_wizard_result_action["params"]["message"],
-            _("No records were created or updated"),
-            "Import wizard action message is not correct",
-        )
-        self.assertEqual(
-            import_wizard_result_action["params"]["sticky"],
-            True,
-            "Import wizard action sticky is not correct",
-        )
-        self.assertEqual(
-            import_wizard_result_action["params"]["type"],
-            "warning",
-            "Import wizard action type is not correct",
+            import_wizard_result_action["view_mode"],
+            "form",
+            "A single root opens in form view",
         )
 
     def test_action_import_yaml_update_existing_record(self):
@@ -340,9 +330,14 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             "Import wizard action model is not correct",
         )
         self.assertEqual(
-            import_wizard_result_action["domain"],
-            [("id", "in", self.server_template_yaml_test.ids)],
+            import_wizard_result_action["res_id"],
+            self.server_template_yaml_test.id,
             "ID must match existing record ID",
+        )
+        self.assertEqual(
+            import_wizard_result_action["view_mode"],
+            "form",
+            "A single root opens in form view",
         )
         self.assertEqual(
             self.server_template_yaml_test.name,
@@ -382,15 +377,20 @@ class TestTowerYamlImportWizUpload(TransactionCase):
             "Import wizard action model is not correct",
         )
         self.assertNotEqual(
-            import_wizard_result_action["domain"],
-            f"[('id', '=', {self.server_template_yaml_test.ids})]",
+            import_wizard_result_action["res_id"],
+            self.server_template_yaml_test.id,
             "ID must not match existing record ID",
+        )
+        self.assertEqual(
+            import_wizard_result_action["view_mode"],
+            "form",
+            "A single root opens in form view",
         )
 
         # -- 2 --
         # Ensure that existing flight plan is used instead of creating a new one
-        new_server_template = self.env[import_wizard_result_action["res_model"]].search(
-            import_wizard_result_action["domain"]
+        new_server_template = self.env[import_wizard_result_action["res_model"]].browse(
+            import_wizard_result_action["res_id"]
         )
         self.assertEqual(
             new_server_template.flight_plan_id,
@@ -559,6 +559,31 @@ records:
             ["Nested Secret 1", "Nested Secret 2", "SSH Key Nested"],
             "Unexpected secrets extracted for nested structure",
         )
+
+    def test_extract_secret_names_from_flat_keys(self):
+        """Flat files name secrets on their own key records."""
+        yaml_code = """cetmix_tower_yaml_version: 1
+records:
+- cetmix_tower_model: key
+  reference: flat_secret
+  name: Flat Secret
+  key_type: s
+- cetmix_tower_model: key
+  reference: flat_ssh_key
+  name: Flat SSH Key
+  key_type: k
+- cetmix_tower_model: server
+  reference: flat_server
+  name: Flat Server
+  ssh_key_id: flat_ssh_key
+  secret_ids:
+  - reference: flat_secret_value
+    key_id: flat_secret
+"""
+        secret_list = self.env["cx.tower.yaml.import.wiz"]._extract_secret_names(
+            yaml.safe_load(yaml_code)
+        )
+        self.assertCountEqual(secret_list, ["Flat Secret", "Flat SSH Key"])
 
     def test_create_records_different_models(self):
         """Test create records with different models"""
@@ -884,7 +909,11 @@ records:
         )
 
     def test_action_import_yaml_aggregates_missing_deferred_links(self):
-        """Missing deferred command template links must fail with one clear error."""
+        """A reference that is not in the file is left empty.
+
+        A reference that is in the file and not yet imported is linked
+        after that record is created.
+        """
         yaml_code = """cetmix_tower_yaml_version: 1
 records:
 - cetmix_tower_model: command
@@ -908,37 +937,28 @@ records:
   name: Valid Deferred Jet Template
 """
         wiz = self._create_import_wizard(yaml_code)
+        wiz.action_import_yaml()
 
-        with self.assertRaises(ValidationError) as err:
-            wiz.action_import_yaml()
-
-        error_message = str(err.exception)
-        self.assertIn(
-            "Deferred relation resolution failed",
-            error_message,
-            "Import must raise one aggregated deferred-resolution error",
+        missing_jet = self.Command.get_by_reference("command_missing_jet_template")
+        missing_waypoint = self.Command.get_by_reference(
+            "command_missing_waypoint_template"
         )
-        self.assertIn(
-            "Record cx.tower.command 'command_missing_jet_template': "
-            "field 'jet_template_id'",
-            error_message,
-            "Error must include unresolved jet template links",
+        linked = self.Command.get_by_reference("command_valid_deferred_template")
+        template = self.env["cx.tower.jet.template"].get_by_reference(
+            "valid_deferred_jet_template"
         )
-        self.assertIn(
-            "cx.tower.jet.template 'missing_jet_template'",
-            error_message,
-            "Error must include missing jet template reference",
+        self.assertFalse(
+            missing_jet.jet_template_id,
+            "A jet template that is not in the file must be left empty",
         )
-        self.assertIn(
-            "Record cx.tower.command 'command_missing_waypoint_template': "
-            "field 'waypoint_template_id'",
-            error_message,
-            "Error must include unresolved waypoint template links",
+        self.assertFalse(
+            missing_waypoint.waypoint_template_id,
+            "A waypoint template that is not in the file must be left empty",
         )
-        self.assertIn(
-            "cx.tower.jet.waypoint.template 'missing_waypoint_template'",
-            error_message,
-            "Error must include missing waypoint template reference",
+        self.assertEqual(
+            linked.jet_template_id,
+            template,
+            "A template later in the file must be linked after it is created",
         )
 
     def test_yaml_import_server_without_password(self):

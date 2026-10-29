@@ -10,7 +10,7 @@
                 </group>
                 <group>
                     <group>
-                        <field name="explode_child_records" />
+                        <field name="include_related_records" />
                         <field name="remove_empty_values" />
                     </group>
                     <group>

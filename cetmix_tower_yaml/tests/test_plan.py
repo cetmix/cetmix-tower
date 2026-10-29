@@ -177,3 +177,86 @@ line_ids:
             plan_actions[1].variable_value_ids,
             "Second action variable value ids is not false",
         )
+
+    def test_update_keeps_plan_line_references(self):
+        """Update an existing flight plan without duplicating its lines.
+
+        Line and action references are explicit. The import writes the plan
+        reference back unchanged, which must not rename those records.
+        A second update of the same file must still find them.
+        """
+        command = self.env["cx.tower.command"].create(
+            {
+                "name": "Keep line command",
+                "code": "echo keep",
+                "reference": "keep_line_command",
+            }
+        )
+        plan = self.Plan.create(
+            {"name": "Keep Line Plan", "reference": "keep_line_plan"}
+        )
+        line_a = self.env["cx.tower.plan.line"].create(
+            {
+                "plan_id": plan.id,
+                "sequence": 10,
+                "command_id": command.id,
+                "reference": "keep_yaml_line_a",
+                "condition": "old",
+            }
+        )
+        line_b = self.env["cx.tower.plan.line"].create(
+            {
+                "plan_id": plan.id,
+                "sequence": 20,
+                "command_id": command.id,
+                "reference": "keep_yaml_line_b",
+                "condition": "keep",
+            }
+        )
+        action = self.env["cx.tower.plan.line.action"].create(
+            {
+                "line_id": line_a.id,
+                "sequence": 1,
+                "condition": "==",
+                "value_char": "0",
+                "action": "n",
+                "reference": "keep_yaml_action",
+            }
+        )
+        yaml_code = """records:
+- cetmix_tower_model: plan
+  reference: keep_line_plan
+  name: Keep Line Plan
+  line_ids:
+  - reference: keep_yaml_line_a
+    sequence: 10
+    condition: '1 == 1'
+    command_id: keep_line_command
+    action_ids:
+    - reference: keep_yaml_action
+      sequence: 1
+      condition: '=='
+      value_char: '0'
+      action: n
+  - reference: keep_yaml_line_b
+    sequence: 20
+    condition: keep
+    command_id: keep_line_command
+"""
+
+        def _import_update():
+            wizard = self.env["cx.tower.yaml.import.wiz"].create(
+                {"yaml_code": yaml_code, "if_record_exists": "update"}
+            )
+            wizard.action_import_yaml()
+
+        _import_update()
+        _import_update()
+
+        self.assertEqual(plan.line_ids, line_a | line_b)
+        self.assertEqual(line_a.reference, "keep_yaml_line_a")
+        self.assertEqual(line_b.reference, "keep_yaml_line_b")
+        self.assertEqual(line_a.condition, "1 == 1")
+        self.assertEqual(line_b.condition, "keep")
+        self.assertEqual(line_a.action_ids, action)
+        self.assertEqual(action.reference, "keep_yaml_action")
