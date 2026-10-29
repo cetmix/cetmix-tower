@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
+<title>Cetmix Tower Drone SSH</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+Despite the name, some widely supported CSS2 features are used.
+
+See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: gray; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic, pre.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="cetmix-tower-drone-ssh">
+<h1 class="title">Cetmix Tower Drone SSH</h1>
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! This file is generated by oca-gen-addon-readme !!
+!! changes will be overwritten.                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! source digest: sha256:c4649a33d767eace95e558433f8e81b21171814263b2e09473ce8810bc7b7b05
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_drone_ssh"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p>This module runs Cetmix Tower SSH commands on external drones instead of
+inside Odoo.</p>
+<ul class="simple">
+<li><strong>SSH commands.</strong> A controller that reports the <tt class="docutils literal">ssh</tt> skill can run
+SSH commands for Tower. This module does not register that skill and
+does not ship it as module data.</li>
+<li><strong>Dispatch.</strong> Every SSH command that has a command log is offered to a
+drone controller before any other way of running it, including the job
+queue. Commands of other actions are never sent to a drone.</li>
+<li><strong>Secrets.</strong> Secrets are resolved only into the encrypted payload sent
+to the controller. The result is stored in the command log with
+secrets masked. The drone job keeps neither the payload nor the
+result.</li>
+<li><strong>Result.</strong> The command log is finished when the controller reports
+the result, and a flight plan continues from there.</li>
+<li><strong>Executed on.</strong> The command log shows the drone controller that holds
+the command.</li>
+</ul>
+<p><strong>Table of contents</strong></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#use-cases-context" id="toc-entry-1">Use Cases / Context</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-2">Configuration</a><ul>
+<li><a class="reference internal" href="#install" id="toc-entry-3">Install</a></li>
+<li><a class="reference internal" href="#add-a-drone-controller" id="toc-entry-4">Add a Drone Controller</a></li>
+<li><a class="reference internal" href="#no-controller-policy" id="toc-entry-5">No Controller Policy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage" id="toc-entry-6">Usage</a><ul>
+<li><a class="reference internal" href="#run-an-ssh-command" id="toc-entry-7">Run an SSH Command</a></li>
+<li><a class="reference internal" href="#exit-codes" id="toc-entry-8">Exit Codes</a></li>
+<li><a class="reference internal" href="#stop-a-command" id="toc-entry-9">Stop a Command</a></li>
+<li><a class="reference internal" href="#payload" id="toc-entry-10">Payload</a></li>
+<li><a class="reference internal" href="#timeout" id="toc-entry-11">Timeout</a></li>
+<li><a class="reference internal" href="#commands-that-are-not-ended-automatically" id="toc-entry-12">Commands That Are Not Ended Automatically</a></li>
+<li><a class="reference internal" href="#where-the-next-step-runs" id="toc-entry-13">Where the Next Step Runs</a></li>
+<li><a class="reference internal" href="#results" id="toc-entry-14">Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-15">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-16">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-17">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-18">Maintainers</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="use-cases-context">
+<h1><a class="toc-backref" href="#toc-entry-1">Use Cases / Context</a></h1>
+<p>An SSH command run by Cetmix Tower holds an Odoo worker until the remote
+command ends. Long commands therefore run against the time limits of
+that worker, and they are also ended by the zombie command cron once
+they run longer than the “Command Timeout” setting. The two limits are
+independent of each other.</p>
+<p>This module moves SSH commands out of Odoo to external drones. It is the
+SSH adapter on the “Cetmix Tower Drone” job layer: it prepares the
+payload and applies the result. It uses the command deferral hooks of
+“Cetmix Tower Server” and does not change how commands are rendered,
+logged or chained in flight plans.</p>
+</div>
+<div class="section" id="configuration">
+<h1><a class="toc-backref" href="#toc-entry-2">Configuration</a></h1>
+<div class="section" id="install">
+<h2><a class="toc-backref" href="#toc-entry-3">Install</a></h2>
+<p>This module is not installed automatically. Install “Cetmix Tower Drone
+SSH” from the Apps menu. It installs “Cetmix Tower Drone” if needed.</p>
+</div>
+<div class="section" id="add-a-drone-controller">
+<h2><a class="toc-backref" href="#toc-entry-4">Add a Drone Controller</a></h2>
+<p>A user of the “Cetmix Tower / Root” group saves a drone controller with
+its URL and keys, then clicks “Check Connection”. The skills appear from
+the health reply. SSH commands run once that reply includes <tt class="docutils literal">ssh</tt>. See
+the configuration of the “Cetmix Tower Drone” module for the other
+controller fields.</p>
+<p>Until an active controller in the “Available” status reports <tt class="docutils literal">ssh</tt>,
+the policy below applies to every SSH command.</p>
+</div>
+<div class="section" id="no-controller-policy">
+<h2><a class="toc-backref" href="#toc-entry-5">No Controller Policy</a></h2>
+<p>Go to “Settings &gt; Cetmix Tower &gt; Drones” and set “No Drone Controller”.
+It decides what happens to an SSH command when no controller is
+available: no controller reports <tt class="docutils literal">ssh</tt>, none is active and
+“Available”, or all of them have reached their “Max Jobs” limit.</p>
+<ul class="simple">
+<li>Fallback. Default. The command is run without a drone: in the job
+queue when the “Cetmix Tower Server Queue” module is installed,
+otherwise inside Odoo.</li>
+<li>Fail. The command is finished with exit code -209 and is not run.</li>
+</ul>
+<p>“Fallback” only covers the case when no controller was available at the
+moment the command was started. When a controller was available but then
+refused the command or could not be reached, the command is already
+reported as running and is not run again in another way: it is finished
+with exit code -209 whatever the policy.</p>
+</div>
+</div>
+<div class="section" id="usage">
+<h1><a class="toc-backref" href="#toc-entry-6">Usage</a></h1>
+<div class="section" id="run-an-ssh-command">
+<h2><a class="toc-backref" href="#toc-entry-7">Run an SSH Command</a></h2>
+<p>Run SSH commands and flight plans as usual. When a drone controller is
+available, an SSH command is sent to it after the transaction that
+started it is saved, and the command stays running in Tower until the
+controller reports the result. No Odoo worker waits for the command
+meanwhile.</p>
+<p>SSH commands run by a flight plan are sent to drones too, including the
+SSH commands of a flight plan started by another flight plan. A command
+that runs a flight plan stays running until that flight plan finishes.</p>
+<p>Open the command log to see the controller in the “Executed on” field.
+While the command is being sent it shows the controller being tried,
+which can change if a controller refuses the command; after that it
+shows the controller that accepted the command.</p>
+<p>The controller form has a Commands button. It opens the command logs run
+on that controller and shows how many there are.</p>
+<p>Open the drone job to see Command log. It links to the command log that
+sent the job, including while that command is still running. The field
+is hidden when the job was not started from a command.</p>
+</div>
+<div class="section" id="exit-codes">
+<h2><a class="toc-backref" href="#toc-entry-8">Exit Codes</a></h2>
+<ul class="simple">
+<li>-503. The server has no host key. The command is not sent to a drone.</li>
+<li>-209. No drone controller took the command.</li>
+<li>-206. The command timed out.</li>
+<li>-208. The command was stopped by a user.</li>
+<li>-100. The controller reported a failure without an exit code.</li>
+</ul>
+</div>
+<div class="section" id="stop-a-command">
+<h2><a class="toc-backref" href="#toc-entry-9">Stop a Command</a></h2>
+<p>Stop the command as usual. The controller is asked to stop the work once
+the stop is saved. A command that was not sent to the controller yet is
+never sent. A result that arrives after the stop is ignored.</p>
+<p>A Root user who cancels the drone job of a running command in “Cetmix
+Tower &gt; Logs &gt; Drone Jobs” stops the command the same way.</p>
+</div>
+<div class="section" id="payload">
+<h2><a class="toc-backref" href="#toc-entry-10">Payload</a></h2>
+<p>The handler prepares the payload and passes it to <tt class="docutils literal">launch_drone()</tt>. A
+controller that runs <tt class="docutils literal">ssh</tt> receives that object as <tt class="docutils literal">data</tt>:</p>
+<ul class="simple">
+<li><tt class="docutils literal">commands</tt>. The command to run: a string, or a list of strings.</li>
+<li><tt class="docutils literal">sudo</tt>. <tt class="docutils literal">n</tt> to run without a sudo password, <tt class="docutils literal">p</tt> to run with the
+password, or <tt class="docutils literal">false</tt> when the command does not use sudo.</li>
+<li><tt class="docutils literal">connection</tt>. SSH connection values: <tt class="docutils literal">host</tt>, <tt class="docutils literal">port</tt>,
+<tt class="docutils literal">username</tt>, <tt class="docutils literal">auth_mode</tt>, <tt class="docutils literal">password</tt>, <tt class="docutils literal">ssh_key</tt>, <tt class="docutils literal">host_key</tt>
+and <tt class="docutils literal">skip_host_key</tt>.</li>
+</ul>
+</div>
+<div class="section" id="timeout">
+<h2><a class="toc-backref" href="#toc-entry-11">Timeout</a></h2>
+<p>The “Command Timeout” setting (<tt class="docutils literal">cetmix_tower_server.command_timeout</tt>)
+is passed as <tt class="docutils literal">drone_timeout</tt>. A negative value is sent as 0. It counts
+differently than for commands run inside Odoo: it is the time without
+any sign of life from the controller, not the total run time. A command
+whose controller keeps reporting that it is working can run longer than
+“Command Timeout”. Commands are checked every 15 minutes. When the
+timeout is reached the command is finished as timed out and the
+controller is asked to stop the work.</p>
+<p>The zombie command cron does not end drone commands.</p>
+<p>Set “Command Timeout” to 0 to disable the timeout of drone commands too.</p>
+</div>
+<div class="section" id="commands-that-are-not-ended-automatically">
+<h2><a class="toc-backref" href="#toc-entry-12">Commands That Are Not Ended Automatically</a></h2>
+<p>Stop these commands manually:</p>
+<ul class="simple">
+<li>“Command Timeout” is 0 and the controller stops answering.</li>
+<li>The command was never accepted because its controller stays
+unreachable.</li>
+</ul>
+</div>
+<div class="section" id="where-the-next-step-runs">
+<h2><a class="toc-backref" href="#toc-entry-13">Where the Next Step Runs</a></h2>
+<p>When a command is finished from a drone result, the next line of its
+flight plan starts right away, inside whatever delivered the result: the
+request sent by the controller, the poll cron (every 2 minutes), the
+timeout cron (every 15 minutes), or the process that was sending the
+command when no controller accepted it.</p>
+<ul class="simple">
+<li>A next SSH command is sent to a drone again.</li>
+<li>With the “Cetmix Tower Server Queue” module installed, every other
+command except Jet actions and waypoint creation is put in the job
+queue.</li>
+<li>Without it, Python commands, flight plan commands and the other
+actions run there, within the limits of that process.</li>
+</ul>
+<p>If the next line fails with an error, the result is not saved either and
+is delivered again later.</p>
+</div>
+<div class="section" id="results">
+<h2><a class="toc-backref" href="#toc-entry-14">Results</a></h2>
+<p>The result is stored only in the command log, with secrets masked. The
+drone job keeps neither the command, the secrets nor the result.</p>
+</div>
+</div>
+<div class="section" id="bug-tracker">
+<h1><a class="toc-backref" href="#toc-entry-15">Bug Tracker</a></h1>
+<p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
+In case of trouble, please check there if your issue has already been reported.
+If you spotted it first, help us to smash it by providing a detailed and welcomed
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_drone_ssh%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<p>Do not contact contributors directly about support or help with technical issues.</p>
+</div>
+<div class="section" id="credits">
+<h1><a class="toc-backref" href="#toc-entry-16">Credits</a></h1>
+<div class="section" id="authors">
+<h2><a class="toc-backref" href="#toc-entry-17">Authors</a></h2>
+<ul class="simple">
+<li>Cetmix</li>
+</ul>
+</div>
+<div class="section" id="maintainers">
+<h2><a class="toc-backref" href="#toc-entry-18">Maintainers</a></h2>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_drone_ssh">cetmix/cetmix-tower</a> project on GitHub.</p>
+<p>You are welcome to contribute.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
