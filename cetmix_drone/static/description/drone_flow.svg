@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" width="1200" height="500" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0284c7"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#059669"/></marker>
+    <marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748b"/></marker>
+  </defs>
+  <rect width="1200" height="500" rx="20" fill="#ffffff"/>
+
+  <!-- Odoo -->
+  <rect x="20" y="20" width="420" height="460" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="44" y="56" font-size="15" font-weight="700" fill="#0284c7" letter-spacing="1.5">ODOO</text>
+
+  <rect x="44" y="76" width="372" height="78" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="64" y="106" font-size="17" font-weight="700" fill="#0f172a">Any Odoo model</text>
+  <text x="64" y="134" font-size="13" fill="#334155" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">record.launch_drone(skill, callback, payload)</text>
+
+  <path d="M230 154V188" stroke="#94a3b8" stroke-width="2" marker-end="url(#s)"/>
+  <text x="242" y="177" font-size="12" fill="#64748b">same transaction</text>
+
+  <rect x="44" y="192" width="372" height="96" rx="12" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
+  <text x="64" y="222" font-size="17" font-weight="700" fill="#0f172a">Drone Job</text>
+  <text x="64" y="248" font-size="14" fill="#334155">skill, controller, state, heartbeat, timeout</text>
+  <text x="64" y="270" font-size="14" fill="#64748b">no payload, no result stored</text>
+
+  <path d="M230 288V352" stroke="#94a3b8" stroke-width="2" marker-end="url(#s)"/>
+  <text x="242" y="325" font-size="12" fill="#64748b">done, failed or timed out</text>
+
+  <rect x="44" y="356" width="372" height="100" rx="12" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+  <text x="64" y="386" font-size="17" font-weight="700" fill="#0f172a">Callback method</text>
+  <text x="64" y="412" font-size="14" fill="#334155" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">_on_my_task_done(drone_job, result)</text>
+  <text x="64" y="436" font-size="14" fill="#64748b">runs as the user who dispatched the job</text>
+
+  <!-- Odoo -> controller -->
+  <path d="M440 112H636" stroke="#64748b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#s)"/>
+  <text x="538" y="100" font-size="13" font-weight="600" fill="#334155" text-anchor="middle">GET /health</text>
+  <text x="538" y="130" font-size="12" fill="#64748b" text-anchor="middle">every 5 min, reports skills</text>
+
+  <path d="M416 222H636" stroke="#0284c7" stroke-width="2.5" marker-end="url(#b)"/>
+  <text x="538" y="210" font-size="13" font-weight="600" fill="#0369a1" text-anchor="middle">POST /jobs</text>
+  <text x="538" y="240" font-size="12" fill="#64748b" text-anchor="middle">after commit, Fernet-encrypted</text>
+
+  <path d="M640 290H420" stroke="#059669" stroke-width="2.5" marker-end="url(#g)"/>
+  <text x="530" y="278" font-size="13" font-weight="600" fill="#047857" text-anchor="middle">POST /job/heartbeat</text>
+
+  <path d="M440 336H636" stroke="#64748b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#s)"/>
+  <text x="538" y="324" font-size="13" font-weight="600" fill="#334155" text-anchor="middle">GET /jobs/&lt;nonce&gt;</text>
+  <text x="538" y="354" font-size="12" fill="#64748b" text-anchor="middle">poll, every 2 min</text>
+
+  <path d="M640 406H420" stroke="#059669" stroke-width="2.5" marker-end="url(#g)"/>
+  <text x="530" y="394" font-size="13" font-weight="600" fill="#047857" text-anchor="middle">POST /job/result</text>
+  <text x="530" y="424" font-size="12" fill="#64748b" text-anchor="middle">status, response, error</text>
+
+  <!-- Controller -->
+  <rect x="640" y="76" width="260" height="380" rx="16" fill="#0b1f33"/>
+  <text x="664" y="112" font-size="15" font-weight="700" fill="#38bdf8" letter-spacing="1.5">CONTROLLER</text>
+  <text x="664" y="142" font-size="17" font-weight="700" fill="#ffffff">Drone Controller</text>
+  <text x="664" y="166" font-size="13" fill="#94a3b8">external process</text>
+  <rect x="664" y="190" width="212" height="34" rx="17" fill="#12304d" stroke="#1e4468"/>
+  <text x="770" y="212" font-size="13" fill="#e0f2fe" text-anchor="middle">Skills: ssh, backup</text>
+  <rect x="664" y="236" width="212" height="34" rx="17" fill="#12304d" stroke="#1e4468"/>
+  <text x="770" y="258" font-size="13" fill="#e0f2fe" text-anchor="middle">Priority, Max Jobs</text>
+  <rect x="664" y="282" width="212" height="34" rx="17" fill="#12304d" stroke="#1e4468"/>
+  <text x="770" y="304" font-size="13" fill="#e0f2fe" text-anchor="middle">Status: Available</text>
+  <text x="664" y="352" font-size="13" fill="#94a3b8">The same Payload Key is</text>
+  <text x="664" y="374" font-size="13" fill="#94a3b8">configured on the drone.</text>
+  <text x="664" y="410" font-size="13" fill="#94a3b8">Odoo only talks to the</text>
+  <text x="664" y="432" font-size="13" fill="#94a3b8">controller.</text>
+
+  <!-- Drones -->
+  <text x="976" y="112" font-size="15" font-weight="700" fill="#0284c7" letter-spacing="1.5">DRONES</text>
+  <path d="M900 166H970" stroke="#94a3b8" stroke-width="2" marker-end="url(#s)"/>
+  <path d="M900 266H970" stroke="#94a3b8" stroke-width="2" marker-end="url(#s)"/>
+  <path d="M900 366H970" stroke="#94a3b8" stroke-width="2" marker-end="url(#s)"/>
+  <rect x="974" y="130" width="206" height="72" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="994" y="160" font-size="16" font-weight="700" fill="#0f172a">Drone</text>
+  <text x="994" y="184" font-size="13" fill="#64748b">runs the long work</text>
+  <rect x="974" y="230" width="206" height="72" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="994" y="260" font-size="16" font-weight="700" fill="#0f172a">Drone</text>
+  <text x="994" y="284" font-size="13" fill="#64748b">runs the long work</text>
+  <rect x="974" y="330" width="206" height="72" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="994" y="360" font-size="16" font-weight="700" fill="#0f172a">Drone</text>
+  <text x="994" y="384" font-size="13" fill="#64748b">runs the long work</text>
+</svg>
