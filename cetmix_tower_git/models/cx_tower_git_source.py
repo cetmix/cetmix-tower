@@ -22,10 +22,12 @@ class CxTowerGitSource(models.Model):
 
     active = fields.Boolean(related="git_project_id.active", store=True, readonly=True)
     enabled = fields.Boolean(
-        default=True, help="Enable in configuration and exported to files"
+        default=True,
+        help="Enable in configuration and exported to files",
+        yaml_export=True,
     )
-    name = fields.Char(required=False)
-    sequence = fields.Integer(default=10)
+    name = fields.Char(required=False, yaml_export=True)
+    sequence = fields.Integer(default=10, yaml_export=True)
     git_project_id = fields.Many2one(
         comodel_name="cx.tower.git.project",
         string="Git Configuration",
@@ -39,6 +41,7 @@ class CxTowerGitSource(models.Model):
         inverse_name="source_id",
         auto_join=True,
         copy=True,
+        yaml_export="explode",
     )
     remote_count = fields.Integer(
         compute="_compute_remote_count",
@@ -143,19 +146,6 @@ class CxTowerGitSource(models.Model):
     def _get_pre_populated_model_data(self):
         res = super()._get_pre_populated_model_data()
         res.update({"cx.tower.git.source": ["cx.tower.git.project", "git_project_id"]})
-        return res
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "enabled",
-            "sequence",
-            "remote_ids",
-        ]
         return res
 
     # ------------------------------

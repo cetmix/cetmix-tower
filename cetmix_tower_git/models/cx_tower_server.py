@@ -22,6 +22,7 @@ class CxTowerServer(models.Model):
         help="Legacy: Git Projects linked through files on this server."
         " Kept for servers that do not use Jets. New setups should link"
         " the Git Project to the Jet and write it with Upload Git Project.",
+        yaml_export="explode",
     )
 
     # Helper field to get all git projects related to server
@@ -38,39 +39,6 @@ class CxTowerServer(models.Model):
         help="Legacy: Git Projects linked through files on this server."
         " Kept for servers that do not use Jets.",
     )
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "git_project_rel_ids",
-        ]
-        return res
-
-    def _get_force_x2m_resolve_models(self):
-        res = super()._get_force_x2m_resolve_models()
-
-        # Add File in order to always try to use existing one
-        res += ["cx.tower.file"]
-        return res
-
-    def _update_or_create_related_record(
-        self, model, reference, values, create_immediately=False
-    ):
-        # Files must be created immediately because they are related
-        # to both server and git project.
-        # So if a file is not created immediately when it is created
-        # for the server, the same file will be created for the git project.
-        # This will lead to creation of two files with the same content
-        # for the same server.
-
-        if model._name == "cx.tower.file":
-            create_immediately = True
-        return super()._update_or_create_related_record(
-            model, reference, values, create_immediately=create_immediately
-        )
 
     @api.model
     def get_servers_by_git_ref(self, repository_url, head=None, head_type=None):

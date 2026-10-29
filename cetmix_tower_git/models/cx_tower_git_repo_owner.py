@@ -18,11 +18,15 @@ class CxTowerGitRepoOwner(models.Model):
     _order = "name"
 
     display_name = fields.Char(
-        readonly=False, compute="_compute_display_name", store=True
+        readonly=False,
+        compute="_compute_display_name",
+        store=True,
+        yaml_export=True,
     )
 
     name = fields.Char(
         help="Name of the repository owner (e.g., 'cetmix', 'OCA')",
+        yaml_export=True,
     )
     reference = fields.Char(
         index=True,
@@ -45,6 +49,7 @@ class CxTowerGitRepoOwner(models.Model):
         " URLs use environment placeholders"
         " ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN,"
         " $BITBUCKET_TOKEN).",
+        yaml_export="include",
     )
 
     @api.depends("name")
@@ -95,16 +100,4 @@ class CxTowerGitRepoOwner(models.Model):
         """Clear cache on unlink."""
         res = super().unlink()
         self.env.registry.clear_cache()
-        return res
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "display_name",
-            "name",
-            "secret_id",
-        ]
         return res
