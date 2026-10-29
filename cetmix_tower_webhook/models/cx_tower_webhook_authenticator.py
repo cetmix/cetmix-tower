@@ -25,6 +25,7 @@ class CxTowerWebhookAuthenticator(models.Model):
     ]
     _description = "Webhook Authenticator"
 
+    name = fields.Char(yaml_export=True)
     log_count = fields.Integer(
         compute="_compute_log_count",
     )
@@ -33,19 +34,23 @@ class CxTowerWebhookAuthenticator(models.Model):
         help="Comma-separated list of IP addresses and/or subnets "
         "(e.g. 192.168.1.10,192.168.2.0/24,10.0.0.1,2001:db8::/32,2a00:1450:4001:824::200e). "  # noqa: E501
         "Requests from other addresses will be denied.",
+        yaml_export=True,
     )
     trusted_proxy_ips = fields.Text(
         string="Trusted Proxy IPs",
         help="Comma-separated list of trusted proxy IP addresses or CIDR ranges "
         "(e.g., 10.0.0.1,192.168.1.0/24). "
         "Only these proxies can set X-Forwarded-For headers.",
+        yaml_export=True,
     )
     variable_ids = fields.Many2many(
         comodel_name="cx.tower.variable",
         relation="cx_tower_webhook_authenticator_variable_rel",
         column1="webhook_authenticator_id",
         column2="variable_id",
+        yaml_export="include",
     )
+    secret_ids = fields.Many2many(yaml_export="include")
 
     @api.constrains("trusted_proxy_ips")
     def _check_trusted_proxy_ips(self):
@@ -131,24 +136,6 @@ class CxTowerWebhookAuthenticator(models.Model):
             },
         }
         res.update(super()._get_python_eval_odoo_objects(**kwargs))
-        return res
-
-    def _get_fields_for_yaml(self):
-        """
-        Extend fields available for YAML export.
-
-        Returns:
-            list[str]: List of field names.
-        """
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "code",
-            "allowed_ip_addresses",
-            "trusted_proxy_ips",
-            "variable_ids",
-            "secret_ids",
-        ]
         return res
 
     def authenticate(self, raise_on_error=True, **kwargs):
