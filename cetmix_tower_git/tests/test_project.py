@@ -1,5 +1,9 @@
 from odoo.exceptions import AccessError
 
+from odoo.addons.cetmix_tower_yaml.tests.yaml_export_check import (
+    assert_yaml_export_attributes,
+)
+
 from .common import CommonTest
 
 
@@ -313,3 +317,54 @@ class TestProject(CommonTest):
 
         # Manager should be able to read project again
         self.assertEqual(manager_project.browse(self.project.id).name, "Test Project")
+
+    def test_yaml_export_attributes(self):
+        """Git models use the same yaml_export rules as the other YAML models."""
+        assert_yaml_export_attributes(
+            self,
+            [
+                "cx.tower.git.project",
+                "cx.tower.git.source",
+                "cx.tower.git.remote",
+                "cx.tower.git.repo",
+            ],
+        )
+
+    def test_project_with_remotes_imports_into_empty_database(self):
+        """A project file recreates its source and remote when they are gone."""
+        repo = self.Repo.create(
+            {"url": "https://github.com/cetmix-test/yaml-flat-repo.git"}
+        )
+        project = self.GitProject.create({"name": "YAML Flat Git Project"})
+        source = self.GitSource.create(
+            {"name": "YAML Flat Source", "git_project_id": project.id}
+        )
+        remote = self.GitRemote.create(
+            {
+                "repo_id": repo.id,
+                "source_id": source.id,
+                "head_type": "branch",
+                "head": "main",
+            }
+        )
+        wizard = (
+            self.env["cx.tower.yaml.export.wiz"]
+            .with_context(active_model=project._name, active_ids=project.ids)
+            .create({"include_related_records": True})
+        )
+        wizard.onchange_include_related_records()
+        code = wizard.yaml_code
+        project_reference = project.reference
+        source_reference = source.reference
+        remote_reference = remote.reference
+        project.unlink()
+        importer = self.env["cx.tower.yaml.import.wiz"].create(
+            {"if_record_exists": "create"}
+        )
+        importer.yaml_code = code
+        importer.action_import_yaml()
+        restored = self.GitProject.get_by_reference(project_reference)
+        self.assertEqual(restored.source_ids.reference, source_reference)
+        self.assertEqual(restored.source_ids.remote_ids.reference, remote_reference)
+        self.assertEqual(restored.source_ids.remote_ids.repo_id, repo)
+        self.assertEqual(restored.source_ids.remote_ids.head, "main")

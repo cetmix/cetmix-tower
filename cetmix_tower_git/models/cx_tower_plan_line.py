@@ -17,21 +17,12 @@ class CxTowerPlanLine(models.Model):
         " New setups should link the Git Project to the Jet and write"
         " it with Upload Git Project. The __git_project__ custom value"
         " is also legacy.",
+        yaml_export="include",
     )
     is_make_copy = fields.Boolean(
         string="Make a Copy",
         help="Legacy: create a copy of the Git Project instead of"
         " linking the file to the existing one. Never touches a Jet's"
         " Git Project.",
+        yaml_export=True,
     )
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "git_project_id",
-            "is_make_copy",
-        ]
-        return res

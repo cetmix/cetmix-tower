@@ -18,20 +18,24 @@ class CxTowerWebhook(models.Model):
     ]
     _description = "Webhook"
 
+    name = fields.Char(yaml_export=True)
     active = fields.Boolean(
         default=True,
         string="Enabled",
+        yaml_export=True,
     )
     authenticator_id = fields.Many2one(
         comodel_name="cx.tower.webhook.authenticator",
         required=True,
         help="Select an Authenticator used for this webhook",
+        yaml_export="include",
     )
     endpoint = fields.Char(
         required=True,
         copy=False,
         help="Webhook endpoint. The complete URL will be "
         "<your_tower_url>/cetmix_tower_webhooks/<endpoint>",
+        yaml_export=True,
     )
     full_url = fields.Char(
         compute="_compute_full_url",
@@ -45,6 +49,7 @@ class CxTowerWebhook(models.Model):
         default="post",
         required=True,
         help="Select the HTTP method for this webhook",
+        yaml_export=True,
     )
     content_type = fields.Selection(
         [
@@ -56,6 +61,7 @@ class CxTowerWebhook(models.Model):
         required=True,
         help="How the payload is expected to be sent to this webhook: "
         "as JSON body or as URL-encoded form data",
+        yaml_export=True,
     )
     user_id = fields.Many2one(
         comodel_name="res.users",
@@ -76,7 +82,9 @@ class CxTowerWebhook(models.Model):
         relation="cx_tower_webhook_variable_rel",
         column1="webhook_id",
         column2="variable_id",
+        yaml_export="include",
     )
+    secret_ids = fields.Many2many(yaml_export="include")
 
     _sql_constraints = [
         (
@@ -154,22 +162,6 @@ class CxTowerWebhook(models.Model):
             },
         }
         res.update(super()._get_python_eval_odoo_objects(**kwargs))
-        return res
-
-    def _get_fields_for_yaml(self):
-        """Override to add fields to YAML export."""
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "active",
-            "authenticator_id",
-            "endpoint",
-            "method",
-            "code",
-            "content_type",
-            "variable_ids",
-            "secret_ids",
-        ]
         return res
 
     def execute(self, payload=None, raise_on_error=True, **kwargs):

@@ -106,12 +106,12 @@ class TestTowerYamlMixin(TransactionCase):
         """
 
         # Patch method to return "access_level" field too
-        def _get_fields_for_yaml(self):
-            return ["access_level", "name", "reference"]
+        def _get_yaml_field_names(self):
+            return ["reference", "name", "access_level"]
 
         with patch(
-            "odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin.CxTowerYamlMixin._get_fields_for_yaml",
-            _get_fields_for_yaml,
+            "odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin.CxTowerYamlMixin._get_yaml_field_names",
+            _get_yaml_field_names,
         ):
             source_values = {
                 "access_level": "3",
@@ -148,12 +148,12 @@ class TestTowerYamlMixin(TransactionCase):
         """
 
         # Patch method to return "access_level" field too
-        def _get_fields_for_yaml(self):
-            return ["access_level", "name", "reference"]
+        def _get_yaml_field_names(self):
+            return ["reference", "name", "access_level"]
 
         with patch(
-            "odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin.CxTowerYamlMixin._get_fields_for_yaml",
-            _get_fields_for_yaml,
+            "odoo.addons.cetmix_tower_yaml.models.cx_tower_yaml_mixin.CxTowerYamlMixin._get_yaml_field_names",
+            _get_yaml_field_names,
         ):
             # -- 1 --
             # Test regular flow
@@ -218,7 +218,11 @@ class TestTowerYamlMixin(TransactionCase):
         }
 
         result_values = self.Command.with_context(
-            yaml_deferred_m2o_queue=deferred_queue
+            yaml_deferred_m2o_queue=deferred_queue,
+            yaml_file_record_keys={
+                ("cx.tower.jet.template", "future_jet_template"),
+                ("cx.tower.jet.waypoint.template", "future_waypoint_template"),
+            },
         )._post_process_yaml_dict_values(values)
 
         self.assertNotIn(
@@ -302,7 +306,11 @@ class TestTowerYamlMixin(TransactionCase):
         }
 
         result_values = self.JetTemplate.with_context(
-            yaml_deferred_x2m_queue=deferred_queue
+            yaml_deferred_x2m_queue=deferred_queue,
+            yaml_import_record_reference=values["reference"],
+            yaml_file_record_keys={
+                ("cx.tower.jet.template", "future_template_dependency_target"),
+            },
         )._post_process_yaml_dict_values(values)
 
         self.assertEqual(
@@ -376,7 +384,11 @@ class TestTowerYamlMixin(TransactionCase):
         }
 
         result_values = self.ScheduledTask.with_context(
-            yaml_deferred_x2m_queue=deferred_queue
+            yaml_deferred_x2m_queue=deferred_queue,
+            yaml_import_record_reference=scheduled_task_values["reference"],
+            yaml_file_record_keys={
+                ("cx.tower.variable.value", "future_variable_value_ref"),
+            },
         )._post_process_yaml_dict_values(scheduled_task_values)
 
         self.assertEqual(
@@ -543,21 +555,17 @@ class TestTowerYamlMixin(TransactionCase):
         tag_pepe_values = self.tag_pepe.with_context(
             no_yaml_service_fields=True
         )._prepare_record_for_yaml()
-        command = (
-            self.env["cx.tower.command"]
-            .create(
-                {
-                    "name": "Command test m2o",
-                    "action": "file_using_template",
-                    "file_template_id": file_template.id,
-                    "tag_ids": [(4, self.tag_doge.id), (4, self.tag_pepe.id)],
-                }
-            )
-            .with_context(explode_related_record=True)
-        )  # and this is the actual trigger
+        command = self.env["cx.tower.command"].create(
+            {
+                "name": "Command test m2o",
+                "action": "file_using_template",
+                "file_template_id": file_template.id,
+                "tag_ids": [(4, self.tag_doge.id), (4, self.tag_pepe.id)],
+            }
+        )
 
         # -- 1 --
-        # Record -> Yaml
+        # Record -> Yaml. Included records are references.
 
         # -- 1.1 --
         # Many2one
@@ -566,9 +574,7 @@ class TestTowerYamlMixin(TransactionCase):
             value=(command.file_template_id.id, command.file_template_id.name),
             record_mode=True,
         )
-        self.assertEqual(
-            result, file_template_values, "Reference was not resolved correctly"
-        )
+        self.assertEqual(result, "test_m2o", "Included record must be a reference")
 
         # -- 1.2 --
         # Many2many
@@ -577,9 +583,7 @@ class TestTowerYamlMixin(TransactionCase):
             value=[self.tag_doge.id, self.tag_pepe.id],
             record_mode=True,
         )
-        self.assertEqual(len(result), 2, "Must be 2 records")
-        self.assertIn(tag_doge_values, result, "Record ID was not resolved correctly")
-        self.assertIn(tag_pepe_values, result, "Record ID was not resolved correctly")
+        self.assertEqual(result, ["doge", "pepe"], "Included tags must be references")
 
         # -- 2 --
         # Yaml -> Record

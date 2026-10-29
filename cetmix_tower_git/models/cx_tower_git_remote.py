@@ -23,10 +23,14 @@ class CxTowerGitRemote(models.Model):
 
     active = fields.Boolean(related="source_id.active", store=True, readonly=True)
     enabled = fields.Boolean(
-        default=True, help="Enable in configuration and exported to files"
+        default=True,
+        help="Enable in configuration and exported to files",
+        yaml_export=True,
     )
-    sequence = fields.Integer(default=10)
-    name = fields.Char(compute="_compute_name", store=True, default="remote")
+    sequence = fields.Integer(default=10, yaml_export=True)
+    name = fields.Char(
+        compute="_compute_name", store=True, default="remote", yaml_export=True
+    )
     source_id = fields.Many2one(
         comodel_name="cx.tower.git.source",
         required=True,
@@ -47,6 +51,7 @@ class CxTowerGitRemote(models.Model):
         ondelete="restrict",
         help="If selected, the remote URL will be filled from the"
         " repo settings based on the remote protocol",
+        yaml_export="include",
     )
     repo_provider = fields.Selection(
         related="repo_id.provider",
@@ -77,11 +82,13 @@ class CxTowerGitRemote(models.Model):
             ("commit", "Commit"),
         ],
         required=True,
+        yaml_export=True,
     )
     head = fields.Char(
         help="Git remote head. Link to branch, PR, commit or commit hash.",
         required=True,
         index=True,
+        yaml_export=True,
     )
 
     def _get_default_url_protocol(self):
@@ -179,21 +186,6 @@ class CxTowerGitRemote(models.Model):
     def _get_pre_populated_model_data(self):
         res = super()._get_pre_populated_model_data()
         res.update({"cx.tower.git.remote": ["cx.tower.git.source", "source_id"]})
-        return res
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "name",
-            "enabled",
-            "sequence",
-            "repo_id",
-            "head",
-            "head_type",
-        ]
         return res
 
     # ------------------------------

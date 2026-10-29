@@ -48,6 +48,7 @@ class CxTowerGitRepo(models.Model):
         inverse="_inverse_url",
         required=True,
         compute_sudo=True,
+        yaml_export=True,
     )
     url_ssh = fields.Char(
         string="SSH URL",
@@ -62,7 +63,10 @@ class CxTowerGitRepo(models.Model):
         compute_sudo=True,
     )
     is_private = fields.Boolean(
-        string="Private", default=False, help="Indicates if the repository is private"
+        string="Private",
+        default=False,
+        help="Indicates if the repository is private",
+        yaml_export=True,
     )
     provider = fields.Selection(
         selection="_selection_provider",
@@ -88,6 +92,7 @@ class CxTowerGitRepo(models.Model):
         " HTTPS URLs use environment placeholders"
         " ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN,"
         " $BITBUCKET_TOKEN).",
+        yaml_export="include",
     )
     remote_ids = fields.One2many(
         comodel_name="cx.tower.git.remote",
@@ -405,15 +410,3 @@ class CxTowerGitRepo(models.Model):
             provider = "github"
 
         return provider
-
-    # ------------------------------
-    # YAML mixin methods
-    # ------------------------------
-    def _get_fields_for_yaml(self):
-        res = super()._get_fields_for_yaml()
-        res += [
-            "url",
-            "is_private",
-            "secret_id",
-        ]
-        return res

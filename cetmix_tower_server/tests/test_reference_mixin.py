@@ -308,3 +308,208 @@ class TestTowerReference(TestTowerCommon):
             "no_plan_line_3",
             "Missing reference should be generated",
         )
+
+    def _prepare_dependent_reference_cases(self):
+        """Create each parent that rewrites child references on its own save.
+
+        Child references are set explicitly. They differ from the generated
+        ``{parent}_model_index`` pattern, which is what a same-reference save
+        used to write back.
+
+        Parents come from ``_get_dependent_model_relation_fields``:
+
+        - flight plan: lines, and through them line actions and the action's
+          variable values
+        - flight plan line: actions
+        - flight plan line action: variable values
+        - variable: values
+        - server template: variable values
+        - server: variable values and files
+
+        Variable options, jet actions, git sources and git remotes generate a
+        reference from the parent when they are created. Their parent does not
+        list them as dependent records, so a later parent save does not rename
+        them.
+
+        Returns:
+            list[tuple]: ``(label, parent, children)`` for each parent.
+        """
+        cases = []
+
+        plan = self.Plan.create(
+            {"name": "Child ref plan", "reference": "child_ref_plan"}
+        )
+        line = self.plan_line.create(
+            {
+                "plan_id": plan.id,
+                "sequence": 10,
+                "command_id": self.command_list_dir.id,
+                "reference": "keep_plan_line",
+            }
+        )
+        action = self.plan_line_action.create(
+            {
+                "line_id": line.id,
+                "sequence": 1,
+                "condition": "==",
+                "value_char": "0",
+                "action": "n",
+                "reference": "keep_plan_action",
+            }
+        )
+        plan_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_path.id,
+                "value_char": "plan-value",
+                "plan_line_action_id": action.id,
+                "reference": "keep_plan_value",
+            }
+        )
+        cases.append(("flight plan", plan, [line, action, plan_value]))
+
+        line_plan = self.Plan.create(
+            {"name": "Child ref line plan", "reference": "child_ref_line_plan"}
+        )
+        line_parent = self.plan_line.create(
+            {
+                "plan_id": line_plan.id,
+                "sequence": 20,
+                "command_id": self.command_list_dir.id,
+                "reference": "keep_line_parent",
+            }
+        )
+        line_action = self.plan_line_action.create(
+            {
+                "line_id": line_parent.id,
+                "sequence": 1,
+                "condition": "==",
+                "value_char": "0",
+                "action": "n",
+                "reference": "keep_line_action",
+            }
+        )
+        cases.append(("flight plan line", line_parent, line_action))
+
+        action_plan = self.Plan.create(
+            {"name": "Child ref action plan", "reference": "child_ref_action_plan"}
+        )
+        action_line = self.plan_line.create(
+            {
+                "plan_id": action_plan.id,
+                "sequence": 10,
+                "command_id": self.command_list_dir.id,
+                "reference": "keep_action_line",
+            }
+        )
+        action_parent = self.plan_line_action.create(
+            {
+                "line_id": action_line.id,
+                "sequence": 2,
+                "condition": "!=",
+                "value_char": "1",
+                "action": "n",
+                "reference": "keep_action_parent",
+            }
+        )
+        action_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_os.id,
+                "value_char": "action-value",
+                "plan_line_action_id": action_parent.id,
+                "reference": "keep_action_value",
+            }
+        )
+        cases.append(("flight plan line action", action_parent, action_value))
+
+        variable = self.Variable.create(
+            {"name": "Child ref variable", "reference": "child_ref_variable"}
+        )
+        variable_value = self.VariableValue.create(
+            {
+                "variable_id": variable.id,
+                "value_char": "global-value",
+                "reference": "keep_variable_value",
+            }
+        )
+        cases.append(("variable", variable, variable_value))
+
+        template = self.ServerTemplate.create(
+            {
+                "name": "Child ref template",
+                "reference": "child_ref_template",
+                "ssh_port": 22,
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+        template_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_url.id,
+                "value_char": "template-value",
+                "server_template_id": template.id,
+                "reference": "keep_template_value",
+            }
+        )
+        cases.append(("server template", template, template_value))
+
+        server = self.Server.create(
+            {
+                "name": "Child ref server",
+                "reference": "child_ref_server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+        server_value = self.VariableValue.create(
+            {
+                "variable_id": self.variable_dir.id,
+                "value_char": "server-value",
+                "server_id": server.id,
+                "reference": "keep_server_value",
+            }
+        )
+        server_file = self.File.create(
+            {
+                "name": "keep.txt",
+                "reference": "keep_server_file",
+                "source": "server",
+                "server_id": server.id,
+                "server_dir": "/var/tmp",
+            }
+        )
+        cases.append(("server", server, [server_value, server_file]))
+        return cases
+
+    def test_same_reference_keeps_dependent_references(self):
+        """Saving the current reference must not rename dependent records."""
+        for label, parent, children in self._prepare_dependent_reference_cases():
+            self.assertTrue(children, f"{label} has no dependent records")
+            references_before = {child.id: child.reference for child in children}
+            parent.write({"reference": parent.reference})
+            for child in children:
+                self.assertEqual(
+                    child.reference,
+                    references_before[child.id],
+                    f"{label} child reference must stay when the parent "
+                    "reference is unchanged",
+                )
+
+    def test_changed_reference_updates_dependent_references(self):
+        """A new parent reference still renames its dependent records."""
+        for label, parent, children in self._prepare_dependent_reference_cases():
+            references_before = {child.id: child.reference for child in children}
+            new_reference = f"{parent.reference}_renamed"
+            parent.write({"reference": new_reference})
+            self.assertEqual(parent.reference, new_reference)
+            for child in children:
+                self.assertNotEqual(
+                    child.reference,
+                    references_before[child.id],
+                    f"{label} child reference must follow the new parent reference",
+                )

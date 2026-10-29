@@ -3,6 +3,7 @@ from . import test_source
 from . import test_project
 from . import test_file_rel
 from . import test_server
+from . import test_server_yaml
 from . import test_repo
 from . import test_jet_git_project
 from . import test_git_repo_lines
