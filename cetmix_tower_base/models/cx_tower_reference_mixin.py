@@ -93,6 +93,10 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Updates record, auto-correcting or validating 'reference'
         based on 'name' or existing value.
 
+        Dependent records are renamed only when this record's reference
+        changes. Writing the current reference leaves their references in
+        place, so a later import can still find them.
+
         Add `reference_mixin_override` context key to skip the reference check
 
         Args:
@@ -101,6 +105,12 @@ class CxTowerReferenceMixin(models.AbstractModel):
         Returns:
             Result of the super `write` call.
         """
+        references_before = (
+            {record.id: record.reference for record in self}
+            if "reference" in vals
+            else {}
+        )
+
         if not self._context.get("reference_mixin_override") and "reference" in vals:
             reference = vals.get("reference", False)
             if not reference:
@@ -124,11 +134,13 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
         res = super().write(vals)
 
-        # Update references of dependent models
         if "reference" in vals:
-            self._update_dependent_model_references()
-            # Clear caches
-            self.env.registry.clear_cache()
+            changed = self.filtered(
+                lambda record: record.reference != references_before.get(record.id)
+            )
+            if changed:
+                changed._update_dependent_model_references()
+                self.env.registry.clear_cache()
         return res
 
     def unlink(self):

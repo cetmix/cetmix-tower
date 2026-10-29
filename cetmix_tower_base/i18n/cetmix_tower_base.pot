@@ -250,6 +250,8 @@ msgid "Reference"
 msgstr ""
 
 #. module: cetmix_tower_base
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_drone_controller_reference_unique
+#: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_drone_skill_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_command_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_file_reference_unique
 #: model:ir.model.constraint,message:cetmix_tower_base.constraint_cx_tower_file_template_reference_unique
