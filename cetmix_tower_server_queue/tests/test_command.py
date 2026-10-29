@@ -26,6 +26,15 @@ class TestTowerCommand(TestTowerCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Only the queue backend: another installed deferral backend
+        # (e.g. a drone) would take the commands before the queue
+        cls.startClassPatcher(
+            patch.object(
+                type(cls.Server),
+                "_get_command_defer_handlers",
+                lambda self: [(50, self._try_defer_command_queue)],
+            )
+        )
         # Set command timeout to 10 seconds
         cls.env["ir.config_parameter"].sudo().set_param(
             "cetmix_tower_server.command_timeout", "10"

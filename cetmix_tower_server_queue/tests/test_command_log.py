@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from odoo.addons.cetmix_tower_server.tests.common import TestTowerCommon
 from odoo.addons.queue_job.job import Job
 
@@ -6,6 +8,19 @@ class TestTowerCommand(TestTowerCommon):
     """
     Test cases for command log state on queue_job failure
     """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Only the queue backend: another installed deferral backend
+        # (e.g. a drone) would take the commands before the queue
+        cls.startClassPatcher(
+            patch.object(
+                type(cls.Server),
+                "_get_command_defer_handlers",
+                lambda self: [(50, self._try_defer_command_queue)],
+            )
+        )
 
     def test_command_log_state_on_job_fail(self):
         command = self.env["cx.tower.command"].create(
