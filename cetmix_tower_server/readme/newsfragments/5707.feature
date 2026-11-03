@@ -1,0 +1,1 @@
+Jet Template: add the editable Allowed Variables field. It is computed from what the template uses and narrows variable pickers in Jet Template, Jet, Create Jet and Clone Jet screens. An empty list allows all variables.

@@ -90,9 +90,13 @@
                         string="that will use"
                     />
                 </group>
+                <field name="allowed_variable_domain" invisible="1" />
                 <field name="line_ids" invisible="use_custom_variables == 'n'">
                     <list editable="bottom">
-                        <field name="variable_id" />
+                        <field
+                            name="variable_id"
+                            domain="parent.allowed_variable_domain or []"
+                        />
                         <field name="variable_type" column_invisible="True" />
                         <field
                             name="value_char"

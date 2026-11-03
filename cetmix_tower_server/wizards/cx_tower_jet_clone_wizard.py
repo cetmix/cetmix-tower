@@ -52,6 +52,10 @@ class CxTowerJetCloneWizard(models.TransientModel):
         "cx.tower.jet.state", required=True, help="Requested state of the jet"
     )
     state_domain = fields.Binary(compute="_compute_state_domain")
+    allowed_variable_domain = fields.Binary(
+        compute="_compute_allowed_variable_domain",
+        help="Domain for variables",
+    )
     use_custom_variables = fields.Selection(
         selection=[("n", "default settings"), ("y", "custom settings")],
         default="n",
@@ -73,6 +77,15 @@ class CxTowerJetCloneWizard(models.TransientModel):
                 continue
             if wizard.jet_id and wizard.jet_id.partner_id:
                 wizard.partner_id = wizard.jet_id.partner_id.id
+
+    @api.depends("jet_template_id.allowed_variable_ids")
+    def _compute_allowed_variable_domain(self):
+        """Empty domain allows all variables"""
+        for wizard in self:
+            allowed_variables = wizard.jet_template_id.allowed_variable_ids
+            wizard.allowed_variable_domain = (
+                [("id", "in", allowed_variables.ids)] if allowed_variables else []
+            )
 
     @api.depends("jet_template_id")
     def _compute_state_domain(self):

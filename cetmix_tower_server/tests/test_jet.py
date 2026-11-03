@@ -1748,3 +1748,22 @@ class TestTowerJet(TestTowerJetsCommon):
             finish_date_first,
             "Second call should not change finish_date (guard)",
         )
+
+    def test_allowed_variable_domain(self):
+        """Jet variable domain follows the allowed variables of its template"""
+        jet = self.Jet.create(
+            {
+                "name": "Allowed Variables Jet",
+                "reference": "allowed_variables_jet",
+                "jet_template_id": self.jet_template_test.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+        self.assertEqual(jet.allowed_variable_domain, [])
+
+        variable = self.Variable.create({"name": "Jet Allowed Variable"})
+        self.jet_template_test.allowed_variable_ids = variable
+        self.assertEqual(jet.allowed_variable_domain, [("id", "in", variable.ids)])
+
+        self.jet_template_test.allowed_variable_ids = False
+        self.assertEqual(jet.allowed_variable_domain, [])

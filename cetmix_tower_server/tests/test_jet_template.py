@@ -1,6 +1,8 @@
 # Copyright (C) 2024 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import re
+
 from odoo.exceptions import ValidationError
 
 from .common_jets import TestTowerJetsCommon
@@ -3224,3 +3226,428 @@ class TestTowerJetTemplate(TestTowerJetsCommon):
             self.server_test_2,
             "File should be linked to server_test_2",
         )
+
+
+class TestTowerJetTemplateAllowedVariables(TestTowerJetsCommon):
+    """Test `allowed_variable_ids` of the jet template"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.PlanLine = cls.env["cx.tower.plan.line"]
+        cls.template = cls.JetTemplate.create(
+            {"name": "Allowed Vars", "reference": "allowed_vars"}
+        )
+
+    @classmethod
+    def _var(cls, reference):
+        """Get or create a variable with the given reference
+
+        Args:
+            reference (Char): Variable reference
+
+        Returns:
+            cx.tower.variable(): Existing or new variable
+        """
+        return cls.Variable.search([("reference", "=", reference)]) or (
+            cls.Variable.create({"name": reference, "reference": reference})
+        )
+
+    @classmethod
+    def _vars_in(cls, *texts):
+        """Create variables referenced as `{{ reference }}` in the texts
+
+        Args:
+            *texts (Char): Texts that may contain variable references
+        """
+        for text in texts:
+            for reference in re.findall(r"{{\s*(\w+)\s*}}", text or ""):
+                cls._var(reference)
+
+    def _command(self, code, **vals):
+        self._vars_in(code)
+        return self.Command.create(
+            {"name": f"cmd {code}", "action": "ssh_command", "code": code, **vals}
+        )
+
+    def _plan(self, name, commands=()):
+        plan = self.Plan.create({"name": name})
+        for command in commands:
+            self.PlanLine.create({"plan_id": plan.id, "command_id": command.id})
+        return plan
+
+    def _refs(self, template=None):
+        return set((template or self.template).allowed_variable_ids.mapped("reference"))
+
+    def test_empty_template(self):
+        """Nothing is used: no variables, no restrictions"""
+        self.assertFalse(self.template.allowed_variable_ids)
+        self.assertEqual(self.template.allowed_variable_domain, [])
+
+    def test_variable_value(self):
+        """Variable of a value and variables referenced in its value"""
+        self._vars_in("{{ av_in_value }}")
+        self.template.variable_value_ids = [
+            (
+                0,
+                0,
+                {
+                    "variable_id": self._var("av_value").id,
+                    "value_char": "{{ av_in_value }} x",
+                },
+            )
+        ]
+        self.assertIn("av_value", self._refs())
+        self.assertIn("av_in_value", self._refs())
+
+    def test_plan_sources(self):
+        """Plan line condition, command code, command file template,
+        plan line action value"""
+        self._vars_in("{{ av_ft }}", "{{ av_cond }}", "{{ av_action_inner }}")
+        file_template = self.FileTemplate.create(
+            {
+                "name": "av ft",
+                "file_name": "av.txt",
+                "code": "{{ av_ft }}",
+            }
+        )
+        command = self._command("echo {{ av_cmd }}")
+        file_command = self.Command.create(
+            {
+                "name": "av push",
+                "action": "file_using_template",
+                "file_template_id": file_template.id,
+            }
+        )
+        plan = self._plan("av plan", [command, file_command])
+        line = plan.line_ids[0]
+        line.condition = "{{ av_cond }} == 1"
+        self.PlanLineAction.create(
+            {
+                "line_id": line.id,
+                "condition": "==",
+                "value_char": "0",
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self._var("av_action").id,
+                            "value_char": "{{ av_action_inner }}",
+                        },
+                    )
+                ],
+            }
+        )
+        self.template.plan_install_id = plan
+        self.assertEqual(
+            self._refs(),
+            {
+                "av_cmd",
+                "av_ft",
+                "av_cond",
+                "av_action",
+                "av_action_inner",
+            },
+        )
+
+    def test_all_plan_fields(self):
+        """Every flight plan field of the template is collected"""
+        fields_plans = {}
+        for name in (
+            "plan_install_id",
+            "plan_uninstall_id",
+            "plan_clone_same_server_id",
+            "plan_clone_different_server_id",
+        ):
+            ref = f"av_{name}"
+            fields_plans[name] = self._plan(ref, [self._command(f"{{{{ {ref} }}}}")])
+        self.template.write(fields_plans)
+        expected = {f"av_{name}" for name in fields_plans}
+
+        self.JetAction.create(
+            {
+                "name": "av action",
+                "reference": "av_action_ref",
+                "jet_template_id": self.template.id,
+                "state_from_id": self.state_a.id,
+                "state_to_id": self.state_b.id,
+                "state_transit_id": self.state_starting.id,
+                "plan_id": self._plan("av_a", [self._command("{{ av_act }}")]).id,
+            }
+        )
+        expected.add("av_act")
+
+        waypoint_vals = {"name": "av wp", "jet_template_id": self.template.id}
+        for name in ("create", "arrive", "leave", "delete"):
+            waypoint_vals[f"plan_{name}_id"] = self._plan(
+                f"av_wp_{name}", [self._command(f"{{{{ av_wp_{name} }}}}")]
+            ).id
+            expected.add(f"av_wp_{name}")
+        self.env["cx.tower.jet.waypoint.template"].create(waypoint_vals)
+
+        self.ScheduledTask.create(
+            {
+                "name": "av task",
+                "action": "plan",
+                "plan_id": self._plan("av_t", [self._command("{{ av_task }}")]).id,
+                "jet_template_ids": [(4, self.template.id)],
+            }
+        )
+        expected.add("av_task")
+        self.assertEqual(self._refs(), expected)
+
+    def test_nested_plans_two_levels(self):
+        """Variable change in a plan nested two levels deep is picked up"""
+        command_deep = self._command("{{ av_deep }}")
+        plan_deep = self._plan("av deep", [command_deep])
+        plan_mid = self._plan(
+            "av mid",
+            [
+                self.Command.create(
+                    {
+                        "name": "run deep",
+                        "action": "plan",
+                        "flight_plan_id": plan_deep.id,
+                    }
+                )
+            ],
+        )
+        plan_top = self._plan(
+            "av top",
+            [
+                self.Command.create(
+                    {
+                        "name": "run mid",
+                        "action": "plan",
+                        "flight_plan_id": plan_mid.id,
+                    }
+                )
+            ],
+        )
+        self.template.plan_install_id = plan_top
+        self.assertEqual(self._refs(), {"av_deep"})
+
+        self._vars_in("{{ av_deep_new }}", "{{ av_deep_line }}")
+        command_deep.code = "{{ av_deep_new }}"
+        self.assertEqual(self._refs(), {"av_deep_new"})
+
+        # New line in the deepest plan
+        self.PlanLine.create(
+            {
+                "plan_id": plan_deep.id,
+                "command_id": self._command("{{ av_deep_line }}").id,
+            }
+        )
+        self.assertEqual(self._refs(), {"av_deep_new", "av_deep_line"})
+
+        # Plan nested later is picked up
+        plan_new = self._plan("av new", [self._command("{{ av_new }}")])
+        run_mid = plan_mid.line_ids.command_id
+        run_mid.flight_plan_id = plan_new
+        self.assertEqual(self._refs(), {"av_new"})
+
+    def test_nested_plans_deep_chain(self):
+        """A long chain of plans created in one transaction does not exhaust
+        the Python stack"""
+        plan = self._plan("av chain 0", [self._command("{{ av_chain }}")])
+        for level in range(1, 200):
+            plan = self._plan(
+                f"av chain {level}",
+                [
+                    self.Command.create(
+                        {
+                            "name": f"run chain {level}",
+                            "action": "plan",
+                            "flight_plan_id": plan.id,
+                        }
+                    )
+                ],
+            )
+        self.template.plan_install_id = plan
+        self.assertEqual(self._refs(), {"av_chain"})
+
+    def test_nested_plans_long_cycle(self):
+        """A long cycle of plans, all waiting for recomputation, does not
+        exhaust the Python stack"""
+        command = self._command("echo placeholder")
+        bottom = self._plan("av long 0", [command])
+        top = bottom
+        for level in range(1, 150):
+            top = self._plan(
+                f"av long {level}",
+                [
+                    self.Command.create(
+                        {
+                            "name": f"run long {level}",
+                            "action": "plan",
+                            "flight_plan_id": top.id,
+                        }
+                    )
+                ],
+            )
+        # Plan lines are checked for cycles, commands are not. Close the cycle
+        # by turning the command of the bottom plan into a call of the top plan
+        command.write({"action": "plan", "flight_plan_id": top.id})
+        self.PlanLine.create(
+            {
+                "plan_id": bottom.id,
+                "command_id": self._command("{{ av_cycle_long }}").id,
+            }
+        )
+        self.template.plan_install_id = top
+        self.assertEqual(self._refs(), {"av_cycle_long"})
+
+    def test_plan_cycle(self):
+        """Plans running each other do not loop forever"""
+        plan_a = self._plan("av cycle a", [self._command("{{ av_cycle_a }}")])
+        plan_b = self._plan("av cycle b", [self._command("{{ av_cycle_b }}")])
+        run_b = self.Command.create(
+            {"name": "av run b", "action": "plan", "flight_plan_id": plan_b.id}
+        )
+        run_a = self.Command.create(
+            {"name": "av run a", "action": "plan", "flight_plan_id": plan_a.id}
+        )
+        self.PlanLine.create({"plan_id": plan_a.id, "command_id": run_b.id})
+        placeholder = self._command("echo placeholder")
+        self.PlanLine.create({"plan_id": plan_b.id, "command_id": placeholder.id})
+        # The constraint forbids cycles. Make one with SQL
+        self.env.cr.execute(
+            "UPDATE cx_tower_plan_line SET command_id = %s "
+            "WHERE plan_id = %s AND command_id = %s",
+            (run_a.id, plan_b.id, placeholder.id),
+        )
+        self.env.invalidate_all()
+        self.template.plan_install_id = plan_a
+        plan_a._compute_all_variable_ids()
+        self.assertEqual(
+            set(plan_a.all_variable_ids.mapped("reference")),
+            {"av_cycle_a", "av_cycle_b"},
+        )
+
+    def test_commands_outside_plans(self):
+        """Server log command and file template, scheduled task command"""
+        self._vars_in("{{ av_log_ft }}", "{{ av_log_ft2 }}")
+        file_template = self.FileTemplate.create(
+            {"name": "av log ft", "file_name": "l.log", "code": "{{ av_log_ft }}"}
+        )
+        self._vars_in("{{ av_log_cmd_ft }}")
+        command_ft = self.Command.create(
+            {
+                "name": "av cmd ft",
+                "action": "file_using_template",
+                "file_template_id": file_template.id,
+                "code": "{{ av_log_cmd_ft }}",
+            }
+        )
+        self.ServerLog.create(
+            {
+                "name": "av log cmd",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.template.id,
+                "log_type": "command",
+                "command_id": command_ft.id,
+                "access_level": "1",
+            }
+        )
+        file_template_2 = self.FileTemplate.create(
+            {"name": "av log ft2", "file_name": "l2.log", "code": "{{ av_log_ft2 }}"}
+        )
+        self.ServerLog.create(
+            {
+                "name": "av log file",
+                "server_id": self.server_test_1.id,
+                "jet_template_id": self.template.id,
+                "log_type": "file",
+                "file_template_id": file_template_2.id,
+                "access_level": "1",
+            }
+        )
+        self.ScheduledTask.create(
+            {
+                "name": "av task cmd",
+                "action": "command",
+                "command_id": self._command("{{ av_task_cmd }}").id,
+                "jet_template_ids": [(4, self.template.id)],
+            }
+        )
+        self.assertEqual(
+            self._refs(),
+            {"av_log_ft", "av_log_cmd_ft", "av_log_ft2", "av_task_cmd"},
+        )
+
+    def test_file(self):
+        """Variables of a file of the template"""
+        self._vars_in("{{ av_file_name }}", "{{ av_file_code }}")
+        self.File.create(
+            {
+                "name": "av_{{ av_file_name }}.txt",
+                "source": "tower",
+                "jet_template_id": self.template.id,
+                "code": "{{ av_file_code }}",
+            }
+        )
+        self.assertEqual(self._refs(), {"av_file_name", "av_file_code"})
+
+    def test_other_template_not_collected(self):
+        """Variables of other templates and required templates are ignored"""
+        other = self.JetTemplate.create({"name": "av other", "reference": "av_other"})
+        other.plan_install_id = self._plan("av o", [self._command("{{ av_other }}")])
+        self.template.template_requires_ids = [
+            (
+                0,
+                0,
+                {
+                    "template_required_id": other.id,
+                    "state_required_id": self.state_running.id,
+                },
+            )
+        ]
+        self.assertFalse(self.template.allowed_variable_ids)
+        self.assertEqual(self._refs(other), {"av_other"})
+
+    def test_domain(self):
+        """Domain is empty without variables and restricts otherwise"""
+        self.assertEqual(self.template.allowed_variable_domain, [])
+        variable = self._var("av_domain")
+        self.template.allowed_variable_ids = variable
+        self.assertEqual(
+            self.template.allowed_variable_domain, [("id", "in", variable.ids)]
+        )
+        self.template.allowed_variable_ids = False
+        self.assertEqual(self.template.allowed_variable_domain, [])
+
+    def test_manual_change_survives_until_dependency_changes(self):
+        """Manual list stays until a dependency changes, then is recomputed"""
+        command = self._command("{{ av_man }}")
+        self.template.plan_install_id = self._plan("av man", [command])
+        manual = self._var("av_manual")
+        self.template.allowed_variable_ids = manual
+        self.assertEqual(self._refs(), {"av_manual"})
+        self.template.invalidate_recordset()
+        self.assertEqual(self._refs(), {"av_manual"})
+
+        self._vars_in("{{ av_man2 }}")
+        command.code = "{{ av_man2 }}"
+        self.assertEqual(self._refs(), {"av_man2"})
+
+    def test_value_written_on_create_is_kept(self):
+        """Value passed to create() is not overwritten by the compute"""
+        variable = self._var("av_create")
+        template = self.JetTemplate.create(
+            {
+                "name": "av created",
+                "reference": "av_created",
+                "allowed_variable_ids": [(6, 0, variable.ids)],
+            }
+        )
+        self.assertEqual(self._refs(template), {"av_create"})
+
+    def test_copy_recomputes(self):
+        """Copied template gets its own computed list"""
+        self.template.variable_value_ids = [
+            (0, 0, {"variable_id": self._var("av_copy").id})
+        ]
+        self.template.allowed_variable_ids = self._var("av_manual_copy")
+        copy = self.template.copy({"reference": "av_copy_template"})
+        self.assertEqual(self._refs(copy), {"av_copy"})

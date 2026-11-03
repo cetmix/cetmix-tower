@@ -79,3 +79,17 @@ class TestJetCreateWizard(TestTowerJetsCommon):
             custom_value,
             "Created jet should keep custom variable values from the wizard",
         )
+
+    def test_allowed_variable_domain(self):
+        """Wizard variable domain follows the allowed variables of the template"""
+        wizard_model = self.env["cx.tower.jet.create.wizard"]
+        wizard = wizard_model.create({"jet_template_id": self.jet_template_test.id})
+        self.assertEqual(wizard.allowed_variable_domain, [])
+
+        variable = self.Variable.create({"name": "Wizard Allowed Variable"})
+        self.jet_template_test.allowed_variable_ids = variable
+        wizard = wizard_model.create({"jet_template_id": self.jet_template_test.id})
+        self.assertEqual(wizard.allowed_variable_domain, [("id", "in", variable.ids)])
+
+        wizard.jet_template_id = self.jet_template_docker
+        self.assertEqual(wizard.allowed_variable_domain, [])

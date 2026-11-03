@@ -97,6 +97,10 @@
                                     />
                                     <field name="access_level" />
                                     <field name="show_in_create_wizard" />
+                                    <field
+                                        name="allowed_variable_ids"
+                                        widget="many2many_tags"
+                                    />
                                 </group>
                                 <group name="servers" string="Installation">
                                     <field name="plan_install_id" />
@@ -137,6 +141,7 @@
                             </div>
                         </page>
                         <page name="configuration" string="Configuration">
+                            <field name="allowed_variable_domain" invisible="1" />
                             <field name="variable_value_ids" order="variable_reference">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle" />
@@ -144,7 +149,10 @@
                                         name="variable_reference"
                                         column_invisible="True"
                                     />
-                                    <field name="variable_id" />
+                                    <field
+                                        name="variable_id"
+                                        domain="parent.allowed_variable_domain or []"
+                                    />
                                     <field
                                         name="variable_type"
                                         column_invisible="True"
@@ -163,7 +171,10 @@
                                 </list>
                                 <form>
                                     <group>
-                                        <field name="variable_id" />
+                                        <field
+                                            name="variable_id"
+                                            domain="parent.allowed_variable_domain or []"
+                                        />
                                         <field
                                             name="variable_reference"
                                             widget="CopyClipboardChar"
