@@ -1,0 +1,1 @@
+This module automatically propagates configuration variables, server logs, and scheduled tasks from Jet Templates to existing Jets, and adds a synchronization button on the Template form to propagate changes dynamically.
