@@ -1,8 +1,20 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import io
 
-from odoo import api, fields, models
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec, ed25519
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
+try:
+    from paramiko import ECDSAKey, Ed25519Key, RSAKey
+    from paramiko.pkey import OPENSSH
+except ImportError:
+    # paramiko>=5.0 is a declared external dependency of this module
+    ECDSAKey = Ed25519Key = RSAKey = OPENSSH = None
 
 
 class CxTowerKey(models.Model):
@@ -20,6 +32,8 @@ class CxTowerKey(models.Model):
     KEY_PREFIX = "#!cxtower"
     KEY_TERMINATOR = "!#"
     SECRET_FIELDS = ["secret_value"]
+    SSH_KEY_TYPES = ("ed25519", "ecdsa", "rsa")
+    RSA_KEY_BITS = 4096
 
     key_type = fields.Selection(
         selection=[
@@ -34,6 +48,17 @@ class CxTowerKey(models.Model):
     )
     secret_value = fields.Text(
         string="SSH Private Key",
+    )
+    public_key = fields.Char(
+        readonly=True,
+        groups="cetmix_tower_base.group_manager",
+        help="Public part of the generated SSH key in the OpenSSH format. "
+        "Cleared when the private key is changed manually.",
+    )
+    has_private_key = fields.Boolean(
+        compute="_compute_has_private_key",
+        groups="cetmix_tower_base.group_manager",
+        help="Technical field: a private key is stored in the vault",
     )
     value_ids = fields.One2many(
         string="Values",
@@ -75,6 +100,35 @@ class CxTowerKey(models.Model):
             else:
                 rec.reference_code = None
 
+    @api.depends("secret_value")
+    def _compute_has_private_key(self):
+        """Check whether a private key is stored in the vault.
+
+        The vault stores values by real record id, so new records
+        are resolved through their origin (if any).
+        The value is invalidated explicitly in `write` because the vault
+        mixin removes `secret_value` from the values before the ORM can
+        mark dependent fields as modified.
+        """
+        secret_values = self._origin._get_secret_values(["secret_value"])
+        for rec in self:
+            rec.has_private_key = bool(
+                secret_values.get(rec._origin.id, {}).get("secret_value")
+            )
+
+    def write(self, vals):
+        """Clear the public key when the private key is changed manually.
+
+        Must run before the vault mixin pops `secret_value` from `vals`.
+        """
+        secret_value_changed = "secret_value" in vals
+        if secret_value_changed and "public_key" not in vals:
+            vals = dict(vals, public_key=False)
+        res = super().write(vals)
+        if secret_value_changed:
+            self.invalidate_recordset(["has_private_key"])
+        return res
+
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
         """Copy key. Ensure secret value is copied.
@@ -98,6 +152,108 @@ class CxTowerKey(models.Model):
             )
 
         return result
+
+    def action_generate_ssh_key(self):
+        """Open the wizard that generates an SSH key pair.
+
+        The `overwrite_ssh_key` context key is set by the "Regenerate"
+        button, which asks for confirmation before calling this method.
+
+        Returns:
+            dict: Window action that opens the wizard
+        """
+        self.ensure_one()
+        self.check_access("write")
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Generate SSH Key"),
+            "res_model": "cx.tower.key.generate.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {
+                "default_key_id": self.id,
+                "default_overwrite": bool(self.env.context.get("overwrite_ssh_key")),
+            },
+        }
+
+    def _generate_ssh_key(self, key_type="ed25519", overwrite=False):
+        """Generate an SSH key pair and store it in the key.
+
+        The private key is stored in `secret_value` in the OpenSSH format
+        without a passphrase, the public key is stored in `public_key`
+        as a single OpenSSH line `<algorithm> <base64>`.
+
+        Args:
+            key_type (str): 'ed25519' (default), 'ecdsa' (nistp256)
+                or 'rsa' (4096 bit)
+            overwrite (bool): replace an existing private key.
+                If False and a private key is stored, raise UserError.
+
+        Raises:
+            UserError: the key is not an SSH key, the key type is not
+                supported or a private key exists and overwrite is False
+
+        Returns:
+            str: Public key
+        """
+        self.ensure_one()
+        # Fail before the (slow) generation, not at the final write
+        self.check_access("write")
+        if self.key_type != "k":
+            raise UserError(_("SSH key can be generated only for keys of type SSH Key"))
+        if key_type not in self.SSH_KEY_TYPES:
+            raise UserError(
+                _(
+                    "Unsupported SSH key type '%(key_type)s'. "
+                    "Supported types: %(supported)s",
+                    key_type=key_type,
+                    supported=", ".join(self.SSH_KEY_TYPES),
+                )
+            )
+        if not overwrite and self._get_secret_value("secret_value"):
+            raise UserError(
+                _(
+                    "Key '%(name)s' already has a private key",
+                    name=self.name,
+                )
+            )
+
+        private_key, public_key = self._generate_ssh_key_pair(key_type)
+        self.write({"secret_value": private_key, "public_key": public_key})
+        return public_key
+
+    def _generate_ssh_key_pair(self, key_type):
+        """Generate an SSH key pair.
+
+        Ed25519 is generated with `cryptography`, because paramiko
+        cannot generate or write Ed25519 keys.
+
+        Args:
+            key_type (str): 'ed25519', 'ecdsa' or 'rsa'
+
+        Returns:
+            tuple: (private key in OpenSSH format, public key line)
+        """
+        if key_type == "ed25519":
+            private_key = (
+                ed25519.Ed25519PrivateKey.generate()
+                .private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.OpenSSH,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+                .decode()
+            )
+            pkey = Ed25519Key.from_private_key(io.StringIO(private_key))
+        else:
+            if key_type == "rsa":
+                pkey = RSAKey.generate(bits=self.RSA_KEY_BITS)
+            else:
+                pkey = ECDSAKey.generate(curve=ec.SECP256R1())
+            key_file = io.StringIO()
+            pkey.write_private_key(key_file, file_format=OPENSSH)
+            private_key = key_file.getvalue()
+        return private_key, f"{pkey.get_name()} {pkey.get_base64()}"
 
     def _get_reference_pattern(self):
         """

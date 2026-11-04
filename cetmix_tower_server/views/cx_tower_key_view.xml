@@ -5,6 +5,25 @@
         <field name="model">cx.tower.key</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button
+                        name="action_generate_ssh_key"
+                        type="object"
+                        string="Generate"
+                        class="btn-primary"
+                        groups="cetmix_tower_base.group_manager"
+                        invisible="key_type != 'k' or has_private_key or not id"
+                    />
+                    <button
+                        name="action_generate_ssh_key"
+                        type="object"
+                        string="Regenerate"
+                        context="{'overwrite_ssh_key': True}"
+                        groups="cetmix_tower_base.group_manager"
+                        invisible="key_type != 'k' or not has_private_key or not id"
+                        confirm="The existing private key will be replaced. It cannot be recovered. Continue?"
+                    />
+                </header>
                 <sheet>
                     <group>
                         <group>
@@ -15,6 +34,11 @@
                                 widget="CopyClipboardChar"
                                 options="{'string': 'Copy'}"
                                 invisible="key_type == 'k'"
+                            />
+                            <field
+                                name="public_key"
+                                widget="CopyClipboardChar"
+                                invisible="key_type != 'k' or not public_key"
                             />
                             <field
                                 name="key_type"
