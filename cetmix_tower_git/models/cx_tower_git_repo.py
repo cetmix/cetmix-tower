@@ -88,10 +88,10 @@ class CxTowerGitRepo(models.Model):
         comodel_name="cx.tower.key",
         string="Secret",
         domain="[('key_type', '=', 's')]",
-        help="Repository-specific secret. Not currently used: private"
-        " HTTPS URLs use environment placeholders"
-        " ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN,"
-        " $BITBUCKET_TOKEN).",
+        help="Secret sent when listing branches, pull requests, and"
+        " commits for this repository. When empty, Tower uses the"
+        " GitHub API Secret from General Settings. Private HTTPS clone"
+        " URLs still use $GITHUB_TOKEN.",
         yaml_export="include",
     )
     remote_ids = fields.One2many(

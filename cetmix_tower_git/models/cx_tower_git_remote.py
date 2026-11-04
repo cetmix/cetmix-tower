@@ -2,8 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import giturlparse
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class CxTowerGitRemote(models.Model):
@@ -90,6 +90,11 @@ class CxTowerGitRemote(models.Model):
         index=True,
         yaml_export=True,
     )
+    head_reference = fields.Char(
+        store=False,
+        help="Aggregator value sent with a captioned suggestion. "
+        "Selecting a row stores this instead of the visible text.",
+    )
 
     def _get_default_url_protocol(self):
         """Default URL protocol for new remote.
@@ -112,34 +117,55 @@ class CxTowerGitRemote(models.Model):
                 for index, source_remote in enumerate(remote.source_id.remote_ids):
                     source_remote.name = f"remote_{index + 1}"
 
-    @api.onchange("head")
+    @api.onchange("head", "head_reference")
     def onchange_head(self):
-        """
-        Extract head number from head url
-        and set it as head.
+        """Store a selected reference, and reduce a pasted link to its tail.
+
+        A provider can send the visible suggestion in ``head`` and the
+        aggregator value in ``head_reference``. The reference replaces
+        ``head`` and is then cleared, so a later edit of Head is kept.
         """
         for remote in self:
-            if remote.head and "/" in remote.head:
+            if self._head_reference_value(remote.head_reference):
+                remote.head = self._head_reference_value(remote.head_reference)
+                remote.head_reference = False
+            elif remote.head and "/" in remote.head:
                 remote.head = self._sanitize_head(remote.head)
 
     @api.model_create_multi
     def create(self, vals_list):
-        # Sanitize head
+        """Sanitize ``head`` and apply a selected reference.
+
+        Args:
+            vals_list (list[dict]): Values passed to ``create``.
+
+        Returns:
+            recordset: Created remotes.
+        """
         for vals in vals_list:
             head = vals.get("head")
             if head and "/" in head:
                 vals["head"] = self._sanitize_head(head)
+            self._apply_head_reference(vals)
         res = super().create(vals_list)
         # Export project to related files and templates
         res._update_related_files_and_templates()
         return res
 
     def write(self, vals):
-        # Sanitize head
+        """Sanitize ``head`` and apply a selected reference.
+
+        Args:
+            vals (dict): Values passed to ``write``.
+
+        Returns:
+            bool: Result of ``write``.
+        """
         if "head" in vals:
             head = vals["head"]
             if head and "/" in head:
                 vals["head"] = self._sanitize_head(head)
+        self._apply_head_reference(vals)
         res = super().write(vals)
         # Update related files and templates on update
         self._update_related_files_and_templates()
@@ -159,18 +185,53 @@ class CxTowerGitRemote(models.Model):
                 file_relations._save_to_file()
         return res
 
-    def _sanitize_head(self, head):
-        """Sanitize head.
-        Extract head number from head url
-        and set it as head.
+    def _head_reference_value(self, reference):
+        """Return the trimmed storage value from a suggestion.
 
         Args:
-            head (Char): Head to sanitize
+            reference (str | bool | None): ``head_reference`` from the form.
 
         Returns:
-            Char: Sanitized head
+            str: Trimmed value, or an empty string when there is nothing
+            to store.
         """
-        if head and "/" in head:
+        if not isinstance(reference, str):
+            return ""
+        return reference.strip()
+
+    def _apply_head_reference(self, vals):
+        """Replace ``head`` when the suggestion carried a storage value.
+
+        ``head_reference`` is not stored. It is removed from ``vals`` so
+        create and write do not receive it.
+
+        Args:
+            vals (dict): Create or write values, modified in place.
+
+        Returns:
+            None
+        """
+        reference = self._head_reference_value(vals.get("head_reference"))
+        if reference:
+            vals["head"] = reference
+        vals.pop("head_reference", None)
+
+    def _sanitize_head(self, head):
+        """Keep a typed head, and reduce a pasted link to its last segment.
+
+        A branch name such as ``feat/2233`` contains ``/`` and must be stored
+        whole. Only a value that contains ``://`` is a pasted link.
+
+        Args:
+            head (Char): Head to sanitize.
+
+        Returns:
+            Char: Trimmed head, or the last path segment of a pasted link.
+        """
+        if not head:
+            return head
+        head = head.strip()
+        if "://" in head:
             return head.split("/")[-1].strip()
         return head
 
@@ -189,6 +250,201 @@ class CxTowerGitRemote(models.Model):
         return res
 
     # ------------------------------
+    # Head autocomplete
+    # ------------------------------
+    @api.model
+    def git_head_autocomplete(self, value):
+        """Return Head suggestions for the repository in the field context.
+
+        The autocomplete widget calls this on focus with ``False`` and, while
+        typing, with the trimmed string. A provider module fills the rows.
+        This method does not call GitHub.
+
+        Args:
+            value (str | bool): Trimmed input, or ``False`` when the field
+                is focused and still empty.
+
+        Raises:
+            AccessError: When the current user cannot write Git remotes.
+
+        Returns:
+            list[dict]: Rows ``{"head": "<value>"}``. A provider may also
+            set ``head_reference`` to the value that must be stored.
+            Empty when the repository is missing, unreadable, or the
+            provider has no hook.
+        """
+        self.browse().check_access("write")
+        repo = self._git_head_context_record(
+            "cx.tower.git.repo", self.env.context.get("git_repo_id")
+        )
+        if not repo:
+            return []
+        source = self._git_head_context_record(
+            "cx.tower.git.source", self.env.context.get("git_source_id")
+        )
+        context_server = self._git_head_context_record(
+            "cx.tower.server", self.env.context.get("git_server_id")
+        )
+        server, partner = self._git_head_autocomplete_scope(source, context_server)
+        query = value.strip() if isinstance(value, str) else False
+        if query == "":
+            query = False
+        return self._git_fetch_heads(
+            repo,
+            self.env.context.get("git_head_type"),
+            query,
+            server=server,
+            partner=partner,
+        )
+
+    @api.model
+    def _git_head_context_record(self, model_name, res_id):
+        """Load one context id when the current user can read it.
+
+        An empty, invalid, or unreadable id is ignored. The raw integer is
+        not returned, so it cannot be passed into secret resolution.
+
+        Args:
+            model_name (str): Model to browse.
+            res_id (int | str | bool): Record id from the field context.
+
+        Returns:
+            recordset: The record, or an empty recordset.
+        """
+        records = self.env[model_name]
+        if not res_id:
+            return records.browse()
+        try:
+            res_id = int(res_id)
+        except (TypeError, ValueError):
+            return records.browse()
+        record = records.browse(res_id).exists()
+        if not record or not record.has_access("read"):
+            return records.browse()
+        return record
+
+    @api.model
+    def _git_head_autocomplete_scope(self, source, server):
+        """Choose the server and partner used to resolve the API secret.
+
+        On the Jet list the checked server is used, and the partner only when
+        it is the partner of a Jet the user can read on that server. On the
+        remote form, a project with one Jet uses that Jet. A project with no
+        Jet and one linked server uses that server and its partner. Several
+        Jets or servers leave both empty, so only a global secret can match.
+
+        Args:
+            source (cx.tower.git.source): Checked source, or empty.
+            server (cx.tower.server): Checked server from the Jet list, or
+                empty.
+
+        Returns:
+            tuple: ``(server, partner)`` recordsets. Either may be empty.
+        """
+        partner = self.env["res.partner"].browse()
+        if server:
+            partner_id = self.env.context.get("git_partner_id")
+            try:
+                partner_id = int(partner_id) if partner_id else False
+            except (TypeError, ValueError):
+                partner_id = False
+            if partner_id:
+                jet = self.env["cx.tower.jet"].search(
+                    [
+                        ("server_id", "=", server.id),
+                        ("partner_id", "=", partner_id),
+                    ],
+                    limit=1,
+                )
+                if jet:
+                    partner = jet.partner_id
+            return server, partner
+        if not source:
+            return self.env["cx.tower.server"].browse(), partner
+        project = source.git_project_id
+        jets = self.env["cx.tower.jet"].search([("git_project_id", "=", project.id)])
+        if len(jets) == 1:
+            jet_server = jets.server_id
+            if jet_server and jet_server.has_access("read"):
+                return jet_server, jets.partner_id
+            return self.env["cx.tower.server"].browse(), partner
+        if jets:
+            return self.env["cx.tower.server"].browse(), partner
+        servers = project.server_ids.filtered(lambda item: item.has_access("read"))
+        if len(servers) == 1:
+            return servers, servers.partner_id
+        return self.env["cx.tower.server"].browse(), partner
+
+    def _git_fetch_heads(self, repo, head_type, query, server=None, partner=None):
+        """Dispatch Head suggestions to the repository provider.
+
+        Args:
+            repo (cx.tower.git.repo): Repository already checked for read.
+            head_type (str): ``branch``, ``pr``, or ``commit``.
+            query (str | bool): Trimmed input, or ``False`` on focus.
+            server (cx.tower.server | None): Server for the secret, or empty.
+            partner (res.partner | None): Partner for the secret, or empty.
+
+        Returns:
+            list[dict]: Provider rows, or an empty list when the provider
+            has no hook. The repository host is not checked here.
+        """
+        method = getattr(self, f"_git_fetch_heads_{repo.provider}", None)
+        if not method:
+            return []
+        return method(
+            repo, head_type, query, server=server or None, partner=partner or None
+        )
+
+    def _git_head_api_token(self, repo, server=None, partner=None):
+        """Resolve the Bearer token for a repository API call.
+
+        The repository Secret wins. A provider module can add another
+        reference when that Secret is empty. The search order is server
+        and partner, then server, then partner, then global.
+
+        Args:
+            repo (cx.tower.git.repo): Repository whose secret is resolved.
+            server (cx.tower.server | None): Checked server, or empty.
+            partner (res.partner | None): Checked partner, or empty.
+
+        Raises:
+            UserError: When no secret value resolves.
+
+        Returns:
+            str: Secret value. Never a raw context id.
+        """
+        reference = self._git_head_api_reference(repo)
+        if not reference:
+            raise UserError(
+                self.env._("No GitHub API secret is configured for this repository.")
+            )
+        kwargs = {}
+        if server:
+            kwargs["server_id"] = server.id
+        if partner:
+            kwargs["partner_id"] = partner.id
+        token = self.env["cx.tower.key"]._resolve_key_type_secret(reference, **kwargs)
+        if not token:
+            raise UserError(
+                self.env._("No GitHub API secret is configured for this repository.")
+            )
+        return token
+
+    def _git_head_api_reference(self, repo):
+        """Return the secret reference used for the repository API.
+
+        Args:
+            repo (cx.tower.git.repo): Repository to read.
+
+        Returns:
+            str | bool: Key reference, or a falsy value when none is set.
+        """
+        if repo.secret_id:
+            return repo.secret_id.reference
+        return False
+
+    # ------------------------------
     # Git Aggregator related methods
     # ------------------------------
     def _git_aggregator_prepare_url(self):
@@ -200,9 +456,9 @@ class CxTowerGitRemote(models.Model):
         self.ensure_one()
 
         if not self.repo_id:
-            raise ValidationError(_("Repository is required"))
+            raise ValidationError(self.env._("Repository is required"))
         if not self.repo_id.url:
-            raise ValidationError(_("Repository URL is not set"))
+            raise ValidationError(self.env._("Repository URL is not set"))
 
         url = self.repo_id.url
         prepared_url = giturlparse.parse(url).urls.get(self.url_protocol, url)
@@ -309,10 +565,17 @@ class CxTowerGitRemote(models.Model):
             Char: Extracted head number
         """
         self.ensure_one()
-        head_number = self.head.split("/")[-1]
+        head = self.head or ""
+        if "://" in head:
+            head_number = head.split("/")[-1].strip()
+        else:
+            head_number = head.strip()
         if not head_number:
             raise ValidationError(
-                _("Git Aggregator: Head number is empty in %(head)s", head=self.head)
+                self.env._(
+                    "Git Aggregator: Head number is empty in %(head)s",
+                    head=self.head,
+                )
             )
         return head_number
 
@@ -366,7 +629,7 @@ class CxTowerGitRemote(models.Model):
         # PR/MR
         if self.head_type == "pr":
             raise ValidationError(
-                _(
+                self.env._(
                     "Git Aggregator: "
                     "Bitbucket does not support"
                     " fetching PRs. Please use branch instead.\n\n"

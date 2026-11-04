@@ -10,7 +10,7 @@
     "author": "Cetmix",
     "license": "AGPL-3",
     "application": False,
-    "depends": ["cetmix_tower_yaml"],
+    "depends": ["cetmix_tower_yaml", "cx_web_widget_autocomplete"],
     "external_dependencies": {
         "python": ["giturlparse==0.12.0"],
     },
