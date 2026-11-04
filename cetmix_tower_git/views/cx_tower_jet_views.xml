@@ -39,7 +39,19 @@
                             />
                             <field name="url_protocol" required="1" optional="show" />
                             <field name="head_type" required="1" />
-                            <field name="head" required="1" />
+                            <field name="head_reference" column_invisible="True" />
+                            <field
+                                name="head"
+                                required="1"
+                                widget="autocomplete"
+                                options="{'function': 'git_head_autocomplete', 'min_symbols': 0}"
+                                context="{
+                                    'git_repo_id': repo_id,
+                                    'git_head_type': head_type,
+                                    'git_server_id': parent.server_id,
+                                    'git_partner_id': parent.partner_id,
+                                }"
+                            />
                             <field name="enabled" widget="boolean_toggle" />
                             <field
                                 name="source_id"

@@ -54,10 +54,18 @@
                             widget="radio"
                             options="{'horizontal': true}"
                         />
+                        <field name="head_reference" invisible="1" />
                         <field
                             name="head"
                             invisible="not head_type"
                             placeholder="Branch/PR/commit number or link"
+                            widget="autocomplete"
+                            options="{'function': 'git_head_autocomplete', 'min_symbols': 0}"
+                            context="{
+                                'git_repo_id': repo_id,
+                                'git_head_type': head_type,
+                                'git_source_id': source_id,
+                            }"
                         />
                         <field name="create_uid" groups="base.group_no_one" />
                     </group>
