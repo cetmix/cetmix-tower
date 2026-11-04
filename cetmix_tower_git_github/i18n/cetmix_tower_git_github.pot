@@ -1,0 +1,67 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_git_github
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_git_github
+#: model:ir.model,name:cetmix_tower_git_github.model_cx_tower_git_remote
+msgid "Cetmix Tower Git Remote"
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#: model:ir.model,name:cetmix_tower_git_github.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git_github.res_config_settings_view_form
+msgid "GitHub"
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#: model:ir.model.fields,field_description:cetmix_tower_git_github.field_res_config_settings__cetmix_tower_git_github_default_secret_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git_github.res_config_settings_view_form
+msgid "GitHub API Secret"
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#. odoo-python
+#: code:addons/cetmix_tower_git_github/models/cx_tower_git_remote.py:0
+msgid "GitHub could not be reached."
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#. odoo-python
+#: code:addons/cetmix_tower_git_github/models/cx_tower_git_remote.py:0
+msgid "GitHub returned an error."
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#. odoo-python
+#: code:addons/cetmix_tower_git_github/models/cx_tower_git_remote.py:0
+msgid "GitHub returned an unexpected response."
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#: model:ir.model.fields,help:cetmix_tower_git_github.field_res_config_settings__cetmix_tower_git_github_default_secret_id
+msgid ""
+"Secret sent to GitHub when a repository has no Secret of its own. Applies to"
+" a public repository and a private one."
+msgstr ""
+
+#. module: cetmix_tower_git_github
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_git_github.res_config_settings_view_form
+msgid ""
+"Used when a repository has no Secret of its own. Be careful about the scope "
+"of the token."
+msgstr ""
