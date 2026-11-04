@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_key_generate_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.key.generate.wizard.view.form</field>
+        <field name="model">cx.tower.key.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate SSH Key">
+                <group>
+                    <field name="key_type" />
+                </group>
+                <footer>
+                    <button
+                        name="action_generate_ssh_key"
+                        type="object"
+                        string="Generate"
+                        class="btn-primary"
+                    />
+                    <button special="cancel" string="Cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
