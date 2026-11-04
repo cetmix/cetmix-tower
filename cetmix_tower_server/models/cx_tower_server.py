@@ -2612,23 +2612,36 @@ class CxTowerServer(models.Model):
     # ---- Auxiliary functions
     # ------------------------------
 
-    def get_variable_value(self, variable_reference, no_fallback=False):
+    def get_variable_value(self, variable_reference, no_fallback=False, tower_env=None):
         """
         Return the value of a variable for the current server.
         NB: this function follows the value application order.
         So it will return the global value if server value is not set.
 
+        Args:
+            variable_reference (Char): The reference of the variable
+                to get the value for
+            no_fallback (bool): If True, will return current record value
+                without checking fallback values.
+            tower_env (Char): Reference of the tower environment, eg 'prod'.
+                Values tagged with this environment are preferred
+                over values without environments.
+
         Returns:
             str: The value of the variable for the current record or None
         """
         self.ensure_one()
-        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
-        if not variable:
-            return None
-        values = variable._get_variable_values_by_references(
-            variable_references=[variable_reference], server=self
+        if no_fallback:
+            return super().get_variable_value(
+                variable_reference, no_fallback, tower_env=tower_env
+            )
+        return self._get_variable_value_with_fallback(
+            variable_reference, tower_env, server=self
         )
-        return values[variable_reference]
+
+    def _variable_value_environment_allowed(self):
+        """Server values can have environments"""
+        return True
 
     def server_toggle_active(self, self_active):
         """

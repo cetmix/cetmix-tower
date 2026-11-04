@@ -1,6 +1,8 @@
 # Copyright (C) 2025 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo.exceptions import ValidationError
+
 from .common_jets import TestTowerJetsCommon
 
 
@@ -93,3 +95,52 @@ class TestJetCreateWizard(TestTowerJetsCommon):
 
         wizard.jet_template_id = self.jet_template_docker
         self.assertEqual(wizard.allowed_variable_domain, [])
+
+    def test_action_confirm_sets_environment(self):
+        """The selected environment reaches the created jet"""
+        environment = self.env_prod
+        wizard = self.env["cx.tower.jet.create.wizard"].create(
+            {
+                "name_type": "m",
+                "name": "Wizard Env Jet",
+                "jet_template_id": self.jet_template_test.id,
+                "server_id": self.server_test_1.id,
+                "environment_id": environment.id,
+            }
+        )
+        jet = self.Jet.browse(wizard.action_confirm()["res_id"])
+        self.assertEqual(jet.environment_id, environment)
+
+        # No environment selected: none on the jet
+        wizard = self.env["cx.tower.jet.create.wizard"].create(
+            {
+                "name_type": "m",
+                "name": "Wizard No Env Jet",
+                "jet_template_id": self.jet_template_test.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+        jet = self.Jet.browse(wizard.action_confirm()["res_id"])
+        self.assertFalse(jet.environment_id)
+
+    def test_action_confirm_environment_required(self):
+        """The wizard shows whether the template requires an environment,
+        and a jet without one is rejected
+        """
+        environment = self.env_prod
+        self.jet_template_test.write(
+            {"env_required": True, "environment_default_id": environment.id}
+        )
+        wizard = self.env["cx.tower.jet.create.wizard"].create(
+            {
+                "name_type": "m",
+                "name": "Wizard Required Env Jet",
+                "jet_template_id": self.jet_template_test.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+        self.assertTrue(wizard.env_required)
+        # The default environment does not prefill the wizard
+        self.assertFalse(wizard.environment_id)
+        with self.assertRaises(ValidationError):
+            wizard.action_confirm()

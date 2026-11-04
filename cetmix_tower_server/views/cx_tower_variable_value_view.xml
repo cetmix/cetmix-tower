@@ -44,6 +44,14 @@
                     optional="show"
                     readonly="variable_type == 's'"
                 />
+                <field
+                    name="environment_ids"
+                    widget="many2many_tags"
+                    options="{'color_field': 'color', 'no_create': True}"
+                    placeholder="All"
+                    readonly="jet_id or server_template_id or plan_line_action_id"
+                    optional="show"
+                />
                 <field name="required" optional="show" />
                 <field name="access_level" optional="show" />
                 <field name="variable_ids" optional="hide" widget="many2many_tags" />

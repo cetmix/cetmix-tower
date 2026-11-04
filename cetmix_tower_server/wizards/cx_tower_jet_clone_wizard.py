@@ -56,6 +56,11 @@ class CxTowerJetCloneWizard(models.TransientModel):
         compute="_compute_allowed_variable_domain",
         help="Domain for variables",
     )
+    environment_id = fields.Many2one(
+        "cx.tower.environment",
+        help="Environment of the new jet",
+    )
+    env_required = fields.Boolean(related="jet_template_id.env_required")
     use_custom_variables = fields.Selection(
         selection=[("n", "default settings"), ("y", "custom settings")],
         default="n",
@@ -123,6 +128,10 @@ class CxTowerJetCloneWizard(models.TransientModel):
         # Add url
         if self.url_type == "m" and self.url:
             kwargs["url"] = self.url
+
+        # Add environment
+        if self.environment_id:
+            kwargs["environment_id"] = self.environment_id.id
 
         jet = self.jet_id.clone(
             server=self.server_id,

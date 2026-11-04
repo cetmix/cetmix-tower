@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="environment_prod" model="cx.tower.environment">
+        <field name="name">Production</field>
+        <field name="reference">prod</field>
+        <field name="color">1</field>
+    </record>
+    <record id="environment_preprod" model="cx.tower.environment">
+        <field name="name">Pre-production</field>
+        <field name="reference">preprod</field>
+        <field name="color">2</field>
+    </record>
+    <record id="environment_stage" model="cx.tower.environment">
+        <field name="name">Staging</field>
+        <field name="reference">stage</field>
+        <field name="color">3</field>
+    </record>
+    <record id="environment_dev" model="cx.tower.environment">
+        <field name="name">Development</field>
+        <field name="reference">dev</field>
+        <field name="color">10</field>
+    </record>
+</odoo>

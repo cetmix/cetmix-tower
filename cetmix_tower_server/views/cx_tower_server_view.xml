@@ -357,6 +357,12 @@
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         readonly="variable_type == 's'"
                                     />
+                                    <field
+                                        name="environment_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color', 'no_create': True}"
+                                        placeholder="All"
+                                    />
                                     <field name="access_level" optional="show" />
                                     <field name="required" optional="show" />
                                 </list>
@@ -372,6 +378,12 @@
                                             name="value_char"
                                             widget="CopyClipboardChar"
                                             options="{'string': 'Copy value'}"
+                                        />
+                                        <field
+                                            name="environment_ids"
+                                            widget="many2many_tags"
+                                            options="{'color_field': 'color', 'no_create': True}"
+                                            placeholder="All"
                                         />
                                         <field name="access_level" />
                                         <field name="required" />

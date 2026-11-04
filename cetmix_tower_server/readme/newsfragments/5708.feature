@@ -1,0 +1,1 @@
+Environments: tag Server, Jet Template and global variable values with environments such as Production or Development, and set an Environment on each Jet. A Jet uses the values tagged with its environment, or the untagged ones. Jet Templates can require an environment, with a default one for jets created by jet requests.
