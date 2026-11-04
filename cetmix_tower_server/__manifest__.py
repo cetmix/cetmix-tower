@@ -13,7 +13,7 @@
     "application": False,
     "installable": True,
     "external_dependencies": {
-        "python": ["paramiko", "tldextract", "dnspython", "ansi2html"],
+        "python": ["paramiko>=5.1.0", "tldextract", "dnspython", "ansi2html"],
     },
     "depends": [
         "cetmix_tower_base",
@@ -65,6 +65,7 @@
         "wizards/cx_tower_jet_action_wizard_view.xml",
         "wizards/cx_tower_jet_create_wizard_view.xml",
         "wizards/cx_tower_jet_clone_wizard_view.xml",
+        "wizards/cx_tower_key_generate_wizard_view.xml",
         "views/cx_tower_server_view.xml",
         "views/cx_tower_os_view.xml",
         "views/cx_tower_tag_view.xml",
