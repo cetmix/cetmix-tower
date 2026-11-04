@@ -1,6 +1,6 @@
 [project]
 name = "odoo-addons-cetmix-cetmix-tower"
-version = "18.0.20261010.0"
+version = "18.0.20261104.0"
 dependencies = [
     "odoo-addon-cetmix_tower==18.0.*",
     "odoo-addon-cetmix_tower_aws==18.0.*",
@@ -14,6 +14,7 @@ dependencies = [
     "odoo-addon-cetmix_tower_webhook==18.0.*",
     "odoo-addon-cetmix_tower_yaml==18.0.*",
     "odoo-addon-cx_web_refresh_from_backend==18.0.*",
+    "odoo-addon-cx_web_widget_autocomplete==18.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",
