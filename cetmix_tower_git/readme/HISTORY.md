@@ -1,3 +1,8 @@
+## 18.0.3.2.0 (2026-11-04)
+
+- Features: Autocomplete Git remote Head, and keep a slash inside a branch name. (5696)
+
+
 ## 18.0.3.1.0 (2026-10-29)
 
 - Features: Git records follow the flat YAML file layout. (5653)
