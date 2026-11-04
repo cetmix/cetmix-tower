@@ -13,7 +13,7 @@
     "application": False,
     "installable": True,
     "external_dependencies": {
-        "python": ["paramiko<4.0.0", "tldextract", "dnspython", "ansi2html"],
+        "python": ["paramiko", "tldextract", "dnspython", "ansi2html"],
     },
     "depends": [
         "cetmix_tower_base",

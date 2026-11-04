@@ -8,7 +8,6 @@ _logger = logging.getLogger(__name__)
 try:
     from paramiko import (
         AutoAddPolicy,
-        DSSKey,
         ECDSAKey,
         Ed25519Key,
         MissingHostKeyPolicy,
@@ -31,12 +30,12 @@ class KeyLoader:
     """
 
     @staticmethod
-    def load_private_key(ssh_key: str) -> RSAKey | DSSKey | ECDSAKey | Ed25519Key:
+    def load_private_key(ssh_key: str) -> RSAKey | ECDSAKey | Ed25519Key:
         """
         Load a private SSH key from a string.
         """
         key_file = io.StringIO(ssh_key)
-        for key_class in (RSAKey, DSSKey, ECDSAKey, Ed25519Key):
+        for key_class in (RSAKey, ECDSAKey, Ed25519Key):
             try:
                 key_file.seek(0)
                 return key_class.from_private_key(key_file)
