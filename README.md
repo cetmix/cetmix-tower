@@ -26,6 +26,7 @@ addon | version | maintainers | summary
 [cetmix_tower_aws](cetmix_tower_aws/) | 18.0.1.0.1 |  | Cetmix Tower AWS EC2 API integration
 [cetmix_tower_base](cetmix_tower_base/) | 18.0.1.1.0 |  | Core access groups, menus and mixins for Cetmix Tower
 [cetmix_tower_git](cetmix_tower_git/) | 18.0.3.2.0 |  | Cetmix Tower Git Management Tools
+[cetmix_tower_git_github](cetmix_tower_git_github/) | 18.0.1.0.0 |  | List GitHub branches, pull requests, and commits on a Git remote
 [cetmix_tower_ovh](cetmix_tower_ovh/) | 18.0.1.0.1 | <a href='https://github.com/GSLabIt'><img src='https://github.com/GSLabIt.png' width='32' height='32' style='border-radius:50%;' alt='GSLabIt'/></a> | Cetmix Tower OVH API integration
 [cetmix_tower_server](cetmix_tower_server/) | 18.0.3.2.0 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_project_link](cetmix_tower_server_project_link/) | 18.0.1.0.0 |  | Link Cetmix Tower Jets to Odoo Project tasks
