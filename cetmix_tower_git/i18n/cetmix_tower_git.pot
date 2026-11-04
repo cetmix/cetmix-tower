@@ -105,6 +105,13 @@ msgid "Add repositories"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__head_reference
+msgid ""
+"Aggregator value sent with a captioned suggestion. Selecting a row stores "
+"this instead of the visible text."
+msgstr ""
+
+#. module: cetmix_tower_git
 #. odoo-python
 #: code:addons/cetmix_tower_git/models/cx_tower_server.py:0
 msgid "An error occurred: %(error)s"
@@ -598,6 +605,11 @@ msgid "Head"
 msgstr ""
 
 #. module: cetmix_tower_git
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_reference
+msgid "Head Reference"
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_type
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__head_type
 msgid "Head Type"
@@ -908,6 +920,12 @@ msgid "No Git Project to upload"
 msgstr ""
 
 #. module: cetmix_tower_git
+#. odoo-python
+#: code:addons/cetmix_tower_git/models/cx_tower_git_remote.py:0
+msgid "No GitHub API secret is configured for this repository."
+msgstr ""
+
+#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_search
 msgid "No Servers"
 msgstr ""
@@ -1203,14 +1221,6 @@ msgid "Repository provider to determine provider-based behaviour"
 msgstr ""
 
 #. module: cetmix_tower_git
-#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo__secret_id
-msgid ""
-"Repository-specific secret. Not currently used: private HTTPS URLs use "
-"environment placeholders ($GITHUB_TOKEN, $GITLAB_TOKEN_NAME:$GITLAB_TOKEN, "
-"$BITBUCKET_TOKEN)."
-msgstr ""
-
-#. module: cetmix_tower_git
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_git.cx_tower_git_project_view_form
 msgid "Root Directory"
 msgstr ""
@@ -1245,6 +1255,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo__secret_id
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_owner__secret_id
 msgid "Secret"
+msgstr ""
+
+#. module: cetmix_tower_git
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo__secret_id
+msgid ""
+"Secret sent when listing branches, pull requests, and commits for this "
+"repository. When empty, Tower uses the GitHub API Secret from General "
+"Settings. Private HTTPS clone URLs still use $GITHUB_TOKEN."
 msgstr ""
 
 #. module: cetmix_tower_git
