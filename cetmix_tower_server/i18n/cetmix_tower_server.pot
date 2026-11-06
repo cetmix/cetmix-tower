@@ -4050,6 +4050,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_ir_ui_menu
+msgid "Menu"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__message_has_error
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__message_has_error
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__message_has_error
