@@ -54,6 +54,7 @@ access_cx_tower_variable_option_manager,Variable Option->Manager,model_cx_tower_
 access_cx_tower_variable_option_root,Variable Option->Root,model_cx_tower_variable_option,cetmix_tower_base.group_root,1,1,1,1
 access_cx_tower_server_host_key_wizard_manager,Show Host Key->Manager,model_cx_tower_server_host_key_wizard,cetmix_tower_base.group_manager,1,1,1,1
 access_cx_tower_server_host_key_wizard_root,Show Host Key->Root,model_cx_tower_server_host_key_wizard,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_key_generate_wizard_manager,Generate SSH Key->Manager,model_cx_tower_key_generate_wizard,cetmix_tower_base.group_manager,1,1,1,1
 access_cetmix_tower_user,Cetmix Tower->User,model_cetmix_tower,cetmix_tower_base.group_user,1,1,0,0
 access_shortcut_user,Shortcut->User,model_cx_tower_shortcut,cetmix_tower_base.group_user,1,0,0,0
 access_shortcut_manager,Shortcut->Manager,model_cx_tower_shortcut,cetmix_tower_base.group_manager,1,0,0,0

@@ -4,6 +4,6 @@ boto3
 dnspython
 giturlparse==0.12.0
 ovh
-paramiko
+paramiko>=5.1.0
 pyyaml
 tldextract
