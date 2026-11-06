@@ -1,0 +1,110 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_drone_ssh
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model,name:cetmix_tower_drone_ssh.model_cx_tower_command_log
+msgid "Cetmix Tower Command Log"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model,name:cetmix_tower_drone_ssh.model_cx_drone_controller
+msgid "Cetmix Tower Drone Controller"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model,name:cetmix_tower_drone_ssh.model_cx_drone_job
+msgid "Cetmix Tower Drone Job"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model,name:cetmix_tower_drone_ssh.model_cx_tower_server
+msgid "Cetmix Tower Server"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,field_description:cetmix_tower_drone_ssh.field_cx_drone_job__command_log_id
+msgid "Command log"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,help:cetmix_tower_drone_ssh.field_cx_drone_job__command_log_id
+msgid "Command log that sent this job, including while it is still running"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,field_description:cetmix_tower_drone_ssh.field_cx_drone_controller__drone_command_log_count
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_drone_ssh.cx_drone_controller_view_form
+msgid "Commands"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model,name:cetmix_tower_drone_ssh.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,field_description:cetmix_tower_drone_ssh.field_cx_tower_command_log__drone_job_id
+msgid "Drone Job"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,help:cetmix_tower_drone_ssh.field_cx_tower_command_log__drone_controller_id
+msgid "Drone controller that holds the command"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,field_description:cetmix_tower_drone_ssh.field_cx_tower_command_log__drone_controller_id
+msgid "Executed on"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields.selection,name:cetmix_tower_drone_ssh.selection__res_config_settings__cetmix_tower_drone_ssh_no_controller_policy__fail
+msgid "Fail"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields.selection,name:cetmix_tower_drone_ssh.selection__res_config_settings__cetmix_tower_drone_ssh_no_controller_policy__fallback
+msgid "Fallback"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,field_description:cetmix_tower_drone_ssh.field_res_config_settings__cetmix_tower_drone_ssh_no_controller_policy
+msgid "No Drone Controller"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#. odoo-python
+#: code:addons/cetmix_tower_drone_ssh/models/cx_tower_server.py:0
+msgid "No drone controller is available to run the command"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#. odoo-python
+#: code:addons/cetmix_tower_drone_ssh/models/cx_drone_job.py:0
+msgid "The command is being updated right now. Try to cancel the job again."
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,help:cetmix_tower_drone_ssh.field_cx_drone_controller__drone_command_log_count
+msgid "Tower command logs executed on this controller via a drone job"
+msgstr ""
+
+#. module: cetmix_tower_drone_ssh
+#: model:ir.model.fields,help:cetmix_tower_drone_ssh.field_res_config_settings__cetmix_tower_drone_ssh_no_controller_policy
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_drone_ssh.res_config_settings_view_form
+msgid ""
+"What to do with an SSH command when no drone controller is available. Fail: "
+"finish the command with an error. Fallback: run the command without a drone."
+msgstr ""
