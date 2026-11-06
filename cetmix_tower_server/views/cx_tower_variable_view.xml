@@ -159,6 +159,13 @@
                                         optional="show"
                                         readonly="variable_type == 's'"
                                     />
+                                    <field
+                                        name="environment_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color', 'no_create': True}"
+                                        placeholder="All"
+                                        readonly="jet_id or server_template_id or plan_line_action_id"
+                                    />
                                     <field name="required" optional="show" />
                                 </list>
                                 <form>
@@ -176,6 +183,13 @@
                                             name="option_id"
                                             optional="show"
                                             invisible="variable_type == 's'"
+                                        />
+                                        <field
+                                            name="environment_ids"
+                                            widget="many2many_tags"
+                                            options="{'color_field': 'color', 'no_create': True}"
+                                            placeholder="All"
+                                            readonly="jet_id or server_template_id or plan_line_action_id"
                                         />
                                     </group>
                                 </form>

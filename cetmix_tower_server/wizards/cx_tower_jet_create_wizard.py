@@ -51,6 +51,11 @@ class CxTowerJetCreateWizard(models.TransientModel):
         "cx.tower.server",
     )
     state_id = fields.Many2one("cx.tower.jet.state", help="Requested state of the jet")
+    environment_id = fields.Many2one(
+        "cx.tower.environment",
+        help="Environment of the jet",
+    )
+    env_required = fields.Boolean(related="jet_template_id.env_required")
     state_domain = fields.Binary(compute="_compute_state_domain")
     allowed_variable_domain = fields.Binary(
         compute="_compute_allowed_variable_domain",
@@ -181,6 +186,10 @@ class CxTowerJetCreateWizard(models.TransientModel):
         # Add url
         if self.url_type == "m" and self.url:
             kwargs["url"] = self.url
+
+        # Add environment
+        if self.environment_id:
+            kwargs["environment_id"] = self.environment_id.id
 
         jet = self.jet_template_id.create_jet(
             self.server_id,

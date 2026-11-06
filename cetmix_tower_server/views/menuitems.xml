@@ -178,6 +178,13 @@
         parent="menu_cx_tower_variable_root"
         sequence="2"
     />
+    <menuitem
+        id="menu_cx_tower_environment"
+        name="Environments"
+        action="action_cx_tower_environment"
+        parent="menu_cx_tower_variable_root"
+        sequence="3"
+    />
 
     <!-- Keys and Secrets -->
     <menuitem

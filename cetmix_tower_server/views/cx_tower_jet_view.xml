@@ -232,6 +232,11 @@
                                 domain="jet_template_domain"
                             />
                             <field
+                                name="environment_id"
+                                required="env_required"
+                                options="{'no_create': True}"
+                            />
+                            <field
                                 name="jet_cloned_from_id"
                                 invisible="not jet_cloned_from_id"
                             />
@@ -602,6 +607,11 @@
                         context="{'group_by': 'jet_template_id'}"
                     />
                     <filter
+                        string="Environment"
+                        name="group_by_environment"
+                        context="{'group_by': 'environment_id'}"
+                    />
+                    <filter
                         string="Server"
                         name="group_by_server"
                         context="{'group_by': 'server_id'}"
@@ -619,6 +629,7 @@
                         icon="fa-cog"
                         enable_counters="1"
                     />
+                    <field name="environment_id" string="Environment" icon="fa-cube" />
                     <field name="jet_template_id" string="Template" icon="fa-plane" />
                     <field
                         name="tag_ids"

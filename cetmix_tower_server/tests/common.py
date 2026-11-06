@@ -82,6 +82,18 @@ class TestTowerCommon(BaseCommon):
         # OS
         cls.os_debian_10 = cls.env["cx.tower.os"].create({"name": "Test Debian 10"})
 
+        # Environments
+        cls.Environment = cls.env["cx.tower.environment"]
+        cls.env_prod = cls.Environment.create(
+            {"name": "Test Production", "reference": "test_prod"}
+        )
+        cls.env_stage = cls.Environment.create(
+            {"name": "Test Staging", "reference": "test_stage"}
+        )
+        cls.env_dev = cls.Environment.create(
+            {"name": "Test Development", "reference": "test_dev"}
+        )
+
         # Server
         cls.Server = cls.env["cx.tower.server"]
         cls.server_test_1 = cls.Server.create(

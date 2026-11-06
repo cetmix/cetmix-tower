@@ -78,6 +78,14 @@ class CxTowerJet(models.Model):
         compute="_compute_allowed_variable_domain",
         help="Domain for variables",
     )
+    environment_id = fields.Many2one(
+        comodel_name="cx.tower.environment",
+        ondelete="restrict",
+        tracking=True,
+        copy=False,
+        help="Variable values tagged with this environment are used for this jet",
+    )
+    env_required = fields.Boolean(related="jet_template_id.env_required")
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         required=True,
@@ -408,6 +416,20 @@ class CxTowerJet(models.Model):
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Constraints
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    @api.constrains("environment_id", "jet_template_id")
+    def _check_environment_required(self):
+        """Check that the jet has an environment if its template requires one"""
+        for jet in self:
+            if jet.jet_template_id.env_required and not jet.environment_id:
+                raise ValidationError(
+                    _(
+                        "Jet '%(jet)s' must have an environment:"
+                        " Jet Template '%(template)s' requires it.",
+                        jet=jet.display_name,
+                        template=jet.jet_template_id.display_name,
+                    )
+                )
+
     @api.constrains("server_id", "jet_template_id")
     def _check_jet_limit_per_server(self):
         """Check if the jet limit per server is reached"""
@@ -662,7 +684,7 @@ class CxTowerJet(models.Model):
             return "1"
         return user_access_level
 
-    def get_variable_value(self, variable_reference, no_fallback=False):
+    def get_variable_value(self, variable_reference, no_fallback=False, tower_env=None):
         """
         Return the value of a variable for the current jet.
         NB: this function follows the value application order.
@@ -673,20 +695,23 @@ class CxTowerJet(models.Model):
                 to get the value for
             no_fallback (bool): If True, will return current record value
                 without checking fallback values.
+            tower_env (Char): Reference of the tower environment, eg 'prod'.
+                Jet values have no environments, so it doesn't filter them.
+                If the Jet has no value, it is used instead of the Jet's
+                environment in the Jet Template->Server->Global chain.
+                Has no effect with `no_fallback`.
 
         Returns:
             str: The value of the variable for the current record or None
         """
         self.ensure_one()
         if no_fallback:
-            return super().get_variable_value(variable_reference, no_fallback)
-        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
-        if not variable:
-            return None
-        values = variable._get_variable_values_by_references(
-            variable_references=[variable_reference], jet=self
+            return super().get_variable_value(
+                variable_reference, no_fallback, tower_env=tower_env
+            )
+        return self._get_variable_value_with_fallback(
+            variable_reference, tower_env, jet=self
         )
-        return values[variable_reference]
 
     def run_command(
         self,

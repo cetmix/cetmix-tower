@@ -1052,3 +1052,44 @@ class TestJetGitProject(CommonTest, TestTowerJetsCommon):
         )
         manager_jet.with_user(self.manager).unlink()
         self.assertFalse(root_project.exists())
+
+    def test_wizards_pass_environment(self):
+        """Create and Clone wizards pass the environment to the new jet"""
+        environment = self.env_prod
+        wizard = self.env["cx.tower.jet.create.wizard"].create(
+            {
+                "name_type": "m",
+                "name": "Git Env Jet",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": self.server_test_1.id,
+                "environment_id": environment.id,
+            }
+        )
+        launched = self.Jet.browse(wizard.action_confirm()["res_id"])
+        self.assertEqual(launched.environment_id, environment)
+
+        self._enable_clone(self.jet_template_sample)
+        wizard = self.env["cx.tower.jet.clone.wizard"].create(
+            {
+                "jet_id": launched.id,
+                "name_type": "m",
+                "name": "Git Env Clone",
+                "state_id": self.state_running.id,
+            }
+        )
+        # The source jet's environment is not copied by default
+        self.assertFalse(wizard.environment_id)
+        wizard.environment_id = environment
+        clone = self.Jet.browse(wizard.action_confirm()["res_id"])
+        self.assertEqual(clone.environment_id, environment)
+
+        wizard = self.env["cx.tower.jet.clone.wizard"].create(
+            {
+                "jet_id": launched.id,
+                "name_type": "m",
+                "name": "Git No Env Clone",
+                "state_id": self.state_running.id,
+            }
+        )
+        clone = self.Jet.browse(wizard.action_confirm()["res_id"])
+        self.assertFalse(clone.environment_id)

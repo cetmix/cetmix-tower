@@ -118,6 +118,9 @@ class CxTowerJetCreateWizard(models.TransientModel):
         if self.url_type == "m" and self.url:
             kwargs["url"] = self.url
 
+        if self.environment_id:
+            kwargs["environment_id"] = self.environment_id.id
+
         kwargs.update(self._get_git_jet_kwargs())
 
         jet = self.jet_template_id.create_jet(
@@ -221,6 +224,9 @@ class CxTowerJetCloneWizard(models.TransientModel):
 
         if self.url_type == "m" and self.url:
             kwargs["url"] = self.url
+
+        if self.environment_id:
+            kwargs["environment_id"] = self.environment_id.id
 
         kwargs.update(self._get_git_jet_kwargs())
 

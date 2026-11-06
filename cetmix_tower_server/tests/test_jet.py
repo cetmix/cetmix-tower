@@ -3,9 +3,13 @@
 
 from unittest.mock import patch
 
+from psycopg2.errors import ForeignKeyViolation
+
 from odoo import fields
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tools import mute_logger
+
+from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 
 from .common_jets import TestTowerJetsCommon
 
@@ -1767,3 +1771,176 @@ class TestTowerJet(TestTowerJetsCommon):
 
         self.jet_template_test.allowed_variable_ids = False
         self.assertEqual(jet.allowed_variable_domain, [])
+
+
+class TestJetEnvironment(TestTowerJetsCommon):
+    """Environment on Jets and Jet Templates"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.template_env = cls.JetTemplate.create(
+            {
+                "name": "Env Required Template",
+                "env_required": True,
+                "environment_default_id": cls.env_dev.id,
+            }
+        )
+        cls.template_no_env = cls.JetTemplate.create({"name": "No Env Template"})
+
+    def _create_env_jet(self, name, template, environment=None):
+        """Create a jet on the test server"""
+        vals = {
+            "name": name,
+            "server_id": self.server_test_1.id,
+            "jet_template_id": template.id,
+        }
+        if environment:
+            vals["environment_id"] = environment.id
+        return self.Jet.create(vals)
+
+    def test_template_default_environment_required(self):
+        """A template that requires an environment needs a default one"""
+        with self.assertRaises(ValidationError):
+            self.JetTemplate.create({"name": "No Default", "env_required": True})
+        with self.assertRaises(ValidationError):
+            self.template_env.environment_default_id = False
+        with self.assertRaises(ValidationError):
+            self.template_no_env.env_required = True
+        self.template_no_env.write(
+            {"env_required": True, "environment_default_id": self.env_prod.id}
+        )
+
+    def test_jet_environment_required(self):
+        """A jet of a template that requires an environment must have one"""
+        with self.assertRaises(ValidationError):
+            self._create_env_jet("No Env", self.template_env)
+        jet = self._create_env_jet("With Env", self.template_env, self.env_prod)
+        self.assertEqual(jet.environment_id, self.env_prod)
+        self.assertTrue(jet.env_required)
+        with self.assertRaises(ValidationError):
+            jet.environment_id = False
+
+        # create_jet() passes the environment
+        jet = self.template_env.create_jet(
+            self.server_test_1, name="API Jet", environment_id=self.env_prod.id
+        )
+        self.assertEqual(jet.environment_id, self.env_prod)
+        with self.assertRaises(ValidationError):
+            self.template_env.create_jet(self.server_test_1, name="API Jet No Env")
+
+    def test_existing_jet_flag_turned_on_later(self):
+        """Existing jets are not checked when the template flag is turned on.
+        An unrelated write is allowed, a write of the environment is checked.
+        """
+        jet = self._create_env_jet("Old Jet", self.template_no_env)
+        self.template_no_env.write(
+            {"env_required": True, "environment_default_id": self.env_prod.id}
+        )
+        jet.name = "Old Jet Renamed"
+        self.assertFalse(jet.environment_id)
+        with self.assertRaises(ValidationError):
+            jet.environment_id = False
+
+    def test_environment_tracking(self):
+        """Changing the jet environment is logged in the chatter"""
+        jet = self._create_env_jet("Tracked Jet", self.template_no_env)
+        # Records created in the current transaction are not tracked
+        # until it is committed: run the pending precommit hooks first
+        self.env.flush_all()
+        self.env.cr.flush()
+        jet = jet.with_context(tracking_disable=False, mail_notrack=False)
+        jet.environment_id = self.env_prod
+        # Force the creation of tracking values
+        self.env.flush_all()
+        self.env.cr.flush()
+        jet.invalidate_recordset(["message_ids"])
+        tracking_values = jet.message_ids.tracking_value_ids.filtered(
+            lambda t: t.field_id.name == "environment_id"
+        )
+        self.assertEqual(len(tracking_values), 1)
+        self.assertEqual(tracking_values.new_value_char, self.env_prod.name)
+
+    def test_unlink_environment_used_by_jet(self):
+        """An environment used by a jet can't be deleted"""
+        self._create_env_jet("Prod Jet", self.template_no_env, self.env_prod)
+        with self.assertRaises(ForeignKeyViolation), mute_logger("odoo.sql_db"):
+            with self.env.cr.savepoint():
+                self.env_prod.unlink()
+
+    def test_unlink_environment_used_by_template(self):
+        """An environment used as a template default can't be deleted"""
+        with self.assertRaises(ForeignKeyViolation), mute_logger("odoo.sql_db"):
+            with self.env.cr.savepoint():
+                self.env_dev.unlink()
+
+    def test_unlink_environment_used_by_value(self):
+        """An environment used by a variable value can't be deleted,
+        archived values included
+        """
+        variable = self.Variable.create({"name": "test_env_unlink"})
+        value = self.VariableValue.create(
+            {
+                "variable_id": variable.id,
+                "value_char": "1",
+                "environment_ids": [(6, 0, self.env_prod.ids)],
+            }
+        )
+        value.active = False
+        with self.assertRaises(ValidationError):
+            self.env_prod.unlink()
+
+        # Not blocked on module uninstall
+        self.env_prod.with_context(**{MODULE_UNINSTALL_FLAG: True}).unlink()
+        self.assertFalse(self.env_prod.exists())
+        self.assertFalse(value.environment_ids)
+
+    def test_unlink_environment_not_used(self):
+        """An unused environment can be deleted"""
+        environment = self.Environment.create({"name": "Unused"})
+        environment.unlink()
+        self.assertFalse(environment.exists())
+
+    # -- Jet requests --
+
+    def _request_new_jet(self, template, requested_by_jet=None):
+        """Create a jet request that creates a new jet"""
+        self.assertFalse(template.jet_ids)
+        with patch.object(type(self.Jet), "_serve_jet_request", return_value=None):
+            request = self.env["cx.tower.jet.request"]._create_request(
+                server=self.server_test_1,
+                jet_template=template,
+                requested_by_jet=requested_by_jet,
+            )
+        self.assertTrue(request.jet_id)
+        return request.jet_id
+
+    def test_jet_request_requester_environment(self):
+        """A new jet takes the environment of the requesting jet"""
+        requester = self._create_env_jet(
+            "Requester", self.template_no_env, self.env_prod
+        )
+        jet = self._request_new_jet(self.template_env, requester)
+        self.assertEqual(jet.environment_id, self.env_prod)
+
+    def test_jet_request_template_default_environment(self):
+        """A new jet takes the template default environment
+        when the requesting jet has none
+        """
+        requester = self._create_env_jet("Requester", self.template_no_env)
+        jet = self._request_new_jet(self.template_env, requester)
+        self.assertEqual(jet.environment_id, self.env_dev)
+
+        # Same without a requesting jet
+        self.template_env.jet_ids.unlink()
+        jet = self._request_new_jet(self.template_env)
+        self.assertEqual(jet.environment_id, self.env_dev)
+
+    def test_jet_request_environment_not_required(self):
+        """A new jet has no environment when the template doesn't require one"""
+        template = self.JetTemplate.create({"name": "Requested No Env"})
+        requester = self._create_env_jet(
+            "Requester", self.template_no_env, self.env_prod
+        )
+        jet = self._request_new_jet(template, requester)
+        self.assertFalse(jet.environment_id)

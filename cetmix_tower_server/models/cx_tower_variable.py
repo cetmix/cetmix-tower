@@ -393,6 +393,7 @@ class TowerVariable(models.Model):
         plan_line_action=None,
         jet_template=None,
         jet=None,
+        tower_env=None,
     ):
         """Get the value of the variable.
 
@@ -409,12 +410,22 @@ class TowerVariable(models.Model):
             or the global value.
         5. Plan Line Action: return the Plan Line Action specific value.
 
+        Inside the Jet Template, Server and Global levels, the value
+        is selected by the tower environment *E* (`tower_env` or the Jet's
+        environment):
+            1. a value whose environments contain *E*;
+            2. else the value without environments;
+            3. values tagged only with other environments are ignored.
+        Without *E* only the value without environments is used.
+
         Args:
             server (cx.tower.server): Server
             server_template (cx.tower.server.template): Server Template
             plan_line_action (cx.tower.plan.line.action): Plan Line Action
             jet_template (cx.tower.jet.template): Jet Template
             jet (cx.tower.jet): Jet
+            tower_env (cx.tower.environment): Tower environment.
+                Takes precedence over the Jet's environment.
 
         Returns:
             Char: The value of the variable or None if no value is found.
@@ -431,9 +442,7 @@ class TowerVariable(models.Model):
         # 1. Prepare the values
 
         # Initialize all values to None
-        global_value_char = server_value_char = server_template_value_char = (
-            plan_line_action_value_char
-        ) = jet_template_value_char = jet_value_char = None
+        server_template_value_char = plan_line_action_value_char = jet_value_char = None
 
         # Get origin id's in case we are dealing with onchange()
         server_id = (
@@ -472,17 +481,28 @@ class TowerVariable(models.Model):
             else None
         )
 
+        # Tower environment used to select values.
+        # Use origin in case we are dealing with onchange()
+        if not tower_env and jet:
+            tower_env = jet.environment_id
+        tower_env_id = tower_env._origin.id if tower_env else None
+
+        # Environment-aware candidates: {"tagged": value, "untagged": value}
+        server_candidates = {}
+        jet_template_candidates = {}
+        global_candidates = {}
+
         # Check all values for the variable and assign them.
         # Note: we are not using filtered() to avoid multiple iterations
         # on the same recordset.
         for variable_value in values:
             # Fetch the server value
-            if (
-                server
-                and server_value_char is None
-                and variable_value.server_id.id == server_id
-            ):
-                server_value_char = variable_value.value_char
+            if server and variable_value.server_id.id == server_id:
+                # Jet and Jet Template values are linked to the server
+                # through the Jet/Jet Template, so `server_id` is empty for them.
+                self._add_environment_candidate(
+                    server_candidates, variable_value, tower_env_id
+                )
                 continue
             # Fetch the server template value
             if (
@@ -501,20 +521,26 @@ class TowerVariable(models.Model):
                 plan_line_action_value_char = variable_value.value_char
                 continue
             # Fetch the jet template value
-            if (
-                jet_template
-                and jet_template_value_char is None
-                and variable_value.jet_template_id.id == jet_template_id
-            ):
-                jet_template_value_char = variable_value.value_char
+            if jet_template and variable_value.jet_template_id.id == jet_template_id:
+                self._add_environment_candidate(
+                    jet_template_candidates, variable_value, tower_env_id
+                )
                 continue
             # Fetch the jet value
             if jet and jet_value_char is None and variable_value.jet_id.id == jet_id:
                 jet_value_char = variable_value.value_char
                 continue
             # Fetch the global value
-            if global_value_char is None and variable_value.is_global:
-                global_value_char = variable_value.value_char
+            if variable_value.is_global:
+                self._add_environment_candidate(
+                    global_candidates, variable_value, tower_env_id
+                )
+
+        server_value_char = self._pick_environment_candidate(server_candidates)
+        jet_template_value_char = self._pick_environment_candidate(
+            jet_template_candidates
+        )
+        global_value_char = self._pick_environment_candidate(global_candidates)
 
         # 2. Compose the response
         # 2.1. Server Template
@@ -559,6 +585,37 @@ class TowerVariable(models.Model):
         return global_value_char
 
     @api.model
+    def _add_environment_candidate(self, candidates, variable_value, tower_env_id):
+        """Store a value as a tagged or untagged candidate of its level.
+        Values tagged only with other environments are ignored.
+        The first value found for each slot wins.
+
+        Args:
+            candidates (dict): {"tagged": value_char, "untagged": value_char}
+            variable_value (cx.tower.variable.value()): value to store
+            tower_env_id (int): id of the tower environment or None
+        """
+        environment_ids = variable_value.environment_ids.ids
+        if not environment_ids:
+            candidates.setdefault("untagged", variable_value.value_char)
+        elif tower_env_id and tower_env_id in environment_ids:
+            candidates.setdefault("tagged", variable_value.value_char)
+
+    @api.model
+    def _pick_environment_candidate(self, candidates):
+        """Pick the value of a level from its candidates.
+
+        Args:
+            candidates (dict): {"tagged": value_char, "untagged": value_char}
+
+        Returns:
+            Char: the tagged value, else the untagged one, else None
+        """
+        if "tagged" in candidates:
+            return candidates["tagged"]
+        return candidates.get("untagged")
+
+    @api.model
     def _get_variable_values_by_references(
         self,
         variable_references,
@@ -578,6 +635,7 @@ class TowerVariable(models.Model):
             - plan_line_action (cx.tower.plan.line.action): Plan Line Action
             - jet_template (cx.tower.jet.template): Jet Template
             - jet (cx.tower.jet): Jet
+            - tower_env (cx.tower.environment): Tower environment
             - _depth (int): Depth of the recursion
         Returns:
             dict {variable_reference: value}
@@ -588,6 +646,7 @@ class TowerVariable(models.Model):
         plan_line_action = kwargs.get("plan_line_action")
         jet_template = kwargs.get("jet_template")
         jet = kwargs.get("jet")
+        tower_env = kwargs.get("tower_env")
         _depth = kwargs.get("_depth", 0)
 
         # 0. Update server and jet template from jet
@@ -629,6 +688,7 @@ class TowerVariable(models.Model):
                     plan_line_action=plan_line_action,
                     jet_template=jet_template,
                     jet=jet,
+                    tower_env=tower_env,
                 )
                 if variable
                 else None
@@ -641,6 +701,7 @@ class TowerVariable(models.Model):
             server=server,
             jet_template=jet_template,
             jet=jet,
+            tower_env=tower_env,
             _depth=_depth,
         )
 
@@ -667,12 +728,14 @@ class TowerVariable(models.Model):
             - plan_line_action (cx.tower.plan.line.action): Plan Line Action
             - jet_template (cx.tower.jet.template): Jet Template
             - jet (cx.tower.jet): Jet
+            - tower_env (cx.tower.environment): Tower environment
             - _depth (int): Depth of the recursion
         """
         # 0. Get keyword arguments
         server = kwargs.get("server")
         jet_template = kwargs.get("jet_template")
         jet = kwargs.get("jet")
+        tower_env = kwargs.get("tower_env")
         _depth = kwargs.get("_depth", 0)
 
         # Control recursion depth
@@ -699,6 +762,7 @@ class TowerVariable(models.Model):
                     server=server,
                     jet_template=jet_template,
                     jet=jet,
+                    tower_env=tower_env,
                     _depth=_depth,
                 )
 
@@ -853,6 +917,9 @@ class TowerVariable(models.Model):
                 "state": jet.state,
                 "cloned_from": jet.jet_cloned_from_id.reference
                 if jet.jet_cloned_from_id
+                else False,
+                "environment": jet.environment_id.reference
+                if jet.environment_id
                 else False,
             }
             # Add URL parts if URL is set
