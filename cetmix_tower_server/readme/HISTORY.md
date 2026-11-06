@@ -1,3 +1,8 @@
+## 18.0.3.3.0 (2026-11-06)
+
+- Features: Jet Template: add the editable Allowed Variables field. It is computed from what the template uses and narrows variable pickers in Jet Template, Jet, Create Jet and Clone Jet screens. An empty list allows all variables. (5707)
+
+
 ## 18.0.3.0.4 (2026-10-15)
 
 - Bugfixes: Allow adding a custom value on a scheduled task without a name. (5687)
