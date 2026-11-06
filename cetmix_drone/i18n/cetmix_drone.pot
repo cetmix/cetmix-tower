@@ -1,0 +1,785 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_drone
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_drone
+#: model:res.groups,comment:cetmix_drone.group_administrator
+msgid ""
+"\n"
+"        Full drone access. Grants Cetmix Tower Root, including User and Manager, so those levels do not have to be chosen separately.\n"
+"    "
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "%(error)s in %(location)s, attempt %(attempt)s"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__active
+msgid "Active"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:res.groups,name:cetmix_drone.group_administrator
+msgid "Administrator"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_search
+msgid "Archived"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_skill_view_form
+msgid "Ask a linked controller for this skill's schema and store it"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Ask the controller whether it is healthy and update its status"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Ask this controller for the schema of each linked skill and store it"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_controller__status__available
+msgid "Available"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_base
+msgid "Base"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__callback_url
+msgid ""
+"Base address this controller uses to call Odoo. Result and heartbeat paths "
+"are added to it. Defaults to the Odoo web base URL"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "Callback %(location)s could not be resolved"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__callback_attempts
+msgid "Callback Attempts"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__callback_error
+msgid "Callback Error"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__callback_url
+msgid "Callback URL"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid ""
+"Callback URL must be an http or https address with no path, such as "
+"http://odoo:8069."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_job__user_id
+msgid "Callback is run as this user"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__reference
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_skill__reference
+msgid ""
+"Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_list
+msgid "Cancel"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_list
+msgid "Cancel this job? The controller will be asked to stop the work."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_job__state__cancelled
+msgid "Cancelled"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_cx_drone_controller
+msgid "Cetmix Tower Drone Controller"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_cx_drone_job
+msgid "Cetmix Tower Drone Job"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_cx_drone_skill
+msgid "Cetmix Tower Drone Skill"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.actions.server,name:cetmix_drone.ir_cron_check_drone_controller_health_ir_actions_server
+msgid "Cetmix Tower: Check drone controller health"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.actions.server,name:cetmix_drone.ir_cron_check_drone_job_timeout_ir_actions_server
+msgid "Cetmix Tower: Check drone job timeout"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.actions.server,name:cetmix_drone.ir_cron_poll_drone_jobs_ir_actions_server
+msgid "Cetmix Tower: Poll drone jobs"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Check Connection"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Connection checked"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__controller_id
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__controller_id
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_search
+msgid "Controller"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.constraint,message:cetmix_drone.constraint_cx_drone_controller_controller_url_unique
+msgid "Controller URL must be unique"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_job__controller_id
+msgid "Controller that accepted the job"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_payload_key_wizard_view_form
+msgid ""
+"Copy these keys now and configure the same values on the\n"
+"                    drone. They will not be shown again after you close this\n"
+"                    dialog. The previous API, payload and response keys no\n"
+"                    longer work. The result storage key is not saved."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__create_uid
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__create_uid
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__create_uid
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__create_date
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__create_date
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__create_date
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_skill__schema
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_skill__schema_text
+msgid "Data and response schema reported by a controller for this skill"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__display_name
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__display_name
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__display_name
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_job__state__done
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_payload_key_wizard_view_form
+msgid "Done"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__date_done
+msgid "Done Date"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_controller__status__draining
+msgid "Draining"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/ir_ui_menu.py:0
+#: model:ir.module.category,name:cetmix_drone.ir_module_category_drone
+msgid "Drone"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__drone_api_key
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__drone_api_key
+msgid "Drone API Key"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.module.category,name:cetmix_drone.ir_module_category_drone_access
+msgid "Drone Access"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.actions.act_window,name:cetmix_drone.cx_drone_controller_action
+#: model:ir.ui.menu,name:cetmix_drone.cx_drone_controller_menu
+msgid "Drone Controllers"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_res_config_settings__cetmix_drone_cron_batch_size
+msgid "Drone Cron Batch Size"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/res_config_settings.py:0
+msgid "Drone Cron Batch Size must be at least 1."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.actions.act_window,name:cetmix_drone.cx_drone_job_action
+#: model:ir.ui.menu,name:cetmix_drone.cx_drone_job_menu
+msgid "Drone Jobs"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_payload_key_wizard_view_form
+msgid "Drone Keys"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__drone_response_key
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__drone_response_key
+msgid "Drone Response Key"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.actions.act_window,name:cetmix_drone.cx_drone_skill_action
+#: model:ir.ui.menu,name:cetmix_drone.cx_drone_skill_menu
+msgid "Drone Skills"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__job_count
+msgid "Drone jobs dispatched to this controller"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.ui.menu,name:cetmix_drone.menu_cx_drone_root
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.res_config_settings_view_form
+msgid "Drones"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_controller__status__error
+msgid "Error"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_job__state__failed
+msgid "Failed"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_search
+msgid "Failed or Timed Out"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__payload_key
+msgid ""
+"Fernet key used to encrypt job payloads. Generated automatically when left "
+"empty"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_skill_view_form
+msgid "Fetch Schema"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Fetch Schemas"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Generate Keys"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid ""
+"Generate a new API key, payload key and response key, save them, and show "
+"them once so they can be copied. Also shows a result storage key, which is "
+"not saved"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__id
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__id
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__id
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__id
+msgid "ID"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "Job not found on the controller"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "Job was not submitted to any controller"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__job_count
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Jobs"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Keys"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__last_check
+msgid "Last Check"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__last_health_check
+msgid "Last Health Check"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__last_heartbeat
+msgid "Last Heartbeat"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__write_uid
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__write_uid
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__write_uid
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__write_date
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__write_date
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__write_date
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_job__last_check
+msgid "Last time a cron asked the controller about this job"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__priority
+msgid "Lower value means higher priority when selecting"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__max_running_jobs
+msgid "Max Jobs"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.constraint,message:cetmix_drone.constraint_cx_drone_controller_max_running_jobs_positive
+msgid "Max Jobs cannot be negative"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__max_running_jobs
+msgid "Maximum number of pending and running jobs. 0 means unlimited"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_ir_ui_menu
+msgid "Menu"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__method_name
+msgid "Method"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_ir_module_module
+msgid "Module"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__name
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__name
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+msgid "Name"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_skill_view_search
+msgid "Name/Reference"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "No connection"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "No drone controller accepted the job"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__nonce
+msgid "Nonce"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.constraint,message:cetmix_drone.constraint_cx_drone_job_nonce_unique
+msgid "Nonce must be unique"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_controller__status__not_reachable
+msgid "Not Reachable"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "Not allowed to change field(s): %(fields)s"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_res_config_settings__cetmix_drone_cron_batch_size
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.res_config_settings_view_form
+msgid ""
+"Number of jobs the poll and stale pending crons ask controllers about in one"
+" batch. Remaining jobs are handled right after."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "Only Tower Root can cancel drone jobs."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__payload_key
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__payload_key
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_payload_key_wizard_view_form
+msgid "Payload Key"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Payload Key must be a valid Fernet key."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_job__state__pending
+msgid "Pending"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__running_job_count
+msgid "Pending and running jobs, as counted against Max Jobs"
+msgstr ""
+
+#. module: cetmix_drone
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_search
+msgid "Pending or Running"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__priority
+msgid "Priority"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__reference
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__reference
+msgid "Reference"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__reservation_seq
+msgid "Reservation Seq"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_payload_key_wizard__result_storage_key
+msgid "Result Storage Key"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_job__state__running
+msgid "Running"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__running_job_count
+msgid "Running Jobs"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__schema
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_controller_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_skill_view_form
+msgid "Schema"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_skill__schema_text
+msgid "Schema Text"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Schema fetched"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Schema not fetched"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Schemas could not be loaded from this controller."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Schemas fetched"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Schemas not fetched"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Schemas were loaded from this controller."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_job__timeout
+msgid "Seconds without heartbeat. 0 means no timeout"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__drone_api_key
+msgid "Sent by Odoo to the controller"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__drone_response_key
+msgid "Sent by the controller to Odoo"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__reservation_seq
+msgid "Serialization token for job reservation. Its value is meaningless"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model,name:cetmix_drone.model_cx_drone_payload_key_wizard
+msgid "Show Generated Drone Keys"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__skill_id
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_search
+msgid "Skill"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__skill_ids
+msgid "Skills"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,help:cetmix_drone.field_cx_drone_controller__skill_ids
+msgid "Skills reported by the last successful health check"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__state
+#: model_terms:ir.ui.view,arch_db:cetmix_drone.cx_drone_job_view_search
+msgid "State"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__status
+msgid "Status"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "Status: %(status)s"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__tag_ids
+msgid "Tags"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__res_model
+msgid "Target Model"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__res_ids
+msgid "Target Records"
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "The completion callback must be a bound method of a recordset."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "The completion callback must be bound to a recordset."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "The completion callback must be bound to saved records."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "The drone payload must be JSON-serializable."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "The drone payload must be a dictionary."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_job.py:0
+msgid "The drone timeout must be an integer greater than or equal to zero."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "The schema could not be loaded for this skill."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_controller.py:0
+msgid "The schema was loaded for this skill."
+msgstr ""
+
+#. module: cetmix_drone
+#. odoo-python
+#: code:addons/cetmix_drone/models/cx_drone_skill.py:0
+msgid "This skill is not linked to a controller."
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields.selection,name:cetmix_drone.selection__cx_drone_job__state__timed_out
+msgid "Timed Out"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__timeout
+msgid "Timeout"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_controller__controller_url
+msgid "URL"
+msgstr ""
+
+#. module: cetmix_drone
+#: model:ir.model.fields,field_description:cetmix_drone.field_cx_drone_job__user_id
+msgid "User"
+msgstr ""
