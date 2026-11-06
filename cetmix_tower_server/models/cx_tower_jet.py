@@ -74,6 +74,10 @@ class CxTowerJet(models.Model):
     jet_template_domain = fields.Binary(
         compute="_compute_jet_template_domain",
     )
+    allowed_variable_domain = fields.Binary(
+        compute="_compute_allowed_variable_domain",
+        help="Domain for variables",
+    )
     server_id = fields.Many2one(
         comodel_name="cx.tower.server",
         required=True,
@@ -255,6 +259,15 @@ class CxTowerJet(models.Model):
         for jet in self:
             jet.jet_template_domain = (
                 [("server_ids", "in", [jet.server_id.id])] if jet.server_id else []
+            )
+
+    @api.depends("jet_template_id.allowed_variable_ids")
+    def _compute_allowed_variable_domain(self):
+        """Empty domain allows all variables"""
+        for jet in self:
+            allowed_variables = jet.jet_template_id.allowed_variable_ids
+            jet.allowed_variable_domain = (
+                [("id", "in", allowed_variables.ids)] if allowed_variables else []
             )
 
     @api.depends("jet_template_id")

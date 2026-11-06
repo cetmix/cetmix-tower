@@ -148,6 +148,25 @@ class CxTowerJetTemplate(models.Model):
         copy=True,
     )
 
+    allowed_variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_jet_template_allowed_variable_rel",
+        column1="jet_template_id",
+        column2="variable_id",
+        string="Allowed Variables",
+        compute="_compute_allowed_variable_ids",
+        store=True,
+        readonly=False,
+        copy=False,
+        help="Only these variables are offered when adding variable values "
+        "to the template and to the jets based on it. "
+        "Leave empty to allow all variables.",
+    )
+    allowed_variable_domain = fields.Binary(
+        compute="_compute_allowed_variable_domain",
+        help="Domain for variables",
+    )
+
     # Actions
     action_ids = fields.One2many(
         comodel_name="cx.tower.jet.action",
@@ -246,6 +265,69 @@ class CxTowerJetTemplate(models.Model):
         """Compute the number of jets for each template."""
         for template in self:
             template.jet_count = len(template.jet_ids)
+
+    @api.depends(
+        "variable_value_ids.variable_id",
+        "variable_value_ids.variable_ids",
+        "action_ids.plan_id.all_variable_ids",
+        "plan_install_id.all_variable_ids",
+        "plan_uninstall_id.all_variable_ids",
+        "plan_clone_same_server_id.all_variable_ids",
+        "plan_clone_different_server_id.all_variable_ids",
+        "waypoint_template_ids.plan_create_id.all_variable_ids",
+        "waypoint_template_ids.plan_arrive_id.all_variable_ids",
+        "waypoint_template_ids.plan_leave_id.all_variable_ids",
+        "waypoint_template_ids.plan_delete_id.all_variable_ids",
+        "scheduled_task_ids.plan_id.all_variable_ids",
+        "scheduled_task_ids.command_id.variable_ids",
+        "scheduled_task_ids.command_id.file_template_id.variable_ids",
+        "server_log_ids.command_id.variable_ids",
+        "server_log_ids.command_id.file_template_id.variable_ids",
+        "server_log_ids.file_template_id.variable_ids",
+        "file_ids.variable_ids",
+    )
+    def _compute_allowed_variable_ids(self):
+        """Collect variables used by this jet template.
+
+        Other jet templates and the templates this one requires are not followed.
+        Nested flight plans are already included in `all_variable_ids` of a plan.
+        """
+        for template in self:
+            values = template.variable_value_ids
+            plans = (
+                template.action_ids.plan_id
+                | template.plan_install_id
+                | template.plan_uninstall_id
+                | template.plan_clone_same_server_id
+                | template.plan_clone_different_server_id
+                | template.waypoint_template_ids.plan_create_id
+                | template.waypoint_template_ids.plan_arrive_id
+                | template.waypoint_template_ids.plan_leave_id
+                | template.waypoint_template_ids.plan_delete_id
+                | template.scheduled_task_ids.plan_id
+            )
+            commands = template.scheduled_task_ids.command_id | (
+                template.server_log_ids.command_id
+            )
+            template.allowed_variable_ids = (
+                values.variable_id
+                | values.variable_ids
+                | plans.all_variable_ids
+                | commands.variable_ids
+                | commands.file_template_id.variable_ids
+                | template.server_log_ids.file_template_id.variable_ids
+                | template.file_ids.variable_ids
+            )
+
+    @api.depends("allowed_variable_ids")
+    def _compute_allowed_variable_domain(self):
+        """Empty domain allows all variables"""
+        for template in self:
+            template.allowed_variable_domain = (
+                [("id", "in", template.allowed_variable_ids.ids)]
+                if template.allowed_variable_ids
+                else []
+            )
 
     @api.depends(
         "action_ids",

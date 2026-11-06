@@ -60,6 +60,20 @@ class CxTowerPlan(models.Model):
         compute="_compute_command_ids",
         store=True,
     )
+    # Technical field. Lets dependent records (eg Jet Templates) be recomputed
+    # when a nested flight plan changes at any depth
+    all_variable_ids = fields.Many2many(
+        comodel_name="cx.tower.variable",
+        relation="cx_tower_plan_all_variable_rel",
+        column1="plan_id",
+        column2="variable_id",
+        string="All Variables",
+        compute="_compute_all_variable_ids",
+        recursive=True,
+        store=True,
+        copy=False,
+        help="Variables used by this flight plan and by the flight plans it runs",
+    )
     note = fields.Text()
     on_error_action = fields.Selection(
         string="On Error",
@@ -118,6 +132,69 @@ class CxTowerPlan(models.Model):
         """Compute command ids"""
         for plan in self:
             plan.command_ids = plan.line_ids.command_id
+
+    def _get_nested_flight_plans(self):
+        """List flight plans run by this plan, directly or through other plans.
+
+        Plans are listed after the plans they run, each plan once.
+        Plain loops are used instead of recursion, so deep chains of plans
+        do not exhaust the Python stack.
+
+        Returns:
+            list(cx.tower.plan()): Nested flight plans, deepest first
+        """
+        self.ensure_one()
+        visited_ids = {self.id}
+        nested = []
+        stack = [(self, iter(self.line_ids.command_id.flight_plan_id))]
+        while stack:
+            plan, children = stack[-1]
+            child = next((c for c in children if c.id not in visited_ids), None)
+            if child:
+                visited_ids.add(child.id)
+                stack.append((child, iter(child.line_ids.command_id.flight_plan_id)))
+                continue
+            stack.pop()
+            if stack:
+                nested.append(plan)
+        return nested
+
+    @api.depends(
+        "line_ids.variable_ids",
+        "line_ids.command_id.variable_ids",
+        "line_ids.command_id.file_template_id.variable_ids",
+        "line_ids.command_id.flight_plan_id.all_variable_ids",
+        "line_ids.action_ids.variable_value_ids.variable_id",
+        "line_ids.action_ids.variable_value_ids.variable_ids",
+    )
+    def _compute_all_variable_ids(self):
+        """Collect variables used by the plan and by all the plans it runs.
+
+        Nested plans are followed to any depth.
+        Each plan is visited once, so plan cycles do not loop forever.
+        """
+        for plan in self:
+            nested_plans = plan._get_nested_flight_plans()
+            # Odoo stops marking dependent records of a recursive field when
+            # they are already waiting for recomputation. Compute nested plans
+            # now so a later change still reaches this plan.
+            # Deepest plans go first and their own refresh is skipped: this
+            # loop already covers every plan they run. Otherwise plans that
+            # run each other would nest one compute into another.
+            if not self.env.context.get("cetmix_tower_plan_refresh"):
+                for nested_plan in nested_plans:
+                    refresh = nested_plan.with_context(cetmix_tower_plan_refresh=True)
+                    refresh.all_variable_ids  # noqa: B018 pylint: disable=pointless-statement
+            lines = plan.union(*nested_plans).line_ids
+            commands = lines.command_id
+            values = lines.action_ids.variable_value_ids
+            plan.all_variable_ids = (
+                lines.variable_ids
+                | commands.variable_ids
+                | commands.file_template_id.variable_ids
+                | values.variable_id
+                | values.variable_ids
+            )
 
     def action_open_plan_logs(self):
         """
