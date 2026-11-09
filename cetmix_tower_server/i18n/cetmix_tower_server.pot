@@ -420,7 +420,8 @@ msgid "A template cannot depend on itself!"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_value_unique_variable_value_jet_template
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 msgid ""
 "A variable value cannot be assigned multiple times to the same jet template!"
 msgstr ""
@@ -716,7 +717,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_value_view_tree
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "All"
 msgstr ""
 
@@ -904,6 +909,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__reference
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_environment__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet__reference
@@ -929,6 +935,7 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_option__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__reference
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__variable_reference
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_environment_view_tree
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_os_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_line_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_log_view_form
@@ -982,6 +989,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_jet.py:0
 msgid "Cannot create waypoint for jet %s because it is busy"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_environment.py:0
+msgid ""
+"Cannot delete environment(s) %(environments)s: they are used in variable "
+"values %(values)s."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1093,6 +1108,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_command_log
 msgid "Cetmix Tower Command Log"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_environment
+msgid "Cetmix Tower Environment"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1353,6 +1373,7 @@ msgid "Code of the associated file template"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_action__color
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_state__color
@@ -1693,6 +1714,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__create_uid
@@ -1740,6 +1762,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__create_date
@@ -1967,6 +1990,11 @@ msgid "Days of Week"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__environment_default_id
+msgid "Default Environment"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__path
 msgid "Default Path"
 msgstr ""
@@ -2097,6 +2125,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__display_name
@@ -2250,6 +2279,43 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__environment_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_clone_wizard__environment_id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_create_wizard__environment_id
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_view_search
+msgid "Environment"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_mixin.py:0
+msgid "Environment '%(tower_env)s' not found"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_template__environment_default_id
+msgid ""
+"Environment of Jets created by jet requests when the requesting Jet has none"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_create_wizard__environment_id
+msgid "Environment of the jet"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_clone_wizard__environment_id
+msgid "Environment of the new jet"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.actions.act_window,name:cetmix_tower_server.action_cx_tower_environment
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_variable_value__environment_ids
+#: model:ir.ui.menu,name:cetmix_tower_server.menu_cx_tower_environment
+msgid "Environments"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__command_error
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_jet_waypoint__state__error
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_search_view
@@ -2271,6 +2337,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 msgid "Error retrieving host key: %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet__env_required
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_clone_wizard__env_required
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_create_wizard__env_required
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet_template__env_required
+msgid "Every new Jet created from this template must have an environment"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2838,6 +2912,7 @@ msgid "For Dependency"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_environment__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_os__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__color
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__color
@@ -3013,6 +3088,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__id
@@ -3423,6 +3499,14 @@ msgid "Jet '%(jet)s' is currently executing an action"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet.py:0
+msgid ""
+"Jet '%(jet)s' must have an environment: Jet Template '%(template)s' requires"
+" it."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__jet_action_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__jet_action_id
 msgid "Jet Action"
@@ -3484,6 +3568,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_waypoint_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_jet_request_search
 msgid "Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_jet_template.py:0
+msgid ""
+"Jet Template '%(template)s' requires an environment: please set the Default "
+"Environment."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3792,6 +3884,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__write_uid
@@ -3839,6 +3932,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard_variable_value__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__write_date
@@ -3903,6 +3997,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_waypoint_template_view_form
 msgid "Leave blank to autogenerate"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_value__environment_ids
+msgid "Leave empty to apply to all environments"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -4165,6 +4264,7 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__name
@@ -4206,6 +4306,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_environment_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_template_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_view_search
@@ -5080,6 +5181,7 @@ msgstr ""
 
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command__reference
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_environment__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file_template__reference
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__reference
@@ -5252,6 +5354,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__template_requires_ids
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_view_form
 msgid "Requires"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet__env_required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_clone_wizard__env_required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_create_wizard__env_required
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__env_required
+msgid "Requires Environment"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -5547,6 +5657,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_search_view
 msgid "Search Commands"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_environment_search_view
+msgid "Search Environments"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -6995,8 +7110,24 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
 msgid ""
+"Variable '%(var)s' already has a value for environment(s) %(environments)s "
+"in the same scope."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
+msgid ""
 "Variable '%(var)s' can only be assigned to one of the models at a time: "
 "Server, Jet, Jet Template, Server Template, or Plan Line Action."
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_variable_value.py:0
+msgid ""
+"Variable '%(var)s': environments can be set only on Server, Jet Template and"
+" global values."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -7116,6 +7247,11 @@ msgstr ""
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__variable_value_ids
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_variable_mixin__variable_value_ids
 msgid "Variable values for selected record"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_jet__environment_id
+msgid "Variable values tagged with this environment are used for this jet"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -7532,6 +7668,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/common.py:0
 msgid "groups_ref must be string or list of strings!"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_clone_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_create_wizard_view_form
+msgid "in the environment"
 msgstr ""
 
 #. module: cetmix_tower_server
