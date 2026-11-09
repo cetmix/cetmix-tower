@@ -1,3 +1,8 @@
+## 18.0.4.0.0 (2026-11-09)
+
+- Features: Pass the selected environment from the Create Jet and Clone Jet wizards with Git Projects to the new jet. (5708)
+
+
 ## 18.0.3.2.0 (2026-11-04)
 
 - Features: Autocomplete Git remote Head, and keep a slash inside a branch name. (5696)

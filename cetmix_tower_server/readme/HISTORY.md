@@ -1,3 +1,8 @@
+## 18.0.4.0.0 (2026-11-09)
+
+- Features: Environments: tag Server, Jet Template and global variable values with environments such as Production or Development, and set an Environment on each Jet. A Jet uses the values tagged with its environment, or the untagged ones. Jet Templates can require an environment, with a default one for jets created by jet requests. (5708)
+
+
 ## 18.0.3.3.0 (2026-11-06)
 
 - Features: Jet Template: add the editable Allowed Variables field. It is computed from what the template uses and narrows variable pickers in Jet Template, Jet, Create Jet and Clone Jet screens. An empty list allows all variables. (5707)

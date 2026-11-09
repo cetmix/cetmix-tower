@@ -1,3 +1,8 @@
+## 18.0.2.0.0 (2026-11-09)
+
+- Bugfixes: Generate unique references for records created together in one batch, e.g. two values of the same variable added on one form. (5708)
+
+
 ## 18.0.1.0.1 (2026-09-18)
 
 - Features: Make the Logs menu available to modules depending only on Tower Base, preserving existing menu entries and their order on upgrade. (5628)

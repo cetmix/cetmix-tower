@@ -25,17 +25,17 @@ addon | version | maintainers | summary
 [cetmix_drone](cetmix_drone/) | 18.0.1.0.0 |  | Run long work on external workers and get the result back in Odoo
 [cetmix_tower](cetmix_tower/) | 18.0.1.0.0 |  | Odoo SAAS Server Application Management
 [cetmix_tower_aws](cetmix_tower_aws/) | 18.0.1.0.1 |  | Cetmix Tower AWS EC2 API integration
-[cetmix_tower_base](cetmix_tower_base/) | 18.0.1.1.0 |  | Core access groups, menus and mixins for Cetmix Tower
+[cetmix_tower_base](cetmix_tower_base/) | 18.0.2.0.0 |  | Core access groups, menus and mixins for Cetmix Tower
 [cetmix_tower_drone_ssh](cetmix_tower_drone_ssh/) | 18.0.1.0.0 |  | Run Cetmix Tower SSH commands on external drones
-[cetmix_tower_git](cetmix_tower_git/) | 18.0.3.2.0 |  | Cetmix Tower Git Management Tools
+[cetmix_tower_git](cetmix_tower_git/) | 18.0.4.0.0 |  | Cetmix Tower Git Management Tools
 [cetmix_tower_git_github](cetmix_tower_git_github/) | 18.0.1.0.0 |  | List GitHub branches, pull requests, and commits on a Git remote
 [cetmix_tower_ovh](cetmix_tower_ovh/) | 18.0.1.0.1 | <a href='https://github.com/GSLabIt'><img src='https://github.com/GSLabIt.png' width='32' height='32' style='border-radius:50%;' alt='GSLabIt'/></a> | Cetmix Tower OVH API integration
-[cetmix_tower_server](cetmix_tower_server/) | 18.0.3.3.0 |  | Manage servers and applications from Odoo
+[cetmix_tower_server](cetmix_tower_server/) | 18.0.4.0.0 |  | Manage servers and applications from Odoo
 [cetmix_tower_server_project_link](cetmix_tower_server_project_link/) | 18.0.1.0.0 |  | Link Cetmix Tower Jets to Odoo Project tasks
 [cetmix_tower_server_queue](cetmix_tower_server_queue/) | 18.0.2.1.2 |  | Cetmix Tower asynchronous task execution using 'queue_job'
 [cetmix_tower_ssh_proxy](cetmix_tower_ssh_proxy/) | 18.0.1.0.0 |  | Connect to Tower servers through SSH jump/proxy servers
 [cetmix_tower_webhook](cetmix_tower_webhook/) | 18.0.2.1.0 |  | Webhook implementation for Cetmix Tower
-[cetmix_tower_yaml](cetmix_tower_yaml/) | 18.0.3.1.0 |  | Cetmix Tower YAML export/import
+[cetmix_tower_yaml](cetmix_tower_yaml/) | 18.0.4.0.0 |  | Cetmix Tower YAML export/import
 [cx_web_refresh_from_backend](cx_web_refresh_from_backend/) | 18.0.1.0.0 |  | Refresh frontend views from backend
 [cx_web_widget_autocomplete](cx_web_widget_autocomplete/) | 18.0.1.0.0 |  | Autocomplete widget
 
