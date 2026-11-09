@@ -10,6 +10,7 @@ class TestTowerBaseCommon(BaseCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.tower_group_user = cls.env.ref("cetmix_tower_base.group_user")
         cls.tower_group_manager = cls.env.ref("cetmix_tower_base.group_manager")
         cls.tower_group_root = cls.env.ref("cetmix_tower_base.group_root")
@@ -20,7 +21,7 @@ class TestTowerBaseCommon(BaseCommon):
                 "name": "Tower Internal",
                 "login": "tower_internal",
                 "email": "tower_internal@example.com",
-                "groups_id": [(6, 0, [cls.env.ref("base.group_user").id])],
+                "group_ids": [(6, 0, [cls.env.ref("base.group_user").id])],
             }
         )
         cls.user_user = cls.Users.create(
@@ -28,7 +29,7 @@ class TestTowerBaseCommon(BaseCommon):
                 "name": "Tower User",
                 "login": "tower_user",
                 "email": "tower_user@example.com",
-                "groups_id": [
+                "group_ids": [
                     (
                         6,
                         0,
@@ -45,7 +46,7 @@ class TestTowerBaseCommon(BaseCommon):
                 "name": "Tower Manager",
                 "login": "tower_manager",
                 "email": "tower_manager@example.com",
-                "groups_id": [
+                "group_ids": [
                     (
                         6,
                         0,
@@ -62,7 +63,7 @@ class TestTowerBaseCommon(BaseCommon):
                 "name": "Tower Root",
                 "login": "tower_root",
                 "email": "tower_root@example.com",
-                "groups_id": [
+                "group_ids": [
                     (
                         6,
                         0,

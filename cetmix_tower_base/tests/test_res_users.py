@@ -25,3 +25,20 @@ class TestResUsers(TestTowerBaseCommon):
         self.assertFalse(
             self.Users.with_user(self.user_internal)._cetmix_tower_access_level()
         )
+
+    def test_role_domains_include_implied_groups(self):
+        """Root remains selectable for roles inherited through implied groups."""
+        roles = self.env["cx.tower.access.role.mixin"]
+        for field_name in ("user_ids", "manager_ids"):
+            domain = roles._fields[field_name].domain(roles)
+            users = self.Users.search(domain)
+            self.assertIn(self.user_root, users)
+            self.assertIn(self.user_manager, users)
+            self.assertNotIn(self.user_internal, users)
+        self.assertIn(
+            self.user_user, self.Users.search(roles._fields["user_ids"].domain(roles))
+        )
+        self.assertNotIn(
+            self.user_user,
+            self.Users.search(roles._fields["manager_ids"].domain(roles)),
+        )

@@ -25,7 +25,7 @@
         <field name="view_id" ref="res_config_settings_view_form" />
         <field name="path">cetmix_tower_settings</field>
         <field name="view_mode">form</field>
-        <field name="target">inline</field>
+        <field name="target">current</field>
         <field
             name="context"
         >{'module' : 'cetmix_tower_base', 'bin_size': False}</field>

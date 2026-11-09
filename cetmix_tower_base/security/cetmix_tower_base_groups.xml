@@ -10,9 +10,14 @@
         <field name="name">Access Level</field>
     </record>
 
+    <record id="res_groups_privilege_tower" model="res.groups.privilege">
+        <field name="name">Access Level</field>
+        <field name="category_id" ref="ir_module_category_tower" />
+    </record>
+
     <record id="group_user" model="res.groups">
         <field name="name">User</field>
-        <field name="category_id" ref="ir_module_category_tower_server" />
+        <field name="privilege_id" ref="res_groups_privilege_tower" />
         <field name="comment">
         Basic actions for selected servers.
     </field>
@@ -20,7 +25,7 @@
 
     <record id="group_manager" model="res.groups">
         <field name="name">Manager</field>
-        <field name="category_id" ref="ir_module_category_tower_server" />
+        <field name="privilege_id" ref="res_groups_privilege_tower" />
         <field name="implied_ids" eval="[(4, ref('group_user'))]" />
         <field name="comment">
         Create and modify selected servers.
@@ -29,7 +34,7 @@
 
     <record id="group_root" model="res.groups">
         <field name="name">Root</field>
-        <field name="category_id" ref="ir_module_category_tower_server" />
+        <field name="privilege_id" ref="res_groups_privilege_tower" />
         <field name="implied_ids" eval="[(4, ref('group_manager'))]" />
         <field name="comment">
         Full control over all servers.

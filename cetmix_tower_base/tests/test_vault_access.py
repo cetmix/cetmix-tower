@@ -1,7 +1,10 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from psycopg2 import IntegrityError
+
 from odoo.exceptions import AccessError
+from odoo.tools import mute_logger
 
 from .common import TestTowerBaseCommon
 
@@ -17,7 +20,7 @@ class TestVaultAccess(TestTowerBaseCommon):
                 "name": "Tower System Admin",
                 "login": "tower_system_admin",
                 "email": "tower_system_admin@example.com",
-                "groups_id": [(6, 0, [cls.env.ref("base.group_system").id])],
+                "group_ids": [(6, 0, [cls.env.ref("base.group_system").id])],
             }
         )
         cls.Vault = cls.env["cx.tower.vault"]
@@ -86,3 +89,14 @@ class TestVaultAccess(TestTowerBaseCommon):
         extra.sudo().unlink()
         self.assertFalse(extra.exists())
         record.sudo().unlink()
+
+    def test_vault_constraint(self):
+        """A resource field can have only one secret in the vault."""
+        vals = self._vault_vals("unique_secret")
+        self.Vault.sudo().create(vals)
+        with (
+            mute_logger("odoo.sql_db"),
+            self.assertRaises(IntegrityError),
+            self.env.cr.savepoint(),
+        ):
+            self.Vault.sudo().create(vals)

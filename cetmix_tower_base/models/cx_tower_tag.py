@@ -1,6 +1,6 @@
 # Copyright (C) 2022 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import _, fields, models
+from odoo import fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -50,7 +50,7 @@ class CxTowerTag(models.Model):
         for tag in self:
             if any(tag[field_name] for field_name in usage_fields):
                 raise ValidationError(
-                    _(
+                    self.env._(
                         "Cannot delete tag '%(tag_name)s' because"
                         " it is used in related records.",
                         tag_name=tag.name,

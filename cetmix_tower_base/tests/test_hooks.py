@@ -1,9 +1,9 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.modules.migration import exec_script
-from odoo.tools import file_path
+from odoo.modules.module import Manifest
 
+from .. import pre_init_hook
 from ..hooks import XMLIDS_TO_BASE, _move_server_xmlids_to_base
 from .common import TestTowerBaseCommon
 
@@ -11,8 +11,12 @@ from .common import TestTowerBaseCommon
 class TestTowerBaseHooks(TestTowerBaseCommon):
     """Tests for the xmlid re-own helper used by pre_init_hook."""
 
-    def test_logs_migration_preserves_menu_and_children(self):
-        """Upgrading base preserves the existing menu and custom child placement."""
+    def test_pre_init_hook_preserves_records(self):
+        """The registered hook preserves group membership and menu children."""
+        manifest = Manifest.for_addon("cetmix_tower_base")
+        self.assertEqual(manifest["pre_init_hook"], "pre_init_hook")
+        root_group = self.tower_group_root
+        groups_before = self.user_root.group_ids
         menu = self.env.ref("cetmix_tower_base.menu_cx_tower_log_root")
         menus = self.env["ir.ui.menu"]
         menus.create(
@@ -24,7 +28,7 @@ class TestTowerBaseHooks(TestTowerBaseCommon):
         children = menus.with_context(**{"ir.ui.menu.full_list": True}).search(
             [("parent_id", "=", menu.id)]
         )
-        fields = ["name", "parent_id", "sequence", "action", "groups_id"]
+        fields = ["name", "parent_id", "sequence", "action", "group_ids"]
         before = (menu | children).read(fields)
         self.env.flush_all()
         self.env.cr.execute(
@@ -32,22 +36,17 @@ class TestTowerBaseHooks(TestTowerBaseCommon):
             UPDATE ir_model_data
                SET module = 'cetmix_tower_server'
              WHERE module = 'cetmix_tower_base'
-               AND name = 'menu_cx_tower_log_root'
+               AND name IN ('menu_cx_tower_log_root', 'group_root')
             """
         )
-        exec_script(
-            self.env.cr,
-            "18.0.1.0.0",
-            file_path("cetmix_tower_base/migrations/18.0.1.0.1/pre-migrate.py"),
-            "cetmix_tower_base",
-            "pre",
-            "18.0.1.0.1",
-        )
+        pre_init_hook(self.env)
         self.env.registry.clear_cache()
         self.assertEqual(self.env.ref("cetmix_tower_base.menu_cx_tower_log_root"), menu)
         self.assertEqual(_move_server_xmlids_to_base(self.env.cr), 0)
         self.env.invalidate_all()
         self.assertEqual((menu | children).read(fields), before)
+        self.assertEqual(self.env.ref("cetmix_tower_base.group_root"), root_group)
+        self.assertEqual(self.user_root.group_ids, groups_before)
         self.env.cr.execute(
             """
             SELECT module, res_id

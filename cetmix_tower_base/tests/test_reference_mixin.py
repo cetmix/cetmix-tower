@@ -1,6 +1,10 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from psycopg2 import IntegrityError
+
+from odoo.tools import mute_logger
+
 from .common import TestTowerBaseCommon
 
 
@@ -31,3 +35,14 @@ class TestReferenceMixinBatch(TestTowerBaseCommon):
         self.Tag.create({"name": "Existing Tag"})
         tags = self.Tag.create([{"name": "Existing Tag"}, {"name": "Existing Tag"}])
         self.assertEqual(tags.mapped("reference"), ["existing_tag_2", "existing_tag_3"])
+
+    def test_reference_constraint(self):
+        """Bypassing reference generation still enforces database uniqueness."""
+        tags = self.Tag.with_context(reference_mixin_override=True)
+        tags.create({"name": "Unique one", "reference": "unique_constraint"})
+        with (
+            mute_logger("odoo.sql_db"),
+            self.assertRaises(IntegrityError),
+            self.env.cr.savepoint(),
+        ):
+            tags.create({"name": "Unique two", "reference": "unique_constraint"})

@@ -40,10 +40,7 @@ class CxTowerVault(models.Model):
         help="The secret data to be stored in the vault",
     )
 
-    _sql_constraints = [
-        (
-            "vault_unique_key",
-            "UNIQUE(res_model, res_id, field_name)",
-            "Each secret (model, record, field) must be unique in the vault.",
-        ),
-    ]
+    _vault_unique_key = models.Constraint(
+        "UNIQUE(res_model, res_id, field_name)",
+        "Each secret (model, record, field) must be unique in the vault.",
+    )

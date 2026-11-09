@@ -3,8 +3,7 @@
 import re
 from collections import defaultdict
 
-from odoo import _, api, fields, models
-from odoo.osv import expression
+from odoo import api, fields, models
 from odoo.tools import ormcache
 
 
@@ -28,9 +27,9 @@ class CxTowerReferenceMixin(models.AbstractModel):
         help="Can contain English letters, digits and '_'. Leave blank to autogenerate",
     )
 
-    _sql_constraints = [
-        ("reference_unique", "UNIQUE(reference)", "Reference must be unique")
-    ]
+    _reference_unique = models.Constraint(
+        "UNIQUE(reference)", "Reference must be unique"
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -47,7 +46,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
             Records: The created record(s).
         """
 
-        if vals_list and not self._context.get("reference_mixin_override"):
+        if vals_list and not self.env.context.get("reference_mixin_override"):
             # Check if we need to populate references based on parent record
             auto_generate_settings = self._get_pre_populated_model_data().get(
                 self._name
@@ -116,7 +115,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
             else {}
         )
 
-        if not self._context.get("reference_mixin_override") and "reference" in vals:
+        if not self.env.context.get("reference_mixin_override") and "reference" in vals:
             reference = vals.get("reference", False)
             if not reference:
                 # Get name from vals
@@ -302,10 +301,10 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
         # If exclude same records from search results
         if self and not self.env.context.get("reference_mixin_skip_self"):
-            domain = [("id", "not in", self.ids)]
+            domain = fields.Domain("id", "not in", self.ids)
         else:
-            domain = []
-        final_domain = expression.AND([domain, [("reference", "=", final_reference)]])
+            domain = fields.Domain.TRUE
+        final_domain = domain & fields.Domain("reference", "=", final_reference)
 
         # Search all records without restrictions including archived
         self_with_sudo_and_context = self.sudo().with_context(active_test=False)
@@ -316,9 +315,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
         ):
             counter += 1
             final_reference = f"{reference}_{counter}"
-            final_domain = expression.AND(
-                [domain, [("reference", "=", final_reference)]]
-            )
+            final_domain = domain & fields.Domain("reference", "=", final_reference)
 
         return final_reference
 
@@ -336,14 +333,14 @@ class CxTowerReferenceMixin(models.AbstractModel):
         """
         self.ensure_one()
         original_name = force_name or self.name
-        copy_name = _("%(name)s (copy)", name=original_name)
+        copy_name = self.env._("%(name)s (copy)", name=original_name)
 
         counter = 1
         # Ensures that the generated copy name is unique by
         # appending a counter until a unique name is found.
         while self.search_count([("name", "=", copy_name)]) > 0:
             counter += 1
-            copy_name = _(
+            copy_name = self.env._(
                 "%(name)s (copy %(number)s)",
                 name=original_name,
                 number=str(counter),
@@ -425,7 +422,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
             CxModel = self.env[model]
         except KeyError as err:
             raise ValueError(
-                _(
+                self.env._(
                     (
                         "Model '%(model)s' does not exist. "
                         "Please provide a valid model name."

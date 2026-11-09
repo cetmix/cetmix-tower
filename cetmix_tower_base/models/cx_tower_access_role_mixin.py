@@ -18,7 +18,7 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         column2="user_id",
         string="Users",
         domain=lambda self: [
-            ("groups_id", "in", [self.env.ref("cetmix_tower_base.group_user").id])
+            ("all_group_ids", "in", [self.env.ref("cetmix_tower_base.group_user").id])
         ],
         default=lambda self: self._default_user_ids(),
         help="Users who can view this record",
@@ -32,7 +32,11 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         string="Managers",
         groups="cetmix_tower_base.group_manager",
         domain=lambda self: [
-            ("groups_id", "in", [self.env.ref("cetmix_tower_base.group_manager").id])
+            (
+                "all_group_ids",
+                "in",
+                [self.env.ref("cetmix_tower_base.group_manager").id],
+            )
         ],
         default=lambda self: self._default_manager_ids(),
         help="Managers who can modify this record",
