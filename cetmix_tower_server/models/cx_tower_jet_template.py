@@ -94,6 +94,19 @@ class CxTowerJetTemplate(models.Model):
         "in the wizard to create a new jet",
     )
 
+    # Environments
+    env_required = fields.Boolean(
+        string="Requires Environment",
+        help="Every new Jet created from this template must have an environment",
+    )
+    environment_default_id = fields.Many2one(
+        comodel_name="cx.tower.environment",
+        string="Default Environment",
+        ondelete="restrict",
+        help="Environment of Jets created by jet requests "
+        "when the requesting Jet has none",
+    )
+
     # Flight Plans
     plan_install_id = fields.Many2one(
         comodel_name="cx.tower.plan",
@@ -396,6 +409,24 @@ class CxTowerJetTemplate(models.Model):
             template.dependency_graph_image = template.dependency_graph_svg
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    #   Constraints
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    @api.constrains("env_required", "environment_default_id")
+    def _check_environment_default_id(self):
+        """A template that requires an environment must have a default one.
+        It is used by jet requests when the requesting Jet has no environment.
+        """
+        for template in self:
+            if template.env_required and not template.environment_default_id:
+                raise ValidationError(
+                    _(
+                        "Jet Template '%(template)s' requires an environment:"
+                        " please set the Default Environment.",
+                        template=template.name,
+                    )
+                )
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   ORM methods
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     def unlink(self):
@@ -576,9 +607,9 @@ class CxTowerJetTemplate(models.Model):
     #  General functions
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    def get_variable_value(self, variable_reference, no_fallback=False):
+    def get_variable_value(self, variable_reference, no_fallback=False, tower_env=None):
         """
-        Return the value of a variable for the current jet.
+        Return the value of a variable for the current jet template.
         NB: this function follows the value application order.
         Jet Template->Server->Global
         Args:
@@ -586,21 +617,25 @@ class CxTowerJetTemplate(models.Model):
                 to get the value for
             no_fallback (bool): If True, will return current record value
                 without checking fallback values.
-
+            tower_env (Char): Reference of the tower environment, eg 'prod'.
+                Values tagged with this environment are preferred
+                over values without environments.
 
         Returns:
             str: The value of the variable for the current record or None
         """
         self.ensure_one()
         if no_fallback:
-            return super().get_variable_value(variable_reference, no_fallback)
-        variable = self.env["cx.tower.variable"].get_by_reference(variable_reference)
-        if not variable:
-            return None
-        values = variable._get_variable_values_by_references(
-            variable_references=[variable_reference], jet_template=self
+            return super().get_variable_value(
+                variable_reference, no_fallback, tower_env=tower_env
+            )
+        return self._get_variable_value_with_fallback(
+            variable_reference, tower_env, jet_template=self
         )
-        return values[variable_reference]
+
+    def _variable_value_environment_allowed(self):
+        """Jet Template values can have environments"""
+        return True
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     #   Template Actions
@@ -1004,6 +1039,7 @@ class CxTowerJetTemplate(models.Model):
             "jet_cloned_from_id",
             "scheduled_task_ids",
             "server_log_ids",
+            "environment_id",
         ]
 
     def _allow_jet_creation(self, server):

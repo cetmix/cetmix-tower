@@ -15,6 +15,8 @@ class CxTowerJetTemplate(models.Model):
     tag_ids = fields.Many2many(yaml_export="include")
     limit_per_server = fields.Integer(yaml_export=True)
     show_in_create_wizard = fields.Boolean(yaml_export=True)
+    env_required = fields.Boolean(yaml_export=True)
+    environment_default_id = fields.Many2one(yaml_export="reference")
     plan_install_id = fields.Many2one(yaml_export="include")
     plan_uninstall_id = fields.Many2one(yaml_export="include")
     plan_clone_same_server_id = fields.Many2one(yaml_export="include")

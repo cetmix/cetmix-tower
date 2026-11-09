@@ -58,7 +58,10 @@ class CxTowerReferenceMixin(models.AbstractModel):
                     parent_model, relation_field, vals_list
                 )
 
-            # Fix or create references
+            # Fix or create references.
+            # Track references assigned in this batch: they are not
+            # in the database yet, so the uniqueness check can't see them.
+            batch_references = set()
             for vals in vals_list:
                 if not vals:
                     continue
@@ -80,9 +83,11 @@ class CxTowerReferenceMixin(models.AbstractModel):
                     vals["name"] = name
 
                 # Generate reference
-                vals.update(
-                    {"reference": self._generate_or_fix_reference(reference or name)}
+                final_reference = self._generate_or_fix_reference(
+                    reference or name, reserved_references=batch_references
                 )
+                batch_references.add(final_reference)
+                vals.update({"reference": final_reference})
 
         res = super().create(vals_list)
         self.env.registry.clear_cache()
@@ -258,12 +263,15 @@ class CxTowerReferenceMixin(models.AbstractModel):
                     for related_record in related_records:
                         related_record.reference = ref_by_id[related_record.id]
 
-    def _generate_or_fix_reference(self, reference_source):
+    def _generate_or_fix_reference(self, reference_source, reserved_references=None):
         """
         Generate a new reference of fix an existing one.
 
         Args:
             reference_source (str): Original string.
+            reserved_references (set): References that are already taken
+                but are not in the database yet,
+                e.g. assigned earlier in the same batch.
 
         Returns:
             str: Generated or fixed reference.
@@ -301,7 +309,11 @@ class CxTowerReferenceMixin(models.AbstractModel):
 
         # Search all records without restrictions including archived
         self_with_sudo_and_context = self.sudo().with_context(active_test=False)
-        while self_with_sudo_and_context.search_count(final_domain) > 0:
+        reserved_references = reserved_references or set()
+        while (
+            final_reference in reserved_references
+            or self_with_sudo_and_context.search_count(final_domain) > 0
+        ):
             counter += 1
             final_reference = f"{reference}_{counter}"
             final_domain = expression.AND(

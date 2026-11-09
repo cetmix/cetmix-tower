@@ -47,6 +47,13 @@
                         domain="state_domain"
                     />
                     <field name="state_domain" invisible="1" />
+                    <field
+                        name="environment_id"
+                        string="in the environment"
+                        invisible="not jet_template_id"
+                        required="env_required"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
                     <label
                         for="name_type"
                         string="with the name that"

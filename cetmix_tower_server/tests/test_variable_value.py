@@ -1,4 +1,4 @@
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, ValidationError
 
 from . import common
 
@@ -950,3 +950,244 @@ class TestTowerVariableValue(common.TestTowerCommon):
                 f"{self.variable_level_1.reference}_{model_ref}_{jet_model_ref}_"
             )
         )
+
+
+class TestVariableValueEnvironment(common.TestTowerCommon):
+    """Environments on variable values: assignment and disjoint rule"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.variable_workers = cls.Variable.create({"name": "test_odoo_workers"})
+        cls.variable_other = cls.Variable.create({"name": "test_other_variable"})
+
+    def _create_value(self, value_char, environments=None, variable=None, **links):
+        """Create a variable value.
+
+        Args:
+            value_char (str): value
+            environments (cx.tower.environment()): environments of the value
+            variable (cx.tower.variable()): variable, workers by default
+            **links: m2o fields, eg server_id=1
+
+        Returns:
+            cx.tower.variable.value(): created value
+        """
+        vals = {
+            "variable_id": (variable or self.variable_workers).id,
+            "value_char": value_char,
+        }
+        if environments:
+            vals["environment_ids"] = [(6, 0, environments.ids)]
+        vals.update(links)
+        return self.VariableValue.create(vals)
+
+    def _create_server(self):
+        """Create a server without variable values"""
+        return self.Server.create(
+            {
+                "name": "Test Environment Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+
+    def _check_scope(self, **links):
+        """Check the disjoint rule in a scope
+
+        Args:
+            **links: m2o fields of the scope, nothing for global values
+        """
+        untagged = self._create_value("2", **links)
+        prod = self._create_value("8", self.env_prod, **links)
+        # Disjoint environments are allowed
+        stage_dev = self._create_value("4", self.env_stage | self.env_dev, **links)
+        self.assertEqual(len(untagged | prod | stage_dev), 3)
+
+        # A second untagged value is rejected
+        with self.assertRaises(ValidationError):
+            self._create_value("3", **links)
+
+        # The same environment twice is rejected
+        with self.assertRaises(ValidationError):
+            self._create_value("9", self.env_dev, **links)
+
+        # Adding a used environment to an existing value is rejected
+        with self.assertRaises(ValidationError):
+            prod.environment_ids = [(4, self.env_stage.id)]
+
+        # Removing the environments of a tagged value is rejected,
+        # because it would be a second untagged value
+        with self.assertRaises(ValidationError):
+            prod.environment_ids = [(5, 0, 0)]
+
+    def _check_unarchive(self, **links):
+        """Unarchiving a value is checked against the active values
+
+        Args:
+            **links: m2o fields of the scope, nothing for global values
+        """
+        untagged = self._create_value("2", **links)
+        prod = self._create_value("8", self.env_prod, **links)
+        (untagged | prod).active = False
+
+        # Archived values don't block their replacements
+        self._create_value("3", **links)
+        self._create_value("9", self.env_prod, **links)
+
+        # Unarchiving would make duplicates
+        with self.assertRaises(ValidationError):
+            untagged.active = True
+        with self.assertRaises(ValidationError):
+            prod.action_unarchive()
+
+    def test_unarchive_ignores_archived_siblings(self):
+        """Archived values don't block unarchiving,
+        even with active_test=False in the context
+        """
+        links = {"server_id": self.server_test_1.id}
+        value_a = self._create_value("2", **links)
+        value_a.active = False
+        value_b = self._create_value("3", **links)
+        value_b.active = False
+        value_a.with_context(active_test=False).action_unarchive()
+        self.assertTrue(value_a.active)
+        self.assertFalse(value_b.active)
+
+    def test_unarchive_server(self):
+        """Server: unarchiving can't create a duplicate"""
+        self._check_unarchive(server_id=self.server_test_1.id)
+
+    def test_unarchive_jet_template(self):
+        """Jet Template: unarchiving can't create a duplicate"""
+        self._check_unarchive(jet_template_id=self.jet_template_sample.id)
+
+    def test_unarchive_global(self):
+        """Global: unarchiving can't create a duplicate"""
+        self._check_unarchive()
+
+    def test_disjoint_server(self):
+        """Server values of the same variable have disjoint environments"""
+        self._check_scope(server_id=self.server_test_1.id)
+
+        # Another server is another scope
+        self._create_value("2", server_id=self._create_server().id)
+
+    def test_disjoint_jet_template(self):
+        """Jet Template values of the same variable have disjoint environments"""
+        self._check_scope(jet_template_id=self.jet_template_sample.id)
+
+    def test_disjoint_global(self):
+        """Global values of the same variable have disjoint environments"""
+        self._check_scope()
+
+        # Keep the message checked by `test_variable_value_toggle_global`
+        with self.assertRaises(ValidationError) as err:
+            self._create_value("5")
+        self.assertEqual(
+            err.exception.args[0],
+            "Only one global value can be defined for variable "
+            f"'{self.variable_workers.name}'",
+        )
+
+    def test_different_variables_do_not_clash(self):
+        """The rule is checked per variable"""
+        self._create_value("1", self.env_prod, server_id=self.server_test_1.id)
+        self._create_value(
+            "1",
+            self.env_prod,
+            variable=self.variable_other,
+            server_id=self.server_test_1.id,
+        )
+
+    def test_environments_not_allowed(self):
+        """Environments are rejected on Jet, Server Template
+        and Plan Line Action values
+        """
+        for links in (
+            {"jet_id": self.jet_sample.id},
+            {"server_template_id": self.server_template_sample.id},
+            {"plan_line_action_id": self.plan_line_1_action_1.id},
+        ):
+            with self.subTest(links=links), self.assertRaises(ValidationError):
+                self._create_value("1", self.env_prod, **links)
+
+        # Setting environments later is rejected too
+        jet_value = self._create_value("1", jet_id=self.jet_sample.id)
+        with self.assertRaises(ValidationError):
+            jet_value.environment_ids = self.env_prod
+
+    def test_change_variable_of_global_value(self):
+        """Changing only the variable moves a global value into another scope.
+        The rule must be checked there too.
+        """
+        self._create_value("1", variable=self.variable_other)
+        self._create_value("1", self.env_prod, variable=self.variable_other)
+
+        untagged = self._create_value("2")
+        with self.assertRaises(ValidationError):
+            untagged.variable_id = self.variable_other
+
+        prod = self._create_value("3", self.env_prod)
+        with self.assertRaises(ValidationError):
+            prod.variable_id = self.variable_other
+
+    def test_jet_template_sql_constraint_dropped(self):
+        """Two Jet Template values of the same variable can exist
+        if their environments differ
+        """
+        self.env.cr.execute(
+            "SELECT 1 FROM pg_constraint WHERE conname = %s",
+            ["cx_tower_variable_value_unique_variable_value_jet_template"],
+        )
+        self.assertFalse(self.env.cr.fetchall())
+
+        prod = self._create_value(
+            "8", self.env_prod, jet_template_id=self.jet_template_sample.id
+        )
+        dev = self._create_value(
+            "2", self.env_dev, jet_template_id=self.jet_template_sample.id
+        )
+        self.env.flush_all()
+        self.assertEqual(prod.jet_template_id, dev.jet_template_id)
+
+    def test_reference_suffix(self):
+        """A second value of the same variable on the same record
+        gets a reference with a suffix
+        """
+        untagged = self._create_value("2", server_id=self.server_test_1.id)
+        prod = self._create_value("8", self.env_prod, server_id=self.server_test_1.id)
+        self.assertEqual(prod.reference, f"{untagged.reference}_2")
+
+    def test_reference_suffix_same_batch(self):
+        """Values of the same variable saved together get unique references"""
+        server = self._create_server()
+        server.write(
+            {
+                "variable_value_ids": [
+                    (
+                        0,
+                        0,
+                        {"variable_id": self.variable_workers.id, "value_char": "2"},
+                    ),
+                    (
+                        0,
+                        0,
+                        {
+                            "variable_id": self.variable_workers.id,
+                            "value_char": "8",
+                            "environment_ids": [(6, 0, self.env_prod.ids)],
+                        },
+                    ),
+                ]
+            }
+        )
+        values = server.variable_value_ids.filtered(
+            lambda v: v.variable_id == self.variable_workers
+        )
+        self.assertEqual(len(values), 2)
+        self.assertEqual(len(set(values.mapped("reference"))), 2)

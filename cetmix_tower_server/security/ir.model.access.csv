@@ -7,6 +7,8 @@ access_variable_value_manager,Variable Value->Manager,model_cx_tower_variable_va
 access_variable_value_root,Variable Value->Root,model_cx_tower_variable_value,cetmix_tower_base.group_root,1,1,1,1
 access_os_user,OS->User,model_cx_tower_os,cetmix_tower_base.group_user,1,0,0,0
 access_os_root,OS->Root,model_cx_tower_os,cetmix_tower_base.group_root,1,1,1,1
+access_environment_user,Environment->User,model_cx_tower_environment,cetmix_tower_base.group_user,1,0,0,0
+access_environment_root,Environment->Root,model_cx_tower_environment,cetmix_tower_base.group_root,1,1,1,1
 access_server_user,Server->User,model_cx_tower_server,cetmix_tower_base.group_user,1,0,0,0
 access_server_manager,Server->Manager,model_cx_tower_server,cetmix_tower_base.group_manager,1,1,1,1
 access_server_root,Server->Root,model_cx_tower_server,cetmix_tower_base.group_root,1,1,1,1

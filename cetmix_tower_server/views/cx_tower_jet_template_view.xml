@@ -101,6 +101,13 @@
                                         name="allowed_variable_ids"
                                         widget="many2many_tags"
                                     />
+                                    <field name="env_required" />
+                                    <field
+                                        name="environment_default_id"
+                                        invisible="not env_required"
+                                        required="env_required"
+                                        options="{'no_create': True}"
+                                    />
                                 </group>
                                 <group name="servers" string="Installation">
                                     <field name="plan_install_id" />
@@ -167,6 +174,12 @@
                                         options="{'no_create': True, 'no_create_edit': True}"
                                         readonly="variable_type == 's'"
                                     />
+                                    <field
+                                        name="environment_ids"
+                                        widget="many2many_tags"
+                                        options="{'color_field': 'color', 'no_create': True}"
+                                        placeholder="All"
+                                    />
                                     <field name="access_level" optional="show" />
                                 </list>
                                 <form>
@@ -184,6 +197,12 @@
                                             name="value_char"
                                             widget="CopyClipboardChar"
                                             options="{'string': 'Copy value'}"
+                                        />
+                                        <field
+                                            name="environment_ids"
+                                            widget="many2many_tags"
+                                            options="{'color_field': 'color', 'no_create': True}"
+                                            placeholder="All"
                                         />
                                         <field name="access_level" />
                                     </group>

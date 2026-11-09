@@ -13,3 +13,4 @@ class CxTowerVariableValue(models.Model):
     value_char = fields.Char(yaml_export=True)
     variable_ids = fields.Many2many(yaml_export="include")
     required = fields.Boolean(yaml_export=True)
+    environment_ids = fields.Many2many(yaml_export="reference")

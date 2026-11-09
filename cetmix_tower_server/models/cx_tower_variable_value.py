@@ -114,6 +114,14 @@ class TowerVariableValue(models.Model):
         copy=False,
     )
     required = fields.Boolean()
+    environment_ids = fields.Many2many(
+        comodel_name="cx.tower.environment",
+        relation="cx_tower_variable_value_environment_rel",
+        column1="variable_value_id",
+        column2="environment_id",
+        string="Environments",
+        help="Leave empty to apply to all environments",
+    )
 
     _sql_constraints = [
         (
@@ -137,12 +145,6 @@ class TowerVariableValue(models.Model):
                 "A variable value cannot be assigned multiple"
                 " times to the same plan line action!"
             ),
-        ),
-        (
-            "unique_variable_value_jet_template",
-            "unique (variable_id, jet_template_id)",
-            "A variable value cannot be assigned multiple times to "
-            "the same jet template!",
         ),
         (
             "unique_variable_value_jet",
@@ -240,30 +242,29 @@ class TowerVariableValue(models.Model):
                     )
                 )
 
-    @api.constrains("is_global", "value_char")
+    @api.constrains(
+        "is_global", "value_char", "variable_id", "environment_ids", "active"
+    )
     def _constraint_global_unique(self):
-        """Ensure that there is only one global value exist for the same variable
+        """Ensure that global values of the same variable have
+        disjoint environments.
+        Archived values are not checked, so `active` is a trigger:
+        unarchiving a value must not create a duplicate.
 
         Hint to devs:
             `unique nulls not distinct (variable_id,server_id,global_id)`
             can be used instead in PG 15.0+
         """
-        for rec in self:
-            if rec.is_global:
-                val_count = self.search_count(
-                    [("variable_id", "=", rec.variable_id.id), ("is_global", "=", True)]
-                )
-                if val_count > 1:
-                    # NB: there is a value check in tests for this message.
-                    # Update `test_variable_value_toggle_global`
-                    # if you modify this message in your code.
-                    raise ValidationError(
-                        _(
-                            "Only one global value can be defined"
-                            " for variable '%(var)s'",
-                            var=rec.variable_id.name,
-                        )
-                    )
+        self.filtered("is_global")._check_environments_disjoint(
+            scope_field=None,
+            # NB: there is a value check in tests for this message.
+            # Update `test_variable_value_toggle_global`
+            # if you modify this message in your code.
+            untagged_message=lambda rec: rec.env._(
+                "Only one global value can be defined for variable '%(var)s'",
+                var=rec.variable_id.name,
+            ),
+        )
 
     @api.constrains("value_char", "option_id")
     def _check_value_char_and_option_id(self):
@@ -316,45 +317,122 @@ class TowerVariableValue(models.Model):
                 )
 
     @api.constrains(
-        "server_id", "server_template_id", "jet_id", "jet_template_id", "variable_id"
+        "server_id",
+        "server_template_id",
+        "jet_id",
+        "jet_template_id",
+        "variable_id",
+        "environment_ids",
+        "active",
     )
     def _check_unique_for_server_no_jet_no_jet_template(self):
-        """Ensure uniqueness of variable+server when both jet fields are empty"""
-        # Filter records that have both jet fields empty
-        records_to_check = self.filtered(
-            lambda r: not r.jet_id and not r.jet_template_id
+        """Ensure that Server values of the same variable have
+        disjoint environments.
+        A value is a Server value when both jet fields are empty.
+        Archived values are not checked, so `active` is a trigger:
+        unarchiving a value must not create a duplicate.
+        """
+        self.filtered(
+            lambda r: r.server_id and not r.jet_id and not r.jet_template_id
+        )._check_environments_disjoint(
+            scope_field="server_id",
+            untagged_message=lambda rec: rec.env._(
+                "Multiple records found with Variable '%(variable_name)s'"
+                " and Server '%(server_name)s' "
+                "with both Jet and Jet Template empty.",
+                variable_name=rec.variable_id.display_name,
+                server_name=rec.server_id.display_name,
+            ),
         )
 
-        if not records_to_check:
-            return
-
-        # Use read_group to find duplicates efficiently
-        domain = [
-            ("jet_id", "=", False),
-            ("jet_template_id", "=", False),
-            ("variable_id", "in", records_to_check.mapped("variable_id").ids),
-            ("server_id", "in", records_to_check.mapped("server_id").ids),
-        ]
-
-        grouped_data = self._read_group(
-            domain=domain,
-            groupby=["variable_id", "server_id"],
-            aggregates=["__count"],
+    @api.constrains("variable_id", "jet_template_id", "environment_ids", "active")
+    def _check_unique_for_jet_template(self):
+        """Ensure that Jet Template values of the same variable have
+        disjoint environments.
+        Archived values are not checked, so `active` is a trigger:
+        unarchiving a value must not create a duplicate.
+        """
+        self.filtered("jet_template_id")._check_environments_disjoint(
+            scope_field="jet_template_id",
+            untagged_message=lambda rec: rec.env._(
+                "A variable value cannot be assigned multiple times to "
+                "the same jet template!"
+            ),
         )
 
-        # Odoo 17+: _read_group returns rows as
-        # (groupby_1, ..., aggregate_1, ...); many2one groups are recordsets.
-        for variable_rs, server_rs, row_count in grouped_data:
-            if row_count > 1:
-                variable_name = variable_rs.display_name if variable_rs else "Unknown"
-                server_name = server_rs.display_name if server_rs else "Unknown"
+    @api.constrains(
+        "environment_ids", "jet_id", "server_template_id", "plan_line_action_id"
+    )
+    def _check_environment_assignment(self):
+        """Environments are allowed only on Server, Jet Template
+        and Global values.
+        """
+        for rec in self:
+            if rec.environment_ids and (
+                rec.jet_id or rec.server_template_id or rec.plan_line_action_id
+            ):
                 raise ValidationError(
                     _(
-                        "Multiple records found with Variable '%(variable_name)s'"
-                        " and Server '%(server_name)s' "
-                        "with both Jet and Jet Template empty.",
-                        variable_name=variable_name,
-                        server_name=server_name,
+                        "Variable '%(var)s': environments can be set only on"
+                        " Server, Jet Template and global values.",
+                        var=rec.variable_id.name,
+                    )
+                )
+
+    def _check_environments_disjoint(self, scope_field, untagged_message):
+        """Check that values in the same scope have disjoint environments.
+
+        A scope is the variable plus the record the value belongs to
+        (`scope_field`), or the variable alone for global values.
+        Within a scope:
+            - at most one value has no environments;
+            - an environment can be used in one value only.
+
+        Args:
+            scope_field (str): m2o field that defines the scope,
+                or None for global values
+            untagged_message (callable): returns the error message
+                for two values without environments. Receives the record.
+
+        Raises:
+            ValidationError: if the environments are not disjoint
+        """
+        # Archived values are skipped: they are not used for rendering
+        self = self.filtered("active")
+        if not self:
+            return
+        domain = [("variable_id", "in", self.variable_id.ids)]
+        if scope_field:
+            domain.append((scope_field, "in", self[scope_field].ids))
+            if scope_field == "server_id":
+                domain += [("jet_id", "=", False), ("jet_template_id", "=", False)]
+        else:
+            domain.append(("is_global", "=", True))
+
+        # Use sudo to check values hidden by record rules too.
+        # Pin active_test: callers may pass active_test=False
+        # (e.g. server toggle_active), but archived values must not count.
+        scope_values = self.sudo().with_context(active_test=True).search(domain)
+        for rec in self:
+            siblings = scope_values.filtered(
+                lambda v, rec=rec: v.id != rec.id
+                and v.variable_id == rec.variable_id
+                and (not scope_field or v[scope_field] == rec[scope_field])
+            )
+            if not siblings:
+                continue
+            if not rec.environment_ids and siblings.filtered(
+                lambda v: not v.environment_ids
+            ):
+                raise ValidationError(untagged_message(rec))
+            shared_environments = rec.sudo().environment_ids & siblings.environment_ids
+            if shared_environments:
+                raise ValidationError(
+                    _(
+                        "Variable '%(var)s' already has a value for environment(s)"
+                        " %(environments)s in the same scope.",
+                        var=rec.variable_id.name,
+                        environments=", ".join(shared_environments.mapped("name")),
                     )
                 )
 

@@ -1187,3 +1187,371 @@ class TestTowerVariableJet(TestTowerJetsCommon):
             "reference", waypoint_data, "Waypoint reference should be present"
         )
         self.assertIn("type", waypoint_data, "Waypoint type should be present")
+
+
+class TestVariableEnvironment(TestTowerCommon):
+    """Selecting variable values by tower environment"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.server = cls.server_test_1
+        cls.jet_template = cls.JetTemplate.create({"name": "Test Env Template"})
+        cls.jet_prod = cls._create_env_jet("Prod Jet", cls.env_prod)
+        cls.jet_dev = cls._create_env_jet("Dev Jet", cls.env_dev)
+        cls.jet_stage = cls._create_env_jet("Stage Jet", cls.env_stage)
+        cls.jet_no_env = cls._create_env_jet("No Env Jet", None)
+
+        # Server level: prod, dev and untagged
+        cls.var_workers = cls.Variable.create({"name": "test_env_workers"})
+        cls._add_value(cls.var_workers, "8", cls.env_prod, server_id=cls.server.id)
+        cls._add_value(cls.var_workers, "3", cls.env_dev, server_id=cls.server.id)
+        cls._add_value(cls.var_workers, "2", None, server_id=cls.server.id)
+
+        # Jet Template level: prod and untagged
+        cls.var_template = cls.Variable.create({"name": "test_env_template"})
+        cls._add_value(
+            cls.var_template,
+            "tpl_prod",
+            cls.env_prod,
+            jet_template_id=cls.jet_template.id,
+        )
+        cls._add_value(
+            cls.var_template, "tpl_all", None, jet_template_id=cls.jet_template.id
+        )
+        # A server value that the Jet Template level must win over
+        cls._add_value(cls.var_template, "srv_all", None, server_id=cls.server.id)
+
+        # Global level: prod and untagged
+        cls.var_global = cls.Variable.create({"name": "test_env_global"})
+        cls._add_value(cls.var_global, "g_prod", cls.env_prod)
+        cls._add_value(cls.var_global, "g_all", None)
+
+        # Server value tagged with another environment only.
+        # It is ignored for other environments, global is used.
+        cls.var_dev_only = cls.Variable.create({"name": "test_env_dev_only"})
+        cls._add_value(
+            cls.var_dev_only, "srv_dev", cls.env_dev, server_id=cls.server.id
+        )
+        cls._add_value(cls.var_dev_only, "g_all", None)
+
+        # Nested value: untagged, renders an environment-specific variable
+        cls.var_nested = cls.Variable.create({"name": "test_env_nested"})
+        cls._add_value(
+            cls.var_nested,
+            "workers={{ test_env_workers }}",
+            None,
+            server_id=cls.server.id,
+        )
+
+    @classmethod
+    def _create_env_jet(cls, name, environment):
+        """Create a jet of the test template on the test server"""
+        return cls.Jet.create(
+            {
+                "name": name,
+                "server_id": cls.server.id,
+                "jet_template_id": cls.jet_template.id,
+                "environment_id": environment.id if environment else False,
+            }
+        )
+
+    @classmethod
+    def _add_value(cls, variable, value_char, environment, **links):
+        """Create a variable value"""
+        vals = {"variable_id": variable.id, "value_char": value_char}
+        if environment:
+            vals["environment_ids"] = [(6, 0, environment.ids)]
+        vals.update(links)
+        return cls.VariableValue.create(vals)
+
+    def _render(self, variable, **kwargs):
+        """Render a variable using `_get_variable_values_by_references`"""
+        return self.Variable._get_variable_values_by_references(
+            [variable.reference], **kwargs
+        )[variable.reference]
+
+    # -- Resolution order --
+
+    def test_server_level(self):
+        """Server level: tagged match, untagged fallback"""
+        self.assertEqual(self._render(self.var_workers, jet=self.jet_prod), "8")
+        self.assertEqual(self._render(self.var_workers, jet=self.jet_dev), "3")
+        # No stage value: untagged one
+        self.assertEqual(self._render(self.var_workers, jet=self.jet_stage), "2")
+        # Jet without environment: untagged only
+        self.assertEqual(self._render(self.var_workers, jet=self.jet_no_env), "2")
+        # No Jet: untagged only
+        self.assertEqual(self._render(self.var_workers, server=self.server), "2")
+
+    def test_jet_template_level(self):
+        """Jet Template level: tagged match, untagged fallback"""
+        self.assertEqual(self._render(self.var_template, jet=self.jet_prod), "tpl_prod")
+        self.assertEqual(self._render(self.var_template, jet=self.jet_dev), "tpl_all")
+        self.assertEqual(
+            self._render(self.var_template, jet=self.jet_no_env), "tpl_all"
+        )
+        # Without Jet the Jet Template uses the untagged value
+        self.assertEqual(
+            self._render(self.var_template, jet_template=self.jet_template),
+            "tpl_all",
+        )
+
+    def test_global_level(self):
+        """Global level: tagged match, untagged fallback"""
+        self.assertEqual(self._render(self.var_global, jet=self.jet_prod), "g_prod")
+        self.assertEqual(self._render(self.var_global, jet=self.jet_dev), "g_all")
+        self.assertEqual(self._render(self.var_global, jet=self.jet_no_env), "g_all")
+        self.assertEqual(self._render(self.var_global), "g_all")
+        self.assertEqual(self._render(self.var_global, server=self.server), "g_all")
+
+    def test_other_environment_ignored(self):
+        """A value tagged only with other environments is ignored:
+        the next level is used
+        """
+        self.assertEqual(self._render(self.var_dev_only, jet=self.jet_dev), "srv_dev")
+        self.assertEqual(self._render(self.var_dev_only, jet=self.jet_prod), "g_all")
+        self.assertEqual(self._render(self.var_dev_only, jet=self.jet_no_env), "g_all")
+        self.assertEqual(self._render(self.var_dev_only, server=self.server), "g_all")
+
+    def test_jet_value_wins(self):
+        """A Jet's own value wins over environment-specific values"""
+        self._add_value(self.var_workers, "16", None, jet_id=self.jet_prod.id)
+        self.assertEqual(self._render(self.var_workers, jet=self.jet_prod), "16")
+        self.assertEqual(self.jet_prod.get_variable_value("test_env_workers"), "16")
+        self.assertEqual(
+            self.jet_prod.get_variable_value("test_env_workers", tower_env="test_dev"),
+            "16",
+        )
+
+    def test_nested_rendering(self):
+        """A nested variable keeps the environment"""
+        self.assertEqual(self._render(self.var_nested, jet=self.jet_prod), "workers=8")
+        self.assertEqual(
+            self._render(self.var_nested, jet=self.jet_no_env), "workers=2"
+        )
+        self.assertEqual(
+            self._render(self.var_nested, server=self.server, tower_env=self.env_dev),
+            "workers=3",
+        )
+        self.assertEqual(
+            self.server.get_variable_value("test_env_nested", tower_env="test_prod"),
+            "workers=8",
+        )
+        # tower_env beats the Jet's environment in nested values too
+        self.assertEqual(
+            self.jet_prod.get_variable_value("test_env_nested", tower_env="test_dev"),
+            "workers=3",
+        )
+
+    def test_environment_changed_on_jet(self):
+        """Changing the Jet's environment changes the resolved values"""
+        jet = self._create_env_jet("Changing Jet", self.env_prod)
+        self.assertEqual(jet.get_variable_value("test_env_workers"), "8")
+        jet.environment_id = self.env_dev
+        self.assertEqual(jet.get_variable_value("test_env_workers"), "3")
+        jet.environment_id = False
+        self.assertEqual(jet.get_variable_value("test_env_workers"), "2")
+
+    # -- tower_env argument --
+
+    def test_get_with_tower_env_server(self):
+        """Server: get with and without tower_env, with fallback"""
+        server = self.server
+        self.assertEqual(server.get_variable_value("test_env_workers"), "2")
+        self.assertEqual(
+            server.get_variable_value("test_env_workers", tower_env="test_prod"), "8"
+        )
+        # No stage value: untagged one
+        self.assertEqual(
+            server.get_variable_value("test_env_workers", tower_env="test_stage"), "2"
+        )
+        # Fallback to global
+        self.assertEqual(
+            server.get_variable_value("test_env_global", tower_env="test_prod"),
+            "g_prod",
+        )
+        self.assertEqual(server.get_variable_value("test_env_global"), "g_all")
+
+    def test_get_no_fallback_server(self):
+        """Server: `no_fallback` returns the server's own value only"""
+        server = self.server
+        self.assertEqual(
+            server.get_variable_value(
+                "test_env_workers", no_fallback=True, tower_env="test_prod"
+            ),
+            "8",
+        )
+        self.assertEqual(
+            server.get_variable_value("test_env_workers", no_fallback=True), "2"
+        )
+        self.assertEqual(
+            server.get_variable_value(
+                "test_env_workers", no_fallback=True, tower_env="test_stage"
+            ),
+            "2",
+        )
+        # No server value: no fallback to the global value
+        self.assertIsNone(
+            server.get_variable_value("test_env_global", no_fallback=True)
+        )
+
+    def test_get_with_tower_env_jet_template(self):
+        """Jet Template: get with and without tower_env"""
+        template = self.jet_template
+        self.assertEqual(template.get_variable_value("test_env_template"), "tpl_all")
+        self.assertEqual(
+            template.get_variable_value("test_env_template", tower_env="test_prod"),
+            "tpl_prod",
+        )
+        self.assertEqual(
+            template.get_variable_value(
+                "test_env_template", no_fallback=True, tower_env="test_prod"
+            ),
+            "tpl_prod",
+        )
+        self.assertEqual(
+            template.get_variable_value(
+                "test_env_template", no_fallback=True, tower_env="test_dev"
+            ),
+            "tpl_all",
+        )
+        # Fallback to global
+        self.assertEqual(
+            template.get_variable_value("test_env_global", tower_env="test_prod"),
+            "g_prod",
+        )
+
+    def test_get_with_tower_env_jet(self):
+        """Jet without own value: tower_env beats the Jet's environment"""
+        self.assertEqual(self.jet_prod.get_variable_value("test_env_workers"), "8")
+        self.assertEqual(
+            self.jet_prod.get_variable_value("test_env_workers", tower_env="test_dev"),
+            "3",
+        )
+        self.assertEqual(
+            self.jet_no_env.get_variable_value(
+                "test_env_workers", tower_env="test_prod"
+            ),
+            "8",
+        )
+        # no_fallback: tower_env has no effect
+        self.assertIsNone(
+            self.jet_prod.get_variable_value(
+                "test_env_workers", no_fallback=True, tower_env="test_prod"
+            )
+        )
+
+    def test_unknown_tower_env(self):
+        """An unknown environment reference raises"""
+        with self.assertRaises(ValidationError):
+            self.server.get_variable_value("test_env_workers", tower_env="prd")
+        with self.assertRaises(ValidationError):
+            self.server.set_variable_value("test_env_workers", "1", tower_env="prd")
+        with self.assertRaises(ValidationError):
+            self.jet_template.get_variable_value("test_env_workers", tower_env="prd")
+        with self.assertRaises(ValidationError):
+            self.jet_prod.get_variable_value("test_env_workers", tower_env="prd")
+
+    def _server_values(self, server, variable):
+        """Return server values of the variable"""
+        return server.variable_value_ids.filtered(lambda v: v.variable_id == variable)
+
+    def test_set_with_tower_env(self):
+        """Server: set with and without tower_env"""
+        server = self.server
+        values = self._server_values(server, self.var_workers)
+        prod_value = values.filtered(lambda v: self.env_prod in v.environment_ids)
+        untagged_value = values.filtered(lambda v: not v.environment_ids)
+
+        # Write the tagged value
+        server.set_variable_value("test_env_workers", "10", tower_env="test_prod")
+        self.assertEqual(prod_value.value_char, "10")
+        self.assertEqual(untagged_value.value_char, "2")
+
+        # Write the untagged value
+        server.set_variable_value("test_env_workers", "1")
+        self.assertEqual(untagged_value.value_char, "1")
+        self.assertEqual(prod_value.value_char, "10")
+
+        # No stage value: a new value tagged with stage is created,
+        # the untagged one is not written
+        server.set_variable_value("test_env_workers", "5", tower_env="test_stage")
+        new_values = self._server_values(server, self.var_workers) - values
+        self.assertEqual(len(new_values), 1)
+        self.assertEqual(new_values.environment_ids, self.env_stage)
+        self.assertEqual(new_values.value_char, "5")
+        self.assertEqual(untagged_value.value_char, "1")
+        self.assertEqual(
+            server.get_variable_value("test_env_workers", tower_env="test_stage"), "5"
+        )
+
+    def test_set_shared_value(self):
+        """Writing a shared value changes it for all its environments"""
+        server = self.server
+        variable = self.Variable.create({"name": "test_env_shared"})
+        shared = self._add_value(
+            variable, "a", self.env_prod | self.env_stage, server_id=server.id
+        )
+        server.set_variable_value("test_env_shared", "b", tower_env="test_stage")
+        self.assertEqual(shared.value_char, "b")
+        self.assertEqual(
+            server.get_variable_value("test_env_shared", tower_env="test_prod"), "b"
+        )
+        self.assertEqual(len(self._server_values(server, variable)), 1)
+
+    def test_set_untagged_created(self):
+        """Without tower_env and no untagged value, an untagged value is created"""
+        server = self.server
+        variable = self.Variable.create({"name": "test_env_tagged_only"})
+        prod_value = self._add_value(variable, "p", self.env_prod, server_id=server.id)
+        server.set_variable_value("test_env_tagged_only", "u")
+        values = self._server_values(server, variable)
+        self.assertEqual(len(values), 2)
+        self.assertEqual(prod_value.value_char, "p")
+        self.assertEqual((values - prod_value).value_char, "u")
+        self.assertFalse((values - prod_value).environment_ids)
+
+    def test_set_with_tower_env_jet_template(self):
+        """Jet Template: set with tower_env creates a tagged value"""
+        template = self.jet_template
+        template.set_variable_value(
+            "test_env_template", "tpl_dev", tower_env="test_dev"
+        )
+        self.assertEqual(
+            template.get_variable_value("test_env_template", tower_env="test_dev"),
+            "tpl_dev",
+        )
+        self.assertEqual(template.get_variable_value("test_env_template"), "tpl_all")
+
+    def test_set_with_tower_env_jet_ignored(self):
+        """Jet values have no environments: tower_env is ignored on set"""
+        jet = self.jet_prod
+        jet.set_variable_value("test_env_workers", "7", tower_env="test_dev")
+        value = jet.variable_value_ids.filtered(
+            lambda v: v.variable_id == self.var_workers
+        )
+        self.assertEqual(value.value_char, "7")
+        self.assertFalse(value.environment_ids)
+        jet.set_variable_value("test_env_workers", "6", tower_env="test_prod")
+        self.assertEqual(value.value_char, "6")
+
+    # -- System variable --
+
+    def test_system_variable_jet_environment(self):
+        """`tower.jet.environment` is the Jet's environment reference"""
+        tower_prod = self.Variable._get_variable_values_by_references(
+            ["tower"], jet=self.jet_prod
+        )["tower"]
+        self.assertEqual(tower_prod["jet"]["environment"], "test_prod")
+
+        tower_no_env = self.Variable._get_variable_values_by_references(
+            ["tower"], jet=self.jet_no_env
+        )["tower"]
+        self.assertIs(tower_no_env["jet"]["environment"], False)
+
+        tower_server = self.Variable._get_variable_values_by_references(
+            ["tower"], server=self.server
+        )["tower"]
+        self.assertNotIn("environment", tower_server["jet"])

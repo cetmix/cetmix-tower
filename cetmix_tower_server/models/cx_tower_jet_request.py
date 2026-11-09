@@ -216,7 +216,9 @@ class CxTowerJetRequest(models.Model):
         if jet_template:
             jet_template.ensure_one()
             _logger.info("Creating new jet using template %s", jet_template.name)
-            jet = jet_template.create_jet(server)
+            jet = jet_template.create_jet(
+                server, **request._prepare_new_jet_kwargs(jet_template)
+            )
             if jet:
                 _logger.info("Created new jet %s", jet.name)
                 request.jet_id = jet
@@ -233,6 +235,28 @@ class CxTowerJetRequest(models.Model):
 
         _logger.info("Jet request creation finished")
         return request
+
+    def _prepare_new_jet_kwargs(self, jet_template):
+        """Prepare keyword arguments to create a new jet for this request.
+
+        If the template requires an environment, the new jet gets
+        the environment of the requesting jet, or the template default one.
+
+        Args:
+            jet_template (cx.tower.jet.template()): Template of the new jet
+
+        Returns:
+            dict: keyword arguments for `create_jet`
+        """
+        self.ensure_one()
+        kwargs = {}
+        if jet_template.env_required:
+            environment = (
+                self.requested_by_jet_id.environment_id
+                or jet_template.environment_default_id
+            )
+            kwargs["environment_id"] = environment.id
+        return kwargs
 
     def _finalize(self, failed=False):
         """
