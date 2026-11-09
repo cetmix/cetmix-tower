@@ -129,6 +129,7 @@ class CxTowerReferenceMixin(models.AbstractModel):
                             {"reference": self._generate_or_fix_reference(record.name)}
                         )
                         super(CxTowerReferenceMixin, record).write(record_vals)
+                    self.env.registry.clear_cache()
                     return True
                 # Name is present in vals
                 reference = self._generate_or_fix_reference(updated_name)

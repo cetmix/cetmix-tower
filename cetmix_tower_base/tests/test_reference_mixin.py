@@ -46,3 +46,13 @@ class TestReferenceMixinBatch(TestTowerBaseCommon):
             self.env.cr.savepoint(),
         ):
             tags.create({"name": "Unique two", "reference": "unique_constraint"})
+
+    def test_reset_reference_invalidates_lookup(self):
+        """Clearing a reference must retire cached lookups of its old value."""
+        tag = self.Tag.create({"name": "Reset Reference", "reference": "old_ref"})
+        self.assertEqual(self.Tag.get_by_reference("old_ref"), tag)
+        self.assertFalse(self.Tag.get_by_reference("reset_reference"))
+        tag.write({"reference": False})
+        self.assertEqual(tag.reference, "reset_reference")
+        self.assertFalse(self.Tag.get_by_reference("old_ref"))
+        self.assertEqual(self.Tag.get_by_reference("reset_reference"), tag)
