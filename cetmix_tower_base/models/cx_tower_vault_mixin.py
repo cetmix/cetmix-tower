@@ -1,6 +1,10 @@
 from collections import defaultdict
 
+from psycopg2.errors import UniqueViolation
+
 from odoo import api, models
+from odoo.exceptions import ConcurrencyError
+from odoo.tools import SQL
 
 
 class CxTowerVaultMixin(models.AbstractModel):
@@ -57,6 +61,12 @@ class CxTowerVaultMixin(models.AbstractModel):
             The main database table never contains actual secret values.
         """
 
+        vals_list = [dict(vals) for vals in vals_list]
+        for vals in vals_list:
+            missing = [name for name in self.SECRET_FIELDS if name not in vals]
+            if missing:
+                vals.update(self.default_get(missing))
+
         # Step 1: Extract secret fields and generate temporary IDs
         secret_vals = self._extract_and_replace_secret_fields(vals_list)
 
@@ -87,10 +97,13 @@ class CxTowerVaultMixin(models.AbstractModel):
             and stored in vault. Cache is invalidated for all secret fields when
             any secret field is modified.
         """
+        vals = dict(vals)
         # Extract secret fields
         secret_values = {}
         for secret_field in self.SECRET_FIELDS:
             if secret_field in vals:
+                if self:
+                    self._check_field_access(self._fields[secret_field], "write")
                 secret_values[secret_field] = vals.pop(secret_field)
 
         res = super().write(vals)
@@ -137,8 +150,8 @@ class CxTowerVaultMixin(models.AbstractModel):
         This method is the only way to get the real secret field value because:
         - Direct field access (e.g., self.secret_field)
           returns placeholder due to _read() override
-        - The actual field in the main table is empty/NULL
-          as values are stored in vault
+        - The main table contains NULL, or a non-secret placeholder for
+          required fields, as values are stored in the vault
 
         Args:
             field_name (str): Name of the secret field to retrieve
@@ -261,13 +274,13 @@ class CxTowerVaultMixin(models.AbstractModel):
                 # Fast lookup for existing record
                 existing_record = existing_map.get((record.id, field))
                 if existing_record:
-                    if value is False or value is None:
+                    if value is False or value is None or value == "":
                         records_to_unlink |= existing_record
                     else:
                         vals_to_update_records[value] |= existing_record
 
                 else:
-                    if value is False or value is None:
+                    if value is False or value is None or value == "":
                         continue
 
                     records_to_create.append(
@@ -284,7 +297,14 @@ class CxTowerVaultMixin(models.AbstractModel):
             records.sudo().write({"data": value})
 
         if records_to_create:
-            self.env["cx.tower.vault"].sudo().create(records_to_create)
+            try:
+                with self.env.cr.savepoint(flush=False):
+                    self.env["cx.tower.vault"].sudo().create(records_to_create)
+            except UniqueViolation as error:
+                if error.diag.constraint_name != "cx_tower_vault_vault_unique_key":
+                    raise
+                # Retry with a new snapshot to see the concurrently inserted secret.
+                raise ConcurrencyError("Concurrent vault secret creation") from error
         if records_to_unlink:
             records_to_unlink.sudo().unlink()
 
@@ -386,7 +406,7 @@ class CxTowerVaultMixin(models.AbstractModel):
     def _clear_temp_values(self):
         """Clear temporary values from main table.
 
-        Sets all SECRET_FIELDS to NULL in the database to remove temporary
+        Clears nullable secret columns and masks required columns to remove temporary
         identifiers after secret values have been stored in vault.
         Works with multiple records in the recordset.
 
@@ -397,9 +417,25 @@ class CxTowerVaultMixin(models.AbstractModel):
             Internal method used during secret processing workflow.
             Clears all SECRET_FIELDS for all records in the current recordset.
         """
-        set_clause = ", ".join(f"{field} = NULL" for field in self.SECRET_FIELDS)
-        query = f"UPDATE {self._table} SET {set_clause} WHERE id in %s"
-        self.env.cr.execute(query, (tuple(self.ids),))
+        assignments = []
+        for name in self.SECRET_FIELDS:
+            field = self._fields[name]
+            value = self.SECRET_VALUE_PLACEHOLDER if field.required else None
+            assignments.append(
+                SQL(
+                    "%s = %s",
+                    SQL.identifier(name),
+                    field.convert_to_column(value, self),
+                )
+            )
+        self.env.cr.execute(
+            SQL(
+                "UPDATE %s SET %s WHERE id IN %s",
+                SQL.identifier(self._table),
+                SQL(", ").join(assignments),
+                tuple(self.ids),
+            )
+        )
 
     def _is_secret_value_set(self, field_name):
         """
