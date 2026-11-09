@@ -479,6 +479,11 @@ msgid "Date and time of the next synchronisation"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__environment_default_id
+msgid "Default Environment"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_command__path
 msgid "Default Path"
 msgstr ""
@@ -570,6 +575,17 @@ msgid "Enable to skip host key verification"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__environment_default_id
+msgid ""
+"Environment of Jets created by jet requests when the requesting Jet has none"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__environment_ids
+msgid "Environments"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_action__state_error_id
 msgid "Error State"
 msgstr ""
@@ -590,6 +606,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_yaml/models/cx_tower_yaml_manifest_template.py:0
 msgid "Euro"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__env_required
+msgid "Every new Jet created from this template must have an environment"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -987,6 +1008,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_waypoint_template__plan_leave_id
 msgid "Leave Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_variable_value__environment_ids
+msgid "Leave empty to apply to all environments"
 msgstr ""
 
 #. module: cetmix_tower_yaml
@@ -1413,6 +1439,11 @@ msgstr ""
 #. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__template_requires_ids
 msgid "Requires"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_jet_template__env_required
+msgid "Requires Environment"
 msgstr ""
 
 #. module: cetmix_tower_yaml
