@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+from paramiko import RSAKey
+
 from odoo.exceptions import ValidationError
 from odoo.tools import mute_logger
 
@@ -966,6 +968,9 @@ class TestTowerSSHProxy(TestTowerCommon):
         """
         Command is executed on the target through the complete SSH proxy route
         """
+        # This test keeps real proxy host-key configuration, so use a valid pin.
+        self.proxy_a.host_key = RSAKey.generate(1024).get_base64()
+
         # Build route:
         # Tower -> Proxy B -> Proxy A -> Target.
         self.proxy_a.write(
@@ -1115,29 +1120,67 @@ class TestTowerSSHProxy(TestTowerCommon):
         target_connection.get_transport.assert_called_once_with()
 
     def test_host_key_retrieval_reads_final_target(self):
-        """Tower host-key retrieval reads the target, not a proxy transport."""
+        """Discovery authenticates only verified proxy hops, never the target."""
         manager = MagicMock()
-        target_connection = MagicMock()
-        target_client = MagicMock()
-        target_transport = MagicMock()
-        remote_key = MagicMock()
-        remote_key.get_base64.return_value = "final-target-host-key"
-        target_transport.get_remote_server_key.return_value = remote_key
-        target_client.get_transport.return_value = target_transport
-        target_connection.connect.return_value = target_client
-        manager.connection = target_connection
-
-        with patch.object(
-            self.registry["cx.tower.server"],
-            "_get_ssh_client",
-            return_value=manager,
-        ) as get_ssh_client:
+        channel = (
+            manager.connection.get_transport.return_value.open_channel.return_value
+        )
+        server_model = self.registry["cx.tower.server"]
+        with (
+            patch.object(
+                server_model,
+                "_get_ssh_proxy_manager",
+                autospec=True,
+                return_value=manager,
+            ) as get_client,
+            patch(
+                "odoo.addons.cetmix_tower_ssh_proxy.models.cx_tower_server.SSHConnection.fetch_host_key",
+                return_value="final-target-host-key",
+            ) as fetch_key,
+        ):
             host_key = self.target._get_host_key_from_host(raise_on_error=True)
 
         self.assertEqual(host_key, "final-target-host-key")
-        self.assertGreaterEqual(get_ssh_client.call_count, 2)
-        target_connection.connect.assert_called_once_with()
-        target_transport.get_remote_server_key.assert_called_once_with()
+        get_client.assert_called_once_with(self.proxy_a, 60, use_cache=False)
+        fetch_key.assert_called_once_with("10.0.0.20", 22, 60, sock=channel)
+        manager.connection.connect.assert_not_called()
+        manager.disconnect.assert_called_once_with()
+
+    def test_host_key_retrieval_requires_verified_proxy(self):
+        """A failed proxy connection prevents target discovery."""
+        with (
+            patch.object(
+                self.registry["cx.tower.server"],
+                "_get_ssh_proxy_manager",
+                side_effect=ValidationError("Untrusted proxy"),
+            ),
+            patch(
+                "odoo.addons.cetmix_tower_ssh_proxy.models.cx_tower_server.SSHConnection.fetch_host_key"
+            ) as fetch_key,
+        ):
+            with self.assertRaises(ValidationError):
+                self.target._get_host_key_from_host(raise_on_error=True)
+            fetch_key.assert_not_called()
+
+    def test_discovery_manager_preserves_cached_route(self):
+        """Discovery cleanup must leave a concurrent connection test intact."""
+        params = self._prepare_route_params(self.proxy_a, timeout=60)
+        cached_connection = MagicMock()
+        discovery_connection = MagicMock()
+        with patch.object(
+            ProxySSHManager,
+            "_build_connections",
+            side_effect=[cached_connection, discovery_connection],
+        ):
+            cached = ProxySSHManager(params)
+            discovery = self.proxy_a._get_ssh_proxy_manager(60, use_cache=False)
+            self.assertIsNot(discovery, cached)
+            self.assertIs(ProxySSHManager(params), cached)
+            discovery.disconnect()
+            self.assertIs(ProxySSHManager(params), cached)
+            cached_connection.disconnect.assert_not_called()
+            discovery_connection.disconnect.assert_called_once_with()
+            cached.disconnect()
 
     def test_template_route_is_copied_by_standard_template_flow(self):
         """Programmatic template creation copies proxy fields via field hooks."""

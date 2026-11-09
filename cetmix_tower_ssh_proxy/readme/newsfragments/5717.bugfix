@@ -1,0 +1,1 @@
+Reject untrusted SSH hosts for command and file sessions while allowing unauthenticated host-key discovery.
