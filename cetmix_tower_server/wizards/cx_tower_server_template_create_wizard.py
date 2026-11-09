@@ -64,8 +64,9 @@ class CxTowerServerTemplateCreateWizard(models.TransientModel):
         help="Host key to verify the server",
     )
     skip_host_key = fields.Boolean(
-        string="Don't Check Key",
-        help="Enable to skip host key verification",
+        string="Use System Host Keys",
+        help="Verify against the Tower service user's known_hosts instead of a "
+        "Tower host key. Unknown or changed host keys are rejected.",
     )
     line_ids = fields.One2many(
         comodel_name="cx.tower.server.template.create.wizard.line",

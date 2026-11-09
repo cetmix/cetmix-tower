@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from odoo.exceptions import AccessError, ValidationError
 
 from ..models.constants import COMMAND_NOT_COMPATIBLE_WITH_SERVER
@@ -827,6 +829,46 @@ result = {
         # Test with skip_host_key
         server.skip_host_key = True
         server.test_ssh_connection()
+
+    def test_host_key_discovery_does_not_load_credentials(self):
+        """Discovery needs no target password, private key or trusted host key."""
+        server = self.server_test_1
+        with (
+            patch(
+                "odoo.addons.cetmix_tower_server.models.cx_tower_server.SSHConnection.fetch_host_key",
+                return_value="unverified-key",
+            ) as fetch_key,
+            patch.object(
+                self.registry["cx.tower.server"], "_get_ssh_connection_values"
+            ) as connection_values,
+        ):
+            self.assertEqual(
+                server._get_host_key_from_host(raise_on_error=True), "unverified-key"
+            )
+            fetch_key.assert_called_once_with("localhost", 22, 60)
+            connection_values.assert_not_called()
+
+    def test_host_key_wizard_discovery_result(self):
+        """Discovery failures select the error state instead of an empty key."""
+        server = self.server_test_1
+        for error in (None, OSError("Handshake failed")):
+            with (
+                self.subTest(error=error),
+                patch.object(
+                    self.registry["cx.tower.server"],
+                    "_fetch_host_key",
+                    return_value="unverified-key",
+                    side_effect=error,
+                ),
+            ):
+                # Test the action after the HTTP identity check has succeeded.
+                action = server.action_show_host_key.__wrapped__(server)
+                context = action["context"]
+                self.assertEqual(context["default_is_error"], error is not None)
+                if error:
+                    self.assertIn("Handshake failed", context["default_host_key"])
+                else:
+                    self.assertEqual(context["default_host_key"], "unverified-key")
 
     def test_server_reference_update(self):
         """Test server reference update cascades to dependent models"""

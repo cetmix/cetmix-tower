@@ -1,27 +1,31 @@
 import io
 import logging
+import socket
 import time
+from base64 import b64decode
 
 _logger = logging.getLogger(__name__)
 
 
 try:
     from paramiko import (
-        AutoAddPolicy,
         ECDSAKey,
         Ed25519Key,
-        MissingHostKeyPolicy,
+        Message,
+        RejectPolicy,
         RSAKey,
         SFTPClient,
         SSHClient,
         SSHException,
+        Transport,
     )
+    from paramiko.hostkeys import HostKeyEntry
 except ImportError:
     _logger.error(
         "Looks like 'paramiko' is not installed, please try to "
         "install it using 'pip install paramiko'"
     )
-    AutoAddPolicy = MissingHostKeyPolicy = RSAKey = SSHClient = None
+    RejectPolicy = RSAKey = SSHClient = None
 
 
 class KeyLoader:
@@ -88,15 +92,8 @@ class SSHConnection:
         if self._ssh_client is not None:
             return self._ssh_client
 
-        self._ssh_client = SSHClient()
-        self._ssh_client.load_system_host_keys()
-
-        if self.host_key:
-            self._ssh_client.set_missing_host_key_policy(
-                CustomHostKeyPolicy(self.host_key)
-            )
-        else:
-            self._ssh_client.set_missing_host_key_policy(AutoAddPolicy())
+        ssh_client = SSHClient()
+        self._configure_host_key_policy(ssh_client)
 
         connect_params = {
             "hostname": self.host,
@@ -117,8 +114,73 @@ class SSHConnection:
         else:
             raise ValueError(f"Unsupported connection mode: {self.mode}")
 
-        self._ssh_client.connect(**connect_params)
+        try:
+            ssh_client.connect(**connect_params)
+        except Exception:
+            ssh_client.close()
+            raise
+        self._ssh_client = ssh_client
         return self._ssh_client
+
+    def _configure_host_key_policy(self, client: SSHClient) -> None:
+        """Require the Tower pin, or a trusted system key when no pin is set.
+
+        Unknown hosts are always rejected. A pin is registered as the only
+        trusted key, so system known_hosts entries cannot override it.
+
+        Args:
+            client (SSHClient): New client whose host verification is configured.
+
+        Raises:
+            SSHException: If the configured pin is not a valid Base64 public key
+                of a supported type.
+        """
+        client.set_missing_host_key_policy(RejectPolicy())
+        if self.host_key:
+            # Register only the pin. This both enforces it and lets Paramiko
+            # prefer its algorithm when the server offers several host keys.
+            # System keys must not override the explicit Tower pin.
+            try:
+                key_type = Message(b64decode(self.host_key, validate=True)).get_text()
+                entry = HostKeyEntry.from_line(f"tower {key_type} {self.host_key}")
+            except ValueError as error:
+                raise SSHException("Invalid pinned host key.") from error
+            if entry is None or entry.key.get_base64() != self.host_key:
+                raise SSHException("Invalid pinned host key.")
+            hostname = self.host if self.port == 22 else f"[{self.host}]:{self.port}"
+            client.get_host_keys().add(hostname, entry.key.get_name(), entry.key)
+        else:
+            client.load_system_host_keys()
+
+    @staticmethod
+    def fetch_host_key(host: str, port: int, timeout: int, sock=None) -> str:
+        """Read an untrusted host key without authenticating or caching a session.
+
+        Args:
+            host (str): Target hostname or IP address.
+            port (int): SSH port.
+            timeout (int): Socket and SSH handshake timeout in seconds.
+            sock (socket.socket | Channel | None): Optional proxy channel. This
+                method takes ownership and closes it, including on failure.
+
+        Returns:
+            str: Unverified Base64 host key for independent confirmation.
+
+        Raises:
+            OSError: If the socket cannot be opened.
+            SSHException: If the SSH handshake fails.
+        """
+        if sock is None:
+            sock = socket.create_connection((host, port), timeout=timeout)
+        transport = None
+        try:
+            transport = Transport(sock)
+            transport.start_client(timeout=timeout)
+            return transport.get_remote_server_key().get_base64()
+        finally:
+            if transport is not None:
+                transport.close()
+            sock.close()
 
     def disconnect(self) -> None:
         """
@@ -136,44 +198,6 @@ class SSHConnection:
         if self._ssh_client is None:
             self.connect()
         return self._ssh_client.get_transport()
-
-
-class CustomHostKeyPolicy(MissingHostKeyPolicy):
-    """
-    Custom SSH host key policy for validating the server's host key.
-
-    This policy compares the server's host key (in Base64 format) with the expected key.
-    If they do not match, an SSHException is raised to prevent connecting
-    to an untrusted server. If they match, the key is added to the client's host keys.
-    """
-
-    def __init__(self, expected_host_key: str):
-        """
-        Initialize the policy with the expected host key.
-
-        Args:
-            expected_host_key (str): The expected host key in Base64 format.
-        """
-        self.expected_host_key = expected_host_key
-
-    def missing_host_key(self, client, hostname, key):
-        """
-        Called when the SSH client receives a host key from the server
-        that is not in its known hosts.
-
-        Args:
-            client: The SSH client instance.
-            hostname: The hostname of the server.
-            key: The host key received from the server.
-
-        Raises:
-            SSHException: If the received host key does not match the expected host key.
-        """
-        received_key = key.get_base64()
-        if received_key != self.expected_host_key:
-            raise SSHException(f"Host key mismatch for {hostname}. ")
-        # If the key matches, add it to the client's known hosts
-        client._host_keys.add(hostname, key.get_name(), key)
 
 
 class SftpService:

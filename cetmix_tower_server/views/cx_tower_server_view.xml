@@ -284,9 +284,12 @@
                                     <div
                                         groups="cetmix_tower_base.group_manager"
                                         class="o_row"
-                                        invisible="skip_host_key"
                                     >
-                                        <field name="host_key" placeholder="Host key" />
+                                        <field
+                                            name="host_key"
+                                            placeholder="Host key"
+                                            invisible="skip_host_key"
+                                        />
                                         <button
                                             name="action_show_host_key"
                                             groups="cetmix_tower_base.group_manager"
@@ -308,7 +311,7 @@
                                         groups="cetmix_tower_base.group_manager"
                                         invisible="not skip_host_key"
                                     >
-                                        In the Secure Shell (SSH) protocol, host keys are used to verify the identity of remote hosts. Accepting unknown host keys may leave the connection open to man-in-the-middle attacks.
+                                        Connections require a trusted key in the Tower service user's known_hosts file. Unknown or changed keys are rejected. Alternatively, use Get from Host, verify the key independently, and insert it as the Tower host key.
                                     </div>
                                 </group>
                                 <group name="ssh">

@@ -6,9 +6,8 @@
         <field name="model">cx.tower.server.host.key.wizard</field>
         <field name="arch" type="xml">
             <form string="Host Key">
-                <field name="is_error" invisible="1" />
                 <div class="alert alert-warning" role="status" invisible="is_error">
-                    Check the key before inserting in the server settings. Do not insert the key if you have any doubts!
+                    This key was retrieved without authenticating the server. Verify it through an independent trusted channel before inserting it in the server settings.
                 </div>
                 <field name="host_key" readonly="1" invisible="is_error" />
                 <field
