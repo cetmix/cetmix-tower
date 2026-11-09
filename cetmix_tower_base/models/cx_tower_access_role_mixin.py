@@ -68,13 +68,16 @@ class CxTowerAccessRoleMixin(models.AbstractModel):
         """
         Create records with post-create fields.
         """
+        vals_list = [vals.copy() for vals in vals_list]
         post_create_fields = self._get_post_create_fields()
         post_create_vals_list = []
         for vals in vals_list:
             post_create_vals = {}
             for key in post_create_fields:
                 if key in vals:
-                    post_create_vals[key] = vals.pop(key)
+                    post_create_vals[key] = vals[key]
+                    # Keep the key present so parent create cannot apply a default.
+                    vals[key] = False
             post_create_vals_list.append(post_create_vals)
 
         # Create records without post-create fields
