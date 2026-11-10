@@ -1,3 +1,8 @@
+## 18.0.4.0.1 (2026-11-10)
+
+- Bugfixes: Reject untrusted SSH hosts for command and file sessions while allowing unauthenticated host-key discovery. (5717)
+
+
 ## 18.0.4.0.0 (2026-11-09)
 
 - Features: Environments: tag Server, Jet Template and global variable values with environments such as Production or Development, and set an Environment on each Jet. A Jet uses the values tagged with its environment, or the untagged ones. Jet Templates can require an environment, with a default one for jets created by jet requests. (5708)

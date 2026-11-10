@@ -1,7 +1,7 @@
 {
     "name": "Cetmix Tower SSH Proxy",
     "summary": "Connect to Tower servers through SSH jump/proxy servers",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "development_status": "Beta",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
