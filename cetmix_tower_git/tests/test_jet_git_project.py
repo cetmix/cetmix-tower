@@ -3,7 +3,7 @@
 
 from unittest.mock import patch
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import Form
 
 from odoo.addons.cetmix_tower_server.tests.common_jets import TestTowerJetsCommon
@@ -1093,3 +1093,97 @@ class TestJetGitProject(CommonTest, TestTowerJetsCommon):
         )
         clone = self.Jet.browse(wizard.action_confirm()["res_id"])
         self.assertFalse(clone.environment_id)
+
+    def test_wizard_views_include_head_autocomplete(self):
+        """Launch and clone wizards use the same Head autocomplete as Jet lines."""
+        for model in ("cx.tower.jet.create.wizard", "cx.tower.jet.clone.wizard"):
+            arch = self.env[model].get_view(view_type="form")["arch"]
+            self.assertIn("git_head_autocomplete", arch)
+            self.assertIn("head_reference", arch)
+
+    def test_wizard_line_delegates_autocomplete(self):
+        """The wizard line returns the same rows as the Git remote method."""
+        ctx = {
+            "git_repo_id": self.repo_cetmix_tower.id,
+            "git_head_type": "branch",
+            "git_server_id": self.server_test_1.id,
+            "git_partner_id": self.server_test_1.partner_id.id,
+        }
+        Line = self.env["cx.tower.git.repo.line.wizard"]
+        with patch.object(
+            type(self.GitRemote),
+            "_git_fetch_heads_github",
+            lambda *args, **kwargs: [{"head": "listed"}],
+            create=True,
+        ):
+            wizard_rows = Line.with_context(**ctx).git_head_autocomplete(False)
+            remote_rows = self.GitRemote.with_context(**ctx).git_head_autocomplete(
+                False
+            )
+        self.assertEqual(wizard_rows, remote_rows)
+        self.assertEqual(wizard_rows, [{"head": "listed"}])
+
+    def test_user_cannot_autocomplete_wizard_line(self):
+        """A user without write access on Git remotes cannot list heads."""
+        Line = self.env["cx.tower.git.repo.line.wizard"]
+        with self.assertRaises(AccessError):
+            Line.with_user(self.user).git_head_autocomplete(False)
+
+    def test_launch_wizard_form_stores_head_values(self):
+        """Head on launch repo lines is sanitized like on Git remotes."""
+        full_sha = "6e427eb" + ("a" * 33)
+        with Form(self.env["cx.tower.jet.create.wizard"]) as wizard_form:
+            wizard_form.jet_template_id = self.jet_template_sample
+            wizard_form.server_id = self.server_test_1
+            wizard_form.state_id = self.state_running
+            wizard_form.name_type = "m"
+            wizard_form.name = "Launch Head Values"
+            wizard_form.add_repositories = "repos"
+            with wizard_form.git_repo_line_ids.new() as branch_line:
+                self._fill_git_line_form(
+                    branch_line, self.repo_cetmix_tower, head="feat/2233"
+                )
+            with wizard_form.git_repo_line_ids.new() as link_line:
+                self._fill_git_line_form(
+                    link_line,
+                    self.repo_oca_web,
+                    head="https://github.com/oca-test/web-test/tree/demo-branch",
+                )
+            with wizard_form.git_repo_line_ids.new() as commit_line:
+                commit_line.repo_id = self.repo_cetmix_tower
+                commit_line.url_protocol = "https"
+                commit_line.head_type = "commit"
+                commit_line.head = "6e427eb subject line"
+                commit_line.head_reference = full_sha
+        lines = wizard_form.record.git_repo_line_ids
+        self.assertEqual(lines[0].head, "feat/2233")
+        self.assertEqual(lines[1].head, "demo-branch")
+        self.assertEqual(lines[2].head, full_sha)
+
+    def test_clone_wizard_form_stores_commit_reference(self):
+        """Head on clone repo lines stores a selected commit reference."""
+        parent = self.jet_template_sample.create_jet(
+            self.server_test_1,
+            name="Clone Head Parent",
+            git_repo_lines=[self._repo_line(self.repo_cetmix_tower)],
+        )
+        full_sha = "6e427eb" + ("b" * 33)
+        wizard = self.env["cx.tower.jet.clone.wizard"].create(
+            {
+                "jet_id": parent.id,
+                "state_id": self.state_running.id,
+            }
+        )
+        with Form(wizard) as wizard_form:
+            wizard_form.name_type = "m"
+            wizard_form.name = "Clone Head Values"
+            wizard_form.git_project_mode = "repos"
+            with wizard_form.git_repo_line_ids.new() as commit_line:
+                commit_line.repo_id = self.repo_cetmix_tower
+                commit_line.url_protocol = "https"
+                commit_line.head_type = "commit"
+                commit_line.head = "6e427eb another subject"
+                commit_line.head_reference = full_sha
+        line = wizard_form.record.git_repo_line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual(line.head, full_sha)

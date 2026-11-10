@@ -27,7 +27,18 @@
                         <field name="repo_id" />
                         <field name="url_protocol" />
                         <field name="head_type" />
-                        <field name="head" />
+                        <field name="head_reference" column_invisible="True" />
+                        <field
+                            name="head"
+                            widget="autocomplete"
+                            options="{'function': 'git_head_autocomplete', 'min_symbols': 0}"
+                            context="{
+                                'git_repo_id': repo_id,
+                                'git_head_type': head_type,
+                                'git_server_id': parent.server_id,
+                                'git_partner_id': parent.partner_id,
+                            }"
+                        />
                     </list>
                 </field>
             </xpath>
@@ -61,7 +72,18 @@
                         <field name="repo_id" />
                         <field name="url_protocol" />
                         <field name="head_type" />
-                        <field name="head" />
+                        <field name="head_reference" column_invisible="True" />
+                        <field
+                            name="head"
+                            widget="autocomplete"
+                            options="{'function': 'git_head_autocomplete', 'min_symbols': 0}"
+                            context="{
+                                'git_repo_id': repo_id,
+                                'git_head_type': head_type,
+                                'git_server_id': parent.server_id,
+                                'git_partner_id': parent.partner_id,
+                            }"
+                        />
                     </list>
                 </field>
             </xpath>
