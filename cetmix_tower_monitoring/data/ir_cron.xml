@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Mark metric values that are no longer updated as stale -->
+    <record
+        forcecreate="True"
+        id="ir_cron_cx_tower_metric_value_check_stale"
+        model="ir.cron"
+    >
+        <field name="name">Cetmix Tower: Check stale metrics</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="state">code</field>
+        <field name="code">model._cron_check_stale()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+    </record>
+    <!-- Run the collectors of metrics with auto sync -->
+    <record
+        forcecreate="True"
+        id="ir_cron_cx_tower_metric_value_auto_sync"
+        model="ir.cron"
+    >
+        <field name="name">Cetmix Tower: Auto sync metrics</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="state">code</field>
+        <field name="code">model._cron_auto_sync()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+    </record>
+</odoo>

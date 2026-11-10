@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_server_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.form.monitoring</field>
+        <field name="model">cx.tower.server</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_server_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page
+                    name="monitoring"
+                    string="Monitoring"
+                    groups="cetmix_tower_base.group_manager"
+                >
+                    <div class="mb-2" invisible="not has_metric_collector">
+                        <button
+                            name="action_refresh_metrics"
+                            type="object"
+                            string="Refresh"
+                            icon="fa-refresh"
+                            class="btn-secondary"
+                        />
+                    </div>
+                    <field name="metric_value_ids">
+                        <list>
+                            <field name="name" />
+                            <field
+                                name="value"
+                                string="Current"
+                                widget="progressbar"
+                                options="{'current_value': 'value', 'max_value': 'max_value', 'editable': false}"
+                                invisible="widget != 'progressbar'"
+                            />
+                            <field
+                                name="value"
+                                string="Current"
+                                widget="gauge"
+                                options="{'max_field': 'max_value'}"
+                                invisible="widget != 'gauge' or not max_value"
+                            />
+                            <field
+                                name="value"
+                                string="Current"
+                                invisible="widget == 'progressbar' or (widget == 'gauge' and max_value)"
+                            />
+                            <field name="unit" />
+                            <field
+                                name="state"
+                                widget="badge"
+                                decoration-success="state == 'ok'"
+                                decoration-warning="state == 'warning'"
+                                decoration-danger="state in ('critical', 'stale')"
+                                decoration-muted="state == 'unknown'"
+                            />
+                            <field name="last_update" />
+                            <field name="max_value" column_invisible="True" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_view_kanban" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.kanban.monitoring</field>
+        <field name="model">cx.tower.server</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_server_view_kanban"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='card']/ul" position="after">
+                <div class="mt-1" groups="cetmix_tower_base.group_manager">
+                    <field
+                        name="monitoring_state"
+                        widget="badge"
+                        decoration-success="monitoring_state == 'ok'"
+                        decoration-warning="monitoring_state == 'warning'"
+                        decoration-danger="monitoring_state in ('critical', 'stale')"
+                        decoration-muted="monitoring_state == 'unknown'"
+                    />
+                </div>
+                <div
+                    t-if="record.kanban_metric_data.raw_value"
+                    class="mt-1 small"
+                    groups="cetmix_tower_base.group_manager"
+                >
+                    <div
+                        t-foreach="record.kanban_metric_data.raw_value"
+                        t-as="metric"
+                        t-key="metric_index"
+                        class="mb-1"
+                    >
+                        <div class="d-flex justify-content-between gap-2">
+                            <span class="text-truncate" t-out="metric.name" />
+                            <span class="text-nowrap" t-out="metric.label" />
+                        </div>
+                        <div
+                            t-if="metric.percent !== false"
+                            class="progress"
+                            style="height: 6px;"
+                            role="progressbar"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            t-att-aria-valuenow="metric.percent"
+                            t-att-aria-label="metric.name"
+                        >
+                            <div
+                                t-att-class="{
+                                    'progress-bar': true,
+                                    'bg-danger': ['critical', 'stale'].includes(metric.state),
+                                    'bg-warning': metric.state === 'warning',
+                                }"
+                                t-att-style="'width: ' + metric.percent + '%'"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//templates" position="before">
+                <field
+                    name="kanban_metric_data"
+                    groups="cetmix_tower_base.group_manager"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_server_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.list.monitoring</field>
+        <field name="model">cx.tower.server</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_server_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="/list" position="attributes">
+                <attribute
+                    name="decoration-warning"
+                >monitoring_decoration == 'warning'</attribute>
+                <attribute
+                    name="decoration-danger"
+                >monitoring_decoration in ('critical', 'stale')</attribute>
+            </xpath>
+            <xpath expr="/list" position="inside">
+                <field
+                    name="monitoring_state"
+                    widget="badge"
+                    optional="show"
+                    groups="cetmix_tower_base.group_manager"
+                    decoration-success="monitoring_state == 'ok'"
+                    decoration-warning="monitoring_state == 'warning'"
+                    decoration-danger="monitoring_state in ('critical', 'stale')"
+                    decoration-muted="monitoring_state == 'unknown'"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

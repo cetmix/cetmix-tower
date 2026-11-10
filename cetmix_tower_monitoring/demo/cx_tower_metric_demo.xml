@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Root disk, pulled by the Python collector -->
+    <record id="cx_tower_metric_disk_root_demo" model="cx.tower.metric">
+        <field name="name">Root Disk</field>
+        <field name="reference">disk_root</field>
+        <field
+            name="note"
+        >Used and total space of the root filesystem "/", in GiB. Collected by the "Monitoring: Collect Disk and Memory" Python command from "df".</field>
+        <field name="widget">progressbar</field>
+        <field name="unit">GiB</field>
+        <field name="stale_after_minutes">30</field>
+        <field name="show_on_kanban" eval="True" />
+        <field name="command_id" ref="cx_tower_command_metric_collector_demo" />
+    </record>
+    <record
+        id="cx_tower_metric_threshold_disk_root_warning_demo"
+        model="cx.tower.metric.threshold"
+    >
+        <field name="metric_id" ref="cx_tower_metric_disk_root_demo" />
+        <field name="sequence">10</field>
+        <field name="condition" eval="'&gt;='" />
+        <field name="value_float">80</field>
+        <field name="severity">warning</field>
+        <field name="action">none</field>
+    </record>
+    <record
+        id="cx_tower_metric_threshold_disk_root_critical_demo"
+        model="cx.tower.metric.threshold"
+    >
+        <field name="metric_id" ref="cx_tower_metric_disk_root_demo" />
+        <field name="sequence">20</field>
+        <field name="condition" eval="'&gt;='" />
+        <field name="value_float">90</field>
+        <field name="severity">critical</field>
+        <field name="action">command</field>
+        <field name="command_id" ref="cx_tower_command_metric_report_demo" />
+    </record>
+    <record
+        id="cx_tower_metric_threshold_disk_root_stale_demo"
+        model="cx.tower.metric.threshold"
+    >
+        <field name="metric_id" ref="cx_tower_metric_disk_root_demo" />
+        <field name="sequence">30</field>
+        <field name="condition" eval="'stale'" />
+        <field name="action">none</field>
+    </record>
+
+    <!-- Memory, pulled by the same Python collector -->
+    <record id="cx_tower_metric_ram_demo" model="cx.tower.metric">
+        <field name="name">Memory</field>
+        <field name="reference">ram</field>
+        <field name="widget">progressbar</field>
+        <field name="unit">MiB</field>
+        <field name="stale_after_minutes">30</field>
+        <field name="show_on_kanban" eval="True" />
+        <field name="command_id" ref="cx_tower_command_metric_collector_demo" />
+    </record>
+    <record
+        id="cx_tower_metric_threshold_ram_warning_demo"
+        model="cx.tower.metric.threshold"
+    >
+        <field name="metric_id" ref="cx_tower_metric_ram_demo" />
+        <field name="sequence">10</field>
+        <field name="condition" eval="'&gt;'" />
+        <field name="value_float">90</field>
+        <field name="severity">warning</field>
+        <field name="action">none</field>
+    </record>
+
+    <!-- Load average, pushed by the webhook -->
+    <record id="cx_tower_metric_load_1_demo" model="cx.tower.metric">
+        <field name="name">Load Average (1 min)</field>
+        <field name="reference">load_1</field>
+        <field name="widget">number</field>
+        <field name="stale_after_minutes">15</field>
+        <field name="show_on_kanban" eval="False" />
+    </record>
+    <record
+        id="cx_tower_metric_threshold_load_1_critical_demo"
+        model="cx.tower.metric.threshold"
+    >
+        <field name="metric_id" ref="cx_tower_metric_load_1_demo" />
+        <field name="sequence">10</field>
+        <field name="condition" eval="'&gt;='" />
+        <field name="value_float">4</field>
+        <field name="severity">critical</field>
+        <field name="action">none</field>
+    </record>
+</odoo>
