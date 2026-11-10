@@ -1291,13 +1291,6 @@ msgid "Cetmix Tower: Run scheduled tasks"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
-msgid ""
-"Check the key before inserting in the server settings. Do not insert the key"
-" if you have any doubts!"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_log_search_view
 msgid "Child plans"
 msgstr ""
@@ -1633,6 +1626,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 msgid "Connection test passed."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
+msgid ""
+"Connections require a trusted key in the Tower service user's known_hosts "
+"file. Unknown or changed keys are rejected. Alternatively, use Get from "
+"Host, verify the key independently, and insert it as the Tower host key."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2214,11 +2215,6 @@ msgid "Domain for variables"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__skip_host_key
-msgid "Don't Check Key"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_jet_template_install__state__done
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_jet_template_install_line__state__done
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_install_view_form
@@ -2263,12 +2259,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_jet_request.py:0
 msgid "Either a jet or a jet template must be provided to create a request"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__skip_host_key
-#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__skip_host_key
-msgid "Enable to skip host key verification"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3255,14 +3245,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/tests/test_plan.py:0
 msgid "If exit code == 35 then Exit with command exit code"
-msgstr ""
-
-#. module: cetmix_tower_server
-#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
-msgid ""
-"In the Secure Shell (SSH) protocol, host keys are used to verify the "
-"identity of remote hosts. Accepting unknown host keys may leave the "
-"connection open to man-in-the-middle attacks."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -6147,11 +6129,6 @@ msgid "Skip"
 msgstr ""
 
 #. module: cetmix_tower_server
-#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__skip_host_key
-msgid "Skip Host Key"
-msgstr ""
-
-#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_command_log_view_form
 msgid "Skipped"
 msgstr ""
@@ -6711,6 +6688,13 @@ msgid "This jet template will be used to create log files when jet is created"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.view_cx_tower_server_host_key_wizard_form
+msgid ""
+"This key was retrieved without authenticating the server. Verify it through "
+"an independent trusted channel before inserting it in the server settings."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_command__file_template_id
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan_line__file_template_id
 msgid "This template will be used to create or update the pushed file"
@@ -6946,6 +6930,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_log__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_shortcut__use_sudo
 msgid "Use Sudo"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server__skip_host_key
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__skip_host_key
+msgid "Use System Host Keys"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -7279,6 +7269,14 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_plan__all_variable_ids
 msgid "Variables used by this flight plan and by the flight plans it runs"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server__skip_host_key
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_server_template_create_wizard__skip_host_key
+msgid ""
+"Verify against the Tower service user's known_hosts instead of a Tower host "
+"key. Unknown or changed host keys are rejected."
 msgstr ""
 
 #. module: cetmix_tower_server
