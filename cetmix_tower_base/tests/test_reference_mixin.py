@@ -1,6 +1,8 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from unittest.mock import patch
+
 from psycopg2 import IntegrityError
 
 from odoo.tools import mute_logger
@@ -56,3 +58,14 @@ class TestReferenceMixinBatch(TestTowerBaseCommon):
         self.assertEqual(tag.reference, "reset_reference")
         self.assertFalse(self.Tag.get_by_reference("old_ref"))
         self.assertEqual(self.Tag.get_by_reference("reset_reference"), tag)
+
+    def test_reset_reference_updates_dependents_only_when_changed(self):
+        """Resetting a custom reference propagates its change to dependents."""
+        tag = self.Tag.create({"name": "Reset parent", "reference": "custom_parent"})
+        with patch.object(type(tag), "_update_dependent_model_references") as update:
+            tag.write({"reference": False})
+            self.assertEqual(tag.reference, "reset_parent")
+            update.assert_called_once()
+        with patch.object(type(tag), "_update_dependent_model_references") as update:
+            tag.write({"reference": False})
+            update.assert_not_called()

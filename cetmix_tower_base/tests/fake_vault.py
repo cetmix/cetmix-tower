@@ -2,6 +2,7 @@ from odoo import fields, models
 
 
 class VaultResource(models.Model):
+    _module = None
     _name = "tower.test.vault.resource"
     _inherit = "cx.tower.vault.mixin"
     _description = "Vault Test Resource"

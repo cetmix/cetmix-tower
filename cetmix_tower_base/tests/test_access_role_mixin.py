@@ -15,6 +15,7 @@ class TestAccessRoleMixin(TestTowerBaseCommon):
         super().setUpClass()
 
         class RoleResource(models.Model):
+            _module = None
             _name = "cx.tower.test.role.resource"
             _inherit = "cx.tower.access.role.mixin"
             _description = "Tower role test resource"
@@ -32,6 +33,7 @@ class TestAccessRoleMixin(TestTowerBaseCommon):
                 return ["child_ids"]
 
         class RoleChild(models.Model):
+            _module = None
             _name = "cx.tower.test.role.child"
             _description = "Tower role test child"
 
