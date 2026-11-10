@@ -10,7 +10,7 @@ from requests.exceptions import RequestException
 from odoo import api, fields, models
 from odoo.exceptions import AccessError, UserError
 
-from .cx_tower_git_remote import GITHUB_API_URL, GITHUB_API_VERSION
+from .cx_tower_git_remote import GITHUB_API_VERSION
 
 _logger = logging.getLogger(__name__)
 
@@ -22,6 +22,9 @@ class CxTowerGitRepo(models.Model):
 
     github_repo_ref = fields.Char(
         help="GitHub repository id returned by GitHub. Not shown in the UI.",
+    )
+    secret_id = fields.Many2one(
+        help="When empty, the owner Secret is used, then the GitHub API Secret.",
     )
 
     _SYNC_WRITE_FIELDS = frozenset({"url", "host", "owner_id", "repo"})
@@ -53,7 +56,7 @@ class CxTowerGitRepo(models.Model):
                 git_github_sync_skip_inverse=True,
             ),
         ).create(vals_list)
-        repos = repos.with_context(git_github_sync_skip_inverse=False)
+        repos = repos.with_env(self.env)
         to_sync = repos.filtered(lambda item: item.id not in existing_ids)
         if to_sync:
             to_sync.with_context(git_github_sync_raise=False).action_git_github_sync()
@@ -207,7 +210,7 @@ class CxTowerGitRepo(models.Model):
         name = self.repo
         if not owner or not name:
             raise UserError(self.env._("GitHub returned an unexpected response."))
-        url = f"{GITHUB_API_URL}/repos/{owner}/{name}"
+        url = git_remote._git_github_repos_base(owner, name)
         try:
             response = requests.get(
                 url,
