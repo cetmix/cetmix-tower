@@ -1,3 +1,8 @@
+## 18.0.4.0.1 (2026-11-10)
+
+- Bugfixes: The Jet Create and Clone wizards list branches, pull requests, and commits for Head. (5719) (5719)
+
+
 ## 18.0.4.0.0 (2026-11-09)
 
 - Features: Pass the selected environment from the Create Jet and Clone Jet wizards with Git Projects to the new jet. (5708)
