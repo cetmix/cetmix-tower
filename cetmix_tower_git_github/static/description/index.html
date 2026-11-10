@@ -401,8 +401,14 @@ Users &amp; Companies &gt; Users</strong> and set the user’s Cetmix Tower acce
 <strong>Root</strong>.</p>
 <p>Set <strong>GitHub API Secret</strong> and save.</p>
 <p>On the repository, set <strong>Secret</strong> when that repository has its own
-token. Leave <strong>Secret</strong> empty to use the globally configured GitHub API
-Secret.</p>
+token. When <strong>Secret</strong> is empty, Tower uses the <strong>Secret</strong> on the
+repository owner. When both are empty, Tower uses <strong>GitHub API Secret</strong>
+from General Settings.</p>
+<p>Tower resolves a secret in that order for Head autocomplete and for
+reading the GitHub repository id. Head autocomplete still uses server
+and partner values when they are known. Reading the GitHub id uses only
+a <strong>global</strong> value of the chosen secret; server-specific or
+partner-specific values are not used for that read.</p>
 <p>Be careful about the scope of the token. Any token that can read the
 repository is enough.</p>
 </div>
