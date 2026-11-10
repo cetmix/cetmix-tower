@@ -1,7 +1,7 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
@@ -46,7 +46,53 @@ class CxTowerGitRepoLineWizard(models.TransientModel):
         required=True,
     )
     head = fields.Char(required=True)
+    head_reference = fields.Char(
+        store=False,
+        help="Aggregator value sent with a captioned suggestion. "
+        "Selecting a row stores this instead of the visible text.",
+    )
     enabled = fields.Boolean(default=True)
+
+    @api.model
+    def git_head_autocomplete(self, value):
+        """Return Head suggestions using the Git remote autocomplete pipeline.
+
+        The autocomplete widget calls this on the wizard line model. Suggestion
+        logic stays on ``cx.tower.git.remote``.
+
+        Args:
+            value (str | bool): Trimmed input, or ``False`` when the field
+                is focused and still empty.
+
+        Raises:
+            AccessError: When the current user cannot write Git remotes.
+            UserError: When no API secret resolves or the provider fails.
+
+        Returns:
+            list[dict]: Rows ``{"head": "<value>"}``, optionally with
+            ``head_reference``.
+        """
+        return self.env["cx.tower.git.remote"].git_head_autocomplete(value)
+
+    @api.onchange("head", "head_reference")
+    def onchange_head(self):
+        """Store a selected reference and reduce a pasted link to its tail.
+
+        Reuses ``cx.tower.git.remote`` onchange so captioned pull requests and
+        commits store the same values as on the Jet and remote forms.
+        """
+        GitRemote = self.env["cx.tower.git.remote"]
+        for line in self:
+            draft = GitRemote.new(
+                {
+                    "head": line.head,
+                    "head_type": line.head_type,
+                    "head_reference": line.head_reference,
+                }
+            )
+            draft.onchange_head()
+            line.head = draft.head
+            line.head_reference = draft.head_reference
 
     def _to_repo_line_dict(self):
         """Serialize this line to the public repo line format.
