@@ -1,6 +1,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from odoo.addons.cetmix_tower_server.ssh.ssh import SSHConnection
+
 from ..ssh.proxy import ProxySSHManager
 
 MAX_SSH_PROXY_HOPS = 8
@@ -161,26 +163,8 @@ class CxTowerServer(models.Model):
                 skip_host_key=skip_host_key,
             )
 
-        server = self.sudo()
         try:
-            route_values = server._get_ssh_route_connection_values(
-                skip_host_key=skip_host_key,
-            )
-            connection_params = [
-                {
-                    "host": values["host"],
-                    "port": values["port"],
-                    "username": values["username"],
-                    "password": values["password"],
-                    "ssh_key": values["ssh_key"],
-                    "host_key": values["host_key"],
-                    "mode": values["auth_mode"],
-                    "timeout": timeout,
-                }
-                for values in route_values
-            ]
-
-            return ProxySSHManager(connection_params)
+            return self._get_ssh_proxy_manager(timeout, skip_host_key=skip_host_key)
 
         except Exception as error:
             if raise_on_error:
@@ -188,3 +172,81 @@ class CxTowerServer(models.Model):
                     _("SSH connection error %(err)s", err=error)
                 ) from error
             return False, error
+
+    def _get_ssh_proxy_manager(self, timeout, skip_host_key=False, use_cache=True):
+        """Build a verified route manager, optionally owned by one operation.
+
+        Every hop is verified with its own host-key settings. Host-key
+        discovery uses an uncached manager so that disconnecting it does not
+        close a route shared with other operations.
+
+        Args:
+            timeout (int): SSH connection timeout in seconds for every hop.
+            skip_host_key (bool): If True, verify the target against system
+                known_hosts instead of its Tower host key. Proxy hops always
+                use their own settings. Defaults to False.
+            use_cache (bool): If True, reuse and cache the manager for this
+                route. If False, the caller owns the manager and must
+                disconnect it. Defaults to True.
+
+        Returns:
+            ProxySSHManager: Connected manager for the route.
+
+        Raises:
+            ValidationError: If the route is invalid or a hop has no host key.
+            Exception: Any SSH error raised while connecting a hop, including
+                an unknown or changed host key.
+        """
+        route_values = self.sudo()._get_ssh_route_connection_values(
+            skip_host_key=skip_host_key,
+        )
+        connection_params = [
+            {
+                "host": values["host"],
+                "port": values["port"],
+                "username": values["username"],
+                "password": values["password"],
+                "ssh_key": values["ssh_key"],
+                "host_key": values["host_key"],
+                "mode": values["auth_mode"],
+                "timeout": timeout,
+            }
+            for values in route_values
+        ]
+        return ProxySSHManager(connection_params, use_cache=use_cache)
+
+    def _fetch_host_key(self, timeout):
+        """Read the target key through verified proxy hops without target auth.
+
+        Args:
+            timeout (int): Socket and SSH handshake timeout in seconds.
+
+        Returns:
+            str: Unverified Base64 target host key for independent confirmation.
+
+        Raises:
+            ValidationError: If a proxy connection cannot be established.
+            OSError: If the target cannot be reached.
+            SSHException: If the target handshake fails.
+        """
+        server = self.sudo()
+        if server.ssh_connection_route != "proxy":
+            return super()._fetch_host_key(timeout)
+
+        route = server._get_ssh_route_servers()
+        proxy = route[-2]._get_ssh_proxy_manager(timeout, use_cache=False)
+        try:
+            sock = proxy.connection.get_transport().open_channel(
+                "direct-tcpip",
+                (server.ip_v4_address or server.ip_v6_address, server.ssh_port),
+                ("127.0.0.1", 0),
+                timeout=timeout,
+            )
+            return SSHConnection.fetch_host_key(
+                server.ip_v4_address or server.ip_v6_address,
+                server.ssh_port,
+                timeout,
+                sock=sock,
+            )
+        finally:
+            proxy.disconnect()

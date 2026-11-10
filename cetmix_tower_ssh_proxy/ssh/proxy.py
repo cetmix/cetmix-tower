@@ -2,9 +2,7 @@ import logging
 import time
 
 from odoo.addons.cetmix_tower_server.ssh.ssh import (
-    AutoAddPolicy,
     CommandExecutor,
-    CustomHostKeyPolicy,
     KeyLoader,
     SftpService,
     SSHClient,
@@ -35,14 +33,7 @@ class ProxySSHConnection(SSHConnection):
 
         ssh_client = SSHClient()
         try:
-            ssh_client.load_system_host_keys()
-
-            if self.host_key:
-                ssh_client.set_missing_host_key_policy(
-                    CustomHostKeyPolicy(self.host_key)
-                )
-            else:
-                ssh_client.set_missing_host_key_policy(AutoAddPolicy())
+            self._configure_host_key_policy(ssh_client)
 
             connect_params = {
                 "hostname": self.host,
@@ -100,10 +91,23 @@ class ProxySSHManager:
 
     _connection_cache = {}
 
-    def __new__(cls, connection_params):
+    def __new__(cls, connection_params, use_cache=True):
         """
         Create or reuse a ProxySSHManager instance for the SSH route
+
+        Args:
+            connection_params (list[dict]): Connection values for each hop,
+                from the outermost proxy to the target.
+            use_cache (bool): If True, return the cached manager for this
+                route when its timeout matches. If False, always create a new
+                manager that the caller owns. Defaults to True.
+
+        Returns:
+            ProxySSHManager: Cached or new manager instance.
         """
+        if not use_cache:
+            return super().__new__(cls)
+
         key = cls._get_cache_key(connection_params)
         timeout = connection_params[0]["timeout"]
 
@@ -130,14 +134,26 @@ class ProxySSHManager:
 
         return super().__new__(cls)
 
-    def __init__(self, connection_params):
+    def __init__(self, connection_params, use_cache=True):
         """
         Initialize the proxy SSH route and target services.
+
+        Args:
+            connection_params (list[dict]): Connection values for each hop,
+                from the outermost proxy to the target.
+            use_cache (bool): If True, cache the manager once the whole route
+                is connected and remove it from the cache on disconnect.
+                Defaults to True.
+
+        Raises:
+            Exception: Any error raised while connecting the route. Opened
+                connections are closed before it is raised.
         """
         # Initialize only once.
         if hasattr(self, "_initialized") and self._initialized:
             return
 
+        self._use_cache = use_cache
         self.proxy_connections = []
         self.connection = None
         self._cache_key = self._get_cache_key(connection_params)
@@ -155,11 +171,12 @@ class ProxySSHManager:
             self._initialized = True
 
             # Cache only a fully initialized manager.
-            self._connection_cache[self._cache_key] = (
-                self,
-                time.time(),
-                self._cached_timeout,
-            )
+            if self._use_cache:
+                self._connection_cache[self._cache_key] = (
+                    self,
+                    time.time(),
+                    self._cached_timeout,
+                )
         except Exception:
             self._disconnect_connections()
             raise
@@ -261,7 +278,8 @@ class ProxySSHManager:
             try:
                 self._disconnect_connections()
             finally:
-                self.delete_cache(self._cache_key)
+                if self._use_cache:
+                    self.delete_cache(self._cache_key)
 
     @classmethod
     def get_connection_cache(cls):

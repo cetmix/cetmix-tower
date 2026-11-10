@@ -1,4 +1,5 @@
 from . import test_server
+from . import test_ssh
 from . import test_command
 from . import test_command_defer
 from . import test_command_runner_registry

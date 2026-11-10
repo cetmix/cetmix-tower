@@ -113,8 +113,10 @@ class CxTowerServer(models.Model):
         string="IPv6 Address", groups="cetmix_tower_base.group_manager"
     )
     skip_host_key = fields.Boolean(
+        string="Use System Host Keys",
         default=False,
-        help="Enable to skip host key verification",
+        help="Verify against the Tower service user's known_hosts instead of a "
+        "Tower host key. Unknown or changed host keys are rejected.",
     )
     host_key = fields.Char(
         groups="cetmix_tower_base.group_manager",
@@ -457,11 +459,11 @@ class CxTowerServer(models.Model):
         """Show host key"""
         self.ensure_one()
         try:
-            host_key = self._get_host_key_from_host()
+            host_key = self._get_host_key_from_host(raise_on_error=True)
             is_error = False
         except Exception as error:
             is_error = True
-            host_key = error
+            host_key = str(error)
         context = {
             "default_host_key": host_key,
             "default_is_error": is_error,
@@ -648,10 +650,10 @@ class CxTowerServer(models.Model):
         for key auth.
 
         Args:
-            skip_host_key (bool): If True, skip host-key verification even
-                when the server does not have skip_host_key set. Combined
-                with ``self.skip_host_key`` for the missing-key error and
-                for omitting ``host_key``. Defaults to False.
+            skip_host_key (bool): If True, use system known_hosts instead of the
+                Tower pin. Combined with ``self.skip_host_key`` for the
+                missing-pin error and for omitting ``host_key``. Unknown
+                system hosts are still rejected. Defaults to False.
 
         Returns:
             dict: Keys ``host``, ``port``, ``username``, ``auth_mode``,
@@ -692,7 +694,8 @@ class CxTowerServer(models.Model):
              in case or error, otherwise False will be returned
             Defaults to True.
             timeout (int, optional): SSH connection timeout in seconds.
-            skip_host_key (bool, optional): If true will skip host key verification.
+            skip_host_key (bool, optional): If True, use system known_hosts
+                instead of the Tower pin. Unknown hosts are rejected.
                 Defaults to False.
 
         Raises:
@@ -914,7 +917,6 @@ class CxTowerServer(models.Model):
             ssh_key = None
         return ssh_key
 
-    @ensure_ssh_disconnect
     def _get_host_key_from_host(self, raise_on_error=False, timeout=60):
         """Get host key
 
@@ -938,28 +940,30 @@ class CxTowerServer(models.Model):
         self.check_access("read")
 
         try:
-            # Skip host key verification to obtain the server's real host key.
-            client = self._get_ssh_client(
-                raise_on_error=raise_on_error, timeout=timeout, skip_host_key=True
-            )
-
-            # Disable host key verification for this connection only, to obtain the
-            # server's real host key. If a pre-configured host key is incorrect using
-            # it would cause a key mismatch error. By setting host_key to False
-            # here, we trigger AutoAddPolicy for this connection, which automatically
-            # accepts the server's actual host key.
-            client.connection.host_key = False
-
-            ssh_client = client.connection.connect()
-            transport = ssh_client.get_transport()
-            remote_key = transport.get_remote_server_key()
-            host_key = remote_key.get_base64()
-            return host_key
+            return self._fetch_host_key(timeout)
         except Exception as e:
             if raise_on_error:
                 raise ValidationError(
                     _("Error retrieving host key: %(err)s", err=e)
                 ) from e
+
+    def _fetch_host_key(self, timeout):
+        """Read the target key without authenticating to the target.
+
+        Args:
+            timeout (int): Socket and SSH handshake timeout in seconds.
+
+        Returns:
+            str: Unverified Base64 host key for independent confirmation.
+
+        Raises:
+            OSError: If the target cannot be reached.
+            SSHException: If the SSH handshake fails.
+        """
+        server = self.sudo()
+        return SSHConnection.fetch_host_key(
+            server.ip_v4_address or server.ip_v6_address, server.ssh_port, timeout
+        )
 
     # ------------------------------
     # ---- Command execution
