@@ -357,7 +357,7 @@ class CxTowerGitRemote(models.Model):
         return response.reason or self.env._("GitHub returned an error.")
 
     def _git_head_api_reference(self, repo):
-        """Use the repository Secret, or the GitHub API Secret setting.
+        """Use the repository Secret, the owner Secret, or settings.
 
         Args:
             repo (cx.tower.git.repo): Repository to read.
@@ -368,6 +368,8 @@ class CxTowerGitRemote(models.Model):
         reference = super()._git_head_api_reference(repo)
         if reference:
             return reference
+        if repo.owner_id and repo.owner_id.secret_id:
+            return repo.owner_id.secret_id.reference
         param = (
             self.env["ir.config_parameter"]
             .sudo()

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_git_repo_view_form_github" model="ir.ui.view">
+        <field name="name">cx.tower.git.repo.form.github</field>
+        <field name="model">cx.tower.git.repo</field>
+        <field name="inherit_id" ref="cetmix_tower_git.cx_tower_git_repo_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button
+                        name="action_git_github_sync"
+                        type="object"
+                        string="Read from GitHub"
+                        groups="cetmix_tower_base.group_manager"
+                        invisible="provider != 'github' or host != 'github.com'"
+                    />
+                </header>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="cx_tower_git_repo_git_github_sync_action" model="ir.actions.server">
+        <field name="name">Read from GitHub</field>
+        <field name="model_id" ref="cetmix_tower_git.model_cx_tower_git_repo" />
+        <field name="binding_model_id" ref="cetmix_tower_git.model_cx_tower_git_repo" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_git_github_sync()</field>
+        <field
+            name="groups_id"
+            eval="[
+            (4, ref('cetmix_tower_base.group_manager')),
+            (4, ref('cetmix_tower_base.group_root')),
+        ]"
+        />
+    </record>
+</odoo>
