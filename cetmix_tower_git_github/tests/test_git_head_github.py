@@ -766,6 +766,65 @@ class TestGitHeadGithub(CommonTest):
         self.assertEqual(repo.github_repo_ref, "1296269")
         self.assertEqual(owner.github_owner_ref, "100")
 
+    def test_create_returned_record_still_syncs_on_later_write(self):
+        """A repository returned by create does not keep the sync guard."""
+        key = self.Key.create(
+            {"name": "Guard key", "key_type": "s", "secret_value": "ghp_guard"}
+        )
+        with self._mock_repo_get(self._repo_api_payload()):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/guard.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.env.context.get("git_github_sync_depth"))
+        with patch(_REPO_GET, side_effect=AssertionError("http called")):
+            repo.write({"host": "gitlab.com", "provider": "gitlab"})
+        self.assertFalse(repo.github_repo_ref)
+
+    def test_empty_owner_ref_access_error_on_quiet_create(self):
+        """A quiet create keeps an empty owner id when that owner cannot be written."""
+        manager_b = self.Users.create(
+            {
+                "name": "Empty Owner Manager",
+                "login": "empty_owner_manager_5709",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.group_manager.id,
+                            self.env.ref("base.group_user").id,
+                        ],
+                    )
+                ],
+            }
+        )
+        owner = self.RepoOwner.with_user(self.manager).create({"name": "emptyowner"})
+        self.assertFalse(owner.github_owner_ref)
+        key = self.Key.create(
+            {"name": "Empty owner key", "key_type": "s", "secret_value": "ghp_empty"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=200)):
+            repo = self.Repo.with_user(manager_b).create(
+                {
+                    "url": "https://github.com/emptyowner/shared.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertFalse(owner.github_owner_ref)
+
+    def test_github_path_segments_are_encoded(self):
+        """Owner and repository names are single encoded path segments."""
+        owner = self.RepoOwner.create({"name": "octo/cat"})
+        repo = self.Repo.new({"repo": "hello?world", "owner_id": owner.id})
+        url, _params, value_key = self.GitRemote._git_github_request(repo, "branch")
+        self.assertEqual(value_key, "name")
+        self.assertIn("/repos/octo%2Fcat/hello%3Fworld/branches", url)
+        self.assertNotIn("/repos/octo/cat/", url)
+
     def test_group_user_cannot_run_sync_action(self):
         """Tower User cannot run the Read from GitHub server action."""
         action = self.env.ref(
