@@ -106,6 +106,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_remote__head_reference
+#: model:ir.model.fields,help:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__head_reference
 msgid ""
 "Aggregator value sent with a captioned suggestion. Selecting a row stores "
 "this instead of the visible text."
@@ -606,6 +607,7 @@ msgstr ""
 
 #. module: cetmix_tower_git
 #: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_remote__head_reference
+#: model:ir.model.fields,field_description:cetmix_tower_git.field_cx_tower_git_repo_line_wizard__head_reference
 msgid "Head Reference"
 msgstr ""
 
