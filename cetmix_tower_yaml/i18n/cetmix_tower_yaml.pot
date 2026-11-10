@@ -570,11 +570,6 @@ msgid "Eg '/home/user' or '/var/log'"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__skip_host_key
-msgid "Enable to skip host key verification"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_jet_template__environment_default_id
 msgid ""
 "Environment of Jets created by jet requests when the requesting Jet has none"
@@ -1614,11 +1609,6 @@ msgid "Show in Wizard"
 msgstr ""
 
 #. module: cetmix_tower_yaml
-#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__skip_host_key
-msgid "Skip Host Key"
-msgstr ""
-
-#. module: cetmix_tower_yaml
 #: model:ir.model.fields.selection,name:cetmix_tower_yaml.selection__cx_tower_yaml_import_wiz__if_record_exists__skip
 msgid "Skip record"
 msgstr ""
@@ -1797,6 +1787,11 @@ msgid "Use Sudo"
 msgstr ""
 
 #. module: cetmix_tower_yaml
+#: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__skip_host_key
+msgid "Use System Host Keys"
+msgstr ""
+
+#. module: cetmix_tower_yaml
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server__use_sudo
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_server_template__use_sudo
 msgid "Use sudo"
@@ -1868,6 +1863,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_plan_line__variable_ids
 #: model:ir.model.fields,field_description:cetmix_tower_yaml.field_cx_tower_variable_value__variable_ids
 msgid "Variables"
+msgstr ""
+
+#. module: cetmix_tower_yaml
+#: model:ir.model.fields,help:cetmix_tower_yaml.field_cx_tower_server__skip_host_key
+msgid ""
+"Verify against the Tower service user's known_hosts instead of a Tower host "
+"key. Unknown or changed host keys are rejected."
 msgstr ""
 
 #. module: cetmix_tower_yaml
