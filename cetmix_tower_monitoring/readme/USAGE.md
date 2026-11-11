@@ -17,6 +17,10 @@ Open server and jet kanban and list views update by themselves when a metric val
 
 The overall state of a server or a jet is the worst state of its metrics, in this order: Critical, Stale, Warning, Unknown, OK.
 
+## Metrics from the Server Template
+
+A server created from a Server Template starts with the metrics of the template, in the Unknown state until the first value is received. Changes to the template later do not change the server: add or remove its metrics on the "Monitoring" tab.
+
 ## Metrics from the Jet Template
 
 A jet shows the metrics of its Jet Template on the "Monitoring" tab together with its own ones. The "Manual" column tells them apart:

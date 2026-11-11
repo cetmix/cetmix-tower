@@ -231,6 +231,24 @@ adds later, the manual value is kept and no other value is added.
 Jet Template metrics are exported and imported with the Jet Template in
 YAML.
 
+Metrics on Server Templates
+---------------------------
+
+Open a Server Template, go to the "Metrics" tab and add the metrics that
+servers created from this template get.
+
+Metrics are copied once, when a server is created from the template: the
+server gets a value for each metric, in the Unknown state until the
+first value is received. Later changes to the template metrics do not
+change existing servers. Servers created without the template, or by
+duplicating a server, do not get them.
+
+Set collector overrides and override thresholds on the server values,
+not on the template.
+
+Server Template metrics are exported and imported with the Server
+Template in YAML.
+
 Push values with a webhook
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -296,6 +314,14 @@ Metric states
 
 The overall state of a server or a jet is the worst state of its
 metrics, in this order: Critical, Stale, Warning, Unknown, OK.
+
+Metrics from the Server Template
+--------------------------------
+
+A server created from a Server Template starts with the metrics of the
+template, in the Unknown state until the first value is received.
+Changes to the template later do not change the server: add or remove
+its metrics on the "Monitoring" tab.
 
 Metrics from the Jet Template
 -----------------------------

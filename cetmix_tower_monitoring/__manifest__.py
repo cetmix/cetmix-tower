@@ -19,6 +19,7 @@
         "views/cx_tower_metric_value_views.xml",
         "views/cx_tower_server_views.xml",
         "views/cx_tower_jet_views.xml",
+        "views/cx_tower_server_template_views.xml",
         "views/res_config_settings_views.xml",
         "views/menuitems.xml",
     ],

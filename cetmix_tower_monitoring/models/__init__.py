@@ -10,6 +10,7 @@ from . import cx_tower_server
 from . import cx_tower_jet
 from . import cx_tower_jet_template_metric
 from . import cx_tower_jet_template
+from . import cx_tower_server_template
 from . import cx_tower_environment
 from . import cx_tower_command_log
 from . import res_config_settings

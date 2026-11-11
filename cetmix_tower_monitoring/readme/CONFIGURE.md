@@ -90,6 +90,16 @@ Values added by a user, or by `record_metric()` from a command or a webhook, are
 
 Jet Template metrics are exported and imported with the Jet Template in YAML.
 
+## Metrics on Server Templates
+
+Open a Server Template, go to the "Metrics" tab and add the metrics that servers created from this template get.
+
+Metrics are copied once, when a server is created from the template: the server gets a value for each metric, in the Unknown state until the first value is received. Later changes to the template metrics do not change existing servers. Servers created without the template, or by duplicating a server, do not get them.
+
+Set collector overrides and override thresholds on the server values, not on the template.
+
+Server Template metrics are exported and imported with the Server Template in YAML.
+
 ### Push values with a webhook
 
 **⚠️ WARNING: You must be a member of the "Cetmix Tower / Root" group to configure webhooks and authenticators.**
