@@ -1730,12 +1730,18 @@ class CxTowerServer(models.Model):
                 plan_log_vals["parent_flight_plan_log_id"] = log_record.plan_log_id.id
                 kwargs["flight_plan_command_log"] = log_record
             kwargs["plan_log"] = plan_log_vals
-            plan_log_record = flight_plan.with_context(from_command=True)._run_single(
-                server=self,
-                jet_template=jet_template,
-                jet=jet,
-                **kwargs,
-            )
+            # Savepoint: a database error inside the plan must not leave the
+            # transaction aborted, or ``log_record.finish()`` below fails
+            # with InFailedSqlTransaction and hides the real error.
+            with self.env.cr.savepoint():
+                plan_log_record = flight_plan.with_context(
+                    from_command=True
+                )._run_single(
+                    server=self,
+                    jet_template=jet_template,
+                    jet=jet,
+                    **kwargs,
+                )
         except Exception as e:  # pylint: disable=broad-exception-caught
             if raise_on_error:
                 raise ValidationError(

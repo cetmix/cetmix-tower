@@ -3453,3 +3453,24 @@ result = {
         self.assertEqual(
             len(parent_plan_log.command_log_ids), command_count_after_first
         )
+
+    @mute_logger("odoo.sql_db")
+    def test_command_runner_flight_plan_database_error_keeps_transaction(self):
+        """A database error inside the plan must not abort the transaction."""
+        command = self.env["cx.tower.command"].new(
+            {"name": "Run plan", "action": "plan", "flight_plan_id": self.plan_1.id}
+        )
+
+        def _failing_run_single(this, *args, **kwargs):
+            self.env.cr.execute("SELECT 1/0")
+
+        with patch.object(type(self.plan_1), "_run_single", _failing_run_single):
+            result = self.server_test_1._command_runner_flight_plan(
+                None, command=command
+            )
+
+        self.assertEqual(result["status"], GENERAL_ERROR)
+        self.assertTrue(result["error"])
+        # The cursor must still be usable after the failure.
+        self.env.cr.execute("SELECT 1")
+        self.assertEqual(self.env.cr.fetchone()[0], 1)
