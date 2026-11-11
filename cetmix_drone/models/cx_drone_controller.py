@@ -363,9 +363,14 @@ class CxTowerDroneController(models.Model):
     def _reserve(self, job=None):
         """Reserve one job slot on this controller.
 
-        Writes the controller row so that a concurrent reservation committed
-        after this transaction's snapshot raises a serialization failure
-        instead of going unnoticed under REPEATABLE READ.
+        Locks and writes the controller row only when Max Jobs is set, so
+        that a concurrent reservation committed after this transaction's
+        snapshot raises a serialization failure instead of going unnoticed
+        under REPEATABLE READ.
+
+        Unlimited controllers reserve without locking or writing the row.
+        A transaction whose snapshot predates a change from unlimited to
+        limited can still reserve without counting against the new limit.
 
         Args:
             job (cx.drone.job): Job being dispatched, excluded from
@@ -375,6 +380,9 @@ class CxTowerDroneController(models.Model):
             bool: True if the slot is reserved.
         """
         self.ensure_one()
+        max_running_jobs = self.sudo().max_running_jobs
+        if not max_running_jobs:
+            return True
         cr = self.env.cr
         cr.execute(
             "SELECT id FROM cx_drone_controller WHERE id = %s FOR UPDATE",
@@ -386,9 +394,6 @@ class CxTowerDroneController(models.Model):
             [self.id],
         )
         self.invalidate_recordset(["reservation_seq"])
-        max_running_jobs = self.sudo().max_running_jobs
-        if not max_running_jobs:
-            return True
         domain = [
             ("controller_id", "=", self.id),
             ("state", "in", JOB_ACTIVE_STATES),

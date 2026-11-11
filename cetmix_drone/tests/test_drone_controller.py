@@ -8,7 +8,8 @@ from cryptography.fernet import Fernet
 from psycopg2 import IntegrityError
 
 from odoo.exceptions import ValidationError
-from odoo.tools import mute_logger
+from odoo.sql_db import Cursor
+from odoo.tools import SQL, mute_logger
 
 from .common import CONTROLLER_LOGGER, TestDroneCommon, connection_refused
 
@@ -186,10 +187,37 @@ class TestDroneController(TestDroneCommon):
             action["domain"], [("controller_id", "=", self.controller_1.id)]
         )
 
-    def test_reservation_bumps_token(self):
-        seq = self.controller_1.reservation_seq
-        self.assertTrue(self.controller_1._reserve())
-        self.assertEqual(self.controller_1.reservation_seq, seq + 1)
+    def test_unlimited_reservation_does_not_lock_or_write(self):
+        """Unlimited reservations skip row locking and token updates."""
+        queries = []
+        original_execute = Cursor.execute
+
+        def execute(cursor, query, params=None, log_exceptions=None):
+            queries.append(query.code if isinstance(query, SQL) else query)
+            return original_execute(cursor, query, params, log_exceptions)
+
+        for limit in (0, 1):
+            with self.subTest(max_running_jobs=limit):
+                self.controller_1.max_running_jobs = limit
+                self.env.flush_all()
+                seq = self.controller_1.reservation_seq
+                queries.clear()
+                with patch("odoo.sql_db.Cursor.execute", execute):
+                    self.assertTrue(self.controller_1._reserve())
+                controller_queries = [
+                    " ".join(query.upper().split())
+                    for query in queries
+                    if "cx_drone_controller" in query.lower()
+                ]
+                self.assertEqual(
+                    any("FOR UPDATE" in query for query in controller_queries),
+                    bool(limit),
+                )
+                self.assertEqual(
+                    any(query.startswith("UPDATE") for query in controller_queries),
+                    bool(limit),
+                )
+                self.assertEqual(self.controller_1.reservation_seq, seq + bool(limit))
 
     # ------------------------------
     # Health

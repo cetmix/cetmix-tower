@@ -127,7 +127,7 @@ job = record.launch_drone(
 - An empty recordset means no controller can take the job: none has reported that skill, or none of those that have is active and "Available" with a free slot. Nothing was sent or created; what to do next is up to the caller.
 - Selection uses the skill. Controller tags are not used.
 - The job record is limited to Cetmix Tower Root, which Drone Administrator grants. Read its fields with `sudo()`. Calling `launch_drone()` does not require that group.
-- A serialization failure while reserving a controller is retried automatically in HTTP and RPC requests. In a cron it aborts that cron run, which repeats on its own schedule.
+- Only controllers with Max Jobs set lock and write their row during reservation. Concurrent launches on such a controller can cause a serialization failure. HTTP and RPC requests retry automatically, up to five attempts. In a cron it aborts that cron run, which repeats on its own schedule.
 
 ### Callback
 
