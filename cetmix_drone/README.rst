@@ -285,26 +285,38 @@ Odoo → controller
 Every request carries ``Authorization: Bearer <Drone API Key>``. Odoo
 waits at most 10 seconds to connect and 10 seconds for an answer.
 
-+--------+--------+--------------------------+----------------------------------------------+
-| Action | Method | Path                     | Answer                                       |
-+========+========+==========================+==============================================+
-| Health | GET    | ``/health``              | 200 with ``{"skills": ["ssh", "backup"]}``   |
-+--------+--------+--------------------------+----------------------------------------------+
-| Skills | GET    | ``/skills``              | 200 with a JSON object whose keys are skill  |
-|        |        |                          | references and whose values are              |
-|        |        |                          | ``{"data": <schema>, "response": <schema>}`` |
-+--------+--------+--------------------------+----------------------------------------------+
-| Submit | POST   | ``/jobs``                | 2xx when accepted; 4xx when rejected; 409    |
-|        |        |                          | for a fenced nonce                           |
-+--------+--------+--------------------------+----------------------------------------------+
-| Status | GET    | ``/jobs/<nonce>``        | 200 with the job state; 404 for a nonce      |
-|        |        |                          | never accepted                               |
-+--------+--------+--------------------------+----------------------------------------------+
-| Cancel | POST   | ``/jobs/<nonce>/cancel`` | 2xx                                          |
-+--------+--------+--------------------------+----------------------------------------------+
-| Fence  | POST   | ``/jobs/<nonce>/fence``  | 200 ``{"state": "fenced"}`` or               |
-|        |        |                          | ``{"state": "accepted"}``                    |
-+--------+--------+--------------------------+----------------------------------------------+
++--------+--------+------------------------+------------------------+
+| Action | Method | Path                   | Answer                 |
++========+========+========================+========================+
+| Health | GET    | ``/health``            | 200 with               |
+|        |        |                        | ``{"skills"            |
+|        |        |                        | : ["ssh", "backup"]}`` |
++--------+--------+------------------------+------------------------+
+| Skills | GET    | ``/skills``            | 200 with a JSON object |
+|        |        |                        | whose keys are skill   |
+|        |        |                        | references and whose   |
+|        |        |                        | values are             |
+|        |        |                        | ``{"data": <schema>, " |
+|        |        |                        | response": <schema>}`` |
++--------+--------+------------------------+------------------------+
+| Submit | POST   | ``/jobs``              | 2xx when accepted; 4xx |
+|        |        |                        | when rejected; 409 for |
+|        |        |                        | a fenced nonce         |
++--------+--------+------------------------+------------------------+
+| Status | GET    | ``/jobs/<nonce>``      | 200 with the job       |
+|        |        |                        | state; 404 for a nonce |
+|        |        |                        | never accepted         |
++--------+--------+------------------------+------------------------+
+| Cancel | POST   | ``                     | 2xx                    |
+|        |        | /jobs/<nonce>/cancel`` |                        |
++--------+--------+------------------------+------------------------+
+| Fence  | POST   | `                      | 200                    |
+|        |        | `/jobs/<nonce>/fence`` | `                      |
+|        |        |                        | `{"state": "fenced"}`` |
+|        |        |                        | or                     |
+|        |        |                        | ``{                    |
+|        |        |                        | "state": "accepted"}`` |
++--------+--------+------------------------+------------------------+
 
 A skill token is a string of lowercase letters, digits and underscores.
 Extra keys in the health body are ignored. Duplicate tokens count once.
@@ -447,9 +459,11 @@ read its fields with ``sudo()``.
 - The job record is limited to Cetmix Tower Root, which Drone
   Administrator grants. Read its fields with ``sudo()``. Calling
   ``launch_drone()`` does not require that group.
-- A serialization failure while reserving a controller is retried
-  automatically in HTTP and RPC requests. In a cron it aborts that cron
-  run, which repeats on its own schedule.
+- Only controllers with Max Jobs set lock and write their row during
+  reservation. Concurrent launches on such a controller can cause a
+  serialization failure. HTTP and RPC requests retry automatically, up
+  to five attempts. In a cron it aborts that cron run, which repeats on
+  its own schedule.
 
 Callback
 ~~~~~~~~

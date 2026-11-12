@@ -84,6 +84,7 @@ class TestDroneJob(TestDroneCommon):
 
     def test_launch_rejects_new_records(self):
         """A new record is rejected before a controller is reserved."""
+        (self.controller_1 | self.controller_2).write({"max_running_jobs": 1})
         cases = (
             self.Tag.new({"name": "New"}),
             self.target | self.Tag.new({}),

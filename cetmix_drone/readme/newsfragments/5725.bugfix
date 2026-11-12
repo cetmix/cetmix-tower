@@ -1,0 +1,1 @@
+Avoid controller row locks and serialization conflicts when reserving jobs on controllers with unlimited Max Jobs.
