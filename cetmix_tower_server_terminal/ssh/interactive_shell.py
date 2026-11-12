@@ -113,6 +113,9 @@ class InteractiveShell:
             if sent_now <= 0:
                 raise OSError("SSH channel closed while sending terminal input.")
             bytes_sent += sent_now
+            # The timeout is about a shell that stopped reading, not about how
+            # long a large payload takes: every byte accepted starts it over.
+            deadline = time.monotonic() + SEND_TIMEOUT
         return bytes_sent
 
     def resize(self, width: int, height: int):
@@ -128,18 +131,27 @@ class InteractiveShell:
         self.height = height
 
     def receive(self, chunk_size: int = 65535) -> str:
-        """Read everything the shell has produced so far.
+        """Read what the shell has produced, up to MAX_RECEIVE_BYTES.
+
+        The read is bounded on purpose: a command that writes without pause
+        keeps `recv_ready` true forever, and the caller has to get its turn
+        back to publish what it already has and to notice a close request.
 
         Args:
-            chunk_size (int): Maximum number of bytes read per call.
+            chunk_size (int): Maximum number of bytes read per recv call.
 
         Returns:
             str: Decoded output, empty string when nothing is available.
         """
         channel = self.open()
         chunks = []
-        while channel.recv_ready():
-            chunks.append(channel.recv(chunk_size))
+        read = 0
+        while read < MAX_RECEIVE_BYTES and channel.recv_ready():
+            chunk = channel.recv(min(chunk_size, MAX_RECEIVE_BYTES - read))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            read += len(chunk)
         if not chunks:
             return ""
         return self._decoder.decode(b"".join(chunks))

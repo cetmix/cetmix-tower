@@ -80,6 +80,61 @@ class FakeShell:
         self.active = False
 
 
+class EndlessShell(FakeShell):
+    """Shell of a command that keeps writing, such as `tail -f`."""
+
+    def __init__(self, reads_allowed=200):
+        """Count the reads so a loop that never checks anything is caught.
+
+        Args:
+            reads_allowed (int): Reads before the shell gives up on the caller.
+        """
+        super().__init__()
+        self.reads = 0
+        self.reads_allowed = reads_allowed
+
+    def receive(self, chunk_size=65535):
+        """Return output forever, within the allowance.
+
+        Returns:
+            str: One character of output.
+
+        Raises:
+            AssertionError: If the caller never stopped to look at anything.
+        """
+        self.reads += 1
+        if self.reads > self.reads_allowed:
+            raise AssertionError(
+                f"The reader went {self.reads_allowed} rounds "
+                "without looking at anything else"
+            )
+        return "x"
+
+
+class FakeNotification:
+    """One postgres notification, with only what the listener reads."""
+
+    def __init__(self, payload):
+        """Store the payload.
+
+        Args:
+            payload (str): Json payload of the notification.
+        """
+        self.payload = payload
+
+
+class FakeConnection:
+    """Postgres connection that hands over a queue of notifications."""
+
+    def __init__(self, payloads):
+        """Queue the payloads in the order they would have arrived.
+
+        Args:
+            payloads (list): Json payloads, oldest first.
+        """
+        self.notifies = [FakeNotification(payload) for payload in payloads]
+
+
 class TestTowerTerminalCommon(TestTowerCommon):
     """Common setup for the terminal tests."""
 

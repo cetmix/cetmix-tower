@@ -12,6 +12,7 @@ from ..constants import (
     ACTION_CLOSE,
     ACTION_INPUT,
     ACTION_RESIZE,
+    DETACHED_GRACE,
     MAX_OUTPUT_CHUNK,
     OUTPUT_FLUSH_IDLE,
     OUTPUT_SMALL_ENOUGH,
@@ -19,7 +20,12 @@ from ..constants import (
     STATE_ERROR,
 )
 from ..tools import terminal_registry
-from .common import FakeShell, TestTowerTerminalCommon
+from .common import (
+    EndlessShell,
+    FakeConnection,
+    FakeShell,
+    TestTowerTerminalCommon,
+)
 
 REGISTRY = "odoo.addons.cetmix_tower_server_terminal.tools.terminal_registry"
 
@@ -121,19 +127,25 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
         """What arrives in one poll reaches the shell as it was typed.
 
         A command and the Enter that runs it can land in the same poll, so the
-        order the listener consumes them in is the order the user sees.
+        order the listener consumes them in is the order the user sees. The
+        queue is handed over whole, the way the listener gets it from postgres,
+        so this fails if it is ever drained from the wrong end again.
         """
         session = self._build_session()
         terminal_registry._SESSIONS[session.token] = session
         self.addCleanup(terminal_registry._unregister, session)
 
-        for piece in ("whoami", "\n"):
-            terminal_registry._handle_notification(
+        connection = FakeConnection(
+            [
                 json.dumps(
                     {"token": session.token, "action": ACTION_INPUT, "data": piece}
                 )
-            )
+                for piece in ("whoami", "\n")
+            ]
+        )
+        terminal_registry._consume_notifications(connection)
         self.assertEqual(session.shell.sent, ["whoami", "\n"])
+        self.assertEqual(connection.notifies, [], "The queue has to be drained")
 
     @mute_logger(REGISTRY)
     def test_malformed_notifications_are_ignored(self):
@@ -186,6 +198,21 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
         self.assertEqual(session._closing_state, STATE_ERROR)
 
     # -- output
+
+    def test_output_that_never_stops_does_not_outlive_the_browser(self):
+        """A shell that keeps writing is still closed once nobody is watching.
+
+        The detach check used to live after the read, so output that never
+        paused kept the loop from ever reaching it and the session outlived
+        the browser that had left.
+        """
+        session = self._build_session()
+        session.shell = EndlessShell()
+        session._get_idle_timeout = lambda: 3600
+        session._write_record = lambda state, message: None
+        session._detached_since = time.monotonic() - DETACHED_GRACE - 1
+        session._pump()
+        self.assertEqual(session.state, STATE_CLOSED)
 
     def test_a_small_echo_goes_out_at_once(self):
         """What a keystroke echoes back is not worth grouping.

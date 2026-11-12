@@ -72,6 +72,8 @@ export class TowerTerminalAction extends Component {
         this.inputBuffer = "";
         this.pendingInput = "";
         this.inputInFlight = false;
+        this.pendingSize = null;
+        this.sizeInFlight = false;
         this.inputTimer = null;
         this.resizeTimer = null;
         this.sessionTimer = null;
@@ -555,14 +557,28 @@ export class TowerTerminalAction extends Component {
         this.inputInFlight = true;
         try {
             while (this.pendingInput && this.isConnected) {
+                if (sessionId !== this.sessionId) {
+                    // Reconnect replaced the session: what is pending now was
+                    // typed for the new one and is not ours to send.
+                    break;
+                }
                 const piece = this.pendingInput.slice(0, MAX_INPUT_CHUNK);
                 this.pendingInput = this.pendingInput.slice(piece.length);
                 await this.callSessionOn(sessionId, "terminal_send", piece);
             }
         } catch (error) {
-            this.reportError(error, _t("Cannot reach the terminal."));
+            // Half of a paste is worse than none of it: the shell would read
+            // what is left as commands. Drop the rest and say so.
+            this.pendingInput = "";
+            this.reportError(
+                error,
+                _t("Part of the input never reached the terminal.")
+            );
         } finally {
             this.inputInFlight = false;
+            if (this.pendingInput && sessionId !== this.sessionId) {
+                this.drainInput();
+            }
         }
     }
 
@@ -579,11 +595,30 @@ export class TowerTerminalAction extends Component {
         }
         this.lastSize = {cols, rows};
         this.showSizeHint(cols, rows);
-        // Not queued behind the input: a size that arrives a moment early or
-        // late is harmless, and the input must not wait for it.
-        this.callSessionOn(this.sessionId, "terminal_resize", cols, rows).catch(
-            (error) => this.reportError(error, _t("Cannot resize the terminal."))
-        );
+        // Its own queue, so it never waits behind the input, and one request
+        // at a time, so two sizes cannot land out of order and leave the shell
+        // believing the window is a size it no longer is.
+        this.pendingSize = {cols, rows};
+        this.drainSize();
+    }
+
+    async drainSize() {
+        if (this.sizeInFlight || !this.pendingSize) {
+            return;
+        }
+        const sessionId = this.sessionId;
+        this.sizeInFlight = true;
+        try {
+            while (this.pendingSize && sessionId === this.sessionId) {
+                const {cols, rows} = this.pendingSize;
+                this.pendingSize = null;
+                await this.callSessionOn(sessionId, "terminal_resize", cols, rows);
+            }
+        } catch (error) {
+            this.reportError(error, _t("Cannot resize the terminal."));
+        } finally {
+            this.sizeInFlight = false;
+        }
     }
 
     /**

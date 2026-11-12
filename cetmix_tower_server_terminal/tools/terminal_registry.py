@@ -205,6 +205,23 @@ def _handle_notification(payload):
     session.handle_action(message)
 
 
+def _consume_notifications(connection):
+    """Hand every pending notification to its session, oldest first.
+
+    These carry what somebody typed, and a command and the Enter that runs it
+    can arrive in the same poll, so the order they are consumed in is the order
+    the shell sees. `bus` pops from the end because it only collects channel
+    names, where order does not matter.
+
+    Args:
+        connection: Postgres connection whose notifications are pending.
+    """
+    notifications = list(connection.notifies)
+    connection.notifies.clear()
+    for notification in notifications:
+        _handle_notification(notification.payload)
+
+
 def _ensure_listener(db_name):
     """Make sure this process listens for notifications of a database.
 
@@ -277,14 +294,7 @@ def _listen_once(db_name):
             while True:
                 if selector.select(LISTENER_POLL_TIMEOUT):
                     connection.poll()
-                    # Oldest first: these carry what somebody typed, and a
-                    # command and the Enter that runs it can arrive in the same
-                    # poll. `bus` pops from the end because it only collects
-                    # channel names, where order does not matter.
-                    notifications = list(connection.notifies)
-                    connection.notifies.clear()
-                    for notification in notifications:
-                        _handle_notification(notification.payload)
+                    _consume_notifications(connection)
                 with _LOCK:
                     if not any(
                         session.db_name == db_name for session in _SESSIONS.values()
@@ -391,6 +401,10 @@ class TerminalSession:
         with Registry(self.db_name).cursor() as cr:
             env = api.Environment(cr, self.uid, {})
             server = env["cx.tower.server"].browse(self.server_id)
+            # Checked again here, not only when the session was created: a
+            # session can sit unopened for a while, and the credentials below
+            # are read with sudo.
+            server.check_access("read")
             values = server._get_ssh_connection_values()
         self._connection = SSHConnection(
             host=values["host"],
@@ -503,6 +517,15 @@ class TerminalSession:
             if not self.shell.is_active():
                 self._finish(STATE_CLOSED, str(SHELL_CLOSED_MESSAGE))
                 return
+            # Before reading, not after: output that never stops, `tail -f` or
+            # `yes`, would otherwise keep the loop from ever reaching this and
+            # the session would outlive the browser that left.
+            if (
+                self._detached_since
+                and time.monotonic() - self._detached_since > DETACHED_GRACE
+            ):
+                self._finish(STATE_CLOSED, str(BROWSER_GONE_MESSAGE))
+                return
             output = self.shell.receive()
             if output:
                 now = time.monotonic()
@@ -515,12 +538,6 @@ class TerminalSession:
             self._flush()
             if time.monotonic() - self._last_activity > idle_timeout:
                 self._finish(STATE_CLOSED, str(SESSION_IDLE_MESSAGE))
-                return
-            if (
-                self._detached_since
-                and time.monotonic() - self._detached_since > DETACHED_GRACE
-            ):
-                self._finish(STATE_CLOSED, str(BROWSER_GONE_MESSAGE))
                 return
             self._heartbeat()
             self._wait_for_output()
