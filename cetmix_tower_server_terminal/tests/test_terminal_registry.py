@@ -65,6 +65,36 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
         start.assert_called_once()
         self.assertIs(terminal_registry.get_session(record.session_token), session)
 
+    def test_a_websocket_that_comes_back_finds_its_session(self):
+        """A reconnection attaches to the live shell instead of losing it.
+
+        The websocket of a browser can drop and be replaced while the shell is
+        perfectly alive. The replacement subscribes to the same channel, and
+        has to end up attached to the session that is already running here.
+        """
+        record = self.open_session()
+        first, second = object(), object()
+        with (
+            patch(f"{REGISTRY}.TerminalSession.start"),
+            patch(f"{REGISTRY}._ensure_listener"),
+        ):
+            session = terminal_registry.ensure_session(record, first)
+        self.addCleanup(terminal_registry._unregister, session)
+
+        terminal_registry.detach_websocket(first)
+        self.assertTrue(session._detached_since)
+        self.assertTrue(
+            terminal_registry.attach_websocket(record.session_token, second)
+        )
+        self.assertFalse(
+            session._detached_since, "Coming back cancels the grace period"
+        )
+        self.assertIn(second, session.websockets)
+
+    def test_attaching_a_session_of_another_process(self):
+        """A token this process knows nothing about is not attached to."""
+        self.assertFalse(terminal_registry.attach_websocket("nope", object()))
+
     def test_a_session_waits_for_the_browser_to_come_back(self):
         """Losing the last websocket starts a grace period instead of closing."""
         record = self.open_session()

@@ -10,6 +10,7 @@ from odoo.addons.bus.websocket import Websocket, wsrequest
 
 from ..constants import BUS_CHANNEL_PREFIX, STATE_NEW
 from ..tools.terminal_registry import (
+    attach_websocket,
     detach_websocket,
     ensure_session,
     sync_websocket,
@@ -45,30 +46,40 @@ class IrWebsocket(models.AbstractModel):
         if not request:
             sync_websocket(wsrequest.ws, tokens)
             if tokens:
-                self._start_terminal_sessions(tokens)
+                self._serve_terminal_sessions(tokens)
         return super()._build_bus_channel_list(channels)
 
-    def _start_terminal_sessions(self, tokens):
-        """Open the shell of the sessions that are waiting for one.
+    def _serve_terminal_sessions(self, tokens):
+        """Give each subscribed terminal the shell it is entitled to.
 
         Sessions are read with the rights of the connected user, so a client
-        can only start a session it owns, and only one it knows the token of.
-        Only a session that was never started is opened here: a browser keeps
-        subscribing to the channels of the terminals it opened before, and a
-        shell that is gone must not come back to life under them.
+        only reaches a session it owns, and only one it knows the token of.
+        Three cases, and the difference between them matters:
+
+        - a shell of that token already runs here: the websocket is attached to
+          it. That is what a reconnection looks like, and without it the session
+          would be closed as soon as its detach grace ran out;
+        - the session was never started: its shell is opened;
+        - anything else, a session already started elsewhere or long gone,
+          is left alone. A browser keeps subscribing to the channels of the
+          terminals it opened before, and a shell that ended must not come back
+          to life under them.
 
         Args:
             tokens (list): Session tokens taken from the subscribed channels.
         """
         sessions = self.env["cx.tower.terminal.session"].search(
-            [("session_token", "in", tokens), ("state", "=", STATE_NEW)]
+            [("session_token", "in", tokens)]
         )
         websocket = wsrequest.ws
         for session in sessions:
             try:
-                ensure_session(session, websocket)
+                if attach_websocket(session.session_token, websocket):
+                    continue
+                if session.state == STATE_NEW:
+                    ensure_session(session, websocket)
             except Exception:
-                _logger.exception("Terminal: cannot start session %s", session.id)
+                _logger.exception("Terminal: cannot serve session %s", session.id)
 
 
 @Websocket.onclose

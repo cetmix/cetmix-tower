@@ -2,10 +2,19 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import codecs
+import time
 
 from odoo.addons.cetmix_tower_server.ssh.ssh import SSHConnection
 
 from ..constants import DEFAULT_TERMINAL_COLS, DEFAULT_TERMINAL_ROWS
+
+# Seconds spent trying to hand input over to a shell that is not reading it
+SEND_TIMEOUT = 5
+# Seconds between attempts while the remote window is full
+SEND_RETRY_SLEEP = 0.02
+# Maximum bytes read in one pass, so a command that never stops writing cannot
+# keep the reader from publishing what it already has
+MAX_RECEIVE_BYTES = 256 * 1024
 
 
 class InteractiveShell:
@@ -71,6 +80,10 @@ class InteractiveShell:
     def send(self, payload: str) -> int:
         """Send input to the shell.
 
+        The channel does not block, so a remote window that is momentarily full
+        raises instead of waiting. That is back pressure, not a broken session:
+        it is retried for a while before giving up.
+
         Args:
             payload (str): Characters to send, control characters included.
 
@@ -78,15 +91,25 @@ class InteractiveShell:
             int: Number of bytes sent.
 
         Raises:
-            OSError: If the channel is closed before everything was sent.
+            OSError: If the channel is closed, or stays unable to take the
+                input for longer than SEND_TIMEOUT.
         """
         if not payload:
             return 0
         channel = self.open()
         data = payload.encode("utf-8")
         bytes_sent = 0
+        deadline = time.monotonic() + SEND_TIMEOUT
         while bytes_sent < len(data):
-            sent_now = channel.send(data[bytes_sent:])
+            try:
+                sent_now = channel.send(data[bytes_sent:])
+            except TimeoutError as error:
+                if time.monotonic() > deadline:
+                    raise OSError(
+                        "The remote shell stopped accepting input."
+                    ) from error
+                time.sleep(SEND_RETRY_SLEEP)
+                continue
             if sent_now <= 0:
                 raise OSError("SSH channel closed while sending terminal input.")
             bytes_sent += sent_now

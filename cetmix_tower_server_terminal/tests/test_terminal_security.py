@@ -53,6 +53,45 @@ class TestTerminalSecurity(TestTowerTerminalCommon):
         with self.assertRaises(AccessError):
             self.open_session(user=self.manager, server=server)
 
+    def test_a_session_cannot_be_created_on_a_server_out_of_reach(self):
+        """Creating the record directly does not bypass the server rules.
+
+        The shell reads the credentials of the server with `sudo()`, so the
+        right to use it cannot be checked only in the action that opens it.
+        """
+        server = self.Server.create(
+            {
+                "name": "Test Out Of Reach",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+        with self.assertRaises(AccessError):
+            self.TerminalSession.with_user(self.manager).create(
+                {"name": "Sneaky", "server_id": server.id}
+            )
+
+    def test_a_session_cannot_be_moved_to_a_server_out_of_reach(self):
+        """The same check applies when the server of a session is changed."""
+        session = self.open_session(user=self.manager)
+        server = self.Server.create(
+            {
+                "name": "Test Out Of Reach 2",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+        with self.assertRaises(AccessError):
+            session.with_user(self.manager).write({"server_id": server.id})
+
     def test_a_session_is_private_to_the_user_who_opened_it(self):
         """Another manager neither finds nor reads a session that is not theirs."""
         session = self.open_session(user=self.manager)

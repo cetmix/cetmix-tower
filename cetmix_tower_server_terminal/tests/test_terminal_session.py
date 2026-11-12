@@ -1,6 +1,8 @@
 # Copyright Cetmix OÜ 2026
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import json
+
 from odoo.exceptions import ValidationError
 from odoo.tests import tagged
 
@@ -10,6 +12,7 @@ from ..constants import (
     ACTION_RESIZE,
     BUS_CHANNEL_PREFIX,
     MAX_INPUT_LENGTH,
+    MAX_NOTIFY_BYTES,
     MAX_TERMINAL_COLS,
     MAX_TERMINAL_ROWS,
     MIN_TERMINAL_COLS,
@@ -80,6 +83,43 @@ class TestTerminalSession(TestTowerTerminalCommon):
         with self.capture_notifications(session) as sent:
             self.assertTrue(session.terminal_send("ls -la\n"))
         self.assertEqual(sent, [(ACTION_INPUT, {"data": "ls -la\n"})])
+
+    def test_plain_input_travels_in_one_notification(self):
+        """Ordinary input is not split for nothing."""
+        session = self.mark_open(self.open_session())
+        self.assertEqual(session._split_input("ls -la\n"), ["ls -la\n"])
+
+    def test_input_too_large_for_a_notification_is_split(self):
+        """Json escaping is what decides the size, not the number of characters.
+
+        A thousand emoji are a thousand characters and twelve thousand bytes
+        once encoded, well over what postgres accepts in a notification.
+        """
+        session = self.mark_open(self.open_session())
+        payload = "🙂" * 1000
+        pieces = session._split_input(payload)
+        self.assertGreater(len(pieces), 1, "Such a payload has to be split")
+        self.assertEqual("".join(pieces), payload, "Nothing may be lost or moved")
+        for piece in pieces:
+            self.assertLessEqual(
+                len(json.dumps(piece)),
+                MAX_NOTIFY_BYTES,
+                "Every piece has to fit in a notification",
+            )
+
+    def test_large_input_is_sent_in_order(self):
+        """The pieces of a split payload reach the shell as they were typed."""
+        session = self.mark_open(self.open_session())
+        payload = "🙂" * 1000
+        with self.capture_notifications(session) as sent:
+            self.assertTrue(session.terminal_send(payload))
+        self.assertGreater(len(sent), 1, "Such a payload has to be split")
+        self.assertEqual([action for action, _data in sent], [ACTION_INPUT] * len(sent))
+        self.assertEqual(
+            "".join(data["data"] for _action, data in sent),
+            payload,
+            "The shell has to receive exactly what was typed, in order",
+        )
 
     def test_send_input_validation(self):
         """Input that is not a reasonably sized string is refused."""

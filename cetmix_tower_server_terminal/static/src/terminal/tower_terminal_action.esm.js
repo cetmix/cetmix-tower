@@ -23,6 +23,9 @@ const NOTIFICATION_TYPE = "cx_tower_terminal.output";
 const INPUT_FLUSH_DELAY = 10;
 // Milliseconds a resize waits, so that dragging a window sends one size.
 const RESIZE_FLUSH_DELAY = 150;
+// Characters sent in one call. The session refuses more, and a paste is
+// easily larger than that.
+const MAX_INPUT_CHUNK = 2000;
 // Milliseconds the search waits for the typing to stop before it runs
 const SEARCH_DELAY = 120;
 // Milliseconds without any message from the session before it is given up on.
@@ -51,8 +54,20 @@ export class TowerTerminalAction extends Component {
         this.onNotification = this.handleNotification.bind(this);
         // The bus runs in a worker shared by every tab, which outlives this
         // page: a channel that is not deleted before the page goes away keeps
-        // being subscribed to by the next one.
-        this.onPageHide = () => this.unsubscribe();
+        // being subscribed to by the next one. A page the browser only puts in
+        // its back forward cache is not gone, and comes back without mounting
+        // again, so it keeps its subscription.
+        this.onPageHide = (event) => {
+            if (!event.persisted) {
+                this.unsubscribe();
+            }
+        };
+        this.onPageShow = (event) => {
+            if (event.persisted) {
+                this.subscribe();
+                this.watchSession();
+            }
+        };
 
         this.inputBuffer = "";
         this.inputTimer = null;
@@ -110,6 +125,7 @@ export class TowerTerminalAction extends Component {
             this.outputRef.el.addEventListener("focusin", this.onFocusIn);
             this.outputRef.el.addEventListener("focusout", this.onFocusOut);
             window.addEventListener("pagehide", this.onPageHide);
+            window.addEventListener("pageshow", this.onPageShow);
         });
 
         onWillUnmount(() => {
@@ -117,6 +133,7 @@ export class TowerTerminalAction extends Component {
             this.outputRef.el.removeEventListener("focusin", this.onFocusIn);
             this.outputRef.el.removeEventListener("focusout", this.onFocusOut);
             window.removeEventListener("pagehide", this.onPageHide);
+            window.removeEventListener("pageshow", this.onPageShow);
             this.unsubscribe();
             this.unregisterResizeHandlers();
             // Courtesy call so the shell goes away at once. The server does not
@@ -517,11 +534,16 @@ export class TowerTerminalAction extends Component {
         if (!payload || !this.isConnected) {
             return;
         }
-        this.inputChain = this.inputChain
-            .then(() => this.callSession("terminal_send", payload))
-            .catch((error) =>
-                this.reportError(error, _t("Cannot reach the terminal."))
-            );
+        // Pasting is the common way to go past what one call takes, and the
+        // pieces have to reach the shell in the order they were typed.
+        for (let at = 0; at < payload.length; at += MAX_INPUT_CHUNK) {
+            const piece = payload.slice(at, at + MAX_INPUT_CHUNK);
+            this.inputChain = this.inputChain
+                .then(() => this.callSession("terminal_send", piece))
+                .catch((error) =>
+                    this.reportError(error, _t("Cannot reach the terminal."))
+                );
+        }
     }
 
     sendSize(force = false) {
@@ -642,10 +664,16 @@ export class TowerTerminalAction extends Component {
         this.searchTimer = null;
     }
 
+    /**
+     * Report a call that failed, without declaring the session dead: the shell
+     * is told to be gone by the session itself, over the bus, and a refused
+     * call says nothing about it.
+     *
+     * @param {Error} error
+     * @param {String} fallbackMessage
+     */
     reportError(error, fallbackMessage) {
         const message = error?.data?.message || error?.message || fallbackMessage;
-        this.state.status = "error";
-        this.state.message = message;
         this.notification.add(message, {type: "danger"});
     }
 }

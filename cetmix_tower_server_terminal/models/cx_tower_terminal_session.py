@@ -17,6 +17,7 @@ from ..constants import (
     ACTION_RESIZE,
     BUS_CHANNEL_PREFIX,
     MAX_INPUT_LENGTH,
+    MAX_NOTIFY_BYTES,
     MAX_TERMINAL_COLS,
     MAX_TERMINAL_ROWS,
     MIN_TERMINAL_COLS,
@@ -72,6 +73,20 @@ class CxTowerTerminalSession(models.TransientModel):
         readonly=True,
     )
     message = fields.Char(readonly=True)
+
+    # -- access
+
+    @api.constrains("server_id")
+    def _check_server_access(self):
+        """Let a session be created only on a server the user can read.
+
+        The shell is opened with the credentials of the server, read with
+        `sudo()`, so the right to use that server cannot be checked only in the
+        action that creates the session: a user who may create a record could
+        otherwise name a server they are not allowed to see.
+        """
+        for session in self:
+            session.server_id.check_access("read")
 
     # -- defaults and selections
 
@@ -233,6 +248,35 @@ class CxTowerTerminalSession(models.TransientModel):
             )
         )
 
+    def _split_input(self, payload):
+        """Cut input into pieces that fit in a postgres notification.
+
+        Json escaping can turn one character into twelve bytes, so the limit
+        has to be measured on what is actually sent, not on the text.
+
+        Args:
+            payload (str): Characters typed in the browser.
+
+        Returns:
+            list: Pieces of the payload, in the order they were typed.
+        """
+        self.ensure_one()
+        if len(json.dumps(payload)) <= MAX_NOTIFY_BYTES:
+            return [payload]
+        # The size starts at the two quotes the encoded string is wrapped in,
+        # and each character costs what it takes once escaped.
+        pieces, piece, size = [], [], 2
+        for character in payload:
+            cost = len(json.dumps(character)) - 2
+            if size + cost > MAX_NOTIFY_BYTES:
+                pieces.append("".join(piece))
+                piece, size = [], 2
+            piece.append(character)
+            size += cost
+        if piece:
+            pieces.append("".join(piece))
+        return pieces
+
     def terminal_send(self, payload):
         """Send what the user typed to the shell.
 
@@ -256,7 +300,8 @@ class CxTowerTerminalSession(models.TransientModel):
             raise ValidationError(self.env._("Terminal input is too large."))
         if self.state != STATE_OPEN:
             return False
-        self._notify_owner(ACTION_INPUT, {"data": payload})
+        for piece in self._split_input(payload):
+            self._notify_owner(ACTION_INPUT, {"data": piece})
         return True
 
     def terminal_resize(self, cols, rows):

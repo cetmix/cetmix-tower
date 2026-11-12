@@ -93,6 +93,24 @@ def get_session(token):
         return _SESSIONS.get(token)
 
 
+def attach_websocket(token, websocket):
+    """Attach a websocket to a session this process is already running.
+
+    Args:
+        token (str): Session token.
+        websocket (odoo.addons.bus.websocket.Websocket): Websocket of the
+            client that subscribed.
+
+    Returns:
+        bool: True if the session was found here and the websocket attached.
+    """
+    session = get_session(token)
+    if not session:
+        return False
+    session.attach(websocket)
+    return True
+
+
 def ensure_session(record, websocket=None):
     """Start the session of a terminal record in this process, once.
 

@@ -65,10 +65,15 @@ DEFAULT_TERMINAL_ROWS = 24
 
 # -- Input limits
 
-# Maximum number of characters accepted in a single input notification. Postgres
-# truncates notification payloads above 8000 bytes, so this has to stay well
-# below that once the payload is json encoded.
+# Maximum number of characters accepted in a single call. What travels is the
+# json encoded notification, so this is only a first, cheap guard: the real
+# limit is MAX_NOTIFY_BYTES below.
 MAX_INPUT_LENGTH = 2048
+
+# Postgres refuses a notification payload of 8000 bytes or more, and json
+# escaping can turn one character into twelve bytes, so input is split into
+# notifications that fit with room to spare.
+MAX_NOTIFY_BYTES = 6000
 
 # -- Session timings
 
