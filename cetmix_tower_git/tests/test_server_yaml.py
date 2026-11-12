@@ -1,8 +1,31 @@
+from odoo.exceptions import AccessError
+
 from .common import CommonTest
 
 
 class TestServerYaml(CommonTest):
     """YAML import of a server that owns files."""
+
+    def test_shared_manager_root_field_uses_normal_access_errors(self):
+        """A Manager-or-Root field must not be classified as Root-only."""
+        server = self.server_test_1
+        server.write(
+            {"user_ids": [(4, self.user.id)], "manager_ids": [(4, self.manager.id)]}
+        )
+        user_server = server.with_user(self.user)
+        field_name = "git_project_rel_ids"
+        self.assertIn(field_name, user_server._get_yaml_export_field_names())
+        values = user_server._post_process_yaml_dict_values({field_name: []})
+        self.assertFalse(values[field_name])
+        with self.assertRaises(AccessError) as error:
+            user_server._prepare_record_for_yaml()
+        self.assertNotEqual(
+            str(error.exception),
+            'You must be a member of the "Root" group to export this snippet',
+        )
+        with self.assertRaises(AccessError):
+            user_server.write({field_name: False})
+        server.with_user(self.manager).read([field_name])
 
     def _server_with_file(self, name, server_dir):
         """Create a server and one file on it.
