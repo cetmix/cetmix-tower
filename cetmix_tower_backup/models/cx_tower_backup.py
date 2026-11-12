@@ -110,10 +110,11 @@ class CxTowerBackup(models.Model):
             "__backup_template": self.backup_template_id.reference,
         }
 
+    @api.private
     def restore(
         self, server, name=None, state=None, variable_values=None, environment=None
     ):
-        """Create a new Jet and start restoring this successful backup.
+        """Create a new Jet and restore this successful backup from Python only.
 
         Args:
             server (cx.tower.server): Destination server.

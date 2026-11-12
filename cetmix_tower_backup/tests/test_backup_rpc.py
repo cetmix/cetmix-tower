@@ -17,6 +17,22 @@ class TestBackupRpc(HttpCase):
             groups="base.group_user,cetmix_tower_base.group_root",
         )
 
+    def test_restore_is_private(self):
+        self.authenticate("backup_rpc_root", "backup_rpc_root")
+        with (
+            mute_logger("odoo.http"),
+            self.assertRaisesRegex(JsonRpcException, "odoo.exceptions.AccessError"),
+        ):
+            self.make_jsonrpc_request(
+                "/web/dataset/call_kw",
+                {
+                    "model": "cx.tower.backup",
+                    "method": "restore",
+                    "args": [[0], 0],
+                    "kwargs": {},
+                },
+            )
+
     def test_create_backup_is_private(self):
         self.authenticate("backup_rpc_root", "backup_rpc_root")
         with (

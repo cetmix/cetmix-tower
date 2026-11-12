@@ -65,7 +65,7 @@
 2. Pass non-secret destination parameters as trigger custom values.
 3. Keep credentials in Tower keys, not custom values or metadata.
 4. Keep the plans and commands at Root level; protected logs block lowering their access level, even after a plan leaves its Backup Template.
-5. Use in-process Python `restore(..., variable_values=...)` when Restore needs custom-value overrides; pass Odoo server, state and environment records rather than integer IDs.
+5. Use in-process Python `restore(..., variable_values=...)` when Restore needs custom-value overrides; pass Odoo server, state and environment records rather than integer IDs. RPC calls to `restore()` are rejected.
 
 | Plan value or object | Contract |
 | --- | --- |

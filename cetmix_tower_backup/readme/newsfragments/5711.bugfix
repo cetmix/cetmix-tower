@@ -1,0 +1,2 @@
+Restrict backup restore() to in-process Python callers. Restore through the
+wizard remains available; direct XML-RPC and JSON-RPC calls are rejected.

@@ -128,7 +128,8 @@ Configuration
    Template.
 5. Use in-process Python ``restore(..., variable_values=...)`` when
    Restore needs custom-value overrides; pass Odoo server, state and
-   environment records rather than integer IDs.
+   environment records rather than integer IDs. RPC calls to
+   ``restore()`` are rejected.
 
 +-----------------------------+---------------------------------------+
 | Plan value or object        | Contract                              |
