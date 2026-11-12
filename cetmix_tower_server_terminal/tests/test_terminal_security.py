@@ -92,6 +92,26 @@ class TestTerminalSecurity(TestTowerTerminalCommon):
         with self.assertRaises(AccessError):
             session.with_user(self.manager).write({"server_id": server.id})
 
+    def test_access_revoked_before_the_shell_opens_stops_the_connection(self):
+        """A session opened before access was revoked does not reach the host.
+
+        The session record can sit unopened while an administrator takes the
+        server away, and the credentials behind it are read with `sudo()`, so
+        the check has to happen where the shell is about to be opened.
+        """
+        session = self.open_session(user=self.manager)
+        server = self.server_test_1.with_user(self.manager)
+        self.assertTrue(
+            server._get_terminal_connection_values(),
+            "A manager of the server gets what the shell needs",
+        )
+
+        self.server_test_1.write({"manager_ids": [(3, self.manager.id)]})
+        self.server_test_1.invalidate_recordset()
+        with self.assertRaises(AccessError):
+            self.server_test_1.with_user(self.manager)._get_terminal_connection_values()
+        self.assertTrue(session.exists(), "The record outlives the access")
+
     def test_a_session_is_private_to_the_user_who_opened_it(self):
         """Another manager neither finds nor reads a session that is not theirs."""
         session = self.open_session(user=self.manager)

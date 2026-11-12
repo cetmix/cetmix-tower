@@ -431,6 +431,11 @@ stay idle before it is closed, 1800 by default. Anything below 60 is
 raised to 60. A session reads it when it starts, so changing it leaves
 the terminals that are already open alone.</li>
 </ul>
+<p>The terminal does not turn on the screen reader mode of xterm.js. That
+mode changes the dom the terminal renders and costs on heavy output,
+which is what this terminal is for, and no browser tells a page that a
+screen reader is listening. If you need it, say so: it is one option
+away and worth doing properly rather than by default.</p>
 <p>Odoo must be running its websocket worker, which is the case in any
 standard deployment: terminal output travels through the Odoo bus. If
 the bus does not reach the browser, the terminal reports the session as

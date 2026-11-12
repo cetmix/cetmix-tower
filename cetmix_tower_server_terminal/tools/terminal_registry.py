@@ -401,11 +401,7 @@ class TerminalSession:
         with Registry(self.db_name).cursor() as cr:
             env = api.Environment(cr, self.uid, {})
             server = env["cx.tower.server"].browse(self.server_id)
-            # Checked again here, not only when the session was created: a
-            # session can sit unopened for a while, and the credentials below
-            # are read with sudo.
-            server.check_access("read")
-            values = server._get_ssh_connection_values()
+            values = server._get_terminal_connection_values()
         self._connection = SSHConnection(
             host=values["host"],
             port=values["port"],
