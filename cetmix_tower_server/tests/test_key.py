@@ -1,5 +1,10 @@
-from odoo.exceptions import AccessError, ValidationError
+from unittest.mock import patch
 
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tests import Form
+from odoo.tools import mute_logger
+
+from ..ssh.ssh import KeyLoader
 from .common import TestTowerCommon
 
 
@@ -917,3 +922,281 @@ class TestTowerKey(TestTowerCommon):
                     "partner_id": self.user_bob.partner_id.id,
                 }
             )
+
+    # ---- SSH key generation
+
+    def _create_ssh_key(self, **vals):
+        return self.Key.create(dict({"name": "Generated Key", "key_type": "k"}, **vals))
+
+    def test_generate_ssh_key_types(self):
+        """Generated pair is stored, has the OpenSSH format and matches"""
+        prefixes = {
+            "ed25519": "ssh-ed25519 ",
+            "ecdsa": "ecdsa-sha2-nistp256 ",
+            "rsa": "ssh-rsa ",
+        }
+        for key_type, prefix in prefixes.items():
+            with self.subTest(key_type=key_type):
+                key = self._create_ssh_key()
+                public_key = key._generate_ssh_key(key_type=key_type)
+                self.assertTrue(public_key.startswith(prefix))
+                self.assertEqual(key.public_key, public_key)
+                private_key = key._get_secret_value("secret_value")
+                self.assertTrue(
+                    private_key.startswith("-----BEGIN OPENSSH PRIVATE KEY-----")
+                )
+                # KeyLoader logs a warning for each rejected key class
+                with mute_logger("odoo.addons.cetmix_tower_server.ssh.ssh"):
+                    loaded = KeyLoader.load_private_key(private_key)
+                self.assertEqual(
+                    f"{loaded.get_name()} {loaded.get_base64()}", public_key
+                )
+                if key_type == "rsa":
+                    self.assertEqual(loaded.get_bits(), 4096)
+                if key_type == "ecdsa":
+                    self.assertEqual(loaded.get_name(), "ecdsa-sha2-nistp256")
+
+    def test_generate_ssh_key_default_type(self):
+        """Ed25519 is the default key type"""
+        key = self._create_ssh_key()
+        self.assertTrue(key._generate_ssh_key().startswith("ssh-ed25519 "))
+
+    def test_generate_ssh_key_overwrite(self):
+        """Existing private key is replaced only with overwrite"""
+        key = self._create_ssh_key()
+        public_key = key._generate_ssh_key()
+        private_key = key._get_secret_value("secret_value")
+
+        with self.assertRaises(UserError):
+            key._generate_ssh_key(key_type="rsa")
+        self.assertEqual(key.public_key, public_key)
+        self.assertEqual(key._get_secret_value("secret_value"), private_key)
+
+        new_public_key = key._generate_ssh_key(overwrite=True)
+        self.assertNotEqual(new_public_key, public_key)
+        self.assertEqual(key.public_key, new_public_key)
+        self.assertNotEqual(key._get_secret_value("secret_value"), private_key)
+
+    def test_generate_ssh_key_manual_private_key(self):
+        """A manually entered private key also blocks generation"""
+        key = self._create_ssh_key(secret_value="manual key")
+        with self.assertRaises(UserError):
+            key._generate_ssh_key()
+        self.assertEqual(key._get_secret_value("secret_value"), "manual key")
+
+    def test_generate_ssh_key_errors(self):
+        """Each invalid call raises its own error"""
+        secret = self.Key.create({"name": "Empty Secret", "key_type": "s"})
+        with self.assertRaisesRegex(UserError, "only for keys of type SSH Key"):
+            secret._generate_ssh_key(overwrite=True)
+        key = self._create_ssh_key()
+        with self.assertRaisesRegex(UserError, "Unsupported SSH key type 'dsa'"):
+            key._generate_ssh_key(key_type="dsa")
+        self.assertFalse(key._get_secret_value("secret_value"))
+        with self.assertRaises(ValueError):
+            (key | self._create_ssh_key())._generate_ssh_key()
+        key.write({"secret_value": "manual key"})
+        with self.assertRaisesRegex(UserError, "already has a private key"):
+            key._generate_ssh_key()
+
+    def test_generate_ssh_key_old_paramiko(self):
+        """Paramiko without OpenSSH key writing raises a clear error"""
+        key = self._create_ssh_key()
+        with patch("odoo.addons.cetmix_tower_server.models.cx_tower_key.OPENSSH", None):
+            with self.assertRaisesRegex(UserError, "paramiko 5.1.0 or later"):
+                key._generate_ssh_key()
+        self.assertFalse(key._get_secret_value("secret_value"))
+
+    def test_public_key_cleared_on_manual_write(self):
+        """Manual private key write clears the public key"""
+        key = self._create_ssh_key()
+        key._generate_ssh_key()
+        key.write({"secret_value": "manual key"})
+        self.assertFalse(key.public_key)
+
+    def test_public_key_not_writable(self):
+        """Only Tower sets the public key"""
+        key_as_manager = self.Key.with_user(self.manager).create(
+            {
+                "name": "Generated Key",
+                "key_type": "k",
+                "manager_ids": [(4, self.manager.id)],
+                "public_key": "ssh-ed25519 FAKE",
+            }
+        )
+        key = key_as_manager.with_user(self.env.user)
+        self.assertFalse(key.public_key)
+        public_key = key._generate_ssh_key()
+        key_as_manager.write({"public_key": "ssh-ed25519 FAKE"})
+        self.assertEqual(key.public_key, public_key)
+        key_as_manager.write(
+            {"secret_value": "manual key", "public_key": "ssh-ed25519 FAKE"}
+        )
+        self.assertFalse(key.public_key)
+
+    def test_generate_ssh_key_copy(self):
+        """Copy keeps the pair together and ignores a passed public key"""
+        key = self._create_ssh_key()
+        public_key = key._generate_ssh_key()
+        key_copy = key.copy()
+        self.assertEqual(key_copy.public_key, public_key)
+        self.assertEqual(
+            key_copy._get_secret_value("secret_value"),
+            key._get_secret_value("secret_value"),
+        )
+        key_copy = key.copy({"public_key": "ssh-ed25519 FAKE"})
+        self.assertEqual(key_copy.public_key, public_key)
+        self.assertFalse(self._create_ssh_key().copy().public_key)
+
+    def test_ssh_key_fields_access(self):
+        """Public key and private key flag are restricted to managers"""
+        key = self._create_ssh_key(manager_ids=[(4, self.manager.id)])
+        key._generate_ssh_key()
+        key_as_manager = key.with_user(self.manager)
+        for field_name in ("public_key", "has_private_key"):
+            with self.subTest(field_name=field_name):
+                field = self.Key._fields[field_name]
+                self.assertFalse(field.is_accessible(key.with_user(self.user).env))
+                self.assertTrue(field.is_accessible(key_as_manager.env))
+                key.invalidate_recordset([field_name])
+                self.assertTrue(key_as_manager.read([field_name])[0][field_name])
+
+    def test_generate_ssh_key_as_manager(self):
+        """A manager of the key can generate it"""
+        key = self._create_ssh_key(manager_ids=[(4, self.manager.id)])
+        public_key = key.with_user(self.manager)._generate_ssh_key()
+        self.assertEqual(key.public_key, public_key)
+
+    def test_has_private_key(self):
+        """Private key flag follows the vault"""
+        new_key = self.Key.new({"name": "New Key", "key_type": "k"})
+        self.assertFalse(new_key.has_private_key)
+
+        key = self._create_ssh_key()
+        self.assertFalse(key.has_private_key)
+        key._generate_ssh_key()
+        self.assertTrue(key.has_private_key)
+        key.write({"secret_value": False})
+        self.assertFalse(key.has_private_key)
+        key.write({"secret_value": "manual key"})
+        self.assertTrue(key.has_private_key)
+        self.assertTrue(self._create_ssh_key(secret_value="key").has_private_key)
+
+    def test_has_private_key_edited_value(self):
+        """Private key flag follows the value typed in the form"""
+        new_key = self.Key.new(
+            {"name": "New Key", "key_type": "k", "secret_value": "typed key"}
+        )
+        self.assertTrue(new_key.has_private_key)
+
+        key = self._create_ssh_key()
+        edited_key = self.Key.new({"secret_value": "typed key"}, origin=key)
+        self.assertTrue(edited_key.has_private_key)
+        self.assertFalse(key.has_private_key)
+
+    def test_onchange_secret_value(self):
+        """Editing the private key in the form hides the public key"""
+        key = self._create_ssh_key()
+        key._generate_ssh_key()
+        with Form(key) as key_form:
+            self.assertTrue(key_form.public_key)
+            key_form.secret_value = "manual key"
+            self.assertFalse(key_form.public_key)
+        self.assertFalse(key.public_key)
+
+    def test_generate_ssh_key_wizard(self):
+        """Wizard passes the chosen type and the overwrite flag"""
+        key = self._create_ssh_key()
+        Wizard = self.env["cx.tower.key.generate.wizard"]
+        for button_context, overwrite in (
+            ({}, False),
+            ({"overwrite_ssh_key": True}, True),
+        ):
+            with self.subTest(overwrite=overwrite):
+                action = key.with_context(**button_context).action_generate_ssh_key()
+                self.assertEqual(action["res_model"], Wizard._name)
+                wizard = Wizard.with_context(**action["context"]).create(
+                    {"key_type": "ecdsa"}
+                )
+                self.assertEqual(wizard.key_id, key)
+                self.assertEqual(wizard.overwrite, overwrite)
+                with patch.object(
+                    type(self.Key), "_generate_ssh_key", autospec=True
+                ) as mock_generate:
+                    wizard.action_generate_ssh_key()
+                mock_generate.assert_called_once_with(
+                    key, key_type="ecdsa", overwrite=overwrite
+                )
+
+    def test_generate_ssh_key_wizard_regenerate(self):
+        """Regenerate from the wizard replaces the key"""
+        key = self._create_ssh_key()
+        public_key = key._generate_ssh_key()
+        action = key.with_context(overwrite_ssh_key=True).action_generate_ssh_key()
+        self.env["cx.tower.key.generate.wizard"].with_context(
+            **action["context"]
+        ).create({"key_type": "ecdsa"}).action_generate_ssh_key()
+        self.assertNotEqual(key.public_key, public_key)
+        self.assertTrue(key.public_key.startswith("ecdsa-sha2-nistp256 "))
+
+    def _generate_with_wizard(self, key, user):
+        """Generate the key through the wizard as the user"""
+        Wizard = self.env["cx.tower.key.generate.wizard"].with_user(user)
+        Wizard.create({"key_id": key.id}).action_generate_ssh_key()
+
+    def test_generate_ssh_key_wizard_access(self):
+        """Wizard works for users who can modify the key"""
+        key_root = self._create_ssh_key()
+        self._generate_with_wizard(key_root, self.root)
+        self.assertTrue(key_root.public_key.startswith("ssh-ed25519 "))
+
+        key_server = self._create_ssh_key()
+        self.server_1.write(
+            {
+                "ssh_key_id": key_server.id,
+                "ssh_auth_mode": "k",
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        self._generate_with_wizard(key_server, self.manager)
+        self.assertTrue(key_server.public_key.startswith("ssh-ed25519 "))
+
+        key_denied = self._create_ssh_key(user_ids=[(4, self.manager.id)])
+        with self.assertRaises(AccessError):
+            self._generate_with_wizard(key_denied, self.manager)
+        wizard = (
+            self.env["cx.tower.key.generate.wizard"]
+            .with_user(self.manager)
+            .create({"key_id": key_server.id})
+        )
+        with self.assertRaises(AccessError):
+            wizard.write({"key_id": key_denied.id})
+        self.assertFalse(key_denied._get_secret_value("secret_value"))
+
+    def test_generate_ssh_key_wizard_creator_only(self):
+        """Wizard is visible only to its creator"""
+        key = self._create_ssh_key(
+            manager_ids=[(4, self.manager.id), (4, self.manager_2.id)]
+        )
+        Wizard = self.env["cx.tower.key.generate.wizard"]
+        wizard = Wizard.with_user(self.manager).create({"key_id": key.id})
+        self.assertFalse(
+            Wizard.with_user(self.manager_2).search([("id", "=", wizard.id)])
+        )
+        with self.assertRaises(AccessError):
+            wizard.with_user(self.manager_2).action_generate_ssh_key()
+
+    def test_generate_ssh_key_read_only_manager(self):
+        """A manager who can only read the key cannot generate it"""
+        key = self._create_ssh_key(user_ids=[(4, self.manager.id)])
+        key_as_manager = key.with_user(self.manager)
+        key_as_manager.check_access("read")
+        with self.assertRaises(AccessError):
+            key_as_manager.action_generate_ssh_key()
+        with patch.object(
+            type(self.Key), "_generate_ssh_key_pair", autospec=True
+        ) as mock_generate_pair:
+            with self.assertRaises(AccessError):
+                key_as_manager._generate_ssh_key()
+        mock_generate_pair.assert_not_called()
+        self.assertFalse(key._get_secret_value("secret_value"))
