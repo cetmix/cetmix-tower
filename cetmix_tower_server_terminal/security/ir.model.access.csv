@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_terminal_session_manager,Terminal Session->Manager,model_cx_tower_terminal_session,cetmix_tower_base.group_manager,1,1,1,1
