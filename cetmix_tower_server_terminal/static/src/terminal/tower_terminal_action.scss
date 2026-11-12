@@ -185,7 +185,7 @@
         border: 1px solid var(--cx-term-border);
         border-radius: 0.5rem;
         overflow: hidden;
-        padding: 0.5rem 0.25rem 0.5rem 0.5rem;
+        padding: 0.5rem;
         transition: border-color 0.15s ease;
 
         // Typing goes to the terminal only while it has the focus, so it says so.
@@ -194,8 +194,11 @@
             box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.25);
         }
 
+        // No height here on purpose. The fit addon sizes the terminal to the
+        // rows that fit whole; stretching it to the full box leaves the last
+        // row cut in half against the bottom edge.
         .xterm {
-            height: 100%;
+            width: 100%;
         }
     }
 
