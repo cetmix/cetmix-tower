@@ -22,7 +22,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[cetmix_drone](cetmix_drone/) | 18.0.1.0.0 |  | Run long work on external workers and get the result back in Odoo
+[cetmix_drone](cetmix_drone/) | 18.0.1.0.1 |  | Run long work on external workers and get the result back in Odoo
 [cetmix_tower](cetmix_tower/) | 18.0.1.0.0 |  | Odoo SAAS Server Application Management
 [cetmix_tower_aws](cetmix_tower_aws/) | 18.0.1.0.1 |  | Cetmix Tower AWS EC2 API integration
 [cetmix_tower_base](cetmix_tower_base/) | 18.0.2.0.0 |  | Core access groups, menus and mixins for Cetmix Tower

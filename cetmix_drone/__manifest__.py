@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Drone",
     "summary": "Run long work on external workers and get the result back in Odoo",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Productivity",
     "website": "https://drone.cetmix.com",
     "live_test_url": "https://drone.cetmix.com",
