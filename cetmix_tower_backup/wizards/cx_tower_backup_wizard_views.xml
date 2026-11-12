@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_backup_create_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.backup.create.wizard.form</field>
+        <field name="model">cx.tower.backup.create.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Back Up Jet">
+                <group>
+                    <field name="jet_id" />
+                    <field name="backup_template_id" />
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Back Up"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" special="cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="cx_tower_backup_create_wizard_action" model="ir.actions.act_window">
+        <field name="name">Back Up</field>
+        <field name="res_model">cx.tower.backup.create.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_jet_id': active_id}</field>
+    </record>
+    <record id="cx_tower_backup_restore_wizard_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.backup.restore.wizard.form</field>
+        <field name="model">cx.tower.backup.restore.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Restore Backup">
+                <group>
+                    <field name="backup_id" />
+                    <field name="server_id" />
+                    <field name="name" placeholder="Leave blank to generate" />
+                    <field name="state_id" />
+                    <field name="environment_id" required="env_required" />
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Restore"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" special="cancel" class="btn-secondary" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="cx_tower_backup_restore_wizard_action" model="ir.actions.act_window">
+        <field name="name">Restore</field>
+        <field name="res_model">cx.tower.backup.restore.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_backup_id': active_id}</field>
+    </record>
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_backup_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.backup.template.form</field>
+        <field name="model">cx.tower.backup.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="reference"
+                                placeholder="Leave blank to autogenerate"
+                            />
+                            <field name="jet_template_id" />
+                            <field name="keep_last" />
+                        </group>
+                        <group>
+                            <field name="plan_backup_id" />
+                            <field name="plan_restore_id" />
+                            <field name="plan_delete_id" />
+                        </group>
+                    </group>
+                    <field name="note" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

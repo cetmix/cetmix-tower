@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_backup_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.backup.list</field>
+        <field name="model">cx.tower.backup</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="name" />
+                <field name="jet_id" />
+                <field name="backup_template_id" />
+                <field name="state" widget="badge" />
+                <field name="create_date" />
+            </list>
+        </field>
+    </record>
+    <record id="cx_tower_backup_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.backup.form</field>
+        <field name="model">cx.tower.backup</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button
+                        name="%(cx_tower_backup_restore_wizard_action)d"
+                        type="action"
+                        string="Restore"
+                        invisible="state != 'done'"
+                        class="btn-primary"
+                    />
+                    <button
+                        name="action_delete"
+                        type="object"
+                        string="Delete"
+                        invisible="state not in ('done', 'failed', 'delete_failed')"
+                    />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <div
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="not delete_warning"
+                    >
+                        <field name="delete_warning" nolabel="1" />
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="reference" readonly="1" />
+                            <field name="backup_template_id" />
+                            <field name="jet_template_id" />
+                        </group>
+                        <group>
+                            <field name="jet_id" />
+                            <field name="server_id" />
+                            <field name="environment_id" />
+                            <field name="create_date" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="metadata" string="Metadata">
+                            <field name="metadata_text" nolabel="1" />
+                        </page>
+                        <page name="plan_logs" string="Plan Logs">
+                            <field name="plan_log_ids" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="cx_tower_backup_view_search" model="ir.ui.view">
+        <field name="name">cx.tower.backup.search</field>
+        <field name="model">cx.tower.backup</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="state" />
+                <field name="backup_template_id" />
+                <field name="jet_id" />
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]" />
+                <filter
+                    name="failed"
+                    string="Failed"
+                    domain="[('state', 'in', ['failed', 'delete_failed'])]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_template"
+                        string="Template"
+                        context="{'group_by': 'backup_template_id'}"
+                    />
+                    <filter
+                        name="group_jet"
+                        string="Jet"
+                        context="{'group_by': 'jet_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="cx_tower_backup_action" model="ir.actions.act_window">
+        <field name="name">Backups</field>
+        <field name="res_model">cx.tower.backup</field>
+        <field name="view_mode">list,form</field>
+        <field name="path">tower-backups</field>
+    </record>
+    <menuitem
+        id="cx_tower_backup_menu"
+        name="Backups"
+        parent="cetmix_tower_server.menu_cx_tower_jet_root"
+        action="cx_tower_backup_action"
+        sequence="25"
+        groups="cetmix_tower_base.group_root"
+    />
+</odoo>

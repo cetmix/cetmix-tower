@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_backup_root,Backup Root,model_cx_tower_backup,cetmix_tower_base.group_root,1,1,1,1
+access_backup_template_root,Backup Template Root,model_cx_tower_backup_template,cetmix_tower_base.group_root,1,1,1,1
+access_backup_create_wizard_root,Back Up Wizard Root,model_cx_tower_backup_create_wizard,cetmix_tower_base.group_root,1,1,1,1
+access_backup_restore_wizard_root,Restore Wizard Root,model_cx_tower_backup_restore_wizard,cetmix_tower_base.group_root,1,1,1,1
