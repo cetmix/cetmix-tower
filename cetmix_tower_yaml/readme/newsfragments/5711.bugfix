@@ -1,0 +1,3 @@
+Allow exports with empty restricted backup fields; require Root when those
+fields contain data. Imports retain normal field and record permissions and
+report required Root membership for restricted fields, even when empty.
