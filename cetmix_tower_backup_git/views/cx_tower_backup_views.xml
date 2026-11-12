@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_backup_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.backup.form.git</field>
+        <field name="model">cx.tower.backup</field>
+        <field name="inherit_id" ref="cetmix_tower_backup.cx_tower_backup_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page
+                    name="git_project"
+                    string="Git Project"
+                    invisible="not git_project_data"
+                >
+                    <field name="git_project_data" widget="jsonb" nolabel="1" />
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
