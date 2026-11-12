@@ -13,6 +13,9 @@
     "application": False,
     "depends": ["cetmix_tower_git"],
     "data": [
+        "security/ir.model.access.csv",
+        "wizards/cx_tower_git_github_sync_wizard_views.xml",
+        "views/cx_tower_git_repo_views.xml",
         "views/res_config_settings_views.xml",
     ],
     "demo": [

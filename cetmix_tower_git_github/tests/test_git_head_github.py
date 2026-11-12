@@ -5,9 +5,11 @@ from unittest.mock import Mock, patch
 
 from requests.exceptions import Timeout
 
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 from odoo.addons.cetmix_tower_git.tests.common import CommonTest
+
+_REPO_GET = "odoo.addons.cetmix_tower_git_github.models.cx_tower_git_repo.requests.get"
 
 
 class TestGitHeadGithub(CommonTest):
@@ -491,3 +493,522 @@ class TestGitHeadGithub(CommonTest):
         )
         with self.assertRaises(UserError):
             self.GitRemote._git_head_api_token(repo)
+
+    def _repo_api_payload(self, repo_id=1296269, private=False, owner_id=583231):
+        """Build a GitHub repository payload for sync tests.
+
+        Args:
+            repo_id (int): GitHub repository id.
+            private (bool): GitHub ``private`` flag.
+            owner_id (int): GitHub owner id.
+
+        Returns:
+            dict: Payload accepted by the sync helper.
+        """
+        return {"id": repo_id, "private": private, "owner": {"id": owner_id}}
+
+    def _mock_repo_get(self, payload, status_code=200):
+        """Return a patch context for repository metadata GET.
+
+        Args:
+            payload (dict | list | None): JSON body.
+            status_code (int): HTTP status.
+
+        Returns:
+            unittest.mock._patch: Patch of ``requests.get`` on the repo model.
+        """
+        response = self._response(status_code, payload)
+        return patch(_REPO_GET, return_value=response)
+
+    def test_github_create_stores_ids_and_private(self):
+        """A github.com create stores repo id, private, and owner id."""
+        key = self.Key.create(
+            {"name": "Sync key", "key_type": "s", "secret_value": "ghp_sync"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(private=True)):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/sync-one.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertTrue(repo.is_private)
+        self.assertEqual(repo.owner_id.github_owner_ref, "583231")
+
+    def test_second_repo_keeps_equal_owner_id(self):
+        """A second repo of the same owner does not change an equal owner id."""
+        key = self.Key.create(
+            {"name": "Sync key 2", "key_type": "s", "secret_value": "ghp_sync2"}
+        )
+        payload = self._repo_api_payload(owner_id=999001)
+        with self._mock_repo_get(payload):
+            first = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/sync-a.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(first.owner_id.github_owner_ref, "999001")
+        with self._mock_repo_get(payload):
+            second = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/sync-b.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(second.owner_id, first.owner_id)
+        self.assertEqual(first.owner_id.github_owner_ref, "999001")
+
+    def test_non_github_create_performs_no_http(self):
+        """A non-github.com create performs no GitHub GET."""
+        with patch(_REPO_GET, side_effect=AssertionError("http called")):
+            repo = self.Repo.create(
+                {"url": "https://gitlab.com/octocat/gitlab-only.git"}
+            )
+        self.assertFalse(repo.github_repo_ref)
+
+    def test_create_without_secret_does_not_call_http(self):
+        """A create with no resolvable secret does not call GitHub."""
+        with patch(_REPO_GET, side_effect=AssertionError("http called")):
+            repo = self.Repo.create({"url": "https://github.com/octocat/no-secret.git"})
+        self.assertFalse(repo.github_repo_ref)
+
+    def test_create_failure_clears_github_repo_ref(self):
+        """Failed sync on create clears github_repo_ref and does not raise."""
+        key = self.Key.create(
+            {"name": "Fail key", "key_type": "s", "secret_value": "ghp_fail"}
+        )
+        with self._mock_repo_get({"message": "x"}, status_code=401):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/bad-401.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.github_repo_ref)
+        response = self._response(200, None)
+        response.json.side_effect = ValueError("not json")
+        with patch(_REPO_GET, return_value=response):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/bad-json.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.github_repo_ref)
+        with self._mock_repo_get([], status_code=200):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/bad-list.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.github_repo_ref)
+        with self._mock_repo_get({"id": 1, "private": True}, status_code=200):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/bad-payload.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.github_repo_ref)
+        with patch(_REPO_GET, side_effect=Timeout("timed out")):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/timeout.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.github_repo_ref)
+
+    def test_button_failures_raise_user_error(self):
+        """Sync failures from the button raise UserError."""
+        key = self.Key.create(
+            {"name": "Btn key", "key_type": "s", "secret_value": "ghp_btn"}
+        )
+        repo = self.Repo.create(
+            {
+                "url": "https://github.com/octocat/button.git",
+                "secret_id": key.id,
+            }
+        )
+        with self._mock_repo_get({"message": "Nope"}, status_code=403):
+            with self.assertRaises(UserError):
+                repo.action_git_github_sync()
+        response = self._response(200, None)
+        response.json.side_effect = ValueError("not json")
+        with patch(_REPO_GET, return_value=response):
+            with self.assertRaises(UserError):
+                repo.action_git_github_sync()
+        with self._mock_repo_get({"id": 1}, status_code=200):
+            with self.assertRaises(UserError):
+                repo.action_git_github_sync()
+        with patch(_REPO_GET, side_effect=Timeout("timed out")):
+            with self.assertRaises(UserError):
+                repo.action_git_github_sync()
+        repo.write({"secret_id": False})
+        with patch(_REPO_GET, side_effect=AssertionError("http")):
+            with self.assertRaises(UserError):
+                repo.action_git_github_sync()
+
+    def test_failed_url_write_clears_repo_ref_keeps_owner_and_private(self):
+        """A failing URL change clears repo id and keeps owner id and private."""
+        key = self.Key.create(
+            {"name": "Url key", "key_type": "s", "secret_value": "ghp_url"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(private=True, owner_id=42)):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/url-old.git",
+                    "secret_id": key.id,
+                }
+            )
+        owner_ref = repo.owner_id.github_owner_ref
+        repo.write({"is_private": False})
+        with self._mock_repo_get({"message": "fail"}, status_code=502):
+            repo.write({"url": "https://github.com/octocat/url-new.git"})
+        self.assertFalse(repo.github_repo_ref)
+        self.assertEqual(repo.owner_id.github_owner_ref, owner_ref)
+        self.assertFalse(repo.is_private)
+
+    def test_non_github_host_write_clears_repo_ref_without_http(self):
+        """A write that sets a non-github.com host clears repo id without HTTP."""
+        key = self.Key.create(
+            {"name": "Host key", "key_type": "s", "secret_value": "ghp_host"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=55)):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/host-switch.git",
+                    "secret_id": key.id,
+                }
+            )
+        owner_ref = repo.owner_id.github_owner_ref
+        with patch(_REPO_GET, side_effect=AssertionError("http called")):
+            repo.write(
+                {
+                    "url": "https://gitlab.com/octocat/host-switch.git",
+                    "provider": "gitlab",
+                }
+            )
+        self.assertFalse(repo.github_repo_ref)
+        self.assertEqual(repo.owner_id.github_owner_ref, owner_ref)
+
+    def test_duplicate_url_create_is_not_fetched(self):
+        """An existing repo returned for the same URL is not fetched again."""
+        key = self.Key.create(
+            {"name": "Dup key", "key_type": "s", "secret_value": "ghp_dup"}
+        )
+        url = "https://github.com/octocat/dup-repo.git"
+        with self._mock_repo_get(self._repo_api_payload()) as mock_get:
+            first = self.Repo.create({"url": url, "secret_id": key.id})
+            count = mock_get.call_count
+            second = self.Repo.create({"url": url, "secret_id": key.id})
+        self.assertEqual(first, second)
+        self.assertEqual(mock_get.call_count, count)
+
+    def test_successful_url_change_performs_one_get(self):
+        """One successful URL change performs one GitHub GET."""
+        key = self.Key.create(
+            {"name": "One get", "key_type": "s", "secret_value": "ghp_one"}
+        )
+        with self._mock_repo_get(self._repo_api_payload()) as mock_get:
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/one-a.git",
+                    "secret_id": key.id,
+                }
+            )
+            mock_get.reset_mock()
+            repo.write({"url": "https://github.com/octocat/one-b.git"})
+            self.assertEqual(mock_get.call_count, 1)
+            mock_get.reset_mock()
+            repo.write(
+                {
+                    "url": "https://github.com/octocat/one-c.git",
+                    "repo": "one-c",
+                }
+            )
+        self.assertEqual(mock_get.call_count, 1)
+
+    def test_owner_created_by_another_user_keeps_owner_ref_on_create(self):
+        """Create does not raise when the owner was created by another user."""
+        manager_b = self.Users.create(
+            {
+                "name": "Other Manager",
+                "login": "other_manager_5709",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.group_manager.id,
+                            self.env.ref("base.group_user").id,
+                        ],
+                    )
+                ],
+            }
+        )
+        owner = self.RepoOwner.with_user(self.manager).create(
+            {"name": "sharedowner", "github_owner_ref": "100"}
+        )
+        key = self.Key.create(
+            {"name": "Shared key", "key_type": "s", "secret_value": "ghp_shared"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=200)):
+            repo = self.Repo.with_user(manager_b).create(
+                {
+                    "url": "https://github.com/sharedowner/shared.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertEqual(owner.github_owner_ref, "100")
+
+    def test_create_returned_record_still_syncs_on_later_write(self):
+        """A repository returned by create does not keep the sync guard."""
+        key = self.Key.create(
+            {"name": "Guard key", "key_type": "s", "secret_value": "ghp_guard"}
+        )
+        with self._mock_repo_get(self._repo_api_payload()):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/guard.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertFalse(repo.env.context.get("git_github_sync_depth"))
+        with patch(_REPO_GET, side_effect=AssertionError("http called")):
+            repo.write({"host": "gitlab.com", "provider": "gitlab"})
+        self.assertFalse(repo.github_repo_ref)
+
+    def test_empty_owner_ref_access_error_on_quiet_create(self):
+        """A quiet create keeps an empty owner id when that owner cannot be written."""
+        manager_b = self.Users.create(
+            {
+                "name": "Empty Owner Manager",
+                "login": "empty_owner_manager_5709",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.group_manager.id,
+                            self.env.ref("base.group_user").id,
+                        ],
+                    )
+                ],
+            }
+        )
+        owner = self.RepoOwner.with_user(self.manager).create({"name": "emptyowner"})
+        self.assertFalse(owner.github_owner_ref)
+        key = self.Key.create(
+            {"name": "Empty owner key", "key_type": "s", "secret_value": "ghp_empty"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=200)):
+            repo = self.Repo.with_user(manager_b).create(
+                {
+                    "url": "https://github.com/emptyowner/shared.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertFalse(owner.github_owner_ref)
+
+    def test_github_path_segments_are_encoded(self):
+        """Owner and repository names are single encoded path segments."""
+        owner = self.RepoOwner.create({"name": "octo/cat"})
+        repo = self.Repo.new({"repo": "hello?world", "owner_id": owner.id})
+        url, _params, value_key = self.GitRemote._git_github_request(repo, "branch")
+        self.assertEqual(value_key, "name")
+        self.assertIn("/repos/octo%2Fcat/hello%3Fworld/branches", url)
+        self.assertNotIn("/repos/octo/cat/", url)
+
+    def test_group_user_cannot_run_sync_action(self):
+        """Tower User cannot run the Read from GitHub server action."""
+        action = self.env.ref(
+            "cetmix_tower_git_github.cx_tower_git_repo_git_github_sync_action"
+        )
+        with self.assertRaises(AccessError):
+            action.with_user(self.user).with_context(
+                active_model="cx.tower.git.repo",
+                active_ids=self.github_repo.ids,
+            ).run()
+
+    def test_wizard_on_owner_clash_overwrite_and_cancel(self):
+        """Clash opens a wizard; Cancel keeps owner id; Overwrite replaces it."""
+        key = self.Key.create(
+            {"name": "Wizard key", "key_type": "s", "secret_value": "ghp_wiz"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=222)):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/wizard.git",
+                    "secret_id": key.id,
+                }
+            )
+        repo.owner_id.write({"github_owner_ref": "111"})
+        with self._mock_repo_get(self._repo_api_payload(owner_id=222)):
+            action = repo.action_git_github_sync()
+        self.assertEqual(action["res_model"], "cx.tower.git.github.sync.wizard")
+        wizard = self.env["cx.tower.git.github.sync.wizard"].browse(action["res_id"])
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertEqual(repo.owner_id.github_owner_ref, "111")
+        wizard.action_cancel()
+        self.assertEqual(repo.owner_id.github_owner_ref, "111")
+        with self._mock_repo_get(self._repo_api_payload(owner_id=333)):
+            repo.owner_id.write({"github_owner_ref": "111"})
+            action = repo.action_git_github_sync()
+        wizard = self.env["cx.tower.git.github.sync.wizard"].browse(action["res_id"])
+        wizard.action_overwrite()
+        self.assertEqual(repo.owner_id.github_owner_ref, "333")
+
+    def test_overwrite_other_users_owner_raises_access_error(self):
+        """Overwrite leaves an owner created by someone else unchanged."""
+        manager_b = self.Users.create(
+            {
+                "name": "Overwrite Manager",
+                "login": "overwrite_manager_5709",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.group_manager.id,
+                            self.env.ref("base.group_user").id,
+                        ],
+                    )
+                ],
+            }
+        )
+        owner = self.RepoOwner.with_user(self.manager).create(
+            {"name": "clashowner", "github_owner_ref": "100"}
+        )
+        key = self.Key.create(
+            {"name": "Clash key", "key_type": "s", "secret_value": "ghp_clash"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=200)):
+            repo = self.Repo.with_user(manager_b).create(
+                {
+                    "url": "https://github.com/clashowner/shared.git",
+                    "secret_id": key.id,
+                }
+            )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=200)):
+            action = repo.with_user(manager_b).action_git_github_sync()
+        wizard = (
+            self.env["cx.tower.git.github.sync.wizard"]
+            .browse(action["res_id"])
+            .with_user(manager_b)
+        )
+        with self.assertRaises(AccessError):
+            wizard.action_overwrite()
+        self.assertEqual(owner.github_owner_ref, "100")
+
+    def test_repository_secret_beats_owner_secret(self):
+        """A set repository Secret is used and the owner Secret is not."""
+        owner_key = self.Key.create(
+            {
+                "name": "Owner secret",
+                "key_type": "s",
+                "secret_value": "owner-token",
+            }
+        )
+        repo_key = self.Key.create(
+            {
+                "name": "Repo secret",
+                "key_type": "s",
+                "secret_value": "repo-token",
+            }
+        )
+        repo = self.Repo.create({"url": "https://github.com/octocat/beat-owner.git"})
+        repo.owner_id.write({"secret_id": owner_key.id})
+        with self._mock_repo_get(self._repo_api_payload()) as mock_get:
+            repo.write({"secret_id": repo_key.id, "url": repo.url})
+        headers = mock_get.call_args.kwargs["headers"]
+        self.assertEqual(headers["Authorization"], "Bearer repo-token")
+        token = self.GitRemote._git_head_api_token(repo)
+        self.assertEqual(token, "repo-token")
+
+    def test_empty_repository_secret_uses_owner_secret(self):
+        """An empty repository Secret uses the owner Secret for sync."""
+        owner_key = self.Key.create(
+            {
+                "name": "Owner only",
+                "key_type": "s",
+                "secret_value": "owner-only",
+            }
+        )
+        self.RepoOwner.create({"name": "owneronly", "secret_id": owner_key.id})
+        with self._mock_repo_get(self._repo_api_payload()) as mock_get:
+            self.Repo.create({"url": "https://github.com/owneronly/owner-only.git"})
+        self.assertEqual(
+            mock_get.call_args.kwargs["headers"]["Authorization"],
+            "Bearer owner-only",
+        )
+
+    def test_both_secrets_empty_use_settings_for_sync(self):
+        """When both secrets are empty, sync uses the settings key global value."""
+        settings_key = self.Key.create(
+            {
+                "name": "Settings sync",
+                "key_type": "s",
+                "secret_value": "settings-sync",
+            }
+        )
+        self.env["ir.config_parameter"].sudo().set_param(
+            "cetmix_tower_git_github.default_secret_id",
+            str(settings_key.id),
+        )
+        with self._mock_repo_get(self._repo_api_payload()) as mock_get:
+            self.Repo.create({"url": "https://github.com/octocat/settings-sync.git"})
+        self.assertEqual(
+            mock_get.call_args.kwargs["headers"]["Authorization"],
+            "Bearer settings-sync",
+        )
+
+    def test_owner_secret_resolves_scopes_for_head_autocomplete(self):
+        """Head autocomplete still resolves owner Secret with server and partner."""
+        owner_key = self.Key.create(
+            {"name": "Owner scope", "key_type": "s", "secret_value": "ignored"}
+        )
+        partner = self.user_bob.partner_id
+        self.KeyValue.create(
+            {
+                "key_id": owner_key.id,
+                "server_id": self.server_test_1.id,
+                "partner_id": partner.id,
+                "secret_value": "owner-scoped",
+            }
+        )
+        repo = self.Repo.create({"url": "https://github.com/octocat/owner-scope.git"})
+        repo.owner_id.write({"secret_id": owner_key.id})
+        token = self.GitRemote._git_head_api_token(repo, self.server_test_1, partner)
+        self.assertEqual(token, "owner-scoped")
+
+    def test_token_not_in_stored_fields_or_user_error(self):
+        """The token is not stored on the repo or shown in UserError text."""
+        secret = "ghp_must_not_leak"
+        key = self.Key.create(
+            {"name": "Leak key", "key_type": "s", "secret_value": secret}
+        )
+        with self._mock_repo_get(self._repo_api_payload()):
+            repo = self.Repo.create(
+                {
+                    "url": "https://github.com/octocat/leak.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertNotIn(secret, repo.github_repo_ref or "")
+        with self._mock_repo_get({"message": "denied"}, status_code=401):
+            with self.assertRaises(UserError) as error:
+                repo.action_git_github_sync()
+        self.assertNotIn(secret, str(error.exception))
+        with self.assertLogs(
+            "odoo.addons.cetmix_tower_git_github.models.cx_tower_git_repo",
+            level="INFO",
+        ) as logs:
+            with self._mock_repo_get({"message": "denied"}, status_code=401):
+                repo.write({"url": "https://github.com/octocat/leak-log.git"})
+        self.assertNotIn(secret, "\n".join(logs.output))
