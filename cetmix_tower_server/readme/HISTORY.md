@@ -1,3 +1,8 @@
+## 18.0.4.1.0 (2026-11-12)
+
+- Features: Generate SSH key pairs (Ed25519, ECDSA, RSA) on the SSH Key form and show the public key. Requires paramiko 5.1.0 or later: upgrade it before updating the module, or the update fails with "External dependency version mismatch". paramiko 5 drops SHA-1 key exchange, SHA-1 RSA signatures (`ssh-rsa`) and group-exchange moduli below 2048 bits, so servers that offer only these must be updated (for example, to Ed25519 keys or SHA-2 algorithms) before Tower can connect to them. (3688)
+
+
 ## 18.0.4.0.1 (2026-11-10)
 
 - Bugfixes: Reject untrusted SSH hosts for command and file sessions while allowing unauthenticated host-key discovery. (5717)
