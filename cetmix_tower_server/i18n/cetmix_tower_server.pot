@@ -717,6 +717,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_generate_wizard__key_type
+msgid "Algorithm of the new SSH key"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_scheduled_task_search_view
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
@@ -950,6 +955,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_create_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_state_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_install_wiz_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_generate_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_plan_run_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_template_create_wizard_view_form
 msgid "Cancel"
@@ -1143,6 +1149,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model,name:cetmix_tower_server.model_cx_tower_plan_log
 msgid "Cetmix Tower Flight Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model,name:cetmix_tower_server.model_cx_tower_key_generate_wizard
+msgid "Cetmix Tower Generate SSH Key"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -1735,6 +1746,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint_template__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__create_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__create_uid
@@ -1783,6 +1795,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint_template__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__create_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__create_date
@@ -2148,6 +2161,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint_template__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__display_name
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__display_name
@@ -2248,6 +2262,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_log__duration_current
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan_log__duration_current
 msgid "Duration, sec"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key_generate_wizard__key_type__ecdsa
+msgid "ECDSA (nistp256)"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key_generate_wizard__key_type__ed25519
+msgid "Ed25519"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -2946,6 +2970,19 @@ msgid "General Settings"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_generate_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
+msgid "Generate"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_generate_wizard_view_form
+msgid "Generate SSH Key"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_server_view_form
 msgid "Get from Host"
 msgstr ""
@@ -2998,6 +3035,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_command_run_wizard__has_missing_required_values
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_server_template_create_wizard__has_missing_required_values
 msgid "Has Missing Required Values"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__has_private_key
+msgid "Has Private Key"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -3100,6 +3142,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint_template__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__id
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__id
@@ -3804,6 +3847,7 @@ msgid "Keep When Deleted"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__key_id
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__key_id
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server__ssh_auth_mode__k
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_server_template__ssh_auth_mode__k
@@ -3812,7 +3856,14 @@ msgid "Key"
 msgstr ""
 
 #. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
+msgid "Key '%(name)s' already has a private key"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__key_type
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__key_type
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_search_view
 msgid "Key Type"
 msgstr ""
@@ -3886,6 +3937,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint_template__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__write_uid
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__write_uid
@@ -3934,6 +3986,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_waypoint_template__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_value__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_os__write_date
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_plan__write_date
@@ -4728,6 +4781,7 @@ msgid "Other jets this jet depends on"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key_generate_wizard__overwrite
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__overwrite
 msgid "Overwrite"
 msgstr ""
@@ -4975,6 +5029,18 @@ msgid "Properties"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_key__public_key
+msgid "Public Key"
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__public_key
+msgid ""
+"Public part of the generated SSH key in the OpenSSH format. Cleared when the"
+" private key is changed manually."
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.res_config_settings_view_form
 msgid "Pull files from server"
 msgstr ""
@@ -5137,6 +5203,11 @@ msgid ""
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_key_generate_wizard__key_type__rsa
+msgid "RSA (4096 bit)"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields.selection,name:cetmix_tower_server.selection__cx_tower_command__if_file_exists__raise
 msgid "Raise Error"
 msgstr ""
@@ -5219,6 +5290,11 @@ msgid "Refresh All"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
+msgid "Regenerate"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_variable_view_form
 msgid "Regex expression, eg. ^[a-z0-9]+$"
 msgstr ""
@@ -5270,6 +5346,11 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_scheduled_task__interval_number
 msgid "Repeat every x."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key_generate_wizard__overwrite
+msgid "Replace the existing private key"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -5552,6 +5633,20 @@ msgstr ""
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_server.py:0
 msgid "SSH connection error %(err)s"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
+msgid "SSH key can be generated only for keys of type SSH Key"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
+msgid ""
+"SSH key generation needs paramiko 5.1.0 or later. Ask your administrator to "
+"upgrade it."
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -6412,6 +6507,11 @@ msgid "Target State"
 msgstr ""
 
 #. module: cetmix_tower_server
+#: model:ir.model.fields,help:cetmix_tower_server.field_cx_tower_key__has_private_key
+msgid "Technical field: a private key is stored in the vault"
+msgstr ""
+
+#. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_file__template_id
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_file_view_search
 #: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_jet_template_install_view_search
@@ -6545,6 +6645,12 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.constraint,message:cetmix_tower_server.constraint_cx_tower_variable_option_unique_variable_option
 msgid "The combination of Value and Variable must be unique."
+msgstr ""
+
+#. module: cetmix_tower_server
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_server.cx_tower_key_view_form
+msgid ""
+"The existing private key will be replaced. It cannot be recovered. Continue?"
 msgstr ""
 
 #. module: cetmix_tower_server
@@ -6900,6 +7006,13 @@ msgstr ""
 #. module: cetmix_tower_server
 #: model:ir.model.fields,field_description:cetmix_tower_server.field_cx_tower_jet_template__plan_uninstall_id
 msgid "Uninstallation Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_key.py:0
+msgid ""
+"Unsupported SSH key type '%(key_type)s'. Supported types: %(supported)s"
 msgstr ""
 
 #. module: cetmix_tower_server
