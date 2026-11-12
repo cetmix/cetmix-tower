@@ -2313,16 +2313,22 @@ class CxTowerServer(models.Model):
             )
             jet = self.env["cx.tower.jet"].browse(jet_id) if jet_id else None
 
-            # Get the evaluation context for the python command.
-            # Other kwargs are passed on so that extending modules
-            # can add their own objects to the evaluation context.
-            # Resolved jet template and jet take precedence
-            # over the received ones.
-            eval_context_kwargs = dict(kwargs, jet_template=jet_template, jet=jet)
-            eval_context_kwargs.pop("server", None)
+            # Forward extension objects, keeping the resolved core objects.
+            eval_kwargs = dict(kwargs)
+            eval_kwargs.update(
+                jet_template=jet_template,
+                jet=jet,
+                waypoint=waypoint,
+                variable_values=kwargs.get("variable_values", {}),
+            )
+            eval_kwargs.pop("server", None)
+            # Get the evaluation context for the python command
             eval_context = self.env[
                 "cx.tower.command"
-            ]._get_python_command_eval_context(server=self, **eval_context_kwargs)
+            ]._get_python_command_eval_context(
+                server=self,
+                **eval_kwargs,
+            )
 
             safe_eval(
                 code,
