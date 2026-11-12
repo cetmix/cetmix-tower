@@ -1,7 +1,7 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class CxTowerKeyGenerateWizard(models.TransientModel):
@@ -28,6 +28,20 @@ class CxTowerKeyGenerateWizard(models.TransientModel):
     overwrite = fields.Boolean(
         help="Replace the existing private key",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Open the wizard only for keys the user can modify"""
+        records = super().create(vals_list)
+        records.key_id.check_access("write")
+        return records
+
+    def write(self, vals):
+        """Allow switching only to keys the user can modify"""
+        res = super().write(vals)
+        if "key_id" in vals:
+            self.key_id.check_access("write")
+        return res
 
     def action_generate_ssh_key(self):
         """Generate the SSH key and close the wizard"""
