@@ -70,12 +70,11 @@ export class TowerTerminalAction extends Component {
         };
 
         this.inputBuffer = "";
+        this.pendingInput = "";
+        this.inputInFlight = false;
         this.inputTimer = null;
         this.resizeTimer = null;
         this.sessionTimer = null;
-        // Input requests are chained so that the characters reach the shell in
-        // the order they were typed in.
-        this.inputChain = Promise.resolve();
         this.lastSize = {cols: 0, rows: 0};
         this.sizeHintTimer = null;
         this.bellTimer = null;
@@ -534,16 +533,36 @@ export class TowerTerminalAction extends Component {
         if (!payload || !this.isConnected) {
             return;
         }
-        // Pasting is the common way to go past what one call takes, and the
-        // pieces have to reach the shell in the order they were typed.
+        this.pendingInput += payload;
+        this.drainInput();
+    }
+
+    /**
+     * Send what is pending, one request at a time.
+     *
+     * Order matters — a command and the Enter that runs it cannot swap — but
+     * waiting for each round trip before sending the next key makes the delay
+     * grow with every letter: over a link of 287 ms, a six letter word took
+     * 2.8 s to appear. Keys typed while a request is in flight are collected
+     * and leave together with the next one, so the delay stays at one round
+     * trip no matter how fast somebody types.
+     */
+    async drainInput() {
+        if (this.inputInFlight || !this.pendingInput || !this.isConnected) {
+            return;
+        }
         const sessionId = this.sessionId;
-        for (let at = 0; at < payload.length; at += MAX_INPUT_CHUNK) {
-            const piece = payload.slice(at, at + MAX_INPUT_CHUNK);
-            this.inputChain = this.inputChain
-                .then(() => this.callSessionOn(sessionId, "terminal_send", piece))
-                .catch((error) =>
-                    this.reportError(error, _t("Cannot reach the terminal."))
-                );
+        this.inputInFlight = true;
+        try {
+            while (this.pendingInput && this.isConnected) {
+                const piece = this.pendingInput.slice(0, MAX_INPUT_CHUNK);
+                this.pendingInput = this.pendingInput.slice(piece.length);
+                await this.callSessionOn(sessionId, "terminal_send", piece);
+            }
+        } catch (error) {
+            this.reportError(error, _t("Cannot reach the terminal."));
+        } finally {
+            this.inputInFlight = false;
         }
     }
 
@@ -560,12 +579,11 @@ export class TowerTerminalAction extends Component {
         }
         this.lastSize = {cols, rows};
         this.showSizeHint(cols, rows);
-        const sessionId = this.sessionId;
-        this.inputChain = this.inputChain
-            .then(() => this.callSessionOn(sessionId, "terminal_resize", cols, rows))
-            .catch((error) =>
-                this.reportError(error, _t("Cannot resize the terminal."))
-            );
+        // Not queued behind the input: a size that arrives a moment early or
+        // late is harmless, and the input must not wait for it.
+        this.callSessionOn(this.sessionId, "terminal_resize", cols, rows).catch(
+            (error) => this.reportError(error, _t("Cannot resize the terminal."))
+        );
     }
 
     /**
@@ -619,6 +637,7 @@ export class TowerTerminalAction extends Component {
             this.busChannel = params.bus_channel;
             this.lastSize = {cols: 0, rows: 0};
             this.inputBuffer = "";
+            this.pendingInput = "";
             this.state.status = "connecting";
             this.state.message = "";
             this.state.overlayDismissed = false;
