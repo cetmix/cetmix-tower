@@ -398,6 +398,30 @@ documentation</a> for detailed information.</p>
 <p>Please refer to the <a class="reference external" href="https://cetmix.com/tower">official
 documentation</a> for detailed configuration
 instructions.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Permission</th>
+<th class="head">Behavior</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>YAML Import: Allow</td>
+<td>Imports respect the user’s field and record
+permissions. Root-only fields require Root
+membership, including when their supplied
+values are empty.</td>
+</tr>
+<tr><td>YAML Export: Allow</td>
+<td>Ordinary record access still applies. Empty
+Root-only fields are omitted; populated fields
+require Root membership.</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
