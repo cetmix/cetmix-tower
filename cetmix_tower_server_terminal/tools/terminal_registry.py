@@ -57,6 +57,7 @@ from ..constants import (
     OUTPUT_SMALL_ENOUGH,
     PUMP_IDLE_WAIT,
     SESSION_IDLE_MESSAGE,
+    SESSION_LOST_MESSAGE,
     SHELL_CLOSED_MESSAGE,
     SSH_CONNECT_TIMEOUT,
     STATE_CLOSED,
@@ -382,7 +383,12 @@ class TerminalSession:
             )
             self._finish(STATE_ERROR, str(error))
             return
-        self._write_record(STATE_OPEN, None)
+        if not self._write_record(STATE_OPEN, None):
+            # The record still says the session is starting, so it would take
+            # no input. Better a session the client can reopen than a terminal
+            # that looks alive and ignores the keyboard.
+            self._finish(STATE_ERROR, str(SESSION_LOST_MESSAGE))
+            return
         self._publish(state=STATE_OPEN)
         try:
             self._pump()
@@ -516,10 +522,10 @@ class TerminalSession:
             # Before reading, not after: output that never stops, `tail -f` or
             # `yes`, would otherwise keep the loop from ever reaching this and
             # the session would outlive the browser that left.
-            if (
-                self._detached_since
-                and time.monotonic() - self._detached_since > DETACHED_GRACE
-            ):
+            # Read once: a browser reattaching between two reads would leave
+            # the second one at zero and close a session somebody is using.
+            detached_since = self._detached_since
+            if detached_since and time.monotonic() - detached_since > DETACHED_GRACE:
                 self._finish(STATE_CLOSED, str(BROWSER_GONE_MESSAGE))
                 return
             output = self.shell.receive()
@@ -576,7 +582,13 @@ class TerminalSession:
             return
         output, self._buffer, self._buffer_since = self._buffer, "", 0.0
         for start in range(0, len(output), MAX_OUTPUT_CHUNK):
-            self._publish(output=output[start : start + MAX_OUTPUT_CHUNK])
+            chunk = output[start : start + MAX_OUTPUT_CHUNK]
+            if not self._publish(output=chunk):
+                # The bus refused it. Put back what did not go out, oldest
+                # first, so the next flush tries again instead of losing it.
+                self._buffer = output[start:] + self._buffer
+                self._buffer_since = now
+                return
 
     def _heartbeat(self):
         """Tell the client the session is still alive, every now and then."""
@@ -591,10 +603,13 @@ class TerminalSession:
             output (str): Terminal output to write in the browser.
             state (str): Session state, defaults to the current one.
             message (str): Human readable status message.
+
+        Returns:
+            bool: True if it reached the bus.
         """
         self._last_published_at = time.monotonic()
         try:
-            with Registry(self.db_name).cursor() as cr:
+            with Registry(self.db_name).cursor() as cr:  # noqa: SIM117
                 env = api.Environment(cr, self.uid, {})
                 env["bus.bus"]._sendone(
                     self.channel,
@@ -606,10 +621,12 @@ class TerminalSession:
                         "message": message and str(message) or False,
                     },
                 )
+            return True
         except Exception:
             _logger.exception(
                 "Terminal: cannot publish the output of session %s", self.record_id
             )
+            return False
 
     # -- record
 
@@ -619,6 +636,9 @@ class TerminalSession:
         Args:
             state (str): State to store.
             message (str): Message to store.
+
+        Returns:
+            bool: True if the record was written, or is already gone.
         """
         try:
             with Registry(self.db_name).cursor() as cr:
@@ -628,10 +648,12 @@ class TerminalSession:
                     record.write(
                         {"state": state, "message": message and str(message) or False}
                     )
+            return True
         except Exception:
             _logger.exception(
                 "Terminal: cannot store the state of session %s", self.record_id
             )
+            return False
 
     def _get_idle_timeout(self):
         """Return how long a session may stay idle before it is closed.

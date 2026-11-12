@@ -121,6 +121,23 @@ class TestTerminalSession(TestTowerTerminalCommon):
             "The shell has to receive exactly what was typed, in order",
         )
 
+    def test_identical_pieces_are_told_apart(self):
+        """Two identical pieces of one paste must not collapse into one.
+
+        Postgres delivers a single notification when the same payload is sent
+        twice on the same channel in one transaction, so a paste that splits
+        into identical halves would silently lose one of them.
+        """
+        session = self.mark_open(self.open_session())
+        first = session._build_notification(ACTION_INPUT, {"data": "ab"})
+        second = session._build_notification(ACTION_INPUT, {"data": "ab"})
+        self.assertEqual(first["data"], second["data"])
+        self.assertNotEqual(
+            json.dumps(first, sort_keys=True),
+            json.dumps(second, sort_keys=True),
+            "Postgres would deliver only one of two identical notifications",
+        )
+
     def test_send_input_validation(self):
         """Input that is not a reasonably sized string is refused."""
         session = self.mark_open(self.open_session())

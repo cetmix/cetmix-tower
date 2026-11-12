@@ -238,7 +238,7 @@ class CxTowerTerminalSession(models.TransientModel):
             payload (dict): Extra keys to send along with the action.
         """
         self.ensure_one()
-        message = dict(payload or {}, token=self.session_token, action=action)
+        message = self._build_notification(action, payload)
         self.env.cr.execute(
             SQL(
                 "SELECT %s(%s, %s)",
@@ -246,6 +246,29 @@ class CxTowerTerminalSession(models.TransientModel):
                 NOTIFY_CHANNEL,
                 json.dumps(message),
             )
+        )
+
+    def _build_notification(self, action, payload=None):
+        """Build the message that travels to the process owning the shell.
+
+        The nonce is what keeps two identical pieces of a paste apart:
+        postgres delivers a single notification when the same payload is sent
+        twice on the same channel in one transaction, so half of what somebody
+        pasted would be dropped without a word.
+
+        Args:
+            action (str): Action to run, one of the `ACTION_*` constants.
+            payload (dict): Extra keys to send along with the action.
+
+        Returns:
+            dict: The message, different on every call.
+        """
+        self.ensure_one()
+        return dict(
+            payload or {},
+            token=self.session_token,
+            action=action,
+            nonce=uuid.uuid4().hex,
         )
 
     def _split_input(self, payload):

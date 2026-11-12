@@ -51,9 +51,12 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
 
         def publish(output="", state=None, message=None):
             self.published.append({"output": output, "state": state})
+            # The real one says whether the bus took it, and the flush keeps
+            # what did not go out.
+            return True
 
         session._publish = publish
-        session._write_record = lambda state, message: None
+        session._write_record = lambda state, message: True
         return session
 
     # -- the registry itself
@@ -209,7 +212,7 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
         session = self._build_session()
         session.shell = EndlessShell()
         session._get_idle_timeout = lambda: 3600
-        session._write_record = lambda state, message: None
+        session._write_record = lambda state, message: True
         session._detached_since = time.monotonic() - DETACHED_GRACE - 1
         session._pump()
         self.assertEqual(session.state, STATE_CLOSED)
