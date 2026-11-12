@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="cx_tower_server_view_form_terminal" model="ir.ui.view">
+        <field name="name">cx.tower.server.view.form.terminal</field>
+        <field name="model">cx.tower.server</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_server_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_run_command']" position="before">
+                <button
+                    name="action_open_terminal"
+                    type="object"
+                    string="Terminal"
+                    icon="fa-terminal"
+                    groups="cetmix_tower_base.group_manager"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

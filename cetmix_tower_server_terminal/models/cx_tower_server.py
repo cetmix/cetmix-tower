@@ -1,0 +1,17 @@
+# Copyright Cetmix OÜ 2026
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import models
+
+
+class CxTowerServer(models.Model):
+    _inherit = "cx.tower.server"
+
+    def action_open_terminal(self):
+        """Open an interactive terminal on this server.
+
+        Returns:
+            dict: Client action that renders the terminal.
+        """
+        self.ensure_one()
+        return self.env["cx.tower.terminal.session"].action_open_for_server(self.id)

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="cetmix_tower_server_terminal.TowerTerminalAction">
+        <div
+            t-attf-class="o_cx_tower_terminal d-flex flex-column h-100 {{state.isFullScreen ? 'o_cx_tower_terminal--full' : ''}} {{state.isBelling ? 'o_cx_tower_terminal--bell' : ''}}"
+        >
+            <div class="o_cx_tower_terminal__bar d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 min-w-0">
+                    <i
+                        class="fa fa-terminal o_cx_tower_terminal__glyph"
+                        aria-hidden="true"
+                    />
+                    <span
+                        class="o_cx_tower_terminal__name text-truncate"
+                        t-esc="state.serverName or state.title"
+                    />
+                    <span
+                        class="o_cx_tower_terminal__target text-truncate"
+                        t-if="state.target"
+                        t-esc="state.target"
+                    />
+                </div>
+                <div
+                    t-attf-class="o_cx_tower_terminal__status o_cx_tower_terminal__status--{{state.status}}"
+                    role="status"
+                >
+                    <span class="o_cx_tower_terminal__dot" aria-hidden="true" />
+                    <span t-esc="statusLabel" />
+                </div>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    <span
+                        class="o_cx_tower_terminal__hint"
+                        t-if="isConnected and !state.isFocused"
+                    >
+                        <i class="fa fa-hand-pointer-o" aria-hidden="true" />
+                        Click the screen to type
+                    </span>
+                    <span
+                        class="o_cx_tower_terminal__size"
+                        t-if="state.sizeHint"
+                        t-esc="state.sizeHint"
+                    />
+                    <button
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--icon"
+                        type="button"
+                        t-on-click="openSearch"
+                        title="Search the output (Ctrl+Shift+F)"
+                        aria-label="Search the output"
+                    >
+                        <i class="fa fa-search" aria-hidden="true" />
+                    </button>
+                    <button
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--icon"
+                        type="button"
+                        t-on-click="toggleFullScreen"
+                        t-att-title="state.isFullScreen ? 'Leave full screen' : 'Full screen'"
+                        aria-label="Toggle full screen"
+                    >
+                        <i
+                            t-attf-class="fa {{state.isFullScreen ? 'fa-compress' : 'fa-expand'}}"
+                            aria-hidden="true"
+                        />
+                    </button>
+                    <button
+                        class="o_cx_tower_terminal__btn"
+                        type="button"
+                        t-on-click="clearOutput"
+                        title="Clear the screen (Ctrl+L)"
+                    >
+                        <i class="fa fa-eraser me-1" aria-hidden="true" />Clear
+                    </button>
+                    <button
+                        t-if="isConnected"
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--danger"
+                        type="button"
+                        t-on-click="closeTerminal"
+                        title="Close this session"
+                    >
+                        <i class="fa fa-power-off me-1" aria-hidden="true" />Disconnect
+                    </button>
+                    <button
+                        t-elif="!showOverlay"
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--primary"
+                        type="button"
+                        t-att-disabled="state.isBusy"
+                        t-on-click="reconnectTerminal"
+                        title="Open a new session on this server"
+                    >
+                        <i
+                        t-attf-class="fa me-1 {{state.isBusy ? 'fa-spinner fa-spin' : 'fa-refresh'}}"
+                        aria-hidden="true"
+                    />Reconnect
+                    </button>
+                </div>
+            </div>
+
+            <div class="o_cx_tower_terminal__screen flex-grow-1 position-relative">
+                <div
+                    t-attf-class="o_cx_tower_terminal__canvas h-100 {{state.isFocused ? 'is-focused' : ''}}"
+                    t-ref="output"
+                />
+
+                <div
+                    t-if="state.search.open"
+                    class="o_cx_tower_terminal__search d-flex align-items-center gap-2"
+                >
+                    <i class="fa fa-search" aria-hidden="true" />
+                    <input
+                        type="text"
+                        class="o_cx_tower_terminal__search-input"
+                        placeholder="Search the output"
+                        aria-label="Search the output"
+                        t-ref="searchInput"
+                        t-on-input="onSearchInput"
+                        t-on-keydown="onSearchKeydown"
+                    />
+                    <span class="o_cx_tower_terminal__search-count">
+                        <t t-if="state.search.term">
+                            <t t-esc="state.search.current" />/<t
+                            t-esc="state.search.total"
+                        />
+                        </t>
+                    </span>
+                    <button
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--icon"
+                        type="button"
+                        t-on-click="() => this.findInScrollback(true)"
+                        title="Previous match (Shift+Enter)"
+                        aria-label="Previous match"
+                    >
+                        <i class="fa fa-angle-up" aria-hidden="true" />
+                    </button>
+                    <button
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--icon"
+                        type="button"
+                        t-on-click="() => this.findInScrollback(false)"
+                        title="Next match (Enter)"
+                        aria-label="Next match"
+                    >
+                        <i class="fa fa-angle-down" aria-hidden="true" />
+                    </button>
+                    <button
+                        class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--icon"
+                        type="button"
+                        t-on-click="closeSearch"
+                        title="Close the search (Esc)"
+                        aria-label="Close the search"
+                    >
+                        <i class="fa fa-times" aria-hidden="true" />
+                    </button>
+                </div>
+
+                <button
+                    t-if="state.hasUnreadOutput"
+                    class="o_cx_tower_terminal__jump"
+                    type="button"
+                    t-on-click="scrollToBottom"
+                >
+                    <i class="fa fa-arrow-down me-1" aria-hidden="true" />New output
+                </button>
+
+                <div
+                    t-if="showOverlay"
+                    class="o_cx_tower_terminal__overlay d-flex flex-column align-items-center justify-content-center text-center gap-2"
+                >
+                    <i t-attf-class="fa fa-2x {{overlayIcon}}" aria-hidden="true" />
+                    <div
+                        class="o_cx_tower_terminal__overlay-title"
+                        t-esc="statusLabel"
+                    />
+                    <div
+                        class="o_cx_tower_terminal__overlay-text"
+                        t-if="state.message"
+                        t-esc="state.message"
+                    />
+                    <div class="d-flex gap-2 mt-2" t-if="state.status !== 'connecting'">
+                        <button
+                            class="o_cx_tower_terminal__btn o_cx_tower_terminal__btn--primary"
+                            type="button"
+                            t-att-disabled="state.isBusy"
+                            t-on-click="reconnectTerminal"
+                        >
+                            <i
+                            t-attf-class="fa me-1 {{state.isBusy ? 'fa-spinner fa-spin' : 'fa-refresh'}}"
+                            aria-hidden="true"
+                        />Reconnect
+                        </button>
+                        <button
+                            class="o_cx_tower_terminal__btn"
+                            type="button"
+                            t-on-click="dismissOverlay"
+                        >Keep reading</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
