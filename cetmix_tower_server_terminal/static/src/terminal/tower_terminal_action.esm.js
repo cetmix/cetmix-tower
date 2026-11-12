@@ -536,10 +536,11 @@ export class TowerTerminalAction extends Component {
         }
         // Pasting is the common way to go past what one call takes, and the
         // pieces have to reach the shell in the order they were typed.
+        const sessionId = this.sessionId;
         for (let at = 0; at < payload.length; at += MAX_INPUT_CHUNK) {
             const piece = payload.slice(at, at + MAX_INPUT_CHUNK);
             this.inputChain = this.inputChain
-                .then(() => this.callSession("terminal_send", piece))
+                .then(() => this.callSessionOn(sessionId, "terminal_send", piece))
                 .catch((error) =>
                     this.reportError(error, _t("Cannot reach the terminal."))
                 );
@@ -559,8 +560,9 @@ export class TowerTerminalAction extends Component {
         }
         this.lastSize = {cols, rows};
         this.showSizeHint(cols, rows);
+        const sessionId = this.sessionId;
         this.inputChain = this.inputChain
-            .then(() => this.callSession("terminal_resize", cols, rows))
+            .then(() => this.callSessionOn(sessionId, "terminal_resize", cols, rows))
             .catch((error) =>
                 this.reportError(error, _t("Cannot resize the terminal."))
             );
@@ -636,8 +638,27 @@ export class TowerTerminalAction extends Component {
     // -- Helpers
 
     callSession(method, ...args) {
+        return this.callSessionOn(this.sessionId, method, ...args);
+    }
+
+    /**
+     * Call a method of one session, named when the call was queued.
+     *
+     * Input is chained, so a call can still be waiting when Reconnect replaces
+     * the session. What was typed for a shell that is gone must not run in the
+     * one that took its place.
+     *
+     * @param {Number} sessionId
+     * @param {String} method
+     * @param {...any} args
+     * @returns {Promise<any>}
+     */
+    callSessionOn(sessionId, method, ...args) {
+        if (sessionId !== this.sessionId) {
+            return Promise.resolve(false);
+        }
         return this.orm.call("cx.tower.terminal.session", method, [
-            [this.sessionId],
+            [sessionId],
             ...args,
         ]);
     }

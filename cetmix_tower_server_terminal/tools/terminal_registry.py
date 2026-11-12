@@ -275,8 +275,14 @@ def _listen_once(db_name):
             while True:
                 if selector.select(LISTENER_POLL_TIMEOUT):
                     connection.poll()
-                    while connection.notifies:
-                        _handle_notification(connection.notifies.pop().payload)
+                    # Oldest first: these carry what somebody typed, and a
+                    # command and the Enter that runs it can arrive in the same
+                    # poll. `bus` pops from the end because it only collects
+                    # channel names, where order does not matter.
+                    notifications = list(connection.notifies)
+                    connection.notifies.clear()
+                    for notification in notifications:
+                        _handle_notification(notification.payload)
                 with _LOCK:
                     if not any(
                         session.db_name == db_name for session in _SESSIONS.values()

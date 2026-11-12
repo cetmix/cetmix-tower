@@ -214,6 +214,15 @@
         z-index: 2;
     }
 
+    // The panel carries the focus ring: the input has no border of its own, so
+    // a keyboard user would otherwise have nothing to look at.
+    .o_cx_tower_terminal__search:focus-within {
+        border-color: rgba(96, 165, 250, 0.55);
+        box-shadow:
+            0 0 0 1px rgba(96, 165, 250, 0.25),
+            0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
     .o_cx_tower_terminal__search-input {
         background-color: transparent;
         border: 0;

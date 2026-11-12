@@ -1,6 +1,7 @@
 # Copyright Cetmix OÜ 2026
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+import json
 import time
 from unittest.mock import patch
 
@@ -115,6 +116,24 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
         """A notification about a session of another process changes nothing."""
         terminal_registry._handle_notification('{"token": "nope", "action": "input"}')
 
+    def test_notifications_are_dispatched_in_arrival_order(self):
+        """What arrives in one poll reaches the shell as it was typed.
+
+        A command and the Enter that runs it can land in the same poll, so the
+        order the listener consumes them in is the order the user sees.
+        """
+        session = self._build_session()
+        terminal_registry._SESSIONS[session.token] = session
+        self.addCleanup(terminal_registry._unregister, session)
+
+        for piece in ("whoami", "\n"):
+            terminal_registry._handle_notification(
+                json.dumps(
+                    {"token": session.token, "action": ACTION_INPUT, "data": piece}
+                )
+            )
+        self.assertEqual(session.shell.sent, ["whoami", "\n"])
+
     @mute_logger(REGISTRY)
     def test_malformed_notifications_are_ignored(self):
         """A notification that is not json is dropped instead of raising."""
@@ -205,6 +224,10 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
         """The last thing a session does is tell the browser it is over."""
         session = self._build_session()
         shell = session.shell
+        # Registered on purpose: asserting that the session is gone proves
+        # nothing unless it was there to begin with.
+        terminal_registry._SESSIONS[session.token] = session
+        self.addCleanup(terminal_registry._unregister, session)
         session._finish(STATE_CLOSED, "The remote shell was closed.")
         self.assertEqual(self.published[-1]["state"], STATE_CLOSED)
         self.assertTrue(shell.closed, "The shell must be closed with the session")
