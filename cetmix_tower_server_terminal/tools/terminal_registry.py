@@ -29,6 +29,7 @@ client when that happened.
 
 import json
 import logging
+import select
 import selectors
 import threading
 import time
@@ -53,7 +54,8 @@ from ..constants import (
     NOTIFY_CHANNEL,
     OUTPUT_FLUSH_IDLE,
     OUTPUT_FLUSH_MAX_DELAY,
-    PUMP_IDLE_SLEEP,
+    OUTPUT_SMALL_ENOUGH,
+    PUMP_IDLE_WAIT,
     SESSION_IDLE_MESSAGE,
     SHELL_CLOSED_MESSAGE,
     SSH_CONNECT_TIMEOUT,
@@ -521,8 +523,26 @@ class TerminalSession:
                 self._finish(STATE_CLOSED, str(BROWSER_GONE_MESSAGE))
                 return
             self._heartbeat()
-            self._stop.wait(PUMP_IDLE_SLEEP)
+            self._wait_for_output()
         self._finish(self._closing_state, self._closing_message)
+
+    def _wait_for_output(self):
+        """Wait until the shell has something to say, or the timeout expires.
+
+        Sleeping on a timer costs half that timer on every echo. The channel
+        exposes a file descriptor, so the reader can wait on it and wake the
+        moment a byte lands; the timeout is only there to keep close requests
+        and the idle check responsive.
+        """
+        if self._stop.is_set() or self.shell is None:
+            return
+        try:
+            channel = self.shell.open()
+            select.select([channel.fileno()], [], [], PUMP_IDLE_WAIT)
+        except Exception:
+            # A channel that cannot be waited on is still readable: fall back
+            # to a short sleep rather than spinning.
+            self._stop.wait(PUMP_IDLE_WAIT)
 
     def _flush(self, force=False):
         """Publish buffered output once the shell went quiet or the buffer is old.
@@ -533,10 +553,13 @@ class TerminalSession:
         if not self._buffer:
             return
         now = time.monotonic()
+        # An echo is a handful of bytes and has somebody waiting to see it, so
+        # it goes out at once. Only a burst is worth grouping.
+        small_enough = len(self._buffer) <= OUTPUT_SMALL_ENOUGH
         quiet_enough = now - self._last_output_at >= OUTPUT_FLUSH_IDLE
         waited_enough = now - self._buffer_since >= OUTPUT_FLUSH_MAX_DELAY
         big_enough = len(self._buffer) >= MAX_OUTPUT_CHUNK
-        if not (force or quiet_enough or waited_enough or big_enough):
+        if not (force or small_enough or quiet_enough or waited_enough or big_enough):
             return
         output, self._buffer, self._buffer_since = self._buffer, "", 0.0
         for start in range(0, len(output), MAX_OUTPUT_CHUNK):

@@ -14,6 +14,7 @@ from ..constants import (
     ACTION_RESIZE,
     MAX_OUTPUT_CHUNK,
     OUTPUT_FLUSH_IDLE,
+    OUTPUT_SMALL_ENOUGH,
     STATE_CLOSED,
     STATE_ERROR,
 )
@@ -186,20 +187,32 @@ class TestTerminalRegistry(TestTowerTerminalCommon):
 
     # -- output
 
-    def test_output_waits_for_the_shell_to_go_quiet(self):
-        """Output is held back while it keeps coming, and published once it stops."""
+    def test_a_small_echo_goes_out_at_once(self):
+        """What a keystroke echoes back is not worth grouping.
+
+        Waiting for the idle window to close costs that window on every
+        character somebody types, which is what makes a terminal feel slow.
+        """
         session = self._build_session()
-        session._buffer = "still writing"
+        session._buffer = "x"
         session._buffer_since = time.monotonic()
         session._last_output_at = time.monotonic()
         session._flush()
-        self.assertEqual(self.published, [], "Output must not be published mid burst")
+        self.assertEqual([entry["output"] for entry in self.published], ["x"])
+
+    def test_a_burst_waits_for_the_shell_to_go_quiet(self):
+        """Output large enough to be a burst is grouped, not sent per chunk."""
+        session = self._build_session()
+        burst = "x" * (OUTPUT_SMALL_ENOUGH + 1)
+        session._buffer = burst
+        session._buffer_since = time.monotonic()
+        session._last_output_at = time.monotonic()
+        session._flush()
+        self.assertEqual(self.published, [], "A burst must not be published mid flight")
 
         session._last_output_at = time.monotonic() - OUTPUT_FLUSH_IDLE - 0.01
         session._flush()
-        self.assertEqual(
-            [entry["output"] for entry in self.published], ["still writing"]
-        )
+        self.assertEqual([entry["output"] for entry in self.published], [burst])
         self.assertFalse(session._buffer, "The buffer must be emptied once published")
 
     def test_output_larger_than_a_notification_is_split(self):

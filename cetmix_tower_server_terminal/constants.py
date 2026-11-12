@@ -80,12 +80,19 @@ MAX_NOTIFY_BYTES = 6000
 # Seconds paramiko waits for the remote host while the shell is being opened
 SSH_CONNECT_TIMEOUT = 60
 
-# Seconds to sleep between reads when the shell produced nothing
-PUMP_IDLE_SLEEP = 0.03
+# Seconds the reader waits on the channel when the shell produced nothing. It
+# wakes as soon as a byte arrives, so this only bounds how long a close request
+# or an idle check waits, not how fast output is picked up.
+PUMP_IDLE_WAIT = 0.1
 
 # Seconds of silence after which buffered output is published, so that a burst of
 # output is sent as a few bus notifications instead of hundreds
 OUTPUT_FLUSH_IDLE = 0.04
+
+# Output up to this size is published without waiting for the idle window. It is
+# what an echo looks like, and making somebody wait 40 ms to see the character
+# they just typed is the difference between a terminal and a form.
+OUTPUT_SMALL_ENOUGH = 512
 
 # Seconds after which buffered output is published even if it keeps coming
 OUTPUT_FLUSH_MAX_DELAY = 0.25
