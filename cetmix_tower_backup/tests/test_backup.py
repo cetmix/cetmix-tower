@@ -91,6 +91,119 @@ class BackupCommon(TestTowerJetsCommon):
 
 
 class TestTowerBackup(BackupCommon):
+    def test_yaml_export_and_import_respect_root_fields(self):
+        """Allow empty-field exports while keeping imports subject to Root access."""
+        command = self.Command.create(
+            {
+                "name": "Manager export command",
+                "action": "ssh_command",
+                "code": "echo backup",
+                "access_level": "2",
+                "manager_ids": [(4, self.manager.id)],
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        manager_command = command.with_user(self.manager)
+        with self.assertRaises(AccessError):
+            manager_command.read(["backup_template_id"])
+        message = 'You must be a member of the "Root" group to export this snippet'
+        for operation in (
+            manager_command._prepare_record_for_yaml,
+            lambda: list(manager_command._iter_yaml_export_dependencies(True)),
+        ):
+            with self.assertRaises(AccessError) as error:
+                operation()
+            self.assertEqual(str(error.exception), message)
+        with self.assertRaises(AccessError):
+            manager_command.read(["backup_template_id"])
+        command.backup_template_id = False
+        exported = manager_command._prepare_record_for_yaml()
+        self.assertNotIn("backup_template_id", exported)
+        list(manager_command._iter_yaml_export_dependencies(True))
+        command.backup_template_id = self.backup_template
+        self.manager.groups_id |= self.env.ref("cetmix_tower_yaml.group_import")
+        wizard = (
+            self.env["cx.tower.yaml.import.wiz"]
+            .with_user(self.manager)
+            .create(
+                {
+                    "if_record_exists": "create",
+                    "yaml_code": yaml.safe_dump(
+                        {
+                            "cetmix_tower_yaml_version": 1,
+                            "records": [
+                                {
+                                    **yaml.safe_load(command.yaml_code),
+                                    "access_level": "root",
+                                }
+                            ],
+                        }
+                    ),
+                }
+            )
+        )
+        with self.assertRaises(AccessError) as error:
+            wizard.action_import_yaml()
+        self.assertEqual(
+            str(error.exception),
+            'You must be a member of the "Root" group to import this snippet',
+        )
+        for value in (False, self.backup_template.reference):
+            with self.assertRaises(AccessError):
+                manager_command._post_process_yaml_dict_values(
+                    {"backup_template_id": value}
+                )
+        result = wizard.sudo().action_import_yaml()
+        imported_command = self.Command.browse(result["res_id"])
+        self.assertEqual(imported_command.backup_template_id, self.backup_template)
+        self.manager.groups_id -= self.env.ref("cetmix_tower_yaml.group_import")
+        with self.assertRaises(AccessError):
+            wizard.action_import_yaml()
+        imported = command._post_process_yaml_dict_values(
+            {"backup_template_id": self.backup_template.reference}
+        )
+        self.assertEqual(imported["backup_template_id"], self.backup_template.id)
+        self.assertEqual(
+            command._prepare_record_for_yaml()["backup_template_id"],
+            self.backup_template.reference,
+        )
+
+    def test_manager_exports_empty_backup_fields_on_all_extended_models(self):
+        """Empty backup relations must not prevent ordinary Manager exports."""
+        command = self.Command.create(
+            {
+                "name": "Ordinary export command",
+                "access_level": "2",
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        template = self.JetTemplate.create(
+            {"name": "Ordinary export template", "manager_ids": [(4, self.manager.id)]}
+        )
+        waypoint = self.env["cx.tower.jet.waypoint.template"].create(
+            {"name": "Ordinary waypoint", "jet_template_id": template.id}
+        )
+        task = self.env["cx.tower.scheduled.task"].create(
+            {
+                "name": "Ordinary task",
+                "action": "command",
+                "command_id": command.id,
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        for record, field in (
+            (command, "backup_template_id"),
+            (template, "backup_template_ids"),
+            (waypoint, "backup_template_id"),
+            (task, "backup_template_id"),
+        ):
+            with self.subTest(model=record._name):
+                manager_record = record.with_user(self.manager)
+                exported = manager_record._prepare_record_for_yaml()
+                self.assertEqual(exported["name"], record.name)
+                self.assertNotIn(field, exported)
+                list(manager_record._iter_yaml_export_dependencies(True))
+
     def test_capture_and_python_context(self):
         variable = self.Variable.create(
             {"name": "Backup own value", "reference": "backup_own_value"}

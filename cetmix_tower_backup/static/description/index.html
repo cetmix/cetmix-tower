@@ -481,7 +481,8 @@ lowering their access level, even after a plan leaves its Backup
 Template.</li>
 <li>Use in-process Python <tt class="docutils literal"><span class="pre">restore(...,</span> <span class="pre">variable_values=...)</span></tt> when
 Restore needs custom-value overrides; pass Odoo server, state and
-environment records rather than integer IDs.</li>
+environment records rather than integer IDs. RPC calls to
+<tt class="docutils literal">restore()</tt> are rejected.</li>
 </ol>
 <table border="1" class="docutils">
 <colgroup>
