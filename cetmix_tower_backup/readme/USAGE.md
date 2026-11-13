@@ -23,7 +23,7 @@
 8. Optionally select **State**.
 9. Select **Environment** if the destination template requires it.
 10. Click **Restore**.
-11. Inspect the new Jet's flight plan log.
+11. Inspect the new Jet's flight plan log. If Restore fails immediately, the dialog opens the failed log and keeps the new Jet.
 
 | Recovery behavior | Result |
 | --- | --- |
@@ -64,7 +64,7 @@
 | Records | Daily clean-up behavior |
 | --- | --- |
 | Unlinked Failed backups | Removed regardless of Keep Last |
-| Excess Done backups per Jet | Removed through the Delete plan |
+| Excess Done backups per Jet | Removed through the Delete plan when configured; otherwise only the record is removed and stored backup data remains |
 | Backup being restored | Counts toward retention and stays until a later clean-up |
 | Waypoint-linked backups | Kept for the waypoint's lifecycle |
 | Deletion Failed backups | Kept for manual investigation and retry |

@@ -1,5 +1,6 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from unittest import TestCase
 from unittest.mock import patch
 
 import yaml
@@ -203,6 +204,147 @@ class TestTowerBackup(BackupCommon):
                 self.assertEqual(exported["name"], record.name)
                 self.assertNotIn(field, exported)
                 list(manager_record._iter_yaml_export_dependencies(True))
+
+    def test_backup_template_cannot_move_existing_backups(self):
+        self._backup()
+        other = self.JetTemplate.create({"name": "Other backup owner"})
+        self.backup_template.write({"jet_template_id": self.template.id})
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            self.backup_template.jet_template_id = other
+        self.assertEqual(self.backup_template.jet_template_id, self.template)
+
+    def test_restore_destination_cannot_be_deleted_while_running(self):
+        backup = self._backup()
+        with self._defer():
+            destination = backup.restore(self.server_test_1)
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            destination.unlink()
+        self.assertTrue(destination.exists())
+        backup.plan_log_ids.finish(0)
+        destination.unlink()
+
+    def test_running_backup_protects_unstarted_child_plan(self):
+        child = self._make_plan("Backup child", "result = {'exit_code': 0}")
+        command = self.Command.create(
+            {
+                "name": "Run backup child",
+                "action": "plan",
+                "access_level": "3",
+                "flight_plan_id": child.id,
+            }
+        )
+        self.backup_plan.write({"line_ids": [(0, 0, {"command_id": command.id})]})
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        self.assertFalse(self.PlanLog.search_count([("plan_id", "=", child.id)]))
+        with self.assertRaises(ValidationError), self.env.cr.savepoint():
+            child.unlink()
+        self.assertEqual(command.flight_plan_id, child)
+        backup.plan_log_ids.finish(0)
+        child.unlink()
+
+    def test_failed_backup_start_leaves_waypoint_retryable(self):
+        template = self.env["cx.tower.jet.waypoint.template"].create(
+            {
+                "name": "Retryable backup waypoint",
+                "jet_template_id": self.template.id,
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        waypoint = self.env["cx.tower.jet.waypoint"].create(
+            {
+                "name": "Retry waypoint",
+                "jet_id": self.source.id,
+                "waypoint_template_id": template.id,
+            }
+        )
+        other = self.JetTemplate.create({"name": "Wrong backup owner"})
+        self.backup_template.jet_template_id = other
+        # Emulate the command runner catching the error without a rollback.
+        with TestCase.assertRaises(self, ValidationError):
+            waypoint.prepare(is_destination=True)
+        self.assertEqual(waypoint.state, "draft")
+        self.assertFalse(waypoint.is_destination)
+        self.assertFalse(waypoint.backup_id)
+        self.backup_template.jet_template_id = self.template
+        waypoint.prepare()
+        self.assertEqual(waypoint.state, "ready")
+
+    def test_scheduled_task_reports_synchronous_backup_failure(self):
+        self.backup_plan.line_ids.command_id.code = "result = {'exit_code': 1}"
+        task = self.env["cx.tower.scheduled.task"].create(
+            {
+                "name": "Failing backup task",
+                "action": "backup",
+                "backup_template_id": self.backup_template.id,
+                "jet_ids": [(4, self.source.id)],
+            }
+        )
+        errors = task._run_action()
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(
+            self.Backup.search([("jet_id", "=", self.source.id)]).state, "failed"
+        )
+
+    def test_command_result_reports_synchronous_backup_failure(self):
+        self.backup_plan.line_ids.command_id.code = "result = {'exit_code': 1}"
+        command = self.Command.create(
+            {
+                "name": "Failing backup command",
+                "action": "create_backup",
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        result = self.source.run_command(command)
+        self.assertEqual(result["status"], -510)
+        log = self.CommandLog.search(
+            [("command_id", "=", command.id)], order="id desc", limit=1
+        )
+        self.assertEqual(log.command_status, -510)
+        self.assertEqual(
+            self.Backup.browse(result["response"]["backup_id"]).state, "failed"
+        )
+
+    def test_failed_restore_wizard_opens_log_and_keeps_destination(self):
+        self.restore_plan.line_ids.command_id.code = "result = {'exit_code': 1}"
+        backup = self._backup()
+        wizard = self.env["cx.tower.backup.restore.wizard"].create(
+            {"backup_id": backup.id, "server_id": self.server_test_1.id}
+        )
+        action = wizard.action_confirm()
+        self.assertEqual(action["res_model"], "cx.tower.plan.log")
+        log = self.PlanLog.browse(action["res_id"])
+        self.assertEqual(log.backup_id, backup)
+        self.assertEqual(log.plan_status, 1)
+        self.assertTrue(log.jet_id.exists())
+        self.assertNotEqual(log.jet_id, self.source)
+        self.assertEqual(backup.state, "done")
+
+    def test_yaml_presence_probe_does_not_cache_sibling_root_values(self):
+        commands = self.Command.create(
+            [
+                {
+                    "name": "Empty backup field",
+                    "access_level": "2",
+                    "manager_ids": [(4, self.manager.id)],
+                },
+                {
+                    "name": "Populated backup field",
+                    "access_level": "2",
+                    "manager_ids": [(4, self.manager.id)],
+                    "backup_template_id": self.backup_template.id,
+                },
+            ]
+        )
+        commands.flush_recordset()
+        commands.invalidate_recordset()
+        manager_commands = commands.with_user(self.manager).with_prefetch(commands.ids)
+        empty, populated = manager_commands
+        self.assertEqual(set(empty._prefetch_ids), set(commands.ids))
+        empty._get_yaml_export_field_names()
+        # Odoo's assertRaises(AccessError) clears the cache and would hide a leak.
+        with TestCase.assertRaises(self, AccessError):
+            self.assertFalse(populated.backup_template_id)
 
     def test_capture_and_python_context(self):
         variable = self.Variable.create(

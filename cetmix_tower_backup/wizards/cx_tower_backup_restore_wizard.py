@@ -40,10 +40,10 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
             ]
 
     def action_confirm(self):
-        """Restore into a new Jet and open its form.
+        """Restore into a new Jet; open its failed log if restoration fails inline.
 
         Returns:
-            dict: New Jet form action.
+            dict: Failed Restore log or new Jet form action.
         """
         self.ensure_one()
         self.check_access("read")
@@ -53,10 +53,16 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
             state=self.state_id,
             environment=self.environment_id,
         )
+        failed = jet.plan_log_ids.filtered(
+            lambda log: log.backup_id == self.backup_id
+            and log.backup_operation == "restore"
+            and not log.is_running
+            and log.plan_status != 0
+        )[:1]
         return {
             "type": "ir.actions.act_window",
-            "res_model": "cx.tower.jet",
-            "res_id": jet.id,
+            "res_model": "cx.tower.plan.log" if failed else "cx.tower.jet",
+            "res_id": failed.id if failed else jet.id,
             "view_mode": "form",
             "target": "current",
         }

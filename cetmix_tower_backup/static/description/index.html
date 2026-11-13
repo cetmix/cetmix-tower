@@ -598,7 +598,8 @@ isolate backups from that code</td>
 <li>Optionally select <strong>State</strong>.</li>
 <li>Select <strong>Environment</strong> if the destination template requires it.</li>
 <li>Click <strong>Restore</strong>.</li>
-<li>Inspect the new Jet’s flight plan log.</li>
+<li>Inspect the new Jet’s flight plan log. If Restore fails immediately,
+the dialog opens the failed log and keeps the new Jet.</li>
 </ol>
 <table border="1" class="docutils">
 <colgroup>
@@ -704,7 +705,10 @@ waypoint links are removed</td>
 <td>Removed regardless of Keep Last</td>
 </tr>
 <tr><td>Excess Done backups per Jet</td>
-<td>Removed through the Delete plan</td>
+<td>Removed through the Delete plan when
+configured; otherwise only the record
+is removed and stored backup data
+remains</td>
 </tr>
 <tr><td>Backup being restored</td>
 <td>Counts toward retention and stays
