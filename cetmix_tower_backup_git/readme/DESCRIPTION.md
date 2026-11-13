@@ -1,5 +1,6 @@
 Capture a Jet's Git Project with its backup: grouped sources, enabled flags,
-repository URLs, heads, protocols, ordering, aggregator root directory and notes.
+repository URLs and privacy, heads, protocols, ordering, aggregator root directory
+and notes.
 Restore creates an independent project before the Restore plan starts, without
 changing the source project. It also works after the source project is deleted.
 
