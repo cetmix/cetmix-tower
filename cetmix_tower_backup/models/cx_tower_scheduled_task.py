@@ -67,10 +67,17 @@ class CxTowerScheduledTask(models.Model):
         for jet in task.jet_ids:
             try:
                 with self.env.cr.savepoint():
-                    jet.create_backup(
+                    backup = jet.create_backup(
                         task.backup_template_id,
                         variable_values=variable_values,
                         scheduled_task=task,
+                    )
+                if backup.state == "failed":
+                    errors.append(
+                        self.env._(
+                            "Backup failed for Jet '%(jet)s'; inspect its plan log.",
+                            jet=jet.display_name,
+                        )
                     )
             except Exception as error:
                 _logger.exception("Backup task %s failed for Jet %s", task.id, jet.id)

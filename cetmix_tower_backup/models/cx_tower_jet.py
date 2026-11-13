@@ -34,7 +34,7 @@ class CxTowerJet(models.Model):
             bool: ORM unlink result.
 
         Raises:
-            ValidationError: A source Jet has an operation in progress.
+            ValidationError: A source or destination Jet has an operation in progress.
         """
         if (
             self.env["cx.tower.backup"]
@@ -47,6 +47,22 @@ class CxTowerJet(models.Model):
                 self.env._(
                     "A Jet with a backup operation in progress cannot be deleted."
                 )
+            )
+        if (
+            self.env["cx.tower.plan.log"]
+            .sudo()
+            .with_context(active_test=False)
+            .search_count(
+                [
+                    ("jet_id", "in", self.ids),
+                    ("is_running", "=", True),
+                    ("backup_operation", "=", "restore"),
+                    ("backup_id", "!=", False),
+                ]
+            )
+        ):
+            raise ValidationError(
+                self.env._("A Jet being restored from a backup cannot be deleted.")
             )
         return super().unlink()
 

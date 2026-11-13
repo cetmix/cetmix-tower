@@ -99,9 +99,11 @@ class CxTowerServer(models.Model):
                 )
             else:
                 return {
-                    "status": 0,
+                    "status": log_record.command_status
+                    if not log_record.is_running
+                    else 0,
                     "response": {"backup_id": backup.id},
-                    "error": None,
+                    "error": log_record.command_error or None,
                 }
         log_record.finish(status=status, response=None, error=error)
         return {"status": status, "response": None, "error": error}

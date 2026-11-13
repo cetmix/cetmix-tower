@@ -1,6 +1,7 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class CxTowerBackupTemplate(models.Model):
@@ -64,3 +65,31 @@ class CxTowerBackupTemplate(models.Model):
             | templates.plan_delete_id
         )
         plans._check_backup_plan_access()
+
+    def write(self, vals):
+        """Keep existing backups attached to their original Jet Template.
+
+        Args:
+            vals (dict): Fields to update.
+
+        Returns:
+            bool: Parent write result.
+
+        Raises:
+            AccessError: The caller cannot update these templates.
+            ValidationError: A template with backups would change its Jet Template.
+        """
+        if "jet_template_id" in vals:
+            self.check_access("write")
+            changed = self.sudo().filtered(
+                lambda template: template.jet_template_id.id != vals["jet_template_id"]
+            )
+            if changed and self.env["cx.tower.backup"].sudo().search_count(
+                [("backup_template_id", "in", changed.ids)]
+            ):
+                raise ValidationError(
+                    self.env._(
+                        "A Backup Template with backups cannot change its Jet Template."
+                    )
+                )
+        return super().write(vals)

@@ -70,6 +70,7 @@
                     name="backup_template_id"
                     groups="cetmix_tower_base.group_root"
                     invisible="action != 'create_backup'"
+                    required="action == 'create_backup'"
                 />
             </xpath>
         </field>

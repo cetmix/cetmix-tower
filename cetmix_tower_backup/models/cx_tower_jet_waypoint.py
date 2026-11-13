@@ -41,7 +41,7 @@ class CxTowerJetWaypoint(models.Model):
             bool: Preparation was requested or completed.
 
         Raises:
-            ValidationError: The waypoint is not in Draft state.
+            ValidationError: The waypoint is not Draft or its backup cannot start.
         """
         self.ensure_one()
         template = self.waypoint_template_id.sudo().backup_template_id
@@ -49,8 +49,9 @@ class CxTowerJetWaypoint(models.Model):
             return super().prepare(is_destination=is_destination)
         if self.state != "draft":
             raise ValidationError(self.env._("Only a draft waypoint can be prepared."))
-        self.write({"state": "preparing", "is_destination": is_destination})
-        self.jet_id.sudo().create_backup(template, ignore_busy=True, waypoint=self)
+        with self.env.cr.savepoint():
+            self.write({"state": "preparing", "is_destination": is_destination})
+            self.jet_id.sudo().create_backup(template, ignore_busy=True, waypoint=self)
         return True
 
     def unlink(self):

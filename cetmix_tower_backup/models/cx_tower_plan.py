@@ -118,21 +118,16 @@ class CxTowerPlan(models.Model):
         Raises:
             ValidationError: A backup execution tree is still running.
         """
-        if (
+        running = (
             self.env["cx.tower.plan.log"]
             .sudo()
             .with_context(active_test=False)
-            .search_count(
-                [
-                    ("plan_id", "in", self.ids),
-                    ("is_running", "=", True),
-                    ("has_backup_values", "=", True),
-                ]
-            )
-        ):
+            .search([("is_running", "=", True), ("has_backup_values", "=", True)])
+        )
+        if self.sudo() & running.plan_id._backup_plan_tree():
             raise ValidationError(
                 self.env._(
-                    "A flight plan running a backup operation cannot be deleted."
+                    "A plan in a running backup execution tree cannot be deleted."
                 )
             )
         return super().unlink()
