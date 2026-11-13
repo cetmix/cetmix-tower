@@ -71,6 +71,48 @@ class TestBackupGit(BackupCommon):
         self.template.use_git_projects = False
         self.assertFalse(backup.restore(self.server_test_1).git_project_id)
 
+    def test_missing_repository_restores_privacy_without_overwriting_shared_repo(self):
+        self.template.use_git_projects = True
+        project = self.env["cx.tower.git.project"]._create_named_git_project(
+            "Private backup"
+        )
+        source = self.env["cx.tower.git.source"].create(
+            {"name": "Private source", "git_project_id": project.id}
+        )
+        repo_model = self.env["cx.tower.git.repo"]
+        repo = repo_model.browse(
+            repo_model._get_repo_id_by_url(
+                "https://github.com/cetmix/backup-private-regression",
+                create=True,
+                raise_if_invalid=True,
+            )
+        )
+        repo.is_private = True
+        self.env["cx.tower.git.remote"].create(
+            {
+                "source_id": source.id,
+                "repo_id": repo.id,
+                "head_type": "branch",
+                "head": "main",
+                "url_protocol": "https",
+            }
+        )
+        self.source.git_project_id = project
+        backup = self.source.create_backup(self.backup_template)
+        self.source.git_project_id = False
+        project.unlink()
+        repo.unlink()
+        restored = backup.restore(self.server_test_1)
+        remote = restored.git_project_id.source_ids.remote_ids
+        self.assertTrue(remote.repo_id.is_private)
+        self.assertIn("$GITHUB_TOKEN", remote._git_aggregator_prepare_url())
+        remote.repo_id.is_private = False
+        second = backup.restore(self.server_test_1)
+        self.assertEqual(
+            second.git_project_id.source_ids.remote_ids.repo_id, remote.repo_id
+        )
+        self.assertFalse(remote.repo_id.is_private)
+
     def test_no_git_project_without_remotes(self):
         self.template.use_git_projects = True
         backup = self._backup(

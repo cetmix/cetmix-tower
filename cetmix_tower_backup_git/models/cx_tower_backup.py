@@ -13,6 +13,12 @@ class CxTowerBackup(models.Model):
 
         Args:
             jet (cx.tower.jet): Destination Jet.
+
+        Returns:
+            None: Saved Git settings have been restored when applicable.
+
+        Raises:
+            ValidationError: A saved repository URL is invalid.
         """
         super()._prepare_restored_jet(jet)
         data = self.git_project_data or {}
@@ -41,13 +47,21 @@ class CxTowerBackup(models.Model):
                     },
                 }
             )
-            remote_model.create(
-                [
+            remote_values = []
+            for remote in source_data["remotes"]:
+                repo_id = repo_model._get_repo_id_by_url(
+                    remote["repo_url"], raise_if_invalid=True
+                )
+                if not repo_id:
+                    repo_id = repo_model._get_repo_id_by_url(
+                        remote["repo_url"], create=True, raise_if_invalid=True
+                    )
+                    if "is_private" in remote:
+                        repo_model.browse(repo_id).is_private = remote["is_private"]
+                remote_values.append(
                     {
                         "source_id": source.id,
-                        "repo_id": repo_model._get_repo_id_by_url(
-                            remote["repo_url"], create=True, raise_if_invalid=True
-                        ),
+                        "repo_id": repo_id,
                         **{
                             key: remote[key]
                             for key in (
@@ -59,7 +73,6 @@ class CxTowerBackup(models.Model):
                             )
                         },
                     }
-                    for remote in source_data["remotes"]
-                ]
-            )
+                )
+            remote_model.create(remote_values)
         jet.git_project_id = project

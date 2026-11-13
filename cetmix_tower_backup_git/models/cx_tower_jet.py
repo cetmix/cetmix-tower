@@ -28,6 +28,7 @@ class CxTowerJet(models.Model):
                         "remotes": [
                             {
                                 "repo_url": remote.repo_id.url,
+                                "is_private": remote.repo_id.is_private,
                                 "head_type": remote.head_type,
                                 "head": remote.head,
                                 "url_protocol": remote.url_protocol,
