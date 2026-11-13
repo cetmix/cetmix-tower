@@ -1571,6 +1571,92 @@ result = {{"exit_code": 0, "message": "ok"}}
             "Error in command result must be set to None",
         )
 
+    def test_run_python_code_passes_extra_kwargs_to_odoo_objects(self):
+        """
+        Extra kwargs passed to `_run_python_code` reach
+        `_get_python_command_odoo_objects`. Resolved values
+        (jet, waypoint) are still passed by name.
+        """
+        command_model = self.registry["cx.tower.command"]
+        original_method = command_model._get_python_command_odoo_objects
+        received_kwargs = {}
+
+        def odoo_objects_spy(command, *args, **kwargs):
+            received_kwargs.update(kwargs)
+            return original_method(command, *args, **kwargs)
+
+        with patch.object(
+            command_model,
+            "_get_python_command_odoo_objects",
+            autospec=True,
+            side_effect=odoo_objects_spy,
+        ):
+            command_result = self.server_test_1._run_python_code(
+                "result = {'exit_code': 0, 'message': jet.name}",
+                log={"jet_id": self.jet_sample.id},
+                extra_test_value="extra",
+            )
+
+        self.assertEqual(command_result["status"], 0)
+        self.assertEqual(command_result["response"], self.jet_sample.name)
+        self.assertEqual(received_kwargs.get("extra_test_value"), "extra")
+        self.assertEqual(received_kwargs.get("server"), self.server_test_1)
+        self.assertEqual(received_kwargs.get("jet"), self.jet_sample)
+        self.assertIsNone(received_kwargs.get("waypoint"))
+
+    def test_python_code_flight_plan_log(self):
+        """
+        A Python command in a flight plan gets the flight plan log
+        and reads the results of the previous lines from it.
+        Outside a flight plan `flight_plan_log` is None.
+        """
+        command_read_log = self.Command.create(
+            {
+                "name": "Read previous line",
+                "action": "python_code",
+                "code": (
+                    "responses = [\n"
+                    "    log.command_response\n"
+                    "    for log in flight_plan_log.command_log_ids\n"
+                    f"    if log.command_id.id == {self.command_list_dir.id}\n"
+                    "]\n"
+                    "result = {'exit_code': 0, 'message': '%s|%s' % "
+                    "(flight_plan_log.id, ','.join(responses))}"
+                ),
+            }
+        )
+        plan = self.Plan.create(
+            {
+                "name": "Test flight plan log",
+                "line_ids": [
+                    (0, 0, {"sequence": 10, "command_id": self.command_list_dir.id}),
+                    (0, 0, {"sequence": 20, "command_id": command_read_log.id}),
+                ],
+            }
+        )
+        plan_log = self.server_test_1.run_flight_plan(plan)
+        python_log = plan_log.command_log_ids.filtered(
+            lambda log: log.command_id == command_read_log
+        )
+        self.assertEqual(python_log.command_status, 0, python_log.command_error)
+        # The mocked SSH connection answers "ok"
+        self.assertEqual(python_log.command_response, f"{plan_log.id}|ok")
+
+        # Outside a flight plan
+        command_read_log.code = (
+            "result = {'exit_code': 0, 'message': str(flight_plan_log)}"
+        )
+        result = self.server_test_1.with_context(no_command_log=True).run_command(
+            command_read_log
+        )
+        self.assertEqual(result["response"], "None")
+
+        # Listed on the Help tab
+        self.assertIn(
+            "<code>flight_plan_log</code>",
+            self.Command._get_default_python_code_help(),
+        )
+
     def test_run_command_without_set_server_status(self):
         """
         Test command execution without setting server status

@@ -71,7 +71,10 @@ class CxTowerWebhookEvalMixin(models.AbstractModel):
         Returns:
             dict: Mapping of object names to their import values and help.
         """
-        return self.env["cx.tower.command"]._get_python_command_odoo_objects()
+        res = self.env["cx.tower.command"]._get_python_command_odoo_objects()
+        # Webhooks and authenticators do not run in a flight plan
+        res.pop("flight_plan_log", None)
+        return res
 
     def _get_python_eval_libraries(self):
         """

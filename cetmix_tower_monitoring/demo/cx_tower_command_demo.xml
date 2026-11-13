@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Prints used and total bytes of the root filesystem -->
+    <record id="cx_tower_command_metric_disk_root_demo" model="cx.tower.command">
+        <field name="name">Monitoring: Root Disk Bytes</field>
+        <field name="reference">demo_metric_disk_root_bytes</field>
+        <field name="action">ssh_command</field>
+        <field name="code">df -B1 --output=used,size /</field>
+    </record>
+
+    <!-- Prints memory in bytes. The "Mem:" row has total and used -->
+    <record id="cx_tower_command_metric_ram_demo" model="cx.tower.command">
+        <field name="name">Monitoring: Memory Bytes</field>
+        <field name="reference">demo_metric_ram_bytes</field>
+        <field name="action">ssh_command</field>
+        <field name="code">free -b</field>
+    </record>
+
+    <!-- Collector of disk_root and ram -->
+    <record id="cx_tower_command_metric_collector_demo" model="cx.tower.command">
+        <field name="name">Monitoring: Collect Disk and Memory</field>
+        <field name="reference">demo_metric_collect_disk_ram</field>
+        <field name="action">python_code</field>
+        <field name="code">runner = server.with_context(no_command_log=True)
+messages = []
+failed = False
+
+# Root disk, GiB
+disk_result = runner.run_command(
+    tower_commands.get_by_reference("demo_metric_disk_root_bytes")
+)
+if disk_result["status"] == 0:
+    disk_used, disk_total = disk_result["response"].strip().splitlines()[-1].split()
+    server.record_metric(
+        "disk_root",
+        used=int(disk_used) / 1024 ** 3,
+        total=int(disk_total) / 1024 ** 3,
+    )
+    messages.append("disk_root recorded")
+else:
+    messages.append("disk_root failed: %s" % disk_result["error"])
+    failed = True
+
+# Memory, MiB
+ram_result = runner.run_command(
+    tower_commands.get_by_reference("demo_metric_ram_bytes")
+)
+if ram_result["status"] == 0:
+    for line in ram_result["response"].splitlines():
+        parts = line.split()
+        if parts and parts[0] == "Mem:":
+            server.record_metric(
+                "ram",
+                used=int(parts[2]) / 1024 ** 2,
+                total=int(parts[1]) / 1024 ** 2,
+            )
+            messages.append("ram recorded")
+            break
+    else:
+        messages.append("ram failed: no Mem: row")
+        failed = True
+else:
+    messages.append("ram failed: %s" % ram_result["error"])
+    failed = True
+
+result = {"exit_code": 1 if failed else 0, "message": ", ".join(messages)}
+</field>
+    </record>
+
+    <!-- Threshold action: reports the metric that crossed the threshold -->
+    <record id="cx_tower_command_metric_report_demo" model="cx.tower.command">
+        <field name="name">Monitoring: Report Threshold</field>
+        <field name="reference">demo_metric_report_threshold</field>
+        <field name="action">python_code</field>
+        <field name="code">result = {
+    "exit_code": 0,
+    "message": "%s is %s: %s of %s %s" % (
+        metric.name,
+        metric_value.state,
+        metric_value.value,
+        metric_value.max_value,
+        metric.unit or "",
+    ),
+}
+</field>
+    </record>
+</odoo>

@@ -135,6 +135,14 @@ class TestCetmixTowerWebhook(CetmixTowerWebhookCommon):
         self.assertEqual(result["exit_code"], 0, result["message"])
         self.assertIn("Context clean", result["message"])
 
+    def test_no_flight_plan_log(self):
+        """Webhook and authenticator code has no flight plan log."""
+        for record in (self.simple_webhook, self.simple_authenticator):
+            self.assertNotIn(
+                "<code>flight_plan_log</code>", record._default_eval_code_help()
+            )
+            self.assertNotIn("flight_plan_log", record._prepare_webhook_eval_context())
+
     def test_webhook_execute_runs_as_user_id(self):
         """
         Test that the webhook code is always executed as the specified user_id,

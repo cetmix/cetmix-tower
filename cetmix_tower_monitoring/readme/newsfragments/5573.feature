@@ -1,0 +1,1 @@
+Monitoring: see the current disk, memory, load and custom metrics of servers and jets, with thresholds that set a Warning, Critical or Stale state and can run a command or a flight plan. Values are collected by commands, flight plans, scheduled tasks and webhooks.

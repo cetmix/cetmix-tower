@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Metric: every Manager sees all metrics, only Root changes them -->
+    <record id="cx_tower_metric_rule_manager" model="ir.rule">
+        <field name="name">Tower metric: manager access rule</field>
+        <field name="model_id" ref="model_cx_tower_metric" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="domain_force">[(1, "=", 1)]</field>
+    </record>
+
+    <record id="cx_tower_metric_rule_root" model="ir.rule">
+        <field name="name">Tower metric: root access rule</field>
+        <field name="model_id" ref="model_cx_tower_metric" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+        <field name="domain_force">[(1, "=", 1)]</field>
+    </record>
+
+    <!-- Metric value: rights of the parent server or jet -->
+    <record id="cx_tower_metric_value_rule_manager_server_read" model="ir.rule">
+        <field name="name">Tower metric value: manager server read rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >["|", ("server_id.user_ids", "in", [user.id]), ("server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_value_rule_manager_server_write" model="ir.rule">
+        <field
+            name="name"
+        >Tower metric value: manager server write and create rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="domain_force">[("server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_value_rule_manager_server_unlink" model="ir.rule">
+        <field name="name">Tower metric value: manager server unlink rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("server_id.manager_ids", "in", [user.id]), ("create_uid", "=", user.id)]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="cx_tower_metric_value_rule_manager_jet_read" model="ir.rule">
+        <field name="name">Tower metric value: manager jet read rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >["&amp;", "|", ("jet_id.user_ids", "in", [user.id]), ("jet_id.manager_ids", "in", [user.id]), "|", ("jet_id.server_id.user_ids", "in", [user.id]), ("jet_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_value_rule_manager_jet_write" model="ir.rule">
+        <field name="name">Tower metric value: manager jet write and create rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("jet_id.manager_ids", "in", [user.id]), "|", ("jet_id.server_id.user_ids", "in", [user.id]), ("jet_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_value_rule_manager_jet_unlink" model="ir.rule">
+        <field name="name">Tower metric value: manager jet unlink rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("jet_id.manager_ids", "in", [user.id]), ("create_uid", "=", user.id), "|", ("jet_id.server_id.user_ids", "in", [user.id]), ("jet_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="cx_tower_metric_value_rule_root" model="ir.rule">
+        <field name="name">Tower metric value: root access rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_value" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+        <field name="domain_force">[(1, "=", 1)]</field>
+    </record>
+
+    <!-- Metric threshold: every Manager reads definition thresholds,
+         only Root changes them. Override thresholds have the rights
+         of the value server or jet -->
+    <record id="cx_tower_metric_threshold_rule_manager_definition" model="ir.rule">
+        <field name="name">Tower metric threshold: manager definition rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="domain_force">[("metric_value_id", "=", False)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_manager_server_read" model="ir.rule">
+        <field name="name">Tower metric threshold: manager server read rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >["|", ("metric_value_id.server_id.user_ids", "in", [user.id]), ("metric_value_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_manager_server_write" model="ir.rule">
+        <field
+            name="name"
+        >Tower metric threshold: manager server write and create rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("metric_value_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_manager_server_unlink" model="ir.rule">
+        <field name="name">Tower metric threshold: manager server unlink rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("metric_value_id.server_id.manager_ids", "in", [user.id]), ("create_uid", "=", user.id)]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_manager_jet_read" model="ir.rule">
+        <field name="name">Tower metric threshold: manager jet read rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >["&amp;", "|", ("metric_value_id.jet_id.user_ids", "in", [user.id]), ("metric_value_id.jet_id.manager_ids", "in", [user.id]), "|", ("metric_value_id.jet_id.server_id.user_ids", "in", [user.id]), ("metric_value_id.jet_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_manager_jet_write" model="ir.rule">
+        <field
+            name="name"
+        >Tower metric threshold: manager jet write and create rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("metric_value_id.jet_id.manager_ids", "in", [user.id]), "|", ("metric_value_id.jet_id.server_id.user_ids", "in", [user.id]), ("metric_value_id.jet_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_manager_jet_unlink" model="ir.rule">
+        <field name="name">Tower metric threshold: manager jet unlink rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field
+            name="domain_force"
+        >[("metric_value_id.jet_id.manager_ids", "in", [user.id]), ("create_uid", "=", user.id), "|", ("metric_value_id.jet_id.server_id.user_ids", "in", [user.id]), ("metric_value_id.jet_id.server_id.manager_ids", "in", [user.id])]</field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="cx_tower_metric_threshold_rule_root" model="ir.rule">
+        <field name="name">Tower metric threshold: root access rule</field>
+        <field name="model_id" ref="model_cx_tower_metric_threshold" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+        <field name="domain_force">[(1, "=", 1)]</field>
+    </record>
+
+    <!-- Jet Template metric: the rights of the Jet Template -->
+    <record id="cx_tower_jet_template_metric_rule_manager_read" model="ir.rule">
+        <field name="name">Tower jet template metric: manager read rule</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_metric" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="domain_force">
+            ["|",
+                ("jet_template_id.access_level", "&lt;=", "2"),
+                "|", "|",
+                    ("jet_template_id.user_ids", "in", [user.id]),
+                    ("jet_template_id.manager_ids", "in", [user.id]),
+                    ("jet_template_id.jet_ids.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="cx_tower_jet_template_metric_rule_manager_write" model="ir.rule">
+        <field
+            name="name"
+        >Tower jet template metric: manager write, create and unlink rule</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_metric" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="domain_force">
+            [
+                ("jet_template_id.access_level", "&lt;=", "2"),
+                ("jet_template_id.manager_ids", "in", [user.id])
+            ]
+        </field>
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="cx_tower_jet_template_metric_rule_root" model="ir.rule">
+        <field name="name">Tower jet template metric: root access rule</field>
+        <field name="model_id" ref="model_cx_tower_jet_template_metric" />
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+        <field name="domain_force">[(1, "=", 1)]</field>
+    </record>
+</odoo>

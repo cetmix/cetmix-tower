@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Jets of the Docker demo template get the Load Average metric -->
+    <record
+        id="cx_tower_jet_template_metric_docker_load_1_demo"
+        model="cx.tower.jet.template.metric"
+    >
+        <field
+            name="jet_template_id"
+            ref="cetmix_tower_server.jet_template_docker_demo"
+        />
+        <field name="metric_id" ref="cx_tower_metric_load_1_demo" />
+    </record>
+</odoo>

@@ -1730,12 +1730,21 @@ class CxTowerServer(models.Model):
                 plan_log_vals["parent_flight_plan_log_id"] = log_record.plan_log_id.id
                 kwargs["flight_plan_command_log"] = log_record
             kwargs["plan_log"] = plan_log_vals
-            plan_log_record = flight_plan.with_context(from_command=True)._run_single(
-                server=self,
-                jet_template=jet_template,
-                jet=jet,
-                **kwargs,
-            )
+            # Savepoint: a database error inside the plan must not leave the
+            # transaction aborted, or ``log_record.finish()`` below fails
+            # with InFailedSqlTransaction and hides the real error.
+            # Assign after the savepoint: if its exit fails, the log created
+            # inside is rolled back and must not be read below.
+            with self.env.cr.savepoint():
+                child_plan_log = flight_plan.with_context(
+                    from_command=True
+                )._run_single(
+                    server=self,
+                    jet_template=jet_template,
+                    jet=jet,
+                    **kwargs,
+                )
+            plan_log_record = child_plan_log
         except Exception as e:  # pylint: disable=broad-exception-caught
             if raise_on_error:
                 raise ValidationError(
@@ -2288,7 +2297,7 @@ class CxTowerServer(models.Model):
                             banned_keyword=banned_keyword,
                         )
                     )
-            # Get jet template, jet and waypoint from kwargs or log
+            # Get jet template and jet from kwargs or log
             log_vals = kwargs.get("log", {})
             if log_vals:
                 jet_template_id = log_vals.get("jet_template_id")
@@ -2296,7 +2305,6 @@ class CxTowerServer(models.Model):
             else:
                 jet_template_id = kwargs.get("jet_template_id")
                 jet_id = kwargs.get("jet_id")
-            waypoint = kwargs.get("waypoint")
 
             jet_template = (
                 self.env["cx.tower.jet.template"].browse(jet_template_id)
@@ -2305,16 +2313,16 @@ class CxTowerServer(models.Model):
             )
             jet = self.env["cx.tower.jet"].browse(jet_id) if jet_id else None
 
-            # Get the evaluation context for the python command
+            # Get the evaluation context for the python command.
+            # Other kwargs are passed on so that extending modules
+            # can add their own objects to the evaluation context.
+            # Resolved jet template and jet take precedence
+            # over the received ones.
+            eval_context_kwargs = dict(kwargs, jet_template=jet_template, jet=jet)
+            eval_context_kwargs.pop("server", None)
             eval_context = self.env[
                 "cx.tower.command"
-            ]._get_python_command_eval_context(
-                server=self,
-                jet_template=jet_template,
-                jet=jet,
-                waypoint=waypoint,
-                variable_values=kwargs.get("variable_values", {}),
-            )
+            ]._get_python_command_eval_context(server=self, **eval_context_kwargs)
 
             safe_eval(
                 code,

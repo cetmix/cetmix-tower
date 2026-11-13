@@ -1,0 +1,840 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils: https://docutils.sourceforge.io/" />
+<title>Cetmix Tower Monitoring</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 9511 2024-01-13 09:50:07Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+Despite the name, some widely supported CSS2 features are used.
+
+See https://docutils.sourceforge.io/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+.subscript {
+  vertical-align: sub;
+  font-size: smaller }
+
+.superscript {
+  vertical-align: super;
+  font-size: smaller }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title, .code .error {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left, table.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right, table.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+.align-top    {
+  vertical-align: top }
+
+.align-middle {
+  vertical-align: middle }
+
+.align-bottom {
+  vertical-align: bottom }
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { color: gray; } /* line numbers */
+pre.code, code { background-color: #eeeeee }
+pre.code .comment, code .comment { color: #5C6576 }
+pre.code .keyword, code .keyword { color: #3B0D06; font-weight: bold }
+pre.code .literal.string, code .literal.string { color: #0C5404 }
+pre.code .name.builtin, code .name.builtin { color: #352B84 }
+pre.code .deleted, code .deleted { background-color: #DEB0A1}
+pre.code .inserted, code .inserted { background-color: #A3D289}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic, pre.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+/* "booktabs" style (no vertical lines) */
+table.docutils.booktabs {
+  border: 0px;
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-collapse: collapse;
+}
+table.docutils.booktabs * {
+  border: 0px;
+}
+table.docutils.booktabs th {
+  border-bottom: thin solid;
+  text-align: left;
+}
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="cetmix-tower-monitoring">
+<h1 class="title">Cetmix Tower Monitoring</h1>
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! This file is generated by oca-gen-addon-readme !!
+!! changes will be overwritten.                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! source digest: sha256:05650b0d55d951a962a77f12cf5a9641d712c99d1fbfa2316b6d89f869893c7a
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_monitoring"><img alt="cetmix/cetmix-tower" src="https://img.shields.io/badge/github-cetmix%2Fcetmix--tower-lightgray.png?logo=github" /></a></p>
+<p>This module adds current metrics of servers and jets to <a class="reference external" href="https://tower.cetmix.com">Cetmix
+Tower</a>.</p>
+<ul class="simple">
+<li><strong>Metrics</strong> define what is measured: free disk, used memory, load or
+any custom value. A metric is shown as a progress bar, a gauge or a
+plain number.</li>
+<li><strong>Latest value</strong> only: each server or jet keeps one value per metric,
+with the time of the last update. There is no history.</li>
+<li><strong>Thresholds</strong> set the value state to Warning or Critical and can run
+a command or a flight plan when the state is reached. A value that is
+not updated in time becomes Stale.</li>
+<li><strong>Collectors</strong> are ordinary Cetmix Tower commands, flight plans and
+webhooks. Python code saves a value with <tt class="docutils literal">record_metric()</tt>.</li>
+</ul>
+<p>Metrics are shown to Cetmix Tower Managers and Root users on the server
+and jet forms, kanban cards and lists. Metric definitions can be
+exported and imported using YAML format.</p>
+<p><strong>Table of contents</strong></p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#use-cases-context" id="toc-entry-1">Use Cases / Context</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-2">Configuration</a><ul>
+<li><a class="reference internal" href="#installation" id="toc-entry-3">Installation</a></li>
+<li><a class="reference internal" href="#access" id="toc-entry-4">Access</a></li>
+<li><a class="reference internal" href="#create-a-metric" id="toc-entry-5">Create a Metric</a><ul>
+<li><a class="reference internal" href="#choose-a-unit-for-progress-bars" id="toc-entry-6">Choose a unit for progress bars</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#thresholds" id="toc-entry-7">Thresholds</a><ul>
+<li><a class="reference internal" href="#override-thresholds-for-one-server-or-jet" id="toc-entry-8">Override thresholds for one server or jet</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#collectors" id="toc-entry-9">Collectors</a><ul>
+<li><a class="reference internal" href="#collect-values-periodically" id="toc-entry-10">Collect values periodically</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#metrics-on-jet-templates" id="toc-entry-11">Metrics on Jet Templates</a></li>
+<li><a class="reference internal" href="#metrics-on-server-templates" id="toc-entry-12">Metrics on Server Templates</a><ul>
+<li><a class="reference internal" href="#push-values-with-a-webhook" id="toc-entry-13">Push values with a webhook</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage" id="toc-entry-14">Usage</a><ul>
+<li><a class="reference internal" href="#where-to-see-metrics" id="toc-entry-15">Where to see metrics</a></li>
+<li><a class="reference internal" href="#metric-states" id="toc-entry-16">Metric states</a></li>
+<li><a class="reference internal" href="#metrics-from-the-server-template" id="toc-entry-17">Metrics from the Server Template</a></li>
+<li><a class="reference internal" href="#metrics-from-the-jet-template" id="toc-entry-18">Metrics from the Jet Template</a></li>
+<li><a class="reference internal" href="#auto-sync" id="toc-entry-19">Auto sync</a></li>
+<li><a class="reference internal" href="#refresh-metrics" id="toc-entry-20">Refresh metrics</a></li>
+<li><a class="reference internal" href="#save-a-value-from-python-code" id="toc-entry-21">Save a value from Python code</a></li>
+<li><a class="reference internal" href="#use-the-metric-in-threshold-actions" id="toc-entry-22">Use the metric in threshold actions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changelog" id="toc-entry-23">Changelog</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-24">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-25">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-26">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-27">Maintainers</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="use-cases-context">
+<h1><a class="toc-backref" href="#toc-entry-1">Use Cases / Context</a></h1>
+<p>Operators of <a class="reference external" href="https://tower.cetmix.com">Cetmix Tower</a> need to see at
+a glance whether a server or a jet is healthy: how full its disk is, how
+much memory is used, what the load is. Opening Grafana or another
+monitoring tool for this means leaving Odoo and matching hosts by name.</p>
+<p>This module shows the current value of such parameters directly on the
+server and the jet in Odoo. It is not a replacement for Grafana or
+Prometheus: it keeps only the latest value of each metric, with no
+history and no graphs. Values are collected with the tools Cetmix Tower
+already has: commands, flight plans, scheduled tasks and webhooks.</p>
+</div>
+<div class="section" id="configuration">
+<h1><a class="toc-backref" href="#toc-entry-2">Configuration</a></h1>
+<div class="section" id="installation">
+<h2><a class="toc-backref" href="#toc-entry-3">Installation</a></h2>
+<p>Install the “Cetmix Tower Monitoring” module. It requires “Cetmix Tower
+Webhook”.</p>
+</div>
+<div class="section" id="access">
+<h2><a class="toc-backref" href="#toc-entry-4">Access</a></h2>
+<p>Metrics, thresholds and metric values are available to the “Cetmix Tower
+/ Manager” and “Cetmix Tower / Root” groups only. Users of the “Cetmix
+Tower / User” group do not see them.</p>
+<ul class="simple">
+<li>Every Manager sees all metric definitions and their thresholds. Only
+Root creates and changes them: their collectors and threshold actions
+run on every server and jet that has the metric.</li>
+<li>A Manager sees the metric values of a server or a jet with the same
+rights as the server or the jet itself: a Manager added to “Users” of
+a server can read its values, a Manager added to “Managers” can also
+update them. Values of a jet also require access to the server of the
+jet.</li>
+<li>A Manager sees the metrics of a Jet Template with the same rights as
+the Jet Template itself, and changes them when added to “Managers” of
+the Jet Template.</li>
+<li>Root sees and changes everything.</li>
+</ul>
+<p>Values are saved as the user that runs the code that calls
+<tt class="docutils literal">record_metric()</tt>: the user who runs the command, or the “Run as User”
+of a webhook. This user must be able to write the server or the jet (be
+in its “Managers”), otherwise the value is not saved.</p>
+</div>
+<div class="section" id="create-a-metric">
+<h2><a class="toc-backref" href="#toc-entry-5">Create a Metric</a></h2>
+<p>Go to “Cetmix Tower &gt; Settings &gt; Automation &gt; Metrics” and click “New”.
+Only Root can create and change metrics.</p>
+<ul class="simple">
+<li><strong>Name</strong>. Metric name, shown on servers and jets.</li>
+<li><strong>Reference</strong>. Unique reference used in <tt class="docutils literal">record_metric()</tt>. Leave
+blank to generate it from the name.</li>
+<li><strong>Widget</strong>. How the value is shown:<ul>
+<li>Progress Bar: used amount of a total, e.g. disk or memory.
+<tt class="docutils literal">record_metric()</tt> takes <tt class="docutils literal">used</tt> and <tt class="docutils literal">total</tt>.</li>
+<li>Gauge: a value with an optional maximum, e.g. CPU usage.
+<tt class="docutils literal">record_metric()</tt> takes <tt class="docutils literal">value</tt> and an optional <tt class="docutils literal">total</tt>.
+Without a maximum the value is shown as a number.</li>
+<li>Number: a plain value, e.g. load average. <tt class="docutils literal">record_metric()</tt> takes
+<tt class="docutils literal">value</tt>.</li>
+</ul>
+</li>
+<li><strong>Note</strong>. Detailed description of the metric: what is measured, how it
+is collected, what the values mean.</li>
+<li><strong>Unit</strong>. Shown next to the value, e.g. <tt class="docutils literal">GiB</tt>, <tt class="docutils literal">MiB</tt> or <tt class="docutils literal">%</tt>.</li>
+<li><strong>Stale After (minutes)</strong>. A value not updated for this many minutes
+becomes Stale. The check runs every 5 minutes.</li>
+<li><strong>Show on Kanban</strong>. Show this metric on the server and jet kanban
+cards.</li>
+<li><strong>Auto sync, minutes</strong>. Run the collector of every value of this
+metric every N minutes. 0 turns auto sync off; otherwise use at least
+5. See “Collect values periodically”.</li>
+<li><strong>Collector Command</strong> or <strong>Collector Flight Plan</strong>. Used by the
+“Refresh” button. Set one of them, or none for metrics pushed by a
+webhook.</li>
+</ul>
+<div class="section" id="choose-a-unit-for-progress-bars">
+<h3><a class="toc-backref" href="#toc-entry-6">Choose a unit for progress bars</a></h3>
+<p>On the server and jet form, a progress bar shows whole numbers only:
+45.2 of 100 is shown as <tt class="docutils literal">45 / 100</tt>, 3.1 of 8 as <tt class="docutils literal">3 / 8</tt>. Record
+values in a unit where whole numbers are meaningful, e.g. GiB for disk
+and MiB for memory, not GiB for memory.</p>
+</div>
+</div>
+<div class="section" id="thresholds">
+<h2><a class="toc-backref" href="#toc-entry-7">Thresholds</a></h2>
+<p>Add thresholds on the “Thresholds” tab of the metric. Only Root can
+change them.</p>
+<ul class="simple">
+<li><strong>Condition</strong>. <tt class="docutils literal">&gt;=</tt>, <tt class="docutils literal">&lt;=</tt>, <tt class="docutils literal">&gt;</tt>, <tt class="docutils literal">&lt;</tt>, <tt class="docutils literal">==</tt>, or Stale.</li>
+<li><strong>Value</strong>. Value to compare with. For progress bar metrics the
+condition compares used / total in percent: <tt class="docutils literal">&gt;= 90</tt> means “90 % or
+more is used”. For gauge and number metrics it compares the value.</li>
+<li><strong>Severity</strong>. Warning or Critical. While the condition matches, the
+value state is at least this severity. Stale thresholds have no
+severity: the value state is Stale anyway.</li>
+<li><strong>Action</strong>. None, Run Command or Run Flight Plan. The command or the
+flight plan runs when the condition becomes matched: on the first
+sample that matches, or when the value crosses the limit again after
+it was back to normal. It does not run again on every sample while the
+condition stays matched.</li>
+</ul>
+<p>Actions run on the server of the value. For a jet value they run on the
+jet server for this jet.</p>
+<div class="section" id="override-thresholds-for-one-server-or-jet">
+<h3><a class="toc-backref" href="#toc-entry-8">Override thresholds for one server or jet</a></h3>
+<p>Open a metric value from the “Monitoring” tab of a server or a jet and
+add thresholds on the “Override Thresholds” tab. If a value has any
+override thresholds, the metric thresholds are not used for it.</p>
+</div>
+</div>
+<div class="section" id="collectors">
+<h2><a class="toc-backref" href="#toc-entry-9">Collectors</a></h2>
+<p>A collector is a Python command, or a flight plan with Python commands,
+that measures the values and saves them with <tt class="docutils literal">record_metric()</tt>. SSH
+commands cannot save values: run them from a Python command and parse
+their output.</p>
+<p>One collector can serve several metrics. It must name each metric
+explicitly, because it is run the same way by the “Refresh” button and
+by scheduled tasks, without any metric:</p>
+<pre class="code python literal-block">
+<span class="n">runner</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">with_context</span><span class="p">(</span><span class="n">no_command_log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="w">
+</span><span class="n">disk</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">run_command</span><span class="p">(</span><span class="n">tower_commands</span><span class="o">.</span><span class="n">get_by_reference</span><span class="p">(</span><span class="s2">&quot;my_disk_bytes&quot;</span><span class="p">))</span><span class="w">
+</span><span class="k">if</span> <span class="n">disk</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span><span class="w">
+</span>    <span class="n">used</span><span class="p">,</span> <span class="n">total</span> <span class="o">=</span> <span class="n">disk</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span><span class="w">
+</span>    <span class="n">server</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="w">
+</span>        <span class="s2">&quot;disk_root&quot;</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">used</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">total</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;exit_code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">}</span>
+</pre>
+<p>Set the collector on the metric. To use another collector on one server
+or jet, open its metric value from the “Monitoring” tab and set
+“Collector Command” or “Collector Flight Plan” there.</p>
+<div class="section" id="collect-values-periodically">
+<h3><a class="toc-backref" href="#toc-entry-10">Collect values periodically</a></h3>
+<p>There are two ways to run collectors periodically:</p>
+<ul class="simple">
+<li><strong>Auto sync</strong>: set “Auto sync, minutes” on the metric. Every value of
+the metric that has a collector is collected every N minutes. Each
+collector runs once per server or jet, even if it serves several
+metrics. The check runs every 5 minutes, so a value is collected on
+the first check after N minutes have passed: the real interval can be
+up to 5 minutes longer than N. The command and flight plan logs of
+auto sync runs are deleted when the runs are done. Logs of commands
+and flight plans run by thresholds during these runs are kept. A run
+that could not start (e.g. another instance of the command is running)
+keeps its log.</li>
+<li><strong>Scheduled task</strong>: create a scheduled task in “Cetmix Tower &gt;
+Settings &gt; Automation &gt; Scheduled Tasks” that runs the collector
+command or flight plan on the servers or jets. Use it for a custom
+schedule. Its logs are kept, as are the logs of the “Refresh” button.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="metrics-on-jet-templates">
+<h2><a class="toc-backref" href="#toc-entry-11">Metrics on Jet Templates</a></h2>
+<p>Define metrics once on a Jet Template: jets of the template get them
+automatically.</p>
+<p>Open the Jet Template, go to the “Metrics” tab and add lines:</p>
+<ul class="simple">
+<li><strong>Metric</strong>. The metric jets of this template get.</li>
+<li><strong>Environments</strong>. Leave empty to apply to all jets of the template.
+Otherwise only jets whose environment is in the list get the metric.</li>
+</ul>
+<p>Changes are applied to existing jets: a jet gets a value for each metric
+that applies to it, and loses the values of metrics that do not apply
+any more, together with their override thresholds. An environment used
+in a Jet Template metric cannot be deleted.</p>
+<p>Values added by a user, or by <tt class="docutils literal">record_metric()</tt> from a command or a
+webhook, are <strong>manual</strong>: the Jet Template never changes or deletes them.
+If a jet already has a manual value for a metric that the Jet Template
+adds later, the manual value is kept and no other value is added.</p>
+<p>Jet Template metrics are exported and imported with the Jet Template in
+YAML.</p>
+</div>
+<div class="section" id="metrics-on-server-templates">
+<h2><a class="toc-backref" href="#toc-entry-12">Metrics on Server Templates</a></h2>
+<p>Open a Server Template, go to the “Metrics” tab and add the metrics that
+servers created from this template get.</p>
+<p>Metrics are copied once, when a server is created from the template: the
+server gets a value for each metric, in the Unknown state until the
+first value is received. Later changes to the template metrics do not
+change existing servers. Servers created without the template, or by
+duplicating a server, do not get them.</p>
+<p>Set collector overrides and override thresholds on the server values,
+not on the template.</p>
+<p>Server Template metrics are exported and imported with the Server
+Template in YAML.</p>
+<div class="section" id="push-values-with-a-webhook">
+<h3><a class="toc-backref" href="#toc-entry-13">Push values with a webhook</a></h3>
+<p><strong>⚠️ WARNING: You must be a member of the “Cetmix Tower / Root” group to
+configure webhooks and authenticators.</strong></p>
+<p>Create a webhook authenticator and a webhook in “Cetmix Tower &gt; Settings
+&gt; Automation”. Webhook code has no current server: resolve it from the
+payload.</p>
+<pre class="code python literal-block">
+<span class="n">server</span> <span class="o">=</span> <span class="n">tower_servers</span><span class="o">.</span><span class="n">get_by_reference</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;server_reference&quot;</span><span class="p">])</span><span class="w">
+</span><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">]:</span><span class="w">
+</span>    <span class="n">server</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="w">
+</span>        <span class="n">item</span><span class="p">[</span><span class="s2">&quot;reference&quot;</span><span class="p">],</span><span class="w">
+</span>        <span class="n">value</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">),</span><span class="w">
+</span>        <span class="n">used</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;used&quot;</span><span class="p">),</span><span class="w">
+</span>        <span class="n">total</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total&quot;</span><span class="p">),</span><span class="w">
+</span>    <span class="p">)</span><span class="w">
+</span><span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;exit_code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;ok&quot;</span><span class="p">}</span>
+</pre>
+<p>Use <tt class="docutils literal">tower_jets.get_by_reference()</tt> for jets. Set the “Run as User” of
+the webhook to a user that can write the servers or the jets.</p>
+</div>
+</div>
+</div>
+<div class="section" id="usage">
+<h1><a class="toc-backref" href="#toc-entry-14">Usage</a></h1>
+<div class="section" id="where-to-see-metrics">
+<h2><a class="toc-backref" href="#toc-entry-15">Where to see metrics</a></h2>
+<ul class="simple">
+<li><strong>Server and jet form</strong>, “Monitoring” tab: every metric with its
+value, unit, state and last update. Progress bar metrics show a bar,
+gauge metrics with a maximum show a gauge, other metrics show the
+number. Gauge rows are taller than the others because each gauge is a
+chart.</li>
+<li><strong>Server and jet kanban</strong>: the overall monitoring state and the
+metrics marked “Show on Kanban”. Progress bar metrics show a bar with
+the used and total values, other metrics show the number.</li>
+<li><strong>Server and jet list</strong>: rows are yellow when the overall state is
+Warning and red when it is Critical or Stale. The optional “Monitoring
+State” column shows the state.</li>
+</ul>
+<p>On the form, progress bar labels are rounded to whole numbers: 45.2 of
+100 GiB is shown as <tt class="docutils literal">45 / 100</tt>. The kanban card shows up to two
+decimals: <tt class="docutils literal">45.2 / 100 GiB</tt>.</p>
+<p>Open server and jet kanban and list views update by themselves when a
+metric value or state changes, including updates from a scheduled task,
+a webhook or auto sync. Several updates saved together refresh the view
+once. An open form does not update by itself, so unsaved changes are
+never lost: reload the page to see the new values.</p>
+</div>
+<div class="section" id="metric-states">
+<h2><a class="toc-backref" href="#toc-entry-16">Metric states</a></h2>
+<ul class="simple">
+<li><strong>Unknown</strong>: no value received yet.</li>
+<li><strong>OK</strong>: the value is up to date and no threshold matches.</li>
+<li><strong>Warning</strong> / <strong>Critical</strong>: the worst severity of the matching
+thresholds.</li>
+<li><strong>Stale</strong>: the value was not updated within “Stale After (minutes)” of
+the metric.</li>
+</ul>
+<p>The overall state of a server or a jet is the worst state of its
+metrics, in this order: Critical, Stale, Warning, Unknown, OK.</p>
+</div>
+<div class="section" id="metrics-from-the-server-template">
+<h2><a class="toc-backref" href="#toc-entry-17">Metrics from the Server Template</a></h2>
+<p>A server created from a Server Template starts with the metrics of the
+template, in the Unknown state until the first value is received.
+Changes to the template later do not change the server: add or remove
+its metrics on the “Monitoring” tab.</p>
+</div>
+<div class="section" id="metrics-from-the-jet-template">
+<h2><a class="toc-backref" href="#toc-entry-18">Metrics from the Jet Template</a></h2>
+<p>A jet shows the metrics of its Jet Template on the “Monitoring” tab
+together with its own ones. The “Manual” column tells them apart:</p>
+<ul class="simple">
+<li><strong>Manual</strong> checked: added by a user, or by <tt class="docutils literal">record_metric()</tt> for a
+metric the jet had no value for. The Jet Template never changes it.</li>
+<li><strong>Manual</strong> not checked: added from the Jet Template. It is removed
+when the Jet Template metric is removed or no longer applies to the
+jet environment.</li>
+</ul>
+</div>
+<div class="section" id="auto-sync">
+<h2><a class="toc-backref" href="#toc-entry-19">Auto sync</a></h2>
+<p>Values of metrics with “Auto sync, minutes” update by themselves. Their
+collector runs leave no command or flight plan logs: check “Last Update”
+on the “Monitoring” tab to see when a value was received.</p>
+</div>
+<div class="section" id="refresh-metrics">
+<h2><a class="toc-backref" href="#toc-entry-20">Refresh metrics</a></h2>
+<p>Click “Refresh” on the “Monitoring” tab of a server or a jet. It runs
+each collector command or flight plan of its metrics once, even if a
+collector serves several metrics. The button is shown only when at least
+one metric has a collector.</p>
+</div>
+<div class="section" id="save-a-value-from-python-code">
+<h2><a class="toc-backref" href="#toc-entry-21">Save a value from Python code</a></h2>
+<p>In a Python command or in webhook code:</p>
+<pre class="code python literal-block">
+<span class="n">server</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="s2">&quot;disk_root&quot;</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="mf">45.2</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>  <span class="c1"># progress bar</span><span class="w">
+</span><span class="n">server</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">37.5</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># gauge</span><span class="w">
+</span><span class="n">jet</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="s2">&quot;load_1&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1.37</span><span class="p">)</span>  <span class="c1"># number</span>
+</pre>
+<p>The metric must exist. A progress bar needs <tt class="docutils literal">used</tt> and <tt class="docutils literal">total</tt>
+greater than 0, a gauge or a number needs <tt class="docutils literal">value</tt>. Values must be
+finite numbers: <tt class="docutils literal">nan</tt> and <tt class="docutils literal">inf</tt> are refused.</p>
+<p>The demo webhook “Monitoring: Push Metrics” is disabled, because its
+demo authenticator allows every request. Enable it on test databases
+only. Example payload, sent as a JSON POST request to
+<tt class="docutils literal">&lt;your Odoo <span class="pre">URL&gt;/cetmix_tower_webhooks/demo_metric_push</span></tt>:</p>
+<pre class="code json literal-block">
+<span class="p">{</span><span class="w">
+  </span><span class="nt">&quot;server_reference&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;demo_server_1&quot;</span><span class="p">,</span><span class="w">
+  </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="nt">&quot;reference&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;disk_root&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;used&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">},</span><span class="w">
+    </span><span class="p">{</span><span class="nt">&quot;reference&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ram&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;used&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3174</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8192</span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span>
+</pre>
+</div>
+<div class="section" id="use-the-metric-in-threshold-actions">
+<h2><a class="toc-backref" href="#toc-entry-22">Use the metric in threshold actions</a></h2>
+<p>A Python command run by a threshold, and every Python command of a
+flight plan run by a threshold (including nested flight plans), has
+these objects:</p>
+<ul class="simple">
+<li><tt class="docutils literal">metric</tt>: the metric whose threshold runs the command.</li>
+<li><tt class="docutils literal">metric_value</tt>: its current value, with <tt class="docutils literal">value</tt>, <tt class="docutils literal">max_value</tt>,
+<tt class="docutils literal">state</tt> and <tt class="docutils literal">last_update</tt>.</li>
+<li><tt class="docutils literal">server</tt> and <tt class="docutils literal">jet</tt>: the server, and the jet when the value belongs
+to a jet.</li>
+</ul>
+<pre class="code python literal-block">
+<span class="n">used</span> <span class="o">=</span> <span class="n">metric_value</span><span class="o">.</span><span class="n">value</span><span class="w">
+</span><span class="n">total</span> <span class="o">=</span> <span class="n">metric_value</span><span class="o">.</span><span class="n">max_value</span><span class="w">
+</span><span class="k">if</span> <span class="n">metric</span><span class="o">.</span><span class="n">reference</span> <span class="o">==</span> <span class="s2">&quot;disk_root&quot;</span> <span class="ow">and</span> <span class="n">metric_value</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span><span class="p">:</span><span class="w">
+</span>    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;exit_code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;disk critical&quot;</span><span class="p">}</span>
+</pre>
+<p>In other commands <tt class="docutils literal">metric</tt> and <tt class="docutils literal">metric_value</tt> are <tt class="docutils literal">None</tt>. Webhook
+and authenticator code does not have them; use <tt class="docutils literal">tower_metrics</tt> and
+<tt class="docutils literal">tower_metric_values</tt> to access metrics and values.</p>
+<p>SSH commands and flight plan line conditions cannot use Python objects.
+They get custom values instead:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Custom value</th>
+<th class="head">Content</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">__metric__</tt></td>
+<td>metric reference</td>
+</tr>
+<tr><td><tt class="docutils literal">__metric_value__</tt></td>
+<td>current value</td>
+</tr>
+<tr><td><tt class="docutils literal">__metric_max__</tt></td>
+<td>total or maximum, empty if none</td>
+</tr>
+<tr><td><tt class="docutils literal">__metric_unit__</tt></td>
+<td>unit</td>
+</tr>
+<tr><td><tt class="docutils literal">__metric_state__</tt></td>
+<td>new state</td>
+</tr>
+<tr><td><tt class="docutils literal">__metric_previous_state__</tt></td>
+<td>state before this update</td>
+</tr>
+<tr><td><tt class="docutils literal">__metric_severity__</tt></td>
+<td>threshold severity, empty for Stale
+thresholds</td>
+</tr>
+<tr><td><tt class="docutils literal">__server__</tt></td>
+<td>server reference</td>
+</tr>
+<tr><td><tt class="docutils literal">__jet__</tt></td>
+<td>jet reference, empty for a server</td>
+</tr>
+</tbody>
+</table>
+<p>In a Python command they are available in <tt class="docutils literal">custom_values</tt>:</p>
+<pre class="code python literal-block">
+<span class="n">used</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">custom_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__metric_value__&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span><span class="w">
+</span><span class="n">state</span> <span class="o">=</span> <span class="n">custom_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__metric_state__&quot;</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+<div class="section" id="changelog">
+<h1><a class="toc-backref" href="#toc-entry-23">Changelog</a></h1>
+</div>
+<div class="section" id="bug-tracker">
+<h1><a class="toc-backref" href="#toc-entry-24">Bug Tracker</a></h1>
+<p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
+In case of trouble, please check there if your issue has already been reported.
+If you spotted it first, help us to smash it by providing a detailed and welcomed
+<a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues/new?body=module:%20cetmix_tower_monitoring%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**">feedback</a>.</p>
+<p>Do not contact contributors directly about support or help with technical issues.</p>
+</div>
+<div class="section" id="credits">
+<h1><a class="toc-backref" href="#toc-entry-25">Credits</a></h1>
+<div class="section" id="authors">
+<h2><a class="toc-backref" href="#toc-entry-26">Authors</a></h2>
+<ul class="simple">
+<li>Cetmix</li>
+</ul>
+</div>
+<div class="section" id="maintainers">
+<h2><a class="toc-backref" href="#toc-entry-27">Maintainers</a></h2>
+<p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_monitoring">cetmix/cetmix-tower</a> project on GitHub.</p>
+<p>You are welcome to contribute.</p>
+</div>
+</div>
+</div>
+</body>
+</html>

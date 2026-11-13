@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Opened from the Monitoring page of a server or a jet -->
+    <record id="cx_tower_metric_value_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.metric.value.view.form</field>
+        <field name="model">cx.tower.metric.value</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field
+                        name="state"
+                        widget="badge"
+                        decoration-success="state == 'ok'"
+                        decoration-warning="state == 'warning'"
+                        decoration-danger="state in ('critical', 'stale')"
+                        decoration-muted="state == 'unknown'"
+                    />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="metric_id" readonly="id" />
+                            <field name="server_id" invisible="not server_id" />
+                            <field name="jet_id" invisible="not jet_id" />
+                            <field name="value" />
+                            <field name="max_value" invisible="widget == 'number'" />
+                            <field name="unit" />
+                            <field name="last_update" />
+                        </group>
+                        <group>
+                            <field name="command_id" invisible="plan_id" />
+                            <field name="plan_id" invisible="command_id" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="thresholds" string="Override Thresholds">
+                            <field name="threshold_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="condition" />
+                                    <field
+                                        name="value_float"
+                                        invisible="condition == 'stale'"
+                                        required="condition != 'stale'"
+                                    />
+                                    <field
+                                        name="severity"
+                                        invisible="condition == 'stale'"
+                                        required="condition != 'stale'"
+                                    />
+                                    <field name="action" />
+                                    <field
+                                        name="command_id"
+                                        invisible="action != 'command'"
+                                        required="action == 'command'"
+                                    />
+                                    <field
+                                        name="plan_id"
+                                        invisible="action != 'plan'"
+                                        required="action == 'plan'"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

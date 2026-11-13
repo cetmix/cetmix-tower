@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.cetmix.tower.monitoring</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.res_config_settings_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//block[@name='cetmix_tower_server_settings']"
+                position="after"
+            >
+                <block name="cetmix_tower_monitoring_settings" title="Monitoring">
+                    <setting
+                        id="cetmix_tower_metric_check_stale"
+                        title="Check stale metrics"
+                        help="Metric values that are not updated in time will be marked as stale using cron job."
+                    >
+                        <div class="o_form_label">
+                            <span>Check stale metrics</span>
+                        </div>
+                        <div class="text-muted">
+                            <span
+                            >Metric values that are not updated in time will be marked as stale using cron job.</span>
+                        </div>
+                        <div class="mt8">
+                            <button
+                                name="action_configure_metric_stale_cron"
+                                string="Cron Job"
+                                type="object"
+                                class="btn-link"
+                                icon="fa-arrow-right"
+                            />
+                        </div>
+                    </setting>
+                    <setting
+                        id="cetmix_tower_metric_auto_sync"
+                        title="Auto sync metrics"
+                        help="Collectors of metrics with auto sync will be run automatically using cron job."
+                    >
+                        <div class="o_form_label">
+                            <span>Auto sync metrics</span>
+                        </div>
+                        <div class="text-muted">
+                            <span
+                            >Collectors of metrics with auto sync will be run automatically using cron job.</span>
+                        </div>
+                        <div class="mt8">
+                            <button
+                                name="action_configure_metric_auto_sync_cron"
+                                string="Cron Job"
+                                type="object"
+                                class="btn-link"
+                                icon="fa-arrow-right"
+                            />
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
