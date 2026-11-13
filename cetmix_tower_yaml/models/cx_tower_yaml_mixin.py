@@ -274,14 +274,54 @@ class CxTowerYamlMixin(models.AbstractModel):
                 names.append(field_name)
         return names
 
+    def _get_yaml_export_field_names(self):
+        """Omit empty restricted Root fields, refusing exports that would lose data.
+
+        Returns:
+            list[str]: Fields safe to export for this record.
+
+        Raises:
+            AccessError: The record is unreadable or a restricted field has data.
+        """
+        self.ensure_one()
+        # Access-rule evaluation also reads fields through sudo internally.
+        self = self.with_context(prefetch_fields=False).with_prefetch(self.ids)
+        self.check_access("read")
+        names = []
+        for name in self._get_yaml_field_names():
+            field = self._fields[name]
+            if (
+                field.groups == "cetmix_tower_base.group_root"
+                and not field.is_accessible(self.env)
+            ):
+                # Inspect presence only; remove the privileged value from shared cache.
+                self.flush_recordset([name])
+                try:
+                    populated = bool(self.sudo().read([name], load=None)[0][name])
+                finally:
+                    self.invalidate_recordset([name], flush=False)
+                if populated:
+                    raise AccessError(
+                        self.env._(
+                            'You must be a member of the "Root" group '
+                            "to export this snippet"
+                        )
+                    )
+                continue
+            names.append(name)
+        return names
+
     def _prepare_record_for_yaml(self):
         """Reads and processes current record before converting it to YAML
 
         Returns:
             dict: values ready for YAML conversion
+
+        Raises:
+            AccessError: Export includes an inaccessible Root-only field.
         """
         self.ensure_one()
-        yaml_keys = self._get_yaml_field_names()
+        yaml_keys = self._get_yaml_export_field_names()
         record_dict = self.read(fields=yaml_keys)[0]
         return self._post_process_record_values(record_dict)
 
@@ -320,9 +360,13 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         Yields:
             recordset: One related record.
+
+        Raises:
+            AccessError: Export includes an inaccessible Root-only field.
         """
         self.ensure_one()
-        for field_name, field in self._fields.items():
+        for field_name in self._get_yaml_export_field_names():
+            field = self._fields[field_name]
             mode = self._yaml_export_mode(field)
             if mode == YAML_EXPORT_EXPLODE:
                 for child in self[field_name]:
@@ -709,6 +753,10 @@ class CxTowerYamlMixin(models.AbstractModel):
 
         Returns:
             dict(): Post-processed values
+
+        Raises:
+            AccessError: Import supplies an inaccessible Root-only field.
+            ValidationError: A supplied access level is invalid.
         """
         # Remove model data because it is not a field
         values.pop("cetmix_tower_model", None)
@@ -731,6 +779,20 @@ class CxTowerYamlMixin(models.AbstractModel):
         # Leave supported keys only
         supported_keys = self._get_yaml_field_names()
         filtered_values = {k: v for k, v in values.items() if k in supported_keys}
+
+        for name in filtered_values:
+            field = self._fields.get(name)
+            if (
+                field
+                and field.groups == "cetmix_tower_base.group_root"
+                and not field.is_accessible(self.env)
+            ):
+                raise AccessError(
+                    self.env._(
+                        'You must be a member of the "Root" group '
+                        "to import this snippet"
+                    )
+                )
 
         # Post process m2o fields
         for key, value in list(filtered_values.items()):

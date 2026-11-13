@@ -45,3 +45,4 @@ from . import test_jet_waypoint
 from . import test_jet_waypoint_template_access
 from . import test_jet_waypoint_access
 from . import test_root_menu
+from . import test_log_rpc

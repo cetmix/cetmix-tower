@@ -2305,15 +2305,21 @@ class CxTowerServer(models.Model):
             )
             jet = self.env["cx.tower.jet"].browse(jet_id) if jet_id else None
 
+            # Forward extension objects, keeping the resolved core objects.
+            eval_kwargs = dict(kwargs)
+            eval_kwargs.update(
+                jet_template=jet_template,
+                jet=jet,
+                waypoint=waypoint,
+                variable_values=kwargs.get("variable_values", {}),
+            )
+            eval_kwargs.pop("server", None)
             # Get the evaluation context for the python command
             eval_context = self.env[
                 "cx.tower.command"
             ]._get_python_command_eval_context(
                 server=self,
-                jet_template=jet_template,
-                jet=jet,
-                waypoint=waypoint,
-                variable_values=kwargs.get("variable_values", {}),
+                **eval_kwargs,
             )
 
             safe_eval(

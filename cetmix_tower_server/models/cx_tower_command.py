@@ -513,7 +513,7 @@ class CxTowerCommand(models.Model):
         return python_libraries
 
     def _get_python_command_odoo_objects(
-        self, server=None, jet_template=None, jet=None, waypoint=None
+        self, server=None, jet_template=None, jet=None, waypoint=None, **kwargs
     ):
         """
         This method is used to import Odoo objects.
@@ -527,6 +527,7 @@ class CxTowerCommand(models.Model):
             jet_template: Jet template to get the Odoo objects for.
             jet: Jet to get the Odoo objects for.
             waypoint: Waypoint to get the Odoo objects for.
+            **kwargs (dict): Additional objects supplied by extension modules.
 
         Returns:
             dict: Available Odoo objects:
@@ -631,9 +632,9 @@ class CxTowerCommand(models.Model):
         """
 
         # Get the jet template, jet and waypoint from kwargs
-        jet_template = kwargs.get("jet_template")
-        jet = kwargs.get("jet")
-        waypoint = kwargs.get("waypoint")
+        jet_template = kwargs.pop("jet_template", None)
+        jet = kwargs.pop("jet", None)
+        waypoint = kwargs.pop("waypoint", None)
 
         # Get the Odoo objects first
         imports = self._get_python_command_odoo_objects(
@@ -641,6 +642,7 @@ class CxTowerCommand(models.Model):
             jet_template=jet_template,
             jet=jet,
             waypoint=waypoint,
+            **kwargs,
         )
 
         # Update with the libraries

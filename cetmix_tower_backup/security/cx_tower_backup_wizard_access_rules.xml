@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_backup_create_wizard_rule_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_backup_create_wizard" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+    <record id="cx_tower_backup_restore_wizard_rule_creator_only" model="ir.rule">
+        <field name="name">Creator only</field>
+        <field name="model_id" ref="model_cx_tower_backup_restore_wizard" />
+        <field name="global" eval="True" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+</odoo>

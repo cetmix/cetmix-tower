@@ -252,10 +252,7 @@ class CxTowerScheduledTask(models.Model):
         for task in tasks:
             try:
                 with self.env.cr.savepoint():
-                    if task.action == "command" and task.command_id:
-                        task._run_command()
-                    elif task.action == "plan" and task.plan_id:
-                        task._run_plan()
+                    errors.extend(task._run_action())
             except Exception as e:
                 _logger.exception("Scheduled task %s failed: %s", task.id, e)
 
@@ -382,6 +379,20 @@ class CxTowerScheduledTask(models.Model):
             second=from_date.second,
             microsecond=from_date.microsecond,
         )
+
+    def _run_action(self):
+        """Dispatch this task's action.
+
+        Returns:
+            list[str]: Per-target failures reported by extension actions.
+                Exceptions still reach the task's savepoint handler.
+        """
+        self.ensure_one()
+        if self.action == "command" and self.command_id:
+            self._run_command()
+        elif self.action == "plan" and self.plan_id:
+            self._run_plan()
+        return []
 
     def _run_command(self):
         """Run command on selected servers."""

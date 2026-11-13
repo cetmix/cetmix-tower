@@ -1,0 +1,8 @@
+Restrict backup restore() to in-process Python callers. Restore through the
+wizard remains available; direct XML-RPC and JSON-RPC calls are rejected.
+
+Protect active Restore destinations and all plans in running backup trees.
+Keep Backup Templates bound to their original Jet Template once backups exist.
+Report synchronous backup failures to commands and scheduled tasks, and open
+failed Restore logs without removing the destination Jet. Failed waypoint
+preparation remains retryable. Clarify record-only retention without a Delete plan.
