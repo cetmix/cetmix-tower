@@ -23,6 +23,7 @@
         <field name="action">python_code</field>
         <field name="code">runner = server.with_context(no_command_log=True)
 messages = []
+failed = False
 
 # Root disk, GiB
 disk_result = runner.run_command(
@@ -38,6 +39,7 @@ if disk_result["status"] == 0:
     messages.append("disk_root recorded")
 else:
     messages.append("disk_root failed: %s" % disk_result["error"])
+    failed = True
 
 # Memory, MiB
 ram_result = runner.run_command(
@@ -53,10 +55,15 @@ if ram_result["status"] == 0:
                 total=int(parts[1]) / 1024 ** 2,
             )
             messages.append("ram recorded")
+            break
+    else:
+        messages.append("ram failed: no Mem: row")
+        failed = True
 else:
     messages.append("ram failed: %s" % ram_result["error"])
+    failed = True
 
-result = {"exit_code": 0, "message": ", ".join(messages)}
+result = {"exit_code": 1 if failed else 0, "message": ", ".join(messages)}
 </field>
     </record>
 

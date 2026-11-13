@@ -1,6 +1,8 @@
 # Copyright (C) 2026 Cetmix OÜ
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import math
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -195,24 +197,15 @@ class CxTowerMetricMixin(models.AbstractModel):
                             metric=metric.reference,
                         )
                     )
-                used = float(used)
-                total = float(total)
-                if total <= 0:
-                    raise ValidationError(
-                        _(
-                            "Metric '%(metric)s' requires 'total' greater than 0.",
-                            metric=metric.reference,
-                        )
-                    )
-                return used, total
-            if value is None:
+                sample = (float(used), float(total))
+            elif value is None:
                 raise ValidationError(
                     _("Metric '%(metric)s' requires 'value'.", metric=metric.reference)
                 )
-            value = float(value)
-            if metric.widget == "gauge" and total is not None:
-                return value, float(total)
-            return value, 0.0
+            elif metric.widget == "gauge" and total is not None:
+                sample = (float(value), float(total))
+            else:
+                sample = (float(value), 0.0)
         except (TypeError, ValueError) as e:
             raise ValidationError(
                 _(
@@ -221,6 +214,22 @@ class CxTowerMetricMixin(models.AbstractModel):
                     error=e,
                 )
             ) from e
+        # float() accepts "nan" and "inf": no threshold can match them
+        if not all(math.isfinite(number) for number in sample):
+            raise ValidationError(
+                _(
+                    "Metric '%(metric)s' values must be finite numbers.",
+                    metric=metric.reference,
+                )
+            )
+        if metric.widget == "progressbar" and sample[1] <= 0:
+            raise ValidationError(
+                _(
+                    "Metric '%(metric)s' requires 'total' greater than 0.",
+                    metric=metric.reference,
+                )
+            )
+        return sample
 
     def action_refresh_metrics(self):
         """Run each distinct collector of the metrics once.

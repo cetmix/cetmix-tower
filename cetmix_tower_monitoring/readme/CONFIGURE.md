@@ -6,7 +6,7 @@ Install the "Cetmix Tower Monitoring" module. It requires "Cetmix Tower Webhook"
 
 Metrics, thresholds and metric values are available to the "Cetmix Tower / Manager" and "Cetmix Tower / Root" groups only. Users of the "Cetmix Tower / User" group do not see them.
 
-- Every Manager sees all metric definitions and their thresholds.
+- Every Manager sees all metric definitions and their thresholds. Only Root creates and changes them: their collectors and threshold actions run on every server and jet that has the metric.
 - A Manager sees the metric values of a server or a jet with the same rights as the server or the jet itself: a Manager added to "Users" of a server can read its values, a Manager added to "Managers" can also update them. Values of a jet also require access to the server of the jet.
 - A Manager sees the metrics of a Jet Template with the same rights as the Jet Template itself, and changes them when added to "Managers" of the Jet Template.
 - Root sees and changes everything.
@@ -15,7 +15,7 @@ Values are saved as the user that runs the code that calls `record_metric()`: th
 
 ## Create a Metric
 
-Go to "Cetmix Tower > Settings > Automation > Metrics" and click "New".
+Go to "Cetmix Tower > Settings > Automation > Metrics" and click "New". Only Root can create and change metrics.
 
 - **Name**. Metric name, shown on servers and jets.
 - **Reference**. Unique reference used in `record_metric()`. Leave blank to generate it from the name.
@@ -36,7 +36,7 @@ On the server and jet form, a progress bar shows whole numbers only: 45.2 of 100
 
 ## Thresholds
 
-Add thresholds on the "Thresholds" tab of the metric.
+Add thresholds on the "Thresholds" tab of the metric. Only Root can change them.
 
 - **Condition**. `>=`, `<=`, `>`, `<`, `==`, or Stale.
 - **Value**. Value to compare with. For progress bar metrics the condition compares used / total in percent: `>= 90` means "90 % or more is used". For gauge and number metrics it compares the value.

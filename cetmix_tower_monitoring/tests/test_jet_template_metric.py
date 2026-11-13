@@ -135,6 +135,22 @@ class TestJetTemplateMetric(TestMonitoringCommon):
         self.assertEqual(jet_copy.metric_value_ids.metric_id, self.metric_load)
         self.assertFalse(jet_copy.metric_value_ids.manual)
 
+    def test_copied_template_keeps_metrics(self):
+        """A copied Jet Template keeps its metric lines."""
+        self._add_template_metric(self.metric_load, self.env_prod)
+        self._add_template_metric(self.metric_gauge)
+
+        template_copy = self.jet_template.copy()
+        self.assertEqual(
+            template_copy.metric_ids.metric_id, self.metric_load | self.metric_gauge
+        )
+        load_line = template_copy.metric_ids.filtered(
+            lambda line: line.metric_id == self.metric_load
+        )
+        self.assertEqual(load_line.environment_ids, self.env_prod)
+        # The lines of the original are not moved
+        self.assertEqual(len(self.jet_template.metric_ids), 2)
+
     def test_environment_in_use_cannot_be_deleted(self):
         """An environment used in a template metric cannot be deleted."""
         environment = self.Environment.create({"name": "Test Metric Env"})

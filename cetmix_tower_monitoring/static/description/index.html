@@ -458,7 +458,9 @@ Webhook”.</p>
 / Manager” and “Cetmix Tower / Root” groups only. Users of the “Cetmix
 Tower / User” group do not see them.</p>
 <ul class="simple">
-<li>Every Manager sees all metric definitions and their thresholds.</li>
+<li>Every Manager sees all metric definitions and their thresholds. Only
+Root creates and changes them: their collectors and threshold actions
+run on every server and jet that has the metric.</li>
 <li>A Manager sees the metric values of a server or a jet with the same
 rights as the server or the jet itself: a Manager added to “Users” of
 a server can read its values, a Manager added to “Managers” can also
@@ -476,7 +478,8 @@ in its “Managers”), otherwise the value is not saved.</p>
 </div>
 <div class="section" id="create-a-metric">
 <h2><a class="toc-backref" href="#toc-entry-5">Create a Metric</a></h2>
-<p>Go to “Cetmix Tower &gt; Settings &gt; Automation &gt; Metrics” and click “New”.</p>
+<p>Go to “Cetmix Tower &gt; Settings &gt; Automation &gt; Metrics” and click “New”.
+Only Root can create and change metrics.</p>
 <ul class="simple">
 <li><strong>Name</strong>. Metric name, shown on servers and jets.</li>
 <li><strong>Reference</strong>. Unique reference used in <tt class="docutils literal">record_metric()</tt>. Leave
@@ -515,7 +518,8 @@ and MiB for memory, not GiB for memory.</p>
 </div>
 <div class="section" id="thresholds">
 <h2><a class="toc-backref" href="#toc-entry-7">Thresholds</a></h2>
-<p>Add thresholds on the “Thresholds” tab of the metric.</p>
+<p>Add thresholds on the “Thresholds” tab of the metric. Only Root can
+change them.</p>
 <ul class="simple">
 <li><strong>Condition</strong>. <tt class="docutils literal">&gt;=</tt>, <tt class="docutils literal">&lt;=</tt>, <tt class="docutils literal">&gt;</tt>, <tt class="docutils literal">&lt;</tt>, <tt class="docutils literal">==</tt>, or Stale.</li>
 <li><strong>Value</strong>. Value to compare with. For progress bar metrics the
@@ -719,9 +723,11 @@ one metric has a collector.</p>
 </span><span class="n">jet</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="s2">&quot;load_1&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">1.37</span><span class="p">)</span>  <span class="c1"># number</span>
 </pre>
 <p>The metric must exist. A progress bar needs <tt class="docutils literal">used</tt> and <tt class="docutils literal">total</tt>
-greater than 0, a gauge or a number needs <tt class="docutils literal">value</tt>.</p>
-<p>Example payload of the demo webhook “Monitoring: Push Metrics”, sent as
-a JSON POST request to
+greater than 0, a gauge or a number needs <tt class="docutils literal">value</tt>. Values must be
+finite numbers: <tt class="docutils literal">nan</tt> and <tt class="docutils literal">inf</tt> are refused.</p>
+<p>The demo webhook “Monitoring: Push Metrics” is disabled, because its
+demo authenticator allows every request. Enable it on test databases
+only. Example payload, sent as a JSON POST request to
 <tt class="docutils literal">&lt;your Odoo <span class="pre">URL&gt;/cetmix_tower_webhooks/demo_metric_push</span></tt>:</p>
 <pre class="code json literal-block">
 <span class="p">{</span><span class="w">

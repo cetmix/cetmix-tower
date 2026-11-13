@@ -260,3 +260,76 @@ class TestMetricThreshold(TestMonitoringCommon):
             self.MetricValue._cron_check_stale()
         self.assertEqual(run_command_mock.call_count, 1)
         self.assertEqual(metric_value.active_threshold_ids, stale_threshold)
+
+    def test_command_running_plan_sees_metric(self):
+        """A threshold command that runs a flight plan passes the metric
+        to every line of the flight plan."""
+        report_commands = self.Command
+        for index in range(2):
+            report_commands |= self.command_report_metric.copy(
+                {"name": f"Test Report Metric Via Command {index}"}
+            )
+        plan = self.Plan.create(
+            {
+                "name": "Test Metric Plan Via Command",
+                "line_ids": [
+                    (0, 0, {"sequence": 10, "command_id": report_commands[0].id}),
+                    (0, 0, {"sequence": 20, "command_id": report_commands[1].id}),
+                ],
+            }
+        )
+        command_run_plan = self.Command.create(
+            {
+                "name": "Test Run Metric Plan",
+                "action": "plan",
+                "flight_plan_id": plan.id,
+            }
+        )
+        self.threshold_disk_critical.command_id = command_run_plan
+
+        # Run in Odoo even if a deferral backend (queue, drone) is installed
+        with self._patch_defer_handlers([]):
+            metric_value = self.jet_sample.record_metric(
+                "test_disk", used=95, total=100
+            )
+
+        expected = f"test_disk|{metric_value.id}|{self.jet_sample.reference}"
+        for command in report_commands:
+            self.assertEqual(self._report_responses(command), [expected], command.name)
+        plan_log = self.PlanLog.search([("plan_id", "=", plan.id)])
+        self.assertEqual(plan_log.metric_id, self.metric_disk)
+        self.assertEqual(plan_log.metric_value_id, metric_value)
+
+    def test_stale_threshold_rearmed_by_longer_interval(self):
+        """A value made fresh by a longer stale interval runs its stale
+        threshold again when it becomes stale again."""
+        stale_threshold = self.MetricThreshold.create(
+            {
+                "metric_id": self.metric_load.id,
+                "condition": "stale",
+                "action": "command",
+                "command_id": self.command_report_metric.id,
+            }
+        )
+        self.metric_load.stale_after_minutes = 30
+        metric_value = self.server_test_1.record_metric("test_load", value=1)
+        self._make_stale(metric_value, minutes=60)
+        with self._patch_run_command() as run_command_mock:
+            self.MetricValue._cron_check_stale()
+        self.assertEqual(run_command_mock.call_count, 1)
+        self.assertEqual(metric_value.active_threshold_ids, stale_threshold)
+
+        # Fresh again: the stale threshold is cleared by the next check
+        self.metric_load.stale_after_minutes = 120
+        self.assertEqual(metric_value.state, "ok")
+        with self._patch_run_command() as run_command_mock:
+            self.MetricValue._cron_check_stale()
+        run_command_mock.assert_not_called()
+        self.assertFalse(metric_value.active_threshold_ids)
+
+        # Stale again: the action runs again
+        self.metric_load.stale_after_minutes = 30
+        with self._patch_run_command() as run_command_mock:
+            self.MetricValue._cron_check_stale()
+        self.assertEqual(run_command_mock.call_count, 1)
+        self.assertEqual(metric_value.active_threshold_ids, stale_threshold)

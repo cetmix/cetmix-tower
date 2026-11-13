@@ -74,6 +74,26 @@ class TestMetricAccess(TestMonitoringCommon):
             self.threshold_disk_warning,
             self.MetricThreshold.with_user(self.manager).search([]),
         )
+        # Only Root changes them: their collectors and actions run everywhere
+        with self.assertRaises(AccessError):
+            self.metric_load.with_user(self.manager).write({"auto_sync_minutes": 5})
+        with self.assertRaises(AccessError):
+            self.Metric.with_user(self.manager).create(
+                {"name": "Test Manager Metric", "widget": "number"}
+            )
+        with self.assertRaises(AccessError):
+            self.threshold_disk_warning.with_user(self.manager).write(
+                {"value_float": 70}
+            )
+        with self.assertRaises(AccessError):
+            self.MetricThreshold.with_user(self.manager).create(
+                {
+                    "metric_id": self.metric_load.id,
+                    "condition": ">=",
+                    "value_float": 5,
+                    "severity": "warning",
+                }
+            )
 
         # Server user: read only
         self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
@@ -97,6 +117,28 @@ class TestMetricAccess(TestMonitoringCommon):
         self.server_test_1.write({"manager_ids": [(4, self.manager_2.id)]})
         with self.assertRaises(AccessError):
             self.server_value.with_user(self.manager_2).unlink()
+
+    @mute_logger("odoo.addons.base.models.ir_rule")
+    def test_manager_cannot_move_value(self):
+        """A value cannot be moved to a server the Manager cannot write."""
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
+        other_server = self.Server.create(
+            {
+                "name": "Test Metric Other Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key",
+                "os_id": self.os_debian_10.id,
+                "user_ids": [(6, 0, self.manager.ids)],
+                "manager_ids": [(6, 0, [])],
+            }
+        )
+        with self.assertRaises(AccessError):
+            self.server_value.with_user(self.manager).write(
+                {"server_id": other_server.id}
+            )
 
     @mute_logger("odoo.addons.base.models.ir_rule")
     def test_manager_jet_values(self):

@@ -10,9 +10,11 @@
         <field name="code">result = {"allowed": True}</field>
     </record>
 
-    <!-- Records the metrics of a server from a JSON payload -->
+    <!-- Records the metrics of a server from a JSON payload.
+         Disabled: its authenticator allows every request -->
     <record id="cx_tower_webhook_metric_demo" model="cx.tower.webhook">
         <field name="name">Monitoring: Push Metrics</field>
+        <field name="active" eval="False" />
         <field name="reference">demo_metric_push</field>
         <field name="endpoint">demo_metric_push</field>
         <field name="method">post</field>

@@ -46,9 +46,9 @@ server.record_metric("cpu", value=37.5, total=100)  # gauge
 jet.record_metric("load_1", value=1.37)  # number
 ```
 
-The metric must exist. A progress bar needs `used` and `total` greater than 0, a gauge or a number needs `value`.
+The metric must exist. A progress bar needs `used` and `total` greater than 0, a gauge or a number needs `value`. Values must be finite numbers: `nan` and `inf` are refused.
 
-Example payload of the demo webhook "Monitoring: Push Metrics", sent as a JSON POST request to `<your Odoo URL>/cetmix_tower_webhooks/demo_metric_push`:
+The demo webhook "Monitoring: Push Metrics" is disabled, because its demo authenticator allows every request. Enable it on test databases only. Example payload, sent as a JSON POST request to `<your Odoo URL>/cetmix_tower_webhooks/demo_metric_push`:
 
 ```json
 {

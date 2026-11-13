@@ -147,6 +147,17 @@ class CxTowerMetricValue(models.Model):
                 else:
                     metric_value.state = "ok"
 
+    def write(self, vals):
+        """Check the write access to the new server or jet.
+
+        Record rules are checked before the write only,
+        so moving a value to another server or jet is checked here.
+        """
+        res = super().write(vals)
+        if "server_id" in vals or "jet_id" in vals:
+            self.check_access("write")
+        return res
+
     @api.constrains("command_id", "plan_id")
     def _check_collector(self):
         """A value is collected by a command or a flight plan, not both."""
@@ -418,8 +429,27 @@ class CxTowerMetricValue(models.Model):
         A value can already be stale without its stale thresholds run:
         ``state`` is also recomputed when ``stale_after_minutes``
         changes. Such values are selected too.
+
+        A longer ``stale_after_minutes`` can make a stale value fresh
+        again. Its stale thresholds are cleared, so they run again
+        when the value becomes stale.
         """
         now = fields.Datetime.now()
+        fresh_values = self.search(
+            [("active_threshold_ids.condition", "=", "stale")]
+        ).filtered(lambda metric_value: not metric_value._is_stale(now=now))
+        for metric_value in fresh_values:
+            stale_thresholds = metric_value.active_threshold_ids.filtered(
+                lambda threshold: threshold.condition == "stale"
+            )
+            metric_value.write(
+                {
+                    "active_threshold_ids": [
+                        Command.unlink(threshold.id) for threshold in stale_thresholds
+                    ]
+                }
+            )
+
         metric_values = self.search([("last_update", "!=", False)]).filtered(
             lambda metric_value: metric_value._is_stale(now=now)
             and (

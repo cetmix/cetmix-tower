@@ -92,6 +92,16 @@ class TestMetric(TestMonitoringCommon):
         # Number needs value
         with self.assertRaises(ValidationError):
             self.server_test_1.record_metric("test_load", used=1, total=2)
+        # Values must be finite
+        for kwargs in (
+            {"metric": "test_disk", "used": "nan", "total": 10},
+            {"metric": "test_disk", "used": 1, "total": "nan"},
+            {"metric": "test_disk", "used": 1, "total": "inf"},
+            {"metric": "test_load", "value": "-inf"},
+            {"metric": "test_gauge", "value": 1, "total": "nan"},
+        ):
+            with self.assertRaises(ValidationError):
+                self.server_test_1.record_metric(kwargs.pop("metric"), **kwargs)
         self.assertFalse(self.server_test_1.metric_value_ids)
 
         # Number ignores total, gauge keeps it

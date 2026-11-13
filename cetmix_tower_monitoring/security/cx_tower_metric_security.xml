@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Metric: every Manager sees all metrics -->
+    <!-- Metric: every Manager sees all metrics, only Root changes them -->
     <record id="cx_tower_metric_rule_manager" model="ir.rule">
         <field name="name">Tower metric: manager access rule</field>
         <field name="model_id" ref="model_cx_tower_metric" />
@@ -101,13 +101,18 @@
         <field name="domain_force">[(1, "=", 1)]</field>
     </record>
 
-    <!-- Metric threshold: definition thresholds for every Manager,
-         override thresholds with the rights of the value server or jet -->
+    <!-- Metric threshold: every Manager reads definition thresholds,
+         only Root changes them. Override thresholds have the rights
+         of the value server or jet -->
     <record id="cx_tower_metric_threshold_rule_manager_definition" model="ir.rule">
         <field name="name">Tower metric threshold: manager definition rule</field>
         <field name="model_id" ref="model_cx_tower_metric_threshold" />
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="domain_force">[("metric_value_id", "=", False)]</field>
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
     </record>
 
     <record id="cx_tower_metric_threshold_rule_manager_server_read" model="ir.rule">

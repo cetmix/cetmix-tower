@@ -11,6 +11,7 @@ class CxTowerJetTemplate(models.Model):
         comodel_name="cx.tower.jet.template.metric",
         inverse_name="jet_template_id",
         string="Metrics",
+        copy=True,
         groups="cetmix_tower_base.group_manager",
         yaml_export="explode",
         help="Jets of this template get these metrics",

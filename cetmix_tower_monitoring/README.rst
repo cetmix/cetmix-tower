@@ -75,7 +75,9 @@ Metrics, thresholds and metric values are available to the "Cetmix Tower
 / Manager" and "Cetmix Tower / Root" groups only. Users of the "Cetmix
 Tower / User" group do not see them.
 
-- Every Manager sees all metric definitions and their thresholds.
+- Every Manager sees all metric definitions and their thresholds. Only
+  Root creates and changes them: their collectors and threshold actions
+  run on every server and jet that has the metric.
 - A Manager sees the metric values of a server or a jet with the same
   rights as the server or the jet itself: a Manager added to "Users" of
   a server can read its values, a Manager added to "Managers" can also
@@ -95,6 +97,7 @@ Create a Metric
 ---------------
 
 Go to "Cetmix Tower > Settings > Automation > Metrics" and click "New".
+Only Root can create and change metrics.
 
 - **Name**. Metric name, shown on servers and jets.
 - **Reference**. Unique reference used in ``record_metric()``. Leave
@@ -134,7 +137,8 @@ and MiB for memory, not GiB for memory.
 Thresholds
 ----------
 
-Add thresholds on the "Thresholds" tab of the metric.
+Add thresholds on the "Thresholds" tab of the metric. Only Root can
+change them.
 
 - **Condition**. ``>=``, ``<=``, ``>``, ``<``, ``==``, or Stale.
 - **Value**. Value to compare with. For progress bar metrics the
@@ -362,10 +366,12 @@ In a Python command or in webhook code:
    jet.record_metric("load_1", value=1.37)  # number
 
 The metric must exist. A progress bar needs ``used`` and ``total``
-greater than 0, a gauge or a number needs ``value``.
+greater than 0, a gauge or a number needs ``value``. Values must be
+finite numbers: ``nan`` and ``inf`` are refused.
 
-Example payload of the demo webhook "Monitoring: Push Metrics", sent as
-a JSON POST request to
+The demo webhook "Monitoring: Push Metrics" is disabled, because its
+demo authenticator allows every request. Enable it on test databases
+only. Example payload, sent as a JSON POST request to
 ``<your Odoo URL>/cetmix_tower_webhooks/demo_metric_push``:
 
 .. code:: json
