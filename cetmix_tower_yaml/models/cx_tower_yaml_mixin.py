@@ -284,6 +284,8 @@ class CxTowerYamlMixin(models.AbstractModel):
             AccessError: The record is unreadable or a restricted field has data.
         """
         self.ensure_one()
+        # Access-rule evaluation also reads fields through sudo internally.
+        self = self.with_context(prefetch_fields=False).with_prefetch(self.ids)
         self.check_access("read")
         names = []
         for name in self._get_yaml_field_names():
@@ -295,7 +297,7 @@ class CxTowerYamlMixin(models.AbstractModel):
                 # Inspect presence only; remove the privileged value from shared cache.
                 self.flush_recordset([name])
                 try:
-                    populated = bool(self.sudo()[name])
+                    populated = bool(self.sudo().read([name], load=None)[0][name])
                 finally:
                     self.invalidate_recordset([name], flush=False)
                 if populated:
