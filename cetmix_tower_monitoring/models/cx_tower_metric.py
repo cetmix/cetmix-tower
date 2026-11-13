@@ -80,6 +80,13 @@ class CxTowerMetric(models.Model):
         inverse_name="metric_id",
     )
 
+    def write(self, vals):
+        """Rearm stale thresholds when a longer interval makes values fresh."""
+        res = super().write(vals)
+        if "stale_after_minutes" in vals:
+            self.value_ids._rearm_stale_thresholds()
+        return res
+
     @api.constrains("auto_sync_minutes")
     def _check_auto_sync_minutes(self):
         """Auto sync is off (0) or runs at most every 5 minutes."""

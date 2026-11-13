@@ -104,6 +104,18 @@ class CxTowerMetricThreshold(models.Model):
             else:
                 threshold.metric_id = threshold.metric_id
 
+    def write(self, vals):
+        """Check the write access to the new metric value.
+
+        Record rules are checked before the write only. Clearing
+        ``metric_value_id`` would turn an override into a metric
+        threshold, which only Root can change.
+        """
+        res = super().write(vals)
+        if "metric_value_id" in vals:
+            self.check_access("write")
+        return res
+
     @api.constrains("condition", "severity", "action", "command_id", "plan_id")
     def _check_threshold(self):
         """Check the values required by the condition and the action."""

@@ -319,16 +319,13 @@ class TestMetricThreshold(TestMonitoringCommon):
         self.assertEqual(run_command_mock.call_count, 1)
         self.assertEqual(metric_value.active_threshold_ids, stale_threshold)
 
-        # Fresh again: the stale threshold is cleared by the next check
-        self.metric_load.stale_after_minutes = 120
+        # Fresh again: the stale threshold is cleared at once
+        self.metric_load.stale_after_minutes = 61
         self.assertEqual(metric_value.state, "ok")
-        with self._patch_run_command() as run_command_mock:
-            self.MetricValue._cron_check_stale()
-        run_command_mock.assert_not_called()
         self.assertFalse(metric_value.active_threshold_ids)
 
-        # Stale again: the action runs again
-        self.metric_load.stale_after_minutes = 30
+        # Stale again before any check runs: the action runs again
+        self._make_stale(metric_value, minutes=62)
         with self._patch_run_command() as run_command_mock:
             self.MetricValue._cron_check_stale()
         self.assertEqual(run_command_mock.call_count, 1)

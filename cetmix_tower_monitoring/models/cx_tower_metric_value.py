@@ -417,6 +417,30 @@ class CxTowerMetricValue(models.Model):
             "__jet__": self.jet_id.reference or "",
         }
 
+    def _rearm_stale_thresholds(self):
+        """Clear the active stale thresholds of values that are fresh.
+
+        A longer ``stale_after_minutes`` can make a stale value fresh
+        without a new sample. Its stale thresholds must run again
+        when the value becomes stale again.
+        """
+        now = fields.Datetime.now()
+        for metric_value in self:
+            if metric_value._is_stale(now=now):
+                continue
+            stale_thresholds = metric_value.active_threshold_ids.filtered(
+                lambda threshold: threshold.condition == "stale"
+            )
+            if stale_thresholds:
+                metric_value.write(
+                    {
+                        "active_threshold_ids": [
+                            Command.unlink(threshold.id)
+                            for threshold in stale_thresholds
+                        ]
+                    }
+                )
+
     @api.model
     def _cron_check_stale(self):
         """Mark values that are no longer updated as stale.
@@ -429,27 +453,8 @@ class CxTowerMetricValue(models.Model):
         A value can already be stale without its stale thresholds run:
         ``state`` is also recomputed when ``stale_after_minutes``
         changes. Such values are selected too.
-
-        A longer ``stale_after_minutes`` can make a stale value fresh
-        again. Its stale thresholds are cleared, so they run again
-        when the value becomes stale.
         """
         now = fields.Datetime.now()
-        fresh_values = self.search(
-            [("active_threshold_ids.condition", "=", "stale")]
-        ).filtered(lambda metric_value: not metric_value._is_stale(now=now))
-        for metric_value in fresh_values:
-            stale_thresholds = metric_value.active_threshold_ids.filtered(
-                lambda threshold: threshold.condition == "stale"
-            )
-            metric_value.write(
-                {
-                    "active_threshold_ids": [
-                        Command.unlink(threshold.id) for threshold in stale_thresholds
-                    ]
-                }
-            )
-
         metric_values = self.search([("last_update", "!=", False)]).filtered(
             lambda metric_value: metric_value._is_stale(now=now)
             and (

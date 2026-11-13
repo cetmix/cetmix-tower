@@ -141,6 +141,18 @@ class TestMetricAccess(TestMonitoringCommon):
             )
 
     @mute_logger("odoo.addons.base.models.ir_rule")
+    def test_manager_cannot_move_override(self):
+        """An override cannot become a metric threshold,
+        or move to a value the Manager cannot write."""
+        self.server_test_1.write({"manager_ids": [(4, self.manager.id)]})
+        override = self.server_override.with_user(self.manager)
+        with self.assertRaises(AccessError):
+            override.write({"metric_value_id": False})
+        with self.assertRaises(AccessError):
+            override.write({"metric_value_id": self.jet_value.id})
+        self.assertEqual(self.server_override.metric_value_id, self.server_value)
+
+    @mute_logger("odoo.addons.base.models.ir_rule")
     def test_manager_jet_values(self):
         """Jet values need access to the jet and to its server."""
         self.jet_sample.write({"manager_ids": [(4, self.manager.id)]})
