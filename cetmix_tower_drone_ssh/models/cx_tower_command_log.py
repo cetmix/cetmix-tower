@@ -75,3 +75,12 @@ class CxTowerCommandLog(models.Model):
         if job and job.state in JOB_ACTIVE_STATES:
             job._cancel()
         return super()._command_finished()
+
+    def unlink(self):
+        """
+        Delete related drone jobs
+        """
+        res = super().unlink()
+        if self.drone_job_id:  # works same as mapped()
+            self.drone_job_id.sudo().unlink()
+        return res

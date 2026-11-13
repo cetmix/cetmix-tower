@@ -12,7 +12,7 @@ Open the drone job to see Command log. It links to the command log that sent the
 
 ## Exit Codes
 
-- -503. The server has no host key. The command is not sent to a drone.
+- `503`. SSH connection setup failed, for example because the server has no stored host key and verification is enabled. The command is not sent to a drone.
 - -209. No drone controller took the command.
 - -206. The command timed out.
 - -208. The command was stopped by a user.
