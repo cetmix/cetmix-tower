@@ -77,10 +77,28 @@ class CxTowerCommandLog(models.Model):
         return super()._command_finished()
 
     def unlink(self):
+        """Delete the finished drone jobs of the deleted command logs.
+
+        The jobs are read before the logs are deleted: afterwards the
+        logs no longer exist and their jobs cannot be read.
+
+        Returns:
+            bool: Result of the parent ``unlink()``.
         """
-        Delete related drone jobs
-        """
+        drone_jobs = self._get_finished_drone_jobs()
         res = super().unlink()
-        if self.drone_job_id:  # works same as mapped()
-            self.drone_job_id.sudo().unlink()
+        drone_jobs.unlink()
         return res
+
+    def _get_finished_drone_jobs(self):
+        """Return the drone jobs of these logs that are no longer active.
+
+        Active jobs are kept: they still report to their log when they
+        finish, and the callback handles a deleted log.
+
+        Returns:
+            cx.drone.job(): Finished jobs, as superuser.
+        """
+        return self.sudo().drone_job_id.filtered(
+            lambda job: job.state not in JOB_ACTIVE_STATES
+        )

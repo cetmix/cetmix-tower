@@ -1,1 +1,1 @@
-Delete drone job when related command log is deleted
+Delete finished drone jobs with their command logs, including logs deleted with their flight plan log
