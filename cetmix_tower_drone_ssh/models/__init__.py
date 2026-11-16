@@ -5,4 +5,5 @@ from . import cx_drone_controller
 from . import cx_drone_job
 from . import cx_tower_server
 from . import cx_tower_command_log
+from . import cx_tower_plan_log
 from . import res_config_settings

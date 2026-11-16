@@ -564,6 +564,48 @@ class TestDroneSshDispatch(TestDroneSshCommon):
         self.assertFalse(plan_command_log.is_running)
 
     # ------------------------------
+    # Log deletion
+    # ------------------------------
+    def test_unlink_command_logs_deletes_finished_jobs(self):
+        """Deleting several command logs deletes their finished jobs."""
+        log_1, job_1 = self.dispatch()
+        log_2, job_2 = self.dispatch()
+        jobs = job_1 | job_2
+        for job in jobs:
+            self.assertEqual(self.http_result(job), 200)
+        self.assertEqual(set(jobs.mapped("state")), {"done"})
+
+        (log_1 | log_2).unlink()
+        self.assertFalse(jobs.exists())
+
+    def test_unlink_command_log_keeps_active_job(self):
+        """A job still running is not deleted with its command log."""
+        log, job = self.dispatch()
+        self.assertEqual(job.state, "running")
+
+        log.unlink()
+        self.assertTrue(job.exists())
+
+    def test_unlink_plan_log_deletes_nested_jobs(self):
+        """Command logs deleted in cascade with their flight plan log,
+        nested flight plans included, take their finished jobs along.
+        """
+        parent_plan_log, plan_command_log, child_log = self._nested_plan()
+        child_plan_log = plan_command_log.triggered_plan_log_id
+        child_job = child_log.sudo().drone_job_id
+        self.assertEqual(self.http_result(child_job), 200)
+        next_log = parent_plan_log.command_log_ids - plan_command_log
+        next_job = next_log.sudo().drone_job_id
+        self.assertEqual(self.http_result(next_job), 200)
+        jobs = child_job | next_job
+        self.assertEqual(set(jobs.mapped("state")), {"done"})
+
+        parent_plan_log.unlink()
+        self.assertFalse(child_plan_log.exists())
+        self.assertFalse(child_log.exists())
+        self.assertFalse(jobs.exists())
+
+    # ------------------------------
     # Result
     # ------------------------------
     def test_server_status_on_success_only(self):
