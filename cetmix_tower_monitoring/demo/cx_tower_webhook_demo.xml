@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Demo only: allows every request -->
+    <record
+        id="cx_tower_webhook_authenticator_metric_demo"
+        model="cx.tower.webhook.authenticator"
+    >
+        <field name="name">Monitoring: Allow All (Demo)</field>
+        <field name="reference">demo_metric_authenticator</field>
+        <field name="code">result = {"allowed": True}</field>
+    </record>
+
+    <!-- Records the metrics of a server from a JSON payload.
+         Disabled: its authenticator allows every request -->
+    <record id="cx_tower_webhook_metric_demo" model="cx.tower.webhook">
+        <field name="name">Monitoring: Push Metrics</field>
+        <field name="active" eval="False" />
+        <field name="reference">demo_metric_push</field>
+        <field name="endpoint">demo_metric_push</field>
+        <field name="method">post</field>
+        <field name="content_type">json</field>
+        <field
+            name="authenticator_id"
+            ref="cx_tower_webhook_authenticator_metric_demo"
+        />
+        <field
+            name="code"
+        >server = tower_servers.get_by_reference(payload.get("server_reference"))
+if not server:
+    result = {"exit_code": 1, "message": "Server not found"}
+else:
+    recorded = []
+    for item in payload.get("metrics") or []:
+        server.record_metric(
+            item["reference"],
+            value=item.get("value"),
+            used=item.get("used"),
+            total=item.get("total"),
+        )
+        recorded.append(item["reference"])
+    result = {"exit_code": 0, "message": "Recorded: %s" % ", ".join(recorded)}
+</field>
+    </record>
+</odoo>

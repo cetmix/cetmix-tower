@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_server_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.server.template.view.form.monitoring</field>
+        <field name="model">cx.tower.server.template</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_server_template_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page
+                    name="metrics"
+                    string="Metrics"
+                    groups="cetmix_tower_base.group_manager"
+                >
+                    <field name="metric_ids">
+                        <list>
+                            <field name="name" />
+                            <field name="reference" optional="show" />
+                            <field name="widget" optional="hide" />
+                            <field name="unit" optional="hide" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

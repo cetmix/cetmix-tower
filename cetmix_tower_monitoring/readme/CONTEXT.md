@@ -1,0 +1,3 @@
+Operators of [Cetmix Tower](https://tower.cetmix.com) need to see at a glance whether a server or a jet is healthy: how full its disk is, how much memory is used, what the load is. Opening Grafana or another monitoring tool for this means leaving Odoo and matching hosts by name.
+
+This module shows the current value of such parameters directly on the server and the jet in Odoo. It is not a replacement for Grafana or Prometheus: it keeps only the latest value of each metric, with no history and no graphs. Values are collected with the tools Cetmix Tower already has: commands, flight plans, scheduled tasks and webhooks.
