@@ -1,0 +1,908 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cetmix_tower_monitoring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid "<span>Check stale metrics</span>"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid ""
+"<span>Collectors of metrics with 'Pull data, minutes' set will be run "
+"automatically using cron job on servers with 'Pull data' enabled and their "
+"jets.</span>"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid ""
+"<span>Metric values that are not updated in time will be marked as stale "
+"using cron job.</span>"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid "<span>Pull metric data</span>"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_command.py:0
+msgid "A helper shortcut to <code>env['cx.tower.metric']</code>"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_command.py:0
+msgid "A helper shortcut to <code>env['cx.tower.metric.value']</code>"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.constraint,message:cetmix_tower_monitoring.constraint_cx_tower_metric_value_metric_jet_unique
+msgid "A jet can have only one value per metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.constraint,message:cetmix_tower_monitoring.constraint_cx_tower_jet_template_metric_jet_template_metric_unique
+msgid "A metric can be added to a Jet Template only once"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.constraint,message:cetmix_tower_monitoring.constraint_cx_tower_metric_value_server_or_jet
+msgid "A metric value belongs to exactly one server or one jet"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.constraint,message:cetmix_tower_monitoring.constraint_cx_tower_metric_value_metric_server_unique
+msgid "A server can have only one value per metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__stale_after_minutes
+msgid "A value not updated for this many minutes becomes stale"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__action
+msgid "Action"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__active
+msgid "Active"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__manual
+msgid ""
+"Added by a user or by record_metric(). Values added from the Jet Template "
+"are not manual"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_search
+msgid "Archived"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_jet__has_metric_collector
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_mixin__has_metric_collector
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_server__has_metric_collector
+msgid "At least one metric has a collector command or flight plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__reference
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__reference
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_threshold__reference
+msgid ""
+"Can contain English letters, digits and '_'. Leave blank to autogenerate"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_environment.py:0
+msgid ""
+"Cannot delete environment(s) %(environments)s: they are used in Jet Template"
+" metrics %(metrics)s."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_command
+msgid "Cetmix Tower Command"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_command_log
+msgid "Cetmix Tower Command Log"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_environment
+msgid "Cetmix Tower Environment"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_plan
+msgid "Cetmix Tower Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_plan_line
+msgid "Cetmix Tower Flight Plan Line"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_plan_log
+msgid "Cetmix Tower Flight Plan Log"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_jet
+msgid "Cetmix Tower Jet"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_jet_template
+msgid "Cetmix Tower Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_jet_template_metric
+msgid "Cetmix Tower Jet Template Metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_metric
+msgid "Cetmix Tower Metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_metric_mixin
+msgid "Cetmix Tower Metric Mixin"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_metric_threshold
+msgid "Cetmix Tower Metric Threshold"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_metric_value
+msgid "Cetmix Tower Metric Value"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_server
+msgid "Cetmix Tower Server"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_server_template
+msgid "Cetmix Tower Server Template"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_command.py:0
+msgid "Cetmix Tower metric whose threshold runs this command"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.actions.server,name:cetmix_tower_monitoring.ir_cron_cx_tower_metric_value_check_stale_ir_actions_server
+msgid "Cetmix Tower: Check stale metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.actions.server,name:cetmix_tower_monitoring.ir_cron_cx_tower_metric_value_pull_data_ir_actions_server
+msgid "Cetmix Tower: Pull metric data"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid "Check stale metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__command_id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__command_id
+msgid "Collector Command"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__plan_id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__plan_id
+msgid "Collector Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid ""
+"Collectors of metrics with 'Pull data, minutes' set will be run "
+"automatically using cron job on servers with 'Pull data' enabled and their "
+"jets."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__command_id
+msgid "Command"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__command_id
+msgid ""
+"Command that collects this metric. It must call record_metric() for this "
+"metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__condition
+msgid "Condition"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__create_uid
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__create_date
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_decoration__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_state__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_decoration__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_state__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_threshold__severity__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_value__state__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_decoration__critical
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_state__critical
+msgid "Critical"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid "Cron Job"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_jet_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_server_view_form
+msgid "Current"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_command.py:0
+msgid "Current Cetmix Tower metric value whose threshold runs this command"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__value
+msgid "Current value"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__note
+msgid "Detailed description of the metric: what is measured and how"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__display_name
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__environment_ids
+msgid "Environments"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model,name:cetmix_tower_monitoring.model_cx_tower_webhook_eval_mixin
+msgid "Eval context/code helper for Cetmix Tower Webhook"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.actions.act_window,name:cetmix_tower_monitoring.cx_tower_metric_export_yaml_action
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_form
+msgid "Export YAML"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__plan_id
+msgid "Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__plan_id
+msgid ""
+"Flight plan that collects this metric. It must call record_metric() for this"
+" metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric__widget__gauge
+msgid "Gauge"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_search
+msgid "Group By"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet__has_metric_collector
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_mixin__has_metric_collector
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__has_metric_collector
+msgid "Has Metric Collector"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__id
+msgid "ID"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__jet_id
+msgid "Jet"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__jet_template_id
+msgid "Jet Template"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_jet_template__metric_ids
+msgid "Jets of this template get these metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet__kanban_metric_data
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_mixin__kanban_metric_data
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__kanban_metric_data
+msgid "Kanban Metric Data"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet__kanban_metric_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__kanban_metric_value_ids
+msgid "Kanban Metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__last_pull_data
+msgid "Last Pull Data"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__last_update
+msgid "Last Update"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__write_uid
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__write_date
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_threshold__metric_value_id
+msgid ""
+"Leave empty for a metric threshold. Set to override the metric thresholds "
+"for one server or jet"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__environment_ids
+msgid "Leave empty to apply to all environments"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__manual
+msgid "Manual"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__active_threshold_ids
+msgid "Matching Thresholds"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__metric_id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__metric_id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__metric_id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_plan_log__metric_id
+msgid "Metric"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric.py:0
+msgid ""
+"Metric '%(metric)s' cannot have both a collector command and a collector "
+"flight plan."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_mixin.py:0
+msgid "Metric '%(metric)s' not found."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_mixin.py:0
+msgid "Metric '%(metric)s' requires 'total' greater than 0."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_mixin.py:0
+msgid "Metric '%(metric)s' requires 'used' and 'total'."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_mixin.py:0
+msgid "Metric '%(metric)s' requires 'value'."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_mixin.py:0
+msgid "Metric '%(metric)s' values must be finite numbers."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_mixin.py:0
+msgid "Metric '%(metric)s' values must be numbers: %(error)s"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric.py:0
+msgid "Metric '%(metric)s': 'Pull data, minutes' cannot be negative."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_command_log__metric_pull_data
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_plan_log__metric_pull_data
+msgid "Metric Pull Data"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__metric_value_id
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_plan_log__metric_value_id
+msgid "Metric Value"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_value.py:0
+msgid ""
+"Metric value '%(metric)s' cannot have both a collector command and a "
+"collector flight plan."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_plan_log__metric_value_id
+msgid "Metric value whose threshold runs this flight plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid ""
+"Metric values that are not updated in time will be marked as stale using "
+"cron job."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_plan_log__metric_id
+msgid "Metric whose threshold runs this flight plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.actions.act_window,name:cetmix_tower_monitoring.cx_tower_metric_action
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet__metric_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template__metric_ids
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__metric_value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server_template__metric_ids
+#: model:ir.ui.menu,name:cetmix_tower_monitoring.cx_tower_metric_menu
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_jet_template_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_server_template_view_form
+msgid "Metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.ui.menu,name:cetmix_tower_monitoring.cx_tower_monitoring_menu_root
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_jet_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_server_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid "Monitoring"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet__monitoring_decoration
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_mixin__monitoring_decoration
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__monitoring_decoration
+msgid "Monitoring Decoration"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet__monitoring_state
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_mixin__monitoring_state
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__monitoring_state
+msgid "Monitoring State"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__name
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__name
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__name
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__name
+msgid "Name"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_threshold__action__none
+msgid "None"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__note
+msgid "Note"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric__widget__number
+msgid "Number"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_decoration__ok
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_state__ok
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_decoration__ok
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_state__ok
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_value__state__ok
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_decoration__ok
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_state__ok
+msgid "OK"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_value_view_form
+msgid "Override Thresholds"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__threshold_ids
+msgid ""
+"Override thresholds. If set, the metric thresholds are not used for this "
+"value"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__command_id
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__plan_id
+msgid "Overrides the collector of the metric for this server or jet"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric__widget__progressbar
+msgid "Progress Bar"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__widget
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__widget
+msgid ""
+"Progress Bar: used of total. Gauge: value, with an optional maximum. Number:"
+" plain value."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_server__monitoring_pull_data
+msgid "Pull data"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__pull_data_minutes
+msgid "Pull data, minutes"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.res_config_settings_view_form
+msgid "Pull metric data"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_server__monitoring_pull_data
+msgid ""
+"Pull metric data of this server and its jets on schedule, for metrics with "
+"'Pull data, minutes' set"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__reference
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__reference
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__reference
+msgid "Reference"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_jet_view_form
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_server_view_form
+msgid "Refresh"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/tests/test_metric_pull_data.py:0
+msgid "Rendering failed"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_threshold__action__command
+msgid "Run Command"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_threshold__action__plan
+msgid "Run Flight Plan"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__pull_data_minutes
+msgid ""
+"Run the collector of every value of this metric every N minutes, on servers "
+"with 'Pull data' enabled and their jets. 0 = off. Values are pulled on the "
+"first run of the 'Cetmix Tower: Pull metric data' scheduled action after N "
+"minutes have passed"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_threshold__action
+msgid "Run when the condition becomes matched"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__server_id
+msgid "Server"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_server_template__metric_ids
+msgid "Servers created from this template get these metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__severity
+msgid "Severity"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__show_on_kanban
+msgid "Show On Kanban"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__show_on_kanban
+msgid "Show this metric on the server and jet kanban cards"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_decoration__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_state__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_decoration__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_state__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_threshold__condition__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_value__state__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_decoration__stale
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_state__stale
+msgid "Stale"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__stale_after_minutes
+msgid "Stale After Minutes"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_threshold__condition
+msgid ""
+"Stale: the value was not updated in time. For progress bar metrics other "
+"conditions compare used / total in percent"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_command_log__metric_pull_data
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_plan_log__metric_pull_data
+msgid "Started by metric data pull. Deleted when the run is done"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__state
+msgid "State"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_jet__monitoring_state
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_mixin__monitoring_state
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_server__monitoring_state
+msgid "The worst state of the metrics"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__threshold_ids
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__threshold_ids
+msgid "Threshold"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_threshold.py:0
+msgid "Threshold of metric '%(metric)s' must have a command."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_threshold.py:0
+msgid "Threshold of metric '%(metric)s' must have a flight plan."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#. odoo-python
+#: code:addons/cetmix_tower_monitoring/models/cx_tower_metric_threshold.py:0
+msgid "Threshold of metric '%(metric)s' must have a severity."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_form
+msgid "Thresholds"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__max_value
+msgid "Total"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__max_value
+msgid "Total or maximum value"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__unit
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__unit
+msgid "Unit"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric__unit
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__unit
+msgid "Unit shown next to the value, e.g. GiB or %"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_decoration__unknown
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_state__unknown
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_decoration__unknown
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_state__unknown
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_value__state__unknown
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_decoration__unknown
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_state__unknown
+msgid "Unknown"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__value_ids
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__value_float
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__value
+msgid "Value"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_threshold__severity
+msgid "Value severity while the condition matches"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_threshold__value_float
+msgid "Value to compare with. For progress bar metrics: percent"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_decoration__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_jet__monitoring_state__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_decoration__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_mixin__monitoring_state__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_threshold__severity__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_metric_value__state__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_decoration__warning
+#: model:ir.model.fields.selection,name:cetmix_tower_monitoring.selection__cx_tower_server__monitoring_state__warning
+msgid "Warning"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,help:cetmix_tower_monitoring.field_cx_tower_metric_value__last_pull_data
+msgid "When the last data pull run for this value started"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__widget
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_value__widget
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_search
+msgid "Widget"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_form
+msgid "YAML"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_jet_template_metric__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric__yaml_code
+#: model:ir.model.fields,field_description:cetmix_tower_monitoring.field_cx_tower_metric_threshold__yaml_code
+msgid "Yaml Code"
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_form
+msgid "You must be a member of the \"YAML/Export\" group to export data as YAML."
+msgstr ""
+
+#. module: cetmix_tower_monitoring
+#: model_terms:ir.ui.view,arch_db:cetmix_tower_monitoring.cx_tower_metric_view_form
+msgid "e.g. Root Disk"
+msgstr ""
