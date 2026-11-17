@@ -1,3 +1,8 @@
+## 18.0.4.2.0 (2026-11-17)
+
+- Features: Python commands get flight_plan_log, the log of the flight plan they run in, to read the results of the previous lines. Extra keyword arguments of a command run now reach the Python command evaluation context, so that other modules can add their own objects to it. (5573)
+
+
 ## 18.0.4.1.1 (2026-11-17)
 
 - Features: Added the "Open jets" link to the server kanban card. (5736)

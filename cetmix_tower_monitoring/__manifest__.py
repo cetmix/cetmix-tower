@@ -3,7 +3,7 @@
 {
     "name": "Cetmix Tower Monitoring",
     "summary": "Current server and jet metrics in Cetmix Tower",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "category": "Productivity",
     "website": "https://tower.cetmix.com",
     "author": "Cetmix",
