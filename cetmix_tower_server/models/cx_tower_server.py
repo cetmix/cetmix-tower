@@ -2318,7 +2318,6 @@ class CxTowerServer(models.Model):
             eval_kwargs.update(
                 jet_template=jet_template,
                 jet=jet,
-                waypoint=waypoint,
                 variable_values=kwargs.get("variable_values", {}),
             )
             eval_kwargs.pop("server", None)
