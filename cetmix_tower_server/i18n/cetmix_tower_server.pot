@@ -4111,6 +4111,17 @@ msgstr ""
 #. module: cetmix_tower_server
 #. odoo-python
 #: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
+msgid ""
+"Log of the flight plan this command is running in. Use "
+"<code>flight_plan_log.command_log_ids</code> to read the results of the "
+"previous lines. In a nested flight plan this is the nested plan log, its "
+"parent is <code>flight_plan_log.parent_flight_plan_log_id</code>. None "
+"outside a flight plan"
+msgstr ""
+
+#. module: cetmix_tower_server
+#. odoo-python
+#: code:addons/cetmix_tower_server/models/cx_tower_command.py:0
 msgid "Logger object. Use with caution! Only for debugging purposes."
 msgstr ""
 
