@@ -13,7 +13,6 @@ class CxTowerGitRepoOwner(models.Model):
         help="GitHub owner id returned by GitHub. Not shown in the UI.",
     )
     secret_id = fields.Many2one(
-        comodel_name="cx.tower.key",
         help="Secret sent when listing branches, pull requests, and"
         " commits for repositories of this owner, and when reading the"
         " GitHub repository id. Used when the repository Secret is empty."

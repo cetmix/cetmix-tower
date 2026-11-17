@@ -231,7 +231,7 @@ class CxTowerGitRepo(models.Model):
             raise UserError(
                 self.env._("GitHub returned an unexpected response.")
             ) from error
-        if not isinstance(payload, dict) or not self._git_github_payload_valid(payload):
+        if not self._git_github_payload_valid(payload):
             raise UserError(self.env._("GitHub returned an unexpected response."))
         return payload
 
@@ -265,11 +265,19 @@ class CxTowerGitRepo(models.Model):
 
         Args:
             payload (dict): GitHub repository payload.
-            raise_errors (bool): Whether owner clashes open the wizard.
+            raise_errors (bool): When true, a differing owner id is recorded
+                for the wizard, and ``AccessError`` while writing that id
+                is raised. When false, a differing id is left unchanged and
+                that ``AccessError`` is logged.
             wizard_lines (list[dict]): Wizard lines to extend on clash.
 
+        Raises:
+            AccessError: The caller cannot write this repository. Also
+                raised when the caller cannot write the owner's GitHub id
+                and ``raise_errors`` is set.
+
         Returns:
-            bool: False; wizard action is built from ``wizard_lines``.
+            bool: False. A clash is recorded on ``wizard_lines``.
         """
         self.ensure_one()
         repo = self
