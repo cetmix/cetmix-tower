@@ -13,6 +13,7 @@
                 <field name="ip_v4_address" />
                 <field name="ip_v6_address" />
                 <field name="color" />
+                <field name="jet_count" />
                 <templates>
                     <t t-name="menu">
                         <div class="container">
@@ -91,6 +92,16 @@
                                 options="{'color_field': 'color'}"
                                 invisible="not tag_ids"
                             />
+                            <a
+                                t-if="record.jet_count.raw_value"
+                                type="object"
+                                name="action_open_jets"
+                                title="Open jets"
+                                class="ms-auto text-nowrap"
+                            >
+                                <i class="fa fa-plane me-1" />
+                                <field name="jet_count" />
+                            </a>
                         </footer>
                     </t>
                 </templates>
