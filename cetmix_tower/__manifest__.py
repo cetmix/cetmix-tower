@@ -17,6 +17,8 @@
         "cetmix_tower_server",
         "cetmix_tower_server_queue",
         "cetmix_tower_git",
+        "cetmix_tower_git_github",
         "cetmix_tower_webhook",
+        "cetmix_tower_monitoring",
     ],
 }

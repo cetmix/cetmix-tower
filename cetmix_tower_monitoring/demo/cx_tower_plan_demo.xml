@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <!-- Flight plan wrapping the Python collector -->
+    <record id="cx_tower_plan_metric_collector_demo" model="cx.tower.plan">
+        <field name="name">Monitoring: Collect Disk and Memory</field>
+        <field name="reference">demo_metric_collect_disk_ram_plan</field>
+        <field name="note">Runs the Python collector of disk_root and ram</field>
+    </record>
+    <record id="cx_tower_plan_line_metric_collector_demo" model="cx.tower.plan.line">
+        <field name="plan_id" ref="cx_tower_plan_metric_collector_demo" />
+        <field name="sequence">10</field>
+        <field name="command_id" ref="cx_tower_command_metric_collector_demo" />
+    </record>
+</odoo>

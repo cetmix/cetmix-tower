@@ -1,0 +1,1 @@
+Python commands get flight_plan_log, the log of the flight plan they run in, to read the results of the previous lines. Extra keyword arguments of a command run now reach the Python command evaluation context, so that other modules can add their own objects to it.

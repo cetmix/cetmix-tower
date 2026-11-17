@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_metric_user,Metric: user,model_cx_tower_metric,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_metric_manager,Metric: manager,model_cx_tower_metric,cetmix_tower_base.group_manager,1,0,0,0
+access_cx_tower_metric_root,Metric: root,model_cx_tower_metric,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_metric_threshold_user,Metric threshold: user,model_cx_tower_metric_threshold,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_metric_threshold_manager,Metric threshold: manager,model_cx_tower_metric_threshold,cetmix_tower_base.group_manager,1,1,1,1
+access_cx_tower_metric_threshold_root,Metric threshold: root,model_cx_tower_metric_threshold,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_metric_value_user,Metric value: user,model_cx_tower_metric_value,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_metric_value_manager,Metric value: manager,model_cx_tower_metric_value,cetmix_tower_base.group_manager,1,1,1,1
+access_cx_tower_metric_value_root,Metric value: root,model_cx_tower_metric_value,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_jet_template_metric_user,Jet template metric: user,model_cx_tower_jet_template_metric,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_jet_template_metric_manager,Jet template metric: manager,model_cx_tower_jet_template_metric,cetmix_tower_base.group_manager,1,1,1,1
+access_cx_tower_jet_template_metric_root,Jet template metric: root,model_cx_tower_jet_template_metric,cetmix_tower_base.group_root,1,1,1,1
