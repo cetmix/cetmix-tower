@@ -513,7 +513,7 @@ class CxTowerCommand(models.Model):
         return python_libraries
 
     def _get_python_command_odoo_objects(
-        self, server=None, jet_template=None, jet=None, waypoint=None
+        self, server=None, jet_template=None, jet=None, waypoint=None, **kwargs
     ):
         """
         This method is used to import Odoo objects.
@@ -527,6 +527,9 @@ class CxTowerCommand(models.Model):
             jet_template: Jet template to get the Odoo objects for.
             jet: Jet to get the Odoo objects for.
             waypoint: Waypoint to get the Odoo objects for.
+            **kwargs: Other values passed to the command run.
+                Extending modules read their own objects from them.
+                ``log["plan_log_id"]`` gives the current flight plan log.
 
         Returns:
             dict: Available Odoo objects:
@@ -535,6 +538,11 @@ class CxTowerCommand(models.Model):
                     "help": <object_help_html>
                 }}
         """
+        # A flight plan line passes its plan log in the command log values
+        plan_log_id = (kwargs.get("log") or {}).get("plan_log_id")
+        flight_plan_log = (
+            self.env["cx.tower.plan.log"].browse(plan_log_id) if plan_log_id else None
+        )
         return {
             "uid": {"import": self._uid, "help": _("Current Odoo user ID")},
             "user": {"import": self.env.user, "help": _("Current Odoo user")},
@@ -557,6 +565,17 @@ class CxTowerCommand(models.Model):
                 "import": waypoint,
                 "help": _(
                     "Current Cetmix Tower Jet waypoint this command is running on"
+                ),
+            },
+            "flight_plan_log": {
+                "import": flight_plan_log,
+                "help": _(
+                    "Log of the flight plan this command is running in. "
+                    "Use <code>flight_plan_log.command_log_ids</code> to read "
+                    "the results of the previous lines. "
+                    "In a nested flight plan this is the nested plan log, "
+                    "its parent is <code>flight_plan_log.parent_flight_plan_log_id"
+                    "</code>. None outside a flight plan"
                 ),
             },
             "tower": {
@@ -630,18 +649,10 @@ class CxTowerCommand(models.Model):
             dict: Evaluation context for the python command.
         """
 
-        # Get the jet template, jet and waypoint from kwargs
-        jet_template = kwargs.get("jet_template")
-        jet = kwargs.get("jet")
-        waypoint = kwargs.get("waypoint")
-
-        # Get the Odoo objects first
-        imports = self._get_python_command_odoo_objects(
-            server=server,
-            jet_template=jet_template,
-            jet=jet,
-            waypoint=waypoint,
-        )
+        # Get the Odoo objects first.
+        # Other kwargs are passed on so that extending modules
+        # can add their own objects to the evaluation context.
+        imports = self._get_python_command_odoo_objects(server=server, **kwargs)
 
         # Update with the libraries
         imports.update(self._get_python_command_libraries())
