@@ -4,9 +4,11 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import yaml
+from psycopg2 import errors
 
-from odoo import _
+from odoo import SUPERUSER_ID, _, api, sql_db
 from odoo.exceptions import AccessError, ValidationError
+from odoo.tests import TransactionCase, tagged
 from odoo.tools import mute_logger
 
 from odoo.addons.cetmix_tower_server.tests.common_jets import TestTowerJetsCommon
@@ -379,6 +381,134 @@ class TestTowerBackup(BackupCommon):
         self.assertEqual(backup.state, "done")
         self.assertEqual(backup.backup_size, 2048.25)
 
+    def test_busy_action_returns_status_and_finishes_calling_command(self):
+        """Expected busy admission must not abandon a jet_action command log."""
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        result = self.source._trigger_action(
+            self.action_create, raise_if_not_available=False
+        )
+        self.assertEqual(result["status"], -505)
+        command = self.Command.create(
+            {
+                "name": "Busy Jet action",
+                "action": "jet_action",
+                "jet_action_id": self.action_create.id,
+                "jet_template_id": self.template.id,
+            }
+        )
+        result = self.source.run_command(command)
+        self.assertNotEqual(result["status"], 0)
+        log = self.CommandLog.search(
+            [("command_id", "=", command.id)], order="id desc", limit=1
+        )
+        self.assertFalse(log.is_running)
+        self.assertNotEqual(log.command_status, 0)
+        self.assertEqual(backup.state, "running")
+
+    def test_nonraising_action_recovers_transaction_conflicts(self):
+        """Real PostgreSQL errors are contained before they can retry prior work."""
+        for code in ("55P03", "40001"):
+
+            def conflict(jet, error_code=code):
+                jet.env.cr.execute(
+                    "DO $$ BEGIN RAISE EXCEPTION 'busy' USING ERRCODE = %s; END $$",
+                    [error_code],
+                )
+
+            with (
+                self.subTest(code=code),
+                self.env.cr.savepoint(),
+                mute_logger("odoo.sql_db"),
+                patch.object(type(self.source), "_lock_backup_operation", conflict),
+            ):
+                result = self.source._trigger_action(
+                    self.action_create, raise_if_not_available=False
+                )
+                self.assertEqual(result["status"], -505)
+                self.env.cr.execute("SELECT 1")
+                self.assertEqual(self.env.cr.fetchone(), (1,))
+
+    def test_cleanup_skips_conflicted_backup_and_continues(self):
+        """Each failed upload is independent and remains retryable after contention."""
+        self.backup_template.plan_delete_id = self.delete_plan
+        original = type(self.Backup)._start_delete
+        for code in ("55P03", "40001"):
+            first = self._backup(state="failed")
+            second = self._backup(state="failed")
+
+            def conflict(backup, *args, backup_id=first.id, error_code=code, **kwargs):
+                if backup.id == backup_id:
+                    backup.env.cr.execute(
+                        "DO $$ BEGIN RAISE EXCEPTION 'busy' USING ERRCODE = %s; END $$",
+                        [error_code],
+                    )
+                return original(backup, *args, **kwargs)
+
+            with (
+                self.subTest(code=code),
+                self.env.cr.savepoint(),
+                mute_logger("odoo.sql_db"),
+                patch.object(type(self.Backup), "_start_delete", conflict),
+            ):
+                self.Backup._run_cleanup()
+            self.assertTrue(first.exists())
+            self.assertEqual(first.state, "failed")
+            self.assertFalse(second.exists())
+            self.env.cr.execute("SELECT 1")
+            self.assertEqual(self.env.cr.fetchone(), (1,))
+            self.Backup._run_cleanup()
+            self.assertFalse(first.exists())
+
+    def test_interactive_delete_reports_busy_jet(self):
+        """The Delete button reports a busy Jet without changing the backup."""
+        self.backup_template.plan_delete_id = self.delete_plan
+        backup = self._backup()
+        self.source.target_state_id = self.state_running
+        with self.assertRaisesRegex(ValidationError, "Jet is busy"):
+            backup.action_delete()
+        self.assertEqual(backup.state, "done")
+        backup.unlink()
+        self.assertTrue(backup.exists())
+        self.source.target_state_id = False
+        backup.action_delete()
+        self.assertFalse(backup.exists())
+
+    def test_busy_jet_keeps_waypoint_ready_for_delete_retry(self):
+        """Admission must succeed before a linked waypoint enters Deleting."""
+        self.backup_template.plan_delete_id = self.delete_plan
+        backup = self._backup()
+        template = self.env["cx.tower.jet.waypoint.template"].create(
+            {
+                "name": "Busy delete waypoint",
+                "jet_template_id": self.template.id,
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        waypoint = self.env["cx.tower.jet.waypoint"].create(
+            {
+                "name": "Busy delete",
+                "jet_id": self.source.id,
+                "waypoint_template_id": template.id,
+                "backup_id": backup.id,
+                "state": "ready",
+            }
+        )
+        self.source.target_state_id = self.state_running
+        with self.assertRaises(ValidationError):
+            waypoint.unlink()
+        self.assertEqual(waypoint.state, "ready")
+        self.assertEqual(backup.state, "done")
+        with mute_logger(
+            "odoo.addons.cetmix_tower_backup.models.cx_tower_jet_waypoint"
+        ):
+            waypoint.with_context(waypoint_no_raise_on_delete=True).unlink()
+        self.assertEqual(waypoint.state, "ready")
+        self.source.target_state_id = False
+        waypoint.unlink()
+        self.assertFalse(waypoint.exists())
+        self.assertFalse(backup.exists())
+
     def test_capture_and_python_context(self):
         variable = self.Variable.create(
             {"name": "Backup own value", "reference": "backup_own_value"}
@@ -426,6 +556,7 @@ class TestTowerBackup(BackupCommon):
                 backup = self.source.create_backup(self.backup_template)
             backup.plan_log_ids.command_log_ids.finish(status=status)
             self.assertEqual(backup.state, "failed")
+            self.assertFalse(self.source.active_backup_id)
             with self.assertRaises(ValidationError):
                 backup.restore(self.server_test_1, state=self.state_running)
 
@@ -445,12 +576,200 @@ class TestTowerBackup(BackupCommon):
         self.source.target_state_id = self.state_running
         with self.assertRaises(ValidationError):
             self.source.create_backup(self.backup_template)
-        self.assertEqual(
-            self.source.create_backup(self.backup_template, ignore_busy=True).state,
-            "done",
-        )
+        with self.assertRaises(ValidationError):
+            self.source.create_backup(self.backup_template, ignore_busy=True)
         with self.assertRaises(ValidationError):
             self.source.create_backup(self.backup_template, waypoint=self.waypoint)
+
+    def test_backup_claim_blocks_new_actions_and_other_backups(self):
+        """An active backup reserves the Jet even without a lifecycle transition."""
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        self.assertEqual(self.source.active_backup_id, backup)
+        self.assertTrue(self.source._is_busy())
+        for operation in (
+            lambda: self.source.create_backup(self.backup_template),
+            lambda: self.source.create_backup(self.backup_template, ignore_busy=True),
+            lambda: self.source._trigger_action(self.action_create),
+            lambda: self.source.bring_to_state(self.state_running.reference),
+        ):
+            with self.assertRaises(ValidationError):
+                operation()
+        backup.plan_log_ids.command_log_ids.finish(status=-1)
+        self.assertFalse(self.source.active_backup_id)
+        self.assertFalse(self.source._is_busy())
+        self.assertEqual(self.source.create_backup(self.backup_template).state, "done")
+
+    def test_standalone_backup_command_cannot_bypass_another_backup(self):
+        """Empty action links never establish ownership of a backup claim."""
+        command = self.Command.create(
+            {
+                "name": "Independent backup request",
+                "action": "create_backup",
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        caller = self.Plan.create(
+            {
+                "name": "Independent backup plan",
+                "line_ids": [(0, 0, {"command_id": command.id})],
+            }
+        )
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        log = self.source.run_flight_plan(caller)
+        self.assertEqual(log.plan_status, -510)
+        self.assertEqual(self.source.active_backup_id, backup)
+        self.assertEqual(self.Backup.search_count([("jet_id", "=", self.source.id)]), 1)
+
+    def test_action_owned_backup_and_lifecycle_continuations(self):
+        """A current action may await its own backup, then continue its state path."""
+        command = self.Command.create(
+            {
+                "name": "Action-owned backup request",
+                "action": "create_backup",
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        child = self.Plan.create(
+            {
+                "name": "Action-owned backup child",
+                "line_ids": [(0, 0, {"command_id": command.id})],
+            }
+        )
+        wrapper = self.Command.create(
+            {
+                "name": "Run action-owned backup child",
+                "action": "plan",
+                "flight_plan_id": child.id,
+            }
+        )
+        plan = self.Plan.create(
+            {
+                "name": "Action-owned backup root",
+                "line_ids": [(0, 0, {"command_id": wrapper.id})],
+            }
+        )
+        for name, state_from, state_to, action_plan in (
+            ("Prepare", False, self.state_initial, plan),
+            ("Build", self.state_initial, self.state_stopped, self.restore_plan),
+            ("Start", self.state_stopped, self.state_running, self.restore_plan),
+        ):
+            self.JetAction.create(
+                {
+                    "name": name,
+                    "jet_template_id": self.template.id,
+                    "state_from_id": state_from and state_from.id,
+                    "state_to_id": state_to.id,
+                    "state_transit_id": self.state_starting.id,
+                    "plan_id": action_plan.id,
+                }
+            )
+        self.source.with_user(self.root).bring_to_state(self.state_running.reference)
+        self.assertEqual(self.source.state_id, self.state_running)
+        self.assertFalse(self.source.current_action_id)
+        self.assertFalse(self.source.target_state_id)
+        self.assertFalse(self.source.active_backup_id)
+        backup = self.Backup.search([("jet_id", "=", self.source.id)])
+        self.assertEqual(backup.state, "done")
+
+    def test_update_action_admits_only_its_own_backup(self):
+        """An Update admits its backup while excluding standalone and cron triggers."""
+        command = self.Command.create(
+            {
+                "name": "Update backup",
+                "action": "create_backup",
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        plan = self.Plan.create(
+            {
+                "name": "Update with backup",
+                "line_ids": [(0, 0, {"command_id": command.id})],
+            }
+        )
+        action = self.JetAction.create(
+            {
+                "name": "Update",
+                "jet_template_id": self.template.id,
+                "state_to_id": self.state_running.id,
+                "state_transit_id": self.state_starting.id,
+                "plan_id": plan.id,
+            }
+        )
+        with self._defer():
+            self.source._trigger_action(action)
+        action_log = self.PlanLog.search([("jet_action_id", "=", action.id)])
+        self.assertTrue(action_log.is_running)
+        standalone_command = self.Command.create(
+            {
+                "name": "Standalone backup during Update",
+                "action": "create_backup",
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        with self.assertRaisesRegex(ValidationError, "currently executing an action"):
+            self.source.run_command(standalone_command)
+        self.server_test_1.run_command(standalone_command, jet=self.source)
+        standalone = self.CommandLog.search(
+            [("command_id", "=", standalone_command.id), ("plan_log_id", "=", False)]
+        )
+        self.assertEqual(standalone.command_status, -510)
+        task = self.env["cx.tower.scheduled.task"].create(
+            {
+                "name": "Scheduled backup during Update",
+                "action": "backup",
+                "backup_template_id": self.backup_template.id,
+                "jet_ids": [(4, self.source.id)],
+            }
+        )
+        with mute_logger(
+            "odoo.addons.cetmix_tower_backup.models.cx_tower_scheduled_task"
+        ):
+            self.assertTrue(task._run_action())
+        self.assertFalse(self.Backup.search([("jet_id", "=", self.source.id)]))
+        with self._defer():
+            result = self.server_test_1._command_runner_create_backup(
+                action_log.command_log_ids
+            )
+        self.assertEqual(result["status"], 0)
+        backup = self.Backup.browse(result["response"]["backup_id"])
+        self.assertEqual(self.source.active_backup_id, backup)
+        with self.assertRaises(ValidationError):
+            self.source.create_backup(
+                self.backup_template,
+                ignore_busy=True,
+                created_from_command_log=action_log.command_log_ids,
+            )
+        self.assertEqual(self.source.active_backup_id, backup)
+        backup.plan_log_ids.command_log_ids.finish(status=0)
+        self.assertEqual(backup.state, "done")
+        self.assertFalse(self.source.active_backup_id)
+        self.assertEqual(self.source.state_id, self.state_running)
+
+    def test_old_completion_preserves_newer_backup_claim(self):
+        """A delayed result cannot release a different operation's reservation."""
+        with self._defer():
+            old = self.source.create_backup(self.backup_template)
+        newer = self._backup(state="running")
+        self.source.active_backup_id = newer
+        old.plan_log_ids.command_log_ids.finish(status=0)
+        self.assertEqual(old.state, "done")
+        self.assertEqual(self.source.active_backup_id, newer)
+        self.assertTrue(self.source._is_busy())
+
+    def test_delete_claim_blocks_action_and_releases_on_failure(self):
+        """Deletion holds the same durable reservation until its plan finishes."""
+        self.backup_template.plan_delete_id = self.delete_plan
+        backup = self._backup()
+        with self._defer():
+            backup.unlink()
+        self.assertEqual(self.source.active_backup_id, backup)
+        with self.assertRaises(ValidationError):
+            self.source._trigger_action(self.action_create)
+        backup.plan_log_ids.command_log_ids.finish(status=-1)
+        self.assertEqual(backup.state, "delete_failed")
+        self.assertFalse(self.source.active_backup_id)
 
     def test_custom_value_precedence(self):
         backup = self._backup(
@@ -538,6 +857,8 @@ class TestTowerBackup(BackupCommon):
         waiting = self._backup()
         waiting.unlink()
         self.assertEqual(waiting.state, "done")
+        with self.assertRaisesRegex(ValidationError, "Delete plan is already running"):
+            waiting.action_delete()
         log.command_log_ids.finish(status=0)
         waiting.unlink()
         self.assertFalse(waiting.exists())
@@ -955,6 +1276,7 @@ class TestTowerBackup(BackupCommon):
             [("command_id", "=", command.id)], order="id desc", limit=1
         )
         self.assertEqual(log.command_status, -510)
+        self.assertFalse(self.source.active_backup_id)
         self.assertFalse(self.Backup.search([("jet_id", "=", self.source.id)]))
         self.assertFalse(
             self.PlanLog.search(
@@ -1016,7 +1338,7 @@ class TestTowerBackup(BackupCommon):
         )
         backup = self.source.create_backup(self.backup_template)
         backups = self.Backup.search([("jet_id", "=", self.source.id)])
-        self.assertEqual(len(backups), 2)
+        self.assertEqual(len(backups), 1)
         self.assertEqual(backup.state, "failed")
         self.assertEqual(set(backups.mapped("state")), {"failed"})
 
@@ -1264,3 +1586,122 @@ class TestTowerBackup(BackupCommon):
         waypoint.unlink()
         self.assertFalse(waypoint.exists())
         self.assertFalse(backup.exists())
+
+
+@tagged("post_install", "-at_install")
+class TestBackupClaimTransactions(TransactionCase):
+    def test_row_claim_rejects_locked_and_stale_snapshot_admission(self):
+        """Real independent transactions cannot admit an overlapping operation."""
+        database = sql_db.db_connect(self.env.cr.dbname)
+        with database.cursor() as setup_cr:
+            setup_env = api.Environment(
+                setup_cr,
+                SUPERUSER_ID,
+                {"tracking_disable": True, "skip_ssh_settings_check": True},
+            )
+            server = setup_env["cx.tower.server"].create(
+                {
+                    "name": "Backup claim concurrency server",
+                    "ssh_auth_mode": "p",
+                    "ssh_username": "test",
+                }
+            )
+            template = setup_env["cx.tower.jet.template"].create(
+                {"name": "Backup claim concurrency template"}
+            )
+            jet = setup_env["cx.tower.jet"].create(
+                {
+                    "name": "Backup claim concurrency Jet",
+                    "server_id": server.id,
+                    "jet_template_id": template.id,
+                }
+            )
+            command = setup_env["cx.tower.command"].create(
+                {
+                    "name": "Backup claim concurrency command",
+                    "access_level": "3",
+                    "action": "python_code",
+                    "code": "result = {'exit_code': 0}",
+                }
+            )
+            plan = setup_env["cx.tower.plan"].create(
+                {
+                    "name": "Backup claim concurrency plan",
+                    "access_level": "3",
+                    "line_ids": [(0, 0, {"command_id": command.id})],
+                }
+            )
+            backup_template = setup_env["cx.tower.backup.template"].create(
+                {
+                    "name": "Backup claim concurrency backup template",
+                    "jet_template_id": template.id,
+                    "plan_backup_id": plan.id,
+                    "plan_restore_id": plan.id,
+                }
+            )
+            ids = {
+                "server": server.id,
+                "template": template.id,
+                "jet": jet.id,
+                "command": command.id,
+                "plan": plan.id,
+                "backup_template": backup_template.id,
+            }
+            # Independent transactions require committed, separately owned fixtures.
+            setup_cr.commit()
+        try:
+            with database.cursor() as first_cr, database.cursor() as second_cr:
+                first_env = api.Environment(first_cr, SUPERUSER_ID, {})
+                second_env = api.Environment(second_cr, SUPERUSER_ID, {})
+                first_jet = first_env["cx.tower.jet"].browse(ids["jet"])
+                second_jet = second_env["cx.tower.jet"].browse(ids["jet"])
+                self.assertFalse(second_jet.active_backup_id)
+                with patch.object(
+                    type(first_env["cx.tower.server"]),
+                    "_get_command_defer_handlers",
+                    return_value=[(1, lambda *args, **kwargs: True)],
+                ):
+                    backup = first_jet.create_backup(
+                        first_env["cx.tower.backup.template"].browse(
+                            ids["backup_template"]
+                        )
+                    )
+                self.assertEqual(first_jet.active_backup_id, backup)
+                with (
+                    mute_logger("odoo.sql_db"),
+                    self.assertRaises(errors.LockNotAvailable),
+                    second_cr.savepoint(),
+                ):
+                    second_jet._check_backup_action_admission()
+                # Publish the claim while request B keeps its original snapshot.
+                first_cr.commit()
+                with (
+                    mute_logger("odoo.sql_db"),
+                    self.assertRaises(errors.SerializationFailure),
+                    second_cr.savepoint(),
+                ):
+                    second_jet._check_backup_action_admission()
+                second_cr.rollback()
+                second_env.invalidate_all()
+                with self.assertRaises(ValidationError):
+                    second_jet._check_backup_action_admission()
+                second_cr.rollback()
+        finally:
+            with database.cursor() as cleanup_cr:
+                cleanup_env = api.Environment(cleanup_cr, SUPERUSER_ID, {})
+                jet = cleanup_env["cx.tower.jet"].browse(ids["jet"])
+                jet.write({"active_backup_id": False})
+                backups = cleanup_env["cx.tower.backup"].search(
+                    [("jet_id", "=", jet.id)]
+                )
+                backups.write({"state": "failed"})
+                backups.unlink()
+                jet.unlink()
+                cleanup_env["cx.tower.server"].browse(ids["server"]).unlink()
+                cleanup_env["cx.tower.backup.template"].browse(
+                    ids["backup_template"]
+                ).unlink()
+                cleanup_env["cx.tower.jet.template"].browse(ids["template"]).unlink()
+                cleanup_env["cx.tower.plan"].browse(ids["plan"]).unlink()
+                cleanup_env["cx.tower.command"].browse(ids["command"]).unlink()
+                cleanup_cr.commit()

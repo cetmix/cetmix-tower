@@ -2,8 +2,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import secrets
 
+from psycopg2 import errors
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+
+from odoo.addons.cetmix_tower_server.models.constants import JET_ACTION_NOT_AVAILABLE
 
 
 class CxTowerJet(models.Model):
@@ -12,6 +16,164 @@ class CxTowerJet(models.Model):
     backup_count = fields.Integer(
         compute="_compute_backup_count", groups="cetmix_tower_base.group_root"
     )
+    active_backup_id = fields.Many2one(
+        "cx.tower.backup",
+        readonly=True,
+        copy=False,
+        ondelete="set null",
+        groups="cetmix_tower_base.group_root",
+        help="Backup operation reserving this Jet against new lifecycle actions.",
+    )
+
+    def _lock_backup_operation(self):
+        """Serialize operation admission against a durable claim on this Jet.
+
+        Returns:
+            None: The row remains locked until the transaction ends.
+        """
+        self.ensure_one()
+        self.flush_recordset(["target_state_id", "active_backup_id"])
+        self.env.cr.execute(
+            "SELECT id FROM cx_tower_jet WHERE id = %s FOR UPDATE NOWAIT",
+            [self.id],
+        )
+        self.invalidate_recordset(
+            ["target_state_id", "current_action_id", "active_backup_id"]
+        )
+
+    def _has_backup_operation(self):
+        """Check running operations, including records created before claims existed.
+
+        Returns:
+            bool: A backup or deletion is still running on this Jet.
+        """
+        self.ensure_one()
+        return bool(
+            self.sudo().active_backup_id
+            or self.env["cx.tower.backup"]
+            .sudo()
+            .search_count(
+                [("jet_id", "=", self.id), ("state", "in", ["running", "deleting"])]
+            )
+        )
+
+    def _is_busy(self):
+        """Include backups without changing the Jet's lifecycle state.
+
+        Returns:
+            bool: A lifecycle action or backup operation reserves this Jet.
+        """
+        return super()._is_busy() or self._has_backup_operation()
+
+    def _check_backup_action_admission(self):
+        """Admit a new lifecycle operation before it writes its own claim.
+
+        Returns:
+            None: The Jet is locked and available for the operation.
+
+        Raises:
+            ValidationError: Another operation already owns the Jet.
+        """
+        self._lock_backup_operation()
+        if self._is_busy():
+            raise ValidationError(self.env._("The Jet is busy with another action."))
+
+    def _trigger_action(
+        self, action, from_transition=False, raise_if_not_available=True, **kwargs
+    ):
+        """Guard direct action requests while preserving admitted continuations.
+
+        Args:
+            action (cx.tower.jet.action): Requested action.
+            from_transition (bool): Continue an already admitted state path.
+            raise_if_not_available (bool): Raise instead of returning a busy status.
+            **kwargs (dict): Arguments forwarded to the lifecycle implementation.
+
+        Returns:
+            dict: Parent action result or unavailable status.
+
+        Raises:
+            ValidationError: The Jet is busy and raising was requested.
+        """
+        if not from_transition:
+            if raise_if_not_available:
+                self._check_backup_action_admission()
+            else:
+                try:
+                    with self.env.cr.savepoint():
+                        self._check_backup_action_admission()
+                except (
+                    ValidationError,
+                    errors.LockNotAvailable,
+                    errors.SerializationFailure,
+                ) as error:
+                    message = (
+                        str(error)
+                        if isinstance(error, ValidationError)
+                        else self.env._("The Jet is busy with another action.")
+                    )
+                    command_log = kwargs.get("current_command_log")
+                    if command_log:
+                        command_log.finish(
+                            status=JET_ACTION_NOT_AVAILABLE, error=message
+                        )
+                    return {"status": JET_ACTION_NOT_AVAILABLE, "error": message}
+        return super()._trigger_action(
+            action,
+            from_transition=from_transition,
+            raise_if_not_available=raise_if_not_available,
+            **kwargs,
+        )
+
+    def bring_to_state(self, *args, **kwargs):
+        """Check external state requests even when a transition already exists.
+
+        Args:
+            *args (tuple): Positional arguments forwarded to the parent.
+            **kwargs (dict): Keyword arguments forwarded to the parent.
+
+        Returns:
+            None: Parent lifecycle result.
+        """
+        self._check_backup_action_admission()
+        return super().bring_to_state(*args, **kwargs)
+
+    def _bring_to_state(self, *args, **kwargs):
+        """Admit initial state paths, including Jet creation, before claiming them.
+
+        Args:
+            *args (tuple): Positional arguments forwarded to the parent.
+            **kwargs (dict): Keyword arguments forwarded to the parent.
+
+        Returns:
+            None: Parent lifecycle result.
+        """
+        if not self.target_state_id:
+            self._check_backup_action_admission()
+        return super()._bring_to_state(*args, **kwargs)
+
+    def _is_action_owned_backup(self, command_log):
+        """Verify that a waiting backup command belongs to the current action.
+
+        Args:
+            command_log (cx.tower.command.log): Triggering Create Backup command.
+
+        Returns:
+            bool: The running root plan belongs to this Jet's current action.
+        """
+        self.ensure_one()
+        action = self.sudo().current_action_id
+        if not action or not command_log:
+            return False
+        log = command_log.sudo().plan_log_id
+        while log.parent_flight_plan_log_id:
+            log = log.parent_flight_plan_log_id
+        return bool(
+            log.is_running
+            and log.jet_id == self
+            and log.jet_action_id
+            and log.jet_action_id == action
+        )
 
     def _compute_backup_count(self):
         """Count each Jet's backups for its smart button in one grouped query.
@@ -122,7 +284,18 @@ class CxTowerJet(models.Model):
             raise ValidationError(
                 self.env._("The Backup Template does not belong to this Jet Template.")
             )
-        if not ignore_busy and self._is_busy():
+        self._lock_backup_operation()
+        owner_command = created_from_command_log or (
+            waypoint and waypoint.sudo().created_from_command_log_id
+        )
+        action_owned = bool(
+            ignore_busy
+            and owner_command
+            and owner_command.is_running
+            and owner_command.jet_id == self
+            and self._is_action_owned_backup(owner_command)
+        )
+        if self._has_backup_operation() or (super()._is_busy() and not action_owned):
             raise ValidationError(self.env._("The Jet is busy with another action."))
         vals = self._prepare_backup_values(
             template,
@@ -131,6 +304,7 @@ class CxTowerJet(models.Model):
             created_from_command_log=created_from_command_log,
         )
         backup = self.env["cx.tower.backup"].sudo().create(vals)
+        self.sudo().write({"active_backup_id": backup.id})
         if waypoint:
             waypoint.sudo().backup_id = backup
         log = self.server_id.sudo().run_flight_plan(

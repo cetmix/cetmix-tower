@@ -49,7 +49,7 @@
 | Deletion condition | Result |
 | --- | --- |
 | Running backup, deletion or Restore | Deletion is blocked |
-| Busy Delete plan | Backup stays unchanged; retry later |
+| Busy Jet or Delete plan | Delete shows an error and leaves the backup unchanged; retry later |
 | Neither source Jet nor captured server remains | Form warns that only the record can be removed; stored data stays |
 | No Delete plan | Record is removed immediately |
 | Source Jet deleted | Completed backups survive; their waypoint links are removed |
@@ -69,6 +69,7 @@
 | Waypoint-linked backups | Kept for the waypoint's lifecycle |
 | Deletion Failed backups | Kept for manual investigation and retry |
 | Orphaned Done backups | Kept |
+| Busy or locked Jet / Delete plan | Deferred until a later clean-up; other backups can still be processed |
 
 **Inspect backup size**
 

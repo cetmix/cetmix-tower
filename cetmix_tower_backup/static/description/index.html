@@ -668,8 +668,9 @@ aggregator source directories can differ</td>
 Restore</td>
 <td>Deletion is blocked</td>
 </tr>
-<tr><td>Busy Delete plan</td>
-<td>Backup stays unchanged; retry
+<tr><td>Busy Jet or Delete plan</td>
+<td>Delete shows an error and leaves
+the backup unchanged; retry
 later</td>
 </tr>
 <tr><td>Neither source Jet nor captured
@@ -696,8 +697,8 @@ waypoint links are removed</td>
 </ol>
 <table border="1" class="docutils">
 <colgroup>
-<col width="43%" />
-<col width="57%" />
+<col width="50%" />
+<col width="50%" />
 </colgroup>
 <thead valign="bottom">
 <tr><th class="head">Records</th>
@@ -709,24 +710,30 @@ waypoint links are removed</td>
 <td>Removed regardless of Keep Last</td>
 </tr>
 <tr><td>Excess Done backups per Jet</td>
-<td>Removed through the Delete plan when
-configured; otherwise only the record
-is removed and stored backup data
-remains</td>
+<td>Removed through the Delete plan
+when configured; otherwise only
+the record is removed and stored
+backup data remains</td>
 </tr>
 <tr><td>Backup being restored</td>
-<td>Counts toward retention and stays
-until a later clean-up</td>
+<td>Counts toward retention and
+stays until a later clean-up</td>
 </tr>
 <tr><td>Waypoint-linked backups</td>
-<td>Kept for the waypoint’s lifecycle</td>
+<td>Kept for the waypoint’s
+lifecycle</td>
 </tr>
 <tr><td>Deletion Failed backups</td>
-<td>Kept for manual investigation and
-retry</td>
+<td>Kept for manual investigation
+and retry</td>
 </tr>
 <tr><td>Orphaned Done backups</td>
 <td>Kept</td>
+</tr>
+<tr><td>Busy or locked Jet / Delete plan</td>
+<td>Deferred until a later clean-up;
+other backups can still be
+processed</td>
 </tr>
 </tbody>
 </table>

@@ -81,12 +81,7 @@ class CxTowerJetWaypoint(models.Model):
                     )
                 backup = waypoint.sudo().backup_id
                 backup._check_delete()
-                if backup._delete_plan_is_busy():
-                    raise ValidationError(
-                        self.env._(
-                            "The Delete plan is already running; try again later."
-                        )
-                    )
+                backup._check_delete_admission()
             except ValidationError as error:
                 if not self.env.context.get("waypoint_no_raise_on_delete"):
                     raise

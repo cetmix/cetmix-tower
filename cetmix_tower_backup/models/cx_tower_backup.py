@@ -3,6 +3,8 @@
 import logging
 import secrets
 
+from psycopg2 import errors
+
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -177,8 +179,14 @@ class CxTowerBackup(models.Model):
 
         Returns:
             dict: Backup window action.
+
+        Raises:
+            ValidationError: An operation prevents deletion or the Jet is busy.
         """
         self.ensure_one()
+        self.check_access("unlink")
+        self._check_delete()
+        self._check_delete_admission()
         self.unlink()
         return self.env["ir.actions.actions"]._for_xml_id(
             "cetmix_tower_backup.cx_tower_backup_action"
@@ -243,6 +251,31 @@ class CxTowerBackup(models.Model):
             )
         return bool(self.env["cx.tower.plan.log"].sudo().search_count(domain))
 
+    def _check_delete_admission(self):
+        """Lock and check execution availability before changing deletion state.
+
+        Returns:
+            None: The Delete plan can start, or no execution is needed.
+
+        Raises:
+            ValidationError: The Jet or Delete plan is busy.
+        """
+        self.ensure_one()
+        if not self.backup_template_id.plan_delete_id or not (
+            self.jet_id.server_id or self.server_id
+        ):
+            return
+        if self.jet_id:
+            self.jet_id._lock_backup_operation()
+            if self.jet_id._is_busy():
+                raise ValidationError(
+                    self.env._("The Jet is busy with another action.")
+                )
+        if self._delete_plan_is_busy():
+            raise ValidationError(
+                self.env._("The Delete plan is already running; try again later.")
+            )
+
     # The actual super unlink is deferred to _unlink_finished after plan success.
     def unlink(self):  # pylint: disable=method-required-super
         """Delete stored data through the configured plan before its record.
@@ -295,12 +328,16 @@ class CxTowerBackup(models.Model):
         plan = self.backup_template_id.plan_delete_id
         server = self.jet_id.server_id or self.server_id
         if plan and server:
-            if self._delete_plan_is_busy():
-                _logger.info("Delete plan for backup %s is busy; retry later", self.id)
+            try:
+                self._check_delete_admission()
+            except ValidationError as error:
+                _logger.info("Backup %s deletion deferred: %s", self.id, error)
                 return
             self.write(
                 {"state": "deleting", "operation_token": secrets.token_urlsafe(32)}
             )
+            if self.jet_id:
+                self.jet_id.sudo().write({"active_backup_id": self.id})
             server.sudo().run_flight_plan(
                 flight_plan=plan,
                 jet=self.jet_id,
@@ -340,6 +377,8 @@ class CxTowerBackup(models.Model):
                 "Ignored mismatched operation result for backup %s", self.id
             )
             return
+        if self.jet_id.sudo().active_backup_id == self:
+            self.jet_id.sudo().write({"active_backup_id": False})
         if log.backup_operation == "delete":
             self.write({"operation_token": False})
             if log.plan_status == 0:
@@ -359,13 +398,26 @@ class CxTowerBackup(models.Model):
                     "Could not finish triggering command for backup %s", self.id
                 )
 
+    def _cleanup_unlink(self):
+        """Isolate each automatic deletion so contention leaves it retryable.
+
+        Returns:
+            None: Available backups are deleted; conflicted ones are deferred.
+        """
+        for backup in self:
+            try:
+                with self.env.cr.savepoint():
+                    backup.unlink()
+            except (errors.LockNotAvailable, errors.SerializationFailure):
+                _logger.info("Backup %s is locked; retry cleanup later", backup.id)
+
     @api.model
     def _run_cleanup(self):
         """Remove unlinked failed uploads, then excess successful backups."""
         backups = self.sudo()
         backups.search(
             [("state", "=", "failed"), ("waypoint_ids", "=", False)]
-        ).unlink()
+        )._cleanup_unlink()
         templates = (
             self.env["cx.tower.backup.template"].sudo().search([("keep_last", ">", 0)])
         )
@@ -381,4 +433,4 @@ class CxTowerBackup(models.Model):
             for jet_backups in successful.grouped("jet_id").values():
                 for backup in jet_backups[template.keep_last :]:
                     if not backup._has_running_restore():
-                        backup.unlink()
+                        backup._cleanup_unlink()

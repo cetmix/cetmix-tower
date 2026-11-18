@@ -261,7 +261,8 @@ Usage
 | Running backup, deletion or      | Deletion is blocked              |
 | Restore                          |                                  |
 +----------------------------------+----------------------------------+
-| Busy Delete plan                 | Backup stays unchanged; retry    |
+| Busy Jet or Delete plan          | Delete shows an error and leaves |
+|                                  | the backup unchanged; retry      |
 |                                  | later                            |
 +----------------------------------+----------------------------------+
 | Neither source Jet nor captured  | Form warns that only the record  |
@@ -281,26 +282,31 @@ Usage
 3. Click **Backups**.
 4. Inspect the remaining records after the daily clean-up.
 
-+-----------------------------+---------------------------------------+
-| Records                     | Daily clean-up behavior               |
-+=============================+=======================================+
-| Unlinked Failed backups     | Removed regardless of Keep Last       |
-+-----------------------------+---------------------------------------+
-| Excess Done backups per Jet | Removed through the Delete plan when  |
-|                             | configured; otherwise only the record |
-|                             | is removed and stored backup data     |
-|                             | remains                               |
-+-----------------------------+---------------------------------------+
-| Backup being restored       | Counts toward retention and stays     |
-|                             | until a later clean-up                |
-+-----------------------------+---------------------------------------+
-| Waypoint-linked backups     | Kept for the waypoint's lifecycle     |
-+-----------------------------+---------------------------------------+
-| Deletion Failed backups     | Kept for manual investigation and     |
-|                             | retry                                 |
-+-----------------------------+---------------------------------------+
-| Orphaned Done backups       | Kept                                  |
-+-----------------------------+---------------------------------------+
++----------------------------------+----------------------------------+
+| Records                          | Daily clean-up behavior          |
++==================================+==================================+
+| Unlinked Failed backups          | Removed regardless of Keep Last  |
++----------------------------------+----------------------------------+
+| Excess Done backups per Jet      | Removed through the Delete plan  |
+|                                  | when configured; otherwise only  |
+|                                  | the record is removed and stored |
+|                                  | backup data remains              |
++----------------------------------+----------------------------------+
+| Backup being restored            | Counts toward retention and      |
+|                                  | stays until a later clean-up     |
++----------------------------------+----------------------------------+
+| Waypoint-linked backups          | Kept for the waypoint's          |
+|                                  | lifecycle                        |
++----------------------------------+----------------------------------+
+| Deletion Failed backups          | Kept for manual investigation    |
+|                                  | and retry                        |
++----------------------------------+----------------------------------+
+| Orphaned Done backups            | Kept                             |
++----------------------------------+----------------------------------+
+| Busy or locked Jet / Delete plan | Deferred until a later clean-up; |
+|                                  | other backups can still be       |
+|                                  | processed                        |
++----------------------------------+----------------------------------+
 
 **Inspect backup size**
 
