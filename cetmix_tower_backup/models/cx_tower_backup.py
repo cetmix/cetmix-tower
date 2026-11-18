@@ -45,6 +45,11 @@ class CxTowerBackup(models.Model):
         required=True,
         readonly=True,
     )
+    backup_size = fields.Float(
+        string="Backup Size (MB)",
+        readonly=True,
+        help="Size supplied by a Tower command in MB (1 MB = 1,048,576 bytes).",
+    )
     variable_values = fields.Json(readonly=True)
     custom_variable_values = fields.Json(readonly=True)
     waypoint_ids = fields.One2many("cx.tower.jet.waypoint", "backup_id", readonly=True)

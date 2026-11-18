@@ -483,6 +483,10 @@ Template.</li>
 Restore needs custom-value overrides; pass Odoo server, state and
 environment records rather than integer IDs. RPC calls to
 <tt class="docutils literal">restore()</tt> are rejected.</li>
+<li>Set the measured size in MB from a Tower Python command with
+<tt class="docutils literal"><span class="pre">backup.write({&quot;backup_size&quot;:</span> 2048.25})</tt>. Use 1 MB = 1,048,576
+bytes and pass fractional MB directly. Tower does not measure or
+assign the size itself.</li>
 </ol>
 <table border="1" class="docutils">
 <colgroup>
@@ -723,6 +727,33 @@ retry</td>
 </tr>
 <tr><td>Orphaned Done backups</td>
 <td>Kept</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Inspect backup size</strong></p>
+<ol class="arabic simple">
+<li>Open <strong>Cetmix Tower</strong>.</li>
+<li>Click <strong>Jets</strong>.</li>
+<li>Click <strong>Backups</strong>.</li>
+<li>Read <strong>Backup Size (MB)</strong> in the list.</li>
+<li>Open a backup to read <strong>Backup Size (MB)</strong> on its form.</li>
+</ol>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="74%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Size value</th>
+<th class="head">Meaning</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Backup Size (MB)</td>
+<td>Stored Float supplied by a Tower command using 1
+MB = 1,048,576 bytes; fractional values are
+retained and the value starts at 0 until
+supplied</td>
 </tr>
 </tbody>
 </table>

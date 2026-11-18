@@ -9,6 +9,7 @@
                 <field name="jet_id" />
                 <field name="backup_template_id" />
                 <field name="state" widget="badge" />
+                <field name="backup_size" />
                 <field name="create_date" />
             </list>
         </field>
@@ -57,6 +58,7 @@
                             <field name="jet_id" />
                             <field name="server_id" />
                             <field name="environment_id" />
+                            <field name="backup_size" />
                             <field name="create_date" />
                         </group>
                     </group>

@@ -346,6 +346,39 @@ class TestTowerBackup(BackupCommon):
         with TestCase.assertRaises(self, AccessError):
             self.assertFalse(populated.backup_template_id)
 
+    def test_backup_size_persists_fractional_mb(self):
+        """Persist command-supplied MB without integer limits or forced rounding."""
+        backup = self._backup()
+        self.assertEqual(backup.backup_size, 0.0)
+        self.assertNotIn("backup_size_mb", backup._fields)
+        for size_mb in (1 / 1048576, 0.5, 1.25, 2048.25, 2147483648.5, 0.0):
+            with self.subTest(size_mb=size_mb), self.env.cr.savepoint():
+                backup.write({"backup_size": size_mb})
+                backup.flush_recordset(["backup_size"])
+                backup.invalidate_recordset(["backup_size"])
+                self.assertEqual(backup.backup_size, size_mb)
+                self.assertEqual(
+                    backup.read(["backup_size"])[0]["backup_size"], size_mb
+                )
+        self.env.cr.execute(
+            "SELECT column_name, data_type FROM information_schema.columns "
+            "WHERE table_schema = current_schema() AND table_name = %s "
+            "AND column_name IN ('backup_size', 'backup_size_mb')",
+            [backup._table],
+        )
+        self.assertEqual(
+            dict(self.env.cr.fetchall()), {"backup_size": "double precision"}
+        )
+
+    def test_backup_size_is_set_by_tower_command(self):
+        """The Backup plan supplies MB directly; the app does not infer a size."""
+        self.backup_plan.line_ids.command_id.code = (
+            "backup.write({'backup_size': 2048.25})\n" "result = {'exit_code': 0}"
+        )
+        backup = self.source.create_backup(self.backup_template)
+        self.assertEqual(backup.state, "done")
+        self.assertEqual(backup.backup_size, 2048.25)
+
     def test_capture_and_python_context(self):
         variable = self.Variable.create(
             {"name": "Backup own value", "reference": "backup_own_value"}

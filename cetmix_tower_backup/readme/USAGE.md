@@ -69,3 +69,15 @@
 | Waypoint-linked backups | Kept for the waypoint's lifecycle |
 | Deletion Failed backups | Kept for manual investigation and retry |
 | Orphaned Done backups | Kept |
+
+**Inspect backup size**
+
+1. Open **Cetmix Tower**.
+2. Click **Jets**.
+3. Click **Backups**.
+4. Read **Backup Size (MB)** in the list.
+5. Open a backup to read **Backup Size (MB)** on its form.
+
+| Size value | Meaning |
+| --- | --- |
+| Backup Size (MB) | Stored Float supplied by a Tower command using 1 MB = 1,048,576 bytes; fractional values are retained and the value starts at 0 until supplied |

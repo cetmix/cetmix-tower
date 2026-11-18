@@ -130,6 +130,10 @@ Configuration
    Restore needs custom-value overrides; pass Odoo server, state and
    environment records rather than integer IDs. RPC calls to
    ``restore()`` are rejected.
+6. Set the measured size in MB from a Tower Python command with
+   ``backup.write({"backup_size": 2048.25})``. Use 1 MB = 1,048,576
+   bytes and pass fractional MB directly. Tower does not measure or
+   assign the size itself.
 
 +-----------------------------+---------------------------------------+
 | Plan value or object        | Contract                              |
@@ -297,6 +301,23 @@ Usage
 +-----------------------------+---------------------------------------+
 | Orphaned Done backups       | Kept                                  |
 +-----------------------------+---------------------------------------+
+
+**Inspect backup size**
+
+1. Open **Cetmix Tower**.
+2. Click **Jets**.
+3. Click **Backups**.
+4. Read **Backup Size (MB)** in the list.
+5. Open a backup to read **Backup Size (MB)** on its form.
+
++------------------+--------------------------------------------------+
+| Size value       | Meaning                                          |
++==================+==================================================+
+| Backup Size (MB) | Stored Float supplied by a Tower command using 1 |
+|                  | MB = 1,048,576 bytes; fractional values are      |
+|                  | retained and the value starts at 0 until         |
+|                  | supplied                                         |
++------------------+--------------------------------------------------+
 
 Bug Tracker
 ===========

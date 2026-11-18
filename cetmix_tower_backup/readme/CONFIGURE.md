@@ -66,6 +66,7 @@
 3. Keep credentials in Tower keys, not custom values or metadata.
 4. Keep the plans and commands at Root level; protected logs block lowering their access level, even after a plan leaves its Backup Template.
 5. Use in-process Python `restore(..., variable_values=...)` when Restore needs custom-value overrides; pass Odoo server, state and environment records rather than integer IDs. RPC calls to `restore()` are rejected.
+6. Set the measured size in MB from a Tower Python command with `backup.write({"backup_size": 2048.25})`. Use 1 MB = 1,048,576 bytes and pass fractional MB directly. Tower does not measure or assign the size itself.
 
 | Plan value or object | Contract |
 | --- | --- |
