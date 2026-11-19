@@ -37,6 +37,20 @@ class CxTowerBackupTemplate(models.Model):
         yaml_export=True,
         help="Keep this many successful backups per Jet. 0 keeps all.",
     )
+    backup_available_variable_ids = fields.Many2many(
+        "cx.tower.variable",
+        relation="cx_tower_backup_template_backup_variable_rel",
+        string="Available Variables, backup",
+        yaml_export="reference",
+        help="Variables offered in the Back Up dialog. Empty allows none.",
+    )
+    restore_available_variable_ids = fields.Many2many(
+        "cx.tower.variable",
+        relation="cx_tower_backup_template_restore_variable_rel",
+        string="Available Variables, restore",
+        yaml_export="reference",
+        help="Variables offered in the Restore dialog. Empty allows none.",
+    )
     note = fields.Text(yaml_export=True)
     backup_ids = fields.One2many("cx.tower.backup", "backup_template_id", readonly=True)
 
@@ -93,3 +107,46 @@ class CxTowerBackupTemplate(models.Model):
                     )
                 )
         return super().write(vals)
+
+    def _get_wizard_variable_values(self, lines, operation):
+        """Validate dialog inputs against this template before executing a plan.
+
+        Args:
+            lines (models.Model): Custom variable lines of either backup wizard.
+            operation (str): Either "backup" or "restore".
+
+        Returns:
+            dict: Variable references mapped to the submitted values.
+
+        Raises:
+            ValidationError: A variable is unavailable, repeated or has an
+                invalid option.
+        """
+        self.ensure_one()
+        available = {
+            "backup": self.backup_available_variable_ids,
+            "restore": self.restore_available_variable_ids,
+        }[operation]
+        values = {}
+        for line in lines:
+            variable = line.variable_id
+            if not variable or variable not in available:
+                raise ValidationError(
+                    self.env._("Select a variable available on the Backup Template.")
+                )
+            if variable.reference in values:
+                raise ValidationError(
+                    self.env._("Each custom variable may be supplied only once.")
+                )
+            if (line.option_id and line.option_id.variable_id != variable) or (
+                variable.variable_type == "o" and not line.option_id
+            ):
+                raise ValidationError(
+                    self.env._("Select an option belonging to the custom variable.")
+                )
+            values[variable.reference] = (
+                line.option_id.value_char
+                if variable.variable_type == "o"
+                else line.value_char
+            )
+        return values

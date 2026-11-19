@@ -126,9 +126,10 @@ Configuration
 4. Keep the plans and commands at Root level; protected logs block
    lowering their access level, even after a plan leaves its Backup
    Template.
-5. Use in-process Python ``restore(..., variable_values=...)`` when
-   Restore needs custom-value overrides; pass Odoo server, state and
-   environment records rather than integer IDs. RPC calls to
+5. Configure **Available Variables, backup** and **Available Variables,
+   restore** on the Backup Template to allow custom-value overrides in
+   the Back Up and Restore dialogs. In-process Python
+   ``restore(..., variable_values=...)`` remains available; RPC calls to
    ``restore()`` are rejected.
 6. Set the measured size in MB from a Tower Python command with
    ``backup.write({"backup_size": 2048.25})``. Use 1 MB = 1,048,576
@@ -210,6 +211,16 @@ Configuration
 3. Save the command. **URL** is read-only on the backup list and form;
    commands supply its value.
 
+**Choose wizard variables**
+
+1. Open **Cetmix Tower** → **Settings** → **Backups** → **Backup
+   Templates**.
+2. Open the template.
+3. Select **Available Variables, backup** for the Back Up dialog and
+   **Available Variables, restore** for the Restore dialog. An empty
+   list permits no custom input in its corresponding dialog.
+4. Click **Save**.
+
 Usage
 =====
 
@@ -221,10 +232,13 @@ Usage
 4.  Open the source Jet.
 5.  Click **Back Up**.
 6.  Select **Backup Template**.
-7.  Click **Back Up** in the dialog.
-8.  Wait for **Running** to become **Done** or **Failed**.
-9.  Open **Metadata** to inspect the stored recovery details.
-10. Open **Plan Logs** to inspect the plan result.
+7.  Optionally click **Add a line** under **Custom Values**.
+8.  Select **Variable** from the template's available variables.
+9.  Enter **Value**, or select **Option** for an option variable.
+10. Click **Back Up** in the dialog.
+11. Wait for **Running** to become **Done** or **Failed**.
+12. Open **Metadata** to inspect the stored recovery details.
+13. Open **Plan Logs** to inspect the plan result.
 
 **Restore into a new Jet**
 
@@ -237,8 +251,11 @@ Usage
 7.  Optionally enter **Name**; leave it blank to generate one.
 8.  Optionally select **State**.
 9.  Select **Environment** if the destination template requires it.
-10. Click **Restore**.
-11. Inspect the new Jet's flight plan log. If Restore fails immediately,
+10. Optionally click **Add a line** under **Custom Values**.
+11. Select **Variable** from the template's available variables.
+12. Enter **Value**, or select **Option** for an option variable.
+13. Click **Restore**.
+14. Inspect the new Jet's flight plan log. If Restore fails immediately,
     the dialog opens the failed log and keeps the new Jet.
 
 +---------------------+-----------------------------------------------+
@@ -361,6 +378,24 @@ Running                   Blue
 Deleting                  Orange
 Failed or Deletion Failed Red
 ========================= ======
+
++----------------------------------+----------------------------------+
+| Wizard custom values             | Behavior                         |
++==================================+==================================+
+| Corresponding Available          | No custom values accepted in     |
+| Variables list empty             | that dialog                      |
++----------------------------------+----------------------------------+
+| Backup dialog values             | Stored with the backup and       |
+|                                  | replayed to its plans            |
++----------------------------------+----------------------------------+
+| Restore dialog values            | Override matching stored custom  |
+|                                  | values for that restore; leave   |
+|                                  | the stored backup values         |
+|                                  | unchanged                        |
++----------------------------------+----------------------------------+
+| Invalid or repeated variable     | Confirmation is refused; no      |
+|                                  | operation is started             |
++----------------------------------+----------------------------------+
 
 Bug Tracker
 ===========

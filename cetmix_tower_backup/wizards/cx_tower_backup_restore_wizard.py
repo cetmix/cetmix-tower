@@ -20,6 +20,16 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
     )
     env_required = fields.Boolean(related="backup_id.jet_template_id.env_required")
 
+    backup_template_id = fields.Many2one(related="backup_id.backup_template_id")
+    available_variable_ids = fields.Many2many(
+        related="backup_template_id.restore_available_variable_ids"
+    )
+    line_ids = fields.One2many(
+        "cx.tower.backup.restore.wizard.variable.line",
+        "wizard_id",
+        string="Custom Values",
+    )
+
     @api.depends("backup_id")
     def _compute_environment_id(self):
         for wizard in self:
@@ -44,6 +54,9 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
 
         Returns:
             dict: Failed Restore log or new Jet form action.
+
+        Raises:
+            ValidationError: Custom values are not permitted by the template.
         """
         self.ensure_one()
         self.check_access("read")
@@ -52,6 +65,9 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
             name=self.name,
             state=self.state_id,
             environment=self.environment_id,
+            variable_values=self.backup_template_id._get_wizard_variable_values(
+                self.line_ids, "restore"
+            ),
         )
         failed = jet.plan_log_ids.filtered(
             lambda log: log.backup_id == self.backup_id

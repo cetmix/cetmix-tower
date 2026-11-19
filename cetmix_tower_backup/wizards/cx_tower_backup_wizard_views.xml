@@ -9,6 +9,22 @@
                     <field name="jet_id" />
                     <field name="backup_template_id" />
                 </group>
+                <field name="line_ids">
+                    <list editable="bottom">
+                        <field
+                            name="variable_id"
+                            domain="[('id', 'in', parent.available_variable_ids)]"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                        <field name="value_char" readonly="variable_type == 'o'" />
+                        <field
+                            name="option_id"
+                            invisible="variable_type != 'o'"
+                            required="variable_type == 'o'"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                    </list>
+                </field>
                 <footer>
                     <button
                         name="action_confirm"
@@ -40,6 +56,22 @@
                     <field name="state_id" />
                     <field name="environment_id" required="env_required" />
                 </group>
+                <field name="line_ids">
+                    <list editable="bottom">
+                        <field
+                            name="variable_id"
+                            domain="[('id', 'in', parent.available_variable_ids)]"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                        <field name="value_char" readonly="variable_type == 'o'" />
+                        <field
+                            name="option_id"
+                            invisible="variable_type != 'o'"
+                            required="variable_type == 'o'"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                    </list>
+                </field>
                 <footer>
                     <button
                         name="action_confirm"

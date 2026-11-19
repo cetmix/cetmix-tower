@@ -1144,6 +1144,13 @@ class TestTowerBackup(BackupCommon):
             get_public_method(self.source, "create_backup")
 
     def test_yaml_fresh_roundtrip_and_forward_scheduled_task(self):
+        variable = self.Variable.create({"name": "Export backup variable"})
+        self.backup_template.write(
+            {
+                "backup_available_variable_ids": [(6, 0, variable.ids)],
+                "restore_available_variable_ids": [(6, 0, variable.ids)],
+            }
+        )
         waypoint = self.env["cx.tower.jet.waypoint.template"].create(
             {
                 "name": "Export backup waypoint",
@@ -1217,6 +1224,8 @@ class TestTowerBackup(BackupCommon):
         self.assertEqual(len(copied.backup_template_ids), 1)
         copied_template = copied.backup_template_ids
         self.assertEqual(copied_template.jet_template_id, copied)
+        self.assertEqual(copied_template.backup_available_variable_ids, variable)
+        self.assertEqual(copied_template.restore_available_variable_ids, variable)
         task = self.env["cx.tower.scheduled.task"].get_by_reference(
             "backup_forward_task"
         )
@@ -1507,6 +1516,215 @@ class TestTowerBackup(BackupCommon):
         self.assertTrue(jet.exists())
         self.assertNotEqual(jet, self.source)
         self.assertEqual(jet.jet_template_id, self.template)
+
+    def test_wizard_custom_values_are_limited_and_replayed(self):
+        variable = self.Variable.create(
+            {"name": "Backup destination", "reference": "backup_destination"}
+        )
+        self.backup_template.write(
+            {
+                "backup_available_variable_ids": [(6, 0, variable.ids)],
+                "restore_available_variable_ids": [(6, 0, variable.ids)],
+            }
+        )
+        wizard = self.env["cx.tower.backup.create.wizard"].create(
+            {
+                "jet_id": self.source.id,
+                "backup_template_id": self.backup_template.id,
+                "line_ids": [
+                    (0, 0, {"variable_id": variable.id, "value_char": "original"})
+                ],
+            }
+        )
+        backup = self.Backup.browse(wizard.action_confirm()["res_id"])
+        self.assertEqual(
+            backup.custom_variable_values, {variable.reference: "original"}
+        )
+        self.assertEqual(
+            backup.plan_log_ids.variable_values[variable.reference], "original"
+        )
+        restore = self.env["cx.tower.backup.restore.wizard"].create(
+            {
+                "backup_id": backup.id,
+                "server_id": self.server_test_1.id,
+                "line_ids": [
+                    (0, 0, {"variable_id": variable.id, "value_char": "override"})
+                ],
+            }
+        )
+        restore.action_confirm()
+        restore_log = backup.plan_log_ids.filtered(
+            lambda log: log.backup_operation == "restore"
+        )
+        self.assertEqual(restore_log.variable_values[variable.reference], "override")
+        self.assertEqual(backup.custom_variable_values[variable.reference], "original")
+        self.backup_template.write(
+            {
+                "backup_available_variable_ids": [(5, 0, 0)],
+                "restore_available_variable_ids": [(5, 0, 0)],
+            }
+        )
+        for dialog in (wizard, restore):
+            with self.assertRaises(ValidationError):
+                dialog.action_confirm()
+        self.backup_template.write(
+            {
+                "backup_available_variable_ids": [(6, 0, variable.ids)],
+                "restore_available_variable_ids": [(6, 0, variable.ids)],
+            }
+        )
+        wizard.line_ids = [
+            (0, 0, {"variable_id": variable.id, "value_char": "duplicate"})
+        ]
+        with self.assertRaises(ValidationError):
+            wizard.action_confirm()
+
+    def test_wizards_use_independent_available_variables(self):
+        backup_variable = self.Variable.create({"name": "Backup only"})
+        restore_variable = self.Variable.create({"name": "Restore only"})
+        self.backup_template.write(
+            {
+                "backup_available_variable_ids": [(6, 0, backup_variable.ids)],
+                "restore_available_variable_ids": [(6, 0, restore_variable.ids)],
+            }
+        )
+        create = self.env["cx.tower.backup.create.wizard"].create(
+            {
+                "jet_id": self.source.id,
+                "backup_template_id": self.backup_template.id,
+                "line_ids": [
+                    (0, 0, {"variable_id": restore_variable.id, "value_char": "wrong"})
+                ],
+            }
+        )
+        self.assertEqual(create.available_variable_ids, backup_variable)
+        with self.assertRaises(ValidationError):
+            create.action_confirm()
+        create.line_ids.write(
+            {"variable_id": backup_variable.id, "value_char": "backup"}
+        )
+        backup = self.Backup.browse(create.action_confirm()["res_id"])
+        self.assertEqual(
+            backup.custom_variable_values, {backup_variable.reference: "backup"}
+        )
+        restore = self.env["cx.tower.backup.restore.wizard"].create(
+            {
+                "backup_id": backup.id,
+                "server_id": self.server_test_1.id,
+                "line_ids": [
+                    (0, 0, {"variable_id": backup_variable.id, "value_char": "wrong"})
+                ],
+            }
+        )
+        self.assertEqual(restore.available_variable_ids, restore_variable)
+        with self.assertRaises(ValidationError):
+            restore.action_confirm()
+        restore.line_ids.write(
+            {"variable_id": restore_variable.id, "value_char": "restore"}
+        )
+        restore.action_confirm()
+        log = backup.plan_log_ids.filtered(
+            lambda log: log.backup_operation == "restore"
+        )
+        self.assertEqual(log.variable_values[restore_variable.reference], "restore")
+        self.assertEqual(log.variable_values[backup_variable.reference], "backup")
+        self.backup_template.backup_available_variable_ids = False
+        self.assertFalse(create.available_variable_ids)
+        self.assertEqual(restore.available_variable_ids, restore_variable)
+
+    def test_wizard_options_use_only_valid_canonical_values(self):
+        variable = self.Variable.create({"name": "Backup option", "variable_type": "o"})
+        other = self.Variable.create({"name": "Foreign option", "variable_type": "o"})
+        options = self.env["cx.tower.variable.option"]
+        option = options.create(
+            {"name": "Chosen", "variable_id": variable.id, "value_char": "canonical"}
+        )
+        foreign = options.create(
+            {"name": "Foreign", "variable_id": other.id, "value_char": "wrong"}
+        )
+        self.backup_template.write(
+            {
+                "backup_available_variable_ids": [(6, 0, variable.ids)],
+                "restore_available_variable_ids": [(6, 0, variable.ids)],
+            }
+        )
+        for kind, values in (
+            (
+                "create",
+                {
+                    "jet_id": self.source.id,
+                    "backup_template_id": self.backup_template.id,
+                },
+            ),
+            (
+                "restore",
+                {"backup_id": self._backup().id, "server_id": self.server_test_1.id},
+            ),
+        ):
+            wizard = self.env[f"cx.tower.backup.{kind}.wizard"].create(values)
+            wizard.line_ids = [
+                (
+                    0,
+                    0,
+                    {
+                        "variable_id": variable.id,
+                        "option_id": option.id,
+                        "value_char": "forged",
+                    },
+                )
+            ]
+            self.assertEqual(
+                self.backup_template._get_wizard_variable_values(
+                    wizard.line_ids, "backup" if kind == "create" else "restore"
+                ),
+                {variable.reference: "canonical"},
+            )
+            wizard.line_ids.option_id = foreign
+            with self.assertRaises(ValidationError):
+                wizard.action_confirm()
+            wizard.line_ids.option_id = False
+            with self.assertRaises(ValidationError):
+                wizard.action_confirm()
+
+    def test_wizard_variable_lines_are_creator_only(self):
+        variable = self.Variable.create({"name": "Dialog variable"})
+        other = self.Users.create(
+            {
+                "name": "Other dialog Root",
+                "login": "backup_line_other",
+                "groups_id": [(4, self.group_root.id)],
+            }
+        )
+        for kind, values in (
+            (
+                "create",
+                {
+                    "jet_id": self.source.id,
+                    "backup_template_id": self.backup_template.id,
+                },
+            ),
+            (
+                "restore",
+                {"backup_id": self._backup().id, "server_id": self.server_test_1.id},
+            ),
+        ):
+            wizard = (
+                self.env[f"cx.tower.backup.{kind}.wizard"]
+                .with_user(self.root)
+                .create(values)
+            )
+            model = self.env[f"cx.tower.backup.{kind}.wizard.variable.line"]
+            line = model.with_user(self.root).create(
+                {"wizard_id": wizard.id, "variable_id": variable.id}
+            )
+            with self.assertRaises(AccessError):
+                line.with_user(other).read()
+            with self.assertRaises(AccessError):
+                line.with_user(other).write({"value_char": "injected"})
+            with self.assertRaises(AccessError), self.env.cr.savepoint():
+                model.with_user(other).create(
+                    {"wizard_id": wizard.id, "variable_id": variable.id}
+                )
 
     def test_waypoint_no_raise_skips_destination_and_deletes_other_records(self):
         template = self.env["cx.tower.jet.waypoint.template"].create(

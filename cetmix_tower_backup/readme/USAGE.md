@@ -6,10 +6,13 @@
 4. Open the source Jet.
 5. Click **Back Up**.
 6. Select **Backup Template**.
-7. Click **Back Up** in the dialog.
-8. Wait for **Running** to become **Done** or **Failed**.
-9. Open **Metadata** to inspect the stored recovery details.
-10. Open **Plan Logs** to inspect the plan result.
+7. Optionally click **Add a line** under **Custom Values**.
+8. Select **Variable** from the template's available variables.
+9. Enter **Value**, or select **Option** for an option variable.
+10. Click **Back Up** in the dialog.
+11. Wait for **Running** to become **Done** or **Failed**.
+12. Open **Metadata** to inspect the stored recovery details.
+13. Open **Plan Logs** to inspect the plan result.
 
 **Restore into a new Jet**
 
@@ -22,8 +25,11 @@
 7. Optionally enter **Name**; leave it blank to generate one.
 8. Optionally select **State**.
 9. Select **Environment** if the destination template requires it.
-10. Click **Restore**.
-11. Inspect the new Jet's flight plan log. If Restore fails immediately, the dialog opens the failed log and keeps the new Jet.
+10. Optionally click **Add a line** under **Custom Values**.
+11. Select **Variable** from the template's available variables.
+12. Enter **Value**, or select **Option** for an option variable.
+13. Click **Restore**.
+14. Inspect the new Jet's flight plan log. If Restore fails immediately, the dialog opens the failed log and keeps the new Jet.
 
 | Recovery behavior | Result |
 | --- | --- |
@@ -97,3 +103,10 @@
 | Running | Blue |
 | Deleting | Orange |
 | Failed or Deletion Failed | Red |
+
+| Wizard custom values | Behavior |
+| --- | --- |
+| Corresponding Available Variables list empty | No custom values accepted in that dialog |
+| Backup dialog values | Stored with the backup and replayed to its plans |
+| Restore dialog values | Override matching stored custom values for that restore; leave the stored backup values unchanged |
+| Invalid or repeated variable | Confirmation is refused; no operation is started |

@@ -15,15 +15,32 @@ class CxTowerBackupCreateWizard(models.TransientModel):
         domain="[('jet_template_id', '=', jet_template_id)]",
     )
 
+    available_variable_ids = fields.Many2many(
+        related="backup_template_id.backup_available_variable_ids"
+    )
+    line_ids = fields.One2many(
+        "cx.tower.backup.create.wizard.variable.line",
+        "wizard_id",
+        string="Custom Values",
+    )
+
     def action_confirm(self):
         """Start the selected backup and open its record.
 
         Returns:
             dict: Backup form action.
+
+        Raises:
+            ValidationError: Custom values are not permitted by the template.
         """
         self.ensure_one()
         self.check_access("read")
-        backup = self.jet_id.create_backup(self.backup_template_id)
+        backup = self.jet_id.create_backup(
+            self.backup_template_id,
+            variable_values=self.backup_template_id._get_wizard_variable_values(
+                self.line_ids, "backup"
+            ),
+        )
         return {
             "type": "ir.actions.act_window",
             "res_model": "cx.tower.backup",

@@ -65,7 +65,7 @@
 2. Pass non-secret destination parameters as trigger custom values.
 3. Keep credentials in Tower keys, not custom values or metadata.
 4. Keep the plans and commands at Root level; protected logs block lowering their access level, even after a plan leaves its Backup Template.
-5. Use in-process Python `restore(..., variable_values=...)` when Restore needs custom-value overrides; pass Odoo server, state and environment records rather than integer IDs. RPC calls to `restore()` are rejected.
+5. Configure **Available Variables, backup** and **Available Variables, restore** on the Backup Template to allow custom-value overrides in the Back Up and Restore dialogs. In-process Python `restore(..., variable_values=...)` remains available; RPC calls to `restore()` are rejected.
 6. Set the measured size in MB from a Tower Python command with `backup.write({"backup_size": 2048.25})`. Use 1 MB = 1,048,576 bytes and pass fractional MB directly. Tower does not measure or assign the size itself.
 
 | Plan value or object | Contract |
@@ -105,3 +105,10 @@
 1. Open the Backup flight plan's Tower Python command.
 2. Write the backup address with `backup.write({"url": "https://storage.example/backup.zip"})`.
 3. Save the command. **URL** is read-only on the backup list and form; commands supply its value.
+
+**Choose wizard variables**
+
+1. Open **Cetmix Tower** → **Settings** → **Backups** → **Backup Templates**.
+2. Open the template.
+3. Select **Available Variables, backup** for the Back Up dialog and **Available Variables, restore** for the Restore dialog. An empty list permits no custom input in its corresponding dialog.
+4. Click **Save**.

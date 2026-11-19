@@ -479,9 +479,10 @@ scheduled <strong>Command</strong> task targeting a Jet.</li>
 <li>Keep the plans and commands at Root level; protected logs block
 lowering their access level, even after a plan leaves its Backup
 Template.</li>
-<li>Use in-process Python <tt class="docutils literal"><span class="pre">restore(...,</span> <span class="pre">variable_values=...)</span></tt> when
-Restore needs custom-value overrides; pass Odoo server, state and
-environment records rather than integer IDs. RPC calls to
+<li>Configure <strong>Available Variables, backup</strong> and <strong>Available Variables,
+restore</strong> on the Backup Template to allow custom-value overrides in
+the Back Up and Restore dialogs. In-process Python
+<tt class="docutils literal"><span class="pre">restore(...,</span> <span class="pre">variable_values=...)</span></tt> remains available; RPC calls to
 <tt class="docutils literal">restore()</tt> are rejected.</li>
 <li>Set the measured size in MB from a Tower Python command with
 <tt class="docutils literal"><span class="pre">backup.write({&quot;backup_size&quot;:</span> 2048.25})</tt>. Use 1 MB = 1,048,576
@@ -594,6 +595,16 @@ isolate backups from that code</td>
 <li>Save the command. <strong>URL</strong> is read-only on the backup list and form;
 commands supply its value.</li>
 </ol>
+<p><strong>Choose wizard variables</strong></p>
+<ol class="arabic simple">
+<li>Open <strong>Cetmix Tower</strong> → <strong>Settings</strong> → <strong>Backups</strong> → <strong>Backup
+Templates</strong>.</li>
+<li>Open the template.</li>
+<li>Select <strong>Available Variables, backup</strong> for the Back Up dialog and
+<strong>Available Variables, restore</strong> for the Restore dialog. An empty
+list permits no custom input in its corresponding dialog.</li>
+<li>Click <strong>Save</strong>.</li>
+</ol>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-3">Usage</a></h1>
@@ -605,6 +616,9 @@ commands supply its value.</li>
 <li>Open the source Jet.</li>
 <li>Click <strong>Back Up</strong>.</li>
 <li>Select <strong>Backup Template</strong>.</li>
+<li>Optionally click <strong>Add a line</strong> under <strong>Custom Values</strong>.</li>
+<li>Select <strong>Variable</strong> from the template’s available variables.</li>
+<li>Enter <strong>Value</strong>, or select <strong>Option</strong> for an option variable.</li>
 <li>Click <strong>Back Up</strong> in the dialog.</li>
 <li>Wait for <strong>Running</strong> to become <strong>Done</strong> or <strong>Failed</strong>.</li>
 <li>Open <strong>Metadata</strong> to inspect the stored recovery details.</li>
@@ -621,6 +635,9 @@ commands supply its value.</li>
 <li>Optionally enter <strong>Name</strong>; leave it blank to generate one.</li>
 <li>Optionally select <strong>State</strong>.</li>
 <li>Select <strong>Environment</strong> if the destination template requires it.</li>
+<li>Optionally click <strong>Add a line</strong> under <strong>Custom Values</strong>.</li>
+<li>Select <strong>Variable</strong> from the template’s available variables.</li>
+<li>Enter <strong>Value</strong>, or select <strong>Option</strong> for an option variable.</li>
 <li>Click <strong>Restore</strong>.</li>
 <li>Inspect the new Jet’s flight plan log. If Restore fails immediately,
 the dialog opens the failed log and keeps the new Jet.</li>
@@ -814,6 +831,38 @@ supplied</td>
 </tr>
 <tr><td>Failed or Deletion Failed</td>
 <td>Red</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Wizard custom values</th>
+<th class="head">Behavior</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Corresponding Available
+Variables list empty</td>
+<td>No custom values accepted in
+that dialog</td>
+</tr>
+<tr><td>Backup dialog values</td>
+<td>Stored with the backup and
+replayed to its plans</td>
+</tr>
+<tr><td>Restore dialog values</td>
+<td>Override matching stored custom
+values for that restore; leave
+the stored backup values
+unchanged</td>
+</tr>
+<tr><td>Invalid or repeated variable</td>
+<td>Confirmation is refused; no
+operation is started</td>
 </tr>
 </tbody>
 </table>
