@@ -412,6 +412,23 @@ Queued backups cannot be restored. A queued backup's form shows that
 deletion is pending. Daily cleanup retries requests deferred by
 contention or dispatch errors.
 
+**Recover a missed completion update**
+
+1. Refresh **Cetmix Tower** → **Tools** → **Backups** after the flight
+   plan finishes.
+2. Inspect **Plan Logs** when a backup failed. A failed Backup plan
+   leaves its backup Failed and releases only its own Jet reservation.
+3. If a completion callback was missed, allow the recovery scheduled
+   action to run. It checks once per minute, including previously stuck
+   operations after the module is upgraded.
+
+Recovery applies the recorded result of a matching finished Backup or
+Delete plan. It does not guess from a backup's age, finalize running
+plans, accept obsolete operation tokens, or clear a newer operation's
+reservation. A notification failure cannot roll back the backup's
+completion update. Failed recovery attempts are logged and retried
+independently on the next run.
+
 Bug Tracker
 ===========
 

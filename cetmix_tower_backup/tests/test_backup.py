@@ -6,7 +6,7 @@ from unittest.mock import patch
 import yaml
 from psycopg2 import errors
 
-from odoo import SUPERUSER_ID, _, api, sql_db
+from odoo import SUPERUSER_ID, _, api, fields, sql_db
 from odoo.exceptions import AccessError, ValidationError
 from odoo.tests import TransactionCase, tagged
 from odoo.tools import mute_logger
@@ -553,6 +553,174 @@ class TestTowerBackup(BackupCommon):
         with mute_logger("odoo.addons.cetmix_tower_backup.models.cx_tower_backup"):
             log.finish(-1)
         self.assertEqual(backup.state, "done")
+
+    def test_failed_backup_finalizes_when_parent_completion_hook_raises(self):
+        """Notifications must not leave a failed plan's backup reserving its Jet."""
+        from odoo.addons.cetmix_tower_server.models.cx_tower_plan_log import (
+            CxTowerPlanLog as CorePlanLog,
+        )
+
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        with (
+            patch.object(
+                CorePlanLog,
+                "_plan_finished",
+                side_effect=ValidationError("notification failed"),
+            ),
+            mute_logger(
+                "odoo.addons.cetmix_tower_server.models.cx_tower_plan_log",
+                "odoo.addons.cetmix_tower_backup.models.cx_tower_plan_log",
+            ),
+        ):
+            backup.plan_log_ids.command_log_ids.finish(status=601)
+        self.assertFalse(backup.plan_log_ids.is_running)
+        self.assertEqual(backup.plan_log_ids.plan_status, 601)
+        self.assertEqual(backup.state, "failed")
+        self.assertFalse(backup.operation_token)
+        self.assertFalse(self.source.active_backup_id)
+
+    def test_terminal_result_survives_sql_error_in_parent_hook(self):
+        from odoo.addons.cetmix_tower_server.models.cx_tower_plan_log import (
+            CxTowerPlanLog as CorePlanLog,
+        )
+
+        def fail_notification(log):
+            log.env.cr.execute("SELECT 1 / 0")
+
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        with (
+            patch.object(CorePlanLog, "_plan_finished", fail_notification),
+            mute_logger(
+                "odoo.sql_db",
+                "odoo.addons.cetmix_tower_backup.models.cx_tower_plan_log",
+            ),
+        ):
+            backup.plan_log_ids.command_log_ids.finish(status=601)
+        self.assertEqual(backup.state, "failed")
+        self.assertFalse(self.source.active_backup_id)
+        self.env.cr.execute("SELECT 1")
+        self.assertEqual(self.env.cr.fetchone(), (1,))
+
+    def _record_terminal_backup_log(self, backup, status):
+        """Build a finished execution whose backup callback was missed.
+
+        Args:
+            backup (cx.tower.backup): Operation with one deferred plan log.
+            status (int): Recorded command and plan exit status.
+
+        Returns:
+            None: Marks the command and plan finished without invoking callbacks.
+        """
+        log = backup.plan_log_ids
+        finished = fields.Datetime.now()
+        log.command_log_ids.write({"finish_date": finished, "command_status": status})
+        log.write({"finish_date": finished, "plan_status": status})
+
+    def test_reconcile_recovers_missed_results_and_preserves_newer_claims(self):
+        for status, expected in ((601, "failed"), (0, "done")):
+            with self._defer():
+                backup = self.source.create_backup(self.backup_template)
+            self._record_terminal_backup_log(backup, status)
+            self.PlanLog._reconcile_backup_operations()
+            self.assertEqual(backup.state, expected)
+            self.assertFalse(backup.operation_token)
+            self.assertFalse(self.source.active_backup_id)
+            self.PlanLog._reconcile_backup_operations()
+            self.assertEqual(backup.state, expected)
+        with self._defer():
+            old = self.source.create_backup(self.backup_template)
+        newer = self._backup(state="running")
+        self.source.active_backup_id = newer
+        self._record_terminal_backup_log(old, 601)
+        self.PlanLog._reconcile_backup_operations()
+        self.assertEqual(old.state, "failed")
+        self.assertEqual(self.source.active_backup_id, newer)
+
+    def test_reconcile_ignores_running_plans_and_obsolete_tokens(self):
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        self.PlanLog.create(
+            {
+                "server_id": self.server_test_1.id,
+                "plan_id": self.backup_plan.id,
+                "backup_id": backup.id,
+                "backup_operation": "backup",
+                "backup_token": backup.operation_token,
+                "parent_flight_plan_log_id": backup.plan_log_ids.id,
+                "start_date": fields.Datetime.now(),
+                "finish_date": fields.Datetime.now(),
+                "plan_status": 601,
+            }
+        )
+        self.PlanLog._reconcile_backup_operations()
+        self.assertEqual(backup.state, "running")
+        backup.operation_token = "newer-operation"
+        self._record_terminal_backup_log(backup, 601)
+        self.PlanLog._reconcile_backup_operations()
+        self.assertEqual(backup.state, "running")
+        self.assertEqual(self.source.active_backup_id, backup)
+
+    def test_finish_fallback_applies_result_when_hook_is_skipped(self):
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        with patch.object(type(self.PlanLog), "_plan_finished", return_value=True):
+            backup.plan_log_ids.command_log_ids.finish(status=601)
+        self.assertEqual(backup.state, "failed")
+        self.assertFalse(self.source.active_backup_id)
+
+    def test_reconcile_recovers_terminal_delete_results(self):
+        self.backup_template.plan_delete_id = self.delete_plan
+        for status in (601, 0):
+            backup = self._backup()
+            with self._defer():
+                backup.unlink()
+            self._record_terminal_backup_log(backup, status)
+            self.PlanLog._reconcile_backup_operations()
+            if status:
+                self.assertEqual(backup.state, "delete_failed")
+            else:
+                self.assertFalse(backup.exists())
+            self.assertFalse(self.source.active_backup_id)
+
+    def test_reconcile_isolates_one_failed_recovery(self):
+        other = self.Jet.create(
+            {
+                "name": "Other recovery Jet",
+                "jet_template_id": self.template.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+        with self._defer():
+            first = self.source.create_backup(self.backup_template)
+            second = other.create_backup(self.backup_template)
+        self._record_terminal_backup_log(first, 601)
+        self._record_terminal_backup_log(second, 601)
+        failed_log_id = first.plan_log_ids.id
+        original = type(self.PlanLog)._finalize_backup_result
+
+        def recover(log):
+            if log.id == failed_log_id:
+                log.env.cr.execute("SELECT 1 / 0")
+            return original(log)
+
+        with (
+            patch.object(type(self.PlanLog), "_finalize_backup_result", recover),
+            mute_logger(
+                "odoo.sql_db",
+                "odoo.addons.cetmix_tower_backup.models.cx_tower_plan_log",
+            ),
+        ):
+            self.PlanLog._reconcile_backup_operations()
+        self.assertEqual(first.state, "running")
+        self.assertEqual(second.state, "failed")
+        self.assertFalse(other.active_backup_id)
+        self.env.cr.execute("SELECT 1")
+        self.assertEqual(self.env.cr.fetchone(), (1,))
+        self.PlanLog._reconcile_backup_operations()
+        self.assertEqual(first.state, "failed")
+        self.assertFalse(self.source.active_backup_id)
 
     def test_failed_and_stopped_backup(self):
         for status in (-1, -308):
