@@ -1,6 +1,8 @@
 # Copyright 2026 Cetmix OÜ
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from urllib.parse import quote
+
 import requests
 from requests.exceptions import RequestException
 
@@ -108,7 +110,7 @@ class CxTowerGitRemote(models.Model):
         name = repo.repo
         if not owner or not name:
             return False, {}, False
-        base = f"{GITHUB_API_URL}/repos/{owner}/{name}"
+        base = self._git_github_repos_base(owner, name)
         params = {"per_page": GITHUB_PAGE_SIZE, "page": 1}
         if head_type == "branch":
             return f"{base}/branches", params, "name"
@@ -118,6 +120,22 @@ class CxTowerGitRemote(models.Model):
         if head_type == "commit":
             return f"{base}/commits", params, "sha"
         return False, {}, False
+
+    @api.model
+    def _git_github_repos_base(self, owner, name):
+        """Return the GitHub repository URL with encoded path segments.
+
+        Each of ``owner`` and ``name`` is one path segment. Encoding them
+        keeps a reserved character inside the segment.
+
+        Args:
+            owner (str): Repository owner.
+            name (str): Repository name.
+
+        Returns:
+            str: ``https://api.github.com/repos/<owner>/<name>``.
+        """
+        return f"{GITHUB_API_URL}/repos/{quote(owner, safe='')}/{quote(name, safe='')}"
 
     def _git_github_suggestion(self, item, value_key):
         """Read one suggestion from a GitHub payload item.
@@ -357,7 +375,7 @@ class CxTowerGitRemote(models.Model):
         return response.reason or self.env._("GitHub returned an error.")
 
     def _git_head_api_reference(self, repo):
-        """Use the repository Secret, or the GitHub API Secret setting.
+        """Use the repository Secret, the owner Secret, or settings.
 
         Args:
             repo (cx.tower.git.repo): Repository to read.
@@ -368,6 +386,8 @@ class CxTowerGitRemote(models.Model):
         reference = super()._git_head_api_reference(repo)
         if reference:
             return reference
+        if repo.owner_id and repo.owner_id.secret_id:
+            return repo.owner_id.secret_id.reference
         param = (
             self.env["ir.config_parameter"]
             .sudo()

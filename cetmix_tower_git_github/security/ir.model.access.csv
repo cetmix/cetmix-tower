@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cx_tower_git_github_sync_wizard_user,cx.tower.git.github.sync.wizard->User,model_cx_tower_git_github_sync_wizard,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_git_github_sync_wizard_manager,cx.tower.git.github.sync.wizard->Manager,model_cx_tower_git_github_sync_wizard,cetmix_tower_base.group_manager,1,1,1,1
+access_cx_tower_git_github_sync_wizard_root,cx.tower.git.github.sync.wizard->Root,model_cx_tower_git_github_sync_wizard,cetmix_tower_base.group_root,1,1,1,1
+access_cx_tower_git_github_sync_wizard_line_user,cx.tower.git.github.sync.wizard.line->User,model_cx_tower_git_github_sync_wizard_line,cetmix_tower_base.group_user,0,0,0,0
+access_cx_tower_git_github_sync_wizard_line_manager,cx.tower.git.github.sync.wizard.line->Manager,model_cx_tower_git_github_sync_wizard_line,cetmix_tower_base.group_manager,1,1,1,1
+access_cx_tower_git_github_sync_wizard_line_root,cx.tower.git.github.sync.wizard.line->Root,model_cx_tower_git_github_sync_wizard_line,cetmix_tower_base.group_root,1,1,1,1

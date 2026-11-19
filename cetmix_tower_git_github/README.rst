@@ -46,8 +46,15 @@ Users & Companies > Users** and set the user's Cetmix Tower access to
 Set **GitHub API Secret** and save.
 
 On the repository, set **Secret** when that repository has its own
-token. Leave **Secret** empty to use the globally configured GitHub API
-Secret.
+token. When **Secret** is empty, Tower uses the **Secret** on the
+repository owner. When both are empty, Tower uses **GitHub API Secret**
+from General Settings.
+
+Tower resolves a secret in that order for Head autocomplete and for
+reading the GitHub repository id. Head autocomplete still uses server
+and partner values when they are known. Reading the GitHub id uses only
+a **global** value of the chosen secret; server-specific or
+partner-specific values are not used for that read.
 
 Be careful about the scope of the token. Any token that can read the
 repository is enough.
@@ -92,6 +99,22 @@ stores the full SHA.
 
 When no secret resolves, an error is shown and the list is empty. A
 typed value can still be saved.
+
+Read from GitHub
+----------------
+
+Go to **Cetmix Tower > Settings > Git Projects > Repositories**. Open a
+github.com repository.
+
+**Read from GitHub** is on the form. The same action is on the
+repository list. Both are limited to managers.
+
+Saving a github.com repository reads GitHub as well. When that read
+fails, the repository is still saved.
+
+When the stored GitHub owner id differs from GitHub, choose
+**Overwrite** to replace it or **Cancel** to keep it. The repository id
+and the private flag are already updated either way.
 
 Bug Tracker
 ===========
