@@ -839,6 +839,94 @@ class TestTowerBackup(BackupCommon):
         ):
             backup.restore(self.server_test_1)
 
+    def test_bulk_delete_continues_after_each_deferred_plan(self):
+        """All selected backups are processed while only one reserves their Jet."""
+        self.backup_template.plan_delete_id = self.delete_plan
+        backups = self._backup() | self._backup() | self._backup()
+        with self._defer():
+            backups.unlink()
+            for expected_remaining in (3, 2, 1):
+                remaining = backups.exists()
+                self.assertEqual(len(remaining), expected_remaining)
+                deleting = remaining.filtered(lambda backup: backup.state == "deleting")
+                self.assertEqual(len(deleting), 1)
+                self.assertEqual(self.source.active_backup_id, deleting)
+                deleting.plan_log_ids.command_log_ids.finish(status=0)
+        self.assertFalse(backups.exists())
+        self.assertFalse(self.source.active_backup_id)
+
+    def test_bulk_delete_continues_after_failure_and_blocks_queued_restore(self):
+        self.backup_template.plan_delete_id = self.delete_plan
+        backups = self._backup() | self._backup()
+        with self._defer():
+            backups.unlink()
+            first = backups.filtered(lambda backup: backup.state == "deleting")
+            second = backups - first
+            self.assertTrue(second.delete_requested)
+            with self.assertRaisesRegex(ValidationError, "queued for deletion"):
+                second.restore(self.server_test_1)
+            first.plan_log_ids.command_log_ids.finish(status=-1)
+            self.assertEqual(first.state, "delete_failed")
+            self.assertEqual(second.state, "deleting")
+            second.plan_log_ids.command_log_ids.finish(status=0)
+        self.assertFalse(second.exists())
+        self.Backup._run_cleanup()
+        self.assertTrue(first.exists())
+
+    def test_bulk_delete_inline_and_record_only(self):
+        self.assertTrue(self.Backup.browse().unlink())
+        self.backup_template.plan_delete_id = self.delete_plan
+        backups = self.Backup.browse()
+        for _index in range(12):
+            backups |= self._backup()
+        backups.unlink()
+        self.assertFalse(backups.exists())
+        self.assertFalse(self.source.active_backup_id)
+        self.backup_template.plan_delete_id = False
+        records = self._backup() | self._backup()
+        records.unlink()
+        self.assertFalse(records.exists())
+
+    def test_bulk_delete_dispatch_failure_is_durable_and_retryable(self):
+        self.backup_template.plan_delete_id = self.delete_plan
+        backups = self._backup() | self._backup()
+        with patch.object(
+            type(self.server_test_1),
+            "run_flight_plan",
+            side_effect=ValidationError("dispatch failed"),
+        ):
+            backups.unlink()
+        self.assertTrue(all(backups.mapped("delete_requested")))
+        self.assertEqual(set(backups.mapped("state")), {"done"})
+        self.assertFalse(self.source.active_backup_id)
+        self.Backup._run_cleanup()
+        self.assertFalse(backups.exists())
+
+    def test_bulk_delete_with_queue_jobs(self):
+        if "queue_job_id" not in self.CommandLog._fields:
+            self.skipTest("Requires cetmix_tower_server_queue")
+        from odoo.addons.queue_job.tests.common import trap_jobs
+
+        self.backup_template.plan_delete_id = self.delete_plan
+        backups = self._backup() | self._backup() | self._backup()
+
+        def handlers(server):
+            return [(50, server._try_defer_command_queue)]
+
+        with (
+            patch.object(
+                type(self.server_test_1), "_get_command_defer_handlers", handlers
+            ),
+            trap_jobs() as trap,
+        ):
+            backups.unlink()
+            self.assertTrue(backups.exists())
+            for _index in range(3):
+                trap.perform_enqueued_jobs()
+            self.assertFalse(trap.enqueued_jobs)
+            self.assertFalse(backups.exists())
+        self.assertFalse(self.source.active_backup_id)
+
     def test_delete_success_failure_busy_and_orphan(self):
         self.backup_template.plan_delete_id = self.delete_plan
         backup = self._backup()

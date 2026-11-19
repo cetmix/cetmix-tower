@@ -51,6 +51,13 @@
                     >
                         <field name="delete_warning" nolabel="1" />
                     </div>
+                    <div
+                        class="alert alert-info"
+                        role="alert"
+                        invisible="not delete_requested"
+                    >
+                        Deletion is queued until the Delete flight plan can run.
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" />

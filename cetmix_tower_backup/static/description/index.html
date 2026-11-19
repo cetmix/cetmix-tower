@@ -866,6 +866,20 @@ operation is started</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Delete several backups</strong></p>
+<ol class="arabic simple">
+<li>Open the Jet’s <strong>Backups</strong> smart button, or <strong>Cetmix Tower</strong> →
+<strong>Tools</strong> → <strong>Backups</strong>.</li>
+<li>Select the backups.</li>
+<li>Click <strong>Action</strong> → <strong>Delete</strong> and confirm.</li>
+<li>Wait for the Delete plans. Backups on the same Jet are processed one
+at a time; remaining requests are retained rather than skipped.</li>
+<li>Inspect any <strong>Deletion Failed</strong> backup separately. Other selected
+backups continue; failed deletions require manual retry.</li>
+</ol>
+<p>Queued backups cannot be restored. A queued backup’s form shows that
+deletion is pending. Daily cleanup retries requests deferred by
+contention or dispatch errors.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h1><a class="toc-backref" href="#toc-entry-4">Bug Tracker</a></h1>

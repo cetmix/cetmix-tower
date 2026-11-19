@@ -397,6 +397,21 @@ Failed or Deletion Failed Red
 |                                  | operation is started             |
 +----------------------------------+----------------------------------+
 
+**Delete several backups**
+
+1. Open the Jet's **Backups** smart button, or **Cetmix Tower** →
+   **Tools** → **Backups**.
+2. Select the backups.
+3. Click **Action** → **Delete** and confirm.
+4. Wait for the Delete plans. Backups on the same Jet are processed one
+   at a time; remaining requests are retained rather than skipped.
+5. Inspect any **Deletion Failed** backup separately. Other selected
+   backups continue; failed deletions require manual retry.
+
+Queued backups cannot be restored. A queued backup's form shows that
+deletion is pending. Daily cleanup retries requests deferred by
+contention or dispatch errors.
+
 Bug Tracker
 ===========
 

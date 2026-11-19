@@ -64,6 +64,7 @@ class CxTowerBackup(models.Model):
     )
     delete_warning = fields.Char(compute="_compute_delete_warning")
     operation_token = fields.Char(readonly=True, copy=False)
+    delete_requested = fields.Boolean(readonly=True, copy=False, index=True)
 
     @api.depends("backup_template_id.plan_delete_id", "jet_id", "server_id")
     def _compute_delete_warning(self):
@@ -137,10 +138,13 @@ class CxTowerBackup(models.Model):
             cx.tower.jet: Newly created Jet.
 
         Raises:
-            ValidationError: Backup is not complete or Jet creation is refused.
+            ValidationError: Backup is queued for deletion, is incomplete, or
+                Jet creation is refused.
         """
         self.ensure_one()
         self.check_access("read")
+        if self.delete_requested:
+            raise ValidationError(self.env._("This backup is queued for deletion."))
         if self.state != "done":
             raise ValidationError(
                 self.env._("Only a successful backup can be restored.")
@@ -284,8 +288,8 @@ class CxTowerBackup(models.Model):
         """Delete stored data through the configured plan before its record.
 
         Returns:
-            bool: True after handling the request. A busy Delete plan leaves
-                the backup unchanged for a later attempt.
+            bool: True after handling the request. Bulk requests are retained
+                until their Delete plans can run. A busy singleton is deferred.
 
         Raises:
             ValidationError: An operation is running or a waypoint owns the backup.
@@ -296,8 +300,13 @@ class CxTowerBackup(models.Model):
             raise ValidationError(
                 self.env._("Delete the waypoint instead of its linked backup.")
             )
-        for backup in self:
-            backup._start_delete()
+        if len(self) > 1:
+            for backup in self:
+                backup._check_delete_admission()
+            self.write({"delete_requested": True})
+            self._process_delete_requests()
+        elif self:
+            self._start_delete()
         return True
 
     def _delete_for_waypoint(self, waypoint):
@@ -337,7 +346,11 @@ class CxTowerBackup(models.Model):
                 _logger.info("Backup %s deletion deferred: %s", self.id, error)
                 return
             self.write(
-                {"state": "deleting", "operation_token": secrets.token_urlsafe(32)}
+                {
+                    "state": "deleting",
+                    "operation_token": secrets.token_urlsafe(32),
+                    "delete_requested": False,
+                }
             )
             if self.jet_id:
                 self.jet_id.sudo().write({"active_backup_id": self.id})
@@ -388,6 +401,7 @@ class CxTowerBackup(models.Model):
                 self._unlink_finished()
             else:
                 self.write({"state": "delete_failed"})
+            self.env["cx.tower.backup"]._process_delete_requests()
             return
         success = log.plan_status == 0
         self.write({"state": "done" if success else "failed", "operation_token": False})
@@ -400,6 +414,41 @@ class CxTowerBackup(models.Model):
                 _logger.exception(
                     "Could not finish triggering command for backup %s", self.id
                 )
+
+    @api.model
+    def _process_delete_requests(self):
+        """Drain durable bulk requests without overlapping operations on a Jet.
+
+        A cursor-local guard prevents recursive draining when a Delete plan
+        finishes inline. Asynchronous callbacks use a new cursor and drain again;
+        no caller-supplied context value can suppress processing. Cleanup retries
+        requests left pending by contention or dispatch errors.
+
+        Returns:
+            None: Available requests are started; busy requests remain pending.
+        """
+        cursor = self.env.cr
+        if getattr(cursor, "_tower_backup_delete_processing", False):
+            return
+        cursor._tower_backup_delete_processing = True
+        try:
+            pending = self.sudo().search([("delete_requested", "=", True)])
+            for backup in pending:
+                if not backup.exists():
+                    continue
+                try:
+                    with self.env.cr.savepoint():
+                        backup.unlink()
+                except (
+                    ValidationError,
+                    errors.LockNotAvailable,
+                    errors.SerializationFailure,
+                ) as error:
+                    _logger.info(
+                        "Bulk deletion of backup %s deferred: %s", backup.id, error
+                    )
+        finally:
+            cursor._tower_backup_delete_processing = False
 
     def _cleanup_unlink(self):
         """Isolate each automatic deletion so contention leaves it retryable.
@@ -418,6 +467,7 @@ class CxTowerBackup(models.Model):
     def _run_cleanup(self):
         """Remove unlinked failed uploads, then excess successful backups."""
         backups = self.sudo()
+        backups._process_delete_requests()
         backups.search(
             [("state", "=", "failed"), ("waypoint_ids", "=", False)]
         )._cleanup_unlink()
