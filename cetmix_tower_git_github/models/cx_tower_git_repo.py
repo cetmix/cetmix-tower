@@ -266,15 +266,16 @@ class CxTowerGitRepo(models.Model):
         Args:
             payload (dict): GitHub repository payload.
             raise_errors (bool): When true, a differing owner id is recorded
-                for the wizard, and ``AccessError`` while writing that id
-                is raised. When false, a differing id is left unchanged and
-                that ``AccessError`` is logged.
+                for the wizard, and ``AccessError`` while filling an empty
+                owner id is raised. When false, a differing id is left
+                unchanged and that ``AccessError`` is logged. An equal id
+                is not written.
             wizard_lines (list[dict]): Wizard lines to extend on clash.
 
         Raises:
             AccessError: The caller cannot write this repository. Also
-                raised when the caller cannot write the owner's GitHub id
-                and ``raise_errors`` is set.
+                raised when the caller cannot fill an empty owner id and
+                ``raise_errors`` is set.
 
         Returns:
             bool: False. A clash is recorded on ``wizard_lines``.
@@ -291,9 +292,9 @@ class CxTowerGitRepo(models.Model):
 
         repo.write(repo_vals)
 
-        if not owner:
+        if not owner or stored == fetched_owner_ref:
             return False
-        if not stored or stored == fetched_owner_ref:
+        if not stored:
             try:
                 owner.write({"github_owner_ref": fetched_owner_ref})
             except AccessError:

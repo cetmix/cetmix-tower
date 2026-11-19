@@ -906,6 +906,47 @@ class TestGitHeadGithub(CommonTest):
             wizard.action_overwrite()
         self.assertEqual(owner.github_owner_ref, "100")
 
+    def test_matching_owner_ref_other_user_does_not_raise(self):
+        """Read from GitHub succeeds when the stored owner id already matches."""
+        manager_b = self.Users.create(
+            {
+                "name": "Matching Owner Manager",
+                "login": "matching_owner_manager_5709",
+                "groups_id": [
+                    (
+                        6,
+                        0,
+                        [
+                            self.group_manager.id,
+                            self.env.ref("base.group_user").id,
+                        ],
+                    )
+                ],
+            }
+        )
+        owner = self.RepoOwner.with_user(self.manager).create(
+            {"name": "sameowner", "github_owner_ref": "583231"}
+        )
+        key = self.Key.create(
+            {"name": "Same owner key", "key_type": "s", "secret_value": "ghp_same"}
+        )
+        with self._mock_repo_get(self._repo_api_payload(owner_id=583231)):
+            repo = self.Repo.with_user(manager_b).create(
+                {
+                    "url": "https://github.com/sameowner/shared.git",
+                    "secret_id": key.id,
+                }
+            )
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertEqual(owner.github_owner_ref, "583231")
+        repo.github_repo_ref = False
+        with self._mock_repo_get(self._repo_api_payload(owner_id=583231, private=True)):
+            action = repo.with_user(manager_b).action_git_github_sync()
+        self.assertFalse(action)
+        self.assertEqual(repo.github_repo_ref, "1296269")
+        self.assertTrue(repo.is_private)
+        self.assertEqual(owner.github_owner_ref, "583231")
+
     def test_repository_secret_beats_owner_secret(self):
         """A set repository Secret is used and the owner Secret is not."""
         owner_key = self.Key.create(
