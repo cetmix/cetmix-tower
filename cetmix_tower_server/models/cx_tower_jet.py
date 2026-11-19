@@ -243,6 +243,13 @@ class CxTowerJet(models.Model):
         inverse_name="jet_id",
         copy=False,
     )
+    secret_ids = fields.One2many(
+        string="Secrets",
+        comodel_name="cx.tower.key.value",
+        inverse_name="jet_id",
+        copy=False,
+        groups="cetmix_tower_base.group_manager",
+    )
 
     # -- Access. Add relation for mixin fields
     user_ids = fields.Many2many(
@@ -514,8 +521,23 @@ class CxTowerJet(models.Model):
 
     def unlink(self):
         """
-        Unlink all related files
+        Unlink all related files and secret values.
+
+        Secret values are deleted through the ORM, so their vault records
+        are deleted too: the database cascade of `jet_id` does not do that.
+        They are deleted as superuser, including values created by other
+        users, but only after the access and the `deletable` checks pass.
+        Secret values, jets and their files are deleted in a savepoint,
+        so a failed deletion keeps the secret values even if the caller
+        catches the error.
+
+        Server paths of the files are resolved before the jet secret values
+        are deleted, so files are deleted from the paths they were
+        uploaded to.
         """
+        # Check access first: the secret values are deleted before
+        # the parent `unlink` checks access to the jets
+        self.check_access("unlink")
 
         # Check if the jet is deletable
         not_deletable_jets = self.filtered(lambda j: not j.deletable)
@@ -526,14 +548,18 @@ class CxTowerJet(models.Model):
                     not_deletable_jets.mapped("display_name"),
                 )
             )
-        files = self.file_ids
-        res = super().unlink()
+        files = self.file_ids._with_resolved_server_paths()
+        with self.env.cr.savepoint():
+            self.env["cx.tower.key.value"].sudo().search(
+                [("jet_id", "in", self.ids)]
+            ).unlink()
+            res = super().unlink()
 
-        # Unlink files only after the records are deleted
-        # This is done to avoid deleting the files while
-        # the 'unlink' method fails due to some reason.
-        if files:
-            files.unlink()
+            # Unlink files only after the records are deleted
+            # This is done to avoid deleting the files while
+            # the 'unlink' method fails due to some reason.
+            if files:
+                files.unlink()
         return res
 
     # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

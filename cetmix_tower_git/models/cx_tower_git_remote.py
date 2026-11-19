@@ -285,7 +285,12 @@ class CxTowerGitRemote(models.Model):
         context_server = self._git_head_context_record(
             "cx.tower.server", self.env.context.get("git_server_id")
         )
-        server, partner = self._git_head_autocomplete_scope(source, context_server)
+        context_jet = self._git_head_context_record(
+            "cx.tower.jet", self.env.context.get("git_jet_id")
+        )
+        server, partner, jet = self._git_head_autocomplete_scope(
+            source, context_server, jet=context_jet
+        )
         query = value.strip() if isinstance(value, str) else False
         if query == "":
             query = False
@@ -295,6 +300,7 @@ class CxTowerGitRemote(models.Model):
             query,
             server=server,
             partner=partner,
+            jet=jet,
         )
 
     @api.model
@@ -324,24 +330,32 @@ class CxTowerGitRemote(models.Model):
         return record
 
     @api.model
-    def _git_head_autocomplete_scope(self, source, server):
-        """Choose the server and partner used to resolve the API secret.
+    def _git_head_autocomplete_scope(self, source, server, jet=None):
+        """Choose the server, partner and jet used to resolve the API secret.
 
-        On the Jet list the checked server is used, and the partner only when
-        it is the partner of a Jet the user can read on that server. On the
-        remote form, a project with one Jet uses that Jet. A project with no
-        Jet and one linked server uses that server and its partner. Several
-        Jets or servers leave both empty, so only a global secret can match.
+        On the Jet form the checked Jet is used with its server, and its
+        partner or its server's partner when the Jet has none. Otherwise,
+        on the Jet list or a launch wizard the checked server is used, and
+        the partner only when it is the partner of a Jet the user can read
+        on that server. On the remote form, a project with one Jet uses
+        that Jet. A project with no Jet and one linked server uses that
+        server and its partner. Several Jets or servers leave all empty,
+        so only a global secret can match.
 
         Args:
             source (cx.tower.git.source): Checked source, or empty.
             server (cx.tower.server): Checked server from the Jet list, or
                 empty.
+            jet (cx.tower.jet | None): Checked Jet from the Jet form, or
+                empty.
 
         Returns:
-            tuple: ``(server, partner)`` recordsets. Either may be empty.
+            tuple: ``(server, partner, jet)`` recordsets. Any may be empty.
         """
         partner = self.env["res.partner"].browse()
+        no_jet = self.env["cx.tower.jet"].browse()
+        if jet:
+            return self._git_head_jet_scope(jet)
         if server:
             partner_id = self.env.context.get("git_partner_id")
             try:
@@ -349,33 +363,52 @@ class CxTowerGitRemote(models.Model):
             except (TypeError, ValueError):
                 partner_id = False
             if partner_id:
-                jet = self.env["cx.tower.jet"].search(
+                partner_jet = self.env["cx.tower.jet"].search(
                     [
                         ("server_id", "=", server.id),
                         ("partner_id", "=", partner_id),
                     ],
                     limit=1,
                 )
-                if jet:
-                    partner = jet.partner_id
-            return server, partner
+                if partner_jet:
+                    partner = partner_jet.partner_id
+            return server, partner, no_jet
         if not source:
-            return self.env["cx.tower.server"].browse(), partner
+            return self.env["cx.tower.server"].browse(), partner, no_jet
         project = source.git_project_id
-        jets = self.env["cx.tower.jet"].search([("git_project_id", "=", project.id)])
-        if len(jets) == 1:
-            jet_server = jets.server_id
-            if jet_server and jet_server.has_access("read"):
-                return jet_server, jets.partner_id
-            return self.env["cx.tower.server"].browse(), partner
+        jet_domain = [("git_project_id", "=", project.id)]
+        jets = self.env["cx.tower.jet"].search(jet_domain)
+        # Count all the project Jets: a single readable Jet is not
+        # the project's only Jet when others are hidden by access rules
+        if len(jets) == 1 and (
+            self.env["cx.tower.jet"].sudo().search_count(jet_domain) == 1
+        ):
+            if jets.server_id and jets.server_id.has_access("read"):
+                return self._git_head_jet_scope(jets)
+            return self.env["cx.tower.server"].browse(), partner, no_jet
         if jets:
-            return self.env["cx.tower.server"].browse(), partner
+            return self.env["cx.tower.server"].browse(), partner, no_jet
         servers = project.server_ids.filtered(lambda item: item.has_access("read"))
         if len(servers) == 1:
-            return servers, servers.partner_id
-        return self.env["cx.tower.server"].browse(), partner
+            return servers, servers.partner_id, no_jet
+        return self.env["cx.tower.server"].browse(), partner, no_jet
 
-    def _git_fetch_heads(self, repo, head_type, query, server=None, partner=None):
+    @api.model
+    def _git_head_jet_scope(self, jet):
+        """Return the secret scope of a Jet the user can read.
+
+        Args:
+            jet (cx.tower.jet): Jet already checked for read.
+
+        Returns:
+            tuple: ``(server, partner, jet)``. The partner is the Jet's
+            partner, or its server's partner when the Jet has none.
+        """
+        return jet.server_id, jet.partner_id or jet.server_id.partner_id, jet
+
+    def _git_fetch_heads(
+        self, repo, head_type, query, server=None, partner=None, jet=None
+    ):
         """Dispatch Head suggestions to the repository provider.
 
         Args:
@@ -384,6 +417,9 @@ class CxTowerGitRemote(models.Model):
             query (str | bool): Trimmed input, or ``False`` on focus.
             server (cx.tower.server | None): Server for the secret, or empty.
             partner (res.partner | None): Partner for the secret, or empty.
+            jet (cx.tower.jet | None): Jet for the secret, or empty.
+                Passed to the provider only when set, so a provider
+                without Jet support keeps working without one.
 
         Returns:
             list[dict]: Provider rows, or an empty list when the provider
@@ -392,21 +428,23 @@ class CxTowerGitRemote(models.Model):
         method = getattr(self, f"_git_fetch_heads_{repo.provider}", None)
         if not method:
             return []
-        return method(
-            repo, head_type, query, server=server or None, partner=partner or None
-        )
+        kwargs = {"server": server or None, "partner": partner or None}
+        if jet:
+            kwargs["jet"] = jet
+        return method(repo, head_type, query, **kwargs)
 
-    def _git_head_api_token(self, repo, server=None, partner=None):
+    def _git_head_api_token(self, repo, server=None, partner=None, jet=None):
         """Resolve the Bearer token for a repository API call.
 
         The repository Secret wins. A provider module can add another
-        reference when that Secret is empty. The search order is server
-        and partner, then server, then partner, then global.
+        reference when that Secret is empty. The search order is jet,
+        then server and partner, then server, then partner, then global.
 
         Args:
             repo (cx.tower.git.repo): Repository whose secret is resolved.
             server (cx.tower.server | None): Checked server, or empty.
             partner (res.partner | None): Checked partner, or empty.
+            jet (cx.tower.jet | None): Checked Jet, or empty.
 
         Raises:
             UserError: When no secret value resolves.
@@ -424,6 +462,8 @@ class CxTowerGitRemote(models.Model):
             kwargs["server_id"] = server.id
         if partner:
             kwargs["partner_id"] = partner.id
+        if jet:
+            kwargs["jet_id"] = jet.id
         token = self.env["cx.tower.key"]._resolve_key_type_secret(reference, **kwargs)
         if not token:
             raise UserError(

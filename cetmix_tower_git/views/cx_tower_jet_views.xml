@@ -50,6 +50,7 @@
                                     'git_head_type': head_type,
                                     'git_server_id': parent.server_id,
                                     'git_partner_id': parent.partner_id,
+                                    'git_jet_id': parent.id,
                                 }"
                             />
                             <field name="enabled" widget="boolean_toggle" />

@@ -475,6 +475,77 @@ class TestGitHeadGithub(CommonTest):
         token = self.GitRemote._git_head_api_token(repo, self.server_test_1, partner)
         self.assertEqual(token, "settings-scoped")
 
+    def test_jet_token_through_github(self):
+        """The GitHub call sends the token selected for the Jet."""
+        partner_server = self.user_bob.partner_id
+        partner_jet = self.manager.partner_id
+        self.server_test_1.partner_id = partner_server
+        project = self.GitProject.create({"name": "Jet token project"})
+        jet_vals = {
+            "jet_template_id": self.jet_template_sample.id,
+            "server_id": self.server_test_1.id,
+        }
+        jet = self.Jet.create(
+            dict(
+                jet_vals,
+                name="GitHub Jet",
+                partner_id=partner_jet.id,
+                git_project_id=project.id,
+            )
+        )
+        jet_no_partner = self.Jet.create(dict(jet_vals, name="GitHub Jet No Partner"))
+        key = self.Key.create(
+            {"name": "GitHub Jet", "key_type": "s", "secret_value": "global-token"}
+        )
+        self.KeyValue.create(
+            [
+                {"key_id": key.id, "jet_id": jet.id, "secret_value": "jet-token"},
+                {
+                    "key_id": key.id,
+                    "server_id": self.server_test_1.id,
+                    "partner_id": partner_server.id,
+                    "secret_value": "server-partner-token",
+                },
+                {
+                    "key_id": key.id,
+                    "server_id": self.server_test_1.id,
+                    "secret_value": "server-token",
+                },
+            ]
+        )
+        repo = self.Repo.create({"url": "https://github.com/octocat/jet-token.git"})
+        repo.secret_id = key
+        source = self.GitSource.create(
+            {"name": "Jet token source", "git_project_id": project.id}
+        )
+
+        def token(**context):
+            ctx = {"git_repo_id": repo.id, "git_head_type": "branch"}
+            ctx.update(context)
+            with patch(
+                "odoo.addons.cetmix_tower_git_github.models"
+                ".cx_tower_git_remote.requests.get",
+                return_value=self._response(200, []),
+            ) as mock_get:
+                self.GitRemote.with_context(**ctx).git_head_autocomplete(False)
+            return mock_get.call_args.kwargs["headers"]["Authorization"]
+
+        # Jet value wins over broader scopes
+        self.assertEqual(token(git_jet_id=jet.id), "Bearer jet-token")
+        self.assertEqual(token(git_source_id=source.id), "Bearer jet-token")
+        # Effective partner of a Jet without partner
+        self.assertEqual(
+            token(git_jet_id=jet_no_partner.id), "Bearer server-partner-token"
+        )
+        # Without a Jet the broader scopes are used
+        self.assertEqual(
+            token(git_server_id=self.server_test_1.id), "Bearer server-token"
+        )
+        self.assertEqual(token(git_jet_id=jet.id + 100000), "Bearer global-token")
+        # Several Jets on the project select no Jet
+        jet_no_partner.git_project_id = project
+        self.assertEqual(token(git_source_id=source.id), "Bearer global-token")
+
     def test_settings_value_must_be_a_secret_key_id(self):
         """The settings value is used only when it is the id of a secret key."""
         repo = self.Repo.create({"url": "https://github.com/octocat/settings-bad.git"})

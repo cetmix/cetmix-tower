@@ -465,8 +465,8 @@ class TestRemote(CommonTest):
             **context: Extra field context.
 
         Returns:
-            dict: ``rows``, ``server``, ``partner``, and ``token`` when the
-            hook ran.
+            dict: ``rows``, ``server``, ``partner``, ``jet``, and ``token``
+            when the hook ran.
         """
         captured = {}
 
@@ -477,13 +477,15 @@ class TestRemote(CommonTest):
             fetched_query,
             server=None,
             partner=None,
+            jet=None,
         ):
             captured["server"] = server
             captured["partner"] = partner
+            captured["jet"] = jet
             captured["head_type"] = head_type
             captured["query"] = fetched_query
             captured["token"] = records._git_head_api_token(
-                fetched_repo, server, partner
+                fetched_repo, server, partner, jet
             )
             return [{"head": "listed"}]
 
@@ -593,7 +595,7 @@ class TestRemote(CommonTest):
         """The remote form uses the single Jet of the source's project."""
         partner = self.user_bob.partner_id
         self.server_test_1.partner_id = partner
-        self.Jet.create(
+        jet = self.Jet.create(
             {
                 "name": "Single Head Jet",
                 "jet_template_id": self.jet_template_sample.id,
@@ -613,13 +615,113 @@ class TestRemote(CommonTest):
                 }
             ],
         )
-        captured = self._autocomplete(
-            self._github_repo(key, private=True),
-            git_source_id=self.source.id,
-        )
+        repo = self._github_repo(key, private=True)
+        captured = self._autocomplete(repo, git_source_id=self.source.id)
         self.assertEqual(captured["server"], self.server_test_1)
         self.assertEqual(captured["partner"], partner)
+        self.assertEqual(captured["jet"], jet)
         self.assertEqual(captured["token"], "jet-token")
+
+        # The Jet's own value wins
+        self.KeyValue.create(
+            {"key_id": key.id, "jet_id": jet.id, "secret_value": "own-jet-token"}
+        )
+        captured = self._autocomplete(repo, git_source_id=self.source.id)
+        self.assertEqual(captured["token"], "own-jet-token")
+
+    def test_jet_form_uses_jet_scope(self):
+        """The Jet form passes the Jet, its server and its effective partner."""
+        partner_server = self.user_bob.partner_id
+        partner_jet = self.manager.partner_id
+        self.server_test_1.partner_id = partner_server
+        jet = self.Jet.create(
+            {
+                "name": "Head Scope Jet",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": self.server_test_1.id,
+                "partner_id": partner_jet.id,
+            }
+        )
+        jet_no_partner = self.Jet.create(
+            {
+                "name": "Head Scope Jet No Partner",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+        key = self._api_key(
+            "Jet form secret",
+            "global-token",
+            [
+                {"secret_value": "jet-token", "jet_id": jet.id},
+                {
+                    "secret_value": "jet-partner-token",
+                    "server_id": self.server_test_1.id,
+                    "partner_id": partner_jet.id,
+                },
+                {
+                    "secret_value": "server-partner-token",
+                    "server_id": self.server_test_1.id,
+                    "partner_id": partner_server.id,
+                },
+            ],
+        )
+        repo = self._github_repo(key, private=True)
+
+        def autocomplete(form_jet, **context):
+            return self._autocomplete(
+                repo,
+                git_server_id=form_jet.server_id.id,
+                git_partner_id=form_jet.partner_id.id,
+                **context,
+            )
+
+        captured = autocomplete(jet, git_jet_id=jet.id)
+        self.assertEqual(captured["jet"], jet)
+        self.assertEqual(captured["partner"], partner_jet)
+        self.assertEqual(captured["token"], "jet-token")
+        captured = autocomplete(jet_no_partner, git_jet_id=jet_no_partner.id)
+        self.assertEqual(captured["jet"], jet_no_partner)
+        self.assertEqual(captured["partner"], partner_server)
+        self.assertEqual(captured["token"], "server-partner-token")
+        # Without a Jet (e.g. a new Jet) no Jet value is used
+        captured = autocomplete(jet)
+        self.assertFalse(captured["jet"])
+        self.assertEqual(captured["token"], "jet-partner-token")
+
+    def test_unreadable_jet_is_ignored(self):
+        """A Jet id the user cannot read does not select the Jet's secret."""
+        self.server_test_1.write(
+            {
+                "user_ids": [(4, self.manager.id)],
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        hidden = self.Jet.create(
+            {
+                "name": "Hidden Head Jet",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": self.server_test_1.id,
+            }
+        )
+        key = self._api_key(
+            "Hidden jet secret",
+            "global-token",
+            [
+                {"secret_value": "hidden-token", "jet_id": hidden.id},
+                {"secret_value": "server-token", "server_id": self.server_test_1.id},
+            ],
+        )
+        repo = self._github_repo(key, private=True)
+        for jet_id in (hidden.id, "abc", hidden.id + 100000):
+            captured = self._autocomplete(
+                repo,
+                user=self.manager,
+                git_server_id=self.server_test_1.id,
+                git_jet_id=jet_id,
+            )
+            self.assertFalse(captured["jet"])
+            self.assertEqual(captured["token"], "server-token")
 
     def test_source_without_jet_uses_linked_server(self):
         """No Jet and one linked server uses that server and its partner."""
@@ -766,6 +868,47 @@ class TestRemote(CommonTest):
             self._github_repo(key, private=True),
             git_source_id=self.source.id,
         )
+        self.assertFalse(captured["server"])
+        self.assertFalse(captured["jet"])
+        self.assertEqual(captured["token"], "global-token")
+
+    def test_one_readable_jet_of_several_uses_no_jet(self):
+        """A project Jet hidden by access rules still makes the project
+        ambiguous: the readable Jet is not used.
+        """
+        self.server_test_1.write({"user_ids": [(4, self.manager.id)]})
+        jets = self.Jet.create(
+            [
+                {
+                    "name": name,
+                    "jet_template_id": self.jet_template_sample.id,
+                    "server_id": self.server_test_1.id,
+                    "git_project_id": self.project.id,
+                    "user_ids": user_ids,
+                }
+                for name, user_ids in (
+                    ("Visible Head Jet", [(4, self.manager.id)]),
+                    ("Hidden Head Jet", []),
+                )
+            ]
+        )
+        key = self._api_key(
+            "Partly visible jets secret",
+            "global-token",
+            [{"secret_value": "jet-token", "jet_id": jets[0].id}],
+        )
+        self.assertEqual(
+            self.Jet.with_user(self.manager).search(
+                [("git_project_id", "=", self.project.id)]
+            ),
+            jets[0],
+        )
+        captured = self._autocomplete(
+            self._github_repo(key, private=True),
+            user=self.manager,
+            git_source_id=self.source.id,
+        )
+        self.assertFalse(captured["jet"])
         self.assertFalse(captured["server"])
         self.assertEqual(captured["token"], "global-token")
 

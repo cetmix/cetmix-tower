@@ -18,7 +18,7 @@ class CxTowerGitRemote(models.Model):
     _inherit = "cx.tower.git.remote"
 
     def _git_fetch_heads_github(
-        self, repo, head_type, query, server=None, partner=None
+        self, repo, head_type, query, server=None, partner=None, jet=None
     ):
         """Return one page of GitHub suggestions for ``head_type``.
 
@@ -32,6 +32,7 @@ class CxTowerGitRemote(models.Model):
             query (str | bool): Trimmed input, or ``False`` on focus.
             server (cx.tower.server | None): Server for the secret.
             partner (res.partner | None): Partner for the secret.
+            jet (cx.tower.jet | None): Jet for the secret.
 
         Raises:
             UserError: When no secret resolves, GitHub cannot be reached,
@@ -46,7 +47,7 @@ class CxTowerGitRemote(models.Model):
         """
         if repo.host != "github.com":
             return []
-        token = self._git_head_api_token(repo, server, partner)
+        token = self._git_head_api_token(repo, server, partner, jet)
         url, params, value_key = self._git_github_request(repo, head_type)
         if not url:
             return []

@@ -167,7 +167,12 @@ class CxTowerKey(models.Model):
 
     @api.returns("self", lambda value: value.id)
     def copy(self, default=None):
-        """Copy key. Ensure secret value is copied.
+        """Copy key. Ensure the SSH private key is copied.
+
+        Secret values of a secret key are not copied: the new key
+        starts without values in any scope. For a secret key the secret
+        value is cleared explicitly: otherwise the copied placeholder
+        would be stored by the vault mixin as a new global value.
 
         Args:
             default (dict, optional): Default values. Defaults to None.
@@ -176,21 +181,14 @@ class CxTowerKey(models.Model):
             self: Copied key
         """
         default = dict(default or {})
-        default["secret_value"] = self._get_secret_value("secret_value")
+        default["secret_value"] = (
+            self._get_secret_value("secret_value") if self.key_type == "k" else False
+        )
         default.pop("public_key", None)
         result = super().copy(default=default)
         if self.public_key:
             # Same private key, so the public key still matches it
             result.sudo().write({"public_key": self.public_key})
-
-        # Copy key values
-        for value in self.value_ids:
-            value.copy(
-                {
-                    "key_id": result.id,
-                }
-            )
-
         return result
 
     def action_generate_ssh_key(self):
@@ -501,7 +499,10 @@ class CxTowerKey(models.Model):
 
         Args:
             reference (str): key reference
-            **kwargs (dict) optional values
+            **kwargs (dict) optional values:
+                - jet_id (int): jet the value is resolved for
+                - server_id (int): server the value is resolved for
+                - partner_id (int): partner the value is resolved for
 
         Returns:
             str: value or False if not able to parse
@@ -509,13 +510,14 @@ class CxTowerKey(models.Model):
         if not reference:
             return
 
-        # Compose domain used to fetch keys
-        #
         # Keys are checked in the following order:
-        # 1. Partner and Server specific
-        # 2. Server specific
-        # 3. Partner specific
-        # 4. General (no server or partner specified)
+        # 1. Jet specific
+        # 2. Partner and Server specific
+        # 3. Server specific
+        # 4. Partner specific
+        # 5. General (no server, partner or jet specified)
+        # Values of other jets are never used.
+        jet_id = kwargs.get("jet_id")
         server_id = kwargs.get("server_id")
         partner_id = kwargs.get("partner_id")
 
@@ -528,15 +530,24 @@ class CxTowerKey(models.Model):
         key_values = key.value_ids
         key_value = None
 
-        # 1. Server and Partner specific key first
-        if key_values and server_id and partner_id:
+        # 1. Jet specific key first
+        if key_values and jet_id:
+            filtered_key_values = key_values.filtered(lambda k: k.jet_id.id == jet_id)
+            if filtered_key_values:
+                key_value = filtered_key_values[0]
+
+        # Other levels never use jet values
+        key_values = key_values.filtered(lambda k: not k.jet_id)
+
+        # 2. Server and Partner specific key next
+        if not key_value and key_values and server_id and partner_id:
             filtered_key_values = key_values.filtered(
                 lambda k: k.server_id.id == server_id and k.partner_id.id == partner_id
             )
             if filtered_key_values:
                 key_value = filtered_key_values[0]
 
-        # 2. Server specific key first
+        # 3. Server specific key next
         if not key_value and key_values and server_id:
             filtered_key_values = key_values.filtered(
                 lambda k: k.server_id.id == server_id and not k.partner_id
@@ -544,7 +555,7 @@ class CxTowerKey(models.Model):
             if filtered_key_values:
                 key_value = filtered_key_values[0]
 
-        # 3. Partner specific key next
+        # 4. Partner specific key next
         if not key_value and key_values and partner_id:
             filtered_key_values = key_values.filtered(
                 lambda k: k.partner_id.id == partner_id and not k.server_id
@@ -552,7 +563,7 @@ class CxTowerKey(models.Model):
             if filtered_key_values:
                 key_value = filtered_key_values[0]
 
-        # 4. General key next
+        # 5. General key next
         if not key_value and key_values:
             filtered_key_values = key_values.filtered(
                 lambda k: not k.partner_id and not k.server_id
@@ -562,6 +573,42 @@ class CxTowerKey(models.Model):
 
         if key_value:
             return key_value._get_secret_value("secret_value")
+
+    @api.model
+    def _get_secret_scope(self, server=None, jet=None):
+        """Compose the secret resolution scope for a server or a jet.
+
+        Use the result as keyword arguments of the secret parser
+        (``_parse_code``, ``_resolve_key_type_secret`` etc.), so that
+        commands, files and result masking resolve the same value.
+
+        With a jet, the jet's server is used and the partner is the jet's
+        partner, or the server's partner when the jet has none.
+        Without a jet, the server's partner is used.
+        The jet and its server are read as superuser: the caller has
+        already checked access to them, only their ids are used.
+
+        Args:
+            server (cx.tower.server, optional): Server the operation runs on.
+                Ignored when ``jet`` is provided.
+            jet (cx.tower.jet, optional): Jet the operation runs for.
+
+        Returns:
+            dict: ``server_id``, ``partner_id`` and ``jet_id`` when set.
+        """
+        scope = {}
+        if jet:
+            jet = jet.sudo()
+            server = jet.server_id
+            partner = jet.partner_id or server.partner_id
+            scope["jet_id"] = jet.id
+        else:
+            partner = server.sudo().partner_id if server else None
+        if server:
+            scope["server_id"] = server.id
+        if partner:
+            scope["partner_id"] = partner.id
+        return scope
 
     def _replace_with_spoiler(self, code, key_values):
         """Helper function that replaces clean text keys in code with spoiler.
@@ -605,9 +652,7 @@ class CxTowerKey(models.Model):
         self.ensure_one()
         if self.key_type == "s":
             # Set general value or create new one if not exists
-            general_value = self.value_ids.filtered(
-                lambda x: not x.server_id and not x.partner_id
-            )
+            general_value = self.value_ids.filtered("is_global")
             if general_value:
                 general_value._set_secret_values(vals)
             else:

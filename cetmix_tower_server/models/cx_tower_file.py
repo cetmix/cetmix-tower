@@ -8,6 +8,19 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import exception_to_unicode
 
+# Context key with resolved server paths, see `_with_resolved_server_paths`
+SERVER_PATHS_CONTEXT_KEY = "cetmix_tower_file_server_paths"
+
+
+class _ResolvedServerPaths(dict):
+    """Server paths resolved by Tower code: {file id: server path}.
+
+    Only values of this type are read from the context: a context sent
+    over RPC is plain JSON and cannot hold it, so a caller cannot make
+    Tower delete a server path of its choice.
+    """
+
+
 # mapping of field names from template and field names from file
 TEMPLATE_FILE_FIELD_MAPPING = {
     "code": "code",
@@ -353,14 +366,63 @@ class CxTowerFile(models.Model):
         Override to delete from server tower files with
         `keep_when_deleted` set to False
         """
-        self.filtered(
+        self._get_files_to_delete_from_server().delete()
+        return super().unlink()
+
+    def _get_files_to_delete_from_server(self):
+        """Return the files that are deleted from server with their records.
+
+        Returns:
+            cx.tower.file: Tower files with a server and
+                `keep_when_deleted` set to False
+        """
+        return self.filtered(
             lambda file_: (
                 file_.server_id
                 and file_.source == "tower"
                 and not file_.keep_when_deleted
             )
-        ).delete()
-        return super().unlink()
+        )
+
+    def _with_resolved_server_paths(self):
+        """Resolve now the server paths used to delete the files from server.
+
+        Use it to keep the path a file was uploaded to when the secret
+        scope is about to change, e.g. before its jet is deleted.
+        The paths are kept in the context of the returned records,
+        so `unlink` and `delete` hooks still run.
+
+        Returns:
+            cx.tower.file: Same files with the resolved paths in the context
+        """
+        tower_key_obj = self.env["cx.tower.key"]
+        server_paths = _ResolvedServerPaths(
+            {
+                file.id: tower_key_obj._parse_code(
+                    file.full_server_path, **file._get_secret_parse_context()
+                )
+                for file in self._get_files_to_delete_from_server()
+            }
+        )
+        return self.with_context(**{SERVER_PATHS_CONTEXT_KEY: server_paths})
+
+    def _get_server_path_to_delete(self):
+        """Return the server path to delete the file from.
+
+        A path resolved by `_with_resolved_server_paths` is used when
+        present, otherwise the path is resolved with the current scope.
+
+        Returns:
+            str: Server path with secret values in place
+        """
+        self.ensure_one()
+        server_paths = self.env.context.get(SERVER_PATHS_CONTEXT_KEY)
+        # Paths resolved by `_with_resolved_server_paths` only
+        if isinstance(server_paths, _ResolvedServerPaths) and self.id in server_paths:
+            return server_paths[self.id]
+        return self.env["cx.tower.key"]._parse_code(
+            self.full_server_path, **self._get_secret_parse_context()
+        )
 
     # -- Actions
     def action_unlink_from_template(self):
@@ -587,21 +649,20 @@ class CxTowerFile(models.Model):
         self._process("delete", raise_error)
 
     def _get_secret_parse_context(self):
-        """Build kwargs for secret resolution scoped to this file's server.
+        """Build kwargs for secret resolution scoped to this file's server or jet.
 
         Mirrors the key context prepared in ``cx.tower.server`` command
-        runners so server- and partner-specific secrets resolve the same
-        way on file upload/download/delete as when running commands.
+        runners so jet-, server- and partner-specific secrets resolve
+        the same way on file upload/download/delete as when running commands.
 
         Returns:
-            dict: ``server_id`` and optionally ``partner_id`` for
-                ``cx.tower.key._parse_code``.
+            dict: ``server_id`` and optionally ``partner_id`` and ``jet_id``
+                for ``cx.tower.key._parse_code``.
         """
         self.ensure_one()
-        key_vals = {"server_id": self.server_id.id}
-        if self.server_id.partner_id:
-            key_vals["partner_id"] = self.server_id.partner_id.id
-        return key_vals
+        return self.env["cx.tower.key"]._get_secret_scope(
+            server=self.server_id, jet=self.jet_id
+        )
 
     def _process_download(
         self,
@@ -743,11 +804,7 @@ class CxTowerFile(models.Model):
                         tower_key_obj._parse_code(file.full_server_path, **key_ctx),
                     )
                 elif action == "delete":
-                    file.server_id.delete_file(
-                        tower_key_obj._parse_code(
-                            file.full_server_path, **file._get_secret_parse_context()
-                        )
-                    )
+                    file.server_id.delete_file(file._get_server_path_to_delete())
                 else:
                     return False
                 file.sudo().server_response = "ok"

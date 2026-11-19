@@ -247,7 +247,7 @@ class CetmixTower(models.AbstractModel):
 
     @api.model
     def server_validate_secret(
-        self, secret_value, secret_reference, server_reference=None
+        self, secret_value, secret_reference, server_reference=None, jet_reference=None
     ):
         """
         Validates the provided secret value against the actual secret.
@@ -255,16 +255,35 @@ class CetmixTower(models.AbstractModel):
         Accepts either a full inline reference (e.g. #!cxtower.secret.<REFERENCE>!#)
         or just a <REFERENCE>.
 
+        When a jet is provided, the secret is resolved for this jet:
+        jet value first, then the values of the jet's server and of the jet's
+        partner (or the server's partner when the jet has no partner).
+        `server_reference` is ignored in this case.
+
         Args:
             secret_value (Char): Value to validate
             secret_reference (Char): Reference code or inline reference
             server_reference (Char, optional): Reference code of the server
+            jet_reference (Char, optional): Reference code of the jet
+        Raises:
+            ValidationError: if no jet the user can read matches `jet_reference`
         Returns:
             Bool: True if the value matches the secret, False otherwise
         """
-        server = self.env["cx.tower.server"]
-        if server_reference:
-            server = server.get_by_reference(server_reference)
+        if jet_reference:
+            # Searched with the user's access rules:
+            # a jet the user cannot read is not found
+            jet = self.env["cx.tower.jet"].get_by_reference(jet_reference)
+            if not jet:
+                raise ValidationError(
+                    self.env._("No jet found for the provided reference.")
+                )
+            key_kwargs = self.env["cx.tower.key"]._get_secret_scope(jet=jet)
+        else:
+            server = self.env["cx.tower.server"]
+            if server_reference:
+                server = server.get_by_reference(server_reference)
+            key_kwargs = {"server_id": server.id}
 
         # Try to extract reference from inline format using _extract_key_parts
         key_parts = self.env["cx.tower.key"]._extract_key_parts(secret_reference)
@@ -274,7 +293,7 @@ class CetmixTower(models.AbstractModel):
             secret_reference = key_parts[1]
 
         value = self.env["cx.tower.key"]._resolve_key_type_secret(
-            secret_reference, server_id=server.id
+            secret_reference, **key_kwargs
         )
         return value == secret_value
 

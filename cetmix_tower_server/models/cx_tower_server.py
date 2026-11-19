@@ -1121,9 +1121,11 @@ class CxTowerServer(models.Model):
 
         # Prepare key renderer values
         key_vals = kwargs.get("key", {})  # Get vals from kwargs
-        key_vals.update({"server_id": self.id})  # pylint: disable=no-member
-        if self.partner_id:
-            key_vals.update({"partner_id": self.partner_id.id})
+        # Jet values are resolved only for the jet checked above
+        key_vals.pop("jet_id", None)
+        key_vals.update(
+            self.env["cx.tower.key"]._get_secret_scope(server=self, jet=jet)
+        )
         kwargs.update({"key": key_vals})
 
         # Save rendered code to log
@@ -2207,10 +2209,10 @@ class CxTowerServer(models.Model):
     def _mask_command_result(self, command_log, status, response, error):
         """Re-parse secrets from the log code and mask them in the result.
 
-        Rebuilds the same key context ``run_command`` sets (server_id, and
-        partner_id when the server has a partner). Does not trust caller
-        kwargs, so a callback without server_id cannot resolve the general
-        secret and leak the server-scoped value.
+        Rebuilds the same key context ``run_command`` sets from the log's
+        server and jet (see ``cx.tower.key._get_secret_scope``). Does not
+        trust caller kwargs, so a callback without server_id cannot resolve
+        the general secret and leak the server- or jet-scoped value.
 
         Args:
             command_log (cx.tower.command.log): Command log whose ``code``
@@ -2222,9 +2224,9 @@ class CxTowerServer(models.Model):
         Returns:
             dict: ``status``, ``response``, ``error`` after spoiler replacement.
         """
-        key_kwargs = {"server_id": command_log.server_id.id}
-        if command_log.server_id.partner_id:
-            key_kwargs["partner_id"] = command_log.server_id.partner_id.id
+        key_kwargs = self.env["cx.tower.key"]._get_secret_scope(
+            server=command_log.server_id, jet=command_log.jet_id
+        )
         parsed = self.env["cx.tower.key"]._parse_code_and_return_key_values(
             command_log.code or "", **key_kwargs
         )

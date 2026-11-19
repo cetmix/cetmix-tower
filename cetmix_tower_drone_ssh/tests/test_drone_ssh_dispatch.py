@@ -665,3 +665,79 @@ class TestDroneSshDispatch(TestDroneSshCommon):
         self.assertIn(placeholder, log.command_response)
         self.assertNotIn("server-secret-value", log.command_error)
         self.assertIn(placeholder, log.command_error)
+
+    def test_jet_secrets_masked(self):
+        """The secret value selected for the jet is sent and masked."""
+        placeholder = self.Key.SECRET_VALUE_PLACEHOLDER
+        Partner = self.env["res.partner"]
+        partner_server = Partner.create({"name": "Drone Server Partner"})
+        partner_jet = Partner.create({"name": "Drone Jet Partner"})
+        self.server_test_1.partner_id = partner_server
+        jet_vals = {
+            "jet_template_id": self.jet_template_sample.id,
+            "server_id": self.server_test_1.id,
+        }
+        jet = self.Jet.create(
+            dict(jet_vals, name="Drone Secret Jet", partner_id=partner_jet.id)
+        )
+        jet_no_partner = self.Jet.create(dict(jet_vals, name="Drone Jet No Partner"))
+        key = self.Key.create(
+            {
+                "name": "Drone Jet Secret",
+                "key_type": "s",
+                "secret_value": "general-secret-value",
+            }
+        )
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": jet.id, "secret_value": "jet-secret-value"}
+        )
+        for partner, value in (
+            (partner_jet, "jet-partner-secret"),
+            (partner_server, "server-partner-secret"),
+        ):
+            self.KeyValue.create(
+                {
+                    "key_id": key.id,
+                    "server_id": self.server_test_1.id,
+                    "partner_id": partner.id,
+                    "secret_value": value,
+                }
+            )
+        command = self.Command.create(
+            {
+                "name": "Drone SSH jet secret",
+                "action": "ssh_command",
+                "code": f"echo #!cxtower.secret.{key.reference}!#",
+            }
+        )
+
+        def check(run_jet, value):
+            run_jet.run_command(command)
+            log = self.CommandLog.search(
+                [("command_id", "=", command.id), ("jet_id", "=", run_jet.id)],
+                order="id desc",
+                limit=1,
+            )
+            self.run_postcommit()
+            job = log.sudo().drone_job_id
+            envelope = self.decrypt(self.network.find("POST", "/jobs")[-1])
+            self.assertIn(value, envelope["data"]["commands"])
+            self.assertNotIn(value, log.code)
+            self.http_result(
+                job,
+                response=[f"out {value} general-secret-value"],
+                error=f"err {value}",
+            )
+            self.assertFalse(log.is_running)
+            for output in (log.command_response, log.command_error):
+                self.assertNotIn(value, output)
+                self.assertIn(placeholder, output)
+            self.assertIn("general-secret-value", log.command_response)
+
+        # Jet value first
+        check(jet, "jet-secret-value")
+        # Jet partner differs from the server partner
+        jet_value.unlink()
+        check(jet, "jet-partner-secret")
+        # Jet without partner uses the server partner
+        check(jet_no_partner, "server-partner-secret")
