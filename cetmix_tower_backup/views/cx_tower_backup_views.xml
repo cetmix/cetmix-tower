@@ -8,8 +8,16 @@
                 <field name="name" />
                 <field name="jet_id" />
                 <field name="backup_template_id" />
-                <field name="state" widget="badge" />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-danger="state in ('failed', 'delete_failed')"
+                    decoration-info="state == 'running'"
+                    decoration-warning="state == 'deleting'"
+                />
                 <field name="backup_size" />
+                <field name="url" widget="url" />
                 <field name="create_date" />
             </list>
         </field>
@@ -59,6 +67,7 @@
                             <field name="server_id" />
                             <field name="environment_id" />
                             <field name="backup_size" />
+                            <field name="url" widget="url" />
                             <field name="create_date" />
                         </group>
                     </group>
@@ -113,7 +122,7 @@
     <menuitem
         id="cx_tower_backup_menu"
         name="Backups"
-        parent="cetmix_tower_server.menu_cx_tower_jet_root"
+        parent="cetmix_tower_server.menu_tools"
         action="cx_tower_backup_action"
         sequence="25"
         groups="cetmix_tower_base.group_root"

@@ -88,3 +88,20 @@
 | Root | Can read and configure backups and templates, and use the backup dialogs |
 | Manager | Can trigger configured backups through waypoints, plans and schedules without seeing backup fields |
 | User able to execute Tower Python | Can call `sudo()`; Root-only ACLs, field groups and UI do not isolate backups from that code |
+
+**Manage Backup Templates from Settings**
+
+1. Sign in as a Tower **Root** user.
+2. Open **Cetmix Tower**.
+3. Click **Settings**.
+4. Click **Backups**.
+5. Click **Backup Templates**.
+6. Create or open a template.
+7. Select **Jet Template** and configure its flight plans and retention.
+8. Click **Save**. Templates remain available on the Jet Template's **Backups** tab.
+
+**Set a backup URL from a command**
+
+1. Open the Backup flight plan's Tower Python command.
+2. Write the backup address with `backup.write({"url": "https://storage.example/backup.zip"})`.
+3. Save the command. **URL** is read-only on the backup list and form; commands supply its value.

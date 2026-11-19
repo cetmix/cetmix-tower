@@ -14,7 +14,7 @@
 **Restore into a new Jet**
 
 1. Open **Cetmix Tower**.
-2. Click **Jets**.
+2. Click **Tools**.
 3. Click **Backups**.
 4. Open a **Done** backup.
 5. Click **Restore**.
@@ -36,7 +36,7 @@
 **Delete a backup**
 
 1. Open **Cetmix Tower**.
-2. Click **Jets**.
+2. Click **Tools**.
 3. Click **Backups**.
 4. Open the backup.
 5. Click **Delete**.
@@ -57,7 +57,7 @@
 **Check automatic clean-up**
 
 1. Open **Cetmix Tower**.
-2. Click **Jets**.
+2. Click **Tools**.
 3. Click **Backups**.
 4. Inspect the remaining records after the daily clean-up.
 
@@ -74,7 +74,7 @@
 **Inspect backup size**
 
 1. Open **Cetmix Tower**.
-2. Click **Jets**.
+2. Click **Tools**.
 3. Click **Backups**.
 4. Read **Backup Size (MB)** in the list.
 5. Open a backup to read **Backup Size (MB)** on its form.
@@ -82,3 +82,18 @@
 | Size value | Meaning |
 | --- | --- |
 | Backup Size (MB) | Stored Float supplied by a Tower command using 1 MB = 1,048,576 bytes; fractional values are retained and the value starts at 0 until supplied |
+
+**Open the backup URL**
+
+1. Open **Cetmix Tower**.
+2. Click **Tools**.
+3. Click **Backups**.
+4. Open a backup.
+5. Click **URL** when the backup command has supplied one.
+
+| List state pill | Color |
+| --- | --- |
+| Done | Green |
+| Running | Blue |
+| Deleting | Orange |
+| Failed or Deletion Failed | Red |

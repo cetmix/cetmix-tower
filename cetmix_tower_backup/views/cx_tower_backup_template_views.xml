@@ -31,4 +31,37 @@
             </form>
         </field>
     </record>
+    <record id="cx_tower_backup_template_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.backup.template.list</field>
+        <field name="model">cx.tower.backup.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="jet_template_id" />
+                <field name="keep_last" />
+            </list>
+        </field>
+    </record>
+    <record id="cx_tower_backup_template_action" model="ir.actions.act_window">
+        <field name="name">Backup Templates</field>
+        <field name="res_model">cx.tower.backup.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="path">tower-backup-templates</field>
+    </record>
+    <menuitem
+        id="cx_tower_backup_settings_menu"
+        name="Backups"
+        parent="cetmix_tower_base.menu_settings"
+        groups="cetmix_tower_base.group_root"
+        sequence="35"
+    />
+    <menuitem
+        id="cx_tower_backup_template_menu"
+        name="Backup Templates"
+        parent="cx_tower_backup_settings_menu"
+        action="cx_tower_backup_template_action"
+        groups="cetmix_tower_base.group_root"
+        sequence="10"
+    />
 </odoo>

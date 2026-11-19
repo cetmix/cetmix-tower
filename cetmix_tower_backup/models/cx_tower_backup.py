@@ -52,6 +52,9 @@ class CxTowerBackup(models.Model):
         readonly=True,
         help="Size supplied by a Tower command in MB (1 MB = 1,048,576 bytes).",
     )
+    url = fields.Char(
+        string="URL", readonly=True, help="Backup URL supplied by a Tower command."
+    )
     variable_values = fields.Json(readonly=True)
     custom_variable_values = fields.Json(readonly=True)
     waypoint_ids = fields.One2many("cx.tower.jet.waypoint", "backup_id", readonly=True)

@@ -574,6 +574,26 @@ isolate backups from that code</td>
 </tr>
 </tbody>
 </table>
+<p><strong>Manage Backup Templates from Settings</strong></p>
+<ol class="arabic simple">
+<li>Sign in as a Tower <strong>Root</strong> user.</li>
+<li>Open <strong>Cetmix Tower</strong>.</li>
+<li>Click <strong>Settings</strong>.</li>
+<li>Click <strong>Backups</strong>.</li>
+<li>Click <strong>Backup Templates</strong>.</li>
+<li>Create or open a template.</li>
+<li>Select <strong>Jet Template</strong> and configure its flight plans and retention.</li>
+<li>Click <strong>Save</strong>. Templates remain available on the Jet Template’s
+<strong>Backups</strong> tab.</li>
+</ol>
+<p><strong>Set a backup URL from a command</strong></p>
+<ol class="arabic simple">
+<li>Open the Backup flight plan’s Tower Python command.</li>
+<li>Write the backup address with
+<tt class="docutils literal"><span class="pre">backup.write({&quot;url&quot;:</span> <span class="pre">&quot;https://storage.example/backup.zip&quot;})</span></tt>.</li>
+<li>Save the command. <strong>URL</strong> is read-only on the backup list and form;
+commands supply its value.</li>
+</ol>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-3">Usage</a></h1>
@@ -593,7 +613,7 @@ isolate backups from that code</td>
 <p><strong>Restore into a new Jet</strong></p>
 <ol class="arabic simple">
 <li>Open <strong>Cetmix Tower</strong>.</li>
-<li>Click <strong>Jets</strong>.</li>
+<li>Click <strong>Tools</strong>.</li>
 <li>Click <strong>Backups</strong>.</li>
 <li>Open a <strong>Done</strong> backup.</li>
 <li>Click <strong>Restore</strong>.</li>
@@ -643,7 +663,7 @@ aggregator source directories can differ</td>
 <p><strong>Delete a backup</strong></p>
 <ol class="arabic simple">
 <li>Open <strong>Cetmix Tower</strong>.</li>
-<li>Click <strong>Jets</strong>.</li>
+<li>Click <strong>Tools</strong>.</li>
 <li>Click <strong>Backups</strong>.</li>
 <li>Open the backup.</li>
 <li>Click <strong>Delete</strong>.</li>
@@ -691,7 +711,7 @@ waypoint links are removed</td>
 <p><strong>Check automatic clean-up</strong></p>
 <ol class="arabic simple">
 <li>Open <strong>Cetmix Tower</strong>.</li>
-<li>Click <strong>Jets</strong>.</li>
+<li>Click <strong>Tools</strong>.</li>
 <li>Click <strong>Backups</strong>.</li>
 <li>Inspect the remaining records after the daily clean-up.</li>
 </ol>
@@ -740,7 +760,7 @@ processed</td>
 <p><strong>Inspect backup size</strong></p>
 <ol class="arabic simple">
 <li>Open <strong>Cetmix Tower</strong>.</li>
-<li>Click <strong>Jets</strong>.</li>
+<li>Click <strong>Tools</strong>.</li>
 <li>Click <strong>Backups</strong>.</li>
 <li>Read <strong>Backup Size (MB)</strong> in the list.</li>
 <li>Open a backup to read <strong>Backup Size (MB)</strong> on its form.</li>
@@ -761,6 +781,39 @@ processed</td>
 MB = 1,048,576 bytes; fractional values are
 retained and the value starts at 0 until
 supplied</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Open the backup URL</strong></p>
+<ol class="arabic simple">
+<li>Open <strong>Cetmix Tower</strong>.</li>
+<li>Click <strong>Tools</strong>.</li>
+<li>Click <strong>Backups</strong>.</li>
+<li>Open a backup.</li>
+<li>Click <strong>URL</strong> when the backup command has supplied one.</li>
+</ol>
+<table border="1" class="docutils">
+<colgroup>
+<col width="81%" />
+<col width="19%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">List state pill</th>
+<th class="head">Color</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Done</td>
+<td>Green</td>
+</tr>
+<tr><td>Running</td>
+<td>Blue</td>
+</tr>
+<tr><td>Deleting</td>
+<td>Orange</td>
+</tr>
+<tr><td>Failed or Deletion Failed</td>
+<td>Red</td>
 </tr>
 </tbody>
 </table>

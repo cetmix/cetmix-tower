@@ -373,13 +373,17 @@ class TestTowerBackup(BackupCommon):
         )
 
     def test_backup_size_is_set_by_tower_command(self):
-        """The Backup plan supplies MB directly; the app does not infer a size."""
+        """The Backup plan supplies the measured size and the backup URL."""
         self.backup_plan.line_ids.command_id.code = (
-            "backup.write({'backup_size': 2048.25})\n" "result = {'exit_code': 0}"
+            "backup.write({'backup_size': 2048.25, "
+            "'url': 'https://storage.example/backup.zip'})\n"
+            "result = {'exit_code': 0}"
         )
         backup = self.source.create_backup(self.backup_template)
         self.assertEqual(backup.state, "done")
         self.assertEqual(backup.backup_size, 2048.25)
+        backup.invalidate_recordset(["url"])
+        self.assertEqual(backup.url, "https://storage.example/backup.zip")
 
     def test_busy_action_returns_status_and_finishes_calling_command(self):
         """Expected busy admission must not abandon a jet_action command log."""
