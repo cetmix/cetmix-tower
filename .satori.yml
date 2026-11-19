@@ -1,0 +1,5 @@
+import:
+  - satori://code/python/audit.yml
+  - satori://code/python/bandit.yml
+  - satori://code/python/pyspector_v2.yml
+  - satori://code/python/safety.yml
