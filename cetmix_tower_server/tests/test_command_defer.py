@@ -313,6 +313,17 @@ class TestTowerCommandDefer(TestTowerCommon):
             self.assertIn("server-partner-secret", executed)
             self.assertNotIn("jet-secret-value", executed)
 
+            # A reused key dict does not carry the scope of a previous run
+            key_vals = {}
+            server.run_command(
+                command, jet=jet, sudo=False, ssh_connection=client, key=key_vals
+            )
+            server.partner_id = False
+            client.reset_mock()
+            server.run_command(command, sudo=False, ssh_connection=client, key=key_vals)
+            executed = client.command_executor.exec_command.call_args[0][0]
+            self.assertIn("server-secret-value", executed)
+
     def test_run_python_command_jet_secret(self):
         """A jet Python command resolves the jet value"""
         key, jet, __, __, __ = self._create_jet_mask_secret()

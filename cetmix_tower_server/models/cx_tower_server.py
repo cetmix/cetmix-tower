@@ -1121,8 +1121,10 @@ class CxTowerServer(models.Model):
 
         # Prepare key renderer values
         key_vals = kwargs.get("key", {})  # Get vals from kwargs
-        # Jet values are resolved only for the jet checked above
-        key_vals.pop("jet_id", None)
+        # The scope always comes from this server and the jet checked above,
+        # never from a caller's or a previous run's values
+        for scope_key in ("jet_id", "server_id", "partner_id"):
+            key_vals.pop(scope_key, None)
         key_vals.update(
             self.env["cx.tower.key"]._get_secret_scope(server=self, jet=jet)
         )
