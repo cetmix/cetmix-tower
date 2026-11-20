@@ -6,13 +6,14 @@
 4. Open the source Jet.
 5. Click **Back Up**.
 6. Select **Backup Template**.
-7. Optionally click **Add a line** under **Custom Values**.
-8. Select **Variable** from the template's available variables.
-9. Enter **Value**, or select **Option** for an option variable.
-10. Click **Back Up** in the dialog.
-11. Wait for **Running** to become **Done** or **Failed**.
-12. Open **Metadata** to inspect the stored recovery details.
-13. Open **Plan Logs** to inspect the plan result.
+7. Optionally enter **Name**; leave it blank to generate one.
+8. Optionally click **Add a line** under **Custom Values**.
+9. Select **Variable** from the template's available variables.
+10. Enter **Value**, or select **Option** for an option variable.
+11. Click **Back Up** in the dialog.
+12. Wait for **Running** to become **Done** or **Failed**.
+13. Open **Metadata** to inspect the stored recovery details.
+14. Open **Plan Logs** to inspect the plan result.
 
 **Restore into a new Jet**
 

@@ -554,6 +554,24 @@ class TestTowerBackup(BackupCommon):
             log.finish(-1)
         self.assertEqual(backup.state, "done")
 
+    def test_create_wizard_optional_backup_name(self):
+        for name in ("Manual backup name", False):
+            with self.subTest(name=name):
+                wizard = self.env["cx.tower.backup.create.wizard"].create(
+                    {
+                        "jet_id": self.source.id,
+                        "backup_template_id": self.backup_template.id,
+                        "name": name,
+                    }
+                )
+                action = wizard.action_confirm()
+                backup = self.Backup.browse(action["res_id"])
+                if name:
+                    self.assertEqual(backup.name, name)
+                else:
+                    self.assertTrue(backup.name.startswith(self.source.name + " "))
+                    self.assertGreater(len(backup.name), len(self.source.name) + 1)
+
     def test_failed_and_stopped_backup(self):
         for status in (-1, -308):
             with self._defer():
