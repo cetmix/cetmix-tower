@@ -722,6 +722,73 @@ class TestTowerBackup(BackupCommon):
         self.assertEqual(first.state, "failed")
         self.assertFalse(self.source.active_backup_id)
 
+    def test_create_wizard_optional_backup_name(self):
+        for name in ("Manual backup name", False):
+            with self.subTest(name=name):
+                wizard = self.env["cx.tower.backup.create.wizard"].create(
+                    {
+                        "jet_id": self.source.id,
+                        "backup_template_id": self.backup_template.id,
+                        "name": name,
+                    }
+                )
+                action = wizard.action_confirm()
+                backup = self.Backup.browse(action["res_id"])
+                if name:
+                    self.assertEqual(backup.name, name)
+                else:
+                    self.assertTrue(backup.name.startswith(self.source.name + " "))
+                    self.assertGreater(len(backup.name), len(self.source.name) + 1)
+
+    def test_force_delete_failed_records_without_remote_execution(self):
+        self.backup_template.plan_delete_id = self.delete_plan
+        backups = self._backup(state="delete_failed") | self._backup(
+            state="delete_failed"
+        )
+        with patch.object(type(self.Server), "run_flight_plan") as run:
+            backups.action_force_delete()
+        run.assert_not_called()
+        self.assertFalse(backups.exists())
+
+    def test_force_delete_rejects_other_states_and_unauthorized_users(self):
+        for state in ("running", "done", "failed", "deleting"):
+            backup = self._backup(state=state)
+            with self.assertRaises(ValidationError):
+                backup.action_force_delete()
+            self.assertTrue(backup.exists())
+        backup = self._backup(state="delete_failed")
+        with self.assertRaises(AccessError):
+            backup.with_user(self.manager).action_force_delete()
+        self.assertTrue(backup.exists())
+
+    def test_force_delete_preserves_waypoint_and_restore_guards(self):
+        backup = self._backup()
+        with self._defer():
+            backup.restore(self.server_test_1)
+        backup.state = "delete_failed"
+        with self.assertRaises(ValidationError):
+            backup.action_force_delete()
+        backup.plan_log_ids.finish(0)
+        template = self.env["cx.tower.jet.waypoint.template"].create(
+            {
+                "name": "Force delete waypoint",
+                "jet_template_id": self.template.id,
+                "backup_template_id": self.backup_template.id,
+            }
+        )
+        self.env["cx.tower.jet.waypoint"].create(
+            {
+                "name": "Protected backup",
+                "jet_id": self.source.id,
+                "waypoint_template_id": template.id,
+                "state": "ready",
+                "backup_id": backup.id,
+            }
+        )
+        with self.assertRaises(ValidationError):
+            backup.action_force_delete()
+        self.assertTrue(backup.exists())
+
     def test_failed_and_stopped_backup(self):
         for status in (-1, -308):
             with self._defer():

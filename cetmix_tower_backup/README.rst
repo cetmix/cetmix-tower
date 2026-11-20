@@ -232,13 +232,14 @@ Usage
 4.  Open the source Jet.
 5.  Click **Back Up**.
 6.  Select **Backup Template**.
-7.  Optionally click **Add a line** under **Custom Values**.
-8.  Select **Variable** from the template's available variables.
-9.  Enter **Value**, or select **Option** for an option variable.
-10. Click **Back Up** in the dialog.
-11. Wait for **Running** to become **Done** or **Failed**.
-12. Open **Metadata** to inspect the stored recovery details.
-13. Open **Plan Logs** to inspect the plan result.
+7.  Optionally enter **Name**; leave it blank to generate one.
+8.  Optionally click **Add a line** under **Custom Values**.
+9.  Select **Variable** from the template's available variables.
+10. Enter **Value**, or select **Option** for an option variable.
+11. Click **Back Up** in the dialog.
+12. Wait for **Running** to become **Done** or **Failed**.
+13. Open **Metadata** to inspect the stored recovery details.
+14. Open **Plan Logs** to inspect the plan result.
 
 **Restore into a new Jet**
 
@@ -428,6 +429,18 @@ plans, accept obsolete operation tokens, or clear a newer operation's
 reservation. A notification failure cannot roll back the backup's
 completion update. Failed recovery attempts are logged and retried
 independently on the next run.
+
+**Force delete after a deletion error**
+
+1. Open **Cetmix Tower** → **Tools** → **Backups**.
+2. Open a backup in **Deletion Failed**.
+3. Click **Force Delete**.
+4. Confirm removal of the record without remote cleanup. Remote data, if
+   any, remains untouched.
+5. To remove several failed-deletion records, select them in the backup
+   list and click **Action** → **Force Delete**. Every selected record
+   must be in **Deletion Failed**; active operations and waypoint
+   ownership still prevent removal.
 
 Bug Tracker
 ===========

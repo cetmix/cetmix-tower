@@ -8,6 +8,7 @@
                 <group>
                     <field name="jet_id" />
                     <field name="backup_template_id" />
+                    <field name="name" placeholder="Leave blank to generate" />
                 </group>
                 <field name="line_ids">
                     <list editable="bottom">

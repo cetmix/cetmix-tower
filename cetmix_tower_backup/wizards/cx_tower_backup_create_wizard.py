@@ -8,6 +8,7 @@ class CxTowerBackupCreateWizard(models.TransientModel):
     _description = "Back Up Jet"
 
     jet_id = fields.Many2one("cx.tower.jet", required=True, readonly=True)
+    name = fields.Char(help="Leave blank to generate a backup name.")
     jet_template_id = fields.Many2one(related="jet_id.jet_template_id")
     backup_template_id = fields.Many2one(
         "cx.tower.backup.template",
@@ -37,6 +38,7 @@ class CxTowerBackupCreateWizard(models.TransientModel):
         self.check_access("read")
         backup = self.jet_id.create_backup(
             self.backup_template_id,
+            name=self.name,
             variable_values=self.backup_template_id._get_wizard_variable_values(
                 self.line_ids, "backup"
             ),
