@@ -52,6 +52,20 @@ Secret.
 Be careful about the scope of the token. Any token that can read the
 repository is enough.
 
+**Use another token for one Jet**
+
+Head suggestions on a Jet first use the value of the secret that belongs
+to that Jet. **Manager** and **Root** can see the **Secrets** tab.
+
+1. Go to **Cetmix Tower > Jets > Jets**. Open the Jet.
+2. On **Secrets**, click **Add a line**.
+3. In **Key**, select the secret used for the GitHub API.
+4. In **Secret Value**, type the token for this Jet.
+5. Click **Save**.
+
+On a Git project, the Jet's token is used only when the project is
+linked to one Jet.
+
 Usage
 =====
 
@@ -92,6 +106,11 @@ stores the full SHA.
 
 When no secret resolves, an error is shown and the list is empty. A
 typed value can still be saved.
+
+Changelog
+=========
+
+
 
 Bug Tracker
 ===========

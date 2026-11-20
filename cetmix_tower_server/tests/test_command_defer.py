@@ -212,6 +212,210 @@ class TestTowerCommandDefer(TestTowerCommon):
         self.assertIn("server-secret-value", result_partner["response"])
         self.assertIn(placeholder, result_partner["response"])
 
+    def _create_jet_mask_secret(self):
+        """Create a key with jet, partner and server values.
+
+        Returns:
+            tuple: (key, jet with own partner, jet without partner,
+                jet partner, server partner)
+        """
+        Partner = self.env["res.partner"]
+        partner_server = Partner.create({"name": "Mask Server Partner"})
+        partner_jet = Partner.create({"name": "Mask Jet Partner"})
+        server = self.server_test_1
+        server.partner_id = partner_server
+        jet = self.Jet.create(
+            {
+                "name": "Mask Jet",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": server.id,
+                "partner_id": partner_jet.id,
+            }
+        )
+        jet_no_partner = self.Jet.create(
+            {
+                "name": "Mask Jet No Partner",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": server.id,
+            }
+        )
+        key = self.Key.create(
+            {
+                "name": "Jet Mask Secret",
+                "key_type": "s",
+                "secret_value": "general-secret-value",
+            }
+        )
+        self.KeyValue.create(
+            [
+                {
+                    "key_id": key.id,
+                    "jet_id": jet.id,
+                    "secret_value": "jet-secret-value",
+                },
+                {
+                    "key_id": key.id,
+                    "server_id": server.id,
+                    "partner_id": partner_jet.id,
+                    "secret_value": "jet-partner-secret",
+                },
+                {
+                    "key_id": key.id,
+                    "server_id": server.id,
+                    "partner_id": partner_server.id,
+                    "secret_value": "server-partner-secret",
+                },
+                {
+                    "key_id": key.id,
+                    "server_id": server.id,
+                    "secret_value": "server-secret-value",
+                },
+            ]
+        )
+        return key, jet, jet_no_partner, partner_jet, partner_server
+
+    def test_run_command_jet_secret(self):
+        """A jet command uses and masks the jet value, a server command
+        never uses it
+        """
+        placeholder = self.Key.SECRET_VALUE_PLACEHOLDER
+        key, jet, __, __, __ = self._create_jet_mask_secret()
+        command = self.Command.create(
+            {
+                "name": "Jet Secret Echo",
+                "action": "ssh_command",
+                "code": f"echo #!cxtower.secret.{key.reference}!#",
+            }
+        )
+        client = MagicMock()
+        client.command_executor.exec_command.side_effect = lambda cmd, sudo=None: (
+            0,
+            [f"out {cmd}"],
+            [f"err {cmd}"],
+        )
+        server = self.server_test_1.with_context(no_command_log=True)
+        with self._patch_defer_handlers([]):
+            result = server.run_command(
+                command, jet=jet, sudo=False, ssh_connection=client
+            )
+            executed = client.command_executor.exec_command.call_args[0][0]
+            self.assertIn("jet-secret-value", executed)
+            for output in (result["response"], result["error"]):
+                self.assertNotIn("jet-secret-value", output)
+                self.assertIn(placeholder, output)
+
+            # A jet id passed by the caller is ignored without a jet
+            client.reset_mock()
+            server.run_command(
+                command, sudo=False, ssh_connection=client, key={"jet_id": jet.id}
+            )
+            executed = client.command_executor.exec_command.call_args[0][0]
+            self.assertIn("server-partner-secret", executed)
+            self.assertNotIn("jet-secret-value", executed)
+
+            # A reused key dict does not carry the scope of a previous run
+            key_vals = {}
+            server.run_command(
+                command, jet=jet, sudo=False, ssh_connection=client, key=key_vals
+            )
+            server.partner_id = False
+            client.reset_mock()
+            server.run_command(command, sudo=False, ssh_connection=client, key=key_vals)
+            executed = client.command_executor.exec_command.call_args[0][0]
+            self.assertIn("server-secret-value", executed)
+
+    def test_run_python_command_jet_secret(self):
+        """A jet Python command resolves the jet value"""
+        key, jet, __, __, __ = self._create_jet_mask_secret()
+        secret = f"#!cxtower.secret.{key.reference}!#"
+        command = self.Command.create(
+            {
+                "name": "Jet Secret Python",
+                "action": "python_code",
+                "code": f"""
+result = {{
+    "exit_code": 0 if {secret} == "jet-secret-value" else 1,
+    "message": {secret},
+}}
+""",
+            }
+        )
+        result = self.server_test_1.with_context(no_command_log=True).run_command(
+            command, jet=jet
+        )
+        self.assertEqual(result["status"], 0)
+        self.assertEqual(result["response"], self.Key.SECRET_VALUE_PLACEHOLDER)
+
+        # Same jet in the command wizard
+        command.code = f"""
+result = {{
+    "exit_code": 0,
+    "message": "jet-ok" if {secret} == "jet-secret-value" else "jet-bad",
+}}
+"""
+        wizard = (
+            self.env["cx.tower.command.run.wizard"]
+            .with_user(self.root)
+            .create(
+                {
+                    "jet_ids": [jet.id],
+                    "command_id": command.id,
+                    "action": "python_code",
+                }
+            )
+        )
+        wizard._compute_rendered_code()
+        wizard.run_command_in_wizard()
+        self.assertIn("jet-ok", wizard.result)
+
+    def test_mask_command_result_jet_secrets(self):
+        """Deferred results mask the value selected for the log's jet"""
+        placeholder = self.Key.SECRET_VALUE_PLACEHOLDER
+        key, jet, jet_no_partner, __, __ = self._create_jet_mask_secret()
+        all_values = (
+            "general-secret-value jet-secret-value jet-partner-secret "
+            "server-partner-secret server-secret-value"
+        )
+
+        def masked(log_jet):
+            log = self.CommandLog.create(
+                {
+                    "server_id": self.server_test_1.id,
+                    "jet_id": log_jet.id,
+                    "command_id": self.command_create_dir.id,
+                    "code": f"echo #!cxtower.secret.{key.reference}!#",
+                    "start_date": Datetime.now(),
+                }
+            )
+            result = self.server_test_1._mask_command_result(
+                log, 0, [all_values], [all_values]
+            )
+            for output in (result["response"], result["error"]):
+                self.assertIn(placeholder, output)
+            self.assertEqual(result["response"], result["error"])
+            return result["response"]
+
+        # Jet value
+        response = masked(jet)
+        self.assertNotIn("jet-secret-value", response)
+        self.assertIn("jet-partner-secret", response)
+        self.assertIn("server-secret-value", response)
+        # Jet partner differs from the server partner
+        jet.secret_ids.unlink()
+        response = masked(jet)
+        self.assertIn("jet-secret-value", response)
+        self.assertNotIn("jet-partner-secret", response)
+        self.assertIn("server-partner-secret", response)
+        # Jet without partner uses the server partner
+        response = masked(jet_no_partner)
+        self.assertNotIn("server-partner-secret", response)
+        self.assertIn("jet-partner-secret", response)
+        # No partner at all
+        self.server_test_1.partner_id = False
+        response = masked(jet_no_partner)
+        self.assertNotIn("server-secret-value", response)
+        self.assertIn("server-partner-secret", response)
+
     def test_finish_twice_one_command_finished(self):
         """Second finish() is a no-op; a two-line plan does not skip a line."""
         log = self.CommandLog.create(

@@ -386,6 +386,21 @@
                             </field>
                         </page>
                         <page
+                            name="secrets"
+                            string="Secrets"
+                            groups="cetmix_tower_base.group_manager"
+                        >
+                            <field name="secret_ids">
+                                <list editable="bottom">
+                                    <field
+                                        name="key_id"
+                                        context="{'default_key_type': 's', 'secrets_only': True}"
+                                    />
+                                    <field name="secret_value" />
+                                </list>
+                            </field>
+                        </page>
+                        <page
                             name="waypoints"
                             groups="cetmix_tower_base.group_manager"
                             string="Waypoints"

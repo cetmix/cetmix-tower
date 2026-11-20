@@ -50,6 +50,29 @@ class TestTowerKey(TestTowerCommon):
             {"name": "Test Key", "key_type": "s", "secret_value": "test value"}
         )
 
+        # Jets and partners for jet secret values
+        cls.Partner = cls.env["res.partner"]
+        cls.partner_server = cls.Partner.create({"name": "Jet Server Partner"})
+        cls.partner_jet = cls.Partner.create({"name": "Jet Partner"})
+        cls.server_1.partner_id = cls.partner_server
+        cls.jet_1 = cls.Jet.create(
+            {
+                "name": "Secret Jet 1",
+                "reference": "secret_jet_1",
+                "jet_template_id": cls.jet_template_sample.id,
+                "server_id": cls.server_1.id,
+                "partner_id": cls.partner_jet.id,
+            }
+        )
+        cls.jet_2 = cls.Jet.create(
+            {
+                "name": "Secret Jet 2",
+                "reference": "secret_jet_2",
+                "jet_template_id": cls.jet_template_sample.id,
+                "server_id": cls.server_1.id,
+            }
+        )
+
     def test_key_creation(self):
         """
         Test key creation.
@@ -922,6 +945,408 @@ class TestTowerKey(TestTowerCommon):
                     "partner_id": self.user_bob.partner_id.id,
                 }
             )
+
+    # ---- Jet secret values
+
+    def _create_scoped_key(self, reference, jet=None):
+        """Create a secret key with a value in every scope.
+
+        Args:
+            reference (str): Key reference
+            jet (cx.tower.jet, optional): Jet of the jet value.
+                Defaults to `jet_1`.
+
+        Returns:
+            tuple: (key, dict of values by scope name)
+        """
+        jet = jet or self.jet_1
+        key = self.Key.create(
+            {
+                "name": reference,
+                "reference": reference,
+                "key_type": "s",
+                "secret_value": "global",
+            }
+        )
+        values = {"global": key.value_ids}
+        for name, vals in (
+            ("jet", {"jet_id": jet.id}),
+            (
+                "server_partner",
+                {"server_id": jet.server_id.id, "partner_id": self.partner_jet.id},
+            ),
+            ("server", {"server_id": jet.server_id.id}),
+            ("partner", {"partner_id": self.partner_jet.id}),
+        ):
+            values[name] = self.KeyValue.create(
+                dict(vals, key_id=key.id, secret_value=name)
+            )
+        return key, values
+
+    def test_resolve_jet_secret_order(self):
+        """Jet value wins, then each level follows the agreed order"""
+        __, values = self._create_scoped_key("JET_ORDER")
+        scope = self.Key._get_secret_scope(jet=self.jet_1)
+        self.assertEqual(
+            scope,
+            {
+                "jet_id": self.jet_1.id,
+                "server_id": self.server_1.id,
+                "partner_id": self.partner_jet.id,
+            },
+        )
+        for level in ("jet", "server_partner", "server", "partner", "global"):
+            self.assertEqual(
+                self.Key._resolve_key_type_secret("JET_ORDER", **scope), level
+            )
+            values[level].unlink()
+        self.assertIsNone(self.Key._resolve_key_type_secret("JET_ORDER", **scope))
+
+    def test_resolve_jet_secret_isolation(self):
+        """A jet value is used only for its own jet"""
+        key, __ = self._create_scoped_key("JET_ISOLATION")
+        self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "jet 2"}
+        )
+        resolve = self.Key._resolve_key_type_secret
+        self.assertEqual(
+            resolve("JET_ISOLATION", **self.Key._get_secret_scope(jet=self.jet_1)),
+            "jet",
+        )
+        self.assertEqual(
+            resolve("JET_ISOLATION", **self.Key._get_secret_scope(jet=self.jet_2)),
+            "jet 2",
+        )
+        # Server only operation never uses jet values
+        server_scope = self.Key._get_secret_scope(server=self.server_1)
+        key.value_ids.filtered(lambda v: not v.jet_id).unlink()
+        self.assertIsNone(resolve("JET_ISOLATION", **server_scope))
+        self.assertIsNone(resolve("JET_ISOLATION"))
+        # Another jet without own value does not use the jet 1 value
+        self.KeyValue.create(
+            {"key_id": key.id, "server_id": self.server_1.id, "secret_value": "srv"}
+        )
+        self.jet_2.secret_ids.unlink()
+        self.assertEqual(
+            resolve("JET_ISOLATION", **self.Key._get_secret_scope(jet=self.jet_2)),
+            "srv",
+        )
+
+    def test_jet_secret_effective_partner(self):
+        """The jet partner wins, the server partner is used when it is empty"""
+        key = self.Key.create(
+            {"name": "Partner Key", "reference": "JET_PARTNER", "key_type": "s"}
+        )
+        for partner, value in (
+            (self.partner_jet, "jet partner"),
+            (self.partner_server, "server partner"),
+        ):
+            self.KeyValue.create(
+                {
+                    "key_id": key.id,
+                    "server_id": self.server_1.id,
+                    "partner_id": partner.id,
+                    "secret_value": f"server and {value}",
+                }
+            )
+            self.KeyValue.create(
+                {"key_id": key.id, "partner_id": partner.id, "secret_value": value}
+            )
+
+        def resolve(jet):
+            return self.Key._resolve_key_type_secret(
+                "JET_PARTNER", **self.Key._get_secret_scope(jet=jet)
+            )
+
+        # Jet partner differs from the server partner
+        self.assertEqual(resolve(self.jet_1), "server and jet partner")
+        # Jet without partner uses the server partner
+        self.assertEqual(resolve(self.jet_2), "server and server partner")
+        key.value_ids.filtered("server_id").unlink()
+        self.assertEqual(resolve(self.jet_1), "jet partner")
+        self.assertEqual(resolve(self.jet_2), "server partner")
+        # No partner at all
+        self.server_1.partner_id = False
+        self.assertEqual(
+            self.Key._get_secret_scope(jet=self.jet_2),
+            {"jet_id": self.jet_2.id, "server_id": self.server_1.id},
+        )
+        self.assertIsNone(resolve(self.jet_2))
+
+    def test_jet_secret_empty_value_stops_resolution(self):
+        """An empty jet value is not replaced by a lower scope value"""
+        key, values = self._create_scoped_key("JET_EMPTY")
+        values["jet"].write({"secret_value": False})
+        self.assertIsNone(
+            self.Key._resolve_key_type_secret(
+                "JET_EMPTY", **self.Key._get_secret_scope(jet=self.jet_1)
+            )
+        )
+        # Without the record the next scope is used
+        values["jet"].unlink()
+        self.assertEqual(
+            self.Key._resolve_key_type_secret(
+                "JET_EMPTY", **self.Key._get_secret_scope(jet=self.jet_1)
+            ),
+            "server_partner",
+        )
+        self.assertTrue(key.exists())
+
+    def test_jet_secret_is_not_global(self):
+        """A jet value is not global and is not used as the key value"""
+        key = self.Key.create({"name": "Jet Only", "key_type": "s"})
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "jet"}
+        )
+        self.assertFalse(jet_value.is_global)
+        key.write({"secret_value": "global"})
+        global_value = key.value_ids - jet_value
+        self.assertTrue(global_value.is_global)
+        self.assertEqual(global_value._get_secret_value("secret_value"), "global")
+        self.assertEqual(jet_value._get_secret_value("secret_value"), "jet")
+
+    def test_key_value_jet_unique(self):
+        """One value per key and jet; jet values coexist with other scopes"""
+        key, values = self._create_scoped_key("JET_UNIQUE")
+        # Other jet with the same key
+        jet_2_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "jet 2"}
+        )
+        with self.assertRaises(ValidationError):
+            self.KeyValue.create(
+                {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "again"}
+            )
+        # Moving a value to a jet that already has one
+        with self.assertRaises(ValidationError):
+            jet_2_value.write({"jet_id": self.jet_1.id})
+        # Moving a jet value to a free scope is fine
+        values["server"].unlink()
+        jet_2_value.write({"jet_id": False, "server_id": self.server_1.id})
+        self.assertFalse(jet_2_value.jet_id)
+
+    def test_key_value_jet_scope_combination(self):
+        """A jet value cannot belong to a server or a partner"""
+        key = self.Key.create({"name": "Jet Combination", "key_type": "s"})
+        for vals in (
+            {"server_id": self.server_1.id},
+            {"partner_id": self.partner_jet.id},
+            {"server_id": self.server_1.id, "partner_id": self.partner_jet.id},
+        ):
+            with self.assertRaises(ValidationError):
+                self.KeyValue.create(
+                    dict(vals, key_id=key.id, jet_id=self.jet_1.id, secret_value="x")
+                )
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "jet"}
+        )
+        with self.assertRaises(ValidationError):
+            jet_value.write({"partner_id": self.partner_jet.id})
+        partner_value = self.KeyValue.create(
+            {"key_id": key.id, "partner_id": self.partner_jet.id, "secret_value": "p"}
+        )
+        with self.assertRaises(ValidationError):
+            partner_value.write({"jet_id": self.jet_2.id})
+
+    def test_key_copy_does_not_copy_values(self):
+        """A copied key has no values in any scope; the source is unchanged"""
+        key, values = self._create_scoped_key("JET_COPY")
+        source_values = key.value_ids
+        source_secrets = source_values._get_secret_values()
+        key_copy = key.copy()
+        self.assertFalse(self.KeyValue.search([("key_id", "=", key_copy.id)]))
+        self.assertFalse(
+            self.env["cx.tower.vault"].search(
+                [("res_model", "=", "cx.tower.key"), ("res_id", "=", key_copy.id)]
+            )
+        )
+        self.assertEqual(key.value_ids, source_values)
+        self.assertEqual(source_values._get_secret_values(), source_secrets)
+        self.assertEqual(values["jet"]._get_secret_value("secret_value"), "jet")
+
+    def test_key_value_jet_access_no_membership(self):
+        """A manager without key or jet membership has no jet value access"""
+        key = self.Key.create({"name": "Jet Access", "key_type": "s"})
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "jet"}
+        )
+        manager_key_value = self.KeyValue.with_user(self.manager)
+        self.assertFalse(manager_key_value.search([("id", "=", jet_value.id)]))
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).read(["key_id", "jet_id"])
+        # Server membership alone does not give access to jet values
+        self.server_1.write(
+            {
+                "user_ids": [(4, self.manager.id)],
+                "manager_ids": [(4, self.manager.id)],
+            }
+        )
+        self.assertFalse(manager_key_value.search([("id", "=", jet_value.id)]))
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).write({"secret_value": "new"})
+        with self.assertRaises(AccessError):
+            manager_key_value.create(
+                {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "new"}
+            )
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).unlink()
+        # The user group has no access at all
+        self.jet_1.write({"user_ids": [(4, self.user.id)]})
+        with self.assertRaises(AccessError):
+            self.KeyValue.with_user(self.user).browse(jet_value.id).read(["key_id"])
+
+    def test_key_value_jet_access_jet_membership(self):
+        """Jet users read jet values, jet managers modify them"""
+        key = self.Key.create({"name": "Jet Member", "key_type": "s"})
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "jet"}
+        )
+        other_jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "jet 2"}
+        )
+        manager_key_value = self.KeyValue.with_user(self.manager)
+
+        # Jet user without server membership: the jet itself is not
+        # readable, the jet values are
+        self.jet_1.write({"user_ids": [(4, self.manager.id)]})
+        self.assertFalse(self.Jet.with_user(self.manager).search([]) & self.jet_1)
+        self.assertEqual(manager_key_value.search([("key_id", "=", key.id)]), jet_value)
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).write({"secret_value": "new"})
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(other_jet_value.id).read(["key_id"])
+
+        # Jet manager: create, write, and delete own values only
+        self.jet_1.write({"manager_ids": [(4, self.manager.id)]})
+        manager_key_value.browse(jet_value.id).write({"secret_value": "updated"})
+        self.assertEqual(jet_value._get_secret_value("secret_value"), "updated")
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(other_jet_value.id).write({"secret_value": "x"})
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).unlink()
+        jet_value.unlink()
+        own_value = manager_key_value.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "own"}
+        )
+        with self.assertRaises(AccessError):
+            manager_key_value.create(
+                {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "x"}
+            )
+        own_value.unlink()
+        self.assertFalse(own_value.exists())
+
+    def test_key_value_jet_access_key_membership(self):
+        """Key users and managers keep access to jet values without jet access"""
+        key = self.Key.create({"name": "Key Member", "key_type": "s"})
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "jet"}
+        )
+        manager_key_value = self.KeyValue.with_user(self.manager)
+        key.write({"user_ids": [(4, self.manager.id)]})
+        self.assertEqual(manager_key_value.search([("key_id", "=", key.id)]), jet_value)
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).write({"secret_value": "x"})
+
+        key.write({"manager_ids": [(4, self.manager.id)]})
+        manager_key_value.browse(jet_value.id).write({"secret_value": "by key"})
+        self.assertEqual(jet_value._get_secret_value("secret_value"), "by key")
+        # Not the creator
+        with self.assertRaises(AccessError):
+            manager_key_value.browse(jet_value.id).unlink()
+        own_value = manager_key_value.create(
+            {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "own"}
+        )
+        own_value.unlink()
+        self.assertFalse(own_value.exists())
+
+    def test_key_value_jet_access_root(self):
+        """Root has full access to jet values"""
+        key = self.Key.create({"name": "Root Jet", "key_type": "s"})
+        root_key_value = self.KeyValue.with_user(self.root)
+        value = root_key_value.create(
+            {"key_id": key.id, "jet_id": self.jet_1.id, "secret_value": "root"}
+        )
+        self.assertTrue(root_key_value.search([("id", "=", value.id)]))
+        value.with_user(self.root).write({"secret_value": "updated"})
+        self.assertEqual(value._get_secret_value("secret_value"), "updated")
+        jet_value = self.KeyValue.create(
+            {"key_id": key.id, "jet_id": self.jet_2.id, "secret_value": "other"}
+        )
+        root_key_value.browse(jet_value.id).unlink()
+        value.with_user(self.root).unlink()
+        self.assertFalse((value | jet_value).exists())
+
+    def test_server_validate_secret_jet(self):
+        """Secret validation with and without a jet"""
+        key, values = self._create_scoped_key("JET_VALIDATE")
+        validate = self.CetmixTower.server_validate_secret
+        # Without a jet: server value, no partner
+        self.assertTrue(validate("server", "JET_VALIDATE", self.server_1.reference))
+        self.assertTrue(validate("global", "#!cxtower.secret.JET_VALIDATE!#"))
+        # With a jet
+        self.assertTrue(
+            validate("jet", "JET_VALIDATE", jet_reference=self.jet_1.reference)
+        )
+        self.assertFalse(
+            validate("server", "JET_VALIDATE", jet_reference=self.jet_1.reference)
+        )
+        values["jet"].unlink()
+        self.assertTrue(
+            validate(
+                "server_partner", "JET_VALIDATE", jet_reference=self.jet_1.reference
+            )
+        )
+
+        # A conflicting server reference is ignored: the server and the
+        # server partner come from the jet
+        self.server_2.partner_id = self.partner_jet
+        for name, vals in (
+            ("other server", {"server_id": self.server_2.id}),
+            (
+                "other server partner",
+                {"server_id": self.server_2.id, "partner_id": self.partner_server.id},
+            ),
+            (
+                "own server partner",
+                {"server_id": self.server_1.id, "partner_id": self.partner_server.id},
+            ),
+        ):
+            self.KeyValue.create(dict(vals, key_id=key.id, secret_value=name))
+        self.assertTrue(
+            validate(
+                "own server partner",
+                "JET_VALIDATE",
+                self.server_2.reference,
+                self.jet_2.reference,
+            )
+        )
+        key.value_ids.filtered(lambda v: v.partner_id == self.partner_server).unlink()
+        self.assertTrue(
+            validate(
+                "server", "JET_VALIDATE", self.server_2.reference, self.jet_2.reference
+            )
+        )
+
+    def test_server_validate_secret_jet_not_found(self):
+        """A missing or unreadable jet reference raises an error"""
+        self._create_scoped_key("JET_VALIDATE_MISSING")
+        with self.assertRaises(ValidationError):
+            self.CetmixTower.server_validate_secret(
+                "jet", "JET_VALIDATE_MISSING", jet_reference="no_such_jet"
+            )
+        tower = self.CetmixTower.with_user(self.manager)
+        with self.assertRaises(ValidationError):
+            tower.server_validate_secret(
+                "jet", "JET_VALIDATE_MISSING", jet_reference=self.jet_1.reference
+            )
+        # Readable jet. Another manager is used because references
+        # are cached per user.
+        self.server_1.write({"user_ids": [(4, self.manager_2.id)]})
+        self.jet_1.write({"user_ids": [(4, self.manager_2.id)]})
+        self.assertTrue(
+            self.CetmixTower.with_user(self.manager_2).server_validate_secret(
+                "jet", "JET_VALIDATE_MISSING", jet_reference=self.jet_1.reference
+            )
+        )
 
     # ---- SSH key generation
 

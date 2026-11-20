@@ -6,7 +6,8 @@ from unittest.mock import patch
 from psycopg2.errors import ForeignKeyViolation
 
 from odoo import fields
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.models import BaseModel
 from odoo.tools import mute_logger
 
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
@@ -1944,3 +1945,243 @@ class TestJetEnvironment(TestTowerJetsCommon):
         )
         jet = self._request_new_jet(template, requester)
         self.assertFalse(jet.environment_id)
+
+
+class TestJetSecretValues(TestTowerJetsCommon):
+    """Jet secret values on jet deletion and cloning"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.secret_key = cls.Key.create(
+            {
+                "name": "Jet Lifecycle Secret",
+                "key_type": "s",
+                "secret_value": "global",
+            }
+        )
+        cls.other_jet = cls._create_jet("Other Secret Jet", "other_secret_jet")
+        cls.manager2 = cls.Users.create(
+            {
+                "name": "Secret Manager 2",
+                "login": "secret_manager_2",
+                "groups_id": [(6, 0, [cls.group_manager.id])],
+            }
+        )
+
+    def _create_secret_values(self, jet):
+        """Create a jet value for `jet` and values of other scopes.
+
+        Args:
+            jet (cx.tower.jet): Jet of the jet value
+
+        Returns:
+            tuple: (jet value, values of other jets and scopes)
+        """
+        jet_value = self.KeyValue.create(
+            {"key_id": self.secret_key.id, "jet_id": jet.id, "secret_value": "jet"}
+        )
+        self.KeyValue.create(
+            [
+                {
+                    "key_id": self.secret_key.id,
+                    "jet_id": self.other_jet.id,
+                    "secret_value": "other jet",
+                },
+                {
+                    "key_id": self.secret_key.id,
+                    "server_id": jet.server_id.id,
+                    "secret_value": "server",
+                },
+            ]
+        )
+        return jet_value, self.secret_key.value_ids - jet_value
+
+    def _vault(self, values):
+        """Return the vault records of secret values"""
+        return self.env["cx.tower.vault"].search(
+            [("res_model", "=", "cx.tower.key.value"), ("res_id", "in", values.ids)]
+        )
+
+    def _create_manager_jet(self, reference):
+        """Create a jet the manager is allowed to delete"""
+        return self._create_jet(
+            reference,
+            reference,
+            manager_ids=[(4, self.manager.id)],
+            server_user_ids=[(4, self.manager.id)],
+            with_user=self.manager,
+        )
+
+    def test_unlink_jet_deletes_secret_values(self):
+        """Jet values and their vault records are deleted with the jet,
+        including values created by another user
+        """
+        jet = self._create_manager_jet("secret_unlink_jet")
+        jet_value, other_values = self._create_secret_values(jet)
+        self.assertNotEqual(jet_value.create_uid, self.manager)
+        self.assertTrue(self._vault(jet_value))
+        other_vault = self._vault(other_values)
+        self.assertEqual(len(other_vault), 3)
+
+        jet.with_user(self.manager).unlink()
+
+        self.assertFalse(jet.exists())
+        self.assertFalse(jet_value.exists())
+        self.assertFalse(self._vault(jet_value))
+        self.assertEqual(self.secret_key.value_ids, other_values)
+        self.assertEqual(self._vault(other_values), other_vault)
+
+    def test_unlink_jet_denied_keeps_secret_values(self):
+        """Denied or rejected jet deletion keeps the values and the vault"""
+        jet = self._create_manager_jet("secret_denied_jet")
+        jet_value, __ = self._create_secret_values(jet)
+        vault = self._vault(jet_value)
+
+        # Access denied
+        with self.assertRaises(AccessError):
+            jet.with_user(self.manager2).unlink()
+        # Not deletable
+        jet.deletable = False
+        with self.assertRaises(ValidationError):
+            jet.with_user(self.manager).unlink()
+        jet.deletable = True
+
+        # Deletion fails after the secret values are deleted.
+        # The error is caught without `assertRaises`, which would roll back
+        # its own savepoint: the jet deletion must roll back by itself.
+        original_unlink = BaseModel.unlink
+
+        def failing_unlink(records):
+            if records._name == "cx.tower.jet":
+                raise UserError(records.env._("Jet deletion failed"))
+            return original_unlink(records)
+
+        error = None
+        with patch.object(BaseModel, "unlink", failing_unlink):
+            try:
+                jet.with_user(self.manager).unlink()
+            except UserError as exc:
+                error = exc
+        self.assertTrue(error)
+
+        self.env.invalidate_all()
+        self.assertTrue(jet.exists())
+        self.assertTrue(jet_value.exists())
+        self.assertEqual(self._vault(jet_value), vault)
+        self.assertEqual(jet_value._get_secret_value("secret_value"), "jet")
+
+    def test_unlink_jet_deletes_files_from_jet_secret_path(self):
+        """Jet files are deleted from the path they were uploaded to,
+        resolved with the jet secret value
+        """
+        jet = self._create_jet("Secret Path Jet", "secret_path_jet")
+        key = self.Key.create(
+            {
+                "name": "Jet Path Secret",
+                "reference": "JET_PATH_SECRET",
+                "key_type": "s",
+                "secret_value": "global_dir",
+            }
+        )
+        self.KeyValue.create(
+            {"key_id": key.id, "jet_id": jet.id, "secret_value": "jet_dir"}
+        )
+        jet_file = self.File.create(
+            {
+                "name": "secret_path.txt",
+                "source": "tower",
+                "jet_id": jet.id,
+                "server_dir": "/tmp/#!cxtower.secret.JET_PATH_SECRET!#",
+                "code": "data",
+            }
+        )
+        deleted = []
+        delete_hook_calls = []
+        original_delete = type(self.File).delete
+
+        def capture_delete(server_self, remote_path):
+            deleted.append(remote_path)
+
+        def tracking_delete(files, raise_error=False):
+            delete_hook_calls.append(files.ids)
+            return original_delete(files, raise_error=raise_error)
+
+        with (
+            patch.object(type(self.Server), "delete_file", new=capture_delete),
+            patch.object(type(self.File), "delete", new=tracking_delete),
+        ):
+            jet.unlink()
+
+        # The file `delete` hook still runs
+        self.assertEqual(delete_hook_calls, [jet_file.ids])
+        self.assertEqual(deleted, ["/tmp/jet_dir/secret_path.txt"])
+        self.assertFalse(jet_file.exists())
+
+    def test_unlink_jet_file_denied_keeps_secret_values(self):
+        """A denied file deletion rolls back the jet and its secret values"""
+        # The manager can delete the jet, but not its file:
+        # file deletion needs the server managers and the file creator
+        jet = self._create_manager_jet("secret_file_denied_jet")
+        jet_value, __ = self._create_secret_values(jet)
+        vault = self._vault(jet_value)
+        jet_file = self.File.create(
+            {
+                "name": "denied.txt",
+                "source": "tower",
+                "jet_id": jet.id,
+                "server_dir": "/tmp",
+                "keep_when_deleted": True,
+            }
+        )
+        # The error is caught without `assertRaises`, which would roll back
+        # its own savepoint
+        error = None
+        try:
+            jet.with_user(self.manager).unlink()
+        except AccessError as exc:
+            error = exc
+        self.assertTrue(error)
+
+        self.env.invalidate_all()
+        self.assertTrue(jet.exists())
+        self.assertEqual(jet_file.jet_id, jet)
+        self.assertTrue(jet_value.exists())
+        self.assertEqual(self._vault(jet_value), vault)
+
+    def test_clone_jet_does_not_copy_secret_values(self):
+        """Cloned jets get no secret values; the source keeps its values"""
+        clone_plan = self.Plan.create({"name": "Secret Clone Plan"})
+        self.jet_template_test.write(
+            {
+                "plan_clone_same_server_id": clone_plan.id,
+                "plan_clone_different_server_id": clone_plan.id,
+            }
+        )
+        other_server = self.Server.create(
+            {
+                "name": "Secret Clone Server",
+                "ip_v4_address": "localhost",
+                "ssh_username": "admin",
+                "ssh_password": "password",
+                "ssh_auth_mode": "p",
+                "host_key": "test_key",
+                "os_id": self.os_debian_10.id,
+            }
+        )
+        jet = self._create_jet("Secret Clone Source", "secret_clone_source")
+        jet_value, __ = self._create_secret_values(jet)
+        values = self.secret_key.value_ids
+        vault = self._vault(values)
+
+        with patch.object(type(self.Jet), "run_flight_plan", return_value=None):
+            same_server_clone = jet.clone()
+            other_server_clone = jet.clone(server=other_server)
+
+        clones = same_server_clone | other_server_clone
+        self.assertEqual(len(clones), 2)
+        self.assertFalse(self.KeyValue.search([("jet_id", "in", clones.ids)]))
+        self.assertEqual(self.secret_key.value_ids, values)
+        self.assertEqual(jet.secret_ids, jet_value)
+        self.assertEqual(self._vault(values), vault)
+        self.assertEqual(jet_value._get_secret_value("secret_value"), "jet")

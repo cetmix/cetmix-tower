@@ -487,11 +487,11 @@ class CxTowerCommandRunWizard(models.TransientModel):
 
         for server in self.server_ids:
             server_name = server.name
-            # Prepare key renderer values
-            key_vals = {
-                "server_id": server.id,
-                "partner_id": server.partner_id.id if server.partner_id else None,
-            }
+            # Prepare key renderer values.
+            # Only one jet can be selected here, see the check above.
+            key_vals = self.env["cx.tower.key"]._get_secret_scope(
+                server=server, jet=self.jet_ids
+            )
 
             kwargs = {
                 "key": key_vals,

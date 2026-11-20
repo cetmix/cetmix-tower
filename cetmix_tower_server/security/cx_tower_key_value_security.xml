@@ -19,10 +19,25 @@
             name="name"
         >Key Value: Manager Read Access - Server Users/Managers</field>
         <field name="model_id" ref="model_cx_tower_key_value" />
+        <!-- Jet values are covered by the Jet rule below -->
         <field name="domain_force">[('key_id.key_type', '=', 's'),
+            ('jet_id', '=', False),
             '|', '|', ('server_id', '=', False),
             ('server_id.user_ids', 'in', [user.id]),
             ('server_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="rule_key_value_manager_read_jet" model="ir.rule">
+        <field name="name">Key Value: Manager Read Access - Jet Users/Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field name="domain_force">[('key_id.key_type', '=', 's'),
+            '|', ('jet_id.user_ids', 'in', [user.id]),
+            ('jet_id.manager_ids', 'in', [user.id])]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="1" />
         <field name="perm_write" eval="0" />
@@ -55,6 +70,17 @@
         <field name="perm_unlink" eval="0" />
     </record>
 
+    <record id="rule_key_value_manager_write_jet" model="ir.rule">
+        <field name="name">Key Value: Manager Write/Create Access - Jet Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field name="domain_force">[('jet_id.manager_ids', 'in', [user.id])]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
     <!-- Manager Delete Rules -->
     <record id="rule_key_value_manager_unlink_key" model="ir.rule">
         <field name="name">Key Value: Manager Delete Access - Key Managers</field>
@@ -75,6 +101,19 @@
         <field
             name="domain_force"
         >[('key_id.key_type', '=', 's'),('server_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
+        <field name="perm_read" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record id="rule_key_value_manager_unlink_jet" model="ir.rule">
+        <field name="name">Key Value: Manager Delete Access - Jet Managers</field>
+        <field name="model_id" ref="model_cx_tower_key_value" />
+        <field
+            name="domain_force"
+        >[('key_id.key_type', '=', 's'),('jet_id.manager_ids', 'in', [user.id]), ('create_uid', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('cetmix_tower_base.group_manager'))]" />
         <field name="perm_read" eval="0" />
         <field name="perm_write" eval="0" />

@@ -384,10 +384,11 @@ value you pick is stored on the remote.</p>
 <li><a class="reference internal" href="#what-is-stored" id="toc-entry-5">What is stored</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-6">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-7">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-8">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-9">Maintainers</a></li>
+<li><a class="reference internal" href="#changelog" id="toc-entry-6">Changelog</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-7">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-8">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-9">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-10">Maintainers</a></li>
 </ul>
 </li>
 </ul>
@@ -405,6 +406,18 @@ token. Leave <strong>Secret</strong> empty to use the globally configured GitHub
 Secret.</p>
 <p>Be careful about the scope of the token. Any token that can read the
 repository is enough.</p>
+<p><strong>Use another token for one Jet</strong></p>
+<p>Head suggestions on a Jet first use the value of the secret that belongs
+to that Jet. <strong>Manager</strong> and <strong>Root</strong> can see the <strong>Secrets</strong> tab.</p>
+<ol class="arabic simple">
+<li>Go to <strong>Cetmix Tower &gt; Jets &gt; Jets</strong>. Open the Jet.</li>
+<li>On <strong>Secrets</strong>, click <strong>Add a line</strong>.</li>
+<li>In <strong>Key</strong>, select the secret used for the GitHub API.</li>
+<li>In <strong>Secret Value</strong>, type the token for this Jet.</li>
+<li>Click <strong>Save</strong>.</li>
+</ol>
+<p>On a Git project, the Jet’s token is used only when the project is
+linked to one Jet.</p>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
@@ -437,8 +450,11 @@ stores the full SHA.</p>
 typed value can still be saved.</p>
 </div>
 </div>
+<div class="section" id="changelog">
+<h1><a class="toc-backref" href="#toc-entry-6">Changelog</a></h1>
+</div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-6">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-7">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/cetmix/cetmix-tower/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -446,15 +462,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-7">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-8">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-8">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-9">Authors</a></h2>
 <ul class="simple">
 <li>Cetmix</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-9">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-10">Maintainers</a></h2>
 <p>This module is part of the <a class="reference external" href="https://github.com/cetmix/cetmix-tower/tree/18.0/cetmix_tower_git_github">cetmix/cetmix-tower</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>

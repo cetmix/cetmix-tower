@@ -234,6 +234,92 @@ class TestTowerFile(TestTowerCommon):
         self.assertEqual(uploaded["data"], "password=server_secret_value")
         self.assertNotIn("None", uploaded["data"])
 
+    def test_jet_file_secret(self):
+        """Jet files resolve the jet value in content and paths."""
+        partner = self.env["res.partner"].create({"name": "Jet File Partner"})
+        jet = self.Jet.create(
+            {
+                "name": "Secret File Jet",
+                "jet_template_id": self.jet_template_sample.id,
+                "server_id": self.server_test_1.id,
+                "partner_id": partner.id,
+            }
+        )
+        secret = self.Key.create(
+            {
+                "name": "Jet File Secret",
+                "reference": "JET_FILE_SECRET",
+                "key_type": "s",
+                "secret_value": "global_value",
+            }
+        )
+        self.KeyValue.create(
+            [
+                {
+                    "key_id": secret.id,
+                    "secret_value": "jet_value",
+                    "jet_id": jet.id,
+                },
+                {
+                    "key_id": secret.id,
+                    "secret_value": "server_value",
+                    "server_id": self.server_test_1.id,
+                },
+            ]
+        )
+        file_vals = {
+            "source": "tower",
+            "server_dir": "/tmp/#!cxtower.secret.JET_FILE_SECRET!#",
+            "code": "password=#!cxtower.secret.JET_FILE_SECRET!#",
+        }
+        jet_file = self.File.create(
+            dict(file_vals, name="jet_secret.txt", jet_id=jet.id)
+        )
+        server_file = self.File.create(
+            dict(file_vals, name="server_secret.txt", server_id=self.server_test_1.id)
+        )
+        self.assertEqual(jet_file.server_id, self.server_test_1)
+
+        calls = {}
+
+        def capture_upload(server_self, data, remote_path, from_path=False):
+            calls["upload"] = (data, remote_path)
+            return MagicMock()
+
+        def capture_download(server_self, remote_path):
+            calls["download"] = remote_path
+            return b"ok"
+
+        def capture_delete(server_self, remote_path):
+            calls["delete"] = remote_path
+            return MagicMock()
+
+        server_class = type(self.server_test_1)
+        with (
+            patch.object(server_class, "upload_file", new=capture_upload),
+            patch.object(server_class, "download_file", new=capture_download),
+            patch.object(server_class, "delete_file", new=capture_delete),
+        ):
+            for file_record, value in (
+                (jet_file, "jet_value"),
+                (server_file, "server_value"),
+            ):
+                file_record.upload(raise_error=True)
+                self.assertEqual(
+                    calls["upload"],
+                    (
+                        f"password={value}",
+                        f"/tmp/{value}/{file_record.name}",
+                    ),
+                )
+                # Server version of a 'tower' file is downloaded too
+                file_record.with_context(is_server_code_version_process=True).download(
+                    raise_error=True
+                )
+                self.assertEqual(calls["download"], f"/tmp/{value}/{file_record.name}")
+                file_record.delete(raise_error=True)
+                self.assertEqual(calls["delete"], f"/tmp/{value}/{file_record.name}")
+
     def test_delete_file(self):
         """
         Delete file remotely from server
