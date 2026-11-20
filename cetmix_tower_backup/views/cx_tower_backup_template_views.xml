@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_backup_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.backup.template.form</field>
+        <field name="model">cx.tower.backup.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field
+                                name="reference"
+                                placeholder="Leave blank to autogenerate"
+                            />
+                            <field name="jet_template_id" />
+                            <field name="keep_last" />
+                        </group>
+                        <group>
+                            <field name="plan_backup_id" />
+                            <field name="plan_restore_id" />
+                            <field name="plan_delete_id" />
+                        </group>
+                    </group>
+                    <field
+                        name="backup_available_variable_ids"
+                        widget="many2many_tags"
+                    />
+                    <field
+                        name="restore_available_variable_ids"
+                        widget="many2many_tags"
+                    />
+                    <field name="note" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="cx_tower_backup_template_view_list" model="ir.ui.view">
+        <field name="name">cx.tower.backup.template.list</field>
+        <field name="model">cx.tower.backup.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="jet_template_id" />
+                <field name="keep_last" />
+            </list>
+        </field>
+    </record>
+    <record id="cx_tower_backup_template_action" model="ir.actions.act_window">
+        <field name="name">Backup Templates</field>
+        <field name="res_model">cx.tower.backup.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="path">tower-backup-templates</field>
+    </record>
+    <menuitem
+        id="cx_tower_backup_settings_menu"
+        name="Backups"
+        parent="cetmix_tower_base.menu_settings"
+        groups="cetmix_tower_base.group_root"
+        sequence="35"
+    />
+    <menuitem
+        id="cx_tower_backup_template_menu"
+        name="Backup Templates"
+        parent="cx_tower_backup_settings_menu"
+        action="cx_tower_backup_template_action"
+        groups="cetmix_tower_base.group_root"
+        sequence="10"
+    />
+</odoo>

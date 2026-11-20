@@ -206,6 +206,7 @@ class CxTowerCommandLog(models.Model):
             else:
                 command_log.command_result_html = False
 
+    @api.private
     def start(self, server_id, command_id, start_date=None, **kwargs):
         """Creates initial log record when command is started
 
@@ -267,6 +268,7 @@ class CxTowerCommandLog(models.Model):
             if log.plan_log_id and log.plan_log_id.is_running:
                 log.plan_log_id.stop()
 
+    @api.private
     def finish(
         self, finish_date=None, status=None, response=None, error=None, **kwargs
     ):
@@ -353,6 +355,7 @@ class CxTowerCommandLog(models.Model):
         for command_log in self_with_sudo:
             command_log._command_finished()
 
+    @api.private
     def record(
         self,
         server_id,

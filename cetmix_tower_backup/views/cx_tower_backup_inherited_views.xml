@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cx_tower_jet_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.template.form.backup</field>
+        <field name="model">cx.tower.jet.template</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_jet_template_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='waypoints']" position="after">
+                <page
+                    name="backups"
+                    string="Backups"
+                    groups="cetmix_tower_base.group_root"
+                >
+                    <field
+                        name="backup_template_ids"
+                        groups="cetmix_tower_base.group_root"
+                    >
+                        <list>
+                            <field name="sequence" widget="handle" />
+                            <field name="name" />
+                            <field name="reference" optional="hide" />
+                            <field name="keep_last" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="cx_tower_jet_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.form.backup</field>
+        <field name="model">cx.tower.jet</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_jet_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button
+                    name="%(cx_tower_backup_create_wizard_action)d"
+                    type="action"
+                    string="Back Up"
+                    groups="cetmix_tower_base.group_root"
+                />
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_backups"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-database"
+                    groups="cetmix_tower_base.group_root"
+                >
+                    <field
+                        name="backup_count"
+                        widget="statinfo"
+                        string="Backups"
+                        groups="cetmix_tower_base.group_root"
+                    />
+                </button>
+            </xpath>
+        </field>
+    </record>
+    <record id="cx_tower_command_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.command.form.backup</field>
+        <field name="model">cx.tower.command</field>
+        <field name="inherit_id" ref="cetmix_tower_server.cx_tower_command_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='waypoint_template_id']" position="after">
+                <field
+                    name="backup_template_id"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="action != 'create_backup'"
+                    required="action == 'create_backup'"
+                />
+            </xpath>
+        </field>
+    </record>
+    <record id="cx_tower_scheduled_task_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.scheduled.task.form.backup</field>
+        <field name="model">cx.tower.scheduled.task</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.view_cx_tower_scheduled_task_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='plan_id']" position="after">
+                <field
+                    name="backup_template_id"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="action != 'backup'"
+                    required="action == 'backup'"
+                />
+            </xpath>
+        </field>
+    </record>
+    <record id="cx_tower_plan_log_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.plan.log.form.backup</field>
+        <field name="model">cx.tower.plan.log</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_plan_log_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='waypoint_id']" position="after">
+                <field
+                    name="backup_id"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="not backup_id"
+                />
+                <field
+                    name="backup_operation"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="not backup_id"
+                />
+            </xpath>
+        </field>
+    </record>
+    <record id="cx_tower_jet_waypoint_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.form.backup</field>
+        <field name="model">cx.tower.jet.waypoint</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_jet_waypoint_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='waypoint_template_id']" position="after">
+                <field
+                    name="backup_id"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="not backup_id"
+                />
+            </xpath>
+        </field>
+    </record>
+    <record id="cx_tower_jet_waypoint_template_view_form" model="ir.ui.view">
+        <field name="name">cx.tower.jet.waypoint.template.form.backup</field>
+        <field name="model">cx.tower.jet.waypoint.template</field>
+        <field
+            name="inherit_id"
+            ref="cetmix_tower_server.cx_tower_jet_waypoint_template_view_form"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='flight_plans']/field[1]" position="before">
+                <field
+                    name="backup_template_id"
+                    groups="cetmix_tower_base.group_root"
+                />
+            </xpath>
+            <xpath expr="//field[@name='plan_create_id']" position="attributes">
+                <attribute name="groups">!cetmix_tower_base.group_root</attribute>
+            </xpath>
+            <xpath expr="//field[@name='plan_delete_id']" position="attributes">
+                <attribute name="groups">!cetmix_tower_base.group_root</attribute>
+            </xpath>
+            <xpath expr="//field[@name='plan_create_id']" position="after">
+                <field
+                    name="plan_create_id"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="backup_template_id"
+                />
+            </xpath>
+            <xpath expr="//field[@name='plan_delete_id']" position="after">
+                <field
+                    name="plan_delete_id"
+                    groups="cetmix_tower_base.group_root"
+                    invisible="backup_template_id"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

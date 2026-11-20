@@ -8,7 +8,7 @@ import yaml
 from markupsafe import escape
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -555,11 +555,17 @@ class CxTowerYamlImportWiz(models.TransientModel):
             dict: Action that opens the root records, or a notification.
 
         Raises:
+            AccessError: The caller cannot read this wizard or lacks import permission.
             ValidationError: The file has no records, a record has no
             reference or model, or a record cannot be saved.
         """
 
         self.ensure_one()
+        self.check_access("read")
+        if not self.env.su and not self.env.user.has_group(
+            "cetmix_tower_yaml.group_import"
+        ):
+            raise AccessError(self.env._("You must have YAML Import permission."))
 
         # Parse YAML code
         yaml_data = yaml.safe_load(self.yaml_code)
@@ -652,6 +658,8 @@ class CxTowerYamlImportWiz(models.TransientModel):
                             record_reference,
                             model_name,
                         )
+                except AccessError:
+                    raise
                 except Exception as e:
                     if existing and not create_new:
                         raise ValidationError(
