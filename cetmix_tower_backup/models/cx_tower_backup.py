@@ -199,6 +199,32 @@ class CxTowerBackup(models.Model):
             "cetmix_tower_backup.cx_tower_backup_action"
         )
 
+    def action_force_delete(self):
+        """Remove failed-deletion records without retrying remote cleanup.
+
+        Returns:
+            dict: Backup list action after removing all selected records.
+
+        Raises:
+            AccessError: The caller cannot delete a selected backup.
+            ValidationError: A backup is not in Deletion Failed, has an active
+                operation, or belongs to a waypoint.
+        """
+        self.check_access("unlink")
+        if any(backup.state != "delete_failed" for backup in self):
+            raise ValidationError(
+                self.env._("Only backups in Deletion Failed can be force deleted.")
+            )
+        self._check_delete()
+        if self.waypoint_ids:
+            raise ValidationError(
+                self.env._("Delete the waypoint instead of its linked backup.")
+            )
+        self._unlink_finished()
+        return self.env["ir.actions.actions"]._for_xml_id(
+            "cetmix_tower_backup.cx_tower_backup_action"
+        )
+
     def _has_running_restore(self):
         """Return whether a Restore plan still needs this backup's data.
 

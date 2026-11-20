@@ -122,3 +122,11 @@
 
 Queued backups cannot be restored. A queued backup's form shows that deletion is
 pending. Daily cleanup retries requests deferred by contention or dispatch errors.
+
+**Force delete after a deletion error**
+
+1. Open **Cetmix Tower** → **Tools** → **Backups**.
+2. Open a backup in **Deletion Failed**.
+3. Click **Force Delete**.
+4. Confirm removal of the record without remote cleanup. Remote data, if any, remains untouched.
+5. To remove several failed-deletion records, select them in the backup list and click **Action** → **Force Delete**. Every selected record must be in **Deletion Failed**; active operations and waypoint ownership still prevent removal.

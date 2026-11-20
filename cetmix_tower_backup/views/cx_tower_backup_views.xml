@@ -41,6 +41,13 @@
                         string="Delete"
                         invisible="state not in ('done', 'failed', 'delete_failed')"
                     />
+                    <button
+                        name="action_force_delete"
+                        type="object"
+                        string="Force Delete"
+                        invisible="state != 'delete_failed'"
+                        confirm="Remove this backup record without deleting remote data?"
+                    />
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
@@ -134,4 +141,13 @@
         sequence="25"
         groups="cetmix_tower_base.group_root"
     />
+    <record id="cx_tower_backup_force_delete_action" model="ir.actions.server">
+        <field name="name">Force Delete</field>
+        <field name="model_id" ref="model_cx_tower_backup" />
+        <field name="binding_model_id" ref="model_cx_tower_backup" />
+        <field name="binding_view_types">list</field>
+        <field name="groups_id" eval="[(4, ref('cetmix_tower_base.group_root'))]" />
+        <field name="state">code</field>
+        <field name="code">action = records.action_force_delete()</field>
+    </record>
 </odoo>
