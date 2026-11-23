@@ -527,9 +527,7 @@ class CxTowerCommand(models.Model):
             jet_template: Jet template to get the Odoo objects for.
             jet: Jet to get the Odoo objects for.
             waypoint: Waypoint to get the Odoo objects for.
-            **kwargs: Other values passed to the command run.
-                Extending modules read their own objects from them.
-                ``log["plan_log_id"]`` gives the current flight plan log.
+            **kwargs (dict): Additional objects supplied by extension modules.
 
         Returns:
             dict: Available Odoo objects:
@@ -649,10 +647,19 @@ class CxTowerCommand(models.Model):
             dict: Evaluation context for the python command.
         """
 
-        # Get the Odoo objects first.
-        # Other kwargs are passed on so that extending modules
-        # can add their own objects to the evaluation context.
-        imports = self._get_python_command_odoo_objects(server=server, **kwargs)
+        # Get the jet template, jet and waypoint from kwargs
+        jet_template = kwargs.pop("jet_template", None)
+        jet = kwargs.pop("jet", None)
+        waypoint = kwargs.pop("waypoint", None)
+
+        # Get the Odoo objects first
+        imports = self._get_python_command_odoo_objects(
+            server=server,
+            jet_template=jet_template,
+            jet=jet,
+            waypoint=waypoint,
+            **kwargs,
+        )
 
         # Update with the libraries
         imports.update(self._get_python_command_libraries())

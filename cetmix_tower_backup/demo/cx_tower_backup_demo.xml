@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="backup_tag_demo" model="cx.tower.tag">
+        <field name="name">Backup Demo</field>
+    </record>
+    <record id="backup_command_demo" model="cx.tower.command">
+        <field name="name">Demo Backup</field>
+        <field name="reference">backup_demo_backup</field>
+        <field name="action">python_code</field>
+        <field name="access_level">3</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field
+            name="note"
+        >Demonstrate backup callbacks without transferring any data.</field>
+        <field name="code">backup.update_metadata({"location": "demo://backup"})
+result = {"exit_code": 0, "message": "Demo backup finished"}</field>
+    </record>
+    <record id="backup_plan_demo" model="cx.tower.plan">
+        <field name="name">Demo Backup Plan</field>
+        <field name="reference">backup_demo_backup_plan</field>
+        <field name="access_level">3</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field name="note">Run the metadata-only demo backup command.</field>
+        <field
+            name="line_ids"
+            eval="[(0, 0, {'command_id': ref('backup_command_demo')})]"
+        />
+    </record>
+    <record id="restore_command_demo" model="cx.tower.command">
+        <field name="name">Demo Restore</field>
+        <field name="reference">backup_demo_restore</field>
+        <field name="action">python_code</field>
+        <field name="access_level">3</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field
+            name="note"
+        >Demonstrate restore callbacks without transferring any data.</field>
+        <field name="code">backup.update_metadata({"location": "demo://backup"})
+result = {"exit_code": 0, "message": "Demo restore finished"}</field>
+    </record>
+    <record id="restore_plan_demo" model="cx.tower.plan">
+        <field name="name">Demo Restore Plan</field>
+        <field name="reference">backup_demo_restore_plan</field>
+        <field name="access_level">3</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field name="note">Run the metadata-only demo restore command.</field>
+        <field
+            name="line_ids"
+            eval="[(0, 0, {'command_id': ref('restore_command_demo')})]"
+        />
+    </record>
+    <record id="delete_command_demo" model="cx.tower.command">
+        <field name="name">Demo Delete</field>
+        <field name="reference">backup_demo_delete</field>
+        <field name="action">python_code</field>
+        <field name="access_level">3</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field
+            name="note"
+        >Demonstrate delete callbacks without transferring any data.</field>
+        <field name="code">backup.update_metadata({"location": "demo://backup"})
+result = {"exit_code": 0, "message": "Demo delete finished"}</field>
+    </record>
+    <record id="delete_plan_demo" model="cx.tower.plan">
+        <field name="name">Demo Delete Plan</field>
+        <field name="reference">backup_demo_delete_plan</field>
+        <field name="access_level">3</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field name="note">Run the metadata-only demo delete command.</field>
+        <field
+            name="line_ids"
+            eval="[(0, 0, {'command_id': ref('delete_command_demo')})]"
+        />
+    </record>
+    <record id="backup_template_demo" model="cx.tower.backup.template">
+        <field name="name">Demo Backup</field>
+        <field name="reference">backup_demo_template</field>
+        <field
+            name="jet_template_id"
+            ref="cetmix_tower_server.jet_template_test_demo"
+        />
+        <field name="plan_backup_id" ref="backup_plan_demo" />
+        <field name="plan_restore_id" ref="restore_plan_demo" />
+        <field name="plan_delete_id" ref="delete_plan_demo" />
+        <field name="keep_last">3</field>
+        <field
+            name="note"
+        >Metadata-only backup demonstration. No external data is created or transferred.</field>
+    </record>
+    <record id="backup_waypoint_template_demo" model="cx.tower.jet.waypoint.template">
+        <field name="name">Demo Backup Waypoint</field>
+        <field name="reference">backup_demo_waypoint</field>
+        <field
+            name="jet_template_id"
+            ref="cetmix_tower_server.jet_template_test_demo"
+        />
+        <field name="backup_template_id" ref="backup_template_demo" />
+        <field
+            name="note"
+        >Prepare a durable backup and manage it through this waypoint.</field>
+    </record>
+    <record id="backup_task_demo" model="cx.tower.scheduled.task">
+        <field name="name">Demo Scheduled Backup</field>
+        <field name="reference">backup_demo_task</field>
+        <field name="active" eval="False" />
+        <field name="action">backup</field>
+        <field name="backup_template_id" ref="backup_template_demo" />
+    </record>
+    <record id="create_backup_command_demo" model="cx.tower.command">
+        <field name="name">Create Demo Backup</field>
+        <field name="reference">backup_demo_create</field>
+        <field name="action">create_backup</field>
+        <field name="backup_template_id" ref="backup_template_demo" />
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field
+            name="note"
+        >Start the demo backup from a Jet flight plan or scheduled Command task.</field>
+    </record>
+    <record id="create_backup_plan_demo" model="cx.tower.plan">
+        <field name="name">Create Demo Backup</field>
+        <field name="reference">backup_demo_create_plan</field>
+        <field name="tag_ids" eval="[(4, ref('backup_tag_demo'))]" />
+        <field name="note">Wait for the demo backup to finish before continuing.</field>
+        <field
+            name="line_ids"
+            eval="[(0, 0, {'command_id': ref('create_backup_command_demo')})]"
+        />
+    </record>
+    <record id="backup_done_demo" model="cx.tower.backup">
+        <field name="name">Demo Successful Backup</field>
+        <field name="reference">backup_done_demo</field>
+        <field name="backup_template_id" ref="backup_template_demo" />
+        <field name="jet_id" ref="cetmix_tower_server.jet_test_demo" />
+        <field name="server_id" ref="cetmix_tower_server.server_demo_1" />
+        <field name="state">done</field>
+        <field name="metadata" eval="{'location': 'demo://backup/done'}" />
+    </record>
+    <record id="backup_failed_demo" model="cx.tower.backup">
+        <field name="name">Demo Failed Backup</field>
+        <field name="reference">backup_failed_demo</field>
+        <field name="backup_template_id" ref="backup_template_demo" />
+        <field name="jet_id" ref="cetmix_tower_server.jet_test_demo" />
+        <field name="server_id" ref="cetmix_tower_server.server_demo_1" />
+        <field name="state">failed</field>
+        <field name="metadata" eval="{'location': 'demo://backup/partial'}" />
+    </record>
+    <record id="backup_delete_failed_demo" model="cx.tower.backup">
+        <field name="name">Demo Deletion Failed Backup</field>
+        <field name="reference">backup_delete_failed_demo</field>
+        <field name="backup_template_id" ref="backup_template_demo" />
+        <field name="state">delete_failed</field>
+        <field name="metadata" eval="{'location': 'demo://backup/delete_failed'}" />
+    </record>
+</odoo>

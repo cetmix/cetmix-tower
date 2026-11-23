@@ -167,6 +167,7 @@ class CxTowerPlanLog(models.Model):
             else:
                 plan_log.duration_current = plan_log.duration
 
+    @api.private
     def start(self, server, plan, start_date=None, **kwargs):
         """
         Runs plan on server.
@@ -333,6 +334,7 @@ class CxTowerPlanLog(models.Model):
             },
         }
 
+    @api.private
     def finish(self, plan_status, **kwargs):
         """Finish plan execution
 
@@ -419,6 +421,7 @@ class CxTowerPlanLog(models.Model):
                     "Post-finish hook for jet '%s' failed: %s", self.jet_id.name, e
                 )
 
+    @api.private
     def record(self, server, plan, status, **kwargs):
         """
         Record plan log without running it.
