@@ -138,8 +138,9 @@ class CxTowerBackup(models.Model):
             cx.tower.jet: Newly created Jet.
 
         Raises:
-            ValidationError: Backup is queued for deletion, is incomplete, or
-                Jet creation is refused.
+            AccessError: The caller cannot read the backup or destination server.
+            ValidationError: Backup is queued for deletion or incomplete, the
+                destination lacks the Jet Template, or Jet creation is refused.
         """
         self.ensure_one()
         self.check_access("read")
@@ -150,6 +151,15 @@ class CxTowerBackup(models.Model):
                 self.env._("Only a successful backup can be restored.")
             )
         template = self.backup_template_id.jet_template_id
+        server.ensure_one()
+        server.check_access("read")
+        if template not in server.jet_template_ids:
+            raise ValidationError(
+                self.env._(
+                    "The backup's Jet Template must be installed "
+                    "on the destination server."
+                )
+            )
         chosen_environment = (
             environment or self.environment_id or template.environment_default_id
         )

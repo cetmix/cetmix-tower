@@ -22,7 +22,7 @@
 3. Click **Backups**.
 4. Open a **Done** backup.
 5. Click **Restore**.
-6. Select **Server**.
+6. Select **Server** from servers with the backup's Jet Template installed.
 7. Optionally enter **Name**; leave it blank to generate one.
 8. Optionally select **State**.
 9. Select **Environment** if the destination template requires it.
@@ -123,17 +123,12 @@
 Queued backups cannot be restored. A queued backup's form shows that deletion is
 pending. Daily cleanup retries requests deferred by contention or dispatch errors.
 
-**Recover a missed completion update**
+**Check a completed backup operation**
 
 1. Refresh **Cetmix Tower** → **Tools** → **Backups** after the flight plan finishes.
-2. Inspect **Plan Logs** when a backup failed. A failed Backup plan leaves its backup Failed and releases only its own Jet reservation.
-3. If a completion callback was missed, allow the recovery scheduled action to run. It checks once per minute, including previously stuck operations after the module is upgraded.
+2. Open **Plan Logs** to inspect the result. A failed Backup plan sets the backup to **Failed** and releases its Jet reservation.
 
-Recovery applies the recorded result of a matching finished Backup or Delete plan.
-It does not guess from a backup's age, finalize running plans, accept obsolete
-operation tokens, or clear a newer operation's reservation. A notification failure
-cannot roll back the backup's completion update. Failed recovery attempts are
-logged and retried independently on the next run.
+The plan result and backup update are saved together. Upgrading the module also repairs previously missed Backup and Delete results when the finished plan matches the backup operation.
 
 **Force delete after a deletion error**
 

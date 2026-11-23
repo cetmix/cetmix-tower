@@ -75,9 +75,13 @@ class CxTowerPlanLog(models.Model):
 
         Returns:
             None: Parent completion result.
+
+        Raises:
+            Exception: Plan completion or the required backup update failed.
         """
-        result = super().finish(*args, **kwargs)
-        self._finalize_backup_result()
+        with self.env.cr.savepoint():
+            result = super().finish(*args, **kwargs)
+            self._finalize_backup_result()
         return result
 
     def _finalize_backup_result(self):
@@ -124,11 +128,11 @@ class CxTowerPlanLog(models.Model):
 
     @api.model
     def _reconcile_backup_operations(self):
-        """Recover missed completion callbacks without guessing from elapsed time.
+        """Repair previously missed backup updates during module loading.
 
         Returns:
-            None: Matching terminal results are applied independently; errors retry
-                on the next run without preventing other backups from recovering.
+            None: Matching terminal results are applied independently and
+                the obsolete recovery cron is removed.
         """
         logs = (
             self.sudo()
@@ -149,6 +153,9 @@ class CxTowerPlanLog(models.Model):
                 with self.env.cr.savepoint():
                     log._finalize_backup_result()
             except Exception:
-                _logger.exception(
-                    "Could not reconcile backup plan log %s; will retry", log.id
-                )
+                _logger.exception("Could not repair backup plan log %s", log.id)
+        cron = self.env.ref(
+            "cetmix_tower_backup.ir_cron_backup_reconcile", raise_if_not_found=False
+        )
+        if cron:
+            cron.unlink()

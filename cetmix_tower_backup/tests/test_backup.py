@@ -30,6 +30,7 @@ class BackupCommon(TestTowerJetsCommon):
         cls.template = cls.JetTemplate.create(
             {
                 "name": "Backup test template",
+                "server_ids": [(4, cls.server_test_1.id)],
                 "manager_ids": [(4, cls.manager.id)],
             }
         )
@@ -670,6 +671,23 @@ class TestTowerBackup(BackupCommon):
         self.assertEqual(backup.state, "failed")
         self.assertFalse(self.source.active_backup_id)
 
+    def test_failed_backup_update_rolls_back_plan_completion(self):
+        with self._defer():
+            backup = self.source.create_backup(self.backup_template)
+        log = backup.plan_log_ids
+        with (
+            patch.object(
+                type(backup), "_plan_finished", side_effect=ValidationError("failed")
+            ),
+            mute_logger("odoo.addons.cetmix_tower_server.models.cx_tower_plan_log"),
+            self.assertRaises(ValidationError),
+        ):
+            log.finish(601)
+        self.assertTrue(log.is_running)
+        self.assertFalse(log.finish_date)
+        self.assertEqual(backup.state, "running")
+        self.assertEqual(self.source.active_backup_id, backup)
+
     def test_reconcile_recovers_terminal_delete_results(self):
         self.backup_template.plan_delete_id = self.delete_plan
         for status in (601, 0):
@@ -788,6 +806,32 @@ class TestTowerBackup(BackupCommon):
         with self.assertRaises(ValidationError):
             backup.action_force_delete()
         self.assertTrue(backup.exists())
+
+    def test_restore_requires_installed_template_in_wizard_and_model(self):
+        from odoo.tools.safe_eval import safe_eval
+
+        backup = self._backup()
+        wizard = self.env["cx.tower.backup.restore.wizard"].create(
+            {"backup_id": backup.id, "server_id": self.server_test_1.id}
+        )
+        domain = safe_eval(
+            wizard._fields["server_id"].domain,
+            {"jet_template_id": wizard.jet_template_id.id},
+        )
+        self.assertIn(self.server_test_1, self.Server.search(domain))
+        self.template.server_ids = False
+        self.assertNotIn(self.server_test_1, self.Server.search(domain))
+        before = self.Jet.search_count([])
+        with self.assertRaisesRegex(ValidationError, "must be installed"):
+            backup.restore(self.server_test_1)
+        with self.assertRaisesRegex(ValidationError, "must be installed"):
+            wizard.action_confirm()
+        self.assertEqual(self.Jet.search_count([]), before)
+        self.template.server_ids = self.server_test_1
+        action = wizard.action_confirm()
+        restored = self.Jet.browse(action["res_id"])
+        self.assertEqual(restored.server_id, self.server_test_1)
+        self.assertEqual(restored.jet_template_id, self.template)
 
     def test_failed_and_stopped_backup(self):
         for status in (-1, -308):

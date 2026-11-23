@@ -8,7 +8,12 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
     _description = "Restore Backup"
 
     backup_id = fields.Many2one("cx.tower.backup", required=True, readonly=True)
-    server_id = fields.Many2one("cx.tower.server", required=True)
+    jet_template_id = fields.Many2one(related="backup_id.jet_template_id")
+    server_id = fields.Many2one(
+        "cx.tower.server",
+        required=True,
+        domain="[('jet_template_ids', 'in', [jet_template_id])]",
+    )
     name = fields.Char()
     state_id = fields.Many2one("cx.tower.jet.state", domain="state_domain")
     state_domain = fields.Binary(compute="_compute_state_domain")
@@ -56,7 +61,8 @@ class CxTowerBackupRestoreWizard(models.TransientModel):
             dict: Failed Restore log or new Jet form action.
 
         Raises:
-            ValidationError: Custom values are not permitted by the template.
+            ValidationError: Custom values are not permitted by the template, or the
+                destination server does not have the Jet Template installed.
         """
         self.ensure_one()
         self.check_access("read")

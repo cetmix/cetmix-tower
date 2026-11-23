@@ -632,7 +632,8 @@ list permits no custom input in its corresponding dialog.</li>
 <li>Click <strong>Backups</strong>.</li>
 <li>Open a <strong>Done</strong> backup.</li>
 <li>Click <strong>Restore</strong>.</li>
-<li>Select <strong>Server</strong>.</li>
+<li>Select <strong>Server</strong> from servers with the backup’s Jet Template
+installed.</li>
 <li>Optionally enter <strong>Name</strong>; leave it blank to generate one.</li>
 <li>Optionally select <strong>State</strong>.</li>
 <li>Select <strong>Environment</strong> if the destination template requires it.</li>
@@ -881,22 +882,16 @@ backups continue; failed deletions require manual retry.</li>
 <p>Queued backups cannot be restored. A queued backup’s form shows that
 deletion is pending. Daily cleanup retries requests deferred by
 contention or dispatch errors.</p>
-<p><strong>Recover a missed completion update</strong></p>
+<p><strong>Check a completed backup operation</strong></p>
 <ol class="arabic simple">
 <li>Refresh <strong>Cetmix Tower</strong> → <strong>Tools</strong> → <strong>Backups</strong> after the flight
 plan finishes.</li>
-<li>Inspect <strong>Plan Logs</strong> when a backup failed. A failed Backup plan
-leaves its backup Failed and releases only its own Jet reservation.</li>
-<li>If a completion callback was missed, allow the recovery scheduled
-action to run. It checks once per minute, including previously stuck
-operations after the module is upgraded.</li>
+<li>Open <strong>Plan Logs</strong> to inspect the result. A failed Backup plan sets
+the backup to <strong>Failed</strong> and releases its Jet reservation.</li>
 </ol>
-<p>Recovery applies the recorded result of a matching finished Backup or
-Delete plan. It does not guess from a backup’s age, finalize running
-plans, accept obsolete operation tokens, or clear a newer operation’s
-reservation. A notification failure cannot roll back the backup’s
-completion update. Failed recovery attempts are logged and retried
-independently on the next run.</p>
+<p>The plan result and backup update are saved together. Upgrading the
+module also repairs previously missed Backup and Delete results when the
+finished plan matches the backup operation.</p>
 <p><strong>Force delete after a deletion error</strong></p>
 <ol class="arabic simple">
 <li>Open <strong>Cetmix Tower</strong> → <strong>Tools</strong> → <strong>Backups</strong>.</li>
